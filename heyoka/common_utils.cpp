@@ -6,6 +6,8 @@
 // Public License v. 2.0. If a copy of the MPL was not distributed
 // with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+#include <heyoka/config.hpp>
+
 #include <algorithm>
 #include <cassert>
 #include <stdexcept>
@@ -14,6 +16,15 @@
 #include <pybind11/pybind11.h>
 
 #include <Python.h>
+
+#if defined(HEYOKA_HAVE_REAL128)
+
+#include <mp++/extra/pybind11.hpp>
+#include <mp++/real128.hpp>
+
+#endif
+
+#include <heyoka/number.hpp>
 
 #include "common_utils.hpp"
 
@@ -25,12 +36,12 @@ py::object builtins()
     return py::module::import("builtins");
 }
 
-py::object type(const py::object &o)
+py::object type(const py::handle &o)
 {
     return builtins().attr("type")(o);
 }
 
-std::string str(const py::object &o)
+std::string str(const py::handle &o)
 {
     return py::cast<std::string>(py::str(o));
 }
@@ -41,12 +52,12 @@ void py_throw(PyObject *type, const char *msg)
     throw py::error_already_set();
 }
 
-bool is_numpy_ld(const py::object &o)
+bool is_numpy_ld(const py::handle &o)
 {
     return type(o).is(py::module::import("numpy").attr("longdouble"));
 }
 
-long double from_numpy_ld(const py::object &o)
+long double from_numpy_ld(const py::handle &o)
 {
     assert(is_numpy_ld(o));
 
@@ -65,6 +76,27 @@ long double from_numpy_ld(const py::object &o)
                    [](auto c) { return static_cast<unsigned char>(c); });
 
     return retval;
+}
+
+heyoka::number to_number(const py::handle &o)
+{
+    if (type(o).is(builtins().attr("float"))) {
+        return heyoka::number{py::cast<double>(o)};
+    }
+
+    if (is_numpy_ld(o)) {
+        return heyoka::number{from_numpy_ld(o)};
+    }
+
+#if defined(HEYOKA_HAVE_REAL128)
+    try {
+        return heyoka::number{py::cast<mppp::real128>(o)};
+    } catch (const py::cast_error &) {
+    }
+#endif
+
+    py_throw(PyExc_TypeError,
+             ("unable to convert an object of type \"" + str(type(o)) + "\" to a heyoka number").c_str());
 }
 
 } // namespace heyoka_py

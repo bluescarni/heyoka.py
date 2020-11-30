@@ -8,6 +8,7 @@
 
 #include <heyoka/config.hpp>
 
+#include <cstdint>
 #include <sstream>
 #include <string>
 #include <vector>
@@ -27,6 +28,9 @@
 
 #include <heyoka/expression.hpp>
 #include <heyoka/math_functions.hpp>
+#include <heyoka/nbody.hpp>
+#include <heyoka/number.hpp>
+#include <heyoka/square.hpp>
 
 #include "common_utils.hpp"
 
@@ -317,9 +321,34 @@ PYBIND11_MODULE(core, m)
     });
 
     // Math functions.
-    m.def("sin", &heyoka::sin);
-    m.def("cos", &heyoka::cos);
-    m.def("log", &heyoka::log);
-    m.def("exp", &heyoka::exp);
-    m.def("sqrt", &heyoka::sqrt);
+    m.def("sin", &hey::sin);
+    m.def("cos", &hey::cos);
+    m.def("log", &hey::log);
+    m.def("exp", &hey::exp);
+    m.def("sqrt", &hey::sqrt);
+    m.def("square", &hey::square);
+
+    // N-body builder.
+    m.def("make_nbody_sys", [](std::uint32_t n, py::kwargs kwargs) {
+        if (kwargs) {
+            // NOTE: Gconst's default value is 1, if not provided.
+            const auto Gconst = kwargs.contains("Gconst") ? heypy::to_number(kwargs["Gconst"]) : hey::number{1.};
+
+            std::vector<hey::number> m_vec;
+            if (kwargs.contains("masses")) {
+                auto masses = py::cast<py::iterable>(kwargs["masses"]);
+                for (const auto &ms : masses) {
+                    m_vec.push_back(heypy::to_number(ms));
+                }
+            } else {
+                // If masses are not provided, all masses are 1.
+                m_vec.resize(static_cast<decltype(m_vec.size())>(n), hey::number{1.});
+            }
+
+            namespace kw = hey::kw;
+            return hey::make_nbody_sys(n, kw::Gconst = Gconst, kw::masses = m_vec);
+        }
+
+        return hey::make_nbody_sys(n);
+    });
 }

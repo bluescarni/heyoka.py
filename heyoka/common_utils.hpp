@@ -15,6 +15,8 @@
 
 #include <Python.h>
 
+#include <heyoka/number.hpp>
+
 namespace heyoka_py
 {
 
@@ -22,15 +24,17 @@ namespace py = pybind11;
 
 py::object builtins();
 
-py::object type(const py::object &);
+py::object type(const py::handle &);
 
-std::string str(const py::object &);
+std::string str(const py::handle &);
 
 [[noreturn]] void py_throw(PyObject *, const char *);
 
-bool is_numpy_ld(const py::object &);
+bool is_numpy_ld(const py::handle &);
 
-long double from_numpy_ld(const py::object &);
+long double from_numpy_ld(const py::handle &);
+
+heyoka::number to_number(const py::handle &);
 
 } // namespace heyoka_py
 
