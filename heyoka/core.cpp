@@ -8,8 +8,6 @@
 
 #include <heyoka/config.hpp>
 
-#include <algorithm>
-#include <iterator>
 #include <sstream>
 #include <string>
 #include <vector>
@@ -28,6 +26,7 @@
 #endif
 
 #include <heyoka/expression.hpp>
+#include <heyoka/math_functions.hpp>
 
 #include "common_utils.hpp"
 
@@ -277,6 +276,22 @@ PYBIND11_MODULE(core, m)
         // Comparisons.
         .def(py::self == py::self)
         .def(py::self != py::self)
+        // pow().
+        .def("__pow__", [](const hey::expression &b, const hey::expression &e) { return hey::pow(b, e); })
+        .def("__pow__", [](const hey::expression &b, double e) { return hey::pow(b, e); })
+#if defined(HEYOKA_HAVE_REAL128)
+        .def("__pow__", [](const hey::expression &b, mppp::real128 e) { return hey::pow(b, e); })
+#endif
+        .def("__pow__",
+             [](const hey::expression &b, const py::object &e) {
+                 if (heypy::is_numpy_ld(e)) {
+                     return hey::pow(b, heypy::from_numpy_ld(e));
+                 } else {
+                     heypy::py_throw(PyExc_TypeError, ("cannot raise an expression to the power of an object of type \""
+                                                       + heypy::str(heypy::type(e)) + "\"")
+                                                          .c_str());
+                 }
+             })
         // Repr.
         .def("__repr__",
              [](const hey::expression &e) {
@@ -289,12 +304,22 @@ PYBIND11_MODULE(core, m)
         .def(
             "__deepcopy__", [](const hey::expression &e, py::dict) { return e; }, "memo"_a);
 
+    // Pairwise sum.
     m.def("pairwise_sum", [](const std::vector<hey::expression> &v_ex) { return hey::pairwise_sum(v_ex); });
 
+    // make_vars() helper.
     m.def("make_vars", [](py::args v_str) {
-        std::vector<hey::expression> retval;
-        std::transform(v_str.begin(), v_str.end(), std::back_inserter(retval),
-                       [](const auto &o) { return hey::expression(py::cast<std::string>(o)); });
+        py::list retval;
+        for (const auto &o : v_str) {
+            retval.append(hey::expression(py::cast<std::string>(o)));
+        }
         return retval;
     });
+
+    // Math functions.
+    m.def("sin", &heyoka::sin);
+    m.def("cos", &heyoka::cos);
+    m.def("log", &heyoka::log);
+    m.def("exp", &heyoka::exp);
+    m.def("sqrt", &heyoka::sqrt);
 }
