@@ -19,7 +19,7 @@ Python3_add_library(core MODULE WITH_SOABI
     common_utils.cpp
 )
 
-target_link_libraries(core PRIVATE heyoka::heyoka)
+target_link_libraries(core PRIVATE heyoka::heyoka Boost::boost)
 target_include_directories(core SYSTEM PRIVATE "${pybind11_INCLUDE_DIR}")
 target_compile_definitions(core PRIVATE "${pybind11_DEFINITIONS}")
 target_compile_options(core PRIVATE

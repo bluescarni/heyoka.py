@@ -127,5 +127,8 @@ find_package(Python3 REQUIRED COMPONENTS Interpreter Development)
 # pybind11.
 find_package(pybind11 REQUIRED)
 
+# Boost.
+find_package(Boost 1.60 REQUIRED)
+
 # Add the module directory.
 add_subdirectory(heyoka)

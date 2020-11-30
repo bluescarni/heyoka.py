@@ -11,8 +11,12 @@
 #include <cstdint>
 #include <sstream>
 #include <string>
+#include <utility>
 #include <vector>
 
+#include <boost/numeric/conversion/cast.hpp>
+
+#include <pybind11/numpy.h>
 #include <pybind11/operators.h>
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
@@ -31,6 +35,7 @@
 #include <heyoka/nbody.hpp>
 #include <heyoka/number.hpp>
 #include <heyoka/square.hpp>
+#include <heyoka/taylor.hpp>
 
 #include "common_utils.hpp"
 
@@ -351,4 +356,43 @@ PYBIND11_MODULE(core, m)
 
         return hey::make_nbody_sys(n);
     });
+
+    // Adaptive taylor integrators.
+    py::class_<hey::taylor_adaptive<double>>(m, "taylor_adaptive_double")
+        .def(py::init(
+            [](const std::vector<std::pair<hey::expression, hey::expression>> &sys, py::iterable state, py::kwargs) {
+                // Build the initial state vector.
+                std::vector<double> s_vector;
+                for (const auto &x : state) {
+                    s_vector.push_back(py::cast<double>(x));
+                }
+
+                return hey::taylor_adaptive<double>{sys, std::move(s_vector)};
+            }))
+        .def_property_readonly("state", [](py::object &o) {
+            auto &ta = py::cast<hey::taylor_adaptive<double> &>(o);
+            return py::array_t<double>({boost::numeric_cast<py::ssize_t>(ta.get_state().size())}, ta.get_state_data(),
+                                       o);
+        });
+
+    py::class_<hey::taylor_adaptive<long double>>(m, "taylor_adaptive_long_double")
+        .def(py::init(
+            [](const std::vector<std::pair<hey::expression, hey::expression>> &sys, py::iterable state, py::kwargs) {
+                // Build the initial state vector.
+                std::vector<long double> s_vector;
+                for (const auto &x : state) {
+                    if (heypy::is_numpy_ld(x)) {
+                        s_vector.push_back(heypy::from_numpy_ld(x));
+                    } else {
+                        s_vector.push_back(py::cast<double>(x));
+                    }
+                }
+
+                return hey::taylor_adaptive<long double>{sys, std::move(s_vector)};
+            }))
+        .def_property_readonly("state", [](py::object &o) {
+            auto &ta = py::cast<hey::taylor_adaptive<long double> &>(o);
+            return py::array_t<long double>({boost::numeric_cast<py::ssize_t>(ta.get_state().size())},
+                                            ta.get_state_data(), o);
+        });
 }
