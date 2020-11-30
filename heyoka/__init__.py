@@ -1,4 +1,4 @@
-# Copyright 2019-2020 Francesco Biscani (bluescarni@gmail.com)
+# Copyright 2020 Francesco Biscani (bluescarni@gmail.com)
 #
 # This file is part of the heyoka.py library.
 #
