@@ -33,7 +33,7 @@ namespace heyoka_py
 
 py::object builtins()
 {
-    return py::module::import("builtins");
+    return py::module_::import("builtins");
 }
 
 py::object type(const py::handle &o)
@@ -54,7 +54,7 @@ void py_throw(PyObject *type, const char *msg)
 
 bool is_numpy_ld(const py::handle &o)
 {
-    return type(o).is(py::module::import("numpy").attr("longdouble"));
+    return type(o).is(py::module_::import("numpy").attr("longdouble"));
 }
 
 long double from_numpy_ld(const py::handle &o)

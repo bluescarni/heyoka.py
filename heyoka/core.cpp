@@ -370,8 +370,8 @@ PYBIND11_MODULE(core, m)
                 return hey::taylor_adaptive<double>{sys, std::move(s_vector)};
             }))
         .def_property_readonly("state", [](py::object &o) {
-            auto &ta = py::cast<hey::taylor_adaptive<double> &>(o);
-            return py::array_t<double>({boost::numeric_cast<py::ssize_t>(ta.get_state().size())}, ta.get_state_data(),
+            auto *ta = py::cast<hey::taylor_adaptive<double> *>(o);
+            return py::array_t<double>({boost::numeric_cast<py::ssize_t>(ta->get_state().size())}, ta->get_state_data(),
                                        o);
         });
 
@@ -391,8 +391,8 @@ PYBIND11_MODULE(core, m)
                 return hey::taylor_adaptive<long double>{sys, std::move(s_vector)};
             }))
         .def_property_readonly("state", [](py::object &o) {
-            auto &ta = py::cast<hey::taylor_adaptive<long double> &>(o);
-            return py::array_t<long double>({boost::numeric_cast<py::ssize_t>(ta.get_state().size())},
-                                            ta.get_state_data(), o);
+            auto *ta = py::cast<hey::taylor_adaptive<long double> *>(o);
+            return py::array_t<long double>({boost::numeric_cast<py::ssize_t>(ta->get_state().size())},
+                                            ta->get_state_data(), o);
         });
 }
