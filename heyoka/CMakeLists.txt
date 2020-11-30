@@ -16,6 +16,7 @@ endforeach()
 # Core module.
 Python3_add_library(core MODULE WITH_SOABI
     core.cpp
+    common_utils.cpp
 )
 
 target_link_libraries(core PRIVATE heyoka::heyoka)
