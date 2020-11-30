@@ -35,7 +35,7 @@ std::string str(const py::object &o)
     return py::cast<std::string>(py::str(o));
 }
 
-[[noreturn]] void py_throw(PyObject *type, const char *msg)
+void py_throw(PyObject *type, const char *msg)
 {
     PyErr_SetString(type, msg);
     throw py::error_already_set();

@@ -43,6 +43,24 @@ PYBIND11_MODULE(core, m)
     mppp_pybind11::init();
 #endif
 
+    using namespace pybind11::literals;
+
+    m.doc() = "The core heyoka module";
+
+    // Flag the presence of real128.
+    m.attr("with_real128") =
+#if defined(HEYOKA_HAVE_REAL128)
+        true
+#else
+        false
+#endif
+        ;
+
+    // Export the heyoka version.
+    m.attr("_heyoka_cpp_version_major") = HEYOKA_VERSION_MAJOR;
+    m.attr("_heyoka_cpp_version_minor") = HEYOKA_VERSION_MINOR;
+    m.attr("_heyoka_cpp_version_patch") = HEYOKA_VERSION_PATCH;
+
     py::class_<hey::expression>(m, "expression")
         .def(py::init<>())
         .def(py::init<double>())
@@ -260,11 +278,16 @@ PYBIND11_MODULE(core, m)
         .def(py::self == py::self)
         .def(py::self != py::self)
         // Repr.
-        .def("__repr__", [](const hey::expression &e) {
-            std::ostringstream oss;
-            oss << e;
-            return oss.str();
-        });
+        .def("__repr__",
+             [](const hey::expression &e) {
+                 std::ostringstream oss;
+                 oss << e;
+                 return oss.str();
+             })
+        // Copy/deepcopy.
+        .def("__copy__", [](const hey::expression &e) { return e; })
+        .def(
+            "__deepcopy__", [](const hey::expression &e, py::dict) { return e; }, "memo"_a);
 
     m.def("pairwise_sum", [](const std::vector<hey::expression> &v_ex) { return hey::pairwise_sum(v_ex); });
 
