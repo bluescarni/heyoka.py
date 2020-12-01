@@ -8,6 +8,7 @@
 
 #include <heyoka/config.hpp>
 
+#include <cstddef>
 #include <cstdint>
 #include <sstream>
 #include <string>
@@ -357,6 +358,14 @@ PYBIND11_MODULE(core, m)
         return hey::make_nbody_sys(n);
     });
 
+    // taylor_outcome enum.
+    py::enum_<hey::taylor_outcome>(m, "taylor_outcome")
+        .value("success", hey::taylor_outcome::success)
+        .value("step_limit", hey::taylor_outcome::step_limit)
+        .value("time_limit", hey::taylor_outcome::time_limit)
+        .value("err_nf_state", hey::taylor_outcome::err_nf_state)
+        .export_values();
+
     // Adaptive taylor integrators.
     py::class_<hey::taylor_adaptive<double>>(m, "taylor_adaptive_double")
         .def(py::init(
@@ -369,6 +378,25 @@ PYBIND11_MODULE(core, m)
 
                 return hey::taylor_adaptive<double>{sys, std::move(s_vector)};
             }))
+        .def("get_decomposition", &hey::taylor_adaptive<double>::get_decomposition)
+        .def("step", [](hey::taylor_adaptive<double> &ta) { return ta.step(); })
+        .def(
+            "step", [](hey::taylor_adaptive<double> &ta, double max_delta_t) { return ta.step(max_delta_t); },
+            "max_delta_t"_a)
+        .def("step_backward", [](hey::taylor_adaptive<double> &ta) { return ta.step_backward(); })
+        .def(
+            "propagate_for",
+            [](hey::taylor_adaptive<double> &ta, double delta_t, std::size_t max_steps) {
+                return ta.propagate_for(delta_t, max_steps);
+            },
+            "delta_t"_a, "max_steps"_a = 0)
+        .def(
+            "propagate_until",
+            [](hey::taylor_adaptive<double> &ta, double t, std::size_t max_steps) {
+                return ta.propagate_until(t, max_steps);
+            },
+            "t"_a, "max_steps"_a = 0)
+        .def_property("time", &hey::taylor_adaptive<double>::get_time, &hey::taylor_adaptive<double>::set_time)
         .def_property_readonly("state", [](py::object &o) {
             auto *ta = py::cast<hey::taylor_adaptive<double> *>(o);
             return py::array_t<double>({boost::numeric_cast<py::ssize_t>(ta->get_state().size())}, ta->get_state_data(),

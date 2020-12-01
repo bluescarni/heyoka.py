@@ -10,7 +10,6 @@
 
 #include <algorithm>
 #include <cassert>
-#include <stdexcept>
 #include <string>
 
 #include <pybind11/pybind11.h>
@@ -65,10 +64,11 @@ long double from_numpy_ld(const py::handle &o)
     const auto str = static_cast<std::string>(b);
 
     if (str.size() != sizeof(long double)) {
-        throw std::runtime_error(
-            "error while converting a numpy.longdouble to a C++ long double: the size of the bytes array ("
-            + std::to_string(str.size()) + ") does not match the size of the long double type ("
-            + std::to_string(sizeof(long double)) + ")");
+        py_throw(PyExc_RuntimeError,
+                 ("error while converting a numpy.longdouble to a C++ long double: the size of the bytes array ("
+                  + std::to_string(str.size()) + ") does not match the size of the long double type ("
+                  + std::to_string(sizeof(long double)) + ")")
+                     .c_str());
     }
 
     long double retval;
