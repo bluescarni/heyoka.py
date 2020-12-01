@@ -395,4 +395,20 @@ PYBIND11_MODULE(core, m)
             return py::array_t<long double>({boost::numeric_cast<py::ssize_t>(ta->get_state().size())},
                                             ta->get_state_data(), o);
         });
+
+#if defined(HEYOKA_HAVE_REAL128)
+    py::class_<hey::taylor_adaptive<mppp::real128>>(m, "taylor_adaptive_real128")
+        .def(py::init(
+            [](const std::vector<std::pair<hey::expression, hey::expression>> &sys, py::iterable state, py::kwargs) {
+                // Build the initial state vector.
+                std::vector<mppp::real128> s_vector;
+                for (const auto &x : state) {
+                    s_vector.push_back(py::cast<mppp::real128>(x));
+                }
+
+                return hey::taylor_adaptive<mppp::real128>{sys, std::move(s_vector)};
+            }))
+        // TODO return an array somehow?
+        .def("get_state", [](const hey::taylor_adaptive<mppp::real128> &ta) { return ta.get_state(); });
+#endif
 }
