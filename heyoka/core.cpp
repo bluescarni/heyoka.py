@@ -39,10 +39,10 @@
 #include <heyoka/taylor.hpp>
 
 #include "common_utils.hpp"
+#include "long_double_caster.hpp"
 
 namespace py = pybind11;
 namespace hey = heyoka;
-
 namespace heypy = heyoka_py;
 
 PYBIND11_MODULE(core, m)
@@ -70,22 +70,18 @@ PYBIND11_MODULE(core, m)
     m.attr("_heyoka_cpp_version_minor") = HEYOKA_VERSION_MINOR;
     m.attr("_heyoka_cpp_version_patch") = HEYOKA_VERSION_PATCH;
 
+    // NOTE: typedef to avoid complications in the
+    // exposition of the operators.
+    using ld_t = long double;
+
     py::class_<hey::expression>(m, "expression")
         .def(py::init<>())
         .def(py::init<double>())
+        .def(py::init<long double>())
 #if defined(HEYOKA_HAVE_REAL128)
         .def(py::init<mppp::real128>())
 #endif
         .def(py::init<std::string>())
-        .def(py::init([](const py::object &o) {
-            if (heypy::is_numpy_ld(o)) {
-                return hey::expression{heypy::from_numpy_ld(o)};
-            } else {
-                heypy::py_throw(PyExc_TypeError, ("cannot construct an expression from an object of type \""
-                                                  + heypy::str(heypy::type(o)) + "\"")
-                                                     .c_str());
-            }
-        }))
         // Unary operators.
         .def(-py::self)
         .def(+py::self)
@@ -93,215 +89,74 @@ PYBIND11_MODULE(core, m)
         .def(py::self + py::self)
         .def(py::self + double())
         .def(double() + py::self)
+        .def(py::self + ld_t())
+        .def(ld_t() + py::self)
 #if defined(HEYOKA_HAVE_REAL128)
         .def(py::self + mppp::real128())
         .def(mppp::real128() + py::self)
 #endif
-        .def(
-            "__add__",
-            [](const hey::expression &ex, const py::object &o) {
-                if (heypy::is_numpy_ld(o)) {
-                    return ex + heypy::from_numpy_ld(o);
-                } else {
-                    heypy::py_throw(PyExc_TypeError, ("cannot add an expression to an object of type \""
-                                                      + heypy::str(heypy::type(o)) + "\"")
-                                                         .c_str());
-                }
-            },
-            py::is_operator())
-        .def(
-            "__add__",
-            [](const py::object &o, const hey::expression &ex) {
-                if (heypy::is_numpy_ld(o)) {
-                    return heypy::from_numpy_ld(o) + ex;
-                } else {
-                    heypy::py_throw(PyExc_TypeError, ("cannot add an expression to an object of type \""
-                                                      + heypy::str(heypy::type(o)) + "\"")
-                                                         .c_str());
-                }
-            },
-            py::is_operator())
         .def(py::self - py::self)
         .def(py::self - double())
         .def(double() - py::self)
+        .def(py::self - ld_t())
+        .def(ld_t() - py::self)
 #if defined(HEYOKA_HAVE_REAL128)
         .def(py::self - mppp::real128())
         .def(mppp::real128() - py::self)
 #endif
-        .def(
-            "__sub__",
-            [](const hey::expression &ex, const py::object &o) {
-                if (heypy::is_numpy_ld(o)) {
-                    return ex - heypy::from_numpy_ld(o);
-                } else {
-                    heypy::py_throw(PyExc_TypeError, ("cannot subtract an object of type \""
-                                                      + heypy::str(heypy::type(o)) + "\" from an expression")
-                                                         .c_str());
-                }
-            },
-            py::is_operator())
-        .def(
-            "__sub__",
-            [](const py::object &o, const hey::expression &ex) {
-                if (heypy::is_numpy_ld(o)) {
-                    return heypy::from_numpy_ld(o) - ex;
-                } else {
-                    heypy::py_throw(PyExc_TypeError, ("cannot subtract an expression from an object of type \""
-                                                      + heypy::str(heypy::type(o)) + "\"")
-                                                         .c_str());
-                }
-            },
-            py::is_operator())
         .def(py::self * py::self)
         .def(py::self * double())
         .def(double() * py::self)
+        .def(py::self * ld_t())
+        .def(ld_t() * py::self)
 #if defined(HEYOKA_HAVE_REAL128)
         .def(py::self * mppp::real128())
         .def(mppp::real128() * py::self)
 #endif
-        .def(
-            "__mul__",
-            [](const hey::expression &ex, const py::object &o) {
-                if (heypy::is_numpy_ld(o)) {
-                    return ex * heypy::from_numpy_ld(o);
-                } else {
-                    heypy::py_throw(PyExc_TypeError, ("cannot multiply an object of type \""
-                                                      + heypy::str(heypy::type(o)) + "\" by an expression")
-                                                         .c_str());
-                }
-            },
-            py::is_operator())
-        .def(
-            "__mul__",
-            [](const py::object &o, const hey::expression &ex) {
-                if (heypy::is_numpy_ld(o)) {
-                    return heypy::from_numpy_ld(o) * ex;
-                } else {
-                    heypy::py_throw(PyExc_TypeError, ("cannot multiply an expression by an object of type \""
-                                                      + heypy::str(heypy::type(o)) + "\"")
-                                                         .c_str());
-                }
-            },
-            py::is_operator())
         .def(py::self / py::self)
         .def(py::self / double())
         .def(double() / py::self)
+        .def(py::self / ld_t())
+        .def(ld_t() / py::self)
 #if defined(HEYOKA_HAVE_REAL128)
         .def(py::self / mppp::real128())
         .def(mppp::real128() / py::self)
 #endif
-        .def(
-            "__div__",
-            [](const hey::expression &ex, const py::object &o) {
-                if (heypy::is_numpy_ld(o)) {
-                    return ex / heypy::from_numpy_ld(o);
-                } else {
-                    heypy::py_throw(PyExc_TypeError, ("cannot divide an expression by an object of type \""
-                                                      + heypy::str(heypy::type(o)) + "\"")
-                                                         .c_str());
-                }
-            },
-            py::is_operator())
-        .def(
-            "__div__",
-            [](const py::object &o, const hey::expression &ex) {
-                if (heypy::is_numpy_ld(o)) {
-                    return heypy::from_numpy_ld(o) / ex;
-                } else {
-                    heypy::py_throw(PyExc_TypeError, ("cannot divide an object of type \"" + heypy::str(heypy::type(o))
-                                                      + "\" by an expression")
-                                                         .c_str());
-                }
-            },
-            py::is_operator())
         // In-place operators.
         .def(py::self += py::self)
         .def(py::self += double())
+        .def(py::self += ld_t())
 #if defined(HEYOKA_HAVE_REAL128)
         .def(py::self += mppp::real128())
 #endif
-        .def(
-            "__iadd__",
-            [](hey::expression &ex, const py::object &o) -> hey::expression & {
-                if (heypy::is_numpy_ld(o)) {
-                    return ex += heypy::from_numpy_ld(o);
-                } else {
-                    heypy::py_throw(PyExc_TypeError, ("cannot add in-place an object of type \""
-                                                      + heypy::str(heypy::type(o)) + "\" to an expression")
-                                                         .c_str());
-                }
-            },
-            py::is_operator())
         .def(py::self -= py::self)
         .def(py::self -= double())
+        .def(py::self -= ld_t())
 #if defined(HEYOKA_HAVE_REAL128)
         .def(py::self -= mppp::real128())
 #endif
-        .def(
-            "__isub__",
-            [](hey::expression &ex, const py::object &o) -> hey::expression & {
-                if (heypy::is_numpy_ld(o)) {
-                    return ex -= heypy::from_numpy_ld(o);
-                } else {
-                    heypy::py_throw(PyExc_TypeError, ("cannot subtract in-place an object of type \""
-                                                      + heypy::str(heypy::type(o)) + "\" from an expression")
-                                                         .c_str());
-                }
-            },
-            py::is_operator())
         .def(py::self *= py::self)
         .def(py::self *= double())
+        .def(py::self *= ld_t())
 #if defined(HEYOKA_HAVE_REAL128)
         .def(py::self *= mppp::real128())
 #endif
-        .def(
-            "__imul__",
-            [](hey::expression &ex, const py::object &o) -> hey::expression & {
-                if (heypy::is_numpy_ld(o)) {
-                    return ex *= heypy::from_numpy_ld(o);
-                } else {
-                    heypy::py_throw(PyExc_TypeError, ("cannot multiply in-place an expression by an object of type \""
-                                                      + heypy::str(heypy::type(o)) + "\"")
-                                                         .c_str());
-                }
-            },
-            py::is_operator())
         .def(py::self /= py::self)
         .def(py::self /= double())
+        .def(py::self /= ld_t())
 #if defined(HEYOKA_HAVE_REAL128)
         .def(py::self /= mppp::real128())
 #endif
-        .def(
-            "__idiv__",
-            [](hey::expression &ex, const py::object &o) -> hey::expression & {
-                if (heypy::is_numpy_ld(o)) {
-                    return ex /= heypy::from_numpy_ld(o);
-                } else {
-                    heypy::py_throw(PyExc_TypeError, ("cannot divide in-place an expression by an object of type \""
-                                                      + heypy::str(heypy::type(o)) + "\"")
-                                                         .c_str());
-                }
-            },
-            py::is_operator())
         // Comparisons.
         .def(py::self == py::self)
         .def(py::self != py::self)
         // pow().
         .def("__pow__", [](const hey::expression &b, const hey::expression &e) { return hey::pow(b, e); })
         .def("__pow__", [](const hey::expression &b, double e) { return hey::pow(b, e); })
+        .def("__pow__", [](const hey::expression &b, long double e) { return hey::pow(b, e); })
 #if defined(HEYOKA_HAVE_REAL128)
         .def("__pow__", [](const hey::expression &b, mppp::real128 e) { return hey::pow(b, e); })
 #endif
-        .def("__pow__",
-             [](const hey::expression &b, const py::object &e) {
-                 if (heypy::is_numpy_ld(e)) {
-                     return hey::pow(b, heypy::from_numpy_ld(e));
-                 } else {
-                     heypy::py_throw(PyExc_TypeError, ("cannot raise an expression to the power of an object of type \""
-                                                       + heypy::str(heypy::type(e)) + "\"")
-                                                          .c_str());
-                 }
-             })
         // Repr.
         .def("__repr__",
              [](const hey::expression &e) {
@@ -335,28 +190,25 @@ PYBIND11_MODULE(core, m)
     m.def("square", &hey::square);
 
     // N-body builder.
-    m.def("make_nbody_sys", [](std::uint32_t n, py::kwargs kwargs) {
-        if (kwargs) {
-            // NOTE: Gconst's default value is 1, if not provided.
-            const auto Gconst = kwargs.contains("Gconst") ? heypy::to_number(kwargs["Gconst"]) : hey::number{1.};
+    m.def(
+        "make_nbody_sys",
+        [](std::uint32_t n, py::object Gconst, py::object masses) {
+            const auto G = heypy::to_number(Gconst);
 
             std::vector<hey::number> m_vec;
-            if (kwargs.contains("masses")) {
-                auto masses = py::cast<py::iterable>(kwargs["masses"]);
-                for (const auto &ms : masses) {
-                    m_vec.push_back(heypy::to_number(ms));
-                }
-            } else {
+            if (masses.is_none()) {
                 // If masses are not provided, all masses are 1.
                 m_vec.resize(static_cast<decltype(m_vec.size())>(n), hey::number{1.});
+            } else {
+                for (const auto &ms : py::cast<py::iterable>(masses)) {
+                    m_vec.push_back(heypy::to_number(ms));
+                }
             }
 
             namespace kw = hey::kw;
-            return hey::make_nbody_sys(n, kw::Gconst = Gconst, kw::masses = m_vec);
-        }
-
-        return hey::make_nbody_sys(n);
-    });
+            return hey::make_nbody_sys(n, kw::Gconst = G, kw::masses = m_vec);
+        },
+        "n"_a, "Gconst"_a = py::cast(1.), "masses"_a = py::none{});
 
     // taylor_outcome enum.
     py::enum_<hey::taylor_outcome>(m, "taylor_outcome")
@@ -367,17 +219,34 @@ PYBIND11_MODULE(core, m)
         .export_values();
 
     // Adaptive taylor integrators.
-    py::class_<hey::taylor_adaptive<double>>(m, "taylor_adaptive_double")
-        .def(py::init(
-            [](const std::vector<std::pair<hey::expression, hey::expression>> &sys, py::iterable state, py::kwargs) {
-                // Build the initial state vector.
-                std::vector<double> s_vector;
-                for (const auto &x : state) {
-                    s_vector.push_back(py::cast<double>(x));
-                }
+    auto tad_ctor_impl
+        = [](const auto &sys, py::iterable state, double time, double tol, bool high_accuracy, bool compact_mode) {
+              // Build the initial state vector.
+              std::vector<double> s_vector;
+              for (const auto &x : state) {
+                  s_vector.push_back(py::cast<double>(x));
+              }
 
-                return hey::taylor_adaptive<double>{sys, std::move(s_vector)};
-            }))
+              namespace kw = hey::kw;
+              return hey::taylor_adaptive<double>{sys,
+                                                  std::move(s_vector),
+                                                  kw::time = time,
+                                                  kw::tol = tol,
+                                                  kw::high_accuracy = high_accuracy,
+                                                  kw::compact_mode = compact_mode};
+          };
+    py::class_<hey::taylor_adaptive<double>>(m, "taylor_adaptive_double")
+        .def(py::init([tad_ctor_impl](const std::vector<std::pair<hey::expression, hey::expression>> &sys,
+                                      py::iterable state, double time, double tol, bool high_accuracy,
+                                      bool compact_mode) {
+                 return tad_ctor_impl(sys, state, time, tol, high_accuracy, compact_mode);
+             }),
+             "sys"_a, "state"_a, "time"_a = 0., "tol"_a = 0., "high_accuracy"_a = false, "compact_mode"_a = false)
+        .def(py::init([tad_ctor_impl](const std::vector<hey::expression> &sys, py::iterable state, double time,
+                                      double tol, bool high_accuracy, bool compact_mode) {
+                 return tad_ctor_impl(sys, state, time, tol, high_accuracy, compact_mode);
+             }),
+             "sys"_a, "state"_a, "time"_a = 0., "tol"_a = 0., "high_accuracy"_a = false, "compact_mode"_a = false)
         .def("get_decomposition", &hey::taylor_adaptive<double>::get_decomposition)
         .def("step", [](hey::taylor_adaptive<double> &ta) { return ta.step(); })
         .def(
@@ -397,45 +266,107 @@ PYBIND11_MODULE(core, m)
             },
             "t"_a, "max_steps"_a = 0)
         .def_property("time", &hey::taylor_adaptive<double>::get_time, &hey::taylor_adaptive<double>::set_time)
-        .def_property_readonly("state", [](py::object &o) {
-            auto *ta = py::cast<hey::taylor_adaptive<double> *>(o);
-            return py::array_t<double>({boost::numeric_cast<py::ssize_t>(ta->get_state().size())}, ta->get_state_data(),
+        .def_property_readonly("state",
+                               [](py::object &o) {
+                                   auto *ta = py::cast<hey::taylor_adaptive<double> *>(o);
+                                   return py::array_t<double>(
+                                       {boost::numeric_cast<py::ssize_t>(ta->get_state().size())}, ta->get_state_data(),
                                        o);
-        });
+                               })
+        .def_property_readonly("order", &hey::taylor_adaptive<double>::get_order)
+        .def_property_readonly("dim", &hey::taylor_adaptive<double>::get_dim)
+        // Repr.
+        .def("__repr__",
+             [](const hey::taylor_adaptive<double> &ta) {
+                 std::ostringstream oss;
+                 oss << ta;
+                 return oss.str();
+             })
+        // Copy/deepcopy.
+        .def("__copy__", [](const hey::taylor_adaptive<double> &ta) { return ta; })
+        .def(
+            "__deepcopy__", [](const hey::taylor_adaptive<double> &ta, py::dict) { return ta; }, "memo"_a);
 
+    auto tald_ctor_impl = [](const auto &sys, py::iterable state, long double time, long double tol, bool high_accuracy,
+                             bool compact_mode) {
+        // Build the initial state vector.
+        std::vector<long double> s_vector;
+        for (const auto &x : state) {
+            s_vector.push_back(py::cast<long double>(x));
+        }
+
+        namespace kw = hey::kw;
+        return hey::taylor_adaptive<long double>{sys,
+                                                 std::move(s_vector),
+                                                 kw::time = time,
+                                                 kw::tol = tol,
+                                                 kw::high_accuracy = high_accuracy,
+                                                 kw::compact_mode = compact_mode};
+    };
     py::class_<hey::taylor_adaptive<long double>>(m, "taylor_adaptive_long_double")
-        .def(py::init(
-            [](const std::vector<std::pair<hey::expression, hey::expression>> &sys, py::iterable state, py::kwargs) {
-                // Build the initial state vector.
-                std::vector<long double> s_vector;
-                for (const auto &x : state) {
-                    if (heypy::is_numpy_ld(x)) {
-                        s_vector.push_back(heypy::from_numpy_ld(x));
-                    } else {
-                        s_vector.push_back(py::cast<double>(x));
-                    }
-                }
-
-                return hey::taylor_adaptive<long double>{sys, std::move(s_vector)};
-            }))
-        .def_property_readonly("state", [](py::object &o) {
-            auto *ta = py::cast<hey::taylor_adaptive<long double> *>(o);
-            return py::array_t<long double>({boost::numeric_cast<py::ssize_t>(ta->get_state().size())},
-                                            ta->get_state_data(), o);
-        });
+        .def(py::init([tald_ctor_impl](const std::vector<std::pair<hey::expression, hey::expression>> &sys,
+                                       py::iterable state, long double time, long double tol, bool high_accuracy,
+                                       bool compact_mode) {
+                 return tald_ctor_impl(sys, state, time, tol, high_accuracy, compact_mode);
+             }),
+             "sys"_a, "state"_a, "time"_a = 0.l, "tol"_a = 0.l, "high_accuracy"_a = false, "compact_mode"_a = false)
+        .def(py::init([tald_ctor_impl](const std::vector<hey::expression> &sys, py::iterable state, long double time,
+                                       long double tol, bool high_accuracy, bool compact_mode) {
+                 return tald_ctor_impl(sys, state, time, tol, high_accuracy, compact_mode);
+             }),
+             "sys"_a, "state"_a, "time"_a = 0.l, "tol"_a = 0.l, "high_accuracy"_a = false, "compact_mode"_a = false)
+        .def("get_decomposition", &hey::taylor_adaptive<long double>::get_decomposition)
+        .def("step", [](hey::taylor_adaptive<long double> &ta) { return ta.step(); })
+        .def(
+            "step", [](hey::taylor_adaptive<long double> &ta, long double max_delta_t) { return ta.step(max_delta_t); },
+            "max_delta_t"_a)
+        .def("step_backward", [](hey::taylor_adaptive<long double> &ta) { return ta.step_backward(); })
+        .def(
+            "propagate_for",
+            [](hey::taylor_adaptive<long double> &ta, long double delta_t, std::size_t max_steps) {
+                return ta.propagate_for(delta_t, max_steps);
+            },
+            "delta_t"_a, "max_steps"_a = 0)
+        .def(
+            "propagate_until",
+            [](hey::taylor_adaptive<long double> &ta, long double t, std::size_t max_steps) {
+                return ta.propagate_until(t, max_steps);
+            },
+            "t"_a, "max_steps"_a = 0)
+        .def_property("time", &hey::taylor_adaptive<long double>::get_time,
+                      &hey::taylor_adaptive<long double>::set_time)
+        .def_property_readonly("state",
+                               [](py::object &o) {
+                                   auto *ta = py::cast<hey::taylor_adaptive<long double> *>(o);
+                                   return py::array_t<long double>(
+                                       {boost::numeric_cast<py::ssize_t>(ta->get_state().size())}, ta->get_state_data(),
+                                       o);
+                               })
+        .def_property_readonly("order", &hey::taylor_adaptive<long double>::get_order)
+        .def_property_readonly("dim", &hey::taylor_adaptive<long double>::get_dim)
+        // Repr.
+        .def("__repr__",
+             [](const hey::taylor_adaptive<long double> &ta) {
+                 std::ostringstream oss;
+                 oss << ta;
+                 return oss.str();
+             })
+        // Copy/deepcopy.
+        .def("__copy__", [](const hey::taylor_adaptive<long double> &ta) { return ta; })
+        .def(
+            "__deepcopy__", [](const hey::taylor_adaptive<long double> &ta, py::dict) { return ta; }, "memo"_a);
 
 #if defined(HEYOKA_HAVE_REAL128)
     py::class_<hey::taylor_adaptive<mppp::real128>>(m, "taylor_adaptive_real128")
-        .def(py::init(
-            [](const std::vector<std::pair<hey::expression, hey::expression>> &sys, py::iterable state, py::kwargs) {
-                // Build the initial state vector.
-                std::vector<mppp::real128> s_vector;
-                for (const auto &x : state) {
-                    s_vector.push_back(py::cast<mppp::real128>(x));
-                }
+        .def(py::init([](const std::vector<std::pair<hey::expression, hey::expression>> &sys, py::iterable state) {
+            // Build the initial state vector.
+            std::vector<mppp::real128> s_vector;
+            for (const auto &x : state) {
+                s_vector.push_back(py::cast<mppp::real128>(x));
+            }
 
-                return hey::taylor_adaptive<mppp::real128>{sys, std::move(s_vector)};
-            }))
+            return hey::taylor_adaptive<mppp::real128>{sys, std::move(s_vector)};
+        }))
         // TODO return an array somehow?
         .def("get_state", [](const hey::taylor_adaptive<mppp::real128> &ta) { return ta.get_state(); });
 #endif

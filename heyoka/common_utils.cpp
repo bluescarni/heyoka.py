@@ -8,8 +8,6 @@
 
 #include <heyoka/config.hpp>
 
-#include <algorithm>
-#include <cassert>
 #include <string>
 
 #include <pybind11/pybind11.h>
@@ -26,6 +24,7 @@
 #include <heyoka/number.hpp>
 
 #include "common_utils.hpp"
+#include "long_double_caster.hpp"
 
 namespace heyoka_py
 {
@@ -51,43 +50,15 @@ void py_throw(PyObject *type, const char *msg)
     throw py::error_already_set();
 }
 
-bool is_numpy_ld(const py::handle &o)
-{
-    return type(o).is(py::module_::import("numpy").attr("longdouble"));
-}
-
-long double from_numpy_ld(const py::handle &o)
-{
-    assert(is_numpy_ld(o));
-
-    py::bytes b = o.attr("data").attr("tobytes")();
-    const auto str = static_cast<std::string>(b);
-
-    if (str.size() != sizeof(long double)) {
-        py_throw(PyExc_RuntimeError,
-                 ("error while converting a numpy.longdouble to a C++ long double: the size of the bytes array ("
-                  + std::to_string(str.size()) + ") does not match the size of the long double type ("
-                  + std::to_string(sizeof(long double)) + ")")
-                     .c_str());
-    }
-
-    long double retval;
-    std::transform(str.begin(), str.end(), reinterpret_cast<unsigned char *>(&retval),
-                   [](auto c) { return static_cast<unsigned char>(c); });
-
-    return retval;
-}
-
 heyoka::number to_number(const py::handle &o)
 {
-    if (type(o).is(builtins().attr("float"))) {
-        return heyoka::number{py::cast<double>(o)};
-    }
-
-    if (is_numpy_ld(o)) {
-        return heyoka::number{from_numpy_ld(o)};
-    }
-
+    // NOTE: investigate if these try/catch
+    // blocks can be replaced by something more
+    // efficient.
+    // NOTE: the real128/long double casters
+    // will fail if o is not exactly of type
+    // real128/long double. The caster to double
+    // will be more tolerant.
 #if defined(HEYOKA_HAVE_REAL128)
     try {
         return heyoka::number{py::cast<mppp::real128>(o)};
@@ -95,8 +66,12 @@ heyoka::number to_number(const py::handle &o)
     }
 #endif
 
-    py_throw(PyExc_TypeError,
-             ("unable to convert an object of type \"" + str(type(o)) + "\" to a heyoka number").c_str());
+    try {
+        return heyoka::number{py::cast<long double>(o)};
+    } catch (const py::cast_error &) {
+    }
+
+    return heyoka::number{py::cast<double>(o)};
 }
 
 } // namespace heyoka_py

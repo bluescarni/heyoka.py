@@ -30,10 +30,6 @@ std::string str(const py::handle &);
 
 [[noreturn]] void py_throw(PyObject *, const char *);
 
-bool is_numpy_ld(const py::handle &);
-
-long double from_numpy_ld(const py::handle &);
-
 heyoka::number to_number(const py::handle &);
 
 } // namespace heyoka_py
