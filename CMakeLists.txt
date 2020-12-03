@@ -1,5 +1,6 @@
-# NOTE: FindPython3 supported since CMake 3.12.0.
-cmake_minimum_required(VERSION 3.12.0)
+# NOTE: FindPython3 supported since CMake 3.12.0, but we use
+# options that appear in 3.17.
+cmake_minimum_required(VERSION 3.17.0)
 
 # Set default build type to "Release".
 # NOTE: this should be done before the project command since the latter can set
@@ -123,6 +124,10 @@ endif()
 
 # Python.
 find_package(Python3 REQUIRED COMPONENTS Interpreter Development)
+message(STATUS "Python3 interpreter: ${Python3_EXECUTABLE}")
+message(STATUS "Python3 installation directory: ${Python3_SITEARCH}")
+set(HEYOKA_PY_INSTALL_PATH "" CACHE STRING "heyoka module installation path")
+mark_as_advanced(HEYOKA_PY_INSTALL_PATH)
 
 # pybind11.
 find_package(pybind11 REQUIRED)

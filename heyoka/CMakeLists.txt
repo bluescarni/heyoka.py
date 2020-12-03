@@ -54,15 +54,23 @@ if (HEYOKA_PY_ENABLE_IPO)
     unset(_HEYOKA_PY_IPO_OUTPUT)
 endif()
 
-# Setup the installation path.
-# set(HEYOKA_PY_INSTALL_PATH "${YACMA_PYTHON_MODULES_INSTALL_PATH}/heyoka")
+# Installation setup.
+if(HEYOKA_PY_INSTALL_PATH STREQUAL "")
+    message(STATUS "heyoka.py will be installed in the default location: ${Python3_SITEARCH}")
+    set(_HEYOKA_PY_INSTALL_DIR "${Python3_SITEARCH}/heyoka")
+else()
+    message(STATUS "heyoka.py will be installed in the custom location: ${HEYOKA_PY_INSTALL_PATH}")
+    set(_HEYOKA_PY_INSTALL_DIR "${HEYOKA_PY_INSTALL_PATH}/heyoka")
+endif()
 
 # Install the core module.
-# install(TARGETS core
-#     RUNTIME DESTINATION ${HEYOKA_PY_INSTALL_PATH}
-#     LIBRARY DESTINATION ${HEYOKA_PY_INSTALL_PATH}
-# )
+install(TARGETS core
+    RUNTIME DESTINATION ${_HEYOKA_PY_INSTALL_DIR}
+    LIBRARY DESTINATION ${_HEYOKA_PY_INSTALL_DIR}
+)
 
 # Add the Python files.
-# install(FILES ${HEYOKA_PY_PYTHON_FILES} "${CMAKE_CURRENT_BINARY_DIR}/_version.py"
-#     DESTINATION ${HEYOKA_PY_INSTALL_PATH})
+install(FILES ${HEYOKA_PY_PYTHON_FILES} "${CMAKE_CURRENT_BINARY_DIR}/_version.py"
+    DESTINATION ${_HEYOKA_PY_INSTALL_DIR})
+
+unset(_HEYOKA_PY_INSTALL_DIR)
