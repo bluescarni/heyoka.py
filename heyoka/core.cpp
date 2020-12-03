@@ -8,8 +8,10 @@
 
 #include <heyoka/config.hpp>
 
+#include <array>
 #include <cstddef>
 #include <cstdint>
+#include <initializer_list>
 #include <sstream>
 #include <string>
 #include <utility>
@@ -210,6 +212,27 @@ PYBIND11_MODULE(core, m)
         },
         "n"_a, "Gconst"_a = py::cast(1.), "masses"_a = py::none{});
 
+    // Elliptic orbit generator.
+    m.def(
+        "random_elliptic_state",
+        [](double mu, const std::array<std::pair<double, double>, 6> &bounds, py::object seed) {
+            const auto retval = seed.is_none() ? hey::random_elliptic_state(mu, bounds)
+                                               : hey::random_elliptic_state(mu, bounds, py::cast<unsigned>(seed));
+
+            return py::array_t<double>({6}, retval.data());
+        },
+        "mu"_a, "bounds"_a, "seed"_a = py::none{});
+
+    // Conversion from cartesian state to orbital elements.
+    m.def(
+        "cartesian_to_oe",
+        [](double mu, const std::array<double, 6> &s) {
+            const auto retval = hey::cartesian_to_oe(mu, s);
+
+            return py::array_t<double>({6}, retval.data());
+        },
+        "mu"_a, "s"_a);
+
     // taylor_outcome enum.
     py::enum_<hey::taylor_outcome>(m, "taylor_outcome")
         .value("success", hey::taylor_outcome::success)
@@ -256,12 +279,14 @@ PYBIND11_MODULE(core, m)
         .def(
             "propagate_for",
             [](hey::taylor_adaptive<double> &ta, double delta_t, std::size_t max_steps) {
+                py::gil_scoped_release release;
                 return ta.propagate_for(delta_t, max_steps);
             },
             "delta_t"_a, "max_steps"_a = 0)
         .def(
             "propagate_until",
             [](hey::taylor_adaptive<double> &ta, double t, std::size_t max_steps) {
+                py::gil_scoped_release release;
                 return ta.propagate_until(t, max_steps);
             },
             "t"_a, "max_steps"_a = 0)
@@ -324,12 +349,14 @@ PYBIND11_MODULE(core, m)
         .def(
             "propagate_for",
             [](hey::taylor_adaptive<long double> &ta, long double delta_t, std::size_t max_steps) {
+                py::gil_scoped_release release;
                 return ta.propagate_for(delta_t, max_steps);
             },
             "delta_t"_a, "max_steps"_a = 0)
         .def(
             "propagate_until",
             [](hey::taylor_adaptive<long double> &ta, long double t, std::size_t max_steps) {
+                py::gil_scoped_release release;
                 return ta.propagate_until(t, max_steps);
             },
             "t"_a, "max_steps"_a = 0)
