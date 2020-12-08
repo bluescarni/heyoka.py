@@ -137,3 +137,6 @@ find_package(Boost 1.60 REQUIRED)
 
 # Add the module directory.
 add_subdirectory(heyoka)
+
+# Configure docs
+configure_file("${CMAKE_CURRENT_SOURCE_DIR}/doc/conf.py.in" "${CMAKE_CURRENT_SOURCE_DIR}/doc/conf.py" @ONLY)

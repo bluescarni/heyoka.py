@@ -11,3 +11,4 @@ build*
 # Docs.
 doc/conf.py
 doc/_build
+doc/notebooks/.ipynb_checkpoints
