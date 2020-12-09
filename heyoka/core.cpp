@@ -461,4 +461,100 @@ PYBIND11_MODULE(core, m)
         // TODO return an array somehow?
         .def("get_state", [](const hey::taylor_adaptive<mppp::real128> &ta) { return ta.get_state(); });
 #endif
+
+    auto tabd_ctor_impl = [](auto sys, std::vector<double> state, std::uint32_t batch_size, py::object time, double tol,
+                             bool high_accuracy, bool compact_mode) {
+        namespace kw = hey::kw;
+
+        if (time.is_none()) {
+            // Times not provided.
+            return hey::taylor_adaptive_batch<double>{std::move(sys),
+                                                      std::move(state),
+                                                      batch_size,
+                                                      kw::tol = tol,
+                                                      kw::high_accuracy = high_accuracy,
+                                                      kw::compact_mode = compact_mode};
+        } else {
+            // Times provided.
+            std::vector<double> time_v;
+            for (const auto &x : py::cast<py::iterable>(time)) {
+                time_v.push_back(py::cast<double>(x));
+            }
+
+            return hey::taylor_adaptive_batch<double>{std::move(sys),
+                                                      std::move(state),
+                                                      batch_size,
+                                                      kw::time = std::move(time_v),
+                                                      kw::tol = tol,
+                                                      kw::high_accuracy = high_accuracy,
+                                                      kw::compact_mode = compact_mode};
+        }
+    };
+    py::class_<hey::taylor_adaptive_batch<double>>(m, "taylor_adaptive_batch_double")
+        .def(py::init([tabd_ctor_impl](std::vector<std::pair<hey::expression, hey::expression>> sys,
+                                       std::vector<double> state, std::uint32_t batch_size, py::object time, double tol,
+                                       bool high_accuracy, bool compact_mode) {
+                 return tabd_ctor_impl(std::move(sys), std::move(state), batch_size, time, tol, high_accuracy,
+                                       compact_mode);
+             }),
+             "sys"_a, "state"_a, "batch_size"_a, "time"_a = py::none{}, "tol"_a = 0., "high_accuracy"_a = false,
+             "compact_mode"_a = false)
+        .def(py::init([tabd_ctor_impl](std::vector<hey::expression> sys, std::vector<double> state,
+                                       std::uint32_t batch_size, py::object time, double tol, bool high_accuracy,
+                                       bool compact_mode) {
+                 return tabd_ctor_impl(std::move(sys), std::move(state), batch_size, time, tol, high_accuracy,
+                                       compact_mode);
+             }),
+             "sys"_a, "state"_a, "batch_size"_a, "time"_a = py::none{}, "tol"_a = 0., "high_accuracy"_a = false,
+             "compact_mode"_a = false)
+        .def("get_decomposition", &hey::taylor_adaptive_batch<double>::get_decomposition)
+        .def("step", [](hey::taylor_adaptive_batch<double> &ta) { return ta.step(); })
+        .def(
+            "step",
+            [](hey::taylor_adaptive_batch<double> &ta, const std::vector<double> &max_delta_t) {
+                return ta.step(max_delta_t);
+            },
+            "max_delta_t"_a)
+        .def("step_backward", [](hey::taylor_adaptive_batch<double> &ta) { return ta.step_backward(); })
+        .def(
+            "propagate_for",
+            [](hey::taylor_adaptive_batch<double> &ta, const std::vector<double> &delta_t, std::size_t max_steps) {
+                py::gil_scoped_release release;
+                return ta.propagate_for(delta_t, max_steps);
+            },
+            "delta_t"_a, "max_steps"_a = 0)
+        .def(
+            "propagate_until",
+            [](hey::taylor_adaptive_batch<double> &ta, const std::vector<double> &t, std::size_t max_steps) {
+                py::gil_scoped_release release;
+                return ta.propagate_until(t, max_steps);
+            },
+            "t"_a, "max_steps"_a = 0)
+        .def_property_readonly("time",
+                               [](py::object &o) {
+                                   auto *ta = py::cast<hey::taylor_adaptive_batch<double> *>(o);
+                                   return py::array_t<double>({boost::numeric_cast<py::ssize_t>(ta->get_time().size())},
+                                                              ta->get_time_data(), o);
+                               })
+        .def_property_readonly("state",
+                               [](py::object &o) {
+                                   auto *ta = py::cast<hey::taylor_adaptive_batch<double> *>(o);
+                                   return py::array_t<double>(
+                                       {boost::numeric_cast<py::ssize_t>(ta->get_state().size())}, ta->get_state_data(),
+                                       o);
+                               })
+        .def_property_readonly("order", &hey::taylor_adaptive_batch<double>::get_order)
+        .def_property_readonly("dim", &hey::taylor_adaptive_batch<double>::get_dim)
+        .def_property_readonly("batch_size", &hey::taylor_adaptive_batch<double>::get_batch_size)
+        // Repr.
+        .def("__repr__",
+             [](const hey::taylor_adaptive_batch<double> &ta) {
+                 std::ostringstream oss;
+                 oss << ta;
+                 return oss.str();
+             })
+        // Copy/deepcopy.
+        .def("__copy__", [](const hey::taylor_adaptive_batch<double> &ta) { return ta; })
+        .def(
+            "__deepcopy__", [](const hey::taylor_adaptive_batch<double> &ta, py::dict) { return ta; }, "memo"_a);
 }
