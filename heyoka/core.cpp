@@ -372,9 +372,18 @@ PYBIND11_MODULE(core, m)
                  return oss.str();
              })
         // Copy/deepcopy.
-        .def("__copy__", [](const hey::taylor_adaptive<double> &ta) { return ta; })
+        .def("__copy__",
+             [](const hey::taylor_adaptive<double> &ta) {
+                 py::gil_scoped_release release;
+                 return ta;
+             })
         .def(
-            "__deepcopy__", [](const hey::taylor_adaptive<double> &ta, py::dict) { return ta; }, "memo"_a);
+            "__deepcopy__",
+            [](const hey::taylor_adaptive<double> &ta, py::dict) {
+                py::gil_scoped_release release;
+                return ta;
+            },
+            "memo"_a);
 
     auto tald_ctor_impl = [](const auto &sys, py::iterable state, long double time, long double tol, bool high_accuracy,
                              bool compact_mode) {
@@ -443,9 +452,18 @@ PYBIND11_MODULE(core, m)
                  return oss.str();
              })
         // Copy/deepcopy.
-        .def("__copy__", [](const hey::taylor_adaptive<long double> &ta) { return ta; })
+        .def("__copy__",
+             [](const hey::taylor_adaptive<long double> &ta) {
+                 py::gil_scoped_release release;
+                 return ta;
+             })
         .def(
-            "__deepcopy__", [](const hey::taylor_adaptive<long double> &ta, py::dict) { return ta; }, "memo"_a);
+            "__deepcopy__",
+            [](const hey::taylor_adaptive<long double> &ta, py::dict) {
+                py::gil_scoped_release release;
+                return ta;
+            },
+            "memo"_a);
 
 #if defined(HEYOKA_HAVE_REAL128)
     py::class_<hey::taylor_adaptive<mppp::real128>>(m, "taylor_adaptive_real128")
@@ -554,7 +572,16 @@ PYBIND11_MODULE(core, m)
                  return oss.str();
              })
         // Copy/deepcopy.
-        .def("__copy__", [](const hey::taylor_adaptive_batch<double> &ta) { return ta; })
+        .def("__copy__",
+             [](const hey::taylor_adaptive_batch<double> &ta) {
+                 py::gil_scoped_release release;
+                 return ta;
+             })
         .def(
-            "__deepcopy__", [](const hey::taylor_adaptive_batch<double> &ta, py::dict) { return ta; }, "memo"_a);
+            "__deepcopy__",
+            [](const hey::taylor_adaptive_batch<double> &ta, py::dict) {
+                py::gil_scoped_release release;
+                return ta;
+            },
+            "memo"_a);
 }
