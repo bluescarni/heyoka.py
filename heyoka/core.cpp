@@ -8,11 +8,13 @@
 
 #include <heyoka/config.hpp>
 
+#include <algorithm>
 #include <array>
 #include <cstddef>
 #include <cstdint>
 #include <initializer_list>
 #include <sstream>
+#include <stdexcept>
 #include <string>
 #include <utility>
 #include <vector>
@@ -307,31 +309,27 @@ PYBIND11_MODULE(core, m)
 
     // Adaptive taylor integrators.
     auto tad_ctor_impl
-        = [](const auto &sys, py::iterable state, double time, double tol, bool high_accuracy, bool compact_mode) {
-              // Build the initial state vector.
-              std::vector<double> s_vector;
-              for (const auto &x : state) {
-                  s_vector.push_back(py::cast<double>(x));
-              }
+        = [](auto sys, std::vector<double> state, double time, double tol, bool high_accuracy, bool compact_mode) {
+              py::gil_scoped_release release;
 
               namespace kw = hey::kw;
-              return hey::taylor_adaptive<double>{sys,
-                                                  std::move(s_vector),
+              return hey::taylor_adaptive<double>{std::move(sys),
+                                                  std::move(state),
                                                   kw::time = time,
                                                   kw::tol = tol,
                                                   kw::high_accuracy = high_accuracy,
                                                   kw::compact_mode = compact_mode};
           };
     py::class_<hey::taylor_adaptive<double>>(m, "taylor_adaptive_double")
-        .def(py::init([tad_ctor_impl](const std::vector<std::pair<hey::expression, hey::expression>> &sys,
-                                      py::iterable state, double time, double tol, bool high_accuracy,
+        .def(py::init([tad_ctor_impl](std::vector<std::pair<hey::expression, hey::expression>> sys,
+                                      std::vector<double> state, double time, double tol, bool high_accuracy,
                                       bool compact_mode) {
-                 return tad_ctor_impl(sys, state, time, tol, high_accuracy, compact_mode);
+                 return tad_ctor_impl(std::move(sys), std::move(state), time, tol, high_accuracy, compact_mode);
              }),
              "sys"_a, "state"_a, "time"_a = 0., "tol"_a = 0., "high_accuracy"_a = false, "compact_mode"_a = false)
-        .def(py::init([tad_ctor_impl](const std::vector<hey::expression> &sys, py::iterable state, double time,
+        .def(py::init([tad_ctor_impl](std::vector<hey::expression> sys, std::vector<double> state, double time,
                                       double tol, bool high_accuracy, bool compact_mode) {
-                 return tad_ctor_impl(sys, state, time, tol, high_accuracy, compact_mode);
+                 return tad_ctor_impl(std::move(sys), std::move(state), time, tol, high_accuracy, compact_mode);
              }),
              "sys"_a, "state"_a, "time"_a = 0., "tol"_a = 0., "high_accuracy"_a = false, "compact_mode"_a = false)
         .def("get_decomposition", &hey::taylor_adaptive<double>::get_decomposition)
@@ -385,32 +383,28 @@ PYBIND11_MODULE(core, m)
             },
             "memo"_a);
 
-    auto tald_ctor_impl = [](const auto &sys, py::iterable state, long double time, long double tol, bool high_accuracy,
-                             bool compact_mode) {
-        // Build the initial state vector.
-        std::vector<long double> s_vector;
-        for (const auto &x : state) {
-            s_vector.push_back(py::cast<long double>(x));
-        }
+    auto tald_ctor_impl = [](auto sys, std::vector<long double> state, long double time, long double tol,
+                             bool high_accuracy, bool compact_mode) {
+        py::gil_scoped_release release;
 
         namespace kw = hey::kw;
-        return hey::taylor_adaptive<long double>{sys,
-                                                 std::move(s_vector),
+        return hey::taylor_adaptive<long double>{std::move(sys),
+                                                 std::move(state),
                                                  kw::time = time,
                                                  kw::tol = tol,
                                                  kw::high_accuracy = high_accuracy,
                                                  kw::compact_mode = compact_mode};
     };
     py::class_<hey::taylor_adaptive<long double>>(m, "taylor_adaptive_long_double")
-        .def(py::init([tald_ctor_impl](const std::vector<std::pair<hey::expression, hey::expression>> &sys,
-                                       py::iterable state, long double time, long double tol, bool high_accuracy,
-                                       bool compact_mode) {
-                 return tald_ctor_impl(sys, state, time, tol, high_accuracy, compact_mode);
+        .def(py::init([tald_ctor_impl](std::vector<std::pair<hey::expression, hey::expression>> sys,
+                                       std::vector<long double> state, long double time, long double tol,
+                                       bool high_accuracy, bool compact_mode) {
+                 return tald_ctor_impl(std::move(sys), std::move(state), time, tol, high_accuracy, compact_mode);
              }),
              "sys"_a, "state"_a, "time"_a = 0.l, "tol"_a = 0.l, "high_accuracy"_a = false, "compact_mode"_a = false)
-        .def(py::init([tald_ctor_impl](const std::vector<hey::expression> &sys, py::iterable state, long double time,
-                                       long double tol, bool high_accuracy, bool compact_mode) {
-                 return tald_ctor_impl(sys, state, time, tol, high_accuracy, compact_mode);
+        .def(py::init([tald_ctor_impl](std::vector<hey::expression> sys, std::vector<long double> state,
+                                       long double time, long double tol, bool high_accuracy, bool compact_mode) {
+                 return tald_ctor_impl(std::move(sys), std::move(state), time, tol, high_accuracy, compact_mode);
              }),
              "sys"_a, "state"_a, "time"_a = 0.l, "tol"_a = 0.l, "high_accuracy"_a = false, "compact_mode"_a = false)
         .def("get_decomposition", &hey::taylor_adaptive<long double>::get_decomposition)
@@ -466,18 +460,112 @@ PYBIND11_MODULE(core, m)
             "memo"_a);
 
 #if defined(HEYOKA_HAVE_REAL128)
-    py::class_<hey::taylor_adaptive<mppp::real128>>(m, "taylor_adaptive_real128")
-        .def(py::init([](const std::vector<std::pair<hey::expression, hey::expression>> &sys, py::iterable state) {
-            // Build the initial state vector.
-            std::vector<mppp::real128> s_vector;
-            for (const auto &x : state) {
-                s_vector.push_back(py::cast<mppp::real128>(x));
-            }
+    try {
+        // NOTE: we need to temporarily alter
+        // the precision in mpmath to successfully
+        // construct the default values of the parameters
+        // for the constructor.
+        auto mpmod = py::module_::import("mpmath");
 
-            return hey::taylor_adaptive<mppp::real128>{sys, std::move(s_vector)};
-        }))
-        // TODO return an array somehow?
-        .def("get_state", [](const hey::taylor_adaptive<mppp::real128> &ta) { return ta.get_state(); });
+        auto orig_prec = mpmod.attr("mp").attr("prec");
+        mpmod.attr("mp").attr("prec") = 113;
+
+        auto taf128_ctor_impl = [](auto sys, std::vector<mppp::real128> state, mppp::real128 time, mppp::real128 tol,
+                                   bool high_accuracy, bool compact_mode) {
+            py::gil_scoped_release release;
+
+            namespace kw = hey::kw;
+            return hey::taylor_adaptive<mppp::real128>{std::move(sys),
+                                                       std::move(state),
+                                                       kw::time = time,
+                                                       kw::tol = tol,
+                                                       kw::high_accuracy = high_accuracy,
+                                                       kw::compact_mode = compact_mode};
+        };
+        py::class_<hey::taylor_adaptive<mppp::real128>>(m, "taylor_adaptive_real128")
+            .def(py::init([taf128_ctor_impl](std::vector<std::pair<hey::expression, hey::expression>> sys,
+                                             std::vector<mppp::real128> state, mppp::real128 time, mppp::real128 tol,
+                                             bool high_accuracy, bool compact_mode) {
+                     return taf128_ctor_impl(std::move(sys), std::move(state), time, tol, high_accuracy, compact_mode);
+                 }),
+                 "sys"_a, "state"_a, "time"_a = mppp::real128{0}, "tol"_a = mppp::real128{0}, "high_accuracy"_a = false,
+                 "compact_mode"_a = false)
+            .def(py::init([taf128_ctor_impl](std::vector<hey::expression> sys, std::vector<mppp::real128> state,
+                                             mppp::real128 time, mppp::real128 tol, bool high_accuracy,
+                                             bool compact_mode) {
+                     return taf128_ctor_impl(std::move(sys), std::move(state), time, tol, high_accuracy, compact_mode);
+                 }),
+                 "sys"_a, "state"_a, "time"_a = mppp::real128{0}, "tol"_a = mppp::real128{0}, "high_accuracy"_a = false,
+                 "compact_mode"_a = false)
+            .def("get_decomposition", &hey::taylor_adaptive<mppp::real128>::get_decomposition)
+            .def("step", [](hey::taylor_adaptive<mppp::real128> &ta) { return ta.step(); })
+            .def(
+                "step",
+                [](hey::taylor_adaptive<mppp::real128> &ta, mppp::real128 max_delta_t) { return ta.step(max_delta_t); },
+                "max_delta_t"_a)
+            .def("step_backward", [](hey::taylor_adaptive<mppp::real128> &ta) { return ta.step_backward(); })
+            .def(
+                "propagate_for",
+                [](hey::taylor_adaptive<mppp::real128> &ta, mppp::real128 delta_t, std::size_t max_steps) {
+                    py::gil_scoped_release release;
+                    return ta.propagate_for(delta_t, max_steps);
+                },
+                "delta_t"_a, "max_steps"_a = 0)
+            .def(
+                "propagate_until",
+                [](hey::taylor_adaptive<mppp::real128> &ta, mppp::real128 t, std::size_t max_steps) {
+                    py::gil_scoped_release release;
+                    return ta.propagate_until(t, max_steps);
+                },
+                "t"_a, "max_steps"_a = 0)
+            .def_property("time", &hey::taylor_adaptive<mppp::real128>::get_time,
+                          &hey::taylor_adaptive<mppp::real128>::set_time)
+            .def("get_state",
+                 [](const hey::taylor_adaptive<mppp::real128> &ta) { return py::array(py::cast(ta.get_state())); })
+            .def("set_state",
+                 [](hey::taylor_adaptive<mppp::real128> &ta, const std::vector<mppp::real128> &v) {
+                     if (v.size() != ta.get_state().size()) {
+                         throw std::invalid_argument(
+                             "Invalid state vector passed to set_state(): the new state vector has a size of "
+                             + std::to_string(v.size()) + ", but the size should be "
+                             + std::to_string(ta.get_state().size()) + " instead");
+                     }
+
+                     std::copy(v.begin(), v.end(), ta.get_state_data());
+                 })
+            .def_property_readonly("order", &hey::taylor_adaptive<mppp::real128>::get_order)
+            .def_property_readonly("dim", &hey::taylor_adaptive<mppp::real128>::get_dim)
+            // Repr.
+            .def("__repr__",
+                 [](const hey::taylor_adaptive<mppp::real128> &ta) {
+                     std::ostringstream oss;
+                     oss << ta;
+                     return oss.str();
+                 })
+            // Copy/deepcopy.
+            .def("__copy__",
+                 [](const hey::taylor_adaptive<mppp::real128> &ta) {
+                     py::gil_scoped_release release;
+                     return ta;
+                 })
+            .def(
+                "__deepcopy__",
+                [](const hey::taylor_adaptive<mppp::real128> &ta, py::dict) {
+                    py::gil_scoped_release release;
+                    return ta;
+                },
+                "memo"_a);
+
+        // Restore the original precision.
+        mpmod.attr("mp").attr("prec") = orig_prec;
+    } catch (const std::exception &e) {
+        // NOTE: ending here means that we could not import mpmath
+        // because it is not installed.
+        py::module_::import("warnings")
+            .attr("warn")(std::string{"An exception was raised while trying to register the quadruple-precision "
+                                      "adaptive Taylor integrator. The full error message is:\n"}
+                          + e.what());
+    }
 #endif
 
     auto tabd_ctor_impl = [](auto sys, std::vector<double> state, std::uint32_t batch_size, py::object time, double tol,
