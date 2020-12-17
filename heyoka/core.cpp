@@ -572,6 +572,8 @@ PYBIND11_MODULE(core, m)
         namespace kw = hey::kw;
 
         if (time.is_none()) {
+            py::gil_scoped_release release;
+
             // Times not provided.
             return hey::taylor_adaptive_batch<double>{std::move(sys),
                                                       std::move(state),
@@ -585,6 +587,8 @@ PYBIND11_MODULE(core, m)
             for (const auto &x : py::cast<py::iterable>(time)) {
                 time_v.push_back(py::cast<double>(x));
             }
+
+            py::gil_scoped_release release;
 
             return hey::taylor_adaptive_batch<double>{std::move(sys),
                                                       std::move(state),
