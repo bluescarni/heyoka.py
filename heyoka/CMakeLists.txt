@@ -30,15 +30,8 @@ target_compile_options(core PRIVATE
 )
 set_target_properties(core PROPERTIES CXX_VISIBILITY_PRESET hidden)
 set_target_properties(core PROPERTIES VISIBILITY_INLINES_HIDDEN TRUE)
-if(NOT CMAKE_CXX_STANDARD)
-    # The user did not provide the CMAKE_CXX_STANDARD variable,
-    # go with the default (C++17).
-    message(STATUS "Setting the C++ standard version to the default value (17).")
-    set_property(TARGET core PROPERTY CXX_STANDARD 17)
-else()
-    message(STATUS "Using the manually-specified value for the C++ standard version (${CMAKE_CXX_STANDARD}).")
-endif()
-set_property(TARGET core PROPERTY CXX_STANDARD_REQUIRED YES)
+target_compile_features(core PRIVATE cxx_std_17)
+set_property(TARGET core PROPERTY CXX_EXTENSIONS NO)
 set_property(TARGET core PROPERTY CXX_EXTENSIONS NO)
 
 if (HEYOKA_PY_ENABLE_IPO)
