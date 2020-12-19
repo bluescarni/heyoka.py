@@ -1,0 +1,17 @@
+version: 2.1
+
+jobs:
+  bionic_gcc7_heyoka_head_38:
+    docker:
+    - image: circleci/buildpack-deps:bionic
+    steps:
+    - checkout
+    - run:
+        name: Build and test
+        command: bash ./tools/circleci_bionic_gcc7_heyoka_head_38.sh
+
+workflows:
+  version: 2.1
+  all_builds:
+    jobs:
+    - bionic_gcc7_heyoka_head_38
