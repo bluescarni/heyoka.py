@@ -10,6 +10,7 @@
 from ._version import __version__
 
 import os as _os
+
 if _os.name == 'posix':
     # NOTE: on some platforms Python by default opens extensions
     # with the RTLD_LOCAL flag, which creates problems because
@@ -38,6 +39,9 @@ if _os.name == 'posix':
         del _ctypes
         del _sys
         del _orig_dlopen_flags
+else:
+    # We import the sub-modules into the root namespace.
+    from .core import *
 
 del _os
 
