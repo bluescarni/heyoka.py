@@ -49,6 +49,13 @@ namespace py = pybind11;
 namespace hey = heyoka;
 namespace heypy = heyoka_py;
 
+#if defined(__clang__)
+
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wself-assign-overloaded"
+
+#endif
+
 PYBIND11_MODULE(core, m)
 {
 #if defined(HEYOKA_HAVE_REAL128)
@@ -179,7 +186,7 @@ PYBIND11_MODULE(core, m)
     // make_vars() helper.
     m.def("make_vars", [](py::args v_str) {
         py::list retval;
-        for (const auto &o : v_str) {
+        for (auto o : v_str) {
             retval.append(hey::expression(py::cast<std::string>(o)));
         }
         return retval;
@@ -204,7 +211,7 @@ PYBIND11_MODULE(core, m)
                 // If masses are not provided, all masses are 1.
                 m_vec.resize(static_cast<decltype(m_vec.size())>(n), hey::number{1.});
             } else {
-                for (const auto &ms : masses) {
+                for (auto ms : masses) {
                     m_vec.push_back(heypy::to_number(ms));
                 }
             }
@@ -221,20 +228,20 @@ PYBIND11_MODULE(core, m)
             const auto G = heypy::to_number(Gconst);
 
             std::vector<std::vector<hey::expression>> points_vec;
-            for (const auto &p : points) {
+            for (auto p : points) {
                 std::vector<hey::expression> tmp;
-                for (const auto &el : py::cast<py::iterable>(p)) {
+                for (auto el : py::cast<py::iterable>(p)) {
                     tmp.emplace_back(heypy::to_number(el));
                 }
                 points_vec.emplace_back(tmp);
             }
 
             std::vector<hey::expression> mass_vec;
-            for (const auto &ms : masses) {
+            for (auto ms : masses) {
                 mass_vec.emplace_back(heypy::to_number(ms));
             }
             std::vector<hey::expression> omega_vec;
-            for (const auto &w : omega) {
+            for (auto w : omega) {
                 omega_vec.emplace_back(heypy::to_number(w));
             }
             namespace kw = hey::kw;
@@ -249,26 +256,26 @@ PYBIND11_MODULE(core, m)
             const auto G = heypy::to_number(Gconst);
 
             std::vector<hey::expression> state_vec;
-            for (const auto &s : state) {
+            for (auto s : state) {
                 state_vec.emplace_back(heypy::to_number(s));
             }
 
             std::vector<std::vector<hey::expression>> points_vec;
-            for (const auto &p : points) {
+            for (auto p : points) {
                 std::vector<hey::expression> tmp;
-                for (const auto &el : py::cast<py::iterable>(p)) {
+                for (auto el : py::cast<py::iterable>(p)) {
                     tmp.emplace_back(heypy::to_number(el));
                 }
                 points_vec.emplace_back(tmp);
             }
 
             std::vector<hey::expression> mass_vec;
-            for (const auto &ms : masses) {
+            for (auto ms : masses) {
                 mass_vec.emplace_back(heypy::to_number(ms));
             }
 
             std::vector<hey::expression> omega_vec;
-            for (const auto &w : omega) {
+            for (auto w : omega) {
                 omega_vec.emplace_back(heypy::to_number(w));
             }
             namespace kw = hey::kw;
@@ -284,7 +291,7 @@ PYBIND11_MODULE(core, m)
             const auto retval = seed.is_none() ? hey::random_elliptic_state(mu, bounds)
                                                : hey::random_elliptic_state(mu, bounds, py::cast<unsigned>(seed));
 
-            return py::array_t<double>({6}, retval.data());
+            return py::array_t<double>(py::array::ShapeContainer{6}, retval.data());
         },
         "mu"_a, "bounds"_a, "seed"_a = py::none{});
 
@@ -294,7 +301,7 @@ PYBIND11_MODULE(core, m)
         [](double mu, const std::array<double, 6> &s) {
             const auto retval = hey::cartesian_to_oe(mu, s);
 
-            return py::array_t<double>({6}, retval.data());
+            return py::array_t<double>(py::array::ShapeContainer{6}, retval.data());
         },
         "mu"_a, "s"_a);
 
@@ -352,13 +359,14 @@ PYBIND11_MODULE(core, m)
             },
             "t"_a, "max_steps"_a = 0)
         .def_property("time", &hey::taylor_adaptive<double>::get_time, &hey::taylor_adaptive<double>::set_time)
-        .def_property_readonly("state",
-                               [](py::object &o) {
-                                   auto *ta = py::cast<hey::taylor_adaptive<double> *>(o);
-                                   return py::array_t<double>(
-                                       {boost::numeric_cast<py::ssize_t>(ta->get_state().size())}, ta->get_state_data(),
-                                       o);
-                               })
+        .def_property_readonly(
+            "state",
+            [](py::object &o) {
+                auto *ta = py::cast<hey::taylor_adaptive<double> *>(o);
+                return py::array_t<double>(
+                    py::array::ShapeContainer{boost::numeric_cast<py::ssize_t>(ta->get_state().size())},
+                    ta->get_state_data(), o);
+            })
         .def_property_readonly("order", &hey::taylor_adaptive<double>::get_order)
         .def_property_readonly("dim", &hey::taylor_adaptive<double>::get_dim)
         // Repr.
@@ -428,13 +436,14 @@ PYBIND11_MODULE(core, m)
             "t"_a, "max_steps"_a = 0)
         .def_property("time", &hey::taylor_adaptive<long double>::get_time,
                       &hey::taylor_adaptive<long double>::set_time)
-        .def_property_readonly("state",
-                               [](py::object &o) {
-                                   auto *ta = py::cast<hey::taylor_adaptive<long double> *>(o);
-                                   return py::array_t<long double>(
-                                       {boost::numeric_cast<py::ssize_t>(ta->get_state().size())}, ta->get_state_data(),
-                                       o);
-                               })
+        .def_property_readonly(
+            "state",
+            [](py::object &o) {
+                auto *ta = py::cast<hey::taylor_adaptive<long double> *>(o);
+                return py::array_t<long double>(
+                    py::array::ShapeContainer{boost::numeric_cast<py::ssize_t>(ta->get_state().size())},
+                    ta->get_state_data(), o);
+            })
         .def_property_readonly("order", &hey::taylor_adaptive<long double>::get_order)
         .def_property_readonly("dim", &hey::taylor_adaptive<long double>::get_dim)
         // Repr.
@@ -584,7 +593,7 @@ PYBIND11_MODULE(core, m)
         } else {
             // Times provided.
             std::vector<double> time_v;
-            for (const auto &x : py::cast<py::iterable>(time)) {
+            for (auto x : py::cast<py::iterable>(time)) {
                 time_v.push_back(py::cast<double>(x));
             }
 
@@ -639,19 +648,22 @@ PYBIND11_MODULE(core, m)
                 return ta.propagate_until(t, max_steps);
             },
             "t"_a, "max_steps"_a = 0)
-        .def_property_readonly("time",
-                               [](py::object &o) {
-                                   auto *ta = py::cast<hey::taylor_adaptive_batch<double> *>(o);
-                                   return py::array_t<double>({boost::numeric_cast<py::ssize_t>(ta->get_time().size())},
-                                                              ta->get_time_data(), o);
-                               })
-        .def_property_readonly("state",
-                               [](py::object &o) {
-                                   auto *ta = py::cast<hey::taylor_adaptive_batch<double> *>(o);
-                                   return py::array_t<double>(
-                                       {boost::numeric_cast<py::ssize_t>(ta->get_state().size())}, ta->get_state_data(),
-                                       o);
-                               })
+        .def_property_readonly(
+            "time",
+            [](py::object &o) {
+                auto *ta = py::cast<hey::taylor_adaptive_batch<double> *>(o);
+                return py::array_t<double>(
+                    py::array::ShapeContainer{boost::numeric_cast<py::ssize_t>(ta->get_time().size())},
+                    ta->get_time_data(), o);
+            })
+        .def_property_readonly(
+            "state",
+            [](py::object &o) {
+                auto *ta = py::cast<hey::taylor_adaptive_batch<double> *>(o);
+                return py::array_t<double>(
+                    py::array::ShapeContainer{boost::numeric_cast<py::ssize_t>(ta->get_state().size())},
+                    ta->get_state_data(), o);
+            })
         .def_property_readonly("order", &hey::taylor_adaptive_batch<double>::get_order)
         .def_property_readonly("dim", &hey::taylor_adaptive_batch<double>::get_dim)
         .def_property_readonly("batch_size", &hey::taylor_adaptive_batch<double>::get_batch_size)
@@ -676,3 +688,9 @@ PYBIND11_MODULE(core, m)
             },
             "memo"_a);
 }
+
+#if defined(__clang__)
+
+#pragma clang diagnostic pop
+
+#endif

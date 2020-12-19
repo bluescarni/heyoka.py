@@ -1,0 +1,53 @@
+version: '{build}'
+
+branches:
+  except:
+    - /pr\/.+/
+
+environment:
+  matrix:
+    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+      BUILD_TYPE: MSVC17_clang_64
+
+install:
+- call "C:\\Miniconda37-x64\\Scripts\\activate.bat"
+- conda config --set always_yes yes
+- conda update -n base conda
+- conda config --add channels conda-forge
+- conda config --set channel_priority strict
+- if [%BUILD_TYPE%]==[MSVC17_clang_64] conda create --name heyoka python=3.7 git pybind11 numpy cmake llvmdev boost-cpp fmt ninja sleef clang clangxx
+- call activate heyoka
+- if [%BUILD_TYPE%]==[MSVC17_clang_64] clang-cl -v
+- if [%BUILD_TYPE%]==[MSVC17_clang_64] call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvars64.bat"
+
+build_script:
+- set CONDA_PREFIX_PATH=C:\Miniconda37-x64\envs\heyoka\Library
+
+# heyoka
+- git clone https://github.com/bluescarni/heyoka.git heyoka_cpp
+- cd heyoka_cpp
+- mkdir build
+- cd build
+- if [%BUILD_TYPE%]==[MSVC17_clang_64] cmake .. -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=clang-cl -DCMAKE_CXX_COMPILER=clang-cl -DCMAKE_PREFIX_PATH=%CONDA_PREFIX_PATH% -DCMAKE_INSTALL_PREFIX=%CONDA_PREFIX_PATH% -DBoost_NO_BOOST_CMAKE=ON -DHEYOKA_ENABLE_IPO=yes -DHEYOKA_WITH_SLEEF=yes
+- if [%BUILD_TYPE%]==[MSVC17_clang_64] cmake --build . -- -v
+- if [%BUILD_TYPE%]==[MSVC17_clang_64] cmake --build . --target install
+- cd ..
+- cd ..
+
+- mkdir build
+- cd build
+
+# heyoka.py
+- if [%BUILD_TYPE%]==[MSVC17_clang_64] cmake .. -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=clang-cl -DCMAKE_CXX_COMPILER=clang-cl -DCMAKE_PREFIX_PATH=%CONDA_PREFIX_PATH% -DCMAKE_INSTALL_PREFIX=%CONDA_PREFIX_PATH% -DBoost_NO_BOOST_CMAKE=ON -DHEYOKA_PY_ENABLE_IPO=yes
+- if [%BUILD_TYPE%]==[MSVC17_clang_64] cmake --build . -- -v
+- if [%BUILD_TYPE%]==[MSVC17_clang_64] cmake --build . --target install
+- cd c:\
+
+test_script:
+- if [%BUILD_TYPE%]==[MSVC17_clang_64] python -c "from heyoka import test; test.run_test_suite()"
+
+# Enable this to be able to login to the build worker. You can use the
+# `remmina` program in Ubuntu, use the login information that the line below
+# prints into the log.
+# on_finish:
+# - ps: $blockRdp = $true; iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))

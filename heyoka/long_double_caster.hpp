@@ -61,7 +61,7 @@ struct type_caster<long double> {
     {
         // NOTE: this is a bit hackish: we create
         // a numpy array of size 1 and return its sum.
-        array_t<long double> tmp({1});
+        array_t<long double> tmp(array::ShapeContainer{1});
         tmp.mutable_at(0) = src;
 
         auto ret = tmp.attr("sum")();

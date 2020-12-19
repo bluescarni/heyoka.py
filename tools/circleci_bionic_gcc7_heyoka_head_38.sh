@@ -16,7 +16,7 @@ export PATH="$HOME/miniconda/bin:$PATH"
 bash miniconda.sh -b -p $HOME/miniconda
 conda config --add channels conda-forge
 conda config --set channel_priority strict
-conda create -y -q -p $deps_dir python=3.8 git pybind11 numpy mpmath cmake llvmdev boost-cpp mppp sleef xtensor xtensor-blas blas blas-devel fmt
+conda create -y -q -p $deps_dir python=3.8 git pybind11 numpy mpmath cmake llvmdev boost-cpp mppp sleef fmt
 source activate $deps_dir
 
 # Checkout, build and install heyoka's HEAD.
@@ -39,7 +39,7 @@ make -j2 VERBOSE=1 install
 
 cd
 
-python -c "import heyoka"
+python -c "from heyoka import test; test.run_test_suite()"
 
 set +e
 set +x
