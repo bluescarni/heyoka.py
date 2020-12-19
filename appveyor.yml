@@ -44,7 +44,7 @@ build_script:
 - cd c:\
 
 test_script:
-- if [%BUILD_TYPE%]==[MSVC17_clang_64] python -c "import heyoka"
+- if [%BUILD_TYPE%]==[MSVC17_clang_64] python -c "from heyoka import test; test.run_test_suite()"
 
 # Enable this to be able to login to the build worker. You can use the
 # `remmina` program in Ubuntu, use the login information that the line below

@@ -39,7 +39,7 @@ make -j2 VERBOSE=1 install
 
 cd
 
-python -c "import heyoka"
+python -c "from heyoka import test; test.run_test_suite()"
 
 set +e
 set +x
