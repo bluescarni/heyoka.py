@@ -9,8 +9,8 @@
 # Version setup.
 from ._version import __version__
 
-import sys as _sys
-if _sys.platform == 'linux'
+import os as _os
+if _os.name == 'posix':
     # NOTE: on some platforms Python by default opens extensions
     # with the RTLD_LOCAL flag, which creates problems because
     # public symbols used by heyoka (e.g., sleef functions, quad
@@ -23,7 +23,7 @@ if _sys.platform == 'linux'
     # DynamicLibrarySearchGenerator::Load(“/path/to/libheyoka.so”)
     # See:
     # https://docs.python.org/3/library/ctypes.html
-    import ctypes as _ctypes
+    import ctypes as _ctypes, sys as _sys
     _orig_dlopen_flags = _sys.getdlopenflags()
     _sys.setdlopenflags(_orig_dlopen_flags | _ctypes.RTLD_GLOBAL)
 
@@ -36,9 +36,10 @@ if _sys.platform == 'linux'
         _sys.setdlopenflags(_orig_dlopen_flags)
 
         del _ctypes
+        del _sys
         del _orig_dlopen_flags
 
-del _sys
+del _os
 
 def taylor_adaptive(sys, state, **kwargs):
     fp_type = kwargs.pop("fp_type", "double")
