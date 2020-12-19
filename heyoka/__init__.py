@@ -41,6 +41,9 @@ if _os.name == 'posix':
 
 del _os
 
+# Explicitly import the test submodule
+from . import test
+
 def taylor_adaptive(sys, state, **kwargs):
     fp_type = kwargs.pop("fp_type", "double")
 
