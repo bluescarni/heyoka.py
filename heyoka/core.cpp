@@ -12,6 +12,7 @@
 #include <array>
 #include <cstddef>
 #include <cstdint>
+#include <exception>
 #include <initializer_list>
 #include <sstream>
 #include <stdexcept>
@@ -35,6 +36,7 @@
 
 #endif
 
+#include <heyoka/exceptions.hpp>
 #include <heyoka/expression.hpp>
 #include <heyoka/mascon.hpp>
 #include <heyoka/math.hpp>
@@ -80,6 +82,17 @@ PYBIND11_MODULE(core, m)
     m.attr("_heyoka_cpp_version_major") = HEYOKA_VERSION_MAJOR;
     m.attr("_heyoka_cpp_version_minor") = HEYOKA_VERSION_MINOR;
     m.attr("_heyoka_cpp_version_patch") = HEYOKA_VERSION_PATCH;
+
+    // Register heyoka's custom exceptions.
+    py::register_exception_translator([](std::exception_ptr p) {
+        try {
+            if (p) {
+                std::rethrow_exception(p);
+            }
+        } catch (const hey::not_implemented_error &nie) {
+            PyErr_SetString(PyExc_NotImplementedError, nie.what());
+        }
+    });
 
     // NOTE: typedef to avoid complications in the
     // exposition of the operators.
