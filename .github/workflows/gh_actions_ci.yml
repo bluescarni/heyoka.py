@@ -2,10 +2,10 @@ name: GitHub CI
 on:
   push:
     branches:
-      - master
+      - main
   pull_request:
     branches:
-      - master
+      - main
 jobs:
   osx_10_15:
     runs-on: macos-10.15
