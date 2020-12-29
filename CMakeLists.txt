@@ -116,7 +116,7 @@ endif()
 # heyoka.
 # NOTE: put the minimum version in a variable
 # so that we can re-use it below.
-set (_HEYOKA_PY_MIN_HEYOKA_VERSION 0.1)
+set (_HEYOKA_PY_MIN_HEYOKA_VERSION 0.2)
 find_package(heyoka REQUIRED)
 if(${heyoka_VERSION} VERSION_LESS ${_HEYOKA_PY_MIN_HEYOKA_VERSION})
     message(FATAL_ERROR "The minimum heyoka version required by heyoka.py is ${_HEYOKA_PY_MIN_HEYOKA_VERSION}, but version ${heyoka_VERSION} was found instead.")
@@ -131,9 +131,6 @@ mark_as_advanced(HEYOKA_PY_INSTALL_PATH)
 
 # pybind11.
 find_package(pybind11 REQUIRED)
-
-# Boost.
-find_package(Boost 1.60 REQUIRED)
 
 # Add the module directory.
 add_subdirectory(heyoka)

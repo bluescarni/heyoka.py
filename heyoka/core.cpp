@@ -213,7 +213,11 @@ PYBIND11_MODULE(core, m)
     m.def("sqrt", &hey::sqrt);
     m.def("square", &hey::square);
 
-    // N-body builder.
+    // Syntax sugar for creating parameters.
+    py::class_<hey::detail::par_impl>(m, "par_generator").def("__getitem__", &hey::detail::par_impl::operator[]);
+    m.attr("par") = hey::detail::par_impl{};
+
+    // N-body builders.
     m.def(
         "make_nbody_sys",
         [](std::uint32_t n, py::object Gconst, py::iterable masses) {
@@ -233,6 +237,20 @@ PYBIND11_MODULE(core, m)
             return hey::make_nbody_sys(n, kw::Gconst = G, kw::masses = m_vec);
         },
         "n"_a, "Gconst"_a = py::cast(1.), "masses"_a = py::none{});
+
+    m.def(
+        "make_nbody_par_sys",
+        [](std::uint32_t n, py::object Gconst, py::object n_massive) {
+            const auto G = heypy::to_number(Gconst);
+
+            namespace kw = hey::kw;
+            if (n_massive.is_none()) {
+                return hey::make_nbody_par_sys(n, kw::Gconst = G);
+            } else {
+                return hey::make_nbody_par_sys(n, kw::Gconst = G, kw::n_massive = py::cast<std::uint32_t>(n_massive));
+            }
+        },
+        "n"_a, "Gconst"_a = py::cast(1.), "n_massive"_a = py::none{});
 
     // mascon dynamics builder
     m.def(
@@ -327,30 +345,35 @@ PYBIND11_MODULE(core, m)
         .export_values();
 
     // Adaptive taylor integrators.
-    auto tad_ctor_impl
-        = [](auto sys, std::vector<double> state, double time, double tol, bool high_accuracy, bool compact_mode) {
-              py::gil_scoped_release release;
+    auto tad_ctor_impl = [](auto sys, std::vector<double> state, double time, std::vector<double> pars, double tol,
+                            bool high_accuracy, bool compact_mode) {
+        py::gil_scoped_release release;
 
-              namespace kw = hey::kw;
-              return hey::taylor_adaptive<double>{std::move(sys),
-                                                  std::move(state),
-                                                  kw::time = time,
-                                                  kw::tol = tol,
-                                                  kw::high_accuracy = high_accuracy,
-                                                  kw::compact_mode = compact_mode};
-          };
+        namespace kw = hey::kw;
+        return hey::taylor_adaptive<double>{std::move(sys),
+                                            std::move(state),
+                                            kw::time = time,
+                                            kw::tol = tol,
+                                            kw::high_accuracy = high_accuracy,
+                                            kw::compact_mode = compact_mode,
+                                            kw::pars = std::move(pars)};
+    };
     py::class_<hey::taylor_adaptive<double>>(m, "taylor_adaptive_double")
         .def(py::init([tad_ctor_impl](std::vector<std::pair<hey::expression, hey::expression>> sys,
-                                      std::vector<double> state, double time, double tol, bool high_accuracy,
-                                      bool compact_mode) {
-                 return tad_ctor_impl(std::move(sys), std::move(state), time, tol, high_accuracy, compact_mode);
+                                      std::vector<double> state, double time, std::vector<double> pars, double tol,
+                                      bool high_accuracy, bool compact_mode) {
+                 return tad_ctor_impl(std::move(sys), std::move(state), time, std::move(pars), tol, high_accuracy,
+                                      compact_mode);
              }),
-             "sys"_a, "state"_a, "time"_a = 0., "tol"_a = 0., "high_accuracy"_a = false, "compact_mode"_a = false)
+             "sys"_a, "state"_a, "time"_a = 0., "pars"_a = py::list{}, "tol"_a = 0., "high_accuracy"_a = false,
+             "compact_mode"_a = false)
         .def(py::init([tad_ctor_impl](std::vector<hey::expression> sys, std::vector<double> state, double time,
-                                      double tol, bool high_accuracy, bool compact_mode) {
-                 return tad_ctor_impl(std::move(sys), std::move(state), time, tol, high_accuracy, compact_mode);
+                                      std::vector<double> pars, double tol, bool high_accuracy, bool compact_mode) {
+                 return tad_ctor_impl(std::move(sys), std::move(state), time, std::move(pars), tol, high_accuracy,
+                                      compact_mode);
              }),
-             "sys"_a, "state"_a, "time"_a = 0., "tol"_a = 0., "high_accuracy"_a = false, "compact_mode"_a = false)
+             "sys"_a, "state"_a, "time"_a = 0., "pars"_a = py::list{}, "tol"_a = 0., "high_accuracy"_a = false,
+             "compact_mode"_a = false)
         .def("get_decomposition", &hey::taylor_adaptive<double>::get_decomposition)
         .def("step", [](hey::taylor_adaptive<double> &ta) { return ta.step(); })
         .def(
@@ -380,6 +403,14 @@ PYBIND11_MODULE(core, m)
                     py::array::ShapeContainer{boost::numeric_cast<py::ssize_t>(ta->get_state().size())},
                     ta->get_state_data(), o);
             })
+        .def_property_readonly(
+            "pars",
+            [](py::object &o) {
+                auto *ta = py::cast<hey::taylor_adaptive<double> *>(o);
+                return py::array_t<double>(
+                    py::array::ShapeContainer{boost::numeric_cast<py::ssize_t>(ta->get_pars().size())},
+                    ta->get_pars_data(), o);
+            })
         .def_property_readonly("order", &hey::taylor_adaptive<double>::get_order)
         .def_property_readonly("dim", &hey::taylor_adaptive<double>::get_dim)
         // Repr.
@@ -403,8 +434,8 @@ PYBIND11_MODULE(core, m)
             },
             "memo"_a);
 
-    auto tald_ctor_impl = [](auto sys, std::vector<long double> state, long double time, long double tol,
-                             bool high_accuracy, bool compact_mode) {
+    auto tald_ctor_impl = [](auto sys, std::vector<long double> state, long double time, std::vector<long double> pars,
+                             long double tol, bool high_accuracy, bool compact_mode) {
         py::gil_scoped_release release;
 
         namespace kw = hey::kw;
@@ -413,20 +444,26 @@ PYBIND11_MODULE(core, m)
                                                  kw::time = time,
                                                  kw::tol = tol,
                                                  kw::high_accuracy = high_accuracy,
-                                                 kw::compact_mode = compact_mode};
+                                                 kw::compact_mode = compact_mode,
+                                                 kw::pars = std::move(pars)};
     };
     py::class_<hey::taylor_adaptive<long double>>(m, "taylor_adaptive_long_double")
         .def(py::init([tald_ctor_impl](std::vector<std::pair<hey::expression, hey::expression>> sys,
-                                       std::vector<long double> state, long double time, long double tol,
-                                       bool high_accuracy, bool compact_mode) {
-                 return tald_ctor_impl(std::move(sys), std::move(state), time, tol, high_accuracy, compact_mode);
+                                       std::vector<long double> state, long double time, std::vector<long double> pars,
+                                       long double tol, bool high_accuracy, bool compact_mode) {
+                 return tald_ctor_impl(std::move(sys), std::move(state), time, std::move(pars), tol, high_accuracy,
+                                       compact_mode);
              }),
-             "sys"_a, "state"_a, "time"_a = 0.l, "tol"_a = 0.l, "high_accuracy"_a = false, "compact_mode"_a = false)
+             "sys"_a, "state"_a, "time"_a = 0.l, "pars"_a = py::list{}, "tol"_a = 0.l, "high_accuracy"_a = false,
+             "compact_mode"_a = false)
         .def(py::init([tald_ctor_impl](std::vector<hey::expression> sys, std::vector<long double> state,
-                                       long double time, long double tol, bool high_accuracy, bool compact_mode) {
-                 return tald_ctor_impl(std::move(sys), std::move(state), time, tol, high_accuracy, compact_mode);
+                                       long double time, std::vector<long double> pars, long double tol,
+                                       bool high_accuracy, bool compact_mode) {
+                 return tald_ctor_impl(std::move(sys), std::move(state), time, std::move(pars), tol, high_accuracy,
+                                       compact_mode);
              }),
-             "sys"_a, "state"_a, "time"_a = 0.l, "tol"_a = 0.l, "high_accuracy"_a = false, "compact_mode"_a = false)
+             "sys"_a, "state"_a, "time"_a = 0.l, "pars"_a = py::list{}, "tol"_a = 0.l, "high_accuracy"_a = false,
+             "compact_mode"_a = false)
         .def("get_decomposition", &hey::taylor_adaptive<long double>::get_decomposition)
         .def("step", [](hey::taylor_adaptive<long double> &ta) { return ta.step(); })
         .def(
@@ -456,6 +493,14 @@ PYBIND11_MODULE(core, m)
                 return py::array_t<long double>(
                     py::array::ShapeContainer{boost::numeric_cast<py::ssize_t>(ta->get_state().size())},
                     ta->get_state_data(), o);
+            })
+        .def_property_readonly(
+            "pars",
+            [](py::object &o) {
+                auto *ta = py::cast<hey::taylor_adaptive<long double> *>(o);
+                return py::array_t<long double>(
+                    py::array::ShapeContainer{boost::numeric_cast<py::ssize_t>(ta->get_pars().size())},
+                    ta->get_pars_data(), o);
             })
         .def_property_readonly("order", &hey::taylor_adaptive<long double>::get_order)
         .def_property_readonly("dim", &hey::taylor_adaptive<long double>::get_dim)
@@ -491,32 +536,35 @@ PYBIND11_MODULE(core, m)
         auto orig_prec = mpmod.attr("mp").attr("prec");
         mpmod.attr("mp").attr("prec") = 113;
 
-        auto taf128_ctor_impl = [](auto sys, std::vector<mppp::real128> state, mppp::real128 time, mppp::real128 tol,
-                                   bool high_accuracy, bool compact_mode) {
-            py::gil_scoped_release release;
+        auto taf128_ctor_impl
+            = [](auto sys, std::vector<mppp::real128> state, mppp::real128 time, std::vector<mppp::real128> pars,
+                 mppp::real128 tol, bool high_accuracy, bool compact_mode) {
+                  py::gil_scoped_release release;
 
-            namespace kw = hey::kw;
-            return hey::taylor_adaptive<mppp::real128>{std::move(sys),
-                                                       std::move(state),
-                                                       kw::time = time,
-                                                       kw::tol = tol,
-                                                       kw::high_accuracy = high_accuracy,
-                                                       kw::compact_mode = compact_mode};
-        };
+                  namespace kw = hey::kw;
+                  return hey::taylor_adaptive<mppp::real128>{std::move(sys),
+                                                             std::move(state),
+                                                             kw::time = time,
+                                                             kw::tol = tol,
+                                                             kw::high_accuracy = high_accuracy,
+                                                             kw::compact_mode = compact_mode,
+                                                             kw::pars = std::move(pars)};
+              };
         py::class_<hey::taylor_adaptive<mppp::real128>>(m, "taylor_adaptive_real128")
             .def(py::init([taf128_ctor_impl](std::vector<std::pair<hey::expression, hey::expression>> sys,
-                                             std::vector<mppp::real128> state, mppp::real128 time, mppp::real128 tol,
+                                             std::vector<mppp::real128> state, mppp::real128 time,
+                                             std::vector<mppp::real128> pars, mppp::real128 tol,
                                              bool high_accuracy, bool compact_mode) {
-                     return taf128_ctor_impl(std::move(sys), std::move(state), time, tol, high_accuracy, compact_mode);
+                     return taf128_ctor_impl(std::move(sys), std::move(state), time, std::move(pars), tol, high_accuracy, compact_mode);
                  }),
-                 "sys"_a, "state"_a, "time"_a = mppp::real128{0}, "tol"_a = mppp::real128{0}, "high_accuracy"_a = false,
+                 "sys"_a, "state"_a, "time"_a = mppp::real128{0},"pars"_a = py::list{},  "tol"_a = mppp::real128{0}, "high_accuracy"_a = false,
                  "compact_mode"_a = false)
             .def(py::init([taf128_ctor_impl](std::vector<hey::expression> sys, std::vector<mppp::real128> state,
-                                             mppp::real128 time, mppp::real128 tol, bool high_accuracy,
+                                             mppp::real128 time, std::vector<mppp::real128> pars,mppp::real128 tol, bool high_accuracy,
                                              bool compact_mode) {
-                     return taf128_ctor_impl(std::move(sys), std::move(state), time, tol, high_accuracy, compact_mode);
+                     return taf128_ctor_impl(std::move(sys), std::move(state), time,std::move(pars), tol, high_accuracy, compact_mode);
                  }),
-                 "sys"_a, "state"_a, "time"_a = mppp::real128{0}, "tol"_a = mppp::real128{0}, "high_accuracy"_a = false,
+                 "sys"_a, "state"_a, "time"_a = mppp::real128{0},"pars"_a = py::list{}, "tol"_a = mppp::real128{0}, "high_accuracy"_a = false,
                  "compact_mode"_a = false)
             .def("get_decomposition", &hey::taylor_adaptive<mppp::real128>::get_decomposition)
             .def("step", [](hey::taylor_adaptive<mppp::real128> &ta) { return ta.step(); })
@@ -550,6 +598,19 @@ PYBIND11_MODULE(core, m)
                              "Invalid state vector passed to set_state(): the new state vector has a size of "
                              + std::to_string(v.size()) + ", but the size should be "
                              + std::to_string(ta.get_state().size()) + " instead");
+                     }
+
+                     std::copy(v.begin(), v.end(), ta.get_state_data());
+                 })
+            .def("get_pars",
+                 [](const hey::taylor_adaptive<mppp::real128> &ta) { return py::array(py::cast(ta.get_pars())); })
+             .def("set_pars",
+                 [](hey::taylor_adaptive<mppp::real128> &ta, const std::vector<mppp::real128> &v) {
+                     if (v.size() != ta.get_pars().size()) {
+                         throw std::invalid_argument(
+                             "Invalid pars vector passed to set_pars(): the new pars vector has a size of "
+                             + std::to_string(v.size()) + ", but the size should be "
+                             + std::to_string(ta.get_pars().size()) + " instead");
                      }
 
                      std::copy(v.begin(), v.end(), ta.get_state_data());
@@ -589,8 +650,8 @@ PYBIND11_MODULE(core, m)
     }
 #endif
 
-    auto tabd_ctor_impl = [](auto sys, std::vector<double> state, std::uint32_t batch_size, py::object time, double tol,
-                             bool high_accuracy, bool compact_mode) {
+    auto tabd_ctor_impl = [](auto sys, std::vector<double> state, std::uint32_t batch_size, py::object time,
+                             std::vector<double> pars, double tol, bool high_accuracy, bool compact_mode) {
         namespace kw = hey::kw;
 
         if (time.is_none()) {
@@ -602,7 +663,8 @@ PYBIND11_MODULE(core, m)
                                                       batch_size,
                                                       kw::tol = tol,
                                                       kw::high_accuracy = high_accuracy,
-                                                      kw::compact_mode = compact_mode};
+                                                      kw::compact_mode = compact_mode,
+                                                      kw::pars = std::move(pars)};
         } else {
             // Times provided.
             std::vector<double> time_v;
@@ -618,26 +680,27 @@ PYBIND11_MODULE(core, m)
                                                       kw::time = std::move(time_v),
                                                       kw::tol = tol,
                                                       kw::high_accuracy = high_accuracy,
-                                                      kw::compact_mode = compact_mode};
+                                                      kw::compact_mode = compact_mode,
+                                                      kw::pars = std::move(pars)};
         }
     };
     py::class_<hey::taylor_adaptive_batch<double>>(m, "taylor_adaptive_batch_double")
         .def(py::init([tabd_ctor_impl](std::vector<std::pair<hey::expression, hey::expression>> sys,
-                                       std::vector<double> state, std::uint32_t batch_size, py::object time, double tol,
-                                       bool high_accuracy, bool compact_mode) {
-                 return tabd_ctor_impl(std::move(sys), std::move(state), batch_size, time, tol, high_accuracy,
-                                       compact_mode);
+                                       std::vector<double> state, std::uint32_t batch_size, py::object time,
+                                       std::vector<double> pars, double tol, bool high_accuracy, bool compact_mode) {
+                 return tabd_ctor_impl(std::move(sys), std::move(state), batch_size, time, std::move(pars), tol,
+                                       high_accuracy, compact_mode);
              }),
-             "sys"_a, "state"_a, "batch_size"_a, "time"_a = py::none{}, "tol"_a = 0., "high_accuracy"_a = false,
-             "compact_mode"_a = false)
+             "sys"_a, "state"_a, "batch_size"_a, "time"_a = py::none{}, "pars"_a = py::list{}, "tol"_a = 0.,
+             "high_accuracy"_a = false, "compact_mode"_a = false)
         .def(py::init([tabd_ctor_impl](std::vector<hey::expression> sys, std::vector<double> state,
-                                       std::uint32_t batch_size, py::object time, double tol, bool high_accuracy,
-                                       bool compact_mode) {
-                 return tabd_ctor_impl(std::move(sys), std::move(state), batch_size, time, tol, high_accuracy,
-                                       compact_mode);
+                                       std::uint32_t batch_size, py::object time, std::vector<double> pars, double tol,
+                                       bool high_accuracy, bool compact_mode) {
+                 return tabd_ctor_impl(std::move(sys), std::move(state), batch_size, time, std::move(pars), tol,
+                                       high_accuracy, compact_mode);
              }),
-             "sys"_a, "state"_a, "batch_size"_a, "time"_a = py::none{}, "tol"_a = 0., "high_accuracy"_a = false,
-             "compact_mode"_a = false)
+             "sys"_a, "state"_a, "batch_size"_a, "time"_a = py::none{}, "pars"_a = py::list{}, "tol"_a = 0.,
+             "high_accuracy"_a = false, "compact_mode"_a = false)
         .def("get_decomposition", &hey::taylor_adaptive_batch<double>::get_decomposition)
         .def("step", [](hey::taylor_adaptive_batch<double> &ta) { return ta.step(); })
         .def(
@@ -676,6 +739,14 @@ PYBIND11_MODULE(core, m)
                 return py::array_t<double>(
                     py::array::ShapeContainer{boost::numeric_cast<py::ssize_t>(ta->get_state().size())},
                     ta->get_state_data(), o);
+            })
+        .def_property_readonly(
+            "pars",
+            [](py::object &o) {
+                auto *ta = py::cast<hey::taylor_adaptive_batch<double> *>(o);
+                return py::array_t<double>(
+                    py::array::ShapeContainer{boost::numeric_cast<py::ssize_t>(ta->get_pars().size())},
+                    ta->get_pars_data(), o);
             })
         .def_property_readonly("order", &hey::taylor_adaptive_batch<double>::get_order)
         .def_property_readonly("dim", &hey::taylor_adaptive_batch<double>::get_dim)
