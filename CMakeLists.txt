@@ -131,6 +131,9 @@ mark_as_advanced(HEYOKA_PY_INSTALL_PATH)
 
 # pybind11.
 find_package(pybind11 REQUIRED)
+if(${pybind11_VERSION} VERSION_LESS "2.6")
+    message(FATAL_ERROR "pybind11 >= 2.6 is required, but version ${pybind11_VERSION} was found instead.")
+endif()
 
 # Add the module directory.
 add_subdirectory(heyoka)
