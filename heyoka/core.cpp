@@ -212,6 +212,7 @@ PYBIND11_MODULE(core, m)
     m.def("exp", &hey::exp);
     m.def("sqrt", &hey::sqrt);
     m.def("square", &hey::square);
+    m.def("tan", &hey::tan);
 
     // Syntax sugar for creating parameters.
     py::class_<hey::detail::par_impl>(m, "par_generator").def("__getitem__", &hey::detail::par_impl::operator[]);
