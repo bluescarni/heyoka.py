@@ -215,7 +215,7 @@ PYBIND11_MODULE(core, m)
     m.def("tan", &hey::tan);
 
     // Syntax sugar for creating parameters.
-    py::class_<hey::detail::par_impl>(m, "par_generator").def("__getitem__", &hey::detail::par_impl::operator[]);
+    py::class_<hey::detail::par_impl>(m, "_par_generator").def("__getitem__", &hey::detail::par_impl::operator[]);
     m.attr("par") = hey::detail::par_impl{};
 
     // N-body builders.
