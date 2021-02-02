@@ -213,6 +213,9 @@ PYBIND11_MODULE(core, m)
     m.def("sqrt", &hey::sqrt);
     m.def("square", &hey::square);
     m.def("tan", &hey::tan);
+    m.def("asin", &hey::asin);
+    m.def("acos", &hey::acos);
+    m.def("atan", &hey::atan);
 
     // Time.
     m.attr("time") = hey::time;
