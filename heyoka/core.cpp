@@ -206,16 +206,22 @@ PYBIND11_MODULE(core, m)
     });
 
     // Math functions.
-    m.def("sin", &hey::sin);
-    m.def("cos", &hey::cos);
+    m.def("square", &hey::square);
+    m.def("sqrt", &hey::sqrt);
     m.def("log", &hey::log);
     m.def("exp", &hey::exp);
-    m.def("sqrt", &hey::sqrt);
-    m.def("square", &hey::square);
+    m.def("sin", &hey::sin);
+    m.def("cos", &hey::cos);
     m.def("tan", &hey::tan);
     m.def("asin", &hey::asin);
     m.def("acos", &hey::acos);
     m.def("atan", &hey::atan);
+    m.def("sinh", &hey::sinh);
+    m.def("cosh", &hey::cosh);
+    m.def("tanh", &hey::tanh);
+    m.def("asinh", &hey::asinh);
+    m.def("acosh", &hey::acosh);
+    m.def("atanh", &hey::atanh);
 
     // Time.
     m.attr("time") = hey::time;
