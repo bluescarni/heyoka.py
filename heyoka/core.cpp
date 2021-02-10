@@ -222,6 +222,7 @@ PYBIND11_MODULE(core, m)
     m.def("asinh", &hey::asinh);
     m.def("acosh", &hey::acosh);
     m.def("atanh", &hey::atanh);
+    m.def("sigmoid", &hey::sigmoid);
 
     // Time.
     m.attr("time") = hey::time;
