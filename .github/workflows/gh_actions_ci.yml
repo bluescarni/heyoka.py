@@ -7,9 +7,15 @@ on:
     branches:
       - main
 jobs:
-  osx_10_15:
+  osx_10_15_heyoka_head:
     runs-on: macos-10.15
     steps:
       - uses: actions/checkout@v2
       - name: Build
-        run: bash tools/gha_osx.sh
+        run: bash tools/gha_osx_heyoka_head.sh
+  osx_10_15_heyoka_stable:
+    runs-on: macos-10.15
+    steps:
+      - uses: actions/checkout@v2
+      - name: Build
+        run: bash tools/gha_osx_heyoka_stable.sh
