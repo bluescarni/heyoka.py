@@ -135,6 +135,12 @@ if(${pybind11_VERSION} VERSION_LESS "2.6")
     message(FATAL_ERROR "pybind11 >= 2.6 is required, but version ${pybind11_VERSION} was found instead.")
 endif()
 
+# Boost.
+find_package(Boost REQUIRED)
+
+# mp++
+find_package(mp++ REQUIRED)
+
 # Add the module directory.
 add_subdirectory(heyoka)
 
