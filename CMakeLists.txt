@@ -11,7 +11,7 @@ if(NOT CMAKE_BUILD_TYPE)
 	FORCE)
 endif()
 
-project(heyoka.py VERSION 0.2.0 LANGUAGES CXX C)
+project(heyoka.py VERSION 0.3.0 LANGUAGES CXX C)
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake" "${CMAKE_CURRENT_SOURCE_DIR}/cmake/yacma")
 
@@ -133,6 +133,20 @@ mark_as_advanced(HEYOKA_PY_INSTALL_PATH)
 find_package(pybind11 REQUIRED)
 if(${pybind11_VERSION} VERSION_LESS "2.6")
     message(FATAL_ERROR "pybind11 >= 2.6 is required, but version ${pybind11_VERSION} was found instead.")
+endif()
+
+# Boost.
+find_package(Boost REQUIRED)
+
+if(heyoka_WITH_MPPP)
+    # heyoka was compiled with mp++ support,
+    # add the mp++ dependency on heyoka.py as well.
+    # Note that mp++ is needed in heyoka.py only
+    # for real128 support currently, so in theory
+    # we could have an mppp-enabled heyoka which
+    # however does not support real128, thus rendering
+    # this dependency unnecessary (strictly speaking).
+    find_package(mp++ REQUIRED)
 endif()
 
 # Add the module directory.

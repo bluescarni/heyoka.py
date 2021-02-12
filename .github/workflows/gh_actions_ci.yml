@@ -7,9 +7,39 @@ on:
     branches:
       - main
 jobs:
-  osx_10_15:
+  osx_10_15_heyoka_head:
     runs-on: macos-10.15
     steps:
       - uses: actions/checkout@v2
       - name: Build
-        run: bash tools/gha_osx.sh
+        run: bash tools/gha_osx_heyoka_head.sh
+  osx_10_15_heyoka_stable:
+    runs-on: macos-10.15
+    steps:
+      - uses: actions/checkout@v2
+      - name: Build
+        run: bash tools/gha_osx_heyoka_stable.sh
+  windows_2019_stable:
+    runs-on: windows-2019
+    steps:
+      - uses: actions/checkout@v2
+      - name: Add msbuild to PATH
+        uses: microsoft/setup-msbuild@v1.0.2
+      - uses: conda-incubator/setup-miniconda@v2
+        with:
+          auto-update-conda: true
+          python-version: 3.8
+          channels: conda-forge
+          channel-priority: strict
+      - name: Build
+        shell: pwsh
+        run: |
+          conda config --set always_yes yes
+          conda create --name heyoka python=3.8 pybind11 numpy cmake heyoka boost-cpp
+          conda activate heyoka
+          mkdir build
+          cd build
+          cmake ../ -G "Visual Studio 16 2019" -A x64 -DCMAKE_INSTALL_PREFIX=%CONDA_PREFIX_PATH% -DCMAKE_PREFIX_PATH=%CONDA_PREFIX_PATH% -DHEYOKA_PY_ENABLE_IPO=yes -DBoost_NO_BOOST_CMAKE=ON
+          cmake --build . --config Release --target install
+          cd c:\
+          python -c "from heyoka import test; test.run_test_suite()"
