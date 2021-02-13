@@ -390,11 +390,23 @@ PYBIND11_MODULE(core, m)
              "sys"_a, "state"_a, "time"_a = 0., "pars"_a = py::list{}, "tol"_a = 0., "high_accuracy"_a = false,
              "compact_mode"_a = false)
         .def("get_decomposition", &hey::taylor_adaptive<double>::get_decomposition)
+#if HEYOKA_VERSION_MAJOR > 0 || (HEYOKA_VERSION_MAJOR == 0 && HEYOKA_VERSION_MINOR >= 4)
+        .def(
+            "step", [](hey::taylor_adaptive<double> &ta, bool wtc) { return ta.step(wtc); }, "write_tc"_a = false)
+        .def(
+            "step",
+            [](hey::taylor_adaptive<double> &ta, double max_delta_t, bool wtc) { return ta.step(max_delta_t, wtc); },
+            "max_delta_t"_a, "write_tc"_a = false)
+        .def(
+            "step_backward", [](hey::taylor_adaptive<double> &ta, bool wtc) { return ta.step_backward(wtc); },
+            "write_tc"_a = false)
+#else
         .def("step", [](hey::taylor_adaptive<double> &ta) { return ta.step(); })
         .def(
             "step", [](hey::taylor_adaptive<double> &ta, double max_delta_t) { return ta.step(max_delta_t); },
             "max_delta_t"_a)
         .def("step_backward", [](hey::taylor_adaptive<double> &ta) { return ta.step_backward(); })
+#endif
         .def(
             "propagate_for",
             [](hey::taylor_adaptive<double> &ta, double delta_t, std::size_t max_steps) {
@@ -426,6 +438,18 @@ PYBIND11_MODULE(core, m)
                     py::array::ShapeContainer{boost::numeric_cast<py::ssize_t>(ta->get_pars().size())},
                     ta->get_pars_data(), o);
             })
+#if HEYOKA_VERSION_MAJOR > 0 || (HEYOKA_VERSION_MAJOR == 0 && HEYOKA_VERSION_MINOR >= 4)
+        .def_property_readonly(
+            "tc",
+            [](py::object &o) {
+                auto *ta = py::cast<hey::taylor_adaptive<double> *>(o);
+
+                const auto nvars = boost::numeric_cast<py::ssize_t>(ta->get_dim());
+                const auto ncoeff = boost::numeric_cast<py::ssize_t>(ta->get_order() + 1u);
+
+                return py::array_t<double>(py::array::ShapeContainer{nvars, ncoeff}, ta->get_tc_data(), o);
+            })
+#endif
         .def_property_readonly("order", &hey::taylor_adaptive<double>::get_order)
         .def_property_readonly("dim", &hey::taylor_adaptive<double>::get_dim)
         // Repr.
@@ -480,11 +504,25 @@ PYBIND11_MODULE(core, m)
              "sys"_a, "state"_a, "time"_a = 0.l, "pars"_a = py::list{}, "tol"_a = 0.l, "high_accuracy"_a = false,
              "compact_mode"_a = false)
         .def("get_decomposition", &hey::taylor_adaptive<long double>::get_decomposition)
+#if HEYOKA_VERSION_MAJOR > 0 || (HEYOKA_VERSION_MAJOR == 0 && HEYOKA_VERSION_MINOR >= 4)
+        .def(
+            "step", [](hey::taylor_adaptive<long double> &ta, bool wtc) { return ta.step(wtc); }, "write_tc"_a = false)
+        .def(
+            "step",
+            [](hey::taylor_adaptive<long double> &ta, long double max_delta_t, bool wtc) {
+                return ta.step(max_delta_t, wtc);
+            },
+            "max_delta_t"_a, "write_tc"_a = false)
+        .def(
+            "step_backward", [](hey::taylor_adaptive<long double> &ta, bool wtc) { return ta.step_backward(wtc); },
+            "write_tc"_a = false)
+#else
         .def("step", [](hey::taylor_adaptive<long double> &ta) { return ta.step(); })
         .def(
             "step", [](hey::taylor_adaptive<long double> &ta, long double max_delta_t) { return ta.step(max_delta_t); },
             "max_delta_t"_a)
         .def("step_backward", [](hey::taylor_adaptive<long double> &ta) { return ta.step_backward(); })
+#endif
         .def(
             "propagate_for",
             [](hey::taylor_adaptive<long double> &ta, long double delta_t, std::size_t max_steps) {
@@ -517,6 +555,18 @@ PYBIND11_MODULE(core, m)
                     py::array::ShapeContainer{boost::numeric_cast<py::ssize_t>(ta->get_pars().size())},
                     ta->get_pars_data(), o);
             })
+#if HEYOKA_VERSION_MAJOR > 0 || (HEYOKA_VERSION_MAJOR == 0 && HEYOKA_VERSION_MINOR >= 4)
+        .def_property_readonly(
+            "tc",
+            [](py::object &o) {
+                auto *ta = py::cast<hey::taylor_adaptive<long double> *>(o);
+
+                const auto nvars = boost::numeric_cast<py::ssize_t>(ta->get_dim());
+                const auto ncoeff = boost::numeric_cast<py::ssize_t>(ta->get_order() + 1u);
+
+                return py::array_t<long double>(py::array::ShapeContainer{nvars, ncoeff}, ta->get_tc_data(), o);
+            })
+#endif
         .def_property_readonly("order", &hey::taylor_adaptive<long double>::get_order)
         .def_property_readonly("dim", &hey::taylor_adaptive<long double>::get_dim)
         // Repr.
@@ -582,12 +632,21 @@ PYBIND11_MODULE(core, m)
                  "sys"_a, "state"_a, "time"_a = mppp::real128{0},"pars"_a = py::list{}, "tol"_a = mppp::real128{0}, "high_accuracy"_a = false,
                  "compact_mode"_a = false)
             .def("get_decomposition", &hey::taylor_adaptive<mppp::real128>::get_decomposition)
+#if HEYOKA_VERSION_MAJOR > 0 || (HEYOKA_VERSION_MAJOR == 0 && HEYOKA_VERSION_MINOR >= 4)
+            .def("step", [](hey::taylor_adaptive<mppp::real128> &ta, bool wtc) { return ta.step(wtc); }, "write_tc"_a = false)
+            .def(
+                "step",
+                [](hey::taylor_adaptive<mppp::real128> &ta, mppp::real128 max_delta_t, bool wtc) { return ta.step(max_delta_t, wtc); },
+                "max_delta_t"_a, "write_tc"_a = false)
+            .def("step_backward", [](hey::taylor_adaptive<mppp::real128> &ta, bool wtc) { return ta.step_backward(wtc); }, "write_tc"_a = false)
+#else
             .def("step", [](hey::taylor_adaptive<mppp::real128> &ta) { return ta.step(); })
             .def(
                 "step",
                 [](hey::taylor_adaptive<mppp::real128> &ta, mppp::real128 max_delta_t) { return ta.step(max_delta_t); },
                 "max_delta_t"_a)
             .def("step_backward", [](hey::taylor_adaptive<mppp::real128> &ta) { return ta.step_backward(); })
+#endif
             .def(
                 "propagate_for",
                 [](hey::taylor_adaptive<mppp::real128> &ta, mppp::real128 delta_t, std::size_t max_steps) {
@@ -630,6 +689,18 @@ PYBIND11_MODULE(core, m)
 
                      std::copy(v.begin(), v.end(), ta.get_state_data());
                  })
+#if HEYOKA_VERSION_MAJOR > 0 || (HEYOKA_VERSION_MAJOR == 0 && HEYOKA_VERSION_MINOR >= 4)
+            .def("get_tc",
+                 [](const hey::taylor_adaptive<mppp::real128> &ta) { auto ret = py::array(py::cast(ta.get_tc()));
+
+                const auto nvars = ta.get_dim();
+                const auto ncoeff = ta.get_order() + 1u;
+
+                 ret.attr("shape") = py::make_tuple(nvars, ncoeff);
+
+                 return ret;
+            })
+#endif
             .def_property_readonly("order", &hey::taylor_adaptive<mppp::real128>::get_order)
             .def_property_readonly("dim", &hey::taylor_adaptive<mppp::real128>::get_dim)
             // Repr.
@@ -717,6 +788,19 @@ PYBIND11_MODULE(core, m)
              "sys"_a, "state"_a, "batch_size"_a, "time"_a = py::none{}, "pars"_a = py::list{}, "tol"_a = 0.,
              "high_accuracy"_a = false, "compact_mode"_a = false)
         .def("get_decomposition", &hey::taylor_adaptive_batch<double>::get_decomposition)
+#if HEYOKA_VERSION_MAJOR > 0 || (HEYOKA_VERSION_MAJOR == 0 && HEYOKA_VERSION_MINOR >= 4)
+        .def(
+            "step", [](hey::taylor_adaptive_batch<double> &ta, bool wtc) { return ta.step(wtc); }, "write_tc"_a = false)
+        .def(
+            "step",
+            [](hey::taylor_adaptive_batch<double> &ta, const std::vector<double> &max_delta_t, bool wtc) {
+                return ta.step(max_delta_t, wtc);
+            },
+            "max_delta_t"_a, "write_tc"_a = false)
+        .def(
+            "step_backward", [](hey::taylor_adaptive_batch<double> &ta, bool wtc) { return ta.step_backward(wtc); },
+            "write_tc"_a = false)
+#else
         .def("step", [](hey::taylor_adaptive_batch<double> &ta) { return ta.step(); })
         .def(
             "step",
@@ -725,6 +809,7 @@ PYBIND11_MODULE(core, m)
             },
             "max_delta_t"_a)
         .def("step_backward", [](hey::taylor_adaptive_batch<double> &ta) { return ta.step_backward(); })
+#endif
         .def(
             "propagate_for",
             [](hey::taylor_adaptive_batch<double> &ta, const std::vector<double> &delta_t, std::size_t max_steps) {
@@ -763,6 +848,19 @@ PYBIND11_MODULE(core, m)
                     py::array::ShapeContainer{boost::numeric_cast<py::ssize_t>(ta->get_pars().size())},
                     ta->get_pars_data(), o);
             })
+#if HEYOKA_VERSION_MAJOR > 0 || (HEYOKA_VERSION_MAJOR == 0 && HEYOKA_VERSION_MINOR >= 4)
+        .def_property_readonly(
+            "tc",
+            [](py::object &o) {
+                auto *ta = py::cast<hey::taylor_adaptive_batch<double> *>(o);
+
+                const auto nvars = boost::numeric_cast<py::ssize_t>(ta->get_dim());
+                const auto ncoeff = boost::numeric_cast<py::ssize_t>(ta->get_order() + 1u);
+                const auto bs = boost::numeric_cast<py::ssize_t>(ta->get_batch_size());
+
+                return py::array_t<double>(py::array::ShapeContainer{nvars, ncoeff, bs}, ta->get_tc_data(), o);
+            })
+#endif
         .def_property_readonly("order", &hey::taylor_adaptive_batch<double>::get_order)
         .def_property_readonly("dim", &hey::taylor_adaptive_batch<double>::get_dim)
         .def_property_readonly("batch_size", &hey::taylor_adaptive_batch<double>::get_batch_size)
