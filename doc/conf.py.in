@@ -62,6 +62,10 @@ html_theme_options = {
     "repository_url": "https://github.com/bluescarni/heyoka.py",
     "use_repository_button": True,
     "use_issues_button": True,
+    "launch_buttons": {
+        "binderhub_url": "https://mybinder.org",
+        "notebook_interface": "classic",
+    },
 }
 
 latex_engine = 'xelatex'
