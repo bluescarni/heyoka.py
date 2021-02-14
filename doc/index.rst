@@ -12,6 +12,19 @@ heyoka.py
     and satirist, who speaks, moves and reacts in an opposite fashion to the
     people around them.
 
+heyoka is a Python library for the integration of ordinary differential equations
+(ODEs) via Taylor's method. Notable features include:
+
+* support for both double-precision and extended-precision floating-point types
+  (80-bit and 128-bit),
+* the ability to maintain machine precision accuracy over
+  tens of billions of timesteps,
+* batch mode integration to harness the power of modern
+  `SIMD <https://en.wikipedia.org/wiki/SIMD>`__ instruction sets,
+* a high-performance implementation of Taylor's method based
+  on automatic differentiation techniques and aggressive just-in-time
+  compilation via `LLVM <https://llvm.org/>`__.
+
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
