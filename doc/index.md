@@ -19,21 +19,21 @@ equations (ODEs) via Taylor\'s method. Notable features include:
   automatic differentiation techniques and aggressive just-in-time
   compilation via [LLVM](https://llvm.org/).
 
-## Tutorials
+## Contents
 
 ```{toctree}
 :maxdepth: 1
 :caption: Basic tutorials
 
+tut_taylor_method
+notebooks/The expression system.ipynb
 notebooks/ODEs with parameters.ipynb
-notebooks/Long term stability of Trappist-1
 ```
 
 ```{toctree}
 :maxdepth: 1
 :caption: Advanced tutorials
 
-notebooks/ODEs with parameters.ipynb
 notebooks/Long term stability of Trappist-1
 ```
 
