@@ -441,8 +441,8 @@ PYBIND11_MODULE(core, m)
 #if HEYOKA_VERSION_MAJOR > 0 || (HEYOKA_VERSION_MAJOR == 0 && HEYOKA_VERSION_MINOR >= 4)
         .def_property_readonly(
             "tc",
-            [](py::object &o) {
-                auto *ta = py::cast<hey::taylor_adaptive<double> *>(o);
+            [](const py::object &o) {
+                auto *ta = py::cast<const hey::taylor_adaptive<double> *>(o);
 
                 const auto nvars = boost::numeric_cast<py::ssize_t>(ta->get_dim());
                 const auto ncoeff = boost::numeric_cast<py::ssize_t>(ta->get_order() + 1u);
@@ -563,8 +563,8 @@ PYBIND11_MODULE(core, m)
 #if HEYOKA_VERSION_MAJOR > 0 || (HEYOKA_VERSION_MAJOR == 0 && HEYOKA_VERSION_MINOR >= 4)
         .def_property_readonly(
             "tc",
-            [](py::object &o) {
-                auto *ta = py::cast<hey::taylor_adaptive<long double> *>(o);
+            [](const py::object &o) {
+                auto *ta = py::cast<const hey::taylor_adaptive<long double> *>(o);
 
                 const auto nvars = boost::numeric_cast<py::ssize_t>(ta->get_dim());
                 const auto ncoeff = boost::numeric_cast<py::ssize_t>(ta->get_order() + 1u);
@@ -861,8 +861,8 @@ PYBIND11_MODULE(core, m)
 #if HEYOKA_VERSION_MAJOR > 0 || (HEYOKA_VERSION_MAJOR == 0 && HEYOKA_VERSION_MINOR >= 4)
         .def_property_readonly(
             "tc",
-            [](py::object &o) {
-                auto *ta = py::cast<hey::taylor_adaptive_batch<double> *>(o);
+            [](const py::object &o) {
+                auto *ta = py::cast<const hey::taylor_adaptive_batch<double> *>(o);
 
                 const auto nvars = boost::numeric_cast<py::ssize_t>(ta->get_dim());
                 const auto ncoeff = boost::numeric_cast<py::ssize_t>(ta->get_order() + 1u);
