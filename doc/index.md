@@ -19,6 +19,8 @@ equations (ODEs) via Taylor\'s method. Notable features include:
   automatic differentiation techniques and aggressive just-in-time
   compilation via [LLVM](https://llvm.org/).
 
+heyoka.py is based on the [heyoka C++ library](https://bluescarni.github.io/heyoka/).
+
 ## Contents
 
 ```{toctree}
