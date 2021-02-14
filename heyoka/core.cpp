@@ -447,7 +447,12 @@ PYBIND11_MODULE(core, m)
                 const auto nvars = boost::numeric_cast<py::ssize_t>(ta->get_dim());
                 const auto ncoeff = boost::numeric_cast<py::ssize_t>(ta->get_order() + 1u);
 
-                return py::array_t<double>(py::array::ShapeContainer{nvars, ncoeff}, ta->get_tc_data(), o);
+                auto ret = py::array_t<double>(py::array::ShapeContainer{nvars, ncoeff}, ta->get_tc().data(), o);
+
+                // Ensure the returned array is read-only.
+                ret.attr("flags").attr("writeable") = false;
+
+                return ret;
             })
 #endif
         .def_property_readonly("order", &hey::taylor_adaptive<double>::get_order)
@@ -564,7 +569,12 @@ PYBIND11_MODULE(core, m)
                 const auto nvars = boost::numeric_cast<py::ssize_t>(ta->get_dim());
                 const auto ncoeff = boost::numeric_cast<py::ssize_t>(ta->get_order() + 1u);
 
-                return py::array_t<long double>(py::array::ShapeContainer{nvars, ncoeff}, ta->get_tc_data(), o);
+                auto ret = py::array_t<long double>(py::array::ShapeContainer{nvars, ncoeff}, ta->get_tc().data(), o);
+
+                // Ensure the returned array is read-only.
+                ret.attr("flags").attr("writeable") = false;
+
+                return ret;
             })
 #endif
         .def_property_readonly("order", &hey::taylor_adaptive<long double>::get_order)
@@ -858,7 +868,12 @@ PYBIND11_MODULE(core, m)
                 const auto ncoeff = boost::numeric_cast<py::ssize_t>(ta->get_order() + 1u);
                 const auto bs = boost::numeric_cast<py::ssize_t>(ta->get_batch_size());
 
-                return py::array_t<double>(py::array::ShapeContainer{nvars, ncoeff, bs}, ta->get_tc_data(), o);
+                auto ret = py::array_t<double>(py::array::ShapeContainer{nvars, ncoeff, bs}, ta->get_tc().data(), o);
+
+                // Ensure the returned array is read-only.
+                ret.attr("flags").attr("writeable") = false;
+
+                return ret;
             })
 #endif
         .def_property_readonly("order", &hey::taylor_adaptive_batch<double>::get_order)
