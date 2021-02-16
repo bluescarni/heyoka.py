@@ -41,7 +41,7 @@
     <script src="_static/sphinx-book-theme.d31b09fe5c1d09cb49b26a786de4a05d.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Taylor’s method" href="tut_taylor_method.html" />
+    <link rel="next" title="Basic tutorials" href="basic_tutorials.html" />
 
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="docsearch:language" content="en" />
@@ -73,41 +73,52 @@
 <nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
     <p class="caption collapsible-parent">
  <span class="caption-text">
-  Basic tutorials
+  Contents
  </span>
 </p>
 <ul class="nav sidenav_l1">
- <li class="toctree-l1">
-  <a class="reference internal" href="tut_taylor_method.html">
-   Taylor’s method
+ <li class="toctree-l1 collapsible-parent">
+  <a class="reference internal" href="basic_tutorials.html">
+   Basic tutorials
   </a>
+  <ul class="collapse-ul">
+   <li class="toctree-l2">
+    <a class="reference internal" href="tut_taylor_method.html">
+     Taylor’s method
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="notebooks/The%20expression%20system.html">
+     The expression system
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="notebooks/ODEs%20with%20parameters.html">
+     ODEs with parameters
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="notebooks/Dense%20output.html">
+     Dense output
+    </a>
+   </li>
+  </ul>
+  <i class="fas fa-chevron-down">
+  </i>
  </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="notebooks/The%20expression%20system.html">
-   The expression system
+ <li class="toctree-l1 collapsible-parent">
+  <a class="reference internal" href="advanced_tutorials.html">
+   Advanced tutorials
   </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="notebooks/ODEs%20with%20parameters.html">
-   ODEs with parameters
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="notebooks/Dense%20output.html">
-   Dense output
-  </a>
- </li>
-</ul>
-<p class="caption collapsible-parent">
- <span class="caption-text">
-  Advanced tutorials
- </span>
-</p>
-<ul class="nav sidenav_l1">
- <li class="toctree-l1">
-  <a class="reference internal" href="notebooks/Long%20term%20stability%20of%20Trappist-1.html">
-   Long term stability of Trappist-1
-  </a>
+  <ul class="collapse-ul">
+   <li class="toctree-l2">
+    <a class="reference internal" href="notebooks/Long%20term%20stability%20of%20Trappist-1.html">
+     Long term stability of Trappist-1
+    </a>
+   </li>
+  </ul>
+  <i class="fas fa-chevron-down">
+  </i>
  </li>
 </ul>
 
@@ -190,32 +201,6 @@
     <!-- Table of contents -->
     <div class="d-none d-md-block col-md-2 bd-toc show">
         
-        <div class="tocsection onthispage pt-5 pb-3">
-            <i class="fas fa-list"></i> Contents
-        </div>
-        <nav id="bd-toc-nav">
-            <ul class="nav section-nav flex-column">
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#contents">
-   Contents
-  </a>
-  <ul class="nav section-nav flex-column">
-  </ul>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#authors">
-   Authors
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#license">
-   License
-  </a>
- </li>
-</ul>
-
-        </nav>
-        
     </div>
 </div>
     <div id="main-content" class="row">
@@ -246,35 +231,24 @@ billions of timesteps,</p></li>
 automatic differentiation techniques and aggressive just-in-time
 compilation via <a class="reference external" href="https://llvm.org/">LLVM</a>.</p></li>
 </ul>
-<p>heyoka.py is based on the <a class="reference external" href="https://github.com/bluescarni/heyoka">heyoka C++ library</a>.</p>
-<div class="section" id="contents">
-<h2>Contents<a class="headerlink" href="#contents" title="Permalink to this headline">¶</a></h2>
+<p>heyoka.py is based on the <a class="reference external" href="https://github.com/bluescarni/heyoka">heyoka C++ library</a>,
+and it is released under the <a class="reference external" href="https://www.mozilla.org/en-US/MPL/2.0/FAQ/">MPL-2.0</a> license.</p>
+<p>The authors are Francesco Biscani (Max Planck Institute for Astronomy) and Dario Izzo (European Space Agency).</p>
 <div class="toctree-wrapper compound">
-<p class="caption"><span class="caption-text">Basic tutorials</span></p>
+<p class="caption"><span class="caption-text">Contents</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="tut_taylor_method.html">Taylor’s method</a></li>
-<li class="toctree-l1"><a class="reference internal" href="notebooks/The%20expression%20system.html">The expression system</a></li>
-<li class="toctree-l1"><a class="reference internal" href="notebooks/ODEs%20with%20parameters.html">ODEs with parameters</a></li>
-<li class="toctree-l1"><a class="reference internal" href="notebooks/Dense%20output.html">Dense output</a></li>
+<li class="toctree-l1"><a class="reference internal" href="basic_tutorials.html">Basic tutorials</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="tut_taylor_method.html">Taylor’s method</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/The%20expression%20system.html">The expression system</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/ODEs%20with%20parameters.html">ODEs with parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/Dense%20output.html">Dense output</a></li>
 </ul>
-</div>
-<div class="toctree-wrapper compound">
-<p class="caption"><span class="caption-text">Advanced tutorials</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="notebooks/Long%20term%20stability%20of%20Trappist-1.html">Long term stability of Trappist-1</a></li>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="advanced_tutorials.html">Advanced tutorials</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/Long%20term%20stability%20of%20Trappist-1.html">Long term stability of Trappist-1</a></li>
 </ul>
-</div>
-</div>
-<div class="section" id="authors">
-<h2>Authors<a class="headerlink" href="#authors" title="Permalink to this headline">¶</a></h2>
-<ul class="simple">
-<li><p>Francesco Biscani (Max Planck Institute for Astronomy)</p></li>
-<li><p>Dario Izzo (European Space Agency)</p></li>
+</li>
 </ul>
-</div>
-<div class="section" id="license">
-<h2>License<a class="headerlink" href="#license" title="Permalink to this headline">¶</a></h2>
-<p>heyoka.py is released under the <a class="reference external" href="https://www.mozilla.org/en-US/MPL/2.0/FAQ/">MPL-2.0</a> license.</p>
 </div>
 </div>
 
@@ -287,7 +261,7 @@ compilation via <a class="reference external" href="https://llvm.org/">LLVM</a>.
     
     <div class='prev-next-bottom'>
         
-    <a class='right-next' id="next-link" href="tut_taylor_method.html" title="next page">Taylor’s method</a>
+    <a class='right-next' id="next-link" href="basic_tutorials.html" title="next page">Basic tutorials</a>
 
     </div>
     <footer class="footer mt-5 mt-md-0">

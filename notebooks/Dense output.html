@@ -43,7 +43,7 @@
     <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["\\(", "\\)"]], "displayMath": [["\\[", "\\]"]], "processRefs": false, "processEnvironments": false}})</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Long term stability of Trappist-1" href="Long%20term%20stability%20of%20Trappist-1.html" />
+    <link rel="next" title="Advanced tutorials" href="../advanced_tutorials.html" />
     <link rel="prev" title="ODEs with parameters" href="ODEs%20with%20parameters.html" />
 
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -76,41 +76,52 @@
 <nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
     <p class="caption collapsible-parent">
  <span class="caption-text">
-  Basic tutorials
+  Contents
  </span>
 </p>
 <ul class="current nav sidenav_l1">
- <li class="toctree-l1">
-  <a class="reference internal" href="../tut_taylor_method.html">
-   Taylor’s method
+ <li class="toctree-l1 current active collapsible-parent">
+  <a class="reference internal" href="../basic_tutorials.html">
+   Basic tutorials
   </a>
+  <ul class="current collapse-ul">
+   <li class="toctree-l2">
+    <a class="reference internal" href="../tut_taylor_method.html">
+     Taylor’s method
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="The%20expression%20system.html">
+     The expression system
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="ODEs%20with%20parameters.html">
+     ODEs with parameters
+    </a>
+   </li>
+   <li class="toctree-l2 current active">
+    <a class="current reference internal" href="#">
+     Dense output
+    </a>
+   </li>
+  </ul>
+  <i class="fas fa-chevron-down">
+  </i>
  </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="The%20expression%20system.html">
-   The expression system
+ <li class="toctree-l1 collapsible-parent">
+  <a class="reference internal" href="../advanced_tutorials.html">
+   Advanced tutorials
   </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="ODEs%20with%20parameters.html">
-   ODEs with parameters
-  </a>
- </li>
- <li class="toctree-l1 current active">
-  <a class="current reference internal" href="#">
-   Dense output
-  </a>
- </li>
-</ul>
-<p class="caption collapsible-parent">
- <span class="caption-text">
-  Advanced tutorials
- </span>
-</p>
-<ul class="nav sidenav_l1">
- <li class="toctree-l1">
-  <a class="reference internal" href="Long%20term%20stability%20of%20Trappist-1.html">
-   Long term stability of Trappist-1
-  </a>
+  <ul class="collapse-ul">
+   <li class="toctree-l2">
+    <a class="reference internal" href="Long%20term%20stability%20of%20Trappist-1.html">
+     Long term stability of Trappist-1
+    </a>
+   </li>
+  </ul>
+  <i class="fas fa-chevron-down">
+  </i>
  </li>
 </ul>
 
@@ -330,7 +341,7 @@ via the <code class="docutils literal notranslate"><span class="pre">tc</span></
 <p>Indeed, the zero-order Taylor coefficients for the state variables are nothing but
 the initial conditions at the beginning of the timestep that was just taken.</p>
 <blockquote>
-<div><p><strong>⚠ IMPORTANT:</strong> This last point is important and needs to be stressed again: the Taylor
+<div><p><strong>NOTE:</strong> This last point is important and needs to be stressed again: the Taylor
 coefficients always refer to the <strong>last</strong> step taken and <strong>not</strong> to the next
 step that the integrator might take.</p>
 </div></blockquote>
@@ -356,6 +367,7 @@ at the specified time coordinate, as computed by the evaluation of the Taylor se
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">matplotlib.pylab</span> <span class="kn">import</span> <span class="n">plt</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s2">&quot;figure.figsize&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">12</span><span class="p">,</span><span class="mi">6</span><span class="p">)</span>
 
 <span class="c1"># Construct a time grid from t=0 to t=1.</span>
 <span class="n">t_grid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
@@ -394,14 +406,14 @@ matches the current state of the system to machine precision.</p>
 <p>Before concluding, we need to highlight a couple of caveats regarding the
 use of dense output.</p>
 <blockquote>
-<div><p><strong>⚠ IMPORTANT:</strong> First, it is the user’s responsibility to ensure that the array of Taylor
+<div><p><strong>NOTE</strong>: first, it is the user’s responsibility to ensure that the array of Taylor
 coefficients contains up-to-date values. In other words, the user needs to remember
 to invoke the <code class="docutils literal notranslate"><span class="pre">step()</span></code> functions with the extra boolean argument <code class="docutils literal notranslate"><span class="pre">write_tc</span> <span class="pre">=</span> <span class="pre">True</span></code>
 before invoking <code class="docutils literal notranslate"><span class="pre">update_d_output()</span></code>.
 Failure to do so will result in <code class="docutils literal notranslate"><span class="pre">update_d_output()</span></code> producing incorrect values.</p>
 </div></blockquote>
 <blockquote>
-<div><p><strong>⚠ IMPORTANT:</strong> Second, the accuracy of dense output is guaranteed to match the integrator’s
+<div><p><strong>NOTE</strong>: second, the accuracy of dense output is guaranteed to match the integrator’s
 accuracy only if the time coordinate falls within the last step taken. Note that heyoka.py will
 <strong>not</strong> prevent the invocation of <code class="docutils literal notranslate"><span class="pre">update_d_output()</span></code> with time coordinates outside the
 guaranteed accuracy range - it is the user’s responsibility to be aware
@@ -442,7 +454,7 @@ error tolerance.</p>
     <div class='prev-next-bottom'>
         
     <a class='left-prev' id="prev-link" href="ODEs%20with%20parameters.html" title="previous page">ODEs with parameters</a>
-    <a class='right-next' id="next-link" href="Long%20term%20stability%20of%20Trappist-1.html" title="next page">Long term stability of Trappist-1</a>
+    <a class='right-next' id="next-link" href="../advanced_tutorials.html" title="next page">Advanced tutorials</a>
 
     </div>
     <footer class="footer mt-5 mt-md-0">

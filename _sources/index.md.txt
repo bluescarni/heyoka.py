@@ -20,32 +20,15 @@ equations (ODEs) via Taylor's method. Notable features include:
   automatic differentiation techniques and aggressive just-in-time
   compilation via [LLVM](https://llvm.org/).
 
-heyoka.py is based on the [heyoka C++ library](https://github.com/bluescarni/heyoka).
+heyoka.py is based on the [heyoka C++ library](https://github.com/bluescarni/heyoka),
+and it is released under the [MPL-2.0](https://www.mozilla.org/en-US/MPL/2.0/FAQ/) license.
 
-## Contents
-
-```{toctree}
-:maxdepth: 1
-:caption: Basic tutorials
-
-tut_taylor_method
-notebooks/The expression system.ipynb
-notebooks/ODEs with parameters.ipynb
-notebooks/Dense output.ipynb
-```
+The authors are Francesco Biscani (Max Planck Institute for Astronomy) and Dario Izzo (European Space Agency).
 
 ```{toctree}
-:maxdepth: 1
-:caption: Advanced tutorials
+:maxdepth: 2
+:caption: Contents
 
-notebooks/Long term stability of Trappist-1
+basic_tutorials
+advanced_tutorials
 ```
-
-## Authors
-
-- Francesco Biscani (Max Planck Institute for Astronomy)
-- Dario Izzo (European Space Agency)
-
-## License
-
-heyoka.py is released under the [MPL-2.0](https://www.mozilla.org/en-US/MPL/2.0/FAQ/) license.
