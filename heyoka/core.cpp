@@ -9,7 +9,6 @@
 #include <heyoka/config.hpp>
 
 #include <algorithm>
-#include <array>
 #include <cstddef>
 #include <cstdint>
 #include <exception>
@@ -330,27 +329,6 @@ PYBIND11_MODULE(core, m)
         },
         "Gconst"_a, "state"_a, "points"_a, "masses"_a, "omega"_a);
 
-    // Elliptic orbit generator.
-    m.def(
-        "random_elliptic_state",
-        [](double mu, const std::array<std::pair<double, double>, 6> &bounds, py::object seed) {
-            const auto retval = seed.is_none() ? hey::random_elliptic_state(mu, bounds)
-                                               : hey::random_elliptic_state(mu, bounds, py::cast<unsigned>(seed));
-
-            return py::array_t<double>(py::array::ShapeContainer{6}, retval.data());
-        },
-        "mu"_a, "bounds"_a, "seed"_a = py::none{});
-
-    // Conversion from cartesian state to orbital elements.
-    m.def(
-        "cartesian_to_oe",
-        [](double mu, const std::array<double, 6> &s) {
-            const auto retval = hey::cartesian_to_oe(mu, s);
-
-            return py::array_t<double>(py::array::ShapeContainer{6}, retval.data());
-        },
-        "mu"_a, "s"_a);
-
     // taylor_outcome enum.
     py::enum_<hey::taylor_outcome>(m, "taylor_outcome")
         .value("success", hey::taylor_outcome::success)
@@ -454,6 +432,38 @@ PYBIND11_MODULE(core, m)
 
                 return ret;
             })
+        .def_property_readonly("last_h", &hey::taylor_adaptive<double>::get_last_h)
+        .def_property_readonly(
+            "d_output",
+            [](const py::object &o) {
+                auto *ta = py::cast<const hey::taylor_adaptive<double> *>(o);
+
+                auto ret = py::array_t<double>(
+                    py::array::ShapeContainer{boost::numeric_cast<py::ssize_t>(ta->get_d_output().size())},
+                    ta->get_d_output().data(), o);
+
+                // Ensure the returned array is read-only.
+                ret.attr("flags").attr("writeable") = false;
+
+                return ret;
+            })
+        .def(
+            "update_d_output",
+            [](py::object &o, double t) {
+                auto *ta = py::cast<hey::taylor_adaptive<double> *>(o);
+
+                ta->update_d_output(t);
+
+                auto ret = py::array_t<double>(
+                    py::array::ShapeContainer{boost::numeric_cast<py::ssize_t>(ta->get_d_output().size())},
+                    ta->get_d_output().data(), o);
+
+                // Ensure the returned array is read-only.
+                ret.attr("flags").attr("writeable") = false;
+
+                return ret;
+            },
+            "t"_a)
 #endif
         .def_property_readonly("order", &hey::taylor_adaptive<double>::get_order)
         .def_property_readonly("dim", &hey::taylor_adaptive<double>::get_dim)
@@ -576,6 +586,38 @@ PYBIND11_MODULE(core, m)
 
                 return ret;
             })
+        .def_property_readonly("last_h", &hey::taylor_adaptive<long double>::get_last_h)
+        .def_property_readonly(
+            "d_output",
+            [](const py::object &o) {
+                auto *ta = py::cast<const hey::taylor_adaptive<long double> *>(o);
+
+                auto ret = py::array_t<long double>(
+                    py::array::ShapeContainer{boost::numeric_cast<py::ssize_t>(ta->get_d_output().size())},
+                    ta->get_d_output().data(), o);
+
+                // Ensure the returned array is read-only.
+                ret.attr("flags").attr("writeable") = false;
+
+                return ret;
+            })
+        .def(
+            "update_d_output",
+            [](py::object &o, long double t) {
+                auto *ta = py::cast<hey::taylor_adaptive<long double> *>(o);
+
+                ta->update_d_output(t);
+
+                auto ret = py::array_t<long double>(
+                    py::array::ShapeContainer{boost::numeric_cast<py::ssize_t>(ta->get_d_output().size())},
+                    ta->get_d_output().data(), o);
+
+                // Ensure the returned array is read-only.
+                ret.attr("flags").attr("writeable") = false;
+
+                return ret;
+            },
+            "t"_a)
 #endif
         .def_property_readonly("order", &hey::taylor_adaptive<long double>::get_order)
         .def_property_readonly("dim", &hey::taylor_adaptive<long double>::get_dim)
@@ -710,6 +752,20 @@ PYBIND11_MODULE(core, m)
 
                  return ret;
             })
+        .def_property_readonly("last_h", &hey::taylor_adaptive<mppp::real128>::get_last_h)
+        .def(
+            "get_d_output",
+            [](const hey::taylor_adaptive<mppp::real128> &ta) {
+                return py::array(py::cast(ta.get_d_output()));
+            })
+        .def(
+            "update_d_output",
+            [](hey::taylor_adaptive<mppp::real128> &ta, mppp::real128 t) {
+                ta.update_d_output(t);
+
+                return py::array(py::cast(ta.get_d_output()));
+            },
+            "t"_a)
 #endif
             .def_property_readonly("order", &hey::taylor_adaptive<mppp::real128>::get_order)
             .def_property_readonly("dim", &hey::taylor_adaptive<mppp::real128>::get_dim)
@@ -875,6 +931,53 @@ PYBIND11_MODULE(core, m)
 
                 return ret;
             })
+        .def_property_readonly(
+            "last_h",
+            [](const py::object &o) {
+                auto *ta = py::cast<const hey::taylor_adaptive_batch<double> *>(o);
+
+                auto ret = py::array_t<double>(
+                    py::array::ShapeContainer{boost::numeric_cast<py::ssize_t>(ta->get_batch_size())},
+                    ta->get_last_h().data(), o);
+
+                // Ensure the returned array is read-only.
+                ret.attr("flags").attr("writeable") = false;
+
+                return ret;
+            })
+        .def_property_readonly(
+            "d_output",
+            [](const py::object &o) {
+                auto *ta = py::cast<const hey::taylor_adaptive_batch<double> *>(o);
+
+                const auto nvars = boost::numeric_cast<py::ssize_t>(ta->get_dim());
+                const auto bs = boost::numeric_cast<py::ssize_t>(ta->get_batch_size());
+
+                auto ret = py::array_t<double>(py::array::ShapeContainer{nvars, bs}, ta->get_d_output().data(), o);
+
+                // Ensure the returned array is read-only.
+                ret.attr("flags").attr("writeable") = false;
+
+                return ret;
+            })
+        .def(
+            "update_d_output",
+            [](py::object &o, const std::vector<double> &t) {
+                auto *ta = py::cast<hey::taylor_adaptive_batch<double> *>(o);
+
+                ta->update_d_output(t);
+
+                const auto nvars = boost::numeric_cast<py::ssize_t>(ta->get_dim());
+                const auto bs = boost::numeric_cast<py::ssize_t>(ta->get_batch_size());
+
+                auto ret = py::array_t<double>(py::array::ShapeContainer{nvars, bs}, ta->get_d_output().data(), o);
+
+                // Ensure the returned array is read-only.
+                ret.attr("flags").attr("writeable") = false;
+
+                return ret;
+            },
+            "t"_a)
 #endif
         .def_property_readonly("order", &hey::taylor_adaptive_batch<double>::get_order)
         .def_property_readonly("dim", &hey::taylor_adaptive_batch<double>::get_dim)

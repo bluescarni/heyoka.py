@@ -31,6 +31,7 @@ heyoka.py is based on the [heyoka C++ library](https://github.com/bluescarni/hey
 tut_taylor_method
 notebooks/The expression system.ipynb
 notebooks/ODEs with parameters.ipynb
+notebooks/Dense output.ipynb
 ```
 
 ```{toctree}
