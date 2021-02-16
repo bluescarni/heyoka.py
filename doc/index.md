@@ -29,5 +29,6 @@ The authors are Francesco Biscani (Max Planck Institute for Astronomy) and Dario
 :maxdepth: 2
 :caption: Contents
 
-tutorial
+basic_tutorials
+advanced_tutorials
 ```
