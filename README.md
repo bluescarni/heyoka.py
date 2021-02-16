@@ -45,7 +45,7 @@ heyoka.py is a Python library for the integration of ordinary differential equat
   on automatic differentiation techniques and aggressive just-in-time
   compilation via [LLVM](https://llvm.org/).
 
-heyoka.py is based on the [heyoka C++ library](https://bluescarni.github.io/heyoka/).
+heyoka.py is based on the [heyoka C++ library](https://github.com/bluescarni/heyoka).
 
 Documentation
 -------------

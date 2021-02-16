@@ -58,19 +58,19 @@ but also to implement all the derivatives necessary to construct the Taylor poly
 This task, if done by hand, can be extremely cumbersome, inefficient and error-prone, especially for large ODE
 systems and/or high-accuracy applications.
 
-The main functionality provided by heyoka is the ability to automatically synthesise a complete Taylor integrator starting
+The main functionality provided by heyoka.py is the ability to automatically synthesise a complete Taylor integrator starting
 only from a
 symbolic representation of :math:`\boldsymbol{F}\left(t, \boldsymbol{x}\left( t \right) \right)` and a set of initial
 conditions. Specifically,
 given a differentiable symbolic expression for :math:`\boldsymbol{F}\left(t, \boldsymbol{x}\left( t \right) \right)`,
-heyoka takes care of:
+heyoka.py takes care of:
 
 * the computation of the high-order derivatives necessary to implement the time stepper :eq:`tts_01`
   via a process of automatic differentiation,
 * the deduction of optimal values for the Taylor order :math:`p` and the (adaptive) step size :math:`h`,
 * the propagation of the state of the system via the evaluation of the Taylor polynomial :eq:`tts_01`.
 
-In order to represent symbolically :math:`\boldsymbol{F}\left(t, \boldsymbol{x}\left( t \right) \right)`, heyoka
+In order to represent symbolically :math:`\boldsymbol{F}\left(t, \boldsymbol{x}\left( t \right) \right)`, heyoka.py
 relies on a small, self-contained symbolic expression system (similar to an extremely trimmed-down,
 bare-bones `computer algebra system <https://en.wikipedia.org/wiki/Computer_algebra_system>`__).
 The expression system is used to decompose :math:`\boldsymbol{F}\left(t, \boldsymbol{x}\left( t \right) \right)`
