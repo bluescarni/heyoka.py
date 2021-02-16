@@ -55,8 +55,8 @@ if [[ ! -z "${CI_PULL_REQUEST}" ]]; then
     exit 0;
 fi
 
-if [[ "${CIRCLE_BRANCH}" != "master" ]]; then
-    echo "Branch is not master, the generated documentation will not be uploaded.";
+if [[ "${CIRCLE_BRANCH}" != "main" ]]; then
+    echo "Branch is not main, the generated documentation will not be uploaded.";
     exit 0;
 fi
 
