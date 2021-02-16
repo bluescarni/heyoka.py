@@ -23,13 +23,11 @@ equations (ODEs) via Taylor's method. Notable features include:
 heyoka.py is based on the [heyoka C++ library](https://github.com/bluescarni/heyoka),
 and it is released under the [MPL-2.0](https://www.mozilla.org/en-US/MPL/2.0/FAQ/) license.
 
-The authors are:
-
-- Francesco Biscani (Max Planck Institute for Astronomy)
-- Dario Izzo (European Space Agency)
+The authors are Francesco Biscani (Max Planck Institute for Astronomy) and Dario Izzo (European Space Agency).
 
 ```{toctree}
 :maxdepth: 2
+:caption: Contents
 
 tutorial
 ```
