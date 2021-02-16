@@ -95,6 +95,11 @@
    ODEs with parameters
   </a>
  </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="notebooks/Dense%20output.html">
+   Dense output
+  </a>
+ </li>
 </ul>
 <p class="caption collapsible-parent">
  <span class="caption-text">
@@ -229,19 +234,19 @@ Taylor’s method requires the user not only to provide <span class="math notran
 but also to implement all the derivatives necessary to construct the Taylor polynomial <a class="reference internal" href="#equation-tts-01">(4)</a>.
 This task, if done by hand, can be extremely cumbersome, inefficient and error-prone, especially for large ODE
 systems and/or high-accuracy applications.</p>
-<p>The main functionality provided by heyoka is the ability to automatically synthesise a complete Taylor integrator starting
+<p>The main functionality provided by heyoka.py is the ability to automatically synthesise a complete Taylor integrator starting
 only from a
 symbolic representation of <span class="math notranslate nohighlight">\(\boldsymbol{F}\left(t, \boldsymbol{x}\left( t \right) \right)\)</span> and a set of initial
 conditions. Specifically,
 given a differentiable symbolic expression for <span class="math notranslate nohighlight">\(\boldsymbol{F}\left(t, \boldsymbol{x}\left( t \right) \right)\)</span>,
-heyoka takes care of:</p>
+heyoka.py takes care of:</p>
 <ul class="simple">
 <li><p>the computation of the high-order derivatives necessary to implement the time stepper <a class="reference internal" href="#equation-tts-01">(4)</a>
 via a process of automatic differentiation,</p></li>
 <li><p>the deduction of optimal values for the Taylor order <span class="math notranslate nohighlight">\(p\)</span> and the (adaptive) step size <span class="math notranslate nohighlight">\(h\)</span>,</p></li>
 <li><p>the propagation of the state of the system via the evaluation of the Taylor polynomial <a class="reference internal" href="#equation-tts-01">(4)</a>.</p></li>
 </ul>
-<p>In order to represent symbolically <span class="math notranslate nohighlight">\(\boldsymbol{F}\left(t, \boldsymbol{x}\left( t \right) \right)\)</span>, heyoka
+<p>In order to represent symbolically <span class="math notranslate nohighlight">\(\boldsymbol{F}\left(t, \boldsymbol{x}\left( t \right) \right)\)</span>, heyoka.py
 relies on a small, self-contained symbolic expression system (similar to an extremely trimmed-down,
 bare-bones <a class="reference external" href="https://en.wikipedia.org/wiki/Computer_algebra_system">computer algebra system</a>).
 The expression system is used to decompose <span class="math notranslate nohighlight">\(\boldsymbol{F}\left(t, \boldsymbol{x}\left( t \right) \right)\)</span>

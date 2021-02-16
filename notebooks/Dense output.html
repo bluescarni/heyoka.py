@@ -1,0 +1,470 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dense output &#8212; heyoka.py 0.4.0 documentation</title>
+    
+  <link rel="stylesheet" href="../_static/css/index.f658d18f9b420779cfdf24aa0a7e2d77.css">
+
+    
+  <link rel="stylesheet"
+    href="../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    
+      
+  <link rel="stylesheet"
+    href="../_static/vendor/open-sans_all/1.44.1/index.css">
+  <link rel="stylesheet"
+    href="../_static/vendor/lato_latin-ext/1.44.1/index.css">
+
+    
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/sphinx-book-theme.40e2e510f6b7d1648584402491bb10fe.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.css" />
+    
+  <link rel="preload" as="script" href="../_static/js/index.d3f166471bb80abb5163.js">
+
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/togglebutton.js"></script>
+    <script >var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    <script src="../_static/sphinx-book-theme.d31b09fe5c1d09cb49b26a786de4a05d.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["\\(", "\\)"]], "displayMath": [["\\[", "\\]"]], "processRefs": false, "processEnvironments": false}})</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Long term stability of Trappist-1" href="Long%20term%20stability%20of%20Trappist-1.html" />
+    <link rel="prev" title="ODEs with parameters" href="ODEs%20with%20parameters.html" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="en" />
+
+
+
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+<div class="col-12 col-md-3 bd-sidebar site-navigation show" id="site-navigation">
+    
+        <div class="navbar-brand-box">
+<a class="navbar-brand text-wrap" href="../index.html">
+  
+  <img src="../_static/white_logo.png" class="logo" alt="logo">
+  
+  
+  <h1 class="site-logo" id="site-title">heyoka.py 0.4.0 documentation</h1>
+  
+</a>
+</div><form class="bd-search d-flex align-items-center" action="../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form>
+<nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+    <p class="caption collapsible-parent">
+ <span class="caption-text">
+  Basic tutorials
+ </span>
+</p>
+<ul class="current nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../tut_taylor_method.html">
+   Taylor’s method
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="The%20expression%20system.html">
+   The expression system
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ODEs%20with%20parameters.html">
+   ODEs with parameters
+  </a>
+ </li>
+ <li class="toctree-l1 current active">
+  <a class="current reference internal" href="#">
+   Dense output
+  </a>
+ </li>
+</ul>
+<p class="caption collapsible-parent">
+ <span class="caption-text">
+  Advanced tutorials
+ </span>
+</p>
+<ul class="nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="Long%20term%20stability%20of%20Trappist-1.html">
+   Long term stability of Trappist-1
+  </a>
+ </li>
+</ul>
+
+</nav> <!-- To handle the deprecated key -->
+
+<div class="navbar_extra_footer">
+  Theme by the <a href="https://ebp.jupyterbook.org">Executable Book Project</a>
+</div>
+
+</div>
+
+
+          
+
+
+          
+<main class="col py-md-3 pl-md-4 bd-content overflow-auto" role="main">
+    
+    <div class="row topbar fixed-top container-xl">
+    <div class="col-12 col-md-3 bd-topbar-whitespace site-navigation show">
+    </div>
+    <div class="col pl-2 topbar-main">
+        
+        <button id="navbar-toggler" class="navbar-toggler ml-0" type="button" data-toggle="collapse"
+            data-toggle="tooltip" data-placement="bottom" data-target=".site-navigation" aria-controls="navbar-menu"
+            aria-expanded="true" aria-label="Toggle navigation" aria-controls="site-navigation"
+            title="Toggle navigation" data-toggle="tooltip" data-placement="left">
+            <i class="fas fa-bars"></i>
+            <i class="fas fa-arrow-left"></i>
+            <i class="fas fa-arrow-up"></i>
+        </button>
+        
+        
+<div class="dropdown-buttons-trigger">
+    <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn" aria-label="Download this page"><i
+            class="fas fa-download"></i></button>
+
+    <div class="dropdown-buttons">
+        <!-- ipynb file if we had a myst markdown file -->
+        
+        <!-- Download raw file -->
+        <a class="dropdown-buttons" href="../_sources/notebooks/Dense output.ipynb.txt"><button type="button"
+                class="btn btn-secondary topbarbtn" title="Download source file" data-toggle="tooltip"
+                data-placement="left">.ipynb</button></a>
+        <!-- Download PDF via print -->
+        <button type="button" id="download-print" class="btn btn-secondary topbarbtn" title="Print to PDF"
+            onClick="window.print()" data-toggle="tooltip" data-placement="left">.pdf</button>
+    </div>
+</div>
+
+        <!-- Source interaction buttons -->
+
+<div class="dropdown-buttons-trigger">
+    <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn"
+        aria-label="Connect with source repository"><i class="fab fa-github"></i></button>
+    <div class="dropdown-buttons sourcebuttons">
+        <a class="repository-button"
+            href="https://github.com/bluescarni/heyoka.py"><button type="button" class="btn btn-secondary topbarbtn"
+                data-toggle="tooltip" data-placement="left" title="Source repository"><i
+                    class="fab fa-github"></i>repository</button></a>
+        <a class="issues-button"
+            href="https://github.com/bluescarni/heyoka.py/issues/new?title=Issue%20on%20page%20%2Fnotebooks/Dense output.html&body=Your%20issue%20content%20here."><button
+                type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip" data-placement="left"
+                title="Open an issue"><i class="fas fa-lightbulb"></i>open issue</button></a>
+        
+    </div>
+</div>
+
+
+        <!-- Full screen (wrap in <a> to have style consistency -->
+        <a class="full-screen-button"><button type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip"
+                data-placement="bottom" onclick="toggleFullScreen()" aria-label="Fullscreen mode"
+                title="Fullscreen mode"><i
+                    class="fas fa-expand"></i></button></a>
+
+        <!-- Launch buttons -->
+
+<div class="dropdown-buttons-trigger">
+    <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn"
+        aria-label="Launch interactive content"><i class="fas fa-rocket"></i></button>
+    <div class="dropdown-buttons">
+        
+        <a class="binder-button" href="https://mybinder.org/v2/gh/bluescarni/heyoka.py/main?urlpath=tree/doc/notebooks/Dense output.ipynb"><button type="button"
+                class="btn btn-secondary topbarbtn" title="Launch Binder" data-toggle="tooltip"
+                data-placement="left"><img class="binder-button-logo"
+                    src="../_static/images/logo_binder.svg"
+                    alt="Interact on binder">Binder</button></a>
+        
+        
+        
+        
+    </div>
+</div>
+
+    </div>
+
+    <!-- Table of contents -->
+    <div class="d-none d-md-block col-md-2 bd-toc show">
+        
+    </div>
+</div>
+    <div id="main-content" class="row">
+        <div class="col-12 col-md-9 pl-md-3 pr-md-0">
+        
+              <div>
+                
+  <div class="section" id="dense-output">
+<h1>Dense output<a class="headerlink" href="#dense-output" title="Permalink to this headline">¶</a></h1>
+<p>One of the peculiar features of Taylor’s method is that it directly provides,
+via Taylor series, <em>dense</em> (or <em>continuous</em>) output.
+That is, the Taylor series built by the integrator at each timestep can be used
+to compute the solution of the ODE system at <em>any time</em> within the timestep
+(and not only at the endpoint) via polynomial evaluation.</p>
+<p>Because the construction of the Taylor series is part of the timestepping algorithm,
+support for dense output comes at essentially no extra
+cost. Additionally, because the dense output is computed via the
+Taylor series of the solution of the ODE system, its accuracy
+is guaranteed to respect the error tolerance set in the integrator.</p>
+<p>In order to illustrate how to use dense output in heyoka.py,
+we will keep things simple and consider a simple harmonic oscillator:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+   \begin{cases}
+   x^\prime = v \\
+   v^\prime = -x
+   \end{cases},
+\end{split}\]</div>
+<p>with initial conditions</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+   \begin{cases}
+   x\left( 0 \right) = 0 \\
+   v\left( 0 \right) = 1
+   \end{cases}.
+\end{split}\]</div>
+<p>The analytical solution for this simple ODE system is, of course,</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+   \begin{cases}
+   x\left( t \right) = \sin\left(t\right) \\
+   v\left( t \right) = \cos\left(t\right)
+   \end{cases}.
+\end{split}\]</div>
+<p>Let’s start by setting up the integrator:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">heyoka</span> <span class="k">as</span> <span class="nn">hy</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="n">x</span><span class="p">,</span> <span class="n">v</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">make_vars</span><span class="p">(</span><span class="s2">&quot;x&quot;</span><span class="p">,</span> <span class="s2">&quot;v&quot;</span><span class="p">)</span>
+
+<span class="n">ta</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">taylor_adaptive</span><span class="p">([(</span><span class="n">x</span><span class="p">,</span> <span class="n">v</span><span class="p">),</span>
+                         <span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="o">-</span><span class="n">x</span><span class="p">)],</span>
+                        <span class="n">state</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Enabling dense output in heyoka.py is a two-step process.</p>
+<p>The first step is to invoke one of the <code class="docutils literal notranslate"><span class="pre">step()</span></code> functions
+passing an extra boolean parameter set to <code class="docutils literal notranslate"><span class="pre">True</span></code>:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ta</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><span class="n">write_tc</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(&lt;taylor_outcome.success: 0&gt;, 1.03425164317259)
+</pre></div>
+</div>
+</div>
+</div>
+<p>The extra <code class="docutils literal notranslate"><span class="pre">write_tc</span> <span class="pre">=</span> <span class="pre">True</span></code> function argument instructs the integrator
+to record into an internal array the list of Taylor series
+coefficients that were generated by the timestepping algorithm.
+We can fetch the list of Taylor coefficients
+via the <code class="docutils literal notranslate"><span class="pre">tc</span></code> read-only property:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ta</span><span class="o">.</span><span class="n">tc</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([[ 0.00000000e+00,  1.00000000e+00, -0.00000000e+00,
+        -1.66666667e-01,  0.00000000e+00,  8.33333333e-03,
+        -0.00000000e+00, -1.98412698e-04,  0.00000000e+00,
+         2.75573192e-06, -0.00000000e+00, -2.50521084e-08,
+         0.00000000e+00,  1.60590438e-10, -0.00000000e+00,
+        -7.64716373e-13,  0.00000000e+00,  2.81145725e-15,
+        -0.00000000e+00, -8.22063525e-18,  0.00000000e+00],
+       [ 1.00000000e+00, -0.00000000e+00, -5.00000000e-01,
+         0.00000000e+00,  4.16666667e-02, -0.00000000e+00,
+        -1.38888889e-03,  0.00000000e+00,  2.48015873e-05,
+        -0.00000000e+00, -2.75573192e-07,  0.00000000e+00,
+         2.08767570e-09, -0.00000000e+00, -1.14707456e-11,
+         0.00000000e+00,  4.77947733e-14, -0.00000000e+00,
+        -1.56192070e-16,  0.00000000e+00,  4.11031762e-19]])
+</pre></div>
+</div>
+</div>
+</div>
+<p>The Taylor coefficients are stored in a 2D array, where each row refers to a different state variable and the number of columns is the Taylor order of the integrator plus one. Thus, the zero-order coefficients for the <span class="math notranslate nohighlight">\(x\)</span> and <span class="math notranslate nohighlight">\(v\)</span> variables are, respectively:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ta</span><span class="o">.</span><span class="n">tc</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([0., 1.])
+</pre></div>
+</div>
+</div>
+</div>
+<p>Indeed, the zero-order Taylor coefficients for the state variables are nothing but
+the initial conditions at the beginning of the timestep that was just taken.</p>
+<blockquote>
+<div><p><strong>⚠ IMPORTANT:</strong> This last point is important and needs to be stressed again: the Taylor
+coefficients always refer to the <strong>last</strong> step taken and <strong>not</strong> to the next
+step that the integrator might take.</p>
+</div></blockquote>
+<p>We are now ready to ask the integrator to compute the value of the solution at some
+arbitrary time. Let’s pick <span class="math notranslate nohighlight">\(t = 0.5\)</span>,
+which is about halfway through the timestep that was just taken:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ta</span><span class="o">.</span><span class="n">update_d_output</span><span class="p">(</span><span class="n">t</span> <span class="o">=</span> <span class="mf">0.5</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([0.47942554, 0.87758256])
+</pre></div>
+</div>
+</div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">update_d_output()</span></code> method takes in input an <em>absolute</em> time coordinate
+and returns a reference to an internal array that will contain the state of the system
+at the specified time coordinate, as computed by the evaluation of the Taylor series.</p>
+<p>Let’s now compare the dense output for the <span class="math notranslate nohighlight">\(x\)</span> variable to the exact analytical solution for <span class="math notranslate nohighlight">\(t \in \left[ 0, 1 \right]\)</span>:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">matplotlib.pylab</span> <span class="kn">import</span> <span class="n">plt</span>
+
+<span class="c1"># Construct a time grid from t=0 to t=1.</span>
+<span class="n">t_grid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+
+<span class="c1"># Compute the dense output for the x variable</span>
+<span class="c1"># over the time grid.</span>
+<span class="n">x_d_out</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">ta</span><span class="o">.</span><span class="n">update_d_output</span><span class="p">(</span><span class="n">t</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">t_grid</span><span class="p">])</span>
+
+<span class="c1"># Compare it to the exact solution.</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">t_grid</span><span class="p">,</span> <span class="p">(</span><span class="n">x_d_out</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">t_grid</span><span class="p">)))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;Time&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;Absolute error&quot;</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/Dense output_12_0.png" src="../_images/Dense output_12_0.png" />
+</div>
+</div>
+<p>As you can see, the dense output matches the exact solution to machine precision.</p>
+<p>Let’s now ask for the dense output at the very end of the timestep that was just taken (i.e., at the current time coordinate), and let’s compare it to the current state vector:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ta</span><span class="o">.</span><span class="n">update_d_output</span><span class="p">(</span><span class="n">ta</span><span class="o">.</span><span class="n">time</span><span class="p">)</span> <span class="o">-</span> <span class="n">ta</span><span class="o">.</span><span class="n">state</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([0., 0.])
+</pre></div>
+</div>
+</div>
+</div>
+<p>That is, as expected, the dense output at the end of the previous timestep
+matches the current state of the system to machine precision.</p>
+<p>Before concluding, we need to highlight a couple of caveats regarding the
+use of dense output.</p>
+<blockquote>
+<div><p><strong>⚠ IMPORTANT:</strong> First, it is the user’s responsibility to ensure that the array of Taylor
+coefficients contains up-to-date values. In other words, the user needs to remember
+to invoke the <code class="docutils literal notranslate"><span class="pre">step()</span></code> functions with the extra boolean argument <code class="docutils literal notranslate"><span class="pre">write_tc</span> <span class="pre">=</span> <span class="pre">True</span></code>
+before invoking <code class="docutils literal notranslate"><span class="pre">update_d_output()</span></code>.
+Failure to do so will result in <code class="docutils literal notranslate"><span class="pre">update_d_output()</span></code> producing incorrect values.</p>
+</div></blockquote>
+<blockquote>
+<div><p><strong>⚠ IMPORTANT:</strong> Second, the accuracy of dense output is guaranteed to match the integrator’s
+accuracy only if the time coordinate falls within the last step taken. Note that heyoka.py will
+<strong>not</strong> prevent the invocation of <code class="docutils literal notranslate"><span class="pre">update_d_output()</span></code> with time coordinates outside the
+guaranteed accuracy range - it is the user’s responsibility to be aware
+that doing so will produce results whose accuracy does not match the integrator’s
+error tolerance.</p>
+</div></blockquote>
+<p>The second point can be better appreciated if we try to compute the dense output past the end of the last timestep taken:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Construct a time grid from t=1 to t=3.</span>
+<span class="n">t_grid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+
+<span class="c1"># Compute the dense output for the x variable</span>
+<span class="c1"># over the time grid.</span>
+<span class="n">x_d_out</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">ta</span><span class="o">.</span><span class="n">update_d_output</span><span class="p">(</span><span class="n">t</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">t_grid</span><span class="p">])</span>
+
+<span class="c1"># Compare it to the exact solution.</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">semilogy</span><span class="p">(</span><span class="n">t_grid</span><span class="p">,</span> <span class="nb">abs</span><span class="p">((</span><span class="n">x_d_out</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">t_grid</span><span class="p">))</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">t_grid</span><span class="p">)))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;Time&quot;</span><span class="p">);</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;Relative error&quot;</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/Dense output_16_0.png" src="../_images/Dense output_16_0.png" />
+</div>
+</div>
+<p>As you can see, past <span class="math notranslate nohighlight">\(t \sim 1\)</span> the dense output is still accurate for another <span class="math notranslate nohighlight">\(\sim 0.5\)</span> time units, but eventually the error with respect to the exact solution begins to increase steadily.</p>
+</div>
+
+
+              </div>
+              
+        </div>
+    </div>
+    
+    
+    <div class='prev-next-bottom'>
+        
+    <a class='left-prev' id="prev-link" href="ODEs%20with%20parameters.html" title="previous page">ODEs with parameters</a>
+    <a class='right-next' id="next-link" href="Long%20term%20stability%20of%20Trappist-1.html" title="next page">Long term stability of Trappist-1</a>
+
+    </div>
+    <footer class="footer mt-5 mt-md-0">
+    <div class="container">
+      <p>
+        
+          By Francesco Biscani and Dario Izzo<br/>
+        
+            &copy; Copyright 2020, 2021, Francesco Biscani and Dario Izzo.<br/>
+      </p>
+    </div>
+  </footer>
+</main>
+
+
+      </div>
+    </div>
+
+    
+  <script src="../_static/js/index.d3f166471bb80abb5163.js"></script>
+
+
+    
+  </body>
+</html>
