@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>The expression system &#8212; heyoka.py 0.4.0 documentation</title>
+    <title>Non-autonomous systems &#8212; heyoka.py 0.4.0 documentation</title>
     
   <link rel="stylesheet" href="../_static/css/index.f658d18f9b420779cfdf24aa0a7e2d77.css">
 
@@ -43,8 +43,8 @@
     <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["\\(", "\\)"]], "displayMath": [["\\[", "\\]"]], "processRefs": false, "processEnvironments": false}})</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="The adaptive integrator" href="The%20adaptive%20integrator.html" />
-    <link rel="prev" title="Taylor’s method" href="../tut_taylor_method.html" />
+    <link rel="next" title="Dense output" href="Dense%20output.html" />
+    <link rel="prev" title="ODEs with parameters" href="ODEs%20with%20parameters.html" />
 
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="docsearch:language" content="en" />
@@ -95,8 +95,8 @@
      Taylor’s method
     </a>
    </li>
-   <li class="toctree-l2 current active">
-    <a class="current reference internal" href="#">
+   <li class="toctree-l2">
+    <a class="reference internal" href="The%20expression%20system.html">
      The expression system
     </a>
    </li>
@@ -115,8 +115,8 @@
      ODEs with parameters
     </a>
    </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="Non-autonomous%20systems.html">
+   <li class="toctree-l2 current active">
+    <a class="current reference internal" href="#">
      Non-autonomous systems
     </a>
    </li>
@@ -188,7 +188,7 @@
         <!-- ipynb file if we had a myst markdown file -->
         
         <!-- Download raw file -->
-        <a class="dropdown-buttons" href="../_sources/notebooks/The expression system.ipynb.txt"><button type="button"
+        <a class="dropdown-buttons" href="../_sources/notebooks/Non-autonomous systems.ipynb.txt"><button type="button"
                 class="btn btn-secondary topbarbtn" title="Download source file" data-toggle="tooltip"
                 data-placement="left">.ipynb</button></a>
         <!-- Download PDF via print -->
@@ -208,7 +208,7 @@
                 data-toggle="tooltip" data-placement="left" title="Source repository"><i
                     class="fab fa-github"></i>repository</button></a>
         <a class="issues-button"
-            href="https://github.com/bluescarni/heyoka.py/issues/new?title=Issue%20on%20page%20%2Fnotebooks/The expression system.html&body=Your%20issue%20content%20here."><button
+            href="https://github.com/bluescarni/heyoka.py/issues/new?title=Issue%20on%20page%20%2Fnotebooks/Non-autonomous systems.html&body=Your%20issue%20content%20here."><button
                 type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip" data-placement="left"
                 title="Open an issue"><i class="fas fa-lightbulb"></i>open issue</button></a>
         
@@ -229,7 +229,7 @@
         aria-label="Launch interactive content"><i class="fas fa-rocket"></i></button>
     <div class="dropdown-buttons">
         
-        <a class="binder-button" href="https://mybinder.org/v2/gh/bluescarni/heyoka.py/main?urlpath=tree/doc/notebooks/The expression system.ipynb"><button type="button"
+        <a class="binder-button" href="https://mybinder.org/v2/gh/bluescarni/heyoka.py/main?urlpath=tree/doc/notebooks/Non-autonomous systems.ipynb"><button type="button"
                 class="btn btn-secondary topbarbtn" title="Launch Binder" data-toggle="tooltip"
                 data-placement="left"><img class="binder-button-logo"
                     src="../_static/images/logo_binder.svg"
@@ -253,107 +253,105 @@
         
               <div>
                 
-  <div class="section" id="the-expression-system">
-<h1>The expression system<a class="headerlink" href="#the-expression-system" title="Permalink to this headline">¶</a></h1>
-<p>As we saw in the previous section, heyoka.py
-needs to be able to represent the right-hand side of an ODE system in symbolic
-form in order to be able to compute its high-order derivatives via automatic
-differentiation. heyoka.py represents generic mathematical expressions
-via a simple <a class="reference external" href="https://en.wikipedia.org/wiki/Abstract_syntax_tree">abstract syntax tree (AST)</a>
-in which the internal nodes are either mathematical operators or n-ary functions,
-and the leaf nodes can be:</p>
-<ul class="simple">
-<li><p>symbolic variables,</p></li>
-<li><p>numerical constants,</p></li>
-<li><p>runtime parameters.</p></li>
-</ul>
-<p>Constants and parameters are mathematically equivalent, the only difference being
-that the value of a constant is determined when the expression is created, whereas
-the value of a parameter is loaded from a user-supplied data array at a later stage.</p>
-<p>As a simple example, here is a graphical representation of the
-AST for the expression <span class="math notranslate nohighlight">\(\left( 1 - x^2\right)y-x\)</span>:</p>
-<img src="../_static/ast.png" width="350">
-<p>The construction of the AST of an expression in heyoka.py can be accomplished via natural
-mathematical notation:</p>
+  <div class="section" id="non-autonomous-systems">
+<h1>Non-autonomous systems<a class="headerlink" href="#non-autonomous-systems" title="Permalink to this headline">¶</a></h1>
+<p>All the ODE systems we have used in the examples thus far belong to the class of autonomous systems.
+That is, the time variable <span class="math notranslate nohighlight">\(t\)</span> never appears explicitly in the expressions of the ODEs. In this
+section, we will see how non-autonomous systems can be defined and integrated in heyoka.py.</p>
+<p>The dynamical system we will be focusing on is, again, a pendulum, but this time we will
+spice things up a little by introducing a velocity-dependent damping effect and a time-dependent
+external forcing. These additional effects create a rich and complex dynamical picture
+which is highly sensitive to the initial conditions. See <a class="reference external" href="http://pi.math.cornell.edu/~hubbard/pendulum.pdf">here</a>
+for a detailed analysis of this dynamical system.</p>
+<p>The ODE system of the forced damped pendulum reads:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+   \begin{cases}
+   x^\prime = v \\
+   v^\prime = \cos t - 0.1v - \sin(x)
+   \end{cases}.
+\end{split}\]</div>
+<p>The <span class="math notranslate nohighlight">\(\cos t\)</span> term represents a periodic time-dependent forcing, while <span class="math notranslate nohighlight">\(-0.1v\)</span>
+is a linear drag representing the effect of air on the pendulum’s bob. We take as initial conditions</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+   \begin{cases}
+   x\left( 0 \right) = 0 \\
+   v\left( 0 \right) = 1.85
+   \end{cases}.
+\end{split}\]</div>
+<p>That is, the pendulum is initially in the vertical position with a positive velocity.</p>
+<p>The time variable is represented in heyoka.py’s expression system by a special placeholder
+called, in a dizzying display of inventiveness, <code class="docutils literal notranslate"><span class="pre">time</span></code>. Because the name <code class="docutils literal notranslate"><span class="pre">time</span></code> is fairly
+common, it is generally a good idea
+to prepend the module name <code class="docutils literal notranslate"><span class="pre">heyoka</span></code> (or its usual abbreviation, <code class="docutils literal notranslate"><span class="pre">hy</span></code>) when using
+the <code class="docutils literal notranslate"><span class="pre">time</span></code> expression, in order to avoid ambiguities.
+With that in mind, let’s look at how the forced damped pendulum is defined in heyoka.py:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">heyoka</span> <span class="k">as</span> <span class="nn">hy</span>
 
-<span class="c1"># Define the symbolic variables x and y.</span>
-<span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">make_vars</span><span class="p">(</span><span class="s2">&quot;x&quot;</span><span class="p">,</span> <span class="s2">&quot;y&quot;</span><span class="p">)</span>
+<span class="c1"># Create the symbolic variables x and v.</span>
+<span class="n">x</span><span class="p">,</span> <span class="n">v</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">make_vars</span><span class="p">(</span><span class="s2">&quot;x&quot;</span><span class="p">,</span> <span class="s2">&quot;y&quot;</span><span class="p">)</span>
 
-<span class="c1"># Another way of creating a symbolic variable.</span>
-<span class="n">z</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">expression</span><span class="p">(</span><span class="s2">&quot;z&quot;</span><span class="p">)</span>
+<span class="c1"># Create the integrator object.</span>
+<span class="n">ta</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">taylor_adaptive</span><span class="p">(</span>
+                        <span class="c1"># Definition of the ODE system:</span>
+                        <span class="c1"># x&#39; = v</span>
+                        <span class="c1"># v&#39; = cos(t) - 0.1*v - sin(x)</span>
+                        <span class="n">sys</span> <span class="o">=</span> <span class="p">[(</span><span class="n">x</span><span class="p">,</span> <span class="n">v</span><span class="p">),</span>
+                         <span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">hy</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">hy</span><span class="o">.</span><span class="n">time</span><span class="p">)</span> <span class="o">-</span> <span class="o">.</span><span class="mi">1</span> <span class="o">*</span> <span class="n">v</span> <span class="o">-</span> <span class="n">hy</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">x</span><span class="p">))],</span>
+                        <span class="c1"># Initial conditions for x and v.</span>
+                        <span class="n">state</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.</span><span class="p">,</span> <span class="mf">1.85</span><span class="p">],</span>
+                        <span class="c1"># Explicitly specify the</span>
+                        <span class="c1"># initial value for the time</span>
+                        <span class="c1"># variable.</span>
+                        <span class="n">time</span> <span class="o">=</span> <span class="mf">0.</span>
+                        <span class="p">)</span>
 
-<span class="c1"># Create and print an expression.</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;The euclidean distance is: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">hy</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">x</span><span class="o">*</span><span class="n">x</span> <span class="o">+</span> <span class="n">y</span><span class="o">*</span><span class="n">y</span> <span class="o">+</span> <span class="n">z</span><span class="o">*</span><span class="n">z</span><span class="p">)))</span>
+<span class="n">ta</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>The euclidean distance is: sqrt((((x * x) + (y * y)) + (z * z)))
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Taylor order: 20
+Dimension   : 2
+Time        : 0.0000000000000000
+State       : [0.0000000000000000, 1.8500000000000001]
 </pre></div>
 </div>
 </div>
 </div>
-<p>Numerical constants can be created using any of the floating-point types supported by heyoka.py:</p>
+<p>Note that, for the sake of completeness, we passed an explicit initial value for the time
+variable via the keyword argument <code class="docutils literal notranslate"><span class="pre">time</span></code>. In this specific case, this is superfluous,
+as the default initial value for the time variable is already zero.</p>
+<p>We can now integrate the system for a few time units, checking how the value of <span class="math notranslate nohighlight">\(x\)</span>
+varies in time:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Double-precision 1.1: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">hy</span><span class="o">.</span><span class="n">expression</span><span class="p">(</span><span class="mf">1.1</span><span class="p">)))</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">matplotlib.pylab</span> <span class="kn">import</span> <span class="n">plt</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s2">&quot;figure.figsize&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">12</span><span class="p">,</span><span class="mi">6</span><span class="p">)</span>
 
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Extended-precision 1.1: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">hy</span><span class="o">.</span><span class="n">expression</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">longdouble</span><span class="p">(</span><span class="s2">&quot;1.1&quot;</span><span class="p">))))</span>
+<span class="c1"># Construct a time grid from t=0 to t=200.</span>
+<span class="n">t_grid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">200</span><span class="p">,</span> <span class="mi">1000</span><span class="p">)</span>
 
-<span class="kn">from</span> <span class="nn">mpmath</span> <span class="kn">import</span> <span class="n">mpf</span><span class="p">,</span> <span class="n">mp</span>
-<span class="n">mp</span><span class="o">.</span><span class="n">prec</span> <span class="o">=</span> <span class="mi">113</span>
+<span class="c1"># Propagate over the time grid.</span>
+<span class="n">x_hist</span> <span class="o">=</span> <span class="p">[(</span><span class="n">ta</span><span class="o">.</span><span class="n">propagate_until</span><span class="p">(</span><span class="n">_</span><span class="p">),</span> <span class="n">ta</span><span class="o">.</span><span class="n">state</span><span class="p">[</span><span class="mi">0</span><span class="p">])[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">t_grid</span><span class="p">]</span>
 
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Quadruple-precision 1.1: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">hy</span><span class="o">.</span><span class="n">expression</span><span class="p">(</span><span class="n">mpf</span><span class="p">(</span><span class="s2">&quot;1.1&quot;</span><span class="p">))))</span>
+<span class="c1"># Display the time evolution for the x variable.</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">t_grid</span><span class="p">,</span> <span class="n">x_hist</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;Time&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;x&quot;</span><span class="p">);</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Double-precision 1.1: 1.1000000000000001
-Extended-precision 1.1: 1.10000000000000000002
-Quadruple-precision 1.1: 1.10000000000000000000000000000000008
-</pre></div>
+<img alt="../_images/Non-autonomous systems_3_0.png" src="../_images/Non-autonomous systems_3_0.png" />
 </div>
 </div>
-</div>
-<p>Note that support for extended-precision floating-point types varies depending on the software/hardware platform. Specifically:</p>
-<ul class="simple">
-<li><p>extended-precision support requires an x86 processor and a compiler toolchain that makes available the 80-bit floating-point type as the C++ <code class="docutils literal notranslate"><span class="pre">long</span> <span class="pre">double</span></code> type;</p></li>
-<li><p>quadruple-precision support requires the availability of the non-standard <code class="docutils literal notranslate"><span class="pre">__float128</span></code> type, which is provided by GCC and clang on some 64-bit platforms. Additionally, <a class="reference external" href="https://mpmath.org/">mpmath</a> must be installed and the working precision must be set exactly to 113 bits (as shown above).</p></li>
-</ul>
-<p>In addition to the standard mathematical operators, heyoka.py’s expression system
-also supports the following elementary functions (with more to come in the near future):</p>
-<ul class="simple">
-<li><p>square root,</p></li>
-<li><p>exponentiation,</p></li>
-<li><p>the basic trigonometric and hyperbolic functions, and their inverse counterparts,</p></li>
-<li><p>the natural logarithm and exponential,</p></li>
-<li><p>the standard logistic function (sigmoid),</p></li>
-<li><p>the error function.</p></li>
-</ul>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># An expression involving a few elementary functions.</span>
-<span class="n">hy</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">x</span> <span class="o">+</span> <span class="mf">2.</span> <span class="o">*</span> <span class="n">y</span><span class="p">)</span> <span class="o">*</span> <span class="n">hy</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">z</span><span class="p">)</span> <span class="o">-</span> <span class="n">hy</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>((cos((x + (2.0000000000000000 * y))) * sqrt(z)) - exp(x))
-</pre></div>
-</div>
-</div>
-</div>
-<p>It must be emphasised that heyoka.py’s expression system is not a full-fledged
-computer algebra system. In particular, its simplification capabilities
-are very limited. Because heyoka.py’s performance is sensitive
-to the complexity of the ODEs, in order to achieve optimal performance
-it is important to ensure that
-the mathematical expressions supplied to heyoka.py are simplified as
-much as possible.</p>
+<p>After an initial excursion to higher values for <span class="math notranslate nohighlight">\(x\)</span>, the system seems to settle into a stable motion. Note that, because this system can exhibit chaotic behaviour, changing
+the initial conditions might lead to a qualitatively-different long-term behaviour.</p>
 </div>
 
 
@@ -365,8 +363,8 @@ much as possible.</p>
     
     <div class='prev-next-bottom'>
         
-    <a class='left-prev' id="prev-link" href="../tut_taylor_method.html" title="previous page">Taylor’s method</a>
-    <a class='right-next' id="next-link" href="The%20adaptive%20integrator.html" title="next page">The adaptive integrator</a>
+    <a class='left-prev' id="prev-link" href="ODEs%20with%20parameters.html" title="previous page">ODEs with parameters</a>
+    <a class='right-next' id="next-link" href="Dense%20output.html" title="next page">Dense output</a>
 
     </div>
     <footer class="footer mt-5 mt-md-0">
