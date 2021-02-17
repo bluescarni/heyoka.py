@@ -234,7 +234,7 @@ PYBIND11_MODULE(core, m)
     // N-body builders.
     m.def(
         "make_nbody_sys",
-        [](std::uint32_t n, py::object Gconst, py::iterable masses) {
+        [](std::uint32_t n, py::object Gconst, py::object masses) {
             const auto G = heypy::to_number(Gconst);
 
             std::vector<hey::number> m_vec;
@@ -242,7 +242,7 @@ PYBIND11_MODULE(core, m)
                 // If masses are not provided, all masses are 1.
                 m_vec.resize(static_cast<decltype(m_vec.size())>(n), hey::number{1.});
             } else {
-                for (auto ms : masses) {
+                for (auto ms : py::cast<py::iterable>(masses)) {
                     m_vec.push_back(heypy::to_number(ms));
                 }
             }

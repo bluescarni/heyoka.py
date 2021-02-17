@@ -19,5 +19,6 @@ Basic tutorials
   tut_taylor_method
   notebooks/The expression system.ipynb
   notebooks/The adaptive integrator.ipynb
+  notebooks/Customising the adaptive integrator.ipynb
   notebooks/ODEs with parameters.ipynb
   notebooks/Dense output.ipynb
