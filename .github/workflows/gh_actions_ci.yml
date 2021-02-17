@@ -44,9 +44,11 @@ jobs:
           cd c:\
           python -c "from heyoka import test; test.run_test_suite()"
 
-name: Binder
-on: [push]
-
+name: Binder cache
+on:
+  push:
+    branches:
+      - main
 jobs:
   Create-MyBinderOrg-Cache:
     runs-on: ubuntu-latest
