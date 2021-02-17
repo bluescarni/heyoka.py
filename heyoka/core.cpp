@@ -334,8 +334,7 @@ PYBIND11_MODULE(core, m)
         .value("success", hey::taylor_outcome::success)
         .value("step_limit", hey::taylor_outcome::step_limit)
         .value("time_limit", hey::taylor_outcome::time_limit)
-        .value("err_nf_state", hey::taylor_outcome::err_nf_state)
-        .export_values();
+        .value("err_nf_state", hey::taylor_outcome::err_nf_state);
 
     // Adaptive taylor integrators.
     auto tad_ctor_impl = [](auto sys, std::vector<double> state, double time, std::vector<double> pars, double tol,
