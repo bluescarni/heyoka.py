@@ -1,0 +1,426 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Installation &#8212; heyoka.py 0.4.0 documentation</title>
+    
+  <link rel="stylesheet" href="_static/css/index.f658d18f9b420779cfdf24aa0a7e2d77.css">
+
+    
+  <link rel="stylesheet"
+    href="_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    
+      
+  <link rel="stylesheet"
+    href="_static/vendor/open-sans_all/1.44.1/index.css">
+  <link rel="stylesheet"
+    href="_static/vendor/lato_latin-ext/1.44.1/index.css">
+
+    
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/sphinx-book-theme.40e2e510f6b7d1648584402491bb10fe.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="_static/mystnb.css" />
+    
+  <link rel="preload" as="script" href="_static/js/index.d3f166471bb80abb5163.js">
+
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/togglebutton.js"></script>
+    <script >var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    <script src="_static/sphinx-book-theme.d31b09fe5c1d09cb49b26a786de4a05d.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Basic tutorials" href="basic_tutorials.html" />
+    <link rel="prev" title="heyoka.py" href="index.html" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="en" />
+
+
+
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+<div class="col-12 col-md-3 bd-sidebar site-navigation show" id="site-navigation">
+    
+        <div class="navbar-brand-box">
+<a class="navbar-brand text-wrap" href="index.html">
+  
+  <img src="_static/white_logo.png" class="logo" alt="logo">
+  
+  
+  <h1 class="site-logo" id="site-title">heyoka.py 0.4.0 documentation</h1>
+  
+</a>
+</div><form class="bd-search d-flex align-items-center" action="search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form>
+<nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+    <p class="caption collapsible-parent">
+ <span class="caption-text">
+  Contents
+ </span>
+</p>
+<ul class="current nav sidenav_l1">
+ <li class="toctree-l1 current active">
+  <a class="current reference internal" href="#">
+   Installation
+  </a>
+ </li>
+ <li class="toctree-l1 collapsible-parent">
+  <a class="reference internal" href="basic_tutorials.html">
+   Basic tutorials
+  </a>
+  <ul class="collapse-ul">
+   <li class="toctree-l2">
+    <a class="reference internal" href="tut_taylor_method.html">
+     Taylor’s method
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="notebooks/The%20expression%20system.html">
+     The expression system
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="notebooks/The%20adaptive%20integrator.html">
+     The adaptive integrator
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="notebooks/ODEs%20with%20parameters.html">
+     ODEs with parameters
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="notebooks/Dense%20output.html">
+     Dense output
+    </a>
+   </li>
+  </ul>
+  <i class="fas fa-chevron-down">
+  </i>
+ </li>
+ <li class="toctree-l1 collapsible-parent">
+  <a class="reference internal" href="advanced_tutorials.html">
+   Advanced tutorials
+  </a>
+  <ul class="collapse-ul">
+   <li class="toctree-l2">
+    <a class="reference internal" href="notebooks/Long%20term%20stability%20of%20Trappist-1.html">
+     Long term stability of Trappist-1
+    </a>
+   </li>
+  </ul>
+  <i class="fas fa-chevron-down">
+  </i>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="changelog.html">
+   Changelog
+  </a>
+ </li>
+</ul>
+
+</nav> <!-- To handle the deprecated key -->
+
+<div class="navbar_extra_footer">
+  Theme by the <a href="https://ebp.jupyterbook.org">Executable Book Project</a>
+</div>
+
+</div>
+
+
+          
+
+
+          
+<main class="col py-md-3 pl-md-4 bd-content overflow-auto" role="main">
+    
+    <div class="row topbar fixed-top container-xl">
+    <div class="col-12 col-md-3 bd-topbar-whitespace site-navigation show">
+    </div>
+    <div class="col pl-2 topbar-main">
+        
+        <button id="navbar-toggler" class="navbar-toggler ml-0" type="button" data-toggle="collapse"
+            data-toggle="tooltip" data-placement="bottom" data-target=".site-navigation" aria-controls="navbar-menu"
+            aria-expanded="true" aria-label="Toggle navigation" aria-controls="site-navigation"
+            title="Toggle navigation" data-toggle="tooltip" data-placement="left">
+            <i class="fas fa-bars"></i>
+            <i class="fas fa-arrow-left"></i>
+            <i class="fas fa-arrow-up"></i>
+        </button>
+        
+        
+<div class="dropdown-buttons-trigger">
+    <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn" aria-label="Download this page"><i
+            class="fas fa-download"></i></button>
+
+    <div class="dropdown-buttons">
+        <!-- ipynb file if we had a myst markdown file -->
+        
+        <!-- Download raw file -->
+        <a class="dropdown-buttons" href="_sources/install.rst.txt"><button type="button"
+                class="btn btn-secondary topbarbtn" title="Download source file" data-toggle="tooltip"
+                data-placement="left">.rst</button></a>
+        <!-- Download PDF via print -->
+        <button type="button" id="download-print" class="btn btn-secondary topbarbtn" title="Print to PDF"
+            onClick="window.print()" data-toggle="tooltip" data-placement="left">.pdf</button>
+    </div>
+</div>
+
+        <!-- Source interaction buttons -->
+
+<div class="dropdown-buttons-trigger">
+    <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn"
+        aria-label="Connect with source repository"><i class="fab fa-github"></i></button>
+    <div class="dropdown-buttons sourcebuttons">
+        <a class="repository-button"
+            href="https://github.com/bluescarni/heyoka.py"><button type="button" class="btn btn-secondary topbarbtn"
+                data-toggle="tooltip" data-placement="left" title="Source repository"><i
+                    class="fab fa-github"></i>repository</button></a>
+        <a class="issues-button"
+            href="https://github.com/bluescarni/heyoka.py/issues/new?title=Issue%20on%20page%20%2Finstall.html&body=Your%20issue%20content%20here."><button
+                type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip" data-placement="left"
+                title="Open an issue"><i class="fas fa-lightbulb"></i>open issue</button></a>
+        
+    </div>
+</div>
+
+
+        <!-- Full screen (wrap in <a> to have style consistency -->
+        <a class="full-screen-button"><button type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip"
+                data-placement="bottom" onclick="toggleFullScreen()" aria-label="Fullscreen mode"
+                title="Fullscreen mode"><i
+                    class="fas fa-expand"></i></button></a>
+
+        <!-- Launch buttons -->
+
+    </div>
+
+    <!-- Table of contents -->
+    <div class="d-none d-md-block col-md-2 bd-toc show">
+        
+        <div class="tocsection onthispage pt-5 pb-3">
+            <i class="fas fa-list"></i> Contents
+        </div>
+        <nav id="bd-toc-nav">
+            <ul class="nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#dependencies">
+   Dependencies
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#packages">
+   Packages
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#conda">
+     Conda
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#installation-from-source">
+   Installation from source
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#verifying-the-installation">
+   Verifying the installation
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#getting-help">
+   Getting help
+  </a>
+ </li>
+</ul>
+
+        </nav>
+        
+    </div>
+</div>
+    <div id="main-content" class="row">
+        <div class="col-12 col-md-9 pl-md-3 pr-md-0">
+        
+              <div>
+                
+  <div class="section" id="installation">
+<h1>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="dependencies">
+<h2>Dependencies<a class="headerlink" href="#dependencies" title="Permalink to this headline">¶</a></h2>
+<p>heyoka.py has the following <strong>mandatory</strong> runtime dependencies:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://www.python.org/">Python</a> 3.4 or later (Python 2.x is
+<strong>not</strong> supported),</p></li>
+<li><p>the <a class="reference external" href="https://github.com/bluescarni/heyoka">heyoka C++ library</a>,</p></li>
+<li><p><a class="reference external" href="https://numpy.org/">NumPy</a>.</p></li>
+</ul>
+<p>Additionally, heyoka.py has the following <strong>optional</strong> runtime
+dependencies:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://mpmath.org/">mpmath</a> (necessary if the heyoka C++ library
+was compiled with support for quadruple-precision computations).</p></li>
+</ul>
+</div>
+<div class="section" id="packages">
+<h2>Packages<a class="headerlink" href="#packages" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="conda">
+<h3>Conda<a class="headerlink" href="#conda" title="Permalink to this headline">¶</a></h3>
+<p>heyoka.py is available via the <a class="reference external" href="https://conda.io/docs/">conda</a>
+package manager for Linux, OSX and Windows
+thanks to the infrastructure provided by <a class="reference external" href="https://conda-forge.org/">conda-forge</a>.
+In order to install heyoka.py via conda, you just need to add <code class="docutils literal notranslate"><span class="pre">conda-forge</span></code>
+to the channels, and then we can immediately install heyoka.py:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>conda config --add channels conda-forge
+<span class="gp">$ </span>conda config --set channel_priority strict
+<span class="gp">$ </span>conda install heyoka.py
+</pre></div>
+</div>
+<p>The conda packages for heyoka.py are maintained by the core development team,
+and they are regularly updated when new heyoka.py versions are released.</p>
+<p>Please refer to the <a class="reference external" href="https://conda.io/docs/">conda documentation</a>
+for instructions on how to setup and manage
+your conda installation.</p>
+</div>
+</div>
+<div class="section" id="installation-from-source">
+<h2>Installation from source<a class="headerlink" href="#installation-from-source" title="Permalink to this headline">¶</a></h2>
+<p>In order to install heyoka.py from source, you will need:</p>
+<ul class="simple">
+<li><p>a C++17 capable compiler (recent versions of GCC,
+Clang or MSVC should do),</p></li>
+<li><p>a <a class="reference external" href="https://www.python.org/">Python</a> installation,</p></li>
+<li><p><a class="reference external" href="https://github.com/pybind/pybind11">pybind11</a> (version &gt;= 2.6),</p></li>
+<li><p>the <a class="reference external" href="https://github.com/bluescarni/heyoka">heyoka C++ library</a>,</p></li>
+<li><p>the <a class="reference external" href="https://www.boost.org/">Boost libraries</a>,</p></li>
+<li><p>the <a class="reference external" href="https://github.com/bluescarni/mppp">mp++ library</a> (optional,
+necessary only if the heyoka C++ library
+was compiled with support for quadruple-precision computations),</p></li>
+<li><p><a class="reference external" href="https://cmake.org/">CMake</a>, version 3.8 or later.</p></li>
+</ul>
+<p>After making sure the dependencies are installed on your system, you can
+download the heyoka.py source code from the
+<a class="reference external" href="https://github.com/bluescarni/heyoka.py/releases">GitHub release page</a>. Alternatively,
+and if you like living on the bleeding edge, you can get the very latest
+version of heyoka.py via <code class="docutils literal notranslate"><span class="pre">git</span></code>:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>git clone https://github.com/bluescarni/heyoka.py.git
+</pre></div>
+</div>
+<p>We follow the usual PR-based development workflow, thus heyoka.py’s <code class="docutils literal notranslate"><span class="pre">master</span></code>
+branch is normally kept in a working state.</p>
+<p>After downloading and/or unpacking heyoka.py’s
+source code, go to heyoka.py’s
+source tree, create a <code class="docutils literal notranslate"><span class="pre">build</span></code> directory and <code class="docutils literal notranslate"><span class="pre">cd</span></code> into it. E.g.,
+on a Unix-like system:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span><span class="nb">cd</span> /path/to/heyoka.py
+<span class="gp">$ </span>mkdir build
+<span class="gp">$ </span><span class="nb">cd</span> build
+</pre></div>
+</div>
+<p>Once you are in the <code class="docutils literal notranslate"><span class="pre">build</span></code> directory, you must configure your build
+using <code class="docutils literal notranslate"><span class="pre">cmake</span></code>. There are various useful CMake variables you can set,
+such as:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">CMAKE_BUILD_TYPE</span></code>: the build type (<code class="docutils literal notranslate"><span class="pre">Release</span></code>, <code class="docutils literal notranslate"><span class="pre">Debug</span></code>, etc.),
+defaults to <code class="docutils literal notranslate"><span class="pre">Release</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">CMAKE_PREFIX_PATH</span></code>: additional paths that will be searched by CMake
+when looking for dependencies.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">HEYOKA_PY_INSTALL_PATH</span></code>: the path into which the heyoka.py module
+will be installed. If left empty (the default), heyoka.py will be installed
+in the global modules directory of your Python installation.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">HEYOKA_PY_ENABLE_IPO</span></code>: set this flag to <code class="docutils literal notranslate"><span class="pre">ON</span></code> to compile heyoka.py
+with link-time optimisations. Requires CMake &gt;= 3.9 and compiler support,
+defaults to <code class="docutils literal notranslate"><span class="pre">OFF</span></code>.</p></li>
+</ul>
+<p>Please consult <a class="reference external" href="https://cmake.org/cmake/help/latest/">CMake’s documentation</a>
+for more details about CMake’s variables and options.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">HEYOKA_PY_INSTALL_PATH</span></code> option is particularly important. If you
+want to install heyoka.py locally instead of globally (which is in general
+a good idea), you can set this variable to the output of
+<code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">-m</span> <span class="pre">site</span> <span class="pre">--user-site</span></code>.</p>
+<p>After configuring the build with CMake, we can then proceed to actually
+building heyoka.py:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>cmake --build .
+</pre></div>
+</div>
+<p>Finally, we can install heyoka.py with the command:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>cmake  --build . --target install
+</pre></div>
+</div>
+</div>
+<div class="section" id="verifying-the-installation">
+<h2>Verifying the installation<a class="headerlink" href="#verifying-the-installation" title="Permalink to this headline">¶</a></h2>
+<p>You can verify that heyoka.py was successfully compiled and
+installed by running the test suite. From a
+Python session, run the following commands:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">heyoka</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">heyoka</span><span class="o">.</span><span class="n">test</span><span class="o">.</span><span class="n">run_test_suite</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>If these commands execute without any error, then
+your heyoka.py installation is ready for use.</p>
+</div>
+<div class="section" id="getting-help">
+<h2>Getting help<a class="headerlink" href="#getting-help" title="Permalink to this headline">¶</a></h2>
+<p>If you run into troubles installing heyoka.py, please do not hesitate
+to contact us by opening an issue report on <a class="reference external" href="https://github.com/bluescarni/heyoka.py/issues">github</a>.</p>
+</div>
+</div>
+
+
+              </div>
+              
+        </div>
+    </div>
+    
+    
+    <div class='prev-next-bottom'>
+        
+    <a class='left-prev' id="prev-link" href="index.html" title="previous page">heyoka.py</a>
+    <a class='right-next' id="next-link" href="basic_tutorials.html" title="next page">Basic tutorials</a>
+
+    </div>
+    <footer class="footer mt-5 mt-md-0">
+    <div class="container">
+      <p>
+        
+          By Francesco Biscani and Dario Izzo<br/>
+        
+            &copy; Copyright 2020, 2021, Francesco Biscani and Dario Izzo.<br/>
+      </p>
+    </div>
+  </footer>
+</main>
+
+
+      </div>
+    </div>
+
+    
+  <script src="_static/js/index.d3f166471bb80abb5163.js"></script>
+
+
+    
+  </body>
+</html>

@@ -43,7 +43,7 @@
     <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["\\(", "\\)"]], "displayMath": [["\\[", "\\]"]], "processRefs": false, "processEnvironments": false}})</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="ODEs with parameters" href="ODEs%20with%20parameters.html" />
+    <link rel="next" title="The adaptive integrator" href="The%20adaptive%20integrator.html" />
     <link rel="prev" title="Taylor’s method" href="../tut_taylor_method.html" />
 
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -80,6 +80,11 @@
  </span>
 </p>
 <ul class="current nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../install.html">
+   Installation
+  </a>
+ </li>
  <li class="toctree-l1 current active collapsible-parent">
   <a class="reference internal" href="../basic_tutorials.html">
    Basic tutorials
@@ -93,6 +98,11 @@
    <li class="toctree-l2 current active">
     <a class="current reference internal" href="#">
      The expression system
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="The%20adaptive%20integrator.html">
+     The adaptive integrator
     </a>
    </li>
    <li class="toctree-l2">
@@ -122,6 +132,11 @@
   </ul>
   <i class="fas fa-chevron-down">
   </i>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../changelog.html">
+   Changelog
+  </a>
  </li>
 </ul>
 
@@ -261,12 +276,12 @@ mathematical notation:</p>
 <span class="n">z</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">expression</span><span class="p">(</span><span class="s2">&quot;z&quot;</span><span class="p">)</span>
 
 <span class="c1"># Create and print an expression.</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;The euclidean distance is </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">hy</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">x</span><span class="o">*</span><span class="n">x</span> <span class="o">+</span> <span class="n">y</span><span class="o">*</span><span class="n">y</span> <span class="o">+</span> <span class="n">z</span><span class="o">*</span><span class="n">z</span><span class="p">)))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;The euclidean distance is: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">hy</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">x</span><span class="o">*</span><span class="n">x</span> <span class="o">+</span> <span class="n">y</span><span class="o">*</span><span class="n">y</span> <span class="o">+</span> <span class="n">z</span><span class="o">*</span><span class="n">z</span><span class="p">)))</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>The euclidean distance is sqrt((((x * x) + (y * y)) + (z * z)))
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>The euclidean distance is: sqrt((((x * x) + (y * y)) + (z * z)))
 </pre></div>
 </div>
 </div>
@@ -341,7 +356,7 @@ much as possible.</p>
     <div class='prev-next-bottom'>
         
     <a class='left-prev' id="prev-link" href="../tut_taylor_method.html" title="previous page">Taylor’s method</a>
-    <a class='right-next' id="next-link" href="ODEs%20with%20parameters.html" title="next page">ODEs with parameters</a>
+    <a class='right-next' id="next-link" href="The%20adaptive%20integrator.html" title="next page">The adaptive integrator</a>
 
     </div>
     <footer class="footer mt-5 mt-md-0">
