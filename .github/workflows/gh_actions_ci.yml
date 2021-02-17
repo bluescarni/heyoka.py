@@ -43,15 +43,9 @@ jobs:
           cmake --build . --config Release --target install
           cd c:\
           python -c "from heyoka import test; test.run_test_suite()"
-
-name: Binder cache
-on:
-  push:
-    branches:
-      - main
-jobs:
-  Create-MyBinderOrg-Cache:
+  binder_cache:
     runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
     steps:
     - name: cache binder build on mybinder.org
       uses: jupyterhub/repo2docker-action@master
