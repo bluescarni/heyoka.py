@@ -7,7 +7,8 @@ Changelog
 New
 ~~~
 
-- Add support for dense output
+- Add support for dense output and for storing
+  the Taylor coefficients at the end of a timestep
   (`#11 <https://github.com/bluescarni/heyoka.py/pull/11>`__).
 - Various doc additions
   (`#15 <https://github.com/bluescarni/heyoka.py/pull/15>`__,
