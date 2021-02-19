@@ -271,6 +271,11 @@
    Time-limited propagation
   </a>
  </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#propagation-over-a-time-grid">
+   Propagation over a time grid
+  </a>
+ </li>
 </ul>
 
         </nav>
@@ -585,6 +590,79 @@ State       : [0.049999999999999843, 0.025000000000002819]
 integrating if a non-finite value is detected in the state vector
 at the end of the timestep. In such case, the outcome of the
 integration will be <code class="docutils literal notranslate"><span class="pre">err_nf_state</span></code>.</p>
+</div>
+<div class="section" id="propagation-over-a-time-grid">
+<h2>Propagation over a time grid<a class="headerlink" href="#propagation-over-a-time-grid" title="Permalink to this headline">¶</a></h2>
+<p>Another way of propagating the state of a system in a <code class="docutils literal notranslate"><span class="pre">taylor_adaptive</span></code>
+integrator is over a time grid. In this mode, the integrator
+uses dense output (described in a later tutorial) to compute the state of the system
+over a grid of time coordinates provided by the user. If the grid is denser
+than the typical timestep size, this can be noticeably more efficient than
+repeatedly calling <code class="docutils literal notranslate"><span class="pre">propagate_until()</span></code> on the grid points, because
+propagating the system state via dense output is much faster than taking
+a full integration step.</p>
+<p>Let’s see a simple usage example:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Reset the time and state to the initial values.</span>
+<span class="n">ta</span><span class="o">.</span><span class="n">time</span> <span class="o">=</span> <span class="mf">0.</span>
+<span class="n">ta</span><span class="o">.</span><span class="n">state</span><span class="p">[:]</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.05</span><span class="p">,</span> <span class="mf">0.025</span><span class="p">]</span>
+
+<span class="c1"># Propagate over a time grid from 0 to 1</span>
+<span class="c1"># at regular intervals.</span>
+<span class="n">out</span> <span class="o">=</span> <span class="n">ta</span><span class="o">.</span><span class="n">propagate_grid</span><span class="p">(</span><span class="n">grid</span> <span class="o">=</span> <span class="p">[</span><span class="o">.</span><span class="mi">1</span><span class="p">,</span> <span class="o">.</span><span class="mi">2</span><span class="p">,</span> <span class="o">.</span><span class="mi">3</span><span class="p">,</span> <span class="o">.</span><span class="mi">4</span><span class="p">,</span> <span class="o">.</span><span class="mi">5</span><span class="p">,</span> <span class="o">.</span><span class="mi">6</span><span class="p">,</span> <span class="o">.</span><span class="mi">7</span><span class="p">,</span> <span class="o">.</span><span class="mi">8</span><span class="p">,</span> <span class="o">.</span><span class="mi">9</span><span class="p">,</span> <span class="mf">1.</span><span class="p">])</span>
+<span class="n">out</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(&lt;taylor_outcome.success: -1&gt;,
+ 0.2021425243240425,
+ 0.21605277478009474,
+ 5,
+ array([[ 0.05003035, -0.024398  ],
+        [ 0.04519961, -0.07142727],
+        [ 0.03597685, -0.11152037],
+        [ 0.02325783, -0.14078016],
+        [ 0.00827833, -0.15635952],
+        [-0.00750582, -0.15674117],
+        [-0.02256041, -0.14188793],
+        [-0.03542229, -0.11324639],
+        [-0.04484178, -0.07360369],
+        [-0.04990399, -0.02681336]]))
+</pre></div>
+</div>
+</div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">propagate_grid()</span></code> takes in input a grid of time points,
+and returns a tuple of 5 values. The first 4 values are the same
+as in the other <code class="docutils literal notranslate"><span class="pre">propagate_*()</span></code> functions:</p>
+<ul class="simple">
+<li><p>the outcome of the integration,</p></li>
+<li><p>the minimum and maximum integration timesteps
+that were used in the propagation,</p></li>
+<li><p>the total number of steps that were taken.</p></li>
+</ul>
+<p>The fifth value returned by <code class="docutils literal notranslate"><span class="pre">propagate_grid()</span></code> is a 2D array containing
+the state of the system at the time points in the grid:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Print the state at t = 0.4 (index 3 in the time grid).</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;State at t = 0.4: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">out</span><span class="p">[</span><span class="mi">4</span><span class="p">][</span><span class="mi">3</span><span class="p">]))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>State at t = 0.4: [ 0.02325783 -0.14078016]
+</pre></div>
+</div>
+</div>
+</div>
+<p>As you can see from the screen output above (where we printed the <code class="docutils literal notranslate"><span class="pre">out</span></code> variable), the use of <code class="docutils literal notranslate"><span class="pre">propagate_grid()</span></code> resulted in 5 integration timesteps being taken. Had we used <code class="docutils literal notranslate"><span class="pre">propagate_until()</span></code>, we would have needed 10 integration timesteps to obtain the same result.</p>
+<p>There are no special requirements on the time values in the grid (apart from the
+fact that they must be finite), or on their spacing/ordering. Note however that
+in order to maximise both precision and performance, the time points should be ordered
+monotonically.</p>
 </div>
 </div>
 
