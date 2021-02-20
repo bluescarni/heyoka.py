@@ -1,5 +1,5 @@
 channels:
   - conda-forge
 dependencies:
-  - heyoka.py
+  - heyoka.py=0.4.0
   - matplotlib
