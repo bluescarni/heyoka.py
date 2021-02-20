@@ -337,7 +337,7 @@ varies in time:</p>
 <span class="n">t_grid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">200</span><span class="p">,</span> <span class="mi">1000</span><span class="p">)</span>
 
 <span class="c1"># Propagate over the time grid.</span>
-<span class="n">x_hist</span> <span class="o">=</span> <span class="p">[(</span><span class="n">ta</span><span class="o">.</span><span class="n">propagate_until</span><span class="p">(</span><span class="n">_</span><span class="p">),</span> <span class="n">ta</span><span class="o">.</span><span class="n">state</span><span class="p">[</span><span class="mi">0</span><span class="p">])[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">t_grid</span><span class="p">]</span>
+<span class="n">x_hist</span> <span class="o">=</span> <span class="n">ta</span><span class="o">.</span><span class="n">propagate_grid</span><span class="p">(</span><span class="n">t_grid</span><span class="p">)[</span><span class="mi">4</span><span class="p">][:,</span><span class="mi">0</span><span class="p">]</span>
 
 <span class="c1"># Display the time evolution for the x variable.</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">t_grid</span><span class="p">,</span> <span class="n">x_hist</span><span class="p">)</span>

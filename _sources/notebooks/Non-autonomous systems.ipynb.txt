@@ -132,7 +132,7 @@
     "t_grid = np.linspace(0, 200, 1000)\n",
     "\n",
     "# Propagate over the time grid.\n",
-    "x_hist = [(ta.propagate_until(_), ta.state[0])[1] for _ in t_grid]\n",
+    "x_hist = ta.propagate_grid(t_grid)[4][:,0]\n",
     "\n",
     "# Display the time evolution for the x variable.\n",
     "plt.plot(t_grid, x_hist)\n",
