@@ -225,6 +225,7 @@ PYBIND11_MODULE(core, m)
     m.def("atanh", &hey::atanh);
     m.def("sigmoid", &hey::sigmoid);
     m.def("erf", &hey::erf);
+    m.def("powi", &hey::powi);
 
     // Time.
     m.attr("time") = hey::time;
@@ -905,30 +906,32 @@ PYBIND11_MODULE(core, m)
              "high_accuracy"_a = false, "compact_mode"_a = false)
         .def("get_decomposition", &hey::taylor_adaptive_batch<double>::get_decomposition)
         .def(
-            "step", [](hey::taylor_adaptive_batch<double> &ta, bool wtc) { return ta.step(wtc); }, "write_tc"_a = false)
+            "step", [](hey::taylor_adaptive_batch<double> &ta, bool wtc) { ta.step(wtc); }, "write_tc"_a = false)
         .def(
             "step",
             [](hey::taylor_adaptive_batch<double> &ta, const std::vector<double> &max_delta_t, bool wtc) {
-                return ta.step(max_delta_t, wtc);
+                ta.step(max_delta_t, wtc);
             },
             "max_delta_t"_a, "write_tc"_a = false)
-        .def(
-            "step_backward", [](hey::taylor_adaptive_batch<double> &ta, bool wtc) { return ta.step_backward(wtc); },
-            "write_tc"_a = false)
+        .def("step_backward", &hey::taylor_adaptive_batch<double>::step_backward, "write_tc"_a = false)
+        .def_property_readonly("step_res",
+                               [](const hey::taylor_adaptive_batch<double> &ta) { return ta.get_step_res(); })
         .def(
             "propagate_for",
             [](hey::taylor_adaptive_batch<double> &ta, const std::vector<double> &delta_t, std::size_t max_steps) {
                 py::gil_scoped_release release;
-                return ta.propagate_for(delta_t, max_steps);
+                ta.propagate_for(delta_t, max_steps);
             },
             "delta_t"_a, "max_steps"_a = 0)
         .def(
             "propagate_until",
             [](hey::taylor_adaptive_batch<double> &ta, const std::vector<double> &t, std::size_t max_steps) {
                 py::gil_scoped_release release;
-                return ta.propagate_until(t, max_steps);
+                ta.propagate_until(t, max_steps);
             },
             "t"_a, "max_steps"_a = 0)
+        .def_property_readonly("propagate_res",
+                               [](const hey::taylor_adaptive_batch<double> &ta) { return ta.get_propagate_res(); })
         .def_property_readonly(
             "time",
             [](py::object &o) {
