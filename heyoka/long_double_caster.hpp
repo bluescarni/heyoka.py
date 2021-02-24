@@ -16,6 +16,8 @@
 
 #include <boost/numeric/conversion/cast.hpp>
 
+#include <fmt/format.h>
+
 #include <pybind11/numpy.h>
 #include <pybind11/pybind11.h>
 
@@ -44,12 +46,13 @@ struct type_caster<long double> {
         assert(PyBuffer_IsContiguous(buffer, 'C'));
 
         if (boost::numeric_cast<std::size_t>(buffer->len) != sizeof(long double)) {
-            heypy::py_throw(
-                PyExc_RuntimeError,
-                ("error while converting a numpy.longdouble to a C++ long double: the size of the bytes array ("
-                 + std::to_string(buffer->len) + ") does not match the size of the long double type ("
-                 + std::to_string(sizeof(long double)) + ")")
-                    .c_str());
+            using fmt::literals::operator""_format;
+
+            heypy::py_throw(PyExc_RuntimeError,
+                            ("error while converting a numpy.longdouble to a C++ long double: the size of the bytes "
+                             "array ({}) does not match the size of the long double type ({})"_format(
+                                 buffer->len, sizeof(long double)))
+                                .c_str());
         }
 
         auto start = static_cast<const unsigned char *>(buffer->buf);

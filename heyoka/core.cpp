@@ -23,6 +23,8 @@
 
 #include <boost/numeric/conversion/cast.hpp>
 
+#include <fmt/format.h>
+
 #include <pybind11/numpy.h>
 #include <pybind11/operators.h>
 #include <pybind11/pybind11.h>
@@ -67,6 +69,7 @@ PYBIND11_MODULE(core, m)
 #endif
 
     using namespace pybind11::literals;
+    using fmt::literals::operator""_format;
 
     m.doc() = "The core heyoka module";
 
@@ -779,10 +782,7 @@ PYBIND11_MODULE(core, m)
             .def("set_state",
                  [](hey::taylor_adaptive<mppp::real128> &ta, const std::vector<mppp::real128> &v) {
                      if (v.size() != ta.get_state().size()) {
-                         throw std::invalid_argument(
-                             "Invalid state vector passed to set_state(): the new state vector has a size of "
-                             + std::to_string(v.size()) + ", but the size should be "
-                             + std::to_string(ta.get_state().size()) + " instead");
+                        heypy::py_throw(PyExc_ValueError, "Invalid state vector passed to set_state(): the new state vector has a size of {}, but the size should be {} instead"_format(v.size(), ta.get_state().size()).c_str());
                      }
 
                      std::copy(v.begin(), v.end(), ta.get_state_data());
@@ -792,10 +792,7 @@ PYBIND11_MODULE(core, m)
             .def("set_pars",
                  [](hey::taylor_adaptive<mppp::real128> &ta, const std::vector<mppp::real128> &v) {
                      if (v.size() != ta.get_pars().size()) {
-                         throw std::invalid_argument(
-                             "Invalid pars vector passed to set_pars(): the new pars vector has a size of "
-                             + std::to_string(v.size()) + ", but the size should be "
-                             + std::to_string(ta.get_pars().size()) + " instead");
+                        heypy::py_throw(PyExc_ValueError, "Invalid pars vector passed to set_pars(): the new pars vector has a size of {}, but the size should be {} instead"_format(v.size(), ta.get_pars().size()).c_str());
                      }
 
                      std::copy(v.begin(), v.end(), ta.get_state_data());
@@ -857,11 +854,37 @@ PYBIND11_MODULE(core, m)
     }
 #endif
 
-    auto tabd_ctor_impl = [](auto sys, std::vector<double> state, std::uint32_t batch_size, py::object time,
-                             std::vector<double> pars, double tol, bool high_accuracy, bool compact_mode) {
+    auto tabd_ctor_impl = [](auto sys, py::array_t<double> state_, std::uint32_t batch_size, py::object time_,
+                             py::object pars_, double tol, bool high_accuracy, bool compact_mode) {
         namespace kw = hey::kw;
 
-        if (time.is_none()) {
+        // Convert state and pars to std::vector, after checking
+        // dimensions and shape.
+        if (state_.ndim() != 2 || boost::numeric_cast<std::uint32_t>(state_.shape(1)) != batch_size) {
+            heypy::py_throw(PyExc_ValueError,
+                            "Invalid state vector passed to the constructor of a batch integrator: "
+                            "the expected array shape is (n, {}), but the input array has either the wrong "
+                            "number of dimensions or the wrong shape"_format(batch_size)
+                                .c_str());
+        }
+        auto state = py::cast<std::vector<double>>(state_.attr("flatten")());
+
+        // If pars is none, an empty vector will be fine.
+        std::vector<double> pars;
+        if (!pars_.is_none()) {
+            auto pars_arr = py::cast<py::array_t<double>>(pars_);
+
+            if (pars_arr.ndim() != 2 || boost::numeric_cast<std::uint32_t>(pars_arr.shape(1)) != batch_size) {
+                heypy::py_throw(PyExc_ValueError,
+                                "Invalid parameter vector passed to the constructor of a batch integrator: "
+                                "the expected array shape is (n, {}), but the input array has either the wrong "
+                                "number of dimensions or the wrong shape"_format(batch_size)
+                                    .c_str());
+            }
+            pars = py::cast<std::vector<double>>(pars_arr.attr("flatten")());
+        }
+
+        if (time_.is_none()) {
             py::gil_scoped_release release;
 
             // Times not provided.
@@ -874,17 +897,22 @@ PYBIND11_MODULE(core, m)
                                                       kw::pars = std::move(pars)};
         } else {
             // Times provided.
-            std::vector<double> time_v;
-            for (auto x : py::cast<py::iterable>(time)) {
-                time_v.push_back(py::cast<double>(x));
+            auto time_arr = py::cast<py::array_t<double>>(time_);
+            if (time_arr.ndim() != 1 || boost::numeric_cast<std::uint32_t>(time_arr.shape(0)) != batch_size) {
+                heypy::py_throw(PyExc_ValueError,
+                                "Invalid time vector passed to the constructor of a batch integrator: "
+                                "the expected array shape is ({}), but the input array has either the wrong "
+                                "number of dimensions or the wrong shape"_format(batch_size)
+                                    .c_str());
             }
+            auto time = py::cast<std::vector<double>>(time_arr);
 
             py::gil_scoped_release release;
 
             return hey::taylor_adaptive_batch<double>{std::move(sys),
                                                       std::move(state),
                                                       batch_size,
-                                                      kw::time = std::move(time_v),
+                                                      kw::time = std::move(time),
                                                       kw::tol = tol,
                                                       kw::high_accuracy = high_accuracy,
                                                       kw::compact_mode = compact_mode,
@@ -893,20 +921,18 @@ PYBIND11_MODULE(core, m)
     };
     py::class_<hey::taylor_adaptive_batch<double>>(m, "taylor_adaptive_batch_double")
         .def(py::init([tabd_ctor_impl](std::vector<std::pair<hey::expression, hey::expression>> sys,
-                                       std::vector<double> state, std::uint32_t batch_size, py::object time,
-                                       std::vector<double> pars, double tol, bool high_accuracy, bool compact_mode) {
-                 return tabd_ctor_impl(std::move(sys), std::move(state), batch_size, time, std::move(pars), tol,
-                                       high_accuracy, compact_mode);
+                                       py::array_t<double> state, std::uint32_t batch_size, py::object time,
+                                       py::object pars, double tol, bool high_accuracy, bool compact_mode) {
+                 return tabd_ctor_impl(std::move(sys), state, batch_size, time, pars, tol, high_accuracy, compact_mode);
              }),
-             "sys"_a, "state"_a, "batch_size"_a, "time"_a = py::none{}, "pars"_a = py::list{}, "tol"_a = 0.,
+             "sys"_a, "state"_a, "batch_size"_a, "time"_a = py::none{}, "pars"_a = py::none{}, "tol"_a = 0.,
              "high_accuracy"_a = false, "compact_mode"_a = false)
-        .def(py::init([tabd_ctor_impl](std::vector<hey::expression> sys, std::vector<double> state,
-                                       std::uint32_t batch_size, py::object time, std::vector<double> pars, double tol,
+        .def(py::init([tabd_ctor_impl](std::vector<hey::expression> sys, py::array_t<double> state,
+                                       std::uint32_t batch_size, py::object time, py::object pars, double tol,
                                        bool high_accuracy, bool compact_mode) {
-                 return tabd_ctor_impl(std::move(sys), std::move(state), batch_size, time, std::move(pars), tol,
-                                       high_accuracy, compact_mode);
+                 return tabd_ctor_impl(std::move(sys), state, batch_size, time, pars, tol, high_accuracy, compact_mode);
              }),
-             "sys"_a, "state"_a, "batch_size"_a, "time"_a = py::none{}, "pars"_a = py::list{}, "tol"_a = 0.,
+             "sys"_a, "state"_a, "batch_size"_a, "time"_a = py::none{}, "pars"_a = py::none{}, "tol"_a = 0.,
              "high_accuracy"_a = false, "compact_mode"_a = false)
         .def("get_decomposition", &hey::taylor_adaptive_batch<double>::get_decomposition)
         .def(
@@ -948,17 +974,23 @@ PYBIND11_MODULE(core, m)
             "state",
             [](py::object &o) {
                 auto *ta = py::cast<hey::taylor_adaptive_batch<double> *>(o);
-                return py::array_t<double>(
-                    py::array::ShapeContainer{boost::numeric_cast<py::ssize_t>(ta->get_state().size())},
-                    ta->get_state_data(), o);
+
+                assert(ta->get_state().size() % ta->get_batch_size() == 0u);
+                const auto nvars = boost::numeric_cast<py::ssize_t>(ta->get_dim());
+                const auto bs = boost::numeric_cast<py::ssize_t>(ta->get_batch_size());
+
+                return py::array_t<double>(py::array::ShapeContainer{nvars, bs}, ta->get_state_data(), o);
             })
         .def_property_readonly(
             "pars",
             [](py::object &o) {
                 auto *ta = py::cast<hey::taylor_adaptive_batch<double> *>(o);
-                return py::array_t<double>(
-                    py::array::ShapeContainer{boost::numeric_cast<py::ssize_t>(ta->get_pars().size())},
-                    ta->get_pars_data(), o);
+
+                assert(ta->get_pars().size() % ta->get_batch_size() == 0u);
+                const auto npars = boost::numeric_cast<py::ssize_t>(ta->get_pars().size() / ta->get_batch_size());
+                const auto bs = boost::numeric_cast<py::ssize_t>(ta->get_batch_size());
+
+                return py::array_t<double>(py::array::ShapeContainer{npars, bs}, ta->get_pars_data(), o);
             })
         .def_property_readonly(
             "tc",
