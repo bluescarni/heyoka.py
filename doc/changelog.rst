@@ -3,6 +3,11 @@
 Changelog
 =========
 
+0.5.0 (unreleased)
+------------------
+
+- Expose symbolic differentiation.
+
 0.4.0 (2021-02-20)
 ------------------
 
