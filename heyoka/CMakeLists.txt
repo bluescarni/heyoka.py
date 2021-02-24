@@ -19,7 +19,7 @@ Python3_add_library(core MODULE WITH_SOABI
     common_utils.cpp
 )
 
-target_link_libraries(core PRIVATE heyoka::heyoka)
+target_link_libraries(core PRIVATE heyoka::heyoka fmt::fmt)
 if(heyoka_WITH_MPPP)
     target_link_libraries(core PRIVATE mp++::mp++)
 endif()

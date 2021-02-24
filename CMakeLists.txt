@@ -138,6 +138,9 @@ endif()
 # Boost.
 find_package(Boost REQUIRED)
 
+# fmt.
+find_package(fmt REQUIRED CONFIG)
+
 if(heyoka_WITH_MPPP)
     # heyoka was compiled with mp++ support,
     # add the mp++ dependency on heyoka.py as well.
@@ -146,7 +149,7 @@ if(heyoka_WITH_MPPP)
     # we could have an mppp-enabled heyoka which
     # however does not support real128, thus rendering
     # this dependency unnecessary (strictly speaking).
-    find_package(mp++ REQUIRED)
+    find_package(mp++ REQUIRED CONFIG)
 endif()
 
 # Add the module directory.
