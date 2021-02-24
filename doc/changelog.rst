@@ -6,7 +6,17 @@ Changelog
 0.5.0 (unreleased)
 ------------------
 
+New
+~~~
+
 - Expose symbolic differentiation.
+
+Changes
+~~~~~~~
+
+- heyoka.py now requires at least version 0.5.0 of the
+  heyoka C++ library
+  (`#20 <https://github.com/bluescarni/heyoka.py/pull/20>`__).
 
 0.4.0 (2021-02-20)
 ------------------
