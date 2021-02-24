@@ -11,7 +11,7 @@ if(NOT CMAKE_BUILD_TYPE)
 	FORCE)
 endif()
 
-project(heyoka.py VERSION 0.4.0 LANGUAGES CXX C)
+project(heyoka.py VERSION 0.5.0 LANGUAGES CXX C)
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake" "${CMAKE_CURRENT_SOURCE_DIR}/cmake/yacma")
 
@@ -116,8 +116,8 @@ endif()
 # heyoka.
 # NOTE: put the minimum version in a variable
 # so that we can re-use it below.
-set (_HEYOKA_PY_MIN_HEYOKA_VERSION 0.4.0)
-find_package(heyoka REQUIRED)
+set (_HEYOKA_PY_MIN_HEYOKA_VERSION 0.5.0)
+find_package(heyoka REQUIRED CONFIG)
 if(${heyoka_VERSION} VERSION_LESS ${_HEYOKA_PY_MIN_HEYOKA_VERSION})
     message(FATAL_ERROR "The minimum heyoka version required by heyoka.py is ${_HEYOKA_PY_MIN_HEYOKA_VERSION}, but version ${heyoka_VERSION} was found instead.")
 endif()
@@ -138,6 +138,9 @@ endif()
 # Boost.
 find_package(Boost REQUIRED)
 
+# fmt.
+find_package(fmt REQUIRED CONFIG)
+
 if(heyoka_WITH_MPPP)
     # heyoka was compiled with mp++ support,
     # add the mp++ dependency on heyoka.py as well.
@@ -146,7 +149,7 @@ if(heyoka_WITH_MPPP)
     # we could have an mppp-enabled heyoka which
     # however does not support real128, thus rendering
     # this dependency unnecessary (strictly speaking).
-    find_package(mp++ REQUIRED)
+    find_package(mp++ REQUIRED CONFIG)
 endif()
 
 # Add the module directory.
