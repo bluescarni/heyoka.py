@@ -311,7 +311,7 @@ element of the state vector has a magnitude greater than 1.</p>
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">heyoka</span> <span class="k">as</span> <span class="nn">hy</span>
 
 <span class="c1"># Create the symbolic variables x and v.</span>
-<span class="n">x</span><span class="p">,</span> <span class="n">v</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">make_vars</span><span class="p">(</span><span class="s2">&quot;x&quot;</span><span class="p">,</span> <span class="s2">&quot;y&quot;</span><span class="p">)</span>
+<span class="n">x</span><span class="p">,</span> <span class="n">v</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">make_vars</span><span class="p">(</span><span class="s2">&quot;x&quot;</span><span class="p">,</span> <span class="s2">&quot;v&quot;</span><span class="p">)</span>
 
 <span class="c1"># Create the integrator object.</span>
 <span class="n">ta</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">taylor_adaptive</span><span class="p">(</span>
@@ -410,8 +410,8 @@ code generation mode:</p>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CPU times: user 8.5 s, sys: 43.2 ms, total: 8.55 s
-Wall time: 8.59 s
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CPU times: user 7.57 s, sys: 44.8 ms, total: 7.61 s
+Wall time: 7.63 s
 </pre></div>
 </div>
 </div>
@@ -426,8 +426,8 @@ keyword argument):</p>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CPU times: user 430 ms, sys: 0 ns, total: 430 ms
-Wall time: 431 ms
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CPU times: user 435 ms, sys: 4 µs, total: 435 ms
+Wall time: 440 ms
 </pre></div>
 </div>
 </div>
