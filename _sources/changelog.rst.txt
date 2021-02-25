@@ -3,17 +3,22 @@
 Changelog
 =========
 
-0.5.0 (unreleased)
+0.5.0 (2021-02-25)
 ------------------
 
 New
 ~~~
 
 - Expose symbolic differentiation.
+- Add a new tutorial (restricted three-body problem).
 
 Changes
 ~~~~~~~
 
+- The interface of the integrator in batch mode has changed
+  to work with arrays in which the batch size has its own dimension,
+  instead of being flattened out
+  (`#20 <https://github.com/bluescarni/heyoka.py/pull/20>`__).
 - heyoka.py now depends on the `{fmt} <https://fmt.dev/latest/index.html>`__ library
   (`#20 <https://github.com/bluescarni/heyoka.py/pull/20>`__).
 - heyoka.py now requires at least version 0.5.0 of the
