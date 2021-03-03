@@ -49,6 +49,7 @@
 
 #include "common_utils.hpp"
 #include "long_double_caster.hpp"
+#include "taylor_add_jet.hpp"
 
 namespace py = pybind11;
 namespace hey = heyoka;
@@ -345,6 +346,10 @@ PYBIND11_MODULE(core, m)
         .value("step_limit", hey::taylor_outcome::step_limit)
         .value("time_limit", hey::taylor_outcome::time_limit)
         .value("err_nf_state", hey::taylor_outcome::err_nf_state);
+
+    // Computation of the jet of derivatives..
+    heypy::expose_taylor_add_jet_dbl(m);
+    heypy::expose_taylor_add_jet_ldbl(m);
 
     // Adaptive taylor integrators.
     auto tad_ctor_impl = [](auto sys, std::vector<double> state, double time, std::vector<double> pars, double tol,
