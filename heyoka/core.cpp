@@ -49,6 +49,7 @@
 
 #include "common_utils.hpp"
 #include "long_double_caster.hpp"
+#include "taylor_add_jet.hpp"
 
 namespace py = pybind11;
 namespace hey = heyoka;
@@ -345,6 +346,16 @@ PYBIND11_MODULE(core, m)
         .value("step_limit", hey::taylor_outcome::step_limit)
         .value("time_limit", hey::taylor_outcome::time_limit)
         .value("err_nf_state", hey::taylor_outcome::err_nf_state);
+
+    // Computation of the jet of derivatives.
+    heypy::expose_taylor_add_jet_dbl(m);
+    heypy::expose_taylor_add_jet_ldbl(m);
+
+#if defined(HEYOKA_HAVE_REAL128)
+
+    heypy::expose_taylor_add_jet_f128(m);
+
+#endif
 
     // Adaptive taylor integrators.
     auto tad_ctor_impl = [](auto sys, std::vector<double> state, double time, std::vector<double> pars, double tol,
@@ -685,7 +696,7 @@ PYBIND11_MODULE(core, m)
         // for the constructor.
         auto mpmod = py::module_::import("mpmath");
 
-        auto orig_prec = mpmod.attr("mp").attr("prec");
+        auto orig_prec = py::cast<int>(mpmod.attr("mp").attr("prec"));
         mpmod.attr("mp").attr("prec") = 113;
 
         auto taf128_ctor_impl
@@ -797,7 +808,7 @@ PYBIND11_MODULE(core, m)
 
                      std::copy(v.begin(), v.end(), ta.get_state_data());
                  })
-            .def("get_tc",
+            .def_property_readonly("tc",
                  [](const hey::taylor_adaptive<mppp::real128> &ta) {
                      auto ret = py::array(py::cast(ta.get_tc()));
 
@@ -854,19 +865,24 @@ PYBIND11_MODULE(core, m)
     }
 #endif
 
-    auto tabd_ctor_impl = [](auto sys, py::array_t<double> state_, std::uint32_t batch_size, py::object time_,
-                             py::object pars_, double tol, bool high_accuracy, bool compact_mode) {
+    auto tabd_ctor_impl = [](auto sys, py::array_t<double> state_, py::object time_, py::object pars_, double tol,
+                             bool high_accuracy, bool compact_mode) {
         namespace kw = hey::kw;
 
         // Convert state and pars to std::vector, after checking
         // dimensions and shape.
-        if (state_.ndim() != 2 || boost::numeric_cast<std::uint32_t>(state_.shape(1)) != batch_size) {
+        if (state_.ndim() != 2) {
             heypy::py_throw(PyExc_ValueError,
                             "Invalid state vector passed to the constructor of a batch integrator: "
-                            "the expected array shape is (n, {}), but the input array has either the wrong "
-                            "number of dimensions or the wrong shape"_format(batch_size)
+                            "the expected number of dimensions is 2, but the input array has a dimension of {}"_format(
+                                state_.ndim())
                                 .c_str());
         }
+
+        // Infer the batch size from the second dimension.
+        const auto batch_size = boost::numeric_cast<std::uint32_t>(state_.shape(1));
+
+        // Flatten out and convert to a C++ vector.
         auto state = py::cast<std::vector<double>>(state_.attr("flatten")());
 
         // If pars is none, an empty vector will be fine.
@@ -921,19 +937,18 @@ PYBIND11_MODULE(core, m)
     };
     py::class_<hey::taylor_adaptive_batch<double>>(m, "taylor_adaptive_batch_double")
         .def(py::init([tabd_ctor_impl](std::vector<std::pair<hey::expression, hey::expression>> sys,
-                                       py::array_t<double> state, std::uint32_t batch_size, py::object time,
-                                       py::object pars, double tol, bool high_accuracy, bool compact_mode) {
-                 return tabd_ctor_impl(std::move(sys), state, batch_size, time, pars, tol, high_accuracy, compact_mode);
-             }),
-             "sys"_a, "state"_a, "batch_size"_a, "time"_a = py::none{}, "pars"_a = py::none{}, "tol"_a = 0.,
-             "high_accuracy"_a = false, "compact_mode"_a = false)
-        .def(py::init([tabd_ctor_impl](std::vector<hey::expression> sys, py::array_t<double> state,
-                                       std::uint32_t batch_size, py::object time, py::object pars, double tol,
+                                       py::array_t<double> state, py::object time, py::object pars, double tol,
                                        bool high_accuracy, bool compact_mode) {
-                 return tabd_ctor_impl(std::move(sys), state, batch_size, time, pars, tol, high_accuracy, compact_mode);
+                 return tabd_ctor_impl(std::move(sys), state, time, pars, tol, high_accuracy, compact_mode);
              }),
-             "sys"_a, "state"_a, "batch_size"_a, "time"_a = py::none{}, "pars"_a = py::none{}, "tol"_a = 0.,
-             "high_accuracy"_a = false, "compact_mode"_a = false)
+             "sys"_a, "state"_a, "time"_a = py::none{}, "pars"_a = py::none{}, "tol"_a = 0., "high_accuracy"_a = false,
+             "compact_mode"_a = false)
+        .def(py::init([tabd_ctor_impl](std::vector<hey::expression> sys, py::array_t<double> state, py::object time,
+                                       py::object pars, double tol, bool high_accuracy, bool compact_mode) {
+                 return tabd_ctor_impl(std::move(sys), state, time, pars, tol, high_accuracy, compact_mode);
+             }),
+             "sys"_a, "state"_a, "time"_a = py::none{}, "pars"_a = py::none{}, "tol"_a = 0., "high_accuracy"_a = false,
+             "compact_mode"_a = false)
         .def("get_decomposition", &hey::taylor_adaptive_batch<double>::get_decomposition)
         .def(
             "step", [](hey::taylor_adaptive_batch<double> &ta, bool wtc) { ta.step(wtc); }, "write_tc"_a = false)
