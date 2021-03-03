@@ -808,7 +808,7 @@ PYBIND11_MODULE(core, m)
 
                      std::copy(v.begin(), v.end(), ta.get_state_data());
                  })
-            .def("get_tc",
+            .def_property_readonly("tc",
                  [](const hey::taylor_adaptive<mppp::real128> &ta) {
                      auto ret = py::array(py::cast(ta.get_tc()));
 
