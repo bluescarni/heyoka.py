@@ -351,6 +351,12 @@ PYBIND11_MODULE(core, m)
     heypy::expose_taylor_add_jet_dbl(m);
     heypy::expose_taylor_add_jet_ldbl(m);
 
+#if defined(HEYOKA_HAVE_REAL128)
+
+    heypy::expose_taylor_add_jet_f128(m);
+
+#endif
+
     // Adaptive taylor integrators.
     auto tad_ctor_impl = [](auto sys, std::vector<double> state, double time, std::vector<double> pars, double tol,
                             bool high_accuracy, bool compact_mode) {

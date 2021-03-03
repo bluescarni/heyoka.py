@@ -81,4 +81,8 @@ def taylor_add_jet(sys, order, **kwargs):
     if fp_type == "long double":
         return _taylor_add_jet_ldbl(sys, order, **kwargs)
 
+    if with_real128 and fp_type == "real128":
+        from .core import _taylor_add_jet_f128
+        return _taylor_add_jet_f128(sys, order, **kwargs)
+
     raise TypeError("the floating-point type \"{}\" is not recognized/supported".format(fp_type))

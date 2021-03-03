@@ -11,6 +11,8 @@
 
 #include <pybind11/pybind11.h>
 
+#include <heyoka/config.hpp>
+
 namespace heyoka_py
 {
 
@@ -18,6 +20,12 @@ namespace py = pybind11;
 
 void expose_taylor_add_jet_dbl(py::module &);
 void expose_taylor_add_jet_ldbl(py::module &);
+
+#if defined(HEYOKA_HAVE_REAL128)
+
+void expose_taylor_add_jet_f128(py::module &);
+
+#endif
 
 } // namespace heyoka_py
 
