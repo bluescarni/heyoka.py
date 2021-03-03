@@ -289,9 +289,138 @@ class taylor_add_jet_test_case(_ut.TestCase):
                             "Taylor derivatives: the shape must be (4), but it is "
                             "(5) instead" in str(cm.exception))
 
+        if not with_real128:
+            return
+
+        from mpmath import mpf
+
+        # Check that the jet is consistent
+        # with the Taylor coefficients.
+        init_state =  [mpf(0.05), mpf(0.025)]
+        pars = [mpf(-9.8)]
+
+        ta = taylor_adaptive(sys, init_state, tol=mpf(1e-9), fp_type="real128")
+
+        jet = taylor_add_jet(sys, 5, fp_type="real128")
+        st = np.full((6, 2), mpf(0))
+        st[0] = init_state
+
+        ta.step(write_tc = True)
+        st = jet(st)
+
+        self.assertTrue(np.all(ta.tc[:,:6].transpose() == st))
+
+        # Try adding an sv_func.
+        jet = taylor_add_jet(sys, 5, fp_type="real128", sv_funcs=[x + v])
+        st = np.full((6, 3), mpf(0))
+        st[0,:2] = init_state
+
+        st = jet(st)
+
+        self.assertTrue(np.all(ta.tc[:,:6].transpose() == st[:,:2]))
+        self.assertTrue(np.all((ta.tc[0,:6] + ta.tc[1,:6]).transpose() == st[:,2]))
+
+        # An example with params.
+        ta_par = taylor_adaptive(sys_par, init_state, tol=mpf(1e-9), fp_type="real128", pars=pars)
+
+        jet_par = taylor_add_jet(sys_par, 5, fp_type="real128")
+        st = np.full((6, 2), mpf(0))
+        st[0] = init_state
+        par_arr = np.full((1,), mpf(-9.8))
+
+        ta_par.step(write_tc = True)
+        st = jet_par(st, pars=par_arr)
+
+        self.assertTrue(np.all(ta_par.tc[:,:6].transpose() == st))
+
+        # Params + time.
+        ta_par_t = taylor_adaptive(sys_par_t, init_state, tol=mpf(1e-9), fp_type="real128", pars=pars)
+        ta_par_t.time = mpf(0.01)
+
+        jet_par_t = taylor_add_jet(sys_par_t, 5, fp_type="real128")
+        st = np.full((6, 2), mpf(0))
+        st[0] = init_state
+        par_arr = np.full((1,), mpf(-9.8))
+        time_arr = np.full((1,), mpf(0.01))
+
+        ta_par_t.step(write_tc = True)
+        st = jet_par_t(st, pars=par_arr, time=time_arr)
+
+        self.assertTrue(np.all(ta_par_t.tc[:,:6].transpose() == st))
+
+        # Failure modes.
+
+        # Params needed but not provided.
+        with self.assertRaises(ValueError) as cm:
+            jet_par(st)
+        self.assertTrue("Invalid vectors passed to a function for the computation of the jet of "
+                        "Taylor derivatives: the ODE system contains parameters, but no parameter array was "
+                        "passed as input argument" in str(cm.exception))
+
+        # Time needed but not provided.
+        with self.assertRaises(ValueError) as cm:
+            jet_par_t(st, pars=par_arr)
+        self.assertTrue("Invalid vectors passed to a function for the computation of the jet of "
+                        "Taylor derivatives: the ODE system is non-autonomous, but no time array was "
+                        "passed as input argument" in str(cm.exception))
+
+        # Wrong st shape, scalar case.
+        st = np.full((6, 2, 1), mpf(0))
+        with self.assertRaises(ValueError) as cm:
+            jet(st)
+        self.assertTrue("Invalid state vector passed to a function for the computation of the jet of "
+                        "Taylor derivatives: the number of dimensions must be 2, but it is "
+                        "3 instead" in str(cm.exception))
+
+        st = np.full((6, 4), mpf(0))
+        with self.assertRaises(ValueError) as cm:
+            jet(st)
+        self.assertTrue("Invalid state vector passed to a function for the computation of the jet of "
+                        "Taylor derivatives: the shape must be (6, 3), but it is "
+                        "(6, 4) instead" in str(cm.exception))
+
+        # Wrong param shape, scalar case.
+        st = np.full((6, 2), mpf(0))
+        par_arr = np.full((5, 2), mpf(-9.8))
+        with self.assertRaises(ValueError) as cm:
+            jet_par(st, pars=par_arr)
+        self.assertTrue("Invalid parameters vector passed to a function for the computation of "
+                        "the jet of "
+                        "Taylor derivatives: the number of dimensions must be 1, but it is "
+                        "2 instead" in str(cm.exception))
+
+        par_arr = np.full((5,), mpf(-9.8))
+        with self.assertRaises(ValueError) as cm:
+            jet_par(st, pars=par_arr)
+        self.assertTrue("Invalid parameters vector passed to a function for the "
+                        "computation of the jet of "
+                        "Taylor derivatives: the shape must be (1), but it is "
+                        "(5) instead" in str(cm.exception))
+
+        # Wrong time shape, scalar case.
+        par_arr = np.full((1,), mpf(-9.8))
+        time_arr = np.full((2,1), mpf(0.01))
+        with self.assertRaises(ValueError) as cm:
+            jet_par_t(st, pars=par_arr, time=time_arr)
+        self.assertTrue("Invalid time vector passed to a function for the computation of the jet of "
+                        "Taylor derivatives: the number of dimensions must be 1, but it is "
+                        "2 instead" in str(cm.exception))
+
+        time_arr = np.full((5,), mpf(0.01))
+        with self.assertRaises(ValueError) as cm:
+            jet_par_t(st, pars=par_arr, time=time_arr)
+        self.assertTrue("Invalid time vector passed to a function for the computation of the jet of "
+                        "Taylor derivatives: the shape must be (1), but it is "
+                        "(5) instead" in str(cm.exception))
 
 def run_test_suite():
     from . import make_nbody_sys, taylor_adaptive
+    from .core import with_real128
+
+    if with_real128:
+        from mpmath import mp
+        orig_mpmath_prec = mp.prec
+        mp.prec = 113
 
     sys = make_nbody_sys(2, masses=[1.1,2.1], Gconst=1)
     ta = taylor_adaptive(sys, [1,2,3,4,5,6,7,8,9,10,11,12])
@@ -301,6 +430,9 @@ def run_test_suite():
     suite = _ut.TestLoader().loadTestsFromTestCase(taylor_add_jet_test_case)
 
     test_result = _ut.TextTestRunner(verbosity=2).run(suite)
+
+    if with_real128:
+        mp.prec = orig_mpmath_prec
 
     if len(test_result.failures) > 0 or len(test_result.errors) > 0:
         retval = 1
