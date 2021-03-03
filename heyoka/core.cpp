@@ -347,7 +347,7 @@ PYBIND11_MODULE(core, m)
         .value("time_limit", hey::taylor_outcome::time_limit)
         .value("err_nf_state", hey::taylor_outcome::err_nf_state);
 
-    // Computation of the jet of derivatives..
+    // Computation of the jet of derivatives.
     heypy::expose_taylor_add_jet_dbl(m);
     heypy::expose_taylor_add_jet_ldbl(m);
 
@@ -690,7 +690,7 @@ PYBIND11_MODULE(core, m)
         // for the constructor.
         auto mpmod = py::module_::import("mpmath");
 
-        auto orig_prec = mpmod.attr("mp").attr("prec");
+        auto orig_prec = py::cast<int>(mpmod.attr("mp").attr("prec"));
         mpmod.attr("mp").attr("prec") = 113;
 
         auto taf128_ctor_impl
