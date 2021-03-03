@@ -6,6 +6,27 @@ Changelog
 0.6.0 (unreleased)
 ------------------
 
+New
+~~~
+
+- Expose low-level functions to compute the jet of derivatives
+  for an ODE system
+  (`#21 <https://github.com/bluescarni/heyoka.py/pull/21>`__).
+
+Changes
+~~~~~~~
+
+- heyoka.py now requires at least version 0.6.0 of the
+  heyoka C++ library
+  (`#21 <https://github.com/bluescarni/heyoka.py/pull/21>`__).
+
+Fix
+~~~
+
+- Properly restore the original ``mpmath`` precision after
+  importing heyoka.py
+  (`#21 <https://github.com/bluescarni/heyoka.py/pull/21>`__).
+
 0.5.0 (2021-02-25)
 ------------------
 
