@@ -283,6 +283,11 @@ void expose_taylor_add_jet_impl(py::module &m, const char *name)
                      tot_n_eq = static_cast<std::uint32_t>(n_eq) + static_cast<std::uint32_t>(n_sv_funcs), jptr](
                         py::array_t<T> state, std::optional<py::array_t<T>> pars, std::optional<py::array_t<T>> time) {
                         // Check the input arrays.
+                        // NOTE: it looks like c_style does not necessarily imply well-aligned:
+                        // https://numpy.org/devdocs/reference/c-api/array.html#c.PyArray_FromAny.NPY_ARRAY_CARRAY
+                        // If this becomes a problem, we can tap into the NumPy C API and do additional
+                        // flag checking:
+                        // https://numpy.org/devdocs/reference/c-api/array.html#c.PyArray_CHKFLAGS
                         if (!(state.flags() & py::array::c_style)) {
                             py_throw(PyExc_ValueError,
                                      "Invalid state vector passed to a function for the computation of the jet of "
