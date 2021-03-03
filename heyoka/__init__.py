@@ -62,11 +62,11 @@ def taylor_adaptive(sys, state, **kwargs):
 
     raise TypeError("the floating-point type \"{}\" is not recognized/supported".format(fp_type))
 
-def taylor_adaptive_batch(sys, state, batch_size, **kwargs):
+def taylor_adaptive_batch(sys, state, **kwargs):
     fp_type = kwargs.pop("fp_type", "double")
 
     if fp_type == "double":
-        return taylor_adaptive_batch_double(sys, state, batch_size, **kwargs)
+        return taylor_adaptive_batch_double(sys, state, **kwargs)
 
     raise TypeError("the floating-point type \"{}\" is not recognized/supported".format(fp_type))
 
