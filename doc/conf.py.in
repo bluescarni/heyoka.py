@@ -70,4 +70,6 @@ html_theme_options = {
     },
 }
 
+execution_excludepatterns = ['*Trappist-1*']
+
 latex_engine = 'xelatex'
