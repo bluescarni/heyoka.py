@@ -62,10 +62,27 @@ def taylor_adaptive(sys, state, **kwargs):
 
     raise TypeError("the floating-point type \"{}\" is not recognized/supported".format(fp_type))
 
-def taylor_adaptive_batch(sys, state, batch_size, **kwargs):
+def taylor_adaptive_batch(sys, state, **kwargs):
     fp_type = kwargs.pop("fp_type", "double")
 
     if fp_type == "double":
-        return taylor_adaptive_batch_double(sys, state, batch_size, **kwargs)
+        return taylor_adaptive_batch_double(sys, state, **kwargs)
+
+    raise TypeError("the floating-point type \"{}\" is not recognized/supported".format(fp_type))
+
+def taylor_add_jet(sys, order, **kwargs):
+    from .core import _taylor_add_jet_dbl, _taylor_add_jet_ldbl
+
+    fp_type = kwargs.pop("fp_type", "double")
+
+    if fp_type == "double":
+        return _taylor_add_jet_dbl(sys, order, **kwargs)
+
+    if fp_type == "long double":
+        return _taylor_add_jet_ldbl(sys, order, **kwargs)
+
+    if with_real128 and fp_type == "real128":
+        from .core import _taylor_add_jet_f128
+        return _taylor_add_jet_f128(sys, order, **kwargs)
 
     raise TypeError("the floating-point type \"{}\" is not recognized/supported".format(fp_type))
