@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Long term stability of Trappist-1 &#8212; heyoka.py 0.6.0 documentation</title>
+    <title>Long term stability of N-body simulations: the case of Trappist-1 &#8212; heyoka.py 0.6.0 documentation</title>
     
   <link rel="stylesheet" href="../_static/css/index.f658d18f9b420779cfdf24aa0a7e2d77.css">
 
@@ -39,6 +39,8 @@
     <script src="../_static/togglebutton.js"></script>
     <script >var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
     <script src="../_static/sphinx-book-theme.7d483ff0a819d6edff12ce0b1ead3928.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["\\(", "\\)"]], "displayMath": [["\\[", "\\]"]], "processRefs": false, "processEnvironments": false}})</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Changelog" href="../changelog.html" />
@@ -144,7 +146,7 @@
    </li>
    <li class="toctree-l2 current active">
     <a class="current reference internal" href="#">
-     Long term stability of Trappist-1
+     Long term stability of N-body simulations: the case of Trappist-1
     </a>
    </li>
   </ul>
@@ -262,14 +264,386 @@
         
               <div>
                 
-  <div class="section" id="long-term-stability-of-trappist-1">
-<h1>Long term stability of Trappist-1<a class="headerlink" href="#long-term-stability-of-trappist-1" title="Permalink to this headline">¶</a></h1>
-<p>The Trappist-1 system (see https://en.wikipedia.org/wiki/TRAPPIST-1) is …</p>
+  <div class="section" id="long-term-stability-of-n-body-simulations-the-case-of-trappist-1">
+<h1>Long term stability of N-body simulations: the case of Trappist-1<a class="headerlink" href="#long-term-stability-of-n-body-simulations-the-case-of-trappist-1" title="Permalink to this headline">¶</a></h1>
+<p><a class="reference external" href="https://en.wikipedia.org/wiki/TRAPPIST-1">TRAPPIST-1</a> is a system made of seven Earth-sized planets, orbiting closely around a small ultra-cool dwarf with periods forming a near-resonant chain. The system is of particular interest as it is considered as a candidate to host extraterrestrial life and it is relatively close to our solar system (∼40 light years).</p>
+<p>Here we show how to use <em>heyoka.py</em> to setup a simulation to study the long-term stability of the system. For this purpose we will simulate the N-body dynamics of the system directly in Cartesian coordinates and in an inertial reference frame, the equations of motion (EOM) being:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+\left\{
+\begin{aligned}
+\frac{d^2x_i}{dt^2} &amp;= -G \sum_{i\ne j}^N \frac {m_j (x_i-x_j)}{\left[{(x_i-x_j)^2+(y_i-y_j)^2+(z_i-z_j)^2}\right]^\frac 32} \\
+\frac{d^2y_i}{dt^2} &amp;= -G \sum_{i\ne j}^N \frac {m_j (y_i-y_j)}{\left[{(x_i-x_j)^2+(y_i-y_j)^2+(z_i-z_j)^2}\right]^\frac 32} \\
+\frac{d^2z_i}{dt^2} &amp;= -G \sum_{i\ne j}^N \frac {m_j (z_i-z_j)}{\left[{(x_i-x_j)^2+(y_i-y_j)^2+(z_i-z_j)^2}\right]^\frac 32} 
+\end{aligned}
+\right. \qquad \qquad \rightarrow i = 1..N
+\end{split}\]</div>
+<p>To build this system of equations we can use heyoka built-in <code class="docutils literal notranslate"><span class="pre">make_nbody_sys</span></code> which will implement for us the equations of motion above. Our main concern is, thus, to generate sets of initial conditions that are compatible with the Earth-based astronomical observations made and simulate a bunch of them in parallel.</p>
+<p>NOTE: We will not use in this notebook <em>heyoka.py</em>’s vectorization capabilities and we will, instead, only parallelise using multiple threads.</p>
+<p>NOTE: Thread parallelism is possible as the <em>heyoka.py</em> Taylor integrator releases the python GIL.</p>
+<p>Let us begin with importing the needed dependencies:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">heyoka</span> <span class="k">as</span> <span class="nn">hy</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># core imports</span>
+<span class="kn">import</span> <span class="nn">heyoka</span> <span class="k">as</span> <span class="nn">hey</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pykep</span> <span class="k">as</span> <span class="nn">pk</span>
+
+<span class="c1"># plots</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">from</span> <span class="nn">mpl_toolkits.mplot3d</span> <span class="kn">import</span> <span class="n">Axes3D</span>
+
+<span class="c1"># misc</span>
+<span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">deepcopy</span>
+<span class="kn">from</span> <span class="nn">multiprocessing.pool</span> <span class="kn">import</span> <span class="n">ThreadPool</span>
+<span class="kn">from</span> <span class="nn">scipy.optimize</span> <span class="kn">import</span> <span class="n">newton</span>
 </pre></div>
 </div>
+</div>
+</div>
+<p>The first thing one must do is to collect the physical information on the system. For this purpose we refer to the paper from <a class="reference external" href="https://arxiv.org/pdf/2010.01074.pdf">Agol et al.</a> and we collect and store the various observations for the Trappist system. We indicate with a small <code class="docutils literal notranslate"><span class="pre">s</span></code> the measurement error:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Cavendish constant (kg m^3/s^2)</span>
+<span class="n">G</span> <span class="o">=</span> <span class="mf">6.67430E-11</span>
+<span class="c1"># Sun_mass (kg)</span>
+<span class="n">SM</span> <span class="o">=</span> <span class="mf">1.989E30</span>
+<span class="c1"># Earth mass (kg)</span>
+<span class="n">EM</span> <span class="o">=</span> <span class="mf">5.972E24</span>
+<span class="c1"># Mass of the Trappist-1 star</span>
+<span class="n">MS</span> <span class="o">=</span> <span class="mf">0.0898</span> <span class="o">*</span> <span class="n">SM</span>
+<span class="n">MSs</span> <span class="o">=</span> <span class="mf">0.0023</span>
+<span class="c1"># Starting epoch of the simulation</span>
+<span class="n">t_start</span> <span class="o">=</span> <span class="mf">7257.93115525</span> <span class="o">*</span> <span class="n">pk</span><span class="o">.</span><span class="n">DAY2SEC</span>
+<span class="c1"># Masses of the Earth sized planets </span>
+<span class="n">mu</span> <span class="o">=</span>  <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">1.3771</span><span class="p">,</span><span class="mf">1.3105</span><span class="p">,</span><span class="mf">0.3885</span><span class="p">,</span><span class="mf">0.6932</span><span class="p">,</span><span class="mf">1.0411</span><span class="p">,</span><span class="mf">1.3238</span><span class="p">,</span><span class="mf">0.3261</span><span class="p">])</span>
+<span class="n">mus</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.0593</span><span class="p">,</span><span class="mf">0.0453</span><span class="p">,</span><span class="mf">0.0074</span><span class="p">,</span><span class="mf">0.0128</span><span class="p">,</span><span class="mf">0.0155</span><span class="p">,</span><span class="mf">0.0171</span><span class="p">,</span><span class="mf">0.0186</span><span class="p">])</span>
+<span class="c1"># Orbital parameters for the Earth sized planets </span>
+<span class="n">P</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">1.510826</span><span class="p">,</span> <span class="mf">2.421937</span><span class="p">,</span> <span class="mf">4.049219</span><span class="p">,</span> <span class="mf">6.101013</span><span class="p">,</span> <span class="mf">9.207540</span><span class="p">,</span><span class="mf">12.352446</span><span class="p">,</span><span class="mf">18.772866</span><span class="p">])</span> <span class="o">*</span> <span class="n">pk</span><span class="o">.</span><span class="n">DAY2SEC</span>
+<span class="n">Ps</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.000006</span><span class="p">,</span><span class="mf">0.000018</span><span class="p">,</span><span class="mf">0.000026</span><span class="p">,</span><span class="mf">0.000035</span><span class="p">,</span><span class="mf">0.000032</span><span class="p">,</span><span class="mf">0.000054</span><span class="p">,</span><span class="mf">0.000214</span><span class="p">])</span> <span class="o">*</span> <span class="n">pk</span><span class="o">.</span><span class="n">DAY2SEC</span>
+<span class="n">t0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">7257.55044</span><span class="p">,</span><span class="mf">7258.58728</span><span class="p">,</span><span class="mf">7257.06768</span><span class="p">,</span><span class="mf">7257.82771</span><span class="p">,</span><span class="mf">7257.07426</span><span class="p">,</span><span class="mf">7257.71462</span><span class="p">,</span><span class="mf">7249.60676</span><span class="p">])</span> <span class="o">*</span> <span class="n">pk</span><span class="o">.</span><span class="n">DAY2SEC</span>
+<span class="n">t0s</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.00015</span><span class="p">,</span><span class="mf">0.00027</span><span class="p">,</span><span class="mf">0.00067</span><span class="p">,</span><span class="mf">0.00041</span><span class="p">,</span><span class="mf">0.00085</span><span class="p">,</span><span class="mf">0.00103</span><span class="p">,</span><span class="mf">0.00272</span><span class="p">])</span> <span class="o">*</span> <span class="n">pk</span><span class="o">.</span><span class="n">DAY2SEC</span>
+<span class="n">ecosw</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="o">-</span><span class="mf">0.00215</span><span class="p">,</span> <span class="mf">0.00055</span><span class="p">,</span><span class="o">-</span><span class="mf">0.00496</span><span class="p">,</span> <span class="mf">0.00433</span><span class="p">,</span><span class="o">-</span><span class="mf">0.00840</span><span class="p">,</span> <span class="mf">0.00380</span><span class="p">,</span><span class="o">-</span><span class="mf">0.00365</span><span class="p">])</span>
+<span class="n">ecosws</span> <span class="o">=</span>  <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.00332</span><span class="p">,</span><span class="mf">0.00232</span><span class="p">,</span><span class="mf">0.00186</span><span class="p">,</span><span class="mf">0.00149</span><span class="p">,</span><span class="mf">0.00130</span><span class="p">,</span><span class="mf">0.00112</span><span class="p">,</span><span class="mf">0.00077</span><span class="p">])</span>
+<span class="n">esinw</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span> <span class="mf">0.00217</span><span class="p">,</span> <span class="mf">0.00001</span><span class="p">,</span> <span class="mf">0.00267</span><span class="p">,</span><span class="o">-</span><span class="mf">0.00461</span><span class="p">,</span><span class="o">-</span><span class="mf">0.00051</span><span class="p">,</span> <span class="mf">0.00128</span><span class="p">,</span><span class="o">-</span><span class="mf">0.00002</span><span class="p">])</span>
+<span class="n">esinws</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.00244</span><span class="p">,</span><span class="mf">0.00171</span><span class="p">,</span><span class="mf">0.00112</span><span class="p">,</span><span class="mf">0.00087</span><span class="p">,</span><span class="mf">0.00087</span><span class="p">,</span><span class="mf">0.00070</span><span class="p">,</span><span class="mf">0.00044</span><span class="p">])</span>
+
+<span class="c1"># We put everything in a dictionary for convenience</span>
+<span class="n">data</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+<span class="n">data</span><span class="p">[</span><span class="s2">&quot;MS&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">MS</span><span class="p">;</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;MSs&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">MSs</span><span class="p">;</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;mu&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">mu</span><span class="p">;</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;mus&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">mus</span><span class="p">;</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;P&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">P</span><span class="p">;</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;Ps&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">Ps</span><span class="p">;</span> 
+<span class="n">data</span><span class="p">[</span><span class="s2">&quot;t0&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">t0</span><span class="p">;</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;t0s&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">t0s</span><span class="p">;</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;t_start&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">t_start</span><span class="p">;</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;ecosw&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ecosw</span><span class="p">;</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;ecosws&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ecosws</span><span class="p">;</span> 
+<span class="n">data</span><span class="p">[</span><span class="s2">&quot;esinw&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">esinw</span><span class="p">;</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;esinws&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">esinws</span><span class="p">;</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;G&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">G</span><span class="p">;</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;m_earth&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">EM</span><span class="p">;</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;m_sun&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">SM</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>We can now generate plausible Trappist systems having physical properties that are compatible with the astronomical observation, we thus define a <code class="docutils literal notranslate"><span class="pre">trappist_generator</span></code> that returns the mass and position of all bodies in the Trappist-1 system (star and planets). Since we are at it we make the generator able to generate <code class="docutils literal notranslate"><span class="pre">N</span></code> plausible systems.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">trappist_generator</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="n">trappist_data</span><span class="p">):</span>
+    <span class="n">G</span><span class="p">,</span> <span class="n">m_earth</span><span class="p">,</span> <span class="n">m_sun</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;G&quot;</span><span class="p">],</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;m_earth&quot;</span><span class="p">],</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;m_sun&quot;</span><span class="p">]</span>
+    <span class="n">retval_ic</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">retval_m</span> <span class="o">=</span> <span class="p">[]</span>
+    
+   
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">N</span><span class="p">):</span>
+        <span class="c1"># First we generate the stellar mass</span>
+        <span class="n">m_star</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;MS&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;MSs&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">()</span><span class="o">*</span><span class="mi">2</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="c1"># Then we generate masses for the planets</span>
+        <span class="n">m_pl</span> <span class="o">=</span> <span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;mu&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;mus&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">()</span><span class="o">*</span><span class="mi">2</span><span class="o">-</span><span class="mi">1</span><span class="p">))</span>
+        <span class="n">m_pl</span> <span class="o">=</span> <span class="n">m_pl</span> <span class="o">*</span> <span class="n">m_earth</span> <span class="o">*</span> <span class="n">m_star</span> <span class="o">/</span> <span class="p">(</span><span class="n">m_sun</span> <span class="o">*</span> <span class="mf">0.09</span><span class="p">)</span>
+
+        <span class="c1"># And compute the Jacobi masses &quot;The Jacobi mass of planet i </span>
+        <span class="c1"># includes also the masses of all objects with a smaller </span>
+        <span class="c1"># semi-major axis.&quot;</span>
+        <span class="n">m_jacobi</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">m_pl</span><span class="p">)</span>
+
+        <span class="c1"># Then we generate the periods P</span>
+        <span class="n">P_pl</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;P&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;Ps&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">()</span><span class="o">*</span><span class="mi">2</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="c1"># And compute the semi-major axes from them</span>
+        <span class="n">a_pl</span> <span class="o">=</span> <span class="p">(</span><span class="n">P_pl</span> <span class="o">/</span> <span class="mf">2.</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span> <span class="o">*</span> <span class="n">G</span> <span class="o">*</span> <span class="p">(</span><span class="n">m_jacobi</span> <span class="o">+</span> <span class="n">m_star</span><span class="p">)</span>
+        <span class="n">a_pl</span> <span class="o">=</span> <span class="n">a_pl</span><span class="o">**</span><span class="p">(</span><span class="mf">1.</span><span class="o">/</span><span class="mf">3.</span><span class="p">)</span>
+        <span class="c1">#a_pl = a_pl  * (1 + pert*(np.random.random(7)*2-1))</span>
+        <span class="c1"># Then we generate the ecos, esin </span>
+        <span class="n">ecosw</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;ecosw&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;ecosws&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">()</span><span class="o">*</span><span class="mi">2</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> 
+        <span class="n">esinw</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;esinw&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;esinws&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">()</span><span class="o">*</span><span class="mi">2</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> 
+
+        <span class="c1"># And compute eccentricites and argument of peristars</span>
+        <span class="n">e_pl</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">ecosw</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">esinw</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+        <span class="n">w_pl</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arctan2</span><span class="p">(</span><span class="n">esinw</span><span class="p">,</span> <span class="n">ecosw</span><span class="p">)</span>
+        <span class="c1">#e_pl = e_pl * (1 + pert*(np.random.random(7)*2-1))</span>
+        <span class="c1">#w_pl = w_pl * (1 + pert*(np.random.random(7)*2-1))</span>
+
+        <span class="c1"># And compute the mean anomalies at transit</span>
+        <span class="n">ni_pl_t</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mi">2</span> <span class="o">-</span> <span class="n">w_pl</span>
+        <span class="n">E_pl_t</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tan</span><span class="p">(</span><span class="n">ni_pl_t</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">((</span><span class="mi">1</span> <span class="o">-</span> <span class="n">e_pl</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">e_pl</span><span class="p">))</span>
+        <span class="n">E_pl_t</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arctan</span><span class="p">(</span><span class="n">E_pl_t</span><span class="p">)</span>
+        <span class="n">E_pl_t</span> <span class="o">=</span> <span class="n">E_pl_t</span> <span class="o">*</span> <span class="mi">2</span>
+        <span class="n">M_pl_t</span> <span class="o">=</span> <span class="n">E_pl_t</span> <span class="o">-</span> <span class="n">E_pl_t</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">E_pl_t</span><span class="p">)</span>
+
+        <span class="c1"># And we set inclinations and RAAN accordingly</span>
+        <span class="n">RAAN_pl</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">7</span><span class="p">)</span>
+        <span class="n">incl_pl</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="mi">7</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mi">2</span>
+        <span class="c1">#incl_pl = incl_pl * (1 + pert*(np.random.random(7)*2-1))</span>
+
+        <span class="c1"># Then we generate the t0</span>
+        <span class="n">t0_pl</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;t0&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;t0s&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">()</span><span class="o">*</span><span class="mi">2</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> 
+
+        <span class="c1"># And we compute the mean anomalies</span>
+        <span class="n">M_pl</span> <span class="o">=</span> <span class="n">M_pl_t</span> <span class="o">-</span> <span class="p">((</span><span class="n">t0_pl</span> <span class="o">-</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;t_start&quot;</span><span class="p">])</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="mi">2</span><span class="p">)</span> <span class="o">/</span> <span class="n">P_pl</span>
+
+
+        <span class="c1"># With all of the orbital parameters defined we can instantiate the ICs</span>
+        <span class="n">ic_tr</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">7</span><span class="p">):</span>
+            <span class="c1"># Newton method to find E from M</span>
+            <span class="n">E</span> <span class="o">=</span> <span class="n">newton</span><span class="p">(</span><span class="k">lambda</span> <span class="n">E</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">M</span><span class="p">:</span> <span class="n">E</span><span class="o">-</span><span class="n">e</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">E</span><span class="p">)</span> <span class="o">-</span> <span class="n">M</span><span class="p">,</span> <span class="n">M_pl</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">+</span> <span class="n">e_pl</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">M_pl</span><span class="p">[</span><span class="n">j</span><span class="p">]),</span> <span class="n">args</span> <span class="o">=</span> <span class="p">(</span><span class="n">e_pl</span><span class="p">[</span><span class="n">j</span><span class="p">],</span> <span class="n">M_pl</span><span class="p">[</span><span class="n">j</span><span class="p">]))</span>
+            <span class="n">r</span><span class="p">,</span><span class="n">v</span> <span class="o">=</span> <span class="n">pk</span><span class="o">.</span><span class="n">par2ic</span><span class="p">([</span><span class="n">a_pl</span><span class="p">[</span><span class="n">j</span><span class="p">],</span> <span class="n">e_pl</span><span class="p">[</span><span class="n">j</span><span class="p">],</span> <span class="n">incl_pl</span><span class="p">[</span><span class="n">j</span><span class="p">],</span> <span class="n">RAAN_pl</span><span class="p">[</span><span class="n">j</span><span class="p">],</span> <span class="n">w_pl</span><span class="p">[</span><span class="n">j</span><span class="p">],</span> <span class="n">E</span><span class="p">],</span> <span class="n">G</span> <span class="o">*</span> <span class="n">m_star</span><span class="p">)</span>
+            <span class="n">ic_tr</span> <span class="o">=</span> <span class="n">ic_tr</span> <span class="o">+</span> <span class="nb">list</span><span class="p">(</span><span class="n">r</span><span class="p">)</span> <span class="o">+</span> <span class="nb">list</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+        <span class="n">ic_tr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">ic_tr</span><span class="p">)</span>
+
+        <span class="c1"># Assemble the return masses into one </span>
+        <span class="n">m_tr</span> <span class="o">=</span> <span class="p">[</span><span class="n">m_star</span><span class="p">]</span> <span class="o">+</span> <span class="nb">list</span><span class="p">(</span><span class="n">m_pl</span><span class="p">)</span>
+        <span class="n">m_tr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">m_tr</span><span class="p">)</span>
+
+        <span class="c1"># And place the star so that the COM is at the origin</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">6</span><span class="p">):</span>
+            <span class="n">ic_tr</span><span class="p">[</span><span class="mi">0</span><span class="o">+</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span> <span class="nb">sum</span><span class="p">(</span><span class="n">ic_tr</span><span class="p">[</span><span class="mi">6</span><span class="o">+</span><span class="n">j</span><span class="p">::</span><span class="mi">6</span><span class="p">]</span><span class="o">*</span><span class="p">(</span><span class="n">m_tr</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="o">/</span> <span class="n">m_tr</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span> 
+            
+        <span class="n">retval_ic</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ic_tr</span><span class="p">)</span>
+        <span class="n">retval_m</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">m_tr</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">retval_m</span><span class="p">,</span> <span class="n">retval_ic</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>and we have a first quick look at the resulting orbits of one random instance:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Plots the trappist system</span>
+<span class="k">def</span> <span class="nf">plot_trappist</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="n">mu</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+    <span class="n">letter</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;s&quot;</span><span class="p">,</span> <span class="s2">&quot;a&quot;</span><span class="p">,</span> <span class="s2">&quot;b&quot;</span><span class="p">,</span> <span class="s2">&quot;c&quot;</span><span class="p">,</span> <span class="s2">&quot;d&quot;</span><span class="p">,</span> <span class="s2">&quot;e&quot;</span><span class="p">,</span> <span class="s2">&quot;f&quot;</span><span class="p">,</span> <span class="s2">&quot;g&quot;</span><span class="p">,</span> <span class="s2">&quot;h&quot;</span><span class="p">]</span>
+    <span class="n">colors</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;y&quot;</span><span class="p">,</span> <span class="s2">&quot;C0&quot;</span><span class="p">,</span> <span class="s2">&quot;C1&quot;</span><span class="p">,</span> <span class="s2">&quot;C2&quot;</span><span class="p">,</span> <span class="s2">&quot;C3&quot;</span><span class="p">,</span> <span class="s2">&quot;C4&quot;</span><span class="p">,</span> <span class="s2">&quot;C5&quot;</span><span class="p">,</span> <span class="s2">&quot;C6&quot;</span><span class="p">,</span> <span class="s2">&quot;C7&quot;</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">axes</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">7</span><span class="p">,</span><span class="mi">7</span><span class="p">))</span>
+        <span class="n">axes</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="mi">111</span><span class="p">,</span> <span class="n">projection</span><span class="o">=</span><span class="s1">&#39;3d&#39;</span><span class="p">,</span> <span class="n">aspect</span><span class="o">=</span><span class="s1">&#39;auto&#39;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">8</span><span class="p">):</span>
+        <span class="n">el</span> <span class="o">=</span> <span class="n">pk</span><span class="o">.</span><span class="n">ic2par</span><span class="p">(</span><span class="n">state</span><span class="p">[</span><span class="n">i</span><span class="o">*</span><span class="mi">6</span><span class="p">:</span><span class="mi">3</span><span class="o">+</span><span class="n">i</span><span class="o">*</span><span class="mi">6</span><span class="p">],</span> <span class="n">state</span><span class="p">[</span><span class="mi">3</span><span class="o">+</span><span class="n">i</span><span class="o">*</span><span class="mi">6</span><span class="p">:</span><span class="mi">6</span><span class="o">+</span><span class="n">i</span><span class="o">*</span><span class="mi">6</span><span class="p">],</span> <span class="n">mu</span><span class="p">)</span>
+        <span class="n">pla</span> <span class="o">=</span> <span class="n">pk</span><span class="o">.</span><span class="n">planet</span><span class="o">.</span><span class="n">keplerian</span><span class="p">(</span><span class="n">pk</span><span class="o">.</span><span class="n">epoch</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="n">el</span><span class="p">,</span> <span class="n">mu</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span> <span class="p">,</span> <span class="s2">&quot;Trappist-1&quot;</span><span class="o">+</span><span class="n">letter</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+        <span class="n">pk</span><span class="o">.</span><span class="n">orbit_plots</span><span class="o">.</span><span class="n">plot_planet</span><span class="p">(</span><span class="n">pla</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="n">axes</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">colors</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s1">&#39;off&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+    <span class="n">axes</span><span class="o">.</span><span class="n">view_init</span><span class="p">(</span><span class="n">elev</span><span class="o">=</span><span class="mf">0.</span><span class="p">,</span> <span class="n">azim</span><span class="o">=</span><span class="mf">90.</span><span class="p">)</span>
+    <span class="n">axes</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="n">s</span><span class="o">=</span><span class="mi">40</span><span class="p">,</span><span class="n">c</span><span class="o">=</span><span class="s1">&#39;y&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">axes</span>
+
+<span class="n">masses</span><span class="p">,</span> <span class="n">state</span> <span class="o">=</span> <span class="n">trappist_generator</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+<span class="n">plot_trappist</span><span class="p">(</span><span class="n">state</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">masses</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">G</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/Long term stability of Trappist-1_7_0.png" src="../_images/Long term stability of Trappist-1_7_0.png" />
+</div>
+</div>
+<p>We are now ready to define the details of the experiment which will simulate in parallel a number of plausible Trappist-1 systems.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Number of parallel processes (i.e. set this to the number of your CPUs).</span>
+<span class="n">nproc</span> <span class="o">=</span> <span class="mi">3</span>
+<span class="c1"># Number of instances of the problem (i.e. plausible Trappist-1 systems we want to generate). </span>
+<span class="c1"># This should be equal or larger than the number of parallel processes.</span>
+<span class="n">ninst</span> <span class="o">=</span> <span class="mi">3</span>
+<span class="c1"># Final integration time in yr. (i.e. for 10Myr use 10000000)</span>
+<span class="n">final_time_yr</span> <span class="o">=</span> <span class="mi">1000</span>
+<span class="c1"># N_log number of logged points (uniformly distributed over the integration time)</span>
+<span class="n">N_log</span><span class="o">=</span><span class="mi">50</span>
+<span class="c1"># Linear schedule</span>
+<span class="n">times</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="n">final_time_yr</span><span class="p">,</span> <span class="n">N_log</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Number of final files that will be generated: </span><span class="si">{:d}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">N_log</span><span class="o">*</span><span class="n">ninst</span><span class="o">+</span><span class="n">ninst</span><span class="p">))</span>
+<span class="c1"># We generate the various trappist systems</span>
+<span class="n">m</span><span class="p">,</span> <span class="n">ic</span> <span class="o">=</span> <span class="n">trappist_generator</span><span class="p">(</span><span class="n">ninst</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Number of final files that will be generated: 153
+</pre></div>
+</div>
+</div>
+</div>
+<p>We define the code that will run in each separate thread. Since this type of simulation may also take days (e.g. when we look at 10Myr evolutions) we use files to log the results and return data from the various threads:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># This will simulate, monitor and log the i-th initial condition</span>
+<span class="k">def</span> <span class="nf">runner</span><span class="p">(</span><span class="n">i</span><span class="p">):</span>
+    <span class="c1"># Generates the EOMs</span>
+    <span class="n">ode_sys</span> <span class="o">=</span> <span class="n">hey</span><span class="o">.</span><span class="n">make_nbody_sys</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="n">Gconst</span> <span class="o">=</span> <span class="n">G</span><span class="p">,</span> <span class="n">masses</span> <span class="o">=</span> <span class="n">m</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+    <span class="c1"># Generates the Taylor integrator</span>
+    <span class="n">ta</span> <span class="o">=</span> <span class="n">hey</span><span class="o">.</span><span class="n">taylor_adaptive</span><span class="p">(</span><span class="n">ode_sys</span><span class="p">,</span> <span class="n">ic</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">high_accuracy</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="mf">1e-18</span><span class="p">,</span> <span class="n">compact_mode</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    
+    <span class="k">def</span> <span class="nf">data_saver</span><span class="p">(</span><span class="n">j</span><span class="p">,</span> <span class="n">state</span><span class="p">):</span>           
+            <span class="n">np</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s1">&#39;trappist1_</span><span class="si">{}</span><span class="s1">_</span><span class="si">{:05d}</span><span class="s1">.npy&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">),</span> <span class="n">state</span><span class="p">)</span>
+    <span class="c1"># Its good practice to put this in a try catch block, even though it should not be necessary</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s1">&#39;trappist1_m_</span><span class="si">{}</span><span class="s1">.npy&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">),</span> <span class="n">m</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+        <span class="n">data_saver</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">ic</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">N_log</span><span class="p">):</span>
+            <span class="n">oc</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">nsteps</span> <span class="o">=</span> <span class="n">ta</span><span class="o">.</span><span class="n">propagate_until</span><span class="p">(</span><span class="n">times</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">*</span> <span class="mf">365.25</span> <span class="o">*</span> <span class="n">pk</span><span class="o">.</span><span class="n">DAY2SEC</span><span class="p">)</span>
+            <span class="n">data_saver</span><span class="p">(</span><span class="n">j</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">ta</span><span class="o">.</span><span class="n">state</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">oc</span> <span class="o">!=</span> <span class="n">hey</span><span class="o">.</span><span class="n">taylor_outcome</span><span class="o">.</span><span class="n">time_limit</span><span class="p">:</span>
+                <span class="k">break</span>
+    <span class="k">except</span> <span class="ne">BaseException</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Exception caught in thread. The full error message:</span><span class="se">\n</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)),</span> <span class="n">flush</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Finally, we run the various simulations. Note that it is here that the Taylor adaptive integrator will be compiled by LLVM into efficient code, and thus each runner will take some time before starting.</p>
+<p>Note that depending to the parameters set for the experiment and your hardware the cell below may run for seconds, days or weeks writing on the files the partial result of the simulation.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">with</span> <span class="n">ThreadPool</span><span class="p">(</span><span class="n">processes</span><span class="o">=</span><span class="n">nproc</span><span class="p">)</span> <span class="k">as</span> <span class="n">pool</span><span class="p">:</span>
+    <span class="n">pool</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">runner</span><span class="p">,</span> <span class="nb">range</span><span class="p">(</span><span class="n">ninst</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>At the end and during the execution of the above cell, files will be created logging the system state and its physical parameters. In particular there will be <code class="docutils literal notranslate"><span class="pre">ninst</span></code> files (e.g. <code class="docutils literal notranslate"><span class="pre">trappist1_m_3.npy</span></code>) containing the system masses and <code class="docutils literal notranslate"><span class="pre">ninst</span> <span class="pre">*</span> <span class="pre">N_log</span></code> files (e.g. <code class="docutils literal notranslate"><span class="pre">trappist1_3_00001.npy</span></code>) containing the system state at the logged points. These files can be read and used to determine the system stability using a number of helper functions.</p>
+<p>To load the state history for the i-th generated system up to <code class="docutils literal notranslate"><span class="pre">N</span></code> files:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">load_evolution</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">N</span><span class="p">):</span>
+    <span class="n">state</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">N</span><span class="o">+</span><span class="mi">1</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">tmp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s1">&#39;trappist1_</span><span class="si">{}</span><span class="s1">_</span><span class="si">{:05d}</span><span class="s1">.npy&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">))</span>
+            <span class="n">state</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">tmp</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">FileNotFoundError</span><span class="p">:</span>
+            <span class="k">pass</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">state</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>To load the masses of the i-th generated system:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">load_masses</span><span class="p">(</span><span class="n">sim_id</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s1">&#39;trappist1_m_</span><span class="si">{}</span><span class="s1">.npy&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">sim_id</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>To compute the orbital parameters evolution for the <code class="docutils literal notranslate"><span class="pre">pl_id</span></code> planet from the states returned by <code class="docutils literal notranslate"><span class="pre">load_evolution</span></code>:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">compute_planet_evolution</span><span class="p">(</span><span class="n">pl_id</span><span class="p">,</span> <span class="n">states</span><span class="p">,</span> <span class="n">m_star</span><span class="p">):</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">states</span><span class="p">[:,</span> <span class="mi">0</span><span class="o">+</span><span class="mi">6</span><span class="o">*</span><span class="n">pl_id</span><span class="p">:</span><span class="mi">6</span><span class="o">+</span><span class="mi">6</span><span class="o">*</span><span class="n">pl_id</span><span class="p">]</span>
+    <span class="n">retval</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
+        <span class="n">retval</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pk</span><span class="o">.</span><span class="n">ic2par</span><span class="p">(</span><span class="n">d</span><span class="p">[:</span><span class="mi">3</span><span class="p">],</span><span class="n">d</span><span class="p">[</span><span class="mi">3</span><span class="p">:</span><span class="mi">6</span><span class="p">],</span> <span class="n">G</span> <span class="o">*</span> <span class="n">m_star</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">retval</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>To determine if the system evolution is so far stable, by detecting big changes in the system semi-major axes:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">is_stable</span><span class="p">(</span><span class="n">states</span><span class="p">,</span> <span class="n">m_star</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">pl_id</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">7</span><span class="p">):</span>
+        <span class="n">params</span> <span class="o">=</span> <span class="n">compute_planet_evolution</span><span class="p">(</span><span class="n">pl_id</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">states</span><span class="p">,</span> <span class="n">m_star</span><span class="p">)</span>
+        <span class="n">std</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">params</span><span class="p">[:,</span><span class="mi">0</span><span class="p">])</span> <span class="o">/</span> <span class="n">pk</span><span class="o">.</span><span class="n">AU</span>
+        <span class="k">if</span> <span class="n">std</span> <span class="o">&gt;</span> <span class="mf">1e-2</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="n">largest_sma</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">params</span><span class="p">[:,</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">smallest_sma</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">params</span><span class="p">[:,</span><span class="mi">0</span><span class="p">])</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">largest_sma</span><span class="o">-</span><span class="n">smallest_sma</span><span class="p">)</span> <span class="o">/</span> <span class="n">pk</span><span class="o">.</span><span class="n">AU</span> <span class="o">&gt;</span> <span class="mf">1e-2</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+    <span class="k">return</span> <span class="kc">True</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>… and finally to compute the system energy</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">kinetic_energy</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="n">masses</span><span class="p">):</span>
+    <span class="n">K</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">8</span><span class="p">):</span>
+        <span class="n">v</span> <span class="o">=</span> <span class="n">state</span><span class="p">[</span><span class="mi">3</span> <span class="o">+</span> <span class="n">i</span><span class="o">*</span><span class="mi">6</span> <span class="p">:</span> <span class="mi">6</span> <span class="o">+</span> <span class="n">i</span><span class="o">*</span><span class="mi">6</span><span class="p">]</span>
+        <span class="n">K</span> <span class="o">+=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">v</span><span class="o">*</span><span class="n">v</span><span class="p">)</span> <span class="o">*</span> <span class="n">masses</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">K</span> <span class="o">*</span> <span class="mf">0.5</span>
+
+<span class="k">def</span> <span class="nf">potential_energy</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="n">masses</span><span class="p">):</span>
+    <span class="n">U</span> <span class="o">=</span> <span class="mf">0.</span><span class="p">;</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">8</span><span class="p">):</span>
+        <span class="n">ri</span> <span class="o">=</span> <span class="n">state</span><span class="p">[</span><span class="n">i</span><span class="o">*</span><span class="mi">6</span> <span class="p">:</span> <span class="mi">3</span> <span class="o">+</span> <span class="n">i</span><span class="o">*</span><span class="mi">6</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">8</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">i</span><span class="o">&gt;=</span><span class="n">j</span><span class="p">:</span> 
+                <span class="k">continue</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">rj</span> <span class="o">=</span> <span class="n">state</span><span class="p">[</span><span class="n">j</span><span class="o">*</span><span class="mi">6</span> <span class="p">:</span> <span class="mi">3</span> <span class="o">+</span> <span class="n">j</span><span class="o">*</span><span class="mi">6</span><span class="p">]</span>
+                <span class="n">rij</span> <span class="o">=</span> <span class="n">ri</span><span class="o">-</span><span class="n">rj</span>
+                <span class="n">U</span> <span class="o">+=</span> <span class="p">(</span><span class="n">masses</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">*</span> <span class="n">masses</span><span class="p">[</span><span class="n">j</span><span class="p">])</span> <span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">rij</span><span class="p">)</span>
+    <span class="k">return</span> <span class="o">-</span> <span class="n">G</span> <span class="o">*</span> <span class="n">U</span>
+                
+<span class="k">def</span> <span class="nf">energy</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="n">masses</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">kinetic_energy</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="n">masses</span><span class="p">)</span> <span class="o">+</span> <span class="n">potential_energy</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="n">masses</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Let us then load the simulation result from the files produced, relative to the first system:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sim_id</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="n">states</span> <span class="o">=</span> <span class="n">load_evolution</span><span class="p">(</span><span class="n">sim_id</span><span class="p">,</span><span class="n">N_log</span><span class="p">)</span>
+<span class="n">masses</span> <span class="o">=</span> <span class="n">load_masses</span><span class="p">(</span><span class="n">sim_id</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>and plot, for example, the semi-major axis of the seven planets</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+<span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">states</span><span class="p">)</span>
+<span class="n">times</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">final_time_yr</span><span class="p">,</span> <span class="n">N_log</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">7</span><span class="p">):</span>
+    <span class="n">params</span> <span class="o">=</span> <span class="n">compute_planet_evolution</span><span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">states</span><span class="p">,</span> <span class="n">masses</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">times</span><span class="p">,</span> <span class="n">params</span><span class="p">[:,</span><span class="mi">0</span><span class="p">])</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;Time (years)&quot;</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/Long term stability of Trappist-1_27_0.png" src="../_images/Long term stability of Trappist-1_27_0.png" />
+</div>
+</div>
+<p>Let us also look at the energy conservation and plot it along the simulation, since we only simulated 1000 years in this example, there is not much we can see, but for long term simulation we would see that the Brouwer’s law is achieved for the error growth:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Error on the energy</span>
+<span class="n">DE</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">states</span><span class="p">)):</span>
+    <span class="n">DE</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">((</span><span class="n">energy</span><span class="p">(</span><span class="n">states</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">masses</span><span class="p">)</span> <span class="o">-</span> <span class="n">energy</span><span class="p">(</span><span class="n">states</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">masses</span><span class="p">)))</span> <span class="o">/</span> <span class="n">energy</span><span class="p">(</span><span class="n">states</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">masses</span><span class="p">))</span>
+<span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span><span class="mi">5</span><span class="p">))</span>
+<span class="n">times</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">final_time_yr</span><span class="p">,</span> <span class="n">N_log</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">loglog</span><span class="p">(</span><span class="n">times</span><span class="p">,</span> <span class="n">DE</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s1">&#39;gray&#39;</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s1">&#39;.&#39;</span><span class="p">);</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;Relative energy error&quot;</span><span class="p">);</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;Time (years)&quot;</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/Long term stability of Trappist-1_29_0.png" src="../_images/Long term stability of Trappist-1_29_0.png" />
 </div>
 </div>
 </div>
