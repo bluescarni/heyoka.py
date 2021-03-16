@@ -52,10 +52,10 @@ def taylor_adaptive(sys, state, **kwargs):
     fp_type = kwargs.pop("fp_type", "double")
 
     if fp_type == "double":
-        return taylor_adaptive_double(sys, state, **kwargs)
+        return taylor_adaptive_dbl(sys, state, **kwargs)
 
     if fp_type == "long double":
-        return taylor_adaptive_long_double(sys, state, **kwargs)
+        return taylor_adaptive_ldbl(sys, state, **kwargs)
 
     if with_real128 and fp_type == "real128":
         return taylor_adaptive_real128(sys, state, **kwargs)
