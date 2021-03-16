@@ -49,24 +49,29 @@ del _os
 from . import test
 
 def taylor_adaptive(sys, state, **kwargs):
+    from .core import _taylor_adaptive_dbl, _taylor_adaptive_ldbl
+
     fp_type = kwargs.pop("fp_type", "double")
 
     if fp_type == "double":
-        return taylor_adaptive_dbl(sys, state, **kwargs)
+        return _taylor_adaptive_dbl(sys, state, **kwargs)
 
     if fp_type == "long double":
-        return taylor_adaptive_ldbl(sys, state, **kwargs)
+        return _taylor_adaptive_ldbl(sys, state, **kwargs)
 
     if with_real128 and fp_type == "real128":
-        return taylor_adaptive_f128(sys, state, **kwargs)
+        from .core import _taylor_adaptive_f128
+        return _taylor_adaptive_f128(sys, state, **kwargs)
 
     raise TypeError("the floating-point type \"{}\" is not recognized/supported".format(fp_type))
 
 def taylor_adaptive_batch(sys, state, **kwargs):
+    from .core import _taylor_adaptive_batch_dbl
+
     fp_type = kwargs.pop("fp_type", "double")
 
     if fp_type == "double":
-        return taylor_adaptive_batch_dbl(sys, state, **kwargs)
+        return _taylor_adaptive_batch_dbl(sys, state, **kwargs)
 
     raise TypeError("the floating-point type \"{}\" is not recognized/supported".format(fp_type))
 

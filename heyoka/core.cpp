@@ -442,7 +442,7 @@ PYBIND11_MODULE(core, m)
                                                       kw::pars = std::move(pars)};
         }
     };
-    py::class_<hey::taylor_adaptive_batch<double>>(m, "taylor_adaptive_batch_dbl")
+    py::class_<hey::taylor_adaptive_batch<double>>(m, "_taylor_adaptive_batch_dbl")
         .def(py::init([tabd_ctor_impl](std::vector<std::pair<hey::expression, hey::expression>> sys,
                                        py::array_t<double> state, py::object time, py::object pars, double tol,
                                        bool high_accuracy, bool compact_mode) {

@@ -76,7 +76,7 @@ void expose_taylor_integrator_impl(py::module &m, const std::string &suffix)
                                        kw::pars = std::move(pars)};
     };
 
-    py::class_<hey::taylor_adaptive<T>>(m, ("taylor_adaptive_{}"_format(suffix)).c_str())
+    py::class_<hey::taylor_adaptive<T>>(m, ("_taylor_adaptive_{}"_format(suffix)).c_str())
         .def(py::init([ctor_impl](std::vector<std::pair<hey::expression, hey::expression>> sys, std::vector<T> state,
                                   T time, std::vector<T> pars, T tol, bool high_accuracy, bool compact_mode) {
                  return ctor_impl(std::move(sys), std::move(state), time, std::move(pars), tol, high_accuracy,
@@ -267,7 +267,7 @@ void expose_taylor_integrator_f128(py::module &m)
                                                              kw::compact_mode = compact_mode,
                                                              kw::pars = std::move(pars)};
               };
-        py::class_<hey::taylor_adaptive<mppp::real128>>(m, "taylor_adaptive_f128")
+        py::class_<hey::taylor_adaptive<mppp::real128>>(m, "_taylor_adaptive_f128")
             .def(py::init([taf128_ctor_impl](std::vector<std::pair<hey::expression, hey::expression>> sys,
                                              std::vector<mppp::real128> state, mppp::real128 time,
                                              std::vector<mppp::real128> pars, mppp::real128 tol, bool high_accuracy,
