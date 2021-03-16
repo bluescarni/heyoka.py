@@ -58,7 +58,7 @@ def taylor_adaptive(sys, state, **kwargs):
         return taylor_adaptive_ldbl(sys, state, **kwargs)
 
     if with_real128 and fp_type == "real128":
-        return taylor_adaptive_real128(sys, state, **kwargs)
+        return taylor_adaptive_f128(sys, state, **kwargs)
 
     raise TypeError("the floating-point type \"{}\" is not recognized/supported".format(fp_type))
 
