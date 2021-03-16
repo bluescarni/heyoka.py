@@ -342,11 +342,17 @@ PYBIND11_MODULE(core, m)
         "Gconst"_a, "state"_a, "points"_a, "masses"_a, "omega"_a);
 
     // taylor_outcome enum.
-    py::enum_<hey::taylor_outcome>(m, "taylor_outcome")
+    py::enum_<hey::taylor_outcome>(m, "taylor_outcome", py::arithmetic())
         .value("success", hey::taylor_outcome::success)
         .value("step_limit", hey::taylor_outcome::step_limit)
         .value("time_limit", hey::taylor_outcome::time_limit)
         .value("err_nf_state", hey::taylor_outcome::err_nf_state);
+
+    // event_direction enum.
+    py::enum_<hey::event_direction>(m, "event_direction")
+        .value("any", hey::event_direction::any)
+        .value("positive", hey::event_direction::positive)
+        .value("negative", hey::event_direction::negative);
 
     // Computation of the jet of derivatives.
     heypy::expose_taylor_add_jet_dbl(m);
