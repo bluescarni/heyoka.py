@@ -361,7 +361,7 @@ PYBIND11_MODULE(core, m)
 
 #endif
 
-    // Adaptive taylor integrators.
+    // Scalar adaptive taylor integrators.
     heypy::expose_taylor_integrator_dbl(m);
     heypy::expose_taylor_integrator_ldbl(m);
 
@@ -371,6 +371,7 @@ PYBIND11_MODULE(core, m)
 
 #endif
 
+    // Batch adaptive integrator for double.
     auto tabd_ctor_impl = [](auto sys, py::array_t<double> state_, py::object time_, py::object pars_, double tol,
                              bool high_accuracy, bool compact_mode) {
         namespace kw = hey::kw;
@@ -441,7 +442,7 @@ PYBIND11_MODULE(core, m)
                                                       kw::pars = std::move(pars)};
         }
     };
-    py::class_<hey::taylor_adaptive_batch<double>>(m, "taylor_adaptive_batch_double")
+    py::class_<hey::taylor_adaptive_batch<double>>(m, "taylor_adaptive_batch_dbl")
         .def(py::init([tabd_ctor_impl](std::vector<std::pair<hey::expression, hey::expression>> sys,
                                        py::array_t<double> state, py::object time, py::object pars, double tol,
                                        bool high_accuracy, bool compact_mode) {

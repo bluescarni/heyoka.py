@@ -66,7 +66,7 @@ def taylor_adaptive_batch(sys, state, **kwargs):
     fp_type = kwargs.pop("fp_type", "double")
 
     if fp_type == "double":
-        return taylor_adaptive_batch_double(sys, state, **kwargs)
+        return taylor_adaptive_batch_dbl(sys, state, **kwargs)
 
     raise TypeError("the floating-point type \"{}\" is not recognized/supported".format(fp_type))
 
