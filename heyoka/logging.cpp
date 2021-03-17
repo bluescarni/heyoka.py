@@ -71,6 +71,7 @@ protected:
             case spdlog::level::critical:
                 py_logger.attr("critical")(str);
                 break;
+            default:;
         }
     }
 
@@ -108,6 +109,7 @@ void log_sync_levels()
         case spdlog::level::critical:
             py_logger.attr("setLevel")(log_mod.attr("CRITICAL"));
             break;
+        default:;
     }
 }
 
