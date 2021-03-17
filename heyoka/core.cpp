@@ -47,6 +47,7 @@
 #include "common_utils.hpp"
 #include "long_double_caster.hpp"
 #include "taylor_add_jet.hpp"
+#include "taylor_expose_events.hpp"
 #include "taylor_expose_integrator.hpp"
 
 namespace py = pybind11;
@@ -80,6 +81,14 @@ PYBIND11_MODULE(core, m)
         false
 #endif
         ;
+
+#if defined(HEYOKA_HAVE_REAL128)
+    if (!heypy::mpmath_available()) {
+        py::module_::import("warnings")
+            .attr("warn")("The heyoka C++ library was compiled with quadruple-precision support, but the 'mpmath' "
+                          "Python module is not installed");
+    }
+#endif
 
     // Export the heyoka version.
     m.attr("_heyoka_cpp_version_major") = HEYOKA_VERSION_MAJOR;
@@ -357,7 +366,9 @@ PYBIND11_MODULE(core, m)
 
 #if defined(HEYOKA_HAVE_REAL128)
 
-    heypy::expose_taylor_add_jet_f128(m);
+    if (heypy::mpmath_available()) {
+        heypy::expose_taylor_add_jet_f128(m);
+    }
 
 #endif
 
@@ -367,7 +378,32 @@ PYBIND11_MODULE(core, m)
 
 #if defined(HEYOKA_HAVE_REAL128)
 
-    heypy::expose_taylor_integrator_f128(m);
+    if (heypy::mpmath_available()) {
+        heypy::expose_taylor_integrator_f128(m);
+    }
+
+#endif
+
+    // Expose the events.
+    heypy::expose_taylor_t_event_dbl(m);
+    heypy::expose_taylor_t_event_ldbl(m);
+
+#if defined(HEYOKA_HAVE_REAL128)
+
+    if (heypy::mpmath_available()) {
+        heypy::expose_taylor_t_event_f128(m);
+    }
+
+#endif
+
+    heypy::expose_taylor_nt_event_dbl(m);
+    heypy::expose_taylor_nt_event_ldbl(m);
+
+#if defined(HEYOKA_HAVE_REAL128)
+
+    if (heypy::mpmath_available()) {
+        heypy::expose_taylor_nt_event_f128(m);
+    }
 
 #endif
 

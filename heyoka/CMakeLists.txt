@@ -19,6 +19,7 @@ Python3_add_library(core MODULE WITH_SOABI
     common_utils.cpp
     taylor_add_jet.cpp
     taylor_expose_integrator.cpp
+    taylor_expose_events.cpp
 )
 
 target_link_libraries(core PRIVATE heyoka::heyoka fmt::fmt)

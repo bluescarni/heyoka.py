@@ -32,6 +32,18 @@ std::string str(const py::handle &);
 
 heyoka::number to_number(const py::handle &);
 
+bool callable(const py::handle &);
+
+bool mpmath_available();
+
+struct scoped_quadprec_setter {
+    scoped_quadprec_setter();
+    ~scoped_quadprec_setter();
+
+    bool has_mpmath;
+    int orig_prec = 0;
+};
+
 } // namespace heyoka_py
 
 #endif
