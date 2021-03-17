@@ -624,18 +624,9 @@ PYBIND11_MODULE(core, m)
                  return oss.str();
              })
         // Copy/deepcopy.
-        .def("__copy__",
-             [](const hey::taylor_adaptive_batch<double> &ta) {
-                 py::gil_scoped_release release;
-                 return ta;
-             })
+        .def("__copy__", [](const hey::taylor_adaptive_batch<double> &ta) { return ta; })
         .def(
-            "__deepcopy__",
-            [](const hey::taylor_adaptive_batch<double> &ta, py::dict) {
-                py::gil_scoped_release release;
-                return ta;
-            },
-            "memo"_a);
+            "__deepcopy__", [](const hey::taylor_adaptive_batch<double> &ta, py::dict) { return ta; }, "memo"_a);
 }
 
 #if defined(__clang__)

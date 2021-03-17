@@ -221,18 +221,9 @@ void expose_taylor_integrator_impl(py::module &m, const std::string &suffix)
                  return oss.str();
              })
         // Copy/deepcopy.
-        .def("__copy__",
-             [](const hey::taylor_adaptive<T> &ta) {
-                 py::gil_scoped_release release;
-                 return ta;
-             })
+        .def("__copy__", [](const hey::taylor_adaptive<T> &ta) { return ta; })
         .def(
-            "__deepcopy__",
-            [](const hey::taylor_adaptive<T> &ta, py::dict) {
-                py::gil_scoped_release release;
-                return ta;
-            },
-            "memo"_a);
+            "__deepcopy__", [](const hey::taylor_adaptive<T> &ta, py::dict) { return ta; }, "memo"_a);
 }
 
 } // namespace
@@ -421,13 +412,11 @@ void expose_taylor_integrator_f128(py::module &m)
             // Copy/deepcopy.
             .def("__copy__",
                  [](const hey::taylor_adaptive<mppp::real128> &ta) {
-                     py::gil_scoped_release release;
                      return ta;
                  })
             .def(
                 "__deepcopy__",
                 [](const hey::taylor_adaptive<mppp::real128> &ta, py::dict) {
-                    py::gil_scoped_release release;
                     return ta;
                 },
                 "memo"_a);
