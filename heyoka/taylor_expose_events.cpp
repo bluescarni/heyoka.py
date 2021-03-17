@@ -55,32 +55,18 @@ void expose_taylor_nt_event_impl(py::module &m, const std::string &suffix)
     using ev_t = hey::nt_event<T>;
     using callback_t = typename ev_t::callback_t;
 
-    struct callback_wrapper {
-        callback_wrapper(py::object obj) : m_obj(std::move(obj)) {}
-
-        void operator()(hey::taylor_adaptive<T> &ta, T time) const
-        {
-            // Make sure we lock the GIL before calling into the
-            // interpreter, as the callbacks may be invoked in long-running
-            // propagate functions which release the GIL.
-            py::gil_scoped_acquire acquire;
-
-            py::cast<callback_t>(m_obj)(ta, time);
-        }
-
-        py::object m_obj;
-    };
-
     py::class_<ev_t>(m, ("_nt_event_{}"_format(suffix)).c_str())
-        .def(py::init([](hey::expression ex, py::object callback, hey::event_direction dir) {
-                 if (!heypy::callable(callback)) {
-                     heypy::py_throw(PyExc_TypeError,
-                                     "Cannot create a non-terminal event with a callback of type '{}', "
-                                     "which is not callable"_format(heypy::str(heypy::type(callback)))
-                                         .c_str());
-                 }
+        .def(py::init([](hey::expression ex, callback_t callback, hey::event_direction dir) {
+                 auto cbl = [cb = std::move(callback)](hey::taylor_adaptive<T> &ta, T time) {
+                     // Make sure we lock the GIL before calling into the
+                     // interpreter, as the callbacks may be invoked in long-running
+                     // propagate functions which release the GIL.
+                     py::gil_scoped_acquire acquire;
 
-                 return ev_t(std::move(ex), callback_wrapper(std::move(callback)), dir);
+                     cb(ta, time);
+                 };
+
+                 return ev_t(std::move(ex), std::move(cbl), dir);
              }),
              "expression"_a, "callback"_a, "direction"_a = hey::event_direction::any)
         .def_property_readonly("expression", &ev_t::get_expression)
@@ -110,36 +96,22 @@ void expose_taylor_t_event_impl(py::module &m, const std::string &suffix)
     using ev_t = hey::t_event<T>;
     using callback_t = typename ev_t::callback_t;
 
-    struct callback_wrapper {
-        callback_wrapper(py::object obj) : m_obj(std::move(obj)) {}
-
-        void operator()(hey::taylor_adaptive<T> &ta, T time, bool mr) const
-        {
-            // Make sure we lock the GIL before calling into the
-            // interpreter, as the callbacks may be invoked in long-running
-            // propagate functions which release the GIL.
-            py::gil_scoped_acquire acquire;
-
-            py::cast<callback_t>(m_obj)(ta, time, mr);
-        }
-
-        py::object m_obj;
-    };
-
     py::class_<ev_t>(m, ("_t_event_{}"_format(suffix)).c_str())
-        .def(py::init([](hey::expression ex, py::object callback, hey::event_direction dir, T cooldown) {
-                 if (callback.is_none()) {
-                     return ev_t(std::move(ex), kw::direction = dir, kw::cooldown = cooldown);
-                 } else {
-                     if (!heypy::callable(callback)) {
-                         heypy::py_throw(PyExc_TypeError,
-                                         "Cannot create a terminal event with a callback of type '{}', "
-                                         "which is not callable"_format(heypy::str(heypy::type(callback)))
-                                             .c_str());
-                     }
+        .def(py::init([](hey::expression ex, callback_t callback, hey::event_direction dir, T cooldown) {
+                 if (callback) {
+                     auto cbl = [cb = std::move(callback)](hey::taylor_adaptive<T> &ta, T time, bool mr) {
+                         // Make sure we lock the GIL before calling into the
+                         // interpreter, as the callbacks may be invoked in long-running
+                         // propagate functions which release the GIL.
+                         py::gil_scoped_acquire acquire;
 
-                     return ev_t(std::move(ex), kw::callback = callback_wrapper(std::move(callback)),
-                                 kw::direction = dir, kw::cooldown = cooldown);
+                         cb(ta, time, mr);
+                     };
+
+                     return ev_t(std::move(ex), kw::callback = std::move(cbl), kw::direction = dir,
+                                 kw::cooldown = cooldown);
+                 } else {
+                     return ev_t(std::move(ex), kw::direction = dir, kw::cooldown = cooldown);
                  }
              }),
              "expression"_a, "callback"_a = py::none{}, "direction"_a = hey::event_direction::any, "cooldown"_a = T(-1))
