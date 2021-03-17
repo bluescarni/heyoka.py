@@ -413,6 +413,77 @@ class taylor_add_jet_test_case(_ut.TestCase):
                         "Taylor derivatives: the shape must be (1), but it is "
                         "(5) instead" in str(cm.exception))
 
+class event_classes_test_case(_ut.TestCase):
+    def runTest(self):
+        from . import t_event, nt_event, make_vars, event_direction
+        from .core import with_real128
+        import numpy as np
+
+        x, v = make_vars("x", "v")
+
+        fp_types = [("double", float), ("long double", np.longdouble)]
+
+        if with_real128:
+            from mpmath import mpf
+            fp_types.append(("real128", mpf))
+
+        for desc, fp_t in fp_types:
+            # Non-terminal event.
+            ev = nt_event(x + v, lambda _: _, fp_type=desc)
+
+            self.assertTrue(" non-terminal" in repr(ev))
+            self.assertTrue("(x + v)" in repr(ev))
+            self.assertTrue("event_direction::any" in repr(ev))
+
+            ev = nt_event(ex = x + v, callback = lambda _: _, fp_type=desc)
+            self.assertTrue(" non-terminal" in repr(ev))
+            self.assertTrue("(x + v)" in repr(ev))
+            self.assertTrue("event_direction::any" in repr(ev))
+
+            ev = nt_event(ex = x + v, callback = lambda _: _, direction = event_direction.positive, fp_type=desc)
+            self.assertTrue(" non-terminal" in repr(ev))
+            self.assertTrue("(x + v)" in repr(ev))
+            self.assertTrue("event_direction::positive" in repr(ev))
+
+            ev = nt_event(ex = x + v, callback = lambda _: _, direction = event_direction.negative, fp_type=desc)
+            self.assertTrue(" non-terminal" in repr(ev))
+            self.assertTrue("(x + v)" in repr(ev))
+            self.assertTrue("event_direction::negative" in repr(ev))
+
+            with self.assertRaises(ValueError) as cm:
+                nt_event(ex = x + v, callback = lambda _: _, direction = event_direction(10), fp_type=desc)
+            self.assertTrue("Invalid value selected for the direction of a non-terminal event" in str(cm.exception))
+
+            # Terminal event.
+            ev = t_event(x + v, fp_type=desc)
+
+            self.assertTrue(" terminal" in repr(ev))
+            self.assertTrue("(x + v)" in repr(ev))
+            self.assertTrue("event_direction::any" in repr(ev))
+            self.assertTrue(": no" in repr(ev))
+            self.assertTrue("auto" in repr(ev))
+
+            ev = t_event(x + v, fp_type=desc, direction = event_direction.negative, cooldown = fp_t(3))
+
+            self.assertTrue(" terminal" in repr(ev))
+            self.assertTrue("(x + v)" in repr(ev))
+            self.assertTrue("event_direction::negative" in repr(ev))
+            self.assertTrue(": no" in repr(ev))
+            self.assertTrue("3" in repr(ev))
+
+            ev = t_event(x + v, fp_type=desc, direction = event_direction.positive, cooldown = fp_t(3), callback = lambda _: _)
+
+            self.assertTrue(" terminal" in repr(ev))
+            self.assertTrue("(x + v)" in repr(ev))
+            self.assertTrue("event_direction::positive" in repr(ev))
+            self.assertTrue(": yes" in repr(ev))
+            self.assertTrue("3" in repr(ev))
+
+            with self.assertRaises(ValueError) as cm:
+                t_event(x + v, fp_type=desc, direction = event_direction(45), cooldown = fp_t(3), callback = lambda _: _)
+            self.assertTrue("Invalid value selected for the direction of a terminal event" in str(cm.exception))
+
+
 def run_test_suite():
     from . import make_nbody_sys, taylor_adaptive
     from .core import with_real128
@@ -428,6 +499,7 @@ def run_test_suite():
     retval = 0
 
     suite = _ut.TestLoader().loadTestsFromTestCase(taylor_add_jet_test_case)
+    suite.addTest(event_classes_test_case())
 
     test_result = _ut.TextTestRunner(verbosity=2).run(suite)
 

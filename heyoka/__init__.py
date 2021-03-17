@@ -120,4 +120,4 @@ def t_event(ex, **kwargs):
 
     if with_real128 and fp_type == "real128":
         from .core import _t_event_f128
-        return _nt_event_f128(ex, **kwargs)
+        return _t_event_f128(ex, **kwargs)
