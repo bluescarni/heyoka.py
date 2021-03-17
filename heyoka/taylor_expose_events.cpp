@@ -69,9 +69,6 @@ void expose_taylor_nt_event_impl(py::module &m, const std::string &suffix)
                  return ev_t(std::move(ex), std::move(cbl), dir);
              }),
              "expression"_a, "callback"_a, "direction"_a = hey::event_direction::any)
-        .def_property_readonly("expression", &ev_t::get_expression)
-        .def_property_readonly("callback", &ev_t::get_callback)
-        .def_property_readonly("direction", &ev_t::get_direction)
         // Repr.
         .def("__repr__",
              [](const ev_t &e) {
@@ -115,10 +112,6 @@ void expose_taylor_t_event_impl(py::module &m, const std::string &suffix)
                  }
              }),
              "expression"_a, "callback"_a = py::none{}, "direction"_a = hey::event_direction::any, "cooldown"_a = T(-1))
-        .def_property_readonly("expression", &ev_t::get_expression)
-        .def_property_readonly("callback", &ev_t::get_callback)
-        .def_property_readonly("direction", &ev_t::get_direction)
-        .def_property_readonly("cooldown", &ev_t::get_cooldown)
         // Repr.
         .def("__repr__",
              [](const ev_t &e) {
