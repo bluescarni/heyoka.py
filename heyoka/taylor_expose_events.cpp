@@ -58,15 +58,6 @@ void expose_taylor_nt_event_impl(py::module &m, const std::string &suffix)
     struct callback_wrapper {
         callback_wrapper(py::object obj) : m_obj(std::move(obj)) {}
 
-        callback_wrapper(callback_wrapper &&) noexcept = default;
-        // NOTE: the purpose of this is to enforce deep copy semantics
-        // when a copy of the wrapper is requested.
-        callback_wrapper(const callback_wrapper &c) : m_obj(py::module_::import("copy").attr("deepcopy")(c.m_obj)) {}
-
-        // Delete the rest.
-        callback_wrapper &operator=(const callback_wrapper &) = delete;
-        callback_wrapper &operator=(callback_wrapper &&) noexcept = delete;
-
         void operator()(hey::taylor_adaptive<T> &ta, T time) const
         {
             // Make sure we lock the GIL before calling into the
@@ -121,15 +112,6 @@ void expose_taylor_t_event_impl(py::module &m, const std::string &suffix)
 
     struct callback_wrapper {
         callback_wrapper(py::object obj) : m_obj(std::move(obj)) {}
-
-        callback_wrapper(callback_wrapper &&) noexcept = default;
-        // NOTE: the purpose of this is to enforce deep copy semantics
-        // when a copy of the wrapper is requested.
-        callback_wrapper(const callback_wrapper &c) : m_obj(py::module_::import("copy").attr("deepcopy")(c.m_obj)) {}
-
-        // Delete the rest.
-        callback_wrapper &operator=(const callback_wrapper &) = delete;
-        callback_wrapper &operator=(callback_wrapper &&) noexcept = delete;
 
         void operator()(hey::taylor_adaptive<T> &ta, T time, bool mr) const
         {
