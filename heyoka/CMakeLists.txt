@@ -20,9 +20,10 @@ Python3_add_library(core MODULE WITH_SOABI
     taylor_add_jet.cpp
     taylor_expose_integrator.cpp
     taylor_expose_events.cpp
+    enable_logging.cpp
 )
 
-target_link_libraries(core PRIVATE heyoka::heyoka fmt::fmt)
+target_link_libraries(core PRIVATE heyoka::heyoka fmt::fmt spdlog::spdlog)
 if(heyoka_WITH_MPPP)
     target_link_libraries(core PRIVATE mp++::mp++)
 endif()

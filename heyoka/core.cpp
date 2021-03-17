@@ -45,6 +45,7 @@
 #include <heyoka/taylor.hpp>
 
 #include "common_utils.hpp"
+#include "enable_logging.hpp"
 #include "long_double_caster.hpp"
 #include "taylor_add_jet.hpp"
 #include "taylor_expose_events.hpp"
@@ -81,6 +82,16 @@ PYBIND11_MODULE(core, m)
         false
 #endif
         ;
+
+    // Connect heyoka's logging to Python's logging.
+    heypy::enable_logging();
+
+    // Expose testing functions.
+    m.def("_test_debug_msg", &heypy::test_debug_msg);
+    m.def("_test_info_msg", &heypy::test_info_msg);
+    m.def("_test_warning_msg", &heypy::test_warning_msg);
+    m.def("_test_error_msg", &heypy::test_error_msg);
+    m.def("_test_critical_msg", &heypy::test_critical_msg);
 
 #if defined(HEYOKA_HAVE_REAL128)
     if (!heypy::mpmath_available()) {

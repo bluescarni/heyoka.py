@@ -141,6 +141,9 @@ find_package(Boost REQUIRED)
 # fmt.
 find_package(fmt REQUIRED CONFIG)
 
+# spdlog.
+find_package(spdlog REQUIRED CONFIG)
+
 if(heyoka_WITH_MPPP)
     # heyoka was compiled with mp++ support,
     # add the mp++ dependency on heyoka.py as well.
