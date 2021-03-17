@@ -45,7 +45,7 @@
 #include <heyoka/taylor.hpp>
 
 #include "common_utils.hpp"
-#include "enable_logging.hpp"
+#include "logging.hpp"
 #include "long_double_caster.hpp"
 #include "taylor_add_jet.hpp"
 #include "taylor_expose_events.hpp"
@@ -85,6 +85,9 @@ PYBIND11_MODULE(core, m)
 
     // Connect heyoka's logging to Python's logging.
     heypy::enable_logging();
+
+    // Expose the logging setter functions.
+    heypy::expose_logging_setters(m);
 
     // Expose testing functions.
     m.def("_test_debug_msg", &heypy::test_debug_msg);

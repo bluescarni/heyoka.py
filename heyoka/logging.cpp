@@ -20,7 +20,7 @@
 
 #include <heyoka/logging.hpp>
 
-#include "enable_logging.hpp"
+#include "logging.hpp"
 
 namespace heyoka_py
 {
@@ -42,7 +42,7 @@ protected:
     {
         // NOTE: grab the raw message and convert it to string
         // without applying any spdlog-specific formatting.
-        auto str = fmt::to_string(msg.payload);
+        const auto str = fmt::to_string(msg.payload);
 
         // Make sure we lock the GIL before calling into the
         // interpreter, as log messages may be produced by event
@@ -77,24 +77,19 @@ protected:
     void flush_() override {}
 };
 
-} // namespace
-
-} // namespace detail
-
-void enable_logging()
+// Utility helper to synchronize the logging levels
+// of the heyoka C++ logger and the Python one.
+void log_sync_levels()
 {
-    // Force the creation of the heyoka logger.
-    hey::create_logger();
-
-    // Fetch it.
+    // Fetch the C++ logger.
     auto logger = spdlog::get("heyoka");
     assert(logger);
 
-    // Initial creation of the heyoka logger on the
-    // Python side.
+    // Fetch the Python logger.
     auto log_mod = py::module_::import("logging");
     auto py_logger = log_mod.attr("getLogger")("heyoka");
-    // Set the initial logging level.
+
+    // Do the matching.
     switch (logger->level()) {
         case spdlog::level::trace:
             [[fallthrough]];
@@ -114,6 +109,28 @@ void enable_logging()
             py_logger.attr("setLevel")(log_mod.attr("CRITICAL"));
             break;
     }
+}
+
+} // namespace
+
+} // namespace detail
+
+void enable_logging()
+{
+    // Force the creation of the heyoka logger.
+    hey::create_logger();
+
+    // Fetch it.
+    auto logger = spdlog::get("heyoka");
+    assert(logger);
+
+    // Initial creation of the heyoka logger on the
+    // Python side.
+    auto log_mod = py::module_::import("logging");
+    auto py_logger = log_mod.attr("getLogger")("heyoka");
+
+    // Set the initial logging level.
+    detail::log_sync_levels();
 
     // Add the Python sink to the heyoka logger.
     auto sink = std::make_shared<detail::py_sink<std::mutex>>();
@@ -158,6 +175,34 @@ void test_critical_msg()
     assert(logger);
 
     logger->critical("This is a test critical message");
+}
+
+void expose_logging_setters(py::module_ &m)
+{
+    m.def("set_logger_level_debug", []() {
+        hey::set_logger_level_debug();
+        detail::log_sync_levels();
+    });
+
+    m.def("set_logger_level_info", []() {
+        hey::set_logger_level_info();
+        detail::log_sync_levels();
+    });
+
+    m.def("set_logger_level_warning", []() {
+        hey::set_logger_level_warn();
+        detail::log_sync_levels();
+    });
+
+    m.def("set_logger_level_error", []() {
+        hey::set_logger_level_err();
+        detail::log_sync_levels();
+    });
+
+    m.def("set_logger_level_critical", []() {
+        hey::set_logger_level_critical();
+        detail::log_sync_levels();
+    });
 }
 
 } // namespace heyoka_py
