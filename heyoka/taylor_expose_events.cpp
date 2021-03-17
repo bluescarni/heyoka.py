@@ -83,9 +83,10 @@ void expose_taylor_nt_event_impl(py::module &m, const std::string &suffix)
     py::class_<ev_t>(m, ("_nt_event_{}"_format(suffix)).c_str())
         .def(py::init([](hey::expression ex, py::object callback, hey::event_direction dir) {
                  if (!heypy::callable(callback)) {
-                     heypy::py_throw(PyExc_TypeError, "Cannot create a non-terminal event from an object of type '{}', "
-                                                      "which is not callable"_format(heypy::str(heypy::type(callback)))
-                                                          .c_str());
+                     heypy::py_throw(PyExc_TypeError,
+                                     "Cannot create a non-terminal event with a callback of type '{}', "
+                                     "which is not callable"_format(heypy::str(heypy::type(callback)))
+                                         .c_str());
                  }
 
                  return ev_t(std::move(ex), callback_wrapper(std::move(callback)), dir);
@@ -148,6 +149,13 @@ void expose_taylor_t_event_impl(py::module &m, const std::string &suffix)
                  if (callback.is_none()) {
                      return ev_t(std::move(ex), kw::direction = dir, kw::cooldown = cooldown);
                  } else {
+                     if (!heypy::callable(callback)) {
+                         heypy::py_throw(PyExc_TypeError,
+                                         "Cannot create a terminal event with a callback of type '{}', "
+                                         "which is not callable"_format(heypy::str(heypy::type(callback)))
+                                             .c_str());
+                     }
+
                      return ev_t(std::move(ex), kw::callback = callback_wrapper(std::move(callback)),
                                  kw::direction = dir, kw::cooldown = cooldown);
                  }
