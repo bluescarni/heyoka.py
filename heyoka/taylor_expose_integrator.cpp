@@ -387,7 +387,7 @@ void expose_taylor_integrator_f128(py::module &m)
                      return ret;
                  })
             .def_property_readonly("last_h", &hey::taylor_adaptive<mppp::real128>::get_last_h)
-            .def("get_d_output",
+            .def("d_output",
                  [](const hey::taylor_adaptive<mppp::real128> &ta) { return py::array(py::cast(ta.get_d_output())); })
             .def(
                 "update_d_output",
