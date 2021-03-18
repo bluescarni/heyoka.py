@@ -10,8 +10,7 @@ import unittest as _ut
 
 class taylor_add_jet_test_case(_ut.TestCase):
     def runTest(self):
-        from . import taylor_add_jet, make_vars, sin, taylor_adaptive, par, time, taylor_adaptive_batch
-        from .core import with_real128
+        from . import taylor_add_jet, make_vars, sin, taylor_adaptive, par, time, taylor_adaptive_batch, with_real128
         import numpy as np
 
         x, v = make_vars("x", "v")
@@ -415,8 +414,7 @@ class taylor_add_jet_test_case(_ut.TestCase):
 
 class event_classes_test_case(_ut.TestCase):
     def runTest(self):
-        from . import t_event, nt_event, make_vars, event_direction
-        from .core import with_real128
+        from . import t_event, nt_event, make_vars, event_direction, with_real128
         import numpy as np
 
         x, v = make_vars("x", "v")
@@ -483,10 +481,109 @@ class event_classes_test_case(_ut.TestCase):
                 t_event(x + v, fp_type=desc, direction = event_direction(45), cooldown = fp_t(3), callback = lambda _: _)
             self.assertTrue("Invalid value selected for the direction of a terminal event" in str(cm.exception))
 
+class event_detection_test_case(_ut.TestCase):
+    def runTest(self):
+        from . import t_event, nt_event, make_vars, event_direction, with_real128, sin, taylor_adaptive, taylor_outcome
+        import numpy as np
+
+        x, v = make_vars("x", "v")
+
+        fp_types = [("double", float), ("long double", np.longdouble)]
+
+        if with_real128:
+            from mpmath import mpf
+            fp_types.append(("real128", mpf))
+
+        # Use a pendulum for testing purposes.
+        sys = [(x, v), (v, -9.8 * sin(x))]
+
+        for desc, fp_t in fp_types:
+            # Non-terminal events.
+            counter = 0
+            cur_time = fp_t(0)
+
+            def cb0(ta, t):
+                nonlocal counter
+                nonlocal cur_time
+
+                self.assertTrue(t > cur_time)
+                self.assertTrue(counter % 3 == 0 or counter % 3 == 2)
+
+                counter = counter + 1
+                cur_time = t
+
+            def cb1(ta, t):
+                nonlocal counter
+                nonlocal cur_time
+
+                self.assertTrue(t > cur_time)
+                self.assertTrue(counter % 3 == 1)
+
+                counter = counter + 1
+                cur_time = t
+
+            ta = taylor_adaptive(sys = sys, state = [fp_t(0), fp_t(0.25)], fp_type = desc,
+                                 nt_events = [nt_event(v*v-1e-10, cb0, fp_type = desc),
+                                 nt_event(v, cb1, fp_type = desc)])
+
+            for _ in range(20):
+                oc, h = ta.step()
+                self.assertTrue(oc == taylor_outcome.success)
+
+            self.assertEqual(counter, 12)
+
+            # Terminal events.
+            counter_t = 0
+            counter_nt = 0
+            cur_time = fp_t(0)
+
+            def cb0(ta, t):
+                nonlocal counter_nt
+                nonlocal cur_time
+
+                self.assertTrue(t > cur_time)
+
+                counter_nt = counter_nt + 1
+                cur_time = t
+
+            def cb1(ta, t, mr):
+                nonlocal cur_time
+                nonlocal counter_t
+
+                self.assertFalse(mr)
+                self.assertTrue(t > cur_time)
+
+                counter_t = counter_t + 1
+                cur_time = t
+
+            ta = taylor_adaptive(sys = sys, state = [fp_t(0), fp_t(0.25)], fp_type = desc,
+                                 nt_events = [nt_event(v*v-1e-10, cb0, fp_type = desc)],
+                                 t_events = [t_event(v, callback = cb1, fp_type=desc)])
+
+            while True:
+                oc, _ = ta.step()
+                if oc > taylor_outcome.success:
+                    break
+                self.assertEqual(oc, taylor_outcome.success)
+
+            self.assertEqual(int(oc), 0)
+            self.assertTrue(ta.time < 1)
+            self.assertEqual(counter_nt, 1)
+            self.assertEqual(counter_t, 1)
+
+            while True:
+                oc, _ = ta.step()
+                if oc > taylor_outcome.success:
+                    break
+                self.assertEqual(oc, taylor_outcome.success)
+
+            self.assertEqual(int(oc), 0)
+            self.assertTrue(ta.time > 1)
+            self.assertEqual(counter_nt, 3)
+            self.assertEqual(counter_t, 2)
 
 def run_test_suite():
-    from . import make_nbody_sys, taylor_adaptive
-    from .core import with_real128
+    from . import make_nbody_sys, taylor_adaptive, with_real128
 
     if with_real128:
         from mpmath import mp
@@ -500,6 +597,7 @@ def run_test_suite():
 
     suite = _ut.TestLoader().loadTestsFromTestCase(taylor_add_jet_test_case)
     suite.addTest(event_classes_test_case())
+    suite.addTest(event_detection_test_case())
 
     test_result = _ut.TextTestRunner(verbosity=2).run(suite)
 
