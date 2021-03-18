@@ -8,6 +8,7 @@
 
 import unittest as _ut
 
+
 class taylor_add_jet_test_case(_ut.TestCase):
     def runTest(self):
         from . import taylor_add_jet, make_vars, sin, taylor_adaptive, par, time, taylor_adaptive_batch, with_real128
@@ -24,7 +25,7 @@ class taylor_add_jet_test_case(_ut.TestCase):
         for desc, fp_t in fp_types:
             # Check that the jet is consistent
             # with the Taylor coefficients.
-            init_state =  [fp_t(0.05), fp_t(0.025)]
+            init_state = [fp_t(0.05), fp_t(0.025)]
             pars = [fp_t(-9.8)]
 
             ta = taylor_adaptive(sys, init_state, tol=fp_t(1e-9), fp_type=desc)
@@ -33,36 +34,39 @@ class taylor_add_jet_test_case(_ut.TestCase):
             st = np.full((6, 2), fp_t(0), dtype=fp_t)
             st[0] = init_state
 
-            ta.step(write_tc = True)
+            ta.step(write_tc=True)
             jet(st)
 
-            self.assertTrue(np.all(ta.tc[:,:6].transpose() == st))
+            self.assertTrue(np.all(ta.tc[:, :6].transpose() == st))
 
             # Try adding an sv_func.
             jet = taylor_add_jet(sys, 5, fp_type=desc, sv_funcs=[x + v])
             st = np.full((6, 3), fp_t(0), dtype=fp_t)
-            st[0,:2] = init_state
+            st[0, :2] = init_state
 
             jet(st)
 
-            self.assertTrue(np.all(ta.tc[:,:6].transpose() == st[:,:2]))
-            self.assertTrue(np.all((ta.tc[0,:6] + ta.tc[1,:6]).transpose() == st[:,2]))
+            self.assertTrue(np.all(ta.tc[:, :6].transpose() == st[:, :2]))
+            self.assertTrue(
+                np.all((ta.tc[0, :6] + ta.tc[1, :6]).transpose() == st[:, 2]))
 
             # An example with params.
-            ta_par = taylor_adaptive(sys_par, init_state, tol=fp_t(1e-9), fp_type=desc, pars=pars)
+            ta_par = taylor_adaptive(
+                sys_par, init_state, tol=fp_t(1e-9), fp_type=desc, pars=pars)
 
             jet_par = taylor_add_jet(sys_par, 5, fp_type=desc)
             st = np.full((6, 2), fp_t(0), dtype=fp_t)
             st[0] = init_state
             par_arr = np.full((1,), fp_t(-9.8), dtype=fp_t)
 
-            ta_par.step(write_tc = True)
+            ta_par.step(write_tc=True)
             jet_par(st, pars=par_arr)
 
-            self.assertTrue(np.all(ta_par.tc[:,:6].transpose() == st))
+            self.assertTrue(np.all(ta_par.tc[:, :6].transpose() == st))
 
             # Params + time.
-            ta_par_t = taylor_adaptive(sys_par_t, init_state, tol=fp_t(1e-9), fp_type=desc, pars=pars)
+            ta_par_t = taylor_adaptive(
+                sys_par_t, init_state, tol=fp_t(1e-9), fp_type=desc, pars=pars)
             ta_par_t.time = fp_t(0.01)
 
             jet_par_t = taylor_add_jet(sys_par_t, 5, fp_type=desc)
@@ -71,47 +75,54 @@ class taylor_add_jet_test_case(_ut.TestCase):
             par_arr = np.full((1,), fp_t(-9.8), dtype=fp_t)
             time_arr = np.full((1,), fp_t(0.01), dtype=fp_t)
 
-            ta_par_t.step(write_tc = True)
+            ta_par_t.step(write_tc=True)
             jet_par_t(st, pars=par_arr, time=time_arr)
 
-            self.assertTrue(np.all(ta_par_t.tc[:,:6].transpose() == st))
+            self.assertTrue(np.all(ta_par_t.tc[:, :6].transpose() == st))
 
             # Failure modes.
 
             # Non-contiguous state.
             with self.assertRaises(ValueError) as cm:
                 jet(st[::2])
-            self.assertTrue("Invalid state vector passed to a function for the computation of the jet of Taylor derivatives: the NumPy array is not C contiguous" in str(cm.exception))
+            self.assertTrue(
+                "Invalid state vector passed to a function for the computation of the jet of Taylor derivatives: the NumPy array is not C contiguous" in str(cm.exception))
 
             # Non-writeable state.
-            st.flags.writeable=False
+            st.flags.writeable = False
             with self.assertRaises(ValueError) as cm:
                 jet(st)
-            self.assertTrue("Invalid state vector passed to a function for the computation of the jet of Taylor derivatives: the NumPy array is not writeable" in str(cm.exception))
+            self.assertTrue(
+                "Invalid state vector passed to a function for the computation of the jet of Taylor derivatives: the NumPy array is not writeable" in str(cm.exception))
 
             # Non-contiguous pars.
             st = np.full((6, 2), fp_t(0), dtype=fp_t)
             par_arr = np.full((5,), fp_t(-9.8), dtype=fp_t)
             with self.assertRaises(ValueError) as cm:
                 jet_par(st, pars=par_arr[::2])
-            self.assertTrue("Invalid parameters vector passed to a function for the computation of the jet of Taylor derivatives: the NumPy array is not C contiguous" in str(cm.exception))
+            self.assertTrue(
+                "Invalid parameters vector passed to a function for the computation of the jet of Taylor derivatives: the NumPy array is not C contiguous" in str(cm.exception))
 
             # Non-contiguous time.
             time_arr = np.full((5,), fp_t(0.01), dtype=fp_t)
             with self.assertRaises(ValueError) as cm:
                 jet_par(st, pars=par_arr, time=time_arr[::2])
-            self.assertTrue("Invalid time vector passed to a function for the computation of the jet of Taylor derivatives: the NumPy array is not C contiguous" in str(cm.exception))
+            self.assertTrue(
+                "Invalid time vector passed to a function for the computation of the jet of Taylor derivatives: the NumPy array is not C contiguous" in str(cm.exception))
 
             # Overlapping arrays.
             with self.assertRaises(ValueError) as cm:
                 jet_par(st, pars=st, time=time_arr)
-            self.assertTrue("Invalid vectors passed to a function for the computation of the jet of Taylor derivatives: the NumPy arrays must all be distinct" in str(cm.exception))
+            self.assertTrue(
+                "Invalid vectors passed to a function for the computation of the jet of Taylor derivatives: the NumPy arrays must all be distinct" in str(cm.exception))
             with self.assertRaises(ValueError) as cm:
                 jet_par(st, pars=par_arr, time=st)
-            self.assertTrue("Invalid vectors passed to a function for the computation of the jet of Taylor derivatives: the NumPy arrays must all be distinct" in str(cm.exception))
+            self.assertTrue(
+                "Invalid vectors passed to a function for the computation of the jet of Taylor derivatives: the NumPy arrays must all be distinct" in str(cm.exception))
             with self.assertRaises(ValueError) as cm:
                 jet_par(st, pars=st, time=st)
-            self.assertTrue("Invalid vectors passed to a function for the computation of the jet of Taylor derivatives: the NumPy arrays must all be distinct" in str(cm.exception))
+            self.assertTrue(
+                "Invalid vectors passed to a function for the computation of the jet of Taylor derivatives: the NumPy arrays must all be distinct" in str(cm.exception))
 
             # Params needed but not provided.
             with self.assertRaises(ValueError) as cm:
@@ -162,7 +173,7 @@ class taylor_add_jet_test_case(_ut.TestCase):
 
             # Wrong time shape, scalar case.
             par_arr = np.full((1,), fp_t(-9.8), dtype=fp_t)
-            time_arr = np.full((2,1), fp_t(0.01), dtype=fp_t)
+            time_arr = np.full((2, 1), fp_t(0.01), dtype=fp_t)
             with self.assertRaises(ValueError) as cm:
                 jet_par_t(st, pars=par_arr, time=time_arr)
             self.assertTrue("Invalid time vector passed to a function for the computation of the jet of "
@@ -184,58 +195,69 @@ class taylor_add_jet_test_case(_ut.TestCase):
 
             # Check that the jet is consistent
             # with the Taylor coefficients.
-            init_state =  [[fp_t(0.05), fp_t(0.06), fp_t(0.07), fp_t(0.08)],
-                           [fp_t(0.025), fp_t(0.026), fp_t(0.027), fp_t(0.028)]]
+            init_state = [[fp_t(0.05), fp_t(0.06), fp_t(0.07), fp_t(0.08)],
+                          [fp_t(0.025), fp_t(0.026), fp_t(0.027), fp_t(0.028)]]
             pars = [[fp_t(-9.8), fp_t(-9.7), fp_t(-9.6), fp_t(-9.5)]]
 
-            ta = taylor_adaptive_batch(sys, init_state, tol=fp_t(1e-9), fp_type=desc)
+            ta = taylor_adaptive_batch(
+                sys, init_state, tol=fp_t(1e-9), fp_type=desc)
 
             jet = taylor_add_jet(sys, 5, fp_type=desc, batch_size=batch_size)
             st = np.full((6, 2, batch_size), fp_t(0), dtype=fp_t)
             st[0] = init_state
 
-            ta.step(write_tc = True)
+            ta.step(write_tc=True)
             jet(st)
 
-            self.assertTrue(np.all(ta.tc[:,:6,:].transpose((1,0,2)) == st))
+            self.assertTrue(np.all(ta.tc[:, :6, :].transpose((1, 0, 2)) == st))
 
             # Try adding an sv_func.
-            jet = taylor_add_jet(sys, 5, fp_type=desc, sv_funcs=[x + v], batch_size=batch_size)
+            jet = taylor_add_jet(sys, 5, fp_type=desc, sv_funcs=[
+                                 x + v], batch_size=batch_size)
             st = np.full((6, 3, batch_size), fp_t(0), dtype=fp_t)
-            st[0,:2] = init_state
+            st[0, :2] = init_state
 
             jet(st)
 
-            self.assertTrue(np.all(ta.tc[:,:6,:].transpose((1,0,2)) == st[:,:2]))
-            self.assertTrue(np.all((ta.tc[0,:6,:] + ta.tc[1,:6,:]) == st[:,2,:]))
+            self.assertTrue(
+                np.all(ta.tc[:, :6, :].transpose((1, 0, 2)) == st[:, :2]))
+            self.assertTrue(
+                np.all((ta.tc[0, :6, :] + ta.tc[1, :6, :]) == st[:, 2, :]))
 
             # An example with params.
-            ta_par = taylor_adaptive_batch(sys_par, init_state, tol=fp_t(1e-9), fp_type=desc, pars=pars)
+            ta_par = taylor_adaptive_batch(
+                sys_par, init_state, tol=fp_t(1e-9), fp_type=desc, pars=pars)
 
-            jet_par = taylor_add_jet(sys_par, 5, fp_type=desc, batch_size=batch_size)
+            jet_par = taylor_add_jet(
+                sys_par, 5, fp_type=desc, batch_size=batch_size)
             st = np.full((6, 2, batch_size), fp_t(0), dtype=fp_t)
             st[0] = init_state
             par_arr = np.array(pars)
 
-            ta_par.step(write_tc = True)
+            ta_par.step(write_tc=True)
             jet_par(st, pars=par_arr)
 
-            self.assertTrue(np.all(ta_par.tc[:,:6,:].transpose((1,0,2)) == st))
+            self.assertTrue(
+                np.all(ta_par.tc[:, :6, :].transpose((1, 0, 2)) == st))
 
             # Params + time.
-            ta_par_t = taylor_adaptive_batch(sys_par_t, init_state, tol=fp_t(1e-9), fp_type=desc, pars=pars)
+            ta_par_t = taylor_adaptive_batch(
+                sys_par_t, init_state, tol=fp_t(1e-9), fp_type=desc, pars=pars)
             ta_par_t.time[:] = [fp_t(0.01), fp_t(0.02), fp_t(0.03), fp_t(0.04)]
 
-            jet_par_t = taylor_add_jet(sys_par_t, 5, fp_type=desc, batch_size=batch_size)
+            jet_par_t = taylor_add_jet(
+                sys_par_t, 5, fp_type=desc, batch_size=batch_size)
             st = np.full((6, 2, batch_size), fp_t(0), dtype=fp_t)
             st[0] = init_state
             par_arr = np.array(pars)
-            time_arr = np.array([fp_t(0.01), fp_t(0.02), fp_t(0.03), fp_t(0.04)])
+            time_arr = np.array(
+                [fp_t(0.01), fp_t(0.02), fp_t(0.03), fp_t(0.04)])
 
-            ta_par_t.step(write_tc = True)
+            ta_par_t.step(write_tc=True)
             jet_par_t(st, pars=par_arr, time=time_arr)
 
-            self.assertTrue(np.all(ta_par_t.tc[:,:6,:].transpose((1,0,2)) == st))
+            self.assertTrue(
+                np.all(ta_par_t.tc[:, :6, :].transpose((1, 0, 2)) == st))
 
             # Just do shape/dims checks for the batch case.
 
@@ -295,7 +317,7 @@ class taylor_add_jet_test_case(_ut.TestCase):
 
         # Check that the jet is consistent
         # with the Taylor coefficients.
-        init_state =  [mpf(0.05), mpf(0.025)]
+        init_state = [mpf(0.05), mpf(0.025)]
         pars = [mpf(-9.8)]
 
         ta = taylor_adaptive(sys, init_state, tol=mpf(1e-9), fp_type="real128")
@@ -304,36 +326,39 @@ class taylor_add_jet_test_case(_ut.TestCase):
         st = np.full((6, 2), mpf(0))
         st[0] = init_state
 
-        ta.step(write_tc = True)
+        ta.step(write_tc=True)
         st = jet(st)
 
-        self.assertTrue(np.all(ta.tc[:,:6].transpose() == st))
+        self.assertTrue(np.all(ta.tc[:, :6].transpose() == st))
 
         # Try adding an sv_func.
         jet = taylor_add_jet(sys, 5, fp_type="real128", sv_funcs=[x + v])
         st = np.full((6, 3), mpf(0))
-        st[0,:2] = init_state
+        st[0, :2] = init_state
 
         st = jet(st)
 
-        self.assertTrue(np.all(ta.tc[:,:6].transpose() == st[:,:2]))
-        self.assertTrue(np.all((ta.tc[0,:6] + ta.tc[1,:6]).transpose() == st[:,2]))
+        self.assertTrue(np.all(ta.tc[:, :6].transpose() == st[:, :2]))
+        self.assertTrue(
+            np.all((ta.tc[0, :6] + ta.tc[1, :6]).transpose() == st[:, 2]))
 
         # An example with params.
-        ta_par = taylor_adaptive(sys_par, init_state, tol=mpf(1e-9), fp_type="real128", pars=pars)
+        ta_par = taylor_adaptive(sys_par, init_state, tol=mpf(
+            1e-9), fp_type="real128", pars=pars)
 
         jet_par = taylor_add_jet(sys_par, 5, fp_type="real128")
         st = np.full((6, 2), mpf(0))
         st[0] = init_state
         par_arr = np.full((1,), mpf(-9.8))
 
-        ta_par.step(write_tc = True)
+        ta_par.step(write_tc=True)
         st = jet_par(st, pars=par_arr)
 
-        self.assertTrue(np.all(ta_par.tc[:,:6].transpose() == st))
+        self.assertTrue(np.all(ta_par.tc[:, :6].transpose() == st))
 
         # Params + time.
-        ta_par_t = taylor_adaptive(sys_par_t, init_state, tol=mpf(1e-9), fp_type="real128", pars=pars)
+        ta_par_t = taylor_adaptive(sys_par_t, init_state, tol=mpf(
+            1e-9), fp_type="real128", pars=pars)
         ta_par_t.time = mpf(0.01)
 
         jet_par_t = taylor_add_jet(sys_par_t, 5, fp_type="real128")
@@ -342,10 +367,10 @@ class taylor_add_jet_test_case(_ut.TestCase):
         par_arr = np.full((1,), mpf(-9.8))
         time_arr = np.full((1,), mpf(0.01))
 
-        ta_par_t.step(write_tc = True)
+        ta_par_t.step(write_tc=True)
         st = jet_par_t(st, pars=par_arr, time=time_arr)
 
-        self.assertTrue(np.all(ta_par_t.tc[:,:6].transpose() == st))
+        self.assertTrue(np.all(ta_par_t.tc[:, :6].transpose() == st))
 
         # Failure modes.
 
@@ -398,7 +423,7 @@ class taylor_add_jet_test_case(_ut.TestCase):
 
         # Wrong time shape, scalar case.
         par_arr = np.full((1,), mpf(-9.8))
-        time_arr = np.full((2,1), mpf(0.01))
+        time_arr = np.full((2, 1), mpf(0.01))
         with self.assertRaises(ValueError) as cm:
             jet_par_t(st, pars=par_arr, time=time_arr)
         self.assertTrue("Invalid time vector passed to a function for the computation of the jet of "
@@ -411,6 +436,7 @@ class taylor_add_jet_test_case(_ut.TestCase):
         self.assertTrue("Invalid time vector passed to a function for the computation of the jet of "
                         "Taylor derivatives: the shape must be (1), but it is "
                         "(5) instead" in str(cm.exception))
+
 
 class event_classes_test_case(_ut.TestCase):
     def runTest(self):
@@ -433,24 +459,28 @@ class event_classes_test_case(_ut.TestCase):
             self.assertTrue("(x + v)" in repr(ev))
             self.assertTrue("event_direction::any" in repr(ev))
 
-            ev = nt_event(ex = x + v, callback = lambda _: _, fp_type=desc)
+            ev = nt_event(ex=x + v, callback=lambda _: _, fp_type=desc)
             self.assertTrue(" non-terminal" in repr(ev))
             self.assertTrue("(x + v)" in repr(ev))
             self.assertTrue("event_direction::any" in repr(ev))
 
-            ev = nt_event(ex = x + v, callback = lambda _: _, direction = event_direction.positive, fp_type=desc)
+            ev = nt_event(ex=x + v, callback=lambda _: _,
+                          direction=event_direction.positive, fp_type=desc)
             self.assertTrue(" non-terminal" in repr(ev))
             self.assertTrue("(x + v)" in repr(ev))
             self.assertTrue("event_direction::positive" in repr(ev))
 
-            ev = nt_event(ex = x + v, callback = lambda _: _, direction = event_direction.negative, fp_type=desc)
+            ev = nt_event(ex=x + v, callback=lambda _: _,
+                          direction=event_direction.negative, fp_type=desc)
             self.assertTrue(" non-terminal" in repr(ev))
             self.assertTrue("(x + v)" in repr(ev))
             self.assertTrue("event_direction::negative" in repr(ev))
 
             with self.assertRaises(ValueError) as cm:
-                nt_event(ex = x + v, callback = lambda _: _, direction = event_direction(10), fp_type=desc)
-            self.assertTrue("Invalid value selected for the direction of a non-terminal event" in str(cm.exception))
+                nt_event(ex=x + v, callback=lambda _: _,
+                         direction=event_direction(10), fp_type=desc)
+            self.assertTrue(
+                "Invalid value selected for the direction of a non-terminal event" in str(cm.exception))
 
             # Terminal event.
             ev = t_event(x + v, fp_type=desc)
@@ -461,7 +491,8 @@ class event_classes_test_case(_ut.TestCase):
             self.assertTrue(": no" in repr(ev))
             self.assertTrue("auto" in repr(ev))
 
-            ev = t_event(x + v, fp_type=desc, direction = event_direction.negative, cooldown = fp_t(3))
+            ev = t_event(x + v, fp_type=desc,
+                         direction=event_direction.negative, cooldown=fp_t(3))
 
             self.assertTrue(" terminal" in repr(ev))
             self.assertTrue("(x + v)" in repr(ev))
@@ -469,7 +500,8 @@ class event_classes_test_case(_ut.TestCase):
             self.assertTrue(": no" in repr(ev))
             self.assertTrue("3" in repr(ev))
 
-            ev = t_event(x + v, fp_type=desc, direction = event_direction.positive, cooldown = fp_t(3), callback = lambda _: _)
+            ev = t_event(x + v, fp_type=desc, direction=event_direction.positive,
+                         cooldown=fp_t(3), callback=lambda _: _)
 
             self.assertTrue(" terminal" in repr(ev))
             self.assertTrue("(x + v)" in repr(ev))
@@ -478,8 +510,11 @@ class event_classes_test_case(_ut.TestCase):
             self.assertTrue("3" in repr(ev))
 
             with self.assertRaises(ValueError) as cm:
-                t_event(x + v, fp_type=desc, direction = event_direction(45), cooldown = fp_t(3), callback = lambda _: _)
-            self.assertTrue("Invalid value selected for the direction of a terminal event" in str(cm.exception))
+                t_event(x + v, fp_type=desc, direction=event_direction(45),
+                        cooldown=fp_t(3), callback=lambda _: _)
+            self.assertTrue(
+                "Invalid value selected for the direction of a terminal event" in str(cm.exception))
+
 
 class event_detection_test_case(_ut.TestCase):
     def runTest(self):
@@ -522,9 +557,9 @@ class event_detection_test_case(_ut.TestCase):
                 counter = counter + 1
                 cur_time = t
 
-            ta = taylor_adaptive(sys = sys, state = [fp_t(0), fp_t(0.25)], fp_type = desc,
-                                 nt_events = [nt_event(v*v-1e-10, cb0, fp_type = desc),
-                                 nt_event(v, cb1, fp_type = desc)])
+            ta = taylor_adaptive(sys=sys, state=[fp_t(0), fp_t(0.25)], fp_type=desc,
+                                 nt_events=[nt_event(v*v-1e-10, cb0, fp_type=desc),
+                                            nt_event(v, cb1, fp_type=desc)])
 
             for _ in range(20):
                 oc, h = ta.step()
@@ -556,9 +591,10 @@ class event_detection_test_case(_ut.TestCase):
                 counter_t = counter_t + 1
                 cur_time = t
 
-            ta = taylor_adaptive(sys = sys, state = [fp_t(0), fp_t(0.25)], fp_type = desc,
-                                 nt_events = [nt_event(v*v-1e-10, cb0, fp_type = desc)],
-                                 t_events = [t_event(v, callback = cb1, fp_type=desc)])
+            ta = taylor_adaptive(sys=sys, state=[fp_t(0), fp_t(0.25)], fp_type=desc,
+                                 nt_events=[
+                                     nt_event(v*v-1e-10, cb0, fp_type=desc)],
+                                 t_events=[t_event(v, callback=cb1, fp_type=desc)])
 
             while True:
                 oc, _ = ta.step()
@@ -582,6 +618,7 @@ class event_detection_test_case(_ut.TestCase):
             self.assertEqual(counter_nt, 3)
             self.assertEqual(counter_t, 2)
 
+
 def run_test_suite():
     from . import make_nbody_sys, taylor_adaptive, with_real128
 
@@ -590,8 +627,8 @@ def run_test_suite():
         orig_mpmath_prec = mp.prec
         mp.prec = 113
 
-    sys = make_nbody_sys(2, masses=[1.1,2.1], Gconst=1)
-    ta = taylor_adaptive(sys, [1,2,3,4,5,6,7,8,9,10,11,12])
+    sys = make_nbody_sys(2, masses=[1.1, 2.1], Gconst=1)
+    ta = taylor_adaptive(sys, [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12])
 
     retval = 0
 

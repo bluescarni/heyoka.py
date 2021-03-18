@@ -7,6 +7,7 @@
 # with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 # Version setup.
+from . import test
 from ._version import __version__
 
 import os as _os
@@ -24,7 +25,8 @@ if _os.name == 'posix':
     # DynamicLibrarySearchGenerator::Load(“/path/to/libheyoka.so”)
     # See:
     # https://docs.python.org/3/library/ctypes.html
-    import ctypes as _ctypes, sys as _sys
+    import ctypes as _ctypes
+    import sys as _sys
     _orig_dlopen_flags = _sys.getdlopenflags()
     _sys.setdlopenflags(_orig_dlopen_flags | _ctypes.RTLD_GLOBAL)
 
@@ -46,7 +48,7 @@ else:
 del _os
 
 # Explicitly import the test submodule
-from . import test
+
 
 def taylor_adaptive(sys, state, **kwargs):
     from .core import _taylor_adaptive_dbl, _taylor_adaptive_ldbl
@@ -63,7 +65,9 @@ def taylor_adaptive(sys, state, **kwargs):
         from .core import _taylor_adaptive_f128
         return _taylor_adaptive_f128(sys, state, **kwargs)
 
-    raise TypeError("the floating-point type \"{}\" is not recognized/supported".format(fp_type))
+    raise TypeError(
+        "the floating-point type \"{}\" is not recognized/supported".format(fp_type))
+
 
 def taylor_adaptive_batch(sys, state, **kwargs):
     from .core import _taylor_adaptive_batch_dbl
@@ -73,7 +77,9 @@ def taylor_adaptive_batch(sys, state, **kwargs):
     if fp_type == "double":
         return _taylor_adaptive_batch_dbl(sys, state, **kwargs)
 
-    raise TypeError("the floating-point type \"{}\" is not recognized/supported".format(fp_type))
+    raise TypeError(
+        "the floating-point type \"{}\" is not recognized/supported".format(fp_type))
+
 
 def taylor_add_jet(sys, order, **kwargs):
     from .core import _taylor_add_jet_dbl, _taylor_add_jet_ldbl
@@ -90,7 +96,9 @@ def taylor_add_jet(sys, order, **kwargs):
         from .core import _taylor_add_jet_f128
         return _taylor_add_jet_f128(sys, order, **kwargs)
 
-    raise TypeError("the floating-point type \"{}\" is not recognized/supported".format(fp_type))
+    raise TypeError(
+        "the floating-point type \"{}\" is not recognized/supported".format(fp_type))
+
 
 def nt_event(ex, callback, **kwargs):
     from .core import _nt_event_dbl, _nt_event_ldbl
@@ -106,6 +114,7 @@ def nt_event(ex, callback, **kwargs):
     if with_real128 and fp_type == "real128":
         from .core import _nt_event_f128
         return _nt_event_f128(ex, callback, **kwargs)
+
 
 def t_event(ex, **kwargs):
     from .core import _t_event_dbl, _t_event_ldbl
