@@ -13,6 +13,7 @@
 #include <cstdint>
 #include <exception>
 #include <initializer_list>
+#include <optional>
 #include <sstream>
 #include <string>
 #include <utility>
@@ -266,17 +267,17 @@ PYBIND11_MODULE(core, m)
     // N-body builders.
     m.def(
         "make_nbody_sys",
-        [](std::uint32_t n, py::object Gconst, py::object masses) {
+        [](std::uint32_t n, py::object Gconst, std::optional<py::iterable> masses) {
             const auto G = heypy::to_number(Gconst);
 
             std::vector<hey::number> m_vec;
-            if (masses.is_none()) {
-                // If masses are not provided, all masses are 1.
-                m_vec.resize(static_cast<decltype(m_vec.size())>(n), hey::number{1.});
-            } else {
-                for (auto ms : py::cast<py::iterable>(masses)) {
+            if (masses) {
+                for (auto ms : *masses) {
                     m_vec.push_back(heypy::to_number(ms));
                 }
+            } else {
+                // If masses are not provided, all masses are 1.
+                m_vec.resize(static_cast<decltype(m_vec.size())>(n), hey::number{1.});
             }
 
             namespace kw = hey::kw;
@@ -286,14 +287,14 @@ PYBIND11_MODULE(core, m)
 
     m.def(
         "make_nbody_par_sys",
-        [](std::uint32_t n, py::object Gconst, py::object n_massive) {
+        [](std::uint32_t n, py::object Gconst, std::optional<std::uint32_t> n_massive) {
             const auto G = heypy::to_number(Gconst);
 
             namespace kw = hey::kw;
-            if (n_massive.is_none()) {
-                return hey::make_nbody_par_sys(n, kw::Gconst = G);
+            if (n_massive) {
+                return hey::make_nbody_par_sys(n, kw::Gconst = G, kw::n_massive = *n_massive);
             } else {
-                return hey::make_nbody_par_sys(n, kw::Gconst = G, kw::n_massive = py::cast<std::uint32_t>(n_massive));
+                return hey::make_nbody_par_sys(n, kw::Gconst = G);
             }
         },
         "n"_a, "Gconst"_a = py::cast(1.), "n_massive"_a = py::none{});
