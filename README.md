@@ -39,6 +39,7 @@ heyoka.py is a Python library for the integration of ordinary differential equat
 * the ability to maintain machine precision accuracy over
   tens of billions of timesteps,
 * high-precision zero-cost dense output,
+* accurate event detection,
 * batch mode integration to harness the power of modern
   [SIMD](https://en.wikipedia.org/wiki/SIMD) instruction sets,
 * a high-performance implementation of Taylor's method based
