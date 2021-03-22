@@ -9,6 +9,8 @@ Changelog
 New
 ~~~
 
+- Initial version of the event detection system
+  (`#23 <https://github.com/bluescarni/heyoka.py/pull/23>`__).
 - Expose low-level functions to compute the jet of derivatives
   for an ODE system
   (`#21 <https://github.com/bluescarni/heyoka.py/pull/21>`__).
@@ -16,6 +18,8 @@ New
 Changes
 ~~~~~~~
 
+- heyoka.py now depends on the `spdlog <https://github.com/gabime/spdlog>`__ library
+  (`#23 <https://github.com/bluescarni/heyoka.py/pull/23>`__).
 - heyoka.py now requires at least version 0.6.0 of the
   heyoka C++ library
   (`#21 <https://github.com/bluescarni/heyoka.py/pull/21>`__).

@@ -6,6 +6,8 @@
 # Public License v. 2.0. If a copy of the MPL was not distributed
 # with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+# Explicitly import the test submodule
+from . import test
 # Version setup.
 from ._version import __version__
 
@@ -24,7 +26,8 @@ if _os.name == 'posix':
     # DynamicLibrarySearchGenerator::Load(“/path/to/libheyoka.so”)
     # See:
     # https://docs.python.org/3/library/ctypes.html
-    import ctypes as _ctypes, sys as _sys
+    import ctypes as _ctypes
+    import sys as _sys
     _orig_dlopen_flags = _sys.getdlopenflags()
     _sys.setdlopenflags(_orig_dlopen_flags | _ctypes.RTLD_GLOBAL)
 
@@ -45,30 +48,36 @@ else:
 
 del _os
 
-# Explicitly import the test submodule
-from . import test
-
 def taylor_adaptive(sys, state, **kwargs):
+    from .core import _taylor_adaptive_dbl, _taylor_adaptive_ldbl
+
     fp_type = kwargs.pop("fp_type", "double")
 
     if fp_type == "double":
-        return taylor_adaptive_double(sys, state, **kwargs)
+        return _taylor_adaptive_dbl(sys, state, **kwargs)
 
     if fp_type == "long double":
-        return taylor_adaptive_long_double(sys, state, **kwargs)
+        return _taylor_adaptive_ldbl(sys, state, **kwargs)
 
     if with_real128 and fp_type == "real128":
-        return taylor_adaptive_real128(sys, state, **kwargs)
+        from .core import _taylor_adaptive_f128
+        return _taylor_adaptive_f128(sys, state, **kwargs)
 
-    raise TypeError("the floating-point type \"{}\" is not recognized/supported".format(fp_type))
+    raise TypeError(
+        "the floating-point type \"{}\" is not recognized/supported".format(fp_type))
+
 
 def taylor_adaptive_batch(sys, state, **kwargs):
+    from .core import _taylor_adaptive_batch_dbl
+
     fp_type = kwargs.pop("fp_type", "double")
 
     if fp_type == "double":
-        return taylor_adaptive_batch_double(sys, state, **kwargs)
+        return _taylor_adaptive_batch_dbl(sys, state, **kwargs)
 
-    raise TypeError("the floating-point type \"{}\" is not recognized/supported".format(fp_type))
+    raise TypeError(
+        "the floating-point type \"{}\" is not recognized/supported".format(fp_type))
+
 
 def taylor_add_jet(sys, order, **kwargs):
     from .core import _taylor_add_jet_dbl, _taylor_add_jet_ldbl
@@ -85,4 +94,37 @@ def taylor_add_jet(sys, order, **kwargs):
         from .core import _taylor_add_jet_f128
         return _taylor_add_jet_f128(sys, order, **kwargs)
 
-    raise TypeError("the floating-point type \"{}\" is not recognized/supported".format(fp_type))
+    raise TypeError(
+        "the floating-point type \"{}\" is not recognized/supported".format(fp_type))
+
+
+def nt_event(ex, callback, **kwargs):
+    from .core import _nt_event_dbl, _nt_event_ldbl
+
+    fp_type = kwargs.pop("fp_type", "double")
+
+    if fp_type == "double":
+        return _nt_event_dbl(ex, callback, **kwargs)
+
+    if fp_type == "long double":
+        return _nt_event_ldbl(ex, callback, **kwargs)
+
+    if with_real128 and fp_type == "real128":
+        from .core import _nt_event_f128
+        return _nt_event_f128(ex, callback, **kwargs)
+
+
+def t_event(ex, **kwargs):
+    from .core import _t_event_dbl, _t_event_ldbl
+
+    fp_type = kwargs.pop("fp_type", "double")
+
+    if fp_type == "double":
+        return _t_event_dbl(ex, **kwargs)
+
+    if fp_type == "long double":
+        return _t_event_ldbl(ex, **kwargs)
+
+    if with_real128 and fp_type == "real128":
+        from .core import _t_event_f128
+        return _t_event_f128(ex, **kwargs)
