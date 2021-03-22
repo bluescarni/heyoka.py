@@ -4,3 +4,4 @@ dependencies:
   - heyoka.py=0.5.0
   - pykep
   - matplotlib
+  - sympy
