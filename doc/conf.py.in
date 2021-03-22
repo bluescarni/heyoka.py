@@ -70,6 +70,7 @@ html_theme_options = {
     },
 }
 
+jupyter_execute_notebooks = "force"
 execution_excludepatterns = ['*Trappist-1*']
 
 latex_engine = 'xelatex'

@@ -6,8 +6,9 @@
 # Public License v. 2.0. If a copy of the MPL was not distributed
 # with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-# Version setup.
+# Explicitly import the test submodule
 from . import test
+# Version setup.
 from ._version import __version__
 
 import os as _os
@@ -46,9 +47,6 @@ else:
     from .core import *
 
 del _os
-
-# Explicitly import the test submodule
-
 
 def taylor_adaptive(sys, state, **kwargs):
     from .core import _taylor_adaptive_dbl, _taylor_adaptive_ldbl

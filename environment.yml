@@ -5,3 +5,5 @@ dependencies:
   - pykep
   - matplotlib
   - sympy
+  - scipy
+  - ipympl
