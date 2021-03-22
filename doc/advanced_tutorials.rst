@@ -7,3 +7,4 @@ Advanced tutorials
   notebooks/The restricted three-body problem
   notebooks/The variational equations
   notebooks/Long term stability of Trappist-1
+  notebooks/Optimal Control of the Lotka-Volterra equations
