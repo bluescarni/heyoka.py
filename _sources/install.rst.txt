@@ -11,6 +11,7 @@ heyoka.py has the following **mandatory** runtime dependencies:
 * the `heyoka C++ library <https://github.com/bluescarni/heyoka>`__,
   version 0.6.0 or later,
 * the `{fmt} <https://fmt.dev/latest/index.html>`__ library,
+* the `spdlog <https://github.com/gabime/spdlog>`__ library,
 * `NumPy <https://numpy.org/>`__.
 
 Additionally, heyoka.py has the following **optional** runtime
@@ -58,6 +59,7 @@ In order to install heyoka.py from source, you will need:
 * the `heyoka C++ library <https://github.com/bluescarni/heyoka>`__,
   version 0.6.0 or later,
 * the `{fmt} <https://fmt.dev/latest/index.html>`__ library,
+* the `spdlog <https://github.com/gabime/spdlog>`__ library,
 * the `Boost libraries <https://www.boost.org/>`__,
 * the `mp++ library <https://github.com/bluescarni/mppp>`__ (optional,
   necessary only if the heyoka C++ library
