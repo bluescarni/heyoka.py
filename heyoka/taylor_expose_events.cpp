@@ -96,13 +96,13 @@ void expose_taylor_t_event_impl(py::module &m, const std::string &suffix)
     py::class_<ev_t>(m, ("_t_event_{}"_format(suffix)).c_str())
         .def(py::init([](hey::expression ex, callback_t callback, hey::event_direction dir, T cooldown) {
                  if (callback) {
-                     auto cbl = [cb = std::move(callback)](hey::taylor_adaptive<T> &ta, T time, bool mr) {
+                     auto cbl = [cb = std::move(callback)](hey::taylor_adaptive<T> &ta, bool mr) {
                          // Make sure we lock the GIL before calling into the
                          // interpreter, as the callbacks may be invoked in long-running
                          // propagate functions which release the GIL.
                          py::gil_scoped_acquire acquire;
 
-                         cb(ta, time, mr);
+                         return cb(ta, mr);
                      };
 
                      return ev_t(std::move(ex), kw::callback = std::move(cbl), kw::direction = dir,
