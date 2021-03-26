@@ -581,15 +581,17 @@ class event_detection_test_case(_ut.TestCase):
                 counter_nt = counter_nt + 1
                 cur_time = t
 
-            def cb1(ta, t, mr):
+            def cb1(ta, mr):
                 nonlocal cur_time
                 nonlocal counter_t
 
                 self.assertFalse(mr)
-                self.assertTrue(t > cur_time)
+                self.assertTrue(ta.time > cur_time)
 
                 counter_t = counter_t + 1
-                cur_time = t
+                cur_time = ta.time
+
+                return True
 
             ta = taylor_adaptive(sys=sys, state=[fp_t(0), fp_t(0.25)], fp_type=desc,
                                  nt_events=[
