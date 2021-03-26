@@ -1,0 +1,483 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sampling events &#8212; heyoka.py 0.6.0 documentation</title>
+    
+  <link rel="stylesheet" href="../_static/css/index.f658d18f9b420779cfdf24aa0a7e2d77.css">
+
+    
+  <link rel="stylesheet"
+    href="../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    
+      
+  <link rel="stylesheet"
+    href="../_static/vendor/open-sans_all/1.44.1/index.css">
+  <link rel="stylesheet"
+    href="../_static/vendor/lato_latin-ext/1.44.1/index.css">
+
+    
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/sphinx-book-theme.e7340bb3dbd8dde6db86f25597f54a1b.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.css" />
+    
+  <link rel="preload" as="script" href="../_static/js/index.d3f166471bb80abb5163.js">
+
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/togglebutton.js"></script>
+    <script >var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    <script src="../_static/sphinx-book-theme.7d483ff0a819d6edff12ce0b1ead3928.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["\\(", "\\)"]], "displayMath": [["\\[", "\\]"]], "processRefs": false, "processEnvironments": false}})</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Changelog" href="../changelog.html" />
+    <link rel="prev" title="The Keplerian billiard" href="The%20Keplerian%20billiard.html" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="en" />
+
+
+
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+<div class="col-12 col-md-3 bd-sidebar site-navigation show" id="site-navigation">
+    
+        <div class="navbar-brand-box">
+<a class="navbar-brand text-wrap" href="../index.html">
+  
+  <img src="../_static/white_logo.png" class="logo" alt="logo">
+  
+  
+  <h1 class="site-logo" id="site-title">heyoka.py 0.6.0 documentation</h1>
+  
+</a>
+</div><form class="bd-search d-flex align-items-center" action="../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form>
+<nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+    <p class="caption collapsible-parent">
+ <span class="caption-text">
+  Contents
+ </span>
+</p>
+<ul class="current nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../install.html">
+   Installation
+  </a>
+ </li>
+ <li class="toctree-l1 collapsible-parent">
+  <a class="reference internal" href="../basic_tutorials.html">
+   Basic tutorials
+  </a>
+  <ul class="collapse-ul">
+   <li class="toctree-l2">
+    <a class="reference internal" href="../tut_taylor_method.html">
+     Taylor’s method
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="The%20expression%20system.html">
+     The expression system
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="The%20adaptive%20integrator.html">
+     The adaptive integrator
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="Customising%20the%20adaptive%20integrator.html">
+     Customising the adaptive integrator
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="ODEs%20with%20parameters.html">
+     ODEs with parameters
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="Non-autonomous%20systems.html">
+     Non-autonomous systems
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="Dense%20output.html">
+     Dense output
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="Event%20detection.html">
+     Event detection
+    </a>
+   </li>
+  </ul>
+  <i class="fas fa-chevron-down">
+  </i>
+ </li>
+ <li class="toctree-l1 current active collapsible-parent">
+  <a class="reference internal" href="../advanced_tutorials.html">
+   Advanced tutorials
+  </a>
+  <ul class="current collapse-ul">
+   <li class="toctree-l2">
+    <a class="reference internal" href="The%20restricted%20three-body%20problem.html">
+     The restricted three-body problem
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="The%20variational%20equations.html">
+     The variational equations
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="Long%20term%20stability%20of%20Trappist-1.html">
+     Long term stability of N-body simulations: the case of Trappist-1
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="Poincar%C3%A9%20sections.html">
+     Poincaré sections
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="The%20Keplerian%20billiard.html">
+     The Keplerian billiard
+    </a>
+   </li>
+   <li class="toctree-l2 current active">
+    <a class="current reference internal" href="#">
+     Sampling events
+    </a>
+   </li>
+  </ul>
+  <i class="fas fa-chevron-down">
+  </i>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../changelog.html">
+   Changelog
+  </a>
+ </li>
+</ul>
+
+</nav> <!-- To handle the deprecated key -->
+
+<div class="navbar_extra_footer">
+  Theme by the <a href="https://ebp.jupyterbook.org">Executable Book Project</a>
+</div>
+
+</div>
+
+
+          
+
+
+          
+<main class="col py-md-3 pl-md-4 bd-content overflow-auto" role="main">
+    
+    <div class="topbar container-xl fixed-top">
+    <div class="topbar-contents row">
+        <div class="col-12 col-md-3 bd-topbar-whitespace site-navigation show"></div>
+        <div class="col pl-md-4 topbar-main">
+            
+            <button id="navbar-toggler" class="navbar-toggler ml-0" type="button" data-toggle="collapse"
+                data-toggle="tooltip" data-placement="bottom" data-target=".site-navigation" aria-controls="navbar-menu"
+                aria-expanded="true" aria-label="Toggle navigation" aria-controls="site-navigation"
+                title="Toggle navigation" data-toggle="tooltip" data-placement="left">
+                <i class="fas fa-bars"></i>
+                <i class="fas fa-arrow-left"></i>
+                <i class="fas fa-arrow-up"></i>
+            </button>
+            
+            
+<div class="dropdown-buttons-trigger">
+    <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn" aria-label="Download this page"><i
+            class="fas fa-download"></i></button>
+
+    <div class="dropdown-buttons">
+        <!-- ipynb file if we had a myst markdown file -->
+        
+        <!-- Download raw file -->
+        <a class="dropdown-buttons" href="../_sources/notebooks/Sampling events.ipynb.txt"><button type="button"
+                class="btn btn-secondary topbarbtn" title="Download source file" data-toggle="tooltip"
+                data-placement="left">.ipynb</button></a>
+        <!-- Download PDF via print -->
+        <button type="button" id="download-print" class="btn btn-secondary topbarbtn" title="Print to PDF"
+            onClick="window.print()" data-toggle="tooltip" data-placement="left">.pdf</button>
+    </div>
+</div>
+
+            <!-- Source interaction buttons -->
+
+<div class="dropdown-buttons-trigger">
+    <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn"
+        aria-label="Connect with source repository"><i class="fab fa-github"></i></button>
+    <div class="dropdown-buttons sourcebuttons">
+        <a class="repository-button"
+            href="https://github.com/bluescarni/heyoka.py"><button type="button" class="btn btn-secondary topbarbtn"
+                data-toggle="tooltip" data-placement="left" title="Source repository"><i
+                    class="fab fa-github"></i>repository</button></a>
+        <a class="issues-button"
+            href="https://github.com/bluescarni/heyoka.py/issues/new?title=Issue%20on%20page%20%2Fnotebooks/Sampling events.html&body=Your%20issue%20content%20here."><button
+                type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip" data-placement="left"
+                title="Open an issue"><i class="fas fa-lightbulb"></i>open issue</button></a>
+        
+    </div>
+</div>
+
+
+            <!-- Full screen (wrap in <a> to have style consistency -->
+            <a class="full-screen-button"><button type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip"
+                    data-placement="bottom" onclick="toggleFullScreen()" aria-label="Fullscreen mode"
+                    title="Fullscreen mode"><i
+                        class="fas fa-expand"></i></button></a>
+
+            <!-- Launch buttons -->
+
+<div class="dropdown-buttons-trigger">
+    <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn"
+        aria-label="Launch interactive content"><i class="fas fa-rocket"></i></button>
+    <div class="dropdown-buttons">
+        
+        <a class="binder-button" href="https://mybinder.org/v2/gh/bluescarni/heyoka.py/main?urlpath=tree/doc/notebooks/Sampling events.ipynb"><button type="button"
+                class="btn btn-secondary topbarbtn" title="Launch Binder" data-toggle="tooltip"
+                data-placement="left"><img class="binder-button-logo"
+                    src="../_static/images/logo_binder.svg"
+                    alt="Interact on binder">Binder</button></a>
+        
+        
+        
+        
+    </div>
+</div>
+
+        </div>
+
+        <!-- Table of contents -->
+        <div class="d-none d-md-block col-md-2 bd-toc show">
+            
+        </div>
+    </div>
+</div>
+    <div id="main-content" class="row">
+        <div class="col-12 col-md-9 pl-md-3 pr-md-0">
+        
+              <div>
+                
+  <div class="section" id="sampling-events">
+<h1>Sampling events<a class="headerlink" href="#sampling-events" title="Permalink to this headline">¶</a></h1>
+<p>In this example, we will show how to use heyoka.py’s event detection system to detect when the solution of a system of ODEs satisfies certain constraints.</p>
+<p>We will be considering the system of polynomial ODEs</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+\begin{cases}
+\frac{dx}{dt} = -y-x^2\\
+\frac{dy}{dt} = 2x-y^3
+\end{cases}
+\end{split}\]</div>
+<p>with initial conditions</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+\begin{cases}
+x\left( 0 \right ) = 1\\
+y\left( 0 \right ) = 1
+\end{cases}.
+\end{split}\]</div>
+<p>Let us begin by creating the symbolic variables and defining the system of ODEs:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">heyoka</span> <span class="k">as</span> <span class="nn">hy</span>
+
+<span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">make_vars</span><span class="p">(</span><span class="s2">&quot;x&quot;</span><span class="p">,</span> <span class="s2">&quot;y&quot;</span><span class="p">)</span>
+<span class="n">eqns</span> <span class="o">=</span> <span class="p">[(</span><span class="n">x</span><span class="p">,</span> <span class="o">-</span><span class="n">y</span> <span class="o">-</span> <span class="n">x</span><span class="o">**</span><span class="mi">2</span><span class="p">),</span> <span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="mi">2</span><span class="o">*</span><span class="n">x</span> <span class="o">-</span> <span class="n">y</span><span class="o">**</span><span class="mi">3</span><span class="p">)]</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>As a first step, we want to detect when the solution crosses the <span class="math notranslate nohighlight">\(x\)</span> axis. The equation for this event is simply</p>
+<div class="math notranslate nohighlight">
+\[
+y = 0.
+\]</div>
+<p>Each time the solution crosses the <span class="math notranslate nohighlight">\(x\)</span> axis, we want to record in a list the <span class="math notranslate nohighlight">\(x\)</span> coordinate at the time of crossing. Thus, we define the following callback for the event:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># The list of values of the x coordinate</span>
+<span class="c1"># at the time of crossing.</span>
+<span class="n">ev_x</span> <span class="o">=</span> <span class="p">[]</span>
+
+<span class="c1"># The event&#39;s callback.</span>
+<span class="k">def</span> <span class="nf">cb</span><span class="p">(</span><span class="n">ta</span><span class="p">,</span> <span class="n">time</span><span class="p">):</span>
+    <span class="c1"># Determine the state of the system</span>
+    <span class="c1"># at the time of crossing.</span>
+    <span class="n">ta</span><span class="o">.</span><span class="n">update_d_output</span><span class="p">(</span><span class="n">time</span><span class="p">)</span>
+    
+    <span class="c1"># Add the x coordinate at the time</span>
+    <span class="c1"># of crossing to ev_x.</span>
+    <span class="n">ev_x</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ta</span><span class="o">.</span><span class="n">d_output</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>We can now proceed to the creation of the integrator:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ta</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">taylor_adaptive</span><span class="p">(</span><span class="n">eqns</span><span class="p">,</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">nt_events</span> <span class="o">=</span> <span class="p">[</span><span class="n">hy</span><span class="o">.</span><span class="n">nt_event</span><span class="p">(</span>
+    <span class="c1"># The event equation.</span>
+    <span class="n">y</span><span class="p">,</span>
+    <span class="c1"># The callback function.</span>
+    <span class="n">cb</span><span class="p">)])</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>The event is created as a <em>non-terminal</em> event, as it is just a logging event that does not alter the state or the dynamics of the system.</p>
+<p>We can then proceed to the integration of the system over a time grid:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="n">grid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">80</span><span class="p">,</span> <span class="mi">2000</span><span class="p">)</span>
+<span class="n">out</span> <span class="o">=</span> <span class="n">ta</span><span class="o">.</span><span class="n">propagate_grid</span><span class="p">(</span><span class="n">grid</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Let us plot the solution and mark the <span class="math notranslate nohighlight">\(x\)</span> axis crossing positions:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">matplotlib.pylab</span> <span class="kn">import</span> <span class="n">plt</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s2">&quot;figure.figsize&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">12</span><span class="p">,</span><span class="mi">12</span><span class="p">)</span>
+
+<span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+<span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">111</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_aspect</span><span class="p">(</span><span class="s1">&#39;equal&#39;</span><span class="p">,</span> <span class="n">adjustable</span><span class="o">=</span><span class="s1">&#39;box&#39;</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">out</span><span class="p">[</span><span class="mi">4</span><span class="p">][:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">out</span><span class="p">[</span><span class="mi">4</span><span class="p">][:,</span> <span class="mi">1</span><span class="p">])</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ev_x</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">ev_x</span><span class="p">),</span> <span class="s1">&#39;o&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=.</span><span class="mi">5</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;x&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;y&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">((</span><span class="o">-</span><span class="mf">0.75</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">grid</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/Sampling events_9_0.png" src="../_images/Sampling events_9_0.png" />
+</div>
+</div>
+<p>The plot shows how the event detection system indeed fired each time the solution crossed the <span class="math notranslate nohighlight">\(x\)</span> axis.</p>
+<p>Let us now complicate things a bit: instead of detecting when the solution crosses the <span class="math notranslate nohighlight">\(x\)</span> axis, we want to detect when the solution intersects the non-linear curve</p>
+<div class="math notranslate nohighlight">
+\[
+y = 1.1 \sin\left( 5x \right).
+\]</div>
+<p>The only thing we need to change in our setup is the event equation, which will now read</p>
+<div class="math notranslate nohighlight">
+\[
+y - 1.1 \sin\left( 5x \right) = 0
+\]</div>
+<p>rather than simply <span class="math notranslate nohighlight">\(y=0\)</span>. Additionally, we will also need to store explicitly the <span class="math notranslate nohighlight">\(y\)</span> coordinate of the crossing points. Let us take a look at the code:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+
+<span class="c1"># Lists of x/y coordinates for the crossing points.</span>
+<span class="n">ev_x</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">ev_y</span> <span class="o">=</span> <span class="p">[]</span>
+
+<span class="c1"># The (updated) callback function.</span>
+<span class="k">def</span> <span class="nf">cb</span><span class="p">(</span><span class="n">ta</span><span class="p">,</span> <span class="n">time</span><span class="p">):</span>
+    <span class="n">ta</span><span class="o">.</span><span class="n">update_d_output</span><span class="p">(</span><span class="n">time</span><span class="p">)</span>
+    <span class="n">ev_x</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ta</span><span class="o">.</span><span class="n">d_output</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="n">ev_y</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ta</span><span class="o">.</span><span class="n">d_output</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+
+<span class="c1"># Reset the integrator with the new event.</span>
+<span class="n">ta</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">taylor_adaptive</span><span class="p">(</span><span class="n">eqns</span><span class="p">,</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">nt_events</span> <span class="o">=</span> <span class="p">[</span><span class="n">hy</span><span class="o">.</span><span class="n">nt_event</span><span class="p">(</span><span class="n">y</span> <span class="o">-</span> <span class="mf">1.1</span><span class="o">*</span><span class="n">hy</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mi">5</span><span class="o">*</span><span class="n">x</span><span class="p">),</span> <span class="n">cb</span><span class="p">)])</span>
+
+<span class="c1"># Integrate over a time grid.</span>
+<span class="n">out</span> <span class="o">=</span> <span class="n">ta</span><span class="o">.</span><span class="n">propagate_grid</span><span class="p">(</span><span class="n">grid</span><span class="p">)</span>
+
+<span class="c1"># Plot the results.</span>
+<span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">111</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_aspect</span><span class="p">(</span><span class="s1">&#39;equal&#39;</span><span class="p">,</span> <span class="n">adjustable</span><span class="o">=</span><span class="s1">&#39;box&#39;</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">out</span><span class="p">[</span><span class="mi">4</span><span class="p">][:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">out</span><span class="p">[</span><span class="mi">4</span><span class="p">][:,</span> <span class="mi">1</span><span class="p">])</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ev_x</span><span class="p">,</span> <span class="n">ev_y</span><span class="p">,</span> <span class="s1">&#39;o&#39;</span><span class="p">,</span> <span class="n">alpha</span> <span class="o">=</span> <span class="o">.</span><span class="mi">5</span><span class="p">)</span>
+
+<span class="c1"># Plot also the curve.</span>
+<span class="n">xrng</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mf">0.75</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2000</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">xrng</span><span class="p">,</span> <span class="mf">1.1</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mi">5</span><span class="o">*</span><span class="n">xrng</span><span class="p">),</span> <span class="s1">&#39;k--&#39;</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;x&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;y&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">((</span><span class="o">-</span><span class="mf">0.75</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">grid</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/Sampling events_11_0.png" src="../_images/Sampling events_11_0.png" />
+</div>
+</div>
+<p>The plot shows again how the event detection system was able to correctly detect the intersections of the solution with the curve.</p>
+</div>
+
+
+              </div>
+              
+        
+        <div class='prev-next-bottom'>
+            
+    <a class='left-prev' id="prev-link" href="The%20Keplerian%20billiard.html" title="previous page">The Keplerian billiard</a>
+    <a class='right-next' id="next-link" href="../changelog.html" title="next page">Changelog</a>
+
+        </div>
+        
+        </div>
+    </div>
+    <footer class="footer mt-5 mt-md-0">
+    <div class="container">
+      <p>
+        
+          By Francesco Biscani and Dario Izzo<br/>
+        
+            &copy; Copyright 2020, 2021, Francesco Biscani and Dario Izzo.<br/>
+      </p>
+    </div>
+  </footer>
+</main>
+
+
+      </div>
+    </div>
+
+    
+  <script src="../_static/js/index.d3f166471bb80abb5163.js"></script>
+
+
+    
+  </body>
+</html>
