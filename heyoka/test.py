@@ -631,12 +631,12 @@ class expression_eval_test_case(_ut.TestCase):
                 from mpmath import mpf
                 fp_types.append(("real128", mpf))
 
-        for desc, fp_t in fp_types:
-            target = fp_t("0.123456789012345678901234567890")
-            a = hey.eval(x, {"x": target}, fp_type=desc)
-            self.assertEqual(a, target)
-            a = hey.eval(x**3.1, {"x": target}, fp_type=desc)
-            self.assertEqual(a, target)
+            for desc, fp_t in fp_types:
+                target = fp_t("0.123456789012345678901234567890")
+                a = hey.eval(x, {"x": target}, fp_type=desc)
+                self.assertEqual(a, target)
+                a = hey.eval(x**3.1, {"x": target}, fp_type=desc)
+                self.assertEqual(a, target)
 
 
 def run_test_suite():
