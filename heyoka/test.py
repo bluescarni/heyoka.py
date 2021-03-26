@@ -657,6 +657,8 @@ def run_test_suite():
     suite = _ut.TestLoader().loadTestsFromTestCase(taylor_add_jet_test_case)
     suite.addTest(event_classes_test_case())
     suite.addTest(event_detection_test_case())
+    suite.addTest(expression_eval_test_case())
+
 
     test_result = _ut.TextTestRunner(verbosity=2).run(suite)
 
