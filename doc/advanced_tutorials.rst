@@ -8,3 +8,5 @@ Advanced tutorials
   notebooks/The variational equations
   notebooks/Long term stability of Trappist-1
   notebooks/Optimal Control of the Lotka-Volterra equations
+  notebooks/Poincaré sections
+

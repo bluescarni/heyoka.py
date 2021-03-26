@@ -18,6 +18,9 @@ New
 Changes
 ~~~~~~~
 
+- **BREAKING**: the ``propagate_grid()`` method now requires
+  monotonically-ordered grid points
+  (`#25 <https://github.com/bluescarni/heyoka.py/pull/25>`__).
 - heyoka.py now depends on the `spdlog <https://github.com/gabime/spdlog>`__ library
   (`#23 <https://github.com/bluescarni/heyoka.py/pull/23>`__).
 - heyoka.py now requires at least version 0.6.0 of the

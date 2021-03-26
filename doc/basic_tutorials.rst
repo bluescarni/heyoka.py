@@ -31,3 +31,4 @@ Basic tutorials
   notebooks/ODEs with parameters.ipynb
   notebooks/Non-autonomous systems.ipynb
   notebooks/Dense output.ipynb
+  notebooks/Event detection.ipynb
