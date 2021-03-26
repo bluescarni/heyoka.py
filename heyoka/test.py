@@ -622,10 +622,10 @@ class event_detection_test_case(_ut.TestCase):
 
 class expression_eval_test_case(_ut.TestCase):
     def runTest(self):
-            from . import sin
+            from . import sin, make_vars, with_real128, eval
             import numpy as np
 
-            x = make_vars("x")
+            x, = make_vars("x")
 
             fp_types = [("double", float), ("long double", np.longdouble)]
 
@@ -635,9 +635,9 @@ class expression_eval_test_case(_ut.TestCase):
 
             for desc, fp_t in fp_types:
                 target = fp_t("0.123456789012345678901234567890")
-                a = hey.eval(x, {"x": target}, fp_type=desc)
+                a = eval(x, {"x": target}, fp_type=desc)
                 self.assertEqual(a, target)
-                a = hey.eval(x**3.1, {"x": target}, fp_type=desc)
+                a = eval(x**3.1, {"x": target}, fp_type=desc)
                 self.assertEqual(a, target**3.1)
 
 
