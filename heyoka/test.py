@@ -638,7 +638,7 @@ class expression_eval_test_case(_ut.TestCase):
                 a = hey.eval(x, {"x": target}, fp_type=desc)
                 self.assertEqual(a, target)
                 a = hey.eval(x**3.1, {"x": target}, fp_type=desc)
-                self.assertEqual(a, target)
+                self.assertEqual(a, target**3.1)
 
 
 def run_test_suite():
