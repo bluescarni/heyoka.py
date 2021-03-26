@@ -9,4 +9,4 @@ Advanced tutorials
   notebooks/Long term stability of Trappist-1
   notebooks/Optimal Control of the Lotka-Volterra equations
   notebooks/Poincaré sections
-
+  notebooks/The Keplerian billiard
