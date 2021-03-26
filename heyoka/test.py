@@ -618,6 +618,26 @@ class event_detection_test_case(_ut.TestCase):
             self.assertEqual(counter_nt, 3)
             self.assertEqual(counter_t, 2)
 
+class expression_eval_test_case(_ut.TestCase):
+    def runTest(self):
+            from . import sin
+            import numpy as np
+
+            x = make_vars("x")
+
+            fp_types = [("double", float), ("long double", np.longdouble)]
+
+            if with_real128:
+                from mpmath import mpf
+                fp_types.append(("real128", mpf))
+
+        for desc, fp_t in fp_types:
+            target = fp_t("0.123456789012345678901234567890")
+            a = hey.eval(x, {"x": target}, fp_type=desc)
+            self.assertEqual(a, target)
+            a = hey.eval(x**3.1, {"x": target}, fp_type=desc)
+            self.assertEqual(a, target)
+
 
 def run_test_suite():
     from . import make_nbody_sys, taylor_adaptive, with_real128
