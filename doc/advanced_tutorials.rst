@@ -8,3 +8,4 @@ Advanced tutorials
   notebooks/The variational equations
   notebooks/Long term stability of Trappist-1
   notebooks/Poincaré sections
+  notebooks/The Keplerian billiard
