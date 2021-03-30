@@ -638,7 +638,7 @@ class expression_eval_test_case(_ut.TestCase):
                 a = eval(x, {"x": target}, fp_type=desc)
                 self.assertEqual(a, target)
                 a = eval(x**3.1, {"x": target}, fp_type=desc)
-                self.assertEqual(a, target**3.1)
+                self.assertAlmostEqual(a, target**3.1, places=14)
 
 
 def run_test_suite():
