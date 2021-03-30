@@ -169,6 +169,11 @@
      Sampling events
     </a>
    </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="The%20two-fixed%20elliptic%20billiard.html">
+     The two-fixed centres elliptic billiard
+    </a>
+   </li>
   </ul>
   <i class="fas fa-chevron-down">
   </i>
@@ -501,6 +506,9 @@ initial amplitude of <span class="math notranslate nohighlight">\(0.05\)</span>.
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[0.0, 1.0037017879400651, 2.0074035758801303, 3.011105363820196, 4.014807151760261]
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>
 </pre></div>
 </div>
 </div>
@@ -836,7 +844,7 @@ being made in the integration.</p>
 a <em>cooldown</em> period. Within the cooldown period, occurrences of the same event are ignored by the event detection
 system. The length of the cooldown period is, by default, automatically deduced by heyoka.py, but in some cases
 it might be useful to manually set a custom value. A custom cooldown period can be selected when constructing
-a terminal event via the <code class="docutils literal notranslate"><span class="pre">cooldown</span></code> keyword.</p>
+a terminal event via the <code class="docutils literal notranslate"><span class="pre">cooldown</span></code> keyword argument.</p>
 <p>When a terminal event triggers and enters the cooldown period, the event detection system will also try to detect
 the occurrence of multiple roots of the event equation within the cooldown period. If such multiple roots are detected,
 then the <code class="docutils literal notranslate"><span class="pre">mr</span></code> boolean parameter in the terminal event callback will be set to <code class="docutils literal notranslate"><span class="pre">True</span></code>, so that the user
