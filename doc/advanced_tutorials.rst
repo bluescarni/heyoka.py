@@ -10,3 +10,4 @@ Advanced tutorials
   notebooks/Optimal Control of the Lotka-Volterra equations
   notebooks/Poincaré sections
   notebooks/The Keplerian billiard
+  notebooks/Sampling events
