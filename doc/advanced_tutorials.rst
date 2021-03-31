@@ -11,3 +11,4 @@ Advanced tutorials
   notebooks/Poincaré sections
   notebooks/The Keplerian billiard
   notebooks/Sampling events
+  notebooks/The two-fixed elliptic billiard

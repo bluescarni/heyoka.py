@@ -543,6 +543,48 @@ PYBIND11_MODULE(core, m)
                 ta.propagate_until(t, max_steps);
             },
             "t"_a, "max_steps"_a = 0)
+        .def(
+            "propagate_grid",
+            [](hey::taylor_adaptive_batch<double> &ta, py::array_t<double> grid, std::size_t max_steps) {
+                // Check the grid dimension/shape.
+                if (grid.ndim() != 2) {
+                    heypy::py_throw(
+                        PyExc_ValueError,
+                        "Invalid grid passed to the propagate_grid() method of a batch integrator: "
+                        "the expected number of dimensions is 2, but the input array has a dimension of {}"_format(
+                            grid.ndim())
+                            .c_str());
+                }
+                if (boost::numeric_cast<std::uint32_t>(grid.shape(1)) != ta.get_batch_size()) {
+                    heypy::py_throw(PyExc_ValueError,
+                                    "Invalid grid passed to the propagate_grid() method of a batch integrator: "
+                                    "the shape must be (n, {}) but the number of columns is {} instead"_format(
+                                        ta.get_batch_size(), grid.shape(1))
+                                        .c_str());
+                }
+
+                // Convert to a std::vector.
+                const auto grid_v = py::cast<std::vector<double>>(grid.attr("flatten")());
+
+                // Run the propagation.
+                // NOTE: for batch integrators, ret is guaranteed to always have
+                // the same size regardless of errors.
+                decltype(ta.propagate_grid(grid_v, max_steps)) ret;
+                {
+                    py::gil_scoped_release release;
+                    ret = ta.propagate_grid(grid_v, max_steps);
+                }
+
+                // Create the output array.
+                assert(ret.size() == grid_v.size() * ta.get_dim());
+                py::array_t<double> a_ret(py::array::ShapeContainer{grid.shape(0),
+                                                                    boost::numeric_cast<py::ssize_t>(ta.get_dim()),
+                                                                    grid.shape(1)},
+                                          ret.data());
+
+                return a_ret;
+            },
+            "grid"_a, "max_steps"_a = 0)
         .def_property_readonly("propagate_res",
                                [](const hey::taylor_adaptive_batch<double> &ta) { return ta.get_propagate_res(); })
         .def_property_readonly(

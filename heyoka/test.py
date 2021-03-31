@@ -641,6 +641,59 @@ class expression_eval_test_case(_ut.TestCase):
                 self.assertAlmostEqual(a, target**3.1, places=14)
 
 
+class batch_integrator_test_case(_ut.TestCase):
+    def runTest(self):
+        self.run_propagate_grid_tests()
+    def run_propagate_grid_tests(self):
+        from . import make_vars, taylor_adaptive, taylor_adaptive_batch, sin
+        import numpy as np
+
+        x, v = make_vars("x", "v")
+        eqns = [(x, v),
+                (v, -9.8*sin(x))]
+
+        x_ic = [0.06, 0.07, 0.08,  0.09]
+        v_ic = [0.025, 0.026, 0.027, 0.028]
+
+        ta = taylor_adaptive_batch(eqns, [x_ic, v_ic])
+
+        # Failure modes.
+        with self.assertRaises(ValueError) as cm:
+            ta.propagate_grid([])
+        self.assertTrue(
+            "Invalid grid passed to the propagate_grid() method of a batch integrator: "
+            "the expected number of dimensions is 2, but the input array has a dimension of 1" in str(cm.exception))
+
+        with self.assertRaises(ValueError) as cm:
+            ta.propagate_grid([[1, 2], [3, 4]])
+        self.assertTrue(
+            "Invalid grid passed to the propagate_grid() method of a batch integrator: "
+            "the shape must be (n, 4) but the number of columns is 2 instead" in str(cm.exception))
+
+        # Run a simple scalar/batch comparison.
+        tas = []
+
+        for x0, v0 in zip(x_ic, v_ic):
+            tas.append(taylor_adaptive(eqns, [x0, v0]))
+
+        grid = np.array([[-0.1, -0.2, -0.3, -0.4],
+                         [0.01, 0.02, 0.03, 0.9],
+                         [1., 1.1, 1.2, 1.3],
+                         [11., 11.1, 11.2, 11.3]])
+
+        bres = ta.propagate_grid(grid)
+
+        sres = [tas[0].propagate_grid(grid[:, 0]),
+                tas[1].propagate_grid(grid[:, 1]),
+                tas[2].propagate_grid(grid[:, 2]),
+                tas[3].propagate_grid(grid[:, 3])]
+
+        self.assertTrue(np.max(np.abs(sres[0][4] - bres[:,:,0]).flatten()) < 1e-14)
+        self.assertTrue(np.max(np.abs(sres[1][4] - bres[:,:,1]).flatten()) < 1e-14)
+        self.assertTrue(np.max(np.abs(sres[2][4] - bres[:,:,2]).flatten()) < 1e-14)
+        self.assertTrue(np.max(np.abs(sres[3][4] - bres[:,:,3]).flatten()) < 1e-14)
+
+
 def run_test_suite():
     from . import make_nbody_sys, taylor_adaptive, with_real128
 
@@ -658,6 +711,7 @@ def run_test_suite():
     suite.addTest(event_classes_test_case())
     suite.addTest(event_detection_test_case())
     suite.addTest(expression_eval_test_case())
+    suite.addTest(batch_integrator_test_case())
 
 
     test_result = _ut.TextTestRunner(verbosity=2).run(suite)
