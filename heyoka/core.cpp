@@ -220,6 +220,16 @@ PYBIND11_MODULE(core, m)
         .def(
             "__deepcopy__", [](const hey::expression &e, py::dict) { return e; }, "memo"_a);
 
+    // Eval
+    m.def("_eval_dbl", [](const hey::expression &e, const std::unordered_map<std::string, double> &map,
+                          const std::vector<double> &pars) { return hey::eval<double>(e, map, pars); });
+    m.def("_eval_ldbl", [](const hey::expression &e, const std::unordered_map<std::string, long double> &map,
+                           const std::vector<long double> &pars) { return hey::eval<long double>(e, map, pars); });
+#if defined(HEYOKA_HAVE_REAL128)
+    m.def("_eval_f128", [](const hey::expression &e, const std::unordered_map<std::string, mppp::real128> &map,
+                           const std::vector<mppp::real128> &pars) { return hey::eval<mppp::real128>(e, map, pars); });
+#endif
+
     // Pairwise sum.
     m.def("pairwise_sum", [](const std::vector<hey::expression> &v_ex) { return hey::pairwise_sum(v_ex); });
 

@@ -620,6 +620,28 @@ class event_detection_test_case(_ut.TestCase):
             self.assertEqual(counter_nt, 3)
             self.assertEqual(counter_t, 2)
 
+class expression_eval_test_case(_ut.TestCase):
+    def runTest(self):
+            from . import sin, make_vars, with_real128, eval
+            import numpy as np
+            from math import log10
+
+            x, = make_vars("x")
+
+            fp_types = [("double", float, int(-log10(np.finfo(float).eps)) - 1),
+                        ("long double", np.longdouble, int(-log10(np.finfo(np.longdouble).eps)) - 1)]
+
+            if with_real128:
+                from mpmath import mpf
+                fp_types.append(("real128", mpf, 32))
+
+            for desc, fp_t, places in fp_types:
+                target = fp_t("0.123456789012345678901234567890")
+                a = eval(x, {"x": target}, fp_type=desc)
+                self.assertEqual(a, target)
+                a = eval(x**3.1, {"x": target}, fp_type=desc)
+                self.assertAlmostEqual(a, target**3.1, places=places)
+
 
 class batch_integrator_test_case(_ut.TestCase):
     def runTest(self):
@@ -690,7 +712,9 @@ def run_test_suite():
     suite = _ut.TestLoader().loadTestsFromTestCase(taylor_add_jet_test_case)
     suite.addTest(event_classes_test_case())
     suite.addTest(event_detection_test_case())
+    suite.addTest(expression_eval_test_case())
     suite.addTest(batch_integrator_test_case())
+
 
     test_result = _ut.TextTestRunner(verbosity=2).run(suite)
 

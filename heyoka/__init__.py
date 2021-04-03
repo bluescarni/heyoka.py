@@ -66,6 +66,23 @@ def taylor_adaptive(sys, state, **kwargs):
     raise TypeError(
         "the floating-point type \"{}\" is not recognized/supported".format(fp_type))
 
+def eval(e, map, pars = [], **kwargs):
+    from .core import _eval_dbl, _eval_ldbl
+
+    fp_type = kwargs.pop("fp_type", "double")
+
+    if fp_type == "double":
+        return _eval_dbl(e, map, pars, **kwargs)
+
+    if fp_type == "long double":
+        return _eval_ldbl(e, map, pars, **kwargs)
+
+    if with_real128 and fp_type == "real128":
+        from .core import _eval_f128
+        return _eval_f128(e, map, pars, **kwargs)
+
+    raise TypeError(
+        "the floating-point type \"{}\" is not recognized/supported".format(fp_type))
 
 def taylor_adaptive_batch(sys, state, **kwargs):
     from .core import _taylor_adaptive_batch_dbl
