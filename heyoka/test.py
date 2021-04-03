@@ -624,21 +624,22 @@ class expression_eval_test_case(_ut.TestCase):
     def runTest(self):
             from . import sin, make_vars, with_real128, eval
             import numpy as np
+            from math import log10
 
             x, = make_vars("x")
 
-            fp_types = [("double", float), ("long double", np.longdouble)]
+            fp_types = [("double", float, int(-log10(np.finfo(float).eps)) - 1), ("long double", int(-log10(np.finfo(np.longdouble).eps)) - 1)]
 
             if with_real128:
                 from mpmath import mpf
-                fp_types.append(("real128", mpf))
+                fp_types.append(("real128", mpf, 32))
 
-            for desc, fp_t in fp_types:
+            for desc, fp_t, places in fp_types:
                 target = fp_t("0.123456789012345678901234567890")
                 a = eval(x, {"x": target}, fp_type=desc)
                 self.assertEqual(a, target)
                 a = eval(x**3.1, {"x": target}, fp_type=desc)
-                self.assertAlmostEqual(a, target**3.1, places=14)
+                self.assertAlmostEqual(a, target**3.1, places=places)
 
 
 class batch_integrator_test_case(_ut.TestCase):
