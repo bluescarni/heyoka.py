@@ -628,7 +628,8 @@ class expression_eval_test_case(_ut.TestCase):
 
             x, = make_vars("x")
 
-            fp_types = [("double", float, int(-log10(np.finfo(float).eps)) - 1), ("long double", int(-log10(np.finfo(np.longdouble).eps)) - 1)]
+            fp_types = [("double", float, int(-log10(np.finfo(float).eps)) - 1),
+                        ("long double", np.longdouble, int(-log10(np.finfo(np.longdouble).eps)) - 1)]
 
             if with_real128:
                 from mpmath import mpf
