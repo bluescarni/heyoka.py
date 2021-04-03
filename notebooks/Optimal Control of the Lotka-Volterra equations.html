@@ -1,0 +1,1064 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Optimal Control of the Lotka-Volterra equations &#8212; heyoka.py 0.6.0 documentation</title>
+    
+  <link rel="stylesheet" href="../_static/css/index.f658d18f9b420779cfdf24aa0a7e2d77.css">
+
+    
+  <link rel="stylesheet"
+    href="../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    
+      
+  <link rel="stylesheet"
+    href="../_static/vendor/open-sans_all/1.44.1/index.css">
+  <link rel="stylesheet"
+    href="../_static/vendor/lato_latin-ext/1.44.1/index.css">
+
+    
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/sphinx-book-theme.e7340bb3dbd8dde6db86f25597f54a1b.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.css" />
+    
+  <link rel="preload" as="script" href="../_static/js/index.d3f166471bb80abb5163.js">
+
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/togglebutton.js"></script>
+    <script >var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    <script src="../_static/sphinx-book-theme.7d483ff0a819d6edff12ce0b1ead3928.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["\\(", "\\)"]], "displayMath": [["\\[", "\\]"]], "processRefs": false, "processEnvironments": false}})</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Poincaré sections" href="Poincar%C3%A9%20sections.html" />
+    <link rel="prev" title="Long term stability of N-body simulations: the case of Trappist-1" href="Long%20term%20stability%20of%20Trappist-1.html" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="en" />
+
+
+
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+<div class="col-12 col-md-3 bd-sidebar site-navigation show" id="site-navigation">
+    
+        <div class="navbar-brand-box">
+<a class="navbar-brand text-wrap" href="../index.html">
+  
+  <img src="../_static/white_logo.png" class="logo" alt="logo">
+  
+  
+  <h1 class="site-logo" id="site-title">heyoka.py 0.6.0 documentation</h1>
+  
+</a>
+</div><form class="bd-search d-flex align-items-center" action="../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form>
+<nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+    <p class="caption collapsible-parent">
+ <span class="caption-text">
+  Contents
+ </span>
+</p>
+<ul class="current nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../install.html">
+   Installation
+  </a>
+ </li>
+ <li class="toctree-l1 collapsible-parent">
+  <a class="reference internal" href="../basic_tutorials.html">
+   Basic tutorials
+  </a>
+  <ul class="collapse-ul">
+   <li class="toctree-l2">
+    <a class="reference internal" href="../tut_taylor_method.html">
+     Taylor’s method
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="The%20expression%20system.html">
+     The expression system
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="The%20adaptive%20integrator.html">
+     The adaptive integrator
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="Customising%20the%20adaptive%20integrator.html">
+     Customising the adaptive integrator
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="ODEs%20with%20parameters.html">
+     ODEs with parameters
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="Non-autonomous%20systems.html">
+     Non-autonomous systems
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="Dense%20output.html">
+     Dense output
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="Event%20detection.html">
+     Event detection
+    </a>
+   </li>
+  </ul>
+  <i class="fas fa-chevron-down">
+  </i>
+ </li>
+ <li class="toctree-l1 current active collapsible-parent">
+  <a class="reference internal" href="../advanced_tutorials.html">
+   Advanced tutorials
+  </a>
+  <ul class="current collapse-ul">
+   <li class="toctree-l2">
+    <a class="reference internal" href="The%20restricted%20three-body%20problem.html">
+     The restricted three-body problem
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="The%20variational%20equations.html">
+     The variational equations
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="Long%20term%20stability%20of%20Trappist-1.html">
+     Long term stability of N-body simulations: the case of Trappist-1
+    </a>
+   </li>
+   <li class="toctree-l2 current active">
+    <a class="current reference internal" href="#">
+     Optimal Control of the Lotka-Volterra equations
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="#deriving-the-augmented-dynamics">
+     Deriving the augmented dynamics
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="#studying-the-uncontrolled-system">
+     Studying the uncontrolled system
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="#controlling-the-prey-predator-dynamics">
+     Controlling the prey-predator dynamics
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="#implementing-a-single-shooting-method">
+     Implementing a single shooting method
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="Poincar%C3%A9%20sections.html">
+     Poincaré sections
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="The%20Keplerian%20billiard.html">
+     The Keplerian billiard
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="Sampling%20events.html">
+     Sampling events
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="The%20two-fixed%20elliptic%20billiard.html">
+     The two-fixed centres elliptic billiard
+    </a>
+   </li>
+  </ul>
+  <i class="fas fa-chevron-down">
+  </i>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../changelog.html">
+   Changelog
+  </a>
+ </li>
+</ul>
+
+</nav> <!-- To handle the deprecated key -->
+
+<div class="navbar_extra_footer">
+  Theme by the <a href="https://ebp.jupyterbook.org">Executable Book Project</a>
+</div>
+
+</div>
+
+
+          
+
+
+          
+<main class="col py-md-3 pl-md-4 bd-content overflow-auto" role="main">
+    
+    <div class="topbar container-xl fixed-top">
+    <div class="topbar-contents row">
+        <div class="col-12 col-md-3 bd-topbar-whitespace site-navigation show"></div>
+        <div class="col pl-md-4 topbar-main">
+            
+            <button id="navbar-toggler" class="navbar-toggler ml-0" type="button" data-toggle="collapse"
+                data-toggle="tooltip" data-placement="bottom" data-target=".site-navigation" aria-controls="navbar-menu"
+                aria-expanded="true" aria-label="Toggle navigation" aria-controls="site-navigation"
+                title="Toggle navigation" data-toggle="tooltip" data-placement="left">
+                <i class="fas fa-bars"></i>
+                <i class="fas fa-arrow-left"></i>
+                <i class="fas fa-arrow-up"></i>
+            </button>
+            
+            
+<div class="dropdown-buttons-trigger">
+    <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn" aria-label="Download this page"><i
+            class="fas fa-download"></i></button>
+
+    <div class="dropdown-buttons">
+        <!-- ipynb file if we had a myst markdown file -->
+        
+        <!-- Download raw file -->
+        <a class="dropdown-buttons" href="../_sources/notebooks/Optimal Control of the Lotka-Volterra equations.ipynb.txt"><button type="button"
+                class="btn btn-secondary topbarbtn" title="Download source file" data-toggle="tooltip"
+                data-placement="left">.ipynb</button></a>
+        <!-- Download PDF via print -->
+        <button type="button" id="download-print" class="btn btn-secondary topbarbtn" title="Print to PDF"
+            onClick="window.print()" data-toggle="tooltip" data-placement="left">.pdf</button>
+    </div>
+</div>
+
+            <!-- Source interaction buttons -->
+
+<div class="dropdown-buttons-trigger">
+    <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn"
+        aria-label="Connect with source repository"><i class="fab fa-github"></i></button>
+    <div class="dropdown-buttons sourcebuttons">
+        <a class="repository-button"
+            href="https://github.com/bluescarni/heyoka.py"><button type="button" class="btn btn-secondary topbarbtn"
+                data-toggle="tooltip" data-placement="left" title="Source repository"><i
+                    class="fab fa-github"></i>repository</button></a>
+        <a class="issues-button"
+            href="https://github.com/bluescarni/heyoka.py/issues/new?title=Issue%20on%20page%20%2Fnotebooks/Optimal Control of the Lotka-Volterra equations.html&body=Your%20issue%20content%20here."><button
+                type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip" data-placement="left"
+                title="Open an issue"><i class="fas fa-lightbulb"></i>open issue</button></a>
+        
+    </div>
+</div>
+
+
+            <!-- Full screen (wrap in <a> to have style consistency -->
+            <a class="full-screen-button"><button type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip"
+                    data-placement="bottom" onclick="toggleFullScreen()" aria-label="Fullscreen mode"
+                    title="Fullscreen mode"><i
+                        class="fas fa-expand"></i></button></a>
+
+            <!-- Launch buttons -->
+
+<div class="dropdown-buttons-trigger">
+    <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn"
+        aria-label="Launch interactive content"><i class="fas fa-rocket"></i></button>
+    <div class="dropdown-buttons">
+        
+        <a class="binder-button" href="https://mybinder.org/v2/gh/bluescarni/heyoka.py/main?urlpath=tree/doc/notebooks/Optimal Control of the Lotka-Volterra equations.ipynb"><button type="button"
+                class="btn btn-secondary topbarbtn" title="Launch Binder" data-toggle="tooltip"
+                data-placement="left"><img class="binder-button-logo"
+                    src="../_static/images/logo_binder.svg"
+                    alt="Interact on binder">Binder</button></a>
+        
+        
+        
+        
+    </div>
+</div>
+
+        </div>
+
+        <!-- Table of contents -->
+        <div class="d-none d-md-block col-md-2 bd-toc show">
+            
+        <div class="tocsection onthispage pt-5 pb-3">
+            <i class="fas fa-list"></i>
+            Contents
+        </div>
+        <nav id="bd-toc-nav">
+            <ul class="nav section-nav flex-column">
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#">
+   Optimal Control of the Lotka-Volterra equations
+  </a>
+ </li>
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#deriving-the-augmented-dynamics">
+   Deriving the augmented dynamics
+  </a>
+ </li>
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#studying-the-uncontrolled-system">
+   Studying the uncontrolled system
+  </a>
+ </li>
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#controlling-the-prey-predator-dynamics">
+   Controlling the prey-predator dynamics
+  </a>
+ </li>
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#implementing-a-single-shooting-method">
+   Implementing a single shooting method
+  </a>
+ </li>
+</ul>
+
+        </nav>
+        
+        </div>
+    </div>
+</div>
+    <div id="main-content" class="row">
+        <div class="col-12 col-md-9 pl-md-3 pr-md-0">
+        
+              <div>
+                
+  <div class="section" id="optimal-control-of-the-lotka-volterra-equations">
+<h1>Optimal Control of the Lotka-Volterra equations<a class="headerlink" href="#optimal-control-of-the-lotka-volterra-equations" title="Permalink to this headline">¶</a></h1>
+<p>In this tutorial we study an optimal control problem for the <a class="reference external" href="https://en.wikipedia.org/wiki/Lotka%E2%80%93Volterra_equations">Lotka-Volterra equations</a>.These famous equations are frequently
+used to describe the dynamics of biological systems in which two species interact: a predator (<span class="math notranslate nohighlight">\(y\)</span>) and a prey (<span class="math notranslate nohighlight">\(x\)</span>).</p>
+<p>The dynamics considered, taken from the work of <a class="reference external" href="https://www.tandfonline.com/doi/full/10.1080/17513758.2016.1226435">Aitziber Ibanez</a> is:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+(1) \quad \left\{
+\begin{array}{l}
+\dot x = p_0 x - p_1 xy - p_4 x u\\
+\dot y = p_2 xy - p_3 y - p_5 y u\\
+\end{array}
+\right.
+\end{split}\]</div>
+<p>where <span class="math notranslate nohighlight">\(p_i &gt; 0\)</span> and <span class="math notranslate nohighlight">\(0 &lt;= \vert u\vert &lt;= 1\)</span> is a control variable describing our hunting capabilities assumed to be proportional to the number of individuals in each of the two species.</p>
+<p><strong>NOTE</strong>: we used the symbols <span class="math notranslate nohighlight">\(p_i\)</span> for all parameters as <span class="math notranslate nohighlight">\(p\)</span> it is the default symbol used in <code class="docutils literal notranslate"><span class="pre">heyoka.py</span></code> streams, and thus it allows consistency in notation throughout the notebook.</p>
+<p>We are interested in finding <span class="math notranslate nohighlight">\(u(t)\)</span> in the functional space of piecewice continuous functions such that the system is steered into a terminal state <span class="math notranslate nohighlight">\(x_f, y_f\)</span> in minimal time when starting from some intial condition <span class="math notranslate nohighlight">\(x_0, y_0\)</span>.</p>
+<p>More formally, we consider the following optimal control problem (<strong>OCP</strong>):</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+\begin{array}{rl}
+\mbox{find:}  &amp; u(t), t_f \\
+\mbox{subject to (dynamics):}   &amp;  \dot x = p_0 x - p_1 xy - p_4 x u\\
+                     &amp;  \dot y = p_2 xy - p_3 y - p_5 y u\\
+\mbox{subject to (boundary conditions):}   &amp;  x(0) = x_0, \quad  x(t_f) = x_f\\
+    &amp;  y(0) = y_0, \quad  y(t_f) = y_f\\
+    &amp; 0 &lt;= \vert u\vert &lt;= 1 \\
+\mbox{to minimize:}   &amp;  t_f \\  
+\end{array}
+\end{split}\]</div>
+<p>To solve the above <strong>OCP</strong> we will apply Pontryagin maximum principle (<a class="reference external" href="https://en.wikipedia.org/wiki/Pontryagin%27s_maximum_principle"><strong>PMP</strong></a>) maximizing <span class="math notranslate nohighlight">\(-t_f\)</span>.
+We will thus eventually transform the problem above into a two-point boudary value problem (<strong>TPBVP</strong>) for an augmented set of ordinary differential equation (<strong>ODE</strong>)
+which we will solve using <code class="docutils literal notranslate"><span class="pre">heyoka.py</span></code>.</p>
+<p>Let us start importing a few core tools:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">heyoka</span> <span class="k">as</span> <span class="nn">hy</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">matplotlib</span> <span class="kn">import</span> <span class="n">pyplot</span> <span class="k">as</span> <span class="n">plt</span>
+
+<span class="kn">import</span> <span class="nn">sympy.simplify</span> <span class="k">as</span> <span class="nn">pretty</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="ne">ModuleNotFoundError</span>Traceback (most recent call last)
+<span class="o">&lt;</span><span class="n">ipython</span><span class="o">-</span><span class="nb">input</span><span class="o">-</span><span class="mi">1</span><span class="o">-</span><span class="n">ba2a1a18aa1d</span><span class="o">&gt;</span> <span class="ow">in</span> <span class="o">&lt;</span><span class="n">module</span><span class="o">&gt;</span>
+<span class="g g-Whitespace">      </span><span class="mi">3</span> <span class="kn">from</span> <span class="nn">matplotlib</span> <span class="kn">import</span> <span class="n">pyplot</span> <span class="k">as</span> <span class="n">plt</span>
+<span class="g g-Whitespace">      </span><span class="mi">4</span> 
+<span class="ne">----&gt; </span><span class="mi">5</span> <span class="kn">import</span> <span class="nn">sympy.simplify</span> <span class="k">as</span> <span class="nn">pretty</span>
+
+<span class="ne">ModuleNotFoundError</span>: No module named &#39;sympy&#39;
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="deriving-the-augmented-dynamics">
+<h1>Deriving the augmented dynamics<a class="headerlink" href="#deriving-the-augmented-dynamics" title="Permalink to this headline">¶</a></h1>
+<p>The straightforward application of the <strong>PMP</strong> requires the introduction of auxiliary functions <span class="math notranslate nohighlight">\(\boldsymbol\lambda(t)\)</span> and of a Hamiltonian which, in the case of a minimum time problem is:</p>
+<div class="math notranslate nohighlight">
+\[
+\mathcal H(\mathbf x, \boldsymbol\lambda, u) = \mathbf f \cdot \boldsymbol\lambda - 1
+\]</div>
+<p>where we indicated with the symbol <span class="math notranslate nohighlight">\(\mathbf f\)</span> the r.h.s. of the dynamics.</p>
+<p>We define the system state, the co-states (or augmented states, essentially some form of continuous version of Lagrange multipliers) <span class="math notranslate nohighlight">\(\lambda_x, \lambda_y\)</span> and the dynamics:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Define the symbolic variables x, y and th.</span>
+<span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">make_vars</span><span class="p">(</span><span class="s2">&quot;x&quot;</span><span class="p">,</span> <span class="s2">&quot;y&quot;</span><span class="p">)</span>
+
+<span class="c1"># the co-states lx, ly </span>
+<span class="n">lx</span><span class="p">,</span> <span class="n">ly</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">make_vars</span><span class="p">(</span><span class="s2">&quot;lambda_x&quot;</span><span class="p">,</span> <span class="s2">&quot;lambda_y&quot;</span><span class="p">)</span>
+
+<span class="c1"># the control</span>
+<span class="n">u</span><span class="p">,</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">make_vars</span><span class="p">(</span><span class="s2">&quot;u&quot;</span><span class="p">)</span>
+
+<span class="c1"># and the dynamics fx, fy</span>
+<span class="n">fx</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">par</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">x</span> <span class="o">-</span> <span class="n">hy</span><span class="o">.</span><span class="n">par</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="n">x</span><span class="o">*</span><span class="n">y</span> <span class="o">-</span> <span class="n">x</span> <span class="o">*</span> <span class="n">hy</span><span class="o">.</span><span class="n">par</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span> <span class="o">*</span> <span class="n">u</span>
+<span class="n">fy</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">par</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">*</span><span class="n">x</span><span class="o">*</span><span class="n">y</span> <span class="o">-</span> <span class="n">hy</span><span class="o">.</span><span class="n">par</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="o">*</span><span class="n">y</span> <span class="o">-</span> <span class="n">y</span> <span class="o">*</span> <span class="n">hy</span><span class="o">.</span><span class="n">par</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span> <span class="o">*</span> <span class="n">u</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>and the expression for the Hamiltonian:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># The Hamiltonian for the minimal time problem</span>
+<span class="n">H</span> <span class="o">=</span> <span class="n">fx</span><span class="o">*</span><span class="n">lx</span> <span class="o">+</span> <span class="n">fy</span><span class="o">*</span><span class="n">ly</span> <span class="o">-</span> <span class="mi">1</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;The Hamiltonian:&quot;</span><span class="p">)</span>
+<span class="n">pretty</span><span class="p">(</span><span class="n">H</span><span class="o">.</span><span class="fm">__repr__</span><span class="p">())</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>The Hamiltonian:
+</pre></div>
+</div>
+<div class="output text_latex math notranslate nohighlight">
+\[\displaystyle - \lambda_{x} x \left(- p_{0} + p_{1} y + p_{4} u\right) - \lambda_{y} y \left(- p_{2} x + p_{3} + p_{5} u\right) - 1.0\]</div>
+</div>
+</div>
+<p>Note how in <em>heyoka.py</em> expression system system parameters are indicated with the symbols <span class="math notranslate nohighlight">\(p_i\)</span> in the screen output.</p>
+<p>According to the <strong>PMP</strong> the value of the control <span class="math notranslate nohighlight">\(u\)</span>, along an optimal trajectory, is such that:</p>
+<div class="math notranslate nohighlight">
+\[
+u^* = \max_{u\in\mathcal U} \mathcal H(\mathbf x, \boldsymbol\lambda, u)
+\]</div>
+<p>where we have introduced the space of admissible controls as the closed interval <span class="math notranslate nohighlight">\(\mathcal U = [0,1]\)</span>. In our case we get, quite simply:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+u^*(\mathbf x, \boldsymbol\lambda) = 
+\left\{\begin{array}{ll}
+1 &amp; -(p_4 x\lambda_x+p_5 y \lambda_y) \gt 0 \\
+0 &amp; -(p_4 x\lambda_x+p_5 y \lambda_y) \lt 0
+\end{array}
+\right.
+\end{split}\]</div>
+<p>The value of the control will then switch between the extreme values 0 and 1 whenever the switching function <span class="math notranslate nohighlight">\(S(\mathbf x, \boldsymbol \lambda) = -(p_4 x\lambda_x+p_5 y \lambda_y)\)</span> changes sign.</p>
+<p>We implement two python functions to compute the switching function and the hamiltonian <span class="math notranslate nohighlight">\(\mathcal H(\mathbf x, \boldsymbol\lambda, u^*)\)</span>:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">_switching_function</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">lx</span><span class="p">,</span><span class="n">ly</span><span class="p">,</span><span class="n">p</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;The non vectorized form for the switching function</span>
+<span class="sd">    </span>
+<span class="sd">    Args:</span>
+<span class="sd">        x,y,lx,ly (float): augmented system state.</span>
+<span class="sd">        p (1-D np.array): system parameters.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        float: The value of the switching function.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="o">-</span><span class="p">(</span><span class="n">p</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span><span class="o">*</span><span class="n">x</span><span class="o">*</span><span class="n">lx</span><span class="o">+</span><span class="n">p</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span><span class="o">*</span><span class="n">y</span><span class="o">*</span><span class="n">ly</span><span class="p">)</span>
+
+<span class="c1"># Vectorized version</span>
+<span class="k">def</span> <span class="nf">switching_function</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">lx</span><span class="p">,</span><span class="n">ly</span><span class="p">,</span><span class="n">p</span><span class="p">):</span>
+    <span class="n">vectorized</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vectorize</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">lx</span><span class="p">,</span><span class="n">ly</span><span class="p">:</span> <span class="n">_switching_function</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">lx</span><span class="p">,</span><span class="n">ly</span><span class="p">,</span><span class="n">p</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">vectorized</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">lx</span><span class="p">,</span><span class="n">ly</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">_hamiltonian</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">lx</span><span class="p">,</span><span class="n">ly</span><span class="p">,</span><span class="n">p</span><span class="p">):</span>
+    <span class="n">sw_v</span> <span class="o">=</span> <span class="n">switching_function</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">lx</span><span class="p">,</span><span class="n">ly</span><span class="p">,</span><span class="n">p</span><span class="p">)</span>
+    <span class="n">u_opt</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">if</span> <span class="n">sw_v</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">u_opt</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="k">return</span> <span class="n">hy</span><span class="o">.</span><span class="n">eval</span><span class="p">(</span><span class="n">H</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;x&quot;</span><span class="p">:</span><span class="n">x</span><span class="p">,</span> <span class="s2">&quot;y&quot;</span><span class="p">:</span><span class="n">y</span><span class="p">,</span> <span class="s2">&quot;lambda_x&quot;</span><span class="p">:</span><span class="n">lx</span><span class="p">,</span> <span class="s2">&quot;lambda_y&quot;</span><span class="p">:</span><span class="n">ly</span><span class="p">,</span> <span class="s2">&quot;u&quot;</span><span class="p">:</span><span class="n">u_opt</span><span class="p">},</span> <span class="n">p</span><span class="p">)</span>
+
+<span class="c1"># Vectorized version</span>
+<span class="k">def</span> <span class="nf">hamiltonian</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">lx</span><span class="p">,</span><span class="n">ly</span><span class="p">,</span><span class="n">p</span><span class="p">):</span>
+    <span class="n">vectorized</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vectorize</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">lx</span><span class="p">,</span><span class="n">ly</span><span class="p">:</span> <span class="n">_hamiltonian</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">lx</span><span class="p">,</span><span class="n">ly</span><span class="p">,</span><span class="n">p</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">vectorized</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">lx</span><span class="p">,</span><span class="n">ly</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>The equations of motion in the augmented state (<span class="math notranslate nohighlight">\(\mathbf x, \boldsymbol \lambda\)</span>) are the Hamilton’s equations:
+$<span class="math notranslate nohighlight">\(
+\begin{array}{l}
+\dot {\mathbf x} = \frac{\partial \mathcal H}{\partial \boldsymbol \lambda} \\
+\dot {\boldsymbol \lambda} = - \frac{\partial \mathcal H}{\partial \mathbf x} 
+\end{array}
+\)</span>$
+let us compute them:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># We compute the co-state equations</span>
+<span class="n">flx</span> <span class="o">=</span> <span class="o">-</span><span class="n">hy</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">H</span><span class="p">,</span> <span class="s2">&quot;x&quot;</span><span class="p">)</span>
+<span class="n">fly</span> <span class="o">=</span> <span class="o">-</span><span class="n">hy</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">H</span><span class="p">,</span> <span class="s2">&quot;y&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Co-state dynamics (1):&quot;</span><span class="p">)</span>
+<span class="n">pretty</span><span class="p">((</span><span class="n">flx</span><span class="p">)</span><span class="o">.</span><span class="fm">__repr__</span><span class="p">())</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Co-state dynamics (1):
+</pre></div>
+</div>
+<div class="output text_latex math notranslate nohighlight">
+\[\displaystyle \lambda_{x} \left(- p_{0} + p_{1} y + p_{4} u\right) - \lambda_{y} p_{2} y\]</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Co-state dynamics (2):&quot;</span><span class="p">)</span>
+<span class="n">pretty</span><span class="p">((</span><span class="n">fly</span><span class="p">)</span><span class="o">.</span><span class="fm">__repr__</span><span class="p">())</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Co-state dynamics (2):
+</pre></div>
+</div>
+<div class="output text_latex math notranslate nohighlight">
+\[\displaystyle \lambda_{x} p_{1} x + \lambda_{y} \left(- p_{2} x + p_{3} + p_{5} u\right)\]</div>
+</div>
+</div>
+<p>Putting everything together (i.e. substituting the expression for the optimal <span class="math notranslate nohighlight">\(u^*\)</span> found via the <strong>PMP</strong> into the augmented equations) we get:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+(2) \quad \left\{
+\begin{array}{l}
+\dot x = p_0 x - p_1 xy - p_4 x u^*\\
+\dot y = p_2 xy - p_3 y - p_5 y u^*\\
+\frac{d \lambda_x}{dt} = (-p_0 + p_1  y + p_4u^*)  \lambda_x - \lambda_y p_2  y   \\
+\frac{d \lambda_y}{dt}  = p_1  x  \lambda_x +(-p_2  x + p_3 + p_5 u^*)  \lambda_y \\
+\end{array}
+\right.
+\end{split}\]</div>
+<p>As dictated by Pontryagin’s Theorem, a necessary condition for a trajectory to be optimal is that intial values <span class="math notranslate nohighlight">\(\boldsymbol \lambda_0\)</span> exist such that the solution of the above ODE initial value problem (<strong>IVP</strong>) from <span class="math notranslate nohighlight">\([\mathbf x_0, \boldsymbol \lambda_0]\)</span> leads the system to the desired target state. Furthermore, if the final time <span class="math notranslate nohighlight">\(t_f\)</span> is left free <span class="math notranslate nohighlight">\(\mathcal H_f = \mathcal H(\mathcal x_f, \boldsymbol \lambda_f) = 0\)</span>.</p>
+<p>Formally, we seek a root of the system of (three) nonlinear equations in the (three) unknowns <span class="math notranslate nohighlight">\(\boldsymbol \lambda_0, t_f\)</span>:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+(3)\qquad
+\varphi(\boldsymbol \lambda_0, t_f) = 
+\left[
+\begin{array}{l}
+x(t_f) - x_f \\
+y(t_f) - y_f \\
+\mathcal H (t_f)
+\end{array}
+\right]
+\end{split}\]</div>
+<p>also called <em>shooting function</em> as finding its root requires solving multiple times an <strong>IVP</strong> in a “clever” trial and error iterative scheme.</p>
+<p>In the following we will be using <code class="docutils literal notranslate"><span class="pre">heyoka.py</span></code> to first study the uncontrolled dynamics, then to study the augmented dynamics and, finally, to define a clever, reduced, shooting function that can be easily
+solved by a root finder.</p>
+</div>
+<div class="section" id="studying-the-uncontrolled-system">
+<h1>Studying the uncontrolled system<a class="headerlink" href="#studying-the-uncontrolled-system" title="Permalink to this headline">¶</a></h1>
+<p>Let us see what happens in an uncontrolled case. We will consider an initial population of 10 preys with growth rates <span class="math notranslate nohighlight">\(p_0= 1.1\)</span>, <span class="math notranslate nohighlight">\(p_1 = 0.2\)</span> and 10 predators with growth rates <span class="math notranslate nohighlight">\(p_2 = 0.1\)</span>, <span class="math notranslate nohighlight">\(p_3 = 0.4\)</span>.</p>
+<p>We write the r.h.s. of Eq.(1). The parameters in the equations are indicated symbolically by the syntax <code class="docutils literal notranslate"><span class="pre">par[i]</span></code>. Their numerical value will be set later.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Dynamics</span>
+<span class="n">fx_unc</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">par</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">x</span> <span class="o">-</span> <span class="n">hy</span><span class="o">.</span><span class="n">par</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="n">x</span><span class="o">*</span><span class="n">y</span> 
+<span class="n">fy_unc</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">par</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">*</span><span class="n">x</span><span class="o">*</span><span class="n">y</span> <span class="o">-</span> <span class="n">hy</span><span class="o">.</span><span class="n">par</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="o">*</span><span class="n">y</span>
+
+<span class="c1"># System parameters</span>
+<span class="n">ps</span> <span class="o">=</span> <span class="p">[</span><span class="mf">1.1</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">]</span>
+
+<span class="c1"># Initial conditions</span>
+<span class="n">x_0</span><span class="p">,</span> <span class="n">y_0</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">10</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>The actual EOM, in the <code class="docutils literal notranslate"><span class="pre">heyoka.py</span></code> syntax, can be specified as a list of tuples (variable, equation):</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ode_sys_unc</span> <span class="o">=</span> <span class="p">[(</span><span class="n">x</span><span class="p">,</span><span class="n">fx_unc</span><span class="p">),</span> <span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">fy_unc</span><span class="p">)]</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>We now create the integrator object, using as initial conditions 10, 10.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ta</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">taylor_adaptive</span><span class="p">(</span><span class="n">ode_sys_unc</span><span class="p">,</span> <span class="n">state</span> <span class="o">=</span> <span class="p">[</span><span class="n">x_0</span><span class="p">,</span><span class="n">y_0</span><span class="p">],</span> <span class="n">pars</span> <span class="o">=</span> <span class="n">ps</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">ta</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Taylor order            : 20
+Dimension               : 2
+Time                    : 0.0000000000000000
+State                   : [10.000000000000000, 10.000000000000000]
+Parameters              : [1.1000000000000001, 0.20000000000000001, 0.10000000000000001, 0.40000000000000002]
+</pre></div>
+</div>
+</div>
+</div>
+<p>We may now solve the <strong>IVP</strong>, since we want to record the state and show its trend we use the <code class="docutils literal notranslate"><span class="pre">propagate_grid</span></code> method which efficiently returns the system state along a predefined time grid.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">t_grid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">20</span><span class="p">,</span><span class="mi">1000</span><span class="p">)</span>
+<span class="n">outcome</span><span class="p">,</span> <span class="n">min_h</span><span class="p">,</span> <span class="n">max_h</span><span class="p">,</span> <span class="n">steps</span><span class="p">,</span> <span class="n">sol</span> <span class="o">=</span> <span class="n">ta</span><span class="o">.</span><span class="n">propagate_grid</span><span class="p">(</span><span class="n">t_grid</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>… and plot the solution … (note that we recorded also other quantities … but we are not really using them here)</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">axs</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">13</span><span class="p">,</span><span class="mi">4</span><span class="p">))</span>
+<span class="n">preys_unc</span> <span class="o">=</span> <span class="n">sol</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">predators_unc</span> <span class="o">=</span> <span class="n">sol</span><span class="p">[:,</span><span class="mi">1</span><span class="p">]</span>
+
+<span class="n">axs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">t_grid</span><span class="p">,</span> <span class="n">preys_unc</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;n. preys&quot;</span><span class="p">)</span>
+<span class="n">axs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">t_grid</span><span class="p">,</span> <span class="n">predators_unc</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;n. predators&quot;</span><span class="p">)</span>
+<span class="n">axs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">axs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;system time&quot;</span><span class="p">)</span>
+<span class="n">axs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;number in each species&quot;</span><span class="p">)</span>
+
+<span class="n">axs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">preys_unc</span><span class="p">,</span> <span class="n">predators_unc</span><span class="p">)</span>
+<span class="n">axs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;n. preys&quot;</span><span class="p">)</span>
+<span class="n">axs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;n. predators&quot;</span><span class="p">)</span>
+<span class="n">axs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span><span class="mi">15</span><span class="p">])</span>
+<span class="n">axs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span><span class="mi">14</span><span class="p">])</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span> 
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/Optimal Control of the Lotka-Volterra equations_22_0.png" src="../_images/Optimal Control of the Lotka-Volterra equations_22_0.png" />
+</div>
+</div>
+</div>
+<div class="section" id="controlling-the-prey-predator-dynamics">
+<h1>Controlling the prey-predator dynamics<a class="headerlink" href="#controlling-the-prey-predator-dynamics" title="Permalink to this headline">¶</a></h1>
+<p>We now study the augmented system of equations. This will be used later in the shooting method.</p>
+<p>We define our ODE first:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Dynamics</span>
+<span class="n">fx</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">par</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">x</span> <span class="o">-</span> <span class="n">hy</span><span class="o">.</span><span class="n">par</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="n">x</span><span class="o">*</span><span class="n">y</span> <span class="o">-</span> <span class="n">x</span> <span class="o">*</span> <span class="n">hy</span><span class="o">.</span><span class="n">par</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span> <span class="o">*</span>  <span class="n">hy</span><span class="o">.</span><span class="n">par</span><span class="p">[</span><span class="mi">6</span><span class="p">]</span>
+<span class="n">fy</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">par</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">*</span><span class="n">x</span><span class="o">*</span><span class="n">y</span> <span class="o">-</span> <span class="n">hy</span><span class="o">.</span><span class="n">par</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="o">*</span><span class="n">y</span> <span class="o">-</span> <span class="n">y</span> <span class="o">*</span> <span class="n">hy</span><span class="o">.</span><span class="n">par</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span> <span class="o">*</span>  <span class="n">hy</span><span class="o">.</span><span class="n">par</span><span class="p">[</span><span class="mi">6</span><span class="p">]</span>
+<span class="n">flx</span> <span class="o">=</span> <span class="p">(</span><span class="o">-</span><span class="n">hy</span><span class="o">.</span><span class="n">par</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">hy</span><span class="o">.</span><span class="n">par</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="n">y</span> <span class="o">+</span> <span class="n">hy</span><span class="o">.</span><span class="n">par</span><span class="p">[</span><span class="mi">6</span><span class="p">]</span> <span class="o">*</span> <span class="n">hy</span><span class="o">.</span><span class="n">par</span><span class="p">[</span><span class="mi">4</span><span class="p">])</span> <span class="o">*</span> <span class="n">lx</span> <span class="o">-</span> <span class="n">hy</span><span class="o">.</span><span class="n">par</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">*</span><span class="n">ly</span><span class="o">*</span><span class="n">y</span>
+<span class="n">fly</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">par</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="n">x</span><span class="o">*</span><span class="n">lx</span> <span class="o">+</span> <span class="p">(</span><span class="o">-</span><span class="n">hy</span><span class="o">.</span><span class="n">par</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">*</span><span class="n">x</span> <span class="o">+</span> <span class="n">hy</span><span class="o">.</span><span class="n">par</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">+</span> <span class="n">hy</span><span class="o">.</span><span class="n">par</span><span class="p">[</span><span class="mi">6</span><span class="p">]</span> <span class="o">*</span> <span class="n">hy</span><span class="o">.</span><span class="n">par</span><span class="p">[</span><span class="mi">5</span><span class="p">])</span> <span class="o">*</span> <span class="n">ly</span>
+<span class="n">ode_sys</span> <span class="o">=</span> <span class="p">[(</span><span class="n">x</span><span class="p">,</span><span class="n">fx</span><span class="p">),</span> <span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">fy</span><span class="p">),</span> <span class="p">(</span><span class="n">lx</span><span class="p">,</span> <span class="n">flx</span><span class="p">),</span> <span class="p">(</span><span class="n">ly</span><span class="p">,</span> <span class="n">fly</span><span class="p">)]</span>
+
+<span class="c1"># System parameters</span>
+<span class="n">p0</span><span class="p">,</span><span class="n">p1</span><span class="p">,</span><span class="n">p2</span><span class="p">,</span><span class="n">p3</span><span class="p">,</span><span class="n">p4</span><span class="p">,</span><span class="n">p5</span><span class="p">,</span><span class="n">p6</span> <span class="o">=</span> <span class="n">ps</span> <span class="o">=</span> <span class="p">[</span><span class="mf">1.1</span><span class="p">,</span><span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span><span class="mf">0.4</span><span class="p">,</span><span class="mf">0.03</span><span class="p">,</span><span class="mf">0.03</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+
+<span class="c1"># Target conditions</span>
+<span class="n">x_t</span><span class="p">,</span> <span class="n">y_t</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">4</span>
+
+<span class="c1"># A random choice for the initial costates</span>
+<span class="n">lx_0</span><span class="p">,</span> <span class="n">ly_0</span>  <span class="o">=-</span><span class="mf">1.105</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.6274561403508774</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>We have added three parameters to the system. The first ones are <code class="docutils literal notranslate"><span class="pre">par[4]</span></code> and <code class="docutils literal notranslate"><span class="pre">par[5]</span></code> representing the values of <span class="math notranslate nohighlight">\(p_4, p_5\)</span>. Then, <code class="docutils literal notranslate"><span class="pre">par[6]</span></code> is the value of the optimal control <span class="math notranslate nohighlight">\(u^*\)</span> effectively determining which one of two different systems of ODEs gets propagated. Its value is decided, as seen  above, by the value of the switching function.</p>
+<p>We now build the system of equations taking care to define in <code class="docutils literal notranslate"><span class="pre">heyoka.py</span></code> a terminal event detecting the change in sign of the switching function and thus changing the optimal control accordingly.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Here we record the switching times</span>
+<span class="n">switch_times</span> <span class="o">=</span> <span class="p">[]</span>
+
+<span class="c1"># This callback will be called by the Taylor integrator when the switching event is detected </span>
+<span class="k">def</span> <span class="nf">switch_callback</span><span class="p">(</span><span class="n">ta</span><span class="p">,</span> <span class="n">mr</span><span class="p">,</span> <span class="n">log_times</span><span class="p">):</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">mr</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">ta</span><span class="o">.</span><span class="n">pars</span><span class="p">[</span><span class="mi">6</span><span class="p">]</span><span class="o">==</span><span class="mf">0.</span><span class="p">:</span>
+            <span class="n">ta</span><span class="o">.</span><span class="n">pars</span><span class="p">[</span><span class="mi">6</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">ta</span><span class="o">.</span><span class="n">pars</span><span class="p">[</span><span class="mi">6</span><span class="p">]</span><span class="o">=</span><span class="mf">0.</span>
+        <span class="k">if</span> <span class="n">log_times</span><span class="p">:</span>
+            <span class="n">switch_times</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ta</span><span class="o">.</span><span class="n">time</span><span class="p">)</span>
+    <span class="c1"># Do not stop the integration</span>
+    <span class="k">return</span> <span class="kc">True</span>
+        
+<span class="c1"># The switching event</span>
+<span class="n">switching_event</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">t_event</span><span class="p">(</span><span class="n">x</span> <span class="o">*</span> <span class="n">lx</span> <span class="o">*</span> <span class="n">hy</span><span class="o">.</span><span class="n">par</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span> <span class="o">+</span> <span class="n">y</span> <span class="o">*</span> <span class="n">ly</span> <span class="o">*</span> <span class="n">hy</span><span class="o">.</span><span class="n">par</span><span class="p">[</span><span class="mi">5</span><span class="p">],</span> <span class="n">callback</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">ta</span><span class="p">,</span> <span class="n">mr</span><span class="p">:</span> <span class="n">switch_callback</span><span class="p">(</span><span class="n">ta</span><span class="p">,</span> <span class="n">mr</span><span class="p">,</span> <span class="kc">True</span><span class="p">))</span>
+
+<span class="c1"># The Taylor integrator</span>
+<span class="n">ta</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">taylor_adaptive</span><span class="p">(</span><span class="n">ode_sys</span><span class="p">,</span> <span class="p">[</span><span class="n">x_0</span><span class="p">,</span> <span class="n">y_0</span><span class="p">,</span> <span class="n">lx_0</span><span class="p">,</span> <span class="n">ly_0</span><span class="p">],</span> <span class="n">pars</span> <span class="o">=</span> <span class="n">ps</span><span class="p">,</span> <span class="n">t_events</span> <span class="o">=</span> <span class="p">[</span><span class="n">switching_event</span><span class="p">])</span>
+
+<span class="c1"># We must set the initial value of the parameter par[6] representing u^* to its optimal value at t=0</span>
+<span class="n">ta</span><span class="o">.</span><span class="n">pars</span><span class="p">[</span><span class="mi">6</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">heaviside</span><span class="p">(</span><span class="n">switching_function</span><span class="p">(</span><span class="n">x_0</span><span class="p">,</span><span class="n">y_0</span><span class="p">,</span><span class="n">lx_0</span><span class="p">,</span><span class="n">ly_0</span><span class="p">,</span> <span class="n">ps</span><span class="p">),</span> <span class="mf">1.</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">ta</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Taylor order            : 20
+Dimension               : 4
+Time                    : 0.0000000000000000
+State                   : [10.000000000000000, 10.000000000000000, -1.1050000000000000, -1.6274561403508774]
+Parameters              : [1.1000000000000001, 0.20000000000000001, 0.10000000000000001, 0.40000000000000002, 0.029999999999999999, 0.029999999999999999, 1.0000000000000000]
+N of terminal events    : 1
+</pre></div>
+</div>
+</div>
+</div>
+<p>We now integrate the system. The resulting trajectory will be optimal, but not respecting the requested boundary conditions, since the final time <span class="math notranslate nohighlight">\(t_f\)</span> and the initial values of the costates were randomly chosen.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">t_grid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">30</span><span class="p">,</span><span class="mi">1000</span><span class="p">)</span>
+<span class="n">outcome</span><span class="p">,</span> <span class="n">min_h</span><span class="p">,</span> <span class="n">max_h</span><span class="p">,</span> <span class="n">steps</span><span class="p">,</span> <span class="n">sol</span> <span class="o">=</span> <span class="n">ta</span><span class="o">.</span><span class="n">propagate_grid</span><span class="p">(</span><span class="n">t_grid</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>and replot the result, comparing it to the previous uncontrolled system.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">axs</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">13</span><span class="p">,</span><span class="mi">4</span><span class="p">))</span>
+<span class="n">preys</span> <span class="o">=</span> <span class="n">sol</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">predators</span> <span class="o">=</span> <span class="n">sol</span><span class="p">[:,</span><span class="mi">1</span><span class="p">]</span>
+<span class="n">lpreys</span> <span class="o">=</span> <span class="n">sol</span><span class="p">[:,</span><span class="mi">2</span><span class="p">]</span>
+<span class="n">lpredators</span> <span class="o">=</span> <span class="n">sol</span><span class="p">[:,</span><span class="mi">3</span><span class="p">]</span>
+
+<span class="n">sf_num</span> <span class="o">=</span> <span class="n">switching_function</span><span class="p">(</span><span class="n">preys</span><span class="p">,</span> <span class="n">predators</span><span class="p">,</span> <span class="n">lpreys</span><span class="p">,</span> <span class="n">lpredators</span><span class="p">,</span> <span class="n">ps</span><span class="p">)</span>
+<span class="n">H_num</span> <span class="o">=</span> <span class="n">hamiltonian</span><span class="p">(</span><span class="n">preys</span><span class="p">,</span> <span class="n">predators</span><span class="p">,</span> <span class="n">lpreys</span><span class="p">,</span> <span class="n">lpredators</span><span class="p">,</span> <span class="n">ps</span><span class="p">)</span>
+<span class="n">mask_on</span> <span class="o">=</span> <span class="n">sf_num</span> <span class="o">&gt;</span> <span class="mi">0</span>
+<span class="n">mask_off</span> <span class="o">=</span> <span class="n">sf_num</span> <span class="o">&lt;</span> <span class="mi">0</span>
+
+<span class="n">axs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">t_grid</span><span class="p">,</span> <span class="n">preys</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;n. preys&quot;</span><span class="p">)</span>
+<span class="n">axs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">t_grid</span><span class="p">,</span> <span class="n">predators</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;n. predators&quot;</span><span class="p">)</span>
+<span class="n">axs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">axs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;system time&quot;</span><span class="p">)</span>
+<span class="n">axs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;number in each species&quot;</span><span class="p">)</span>
+
+<span class="n">axs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">preys_unc</span><span class="p">,</span> <span class="n">predators_unc</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;uncontrolled&quot;</span><span class="p">)</span>
+<span class="n">axs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">preys</span><span class="p">,</span> <span class="n">predators</span><span class="p">,</span> <span class="s1">&#39;r--&#39;</span><span class="p">,</span> <span class="n">label</span> <span class="o">=</span> <span class="s2">&quot;on phase&quot;</span><span class="p">)</span>
+<span class="n">axs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">preys</span><span class="p">[</span><span class="n">mask_off</span><span class="p">],</span> <span class="n">predators</span><span class="p">[</span><span class="n">mask_off</span><span class="p">],</span> <span class="s1">&#39;k.&#39;</span><span class="p">,</span> <span class="n">label</span> <span class="o">=</span> <span class="s2">&quot;off phase&quot;</span><span class="p">)</span>
+<span class="n">axs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;n. preys&quot;</span><span class="p">)</span>
+<span class="n">axs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;n. predators&quot;</span><span class="p">)</span>
+<span class="n">axs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span><span class="mi">15</span><span class="p">])</span>
+<span class="n">axs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span><span class="mi">14</span><span class="p">])</span>
+<span class="n">axs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">scatter</span><span class="p">([</span><span class="n">x_t</span><span class="p">],</span> <span class="p">[</span><span class="n">y_t</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;target&#39;</span><span class="p">)</span>
+<span class="n">axs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="n">axs</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">t_grid</span><span class="p">,</span> <span class="n">sf_num</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;switching function&quot;</span><span class="p">)</span>
+<span class="n">axs</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">t_grid</span><span class="p">,</span> <span class="n">H_num</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;hamiltonian&quot;</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">time</span> <span class="ow">in</span> <span class="n">switch_times</span><span class="p">:</span>
+    <span class="n">axs</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">time</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;k&#39;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">)</span>
+<span class="n">axs</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;system time&quot;</span><span class="p">)</span>
+<span class="n">axs</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span> 
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/Optimal Control of the Lotka-Volterra equations_30_0.png" src="../_images/Optimal Control of the Lotka-Volterra equations_30_0.png" />
+</div>
+</div>
+</div>
+<div class="section" id="implementing-a-single-shooting-method">
+<h1>Implementing a single shooting method<a class="headerlink" href="#implementing-a-single-shooting-method" title="Permalink to this headline">¶</a></h1>
+<p>Above we have produced an optimal trajectory, only not the one we looked for since we want to achieve the terminal conditions <span class="math notranslate nohighlight">\(x_f = 10, y_f=4\)</span> and (free time) <span class="math notranslate nohighlight">\(H_f=0\)</span>.
+The choice we made for <span class="math notranslate nohighlight">\(\lambda_{x0}\)</span>, <span class="math notranslate nohighlight">\(\lambda_{y0}\)</span>, <span class="math notranslate nohighlight">\(t_f\)</span> was not a good one, we need to change it up to when Eq.(3) is actually satisfied.</p>
+<p>In this case, to showcase the possibilities offered by <em>heyoka.py</em>, we will vary <span class="math notranslate nohighlight">\(\lambda_x\)</span>, find <span class="math notranslate nohighlight">\(\lambda_y\)</span> from the condition <span class="math notranslate nohighlight">\(\mathcal H_f = \mathcal H_0 = 0\)</span> and find <span class="math notranslate nohighlight">\(t_f\)</span> as the time along the generated trajectory when the difference between the state and the target is minimal (a terminal event).</p>
+<p>This reduces the free <em>shooting parameters</em> in Eq.(3) from three to one only: <span class="math notranslate nohighlight">\(\lambda_x\)</span>.</p>
+<p>The following holds (from <span class="math notranslate nohighlight">\(\mathcal H_f = \mathcal H_0=0\)</span>):
+$<span class="math notranslate nohighlight">\(
+\lambda_{y0} = \frac{x\lambda_{x0}(p_0-p_1 y_0-p_4 u^*_0-1)}{y_0(-p_2x_0+p_3+p_5 u^*_0)}
+\)</span>$
+and it is implemented in the function below:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">find_lambda_y0</span><span class="p">(</span><span class="n">x_0</span><span class="p">,</span><span class="n">y_0</span><span class="p">,</span><span class="n">lx_0</span><span class="p">,</span><span class="n">p</span><span class="p">):</span>
+    <span class="c1">#we assume u*=0</span>
+    <span class="n">ly_0</span> <span class="o">=</span> <span class="p">(</span><span class="n">x_0</span><span class="o">*</span><span class="n">lx_0</span><span class="o">*</span><span class="p">(</span><span class="n">p</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">-</span><span class="n">p</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="n">y_0</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">/</span><span class="n">y_0</span><span class="o">/</span><span class="p">(</span><span class="o">-</span><span class="n">p</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">*</span><span class="n">x_0</span><span class="o">+</span><span class="n">p</span><span class="p">[</span><span class="mi">3</span><span class="p">])</span>
+    <span class="k">if</span> <span class="n">_switching_function</span><span class="p">(</span><span class="n">x_0</span><span class="p">,</span><span class="n">y_0</span><span class="p">,</span><span class="n">lx_0</span><span class="p">,</span><span class="n">ly_0</span><span class="p">,</span><span class="n">p</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="c1">#the assumption holds</span>
+        <span class="k">return</span> <span class="n">ly_0</span>
+    <span class="n">ly_0</span> <span class="o">=</span> <span class="p">(</span><span class="n">x_0</span><span class="o">*</span><span class="n">lx_0</span><span class="o">*</span><span class="p">(</span><span class="n">p</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">-</span><span class="n">p</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="n">y_0</span><span class="o">-</span><span class="n">p</span><span class="p">[</span><span class="mi">4</span><span class="p">])</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">/</span><span class="n">y_0</span><span class="o">/</span><span class="p">(</span><span class="o">-</span><span class="n">p</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">*</span><span class="n">x_0</span><span class="o">+</span><span class="n">p</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="o">+</span><span class="n">p</span><span class="p">[</span><span class="mi">5</span><span class="p">])</span>
+    <span class="k">if</span> <span class="n">_switching_function</span><span class="p">(</span><span class="n">x_0</span><span class="p">,</span><span class="n">y_0</span><span class="p">,</span><span class="n">lx_0</span><span class="p">,</span><span class="n">ly_0</span><span class="p">,</span><span class="n">p</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="c1">#the assumption holds</span>
+        <span class="k">return</span> <span class="n">ly_0</span>
+    <span class="k">raise</span> <span class="ne">ValueError</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>We also need to introduce a distance event triggering when the derivative of the distance is zero, hence at the maximum and minimum distance points.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">distance_callback</span><span class="p">(</span><span class="n">ta</span><span class="p">,</span> <span class="n">mr</span><span class="p">):</span>
+    <span class="n">candidates_t</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ta</span><span class="o">.</span><span class="n">time</span><span class="p">)</span>
+    <span class="n">candidates_d</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">ta</span><span class="o">.</span><span class="n">state</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">-</span><span class="n">x_t</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="p">(</span><span class="n">ta</span><span class="o">.</span><span class="n">state</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="n">y_t</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+    <span class="c1"># Do not stop the integration</span>
+    <span class="k">return</span> <span class="kc">True</span>
+
+<span class="c1"># This is the new &quot;distance&quot; event</span>
+<span class="n">distance_event</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">t_event</span><span class="p">((</span><span class="n">x</span><span class="o">-</span> <span class="n">x_t</span><span class="p">)</span><span class="o">*</span><span class="n">fx</span> <span class="o">+</span> <span class="p">(</span><span class="n">y</span><span class="o">-</span><span class="n">y_t</span><span class="p">)</span><span class="o">*</span><span class="n">fy</span><span class="p">,</span> <span class="n">callback</span> <span class="o">=</span> <span class="n">distance_callback</span><span class="p">)</span>
+
+<span class="c1"># We also redefine the switching event as we have no need to log the switching times (this is optional and has not real impact in this case)</span>
+<span class="n">switching_event_no_log</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">t_event</span><span class="p">(</span><span class="n">x</span> <span class="o">*</span> <span class="n">lx</span> <span class="o">*</span> <span class="n">hy</span><span class="o">.</span><span class="n">par</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span> <span class="o">+</span> <span class="n">y</span> <span class="o">*</span> <span class="n">ly</span> <span class="o">*</span> <span class="n">hy</span><span class="o">.</span><span class="n">par</span><span class="p">[</span><span class="mi">5</span><span class="p">],</span> <span class="n">callback</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">ta</span><span class="p">,</span><span class="n">mr</span><span class="p">:</span> <span class="n">switch_callback</span><span class="p">(</span><span class="n">ta</span><span class="p">,</span> <span class="n">mr</span><span class="p">,</span> <span class="kc">False</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Let us check that all is in order performing again the same integration and visualizing the new event triggers ….</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ta</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">taylor_adaptive</span><span class="p">(</span><span class="n">ode_sys</span><span class="p">,</span> <span class="p">[</span><span class="n">x_0</span><span class="p">,</span> <span class="n">y_0</span><span class="p">,</span> <span class="n">lx_0</span><span class="p">,</span> <span class="n">ly_0</span><span class="p">],</span> <span class="n">pars</span><span class="o">=</span><span class="n">ps</span><span class="p">,</span> <span class="n">t_events</span> <span class="o">=</span> <span class="p">[</span><span class="n">switching_event_no_log</span><span class="p">,</span> <span class="n">distance_event</span><span class="p">])</span>
+<span class="c1"># we must set the initial value of the parameter $u^*$ to its optimal value at t=0</span>
+<span class="n">ta</span><span class="o">.</span><span class="n">pars</span><span class="p">[</span><span class="mi">6</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">heaviside</span><span class="p">(</span><span class="n">switching_function</span><span class="p">(</span><span class="n">x_0</span><span class="p">,</span><span class="n">y_0</span><span class="p">,</span><span class="n">lx_0</span><span class="p">,</span><span class="n">ly_0</span><span class="p">,</span> <span class="n">ps</span><span class="p">),</span> <span class="mf">1.</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">ta</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Taylor order            : 20
+Dimension               : 4
+Time                    : 0.0000000000000000
+State                   : [10.000000000000000, 10.000000000000000, -1.1050000000000000, -1.6274561403508774]
+Parameters              : [1.1000000000000001, 0.20000000000000001, 0.10000000000000001, 0.40000000000000002, 0.029999999999999999, 0.029999999999999999, 1.0000000000000000]
+N of terminal events    : 2
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">t_grid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">35</span><span class="p">,</span><span class="mi">1000</span><span class="p">)</span>
+<span class="c1"># Here we record the detected max/min distances and times</span>
+<span class="n">candidates_d</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">candidates_t</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="c1"># We propagate</span>
+<span class="n">outcome</span><span class="p">,</span> <span class="n">min_h</span><span class="p">,</span> <span class="n">max_h</span><span class="p">,</span> <span class="n">steps</span><span class="p">,</span> <span class="n">sol</span> <span class="o">=</span> <span class="n">ta</span><span class="o">.</span><span class="n">propagate_grid</span><span class="p">(</span><span class="n">t_grid</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>and we plot the results highlighting with different colors parts of the trajectory that are within successive distance events:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">axs</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span><span class="mi">6</span><span class="p">))</span>
+<span class="n">preys</span> <span class="o">=</span> <span class="n">sol</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">predators</span> <span class="o">=</span> <span class="n">sol</span><span class="p">[:,</span><span class="mi">1</span><span class="p">]</span>
+<span class="n">lpreys</span> <span class="o">=</span> <span class="n">sol</span><span class="p">[:,</span><span class="mi">2</span><span class="p">]</span>
+<span class="n">lpredators</span> <span class="o">=</span> <span class="n">sol</span><span class="p">[:,</span><span class="mi">3</span><span class="p">]</span>
+
+<span class="n">sf_num</span> <span class="o">=</span> <span class="n">switching_function</span><span class="p">(</span><span class="n">preys</span><span class="p">,</span> <span class="n">predators</span><span class="p">,</span> <span class="n">lpreys</span><span class="p">,</span> <span class="n">lpredators</span><span class="p">,</span> <span class="n">ps</span><span class="p">)</span>
+<span class="n">H_num</span> <span class="o">=</span> <span class="n">hamiltonian</span><span class="p">(</span><span class="n">preys</span><span class="p">,</span> <span class="n">predators</span><span class="p">,</span> <span class="n">lpreys</span><span class="p">,</span> <span class="n">lpredators</span><span class="p">,</span> <span class="n">ps</span><span class="p">)</span>
+<span class="n">axs</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">preys_unc</span><span class="p">,</span> <span class="n">predators_unc</span><span class="p">)</span>
+
+<span class="n">candidates_t</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">candidates_d</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">candidates_t</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+    <span class="n">mask_on</span> <span class="o">=</span> <span class="p">(</span><span class="n">t_grid</span> <span class="o">&gt;=</span> <span class="n">candidates_t</span><span class="p">[</span><span class="n">i</span><span class="p">])</span><span class="o">&amp;</span><span class="p">(</span><span class="n">t_grid</span> <span class="o">&lt;=</span> <span class="n">candidates_t</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">])</span>
+    <span class="n">axs</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">preys</span><span class="p">[</span><span class="n">mask_on</span><span class="p">],</span> <span class="n">predators</span><span class="p">[</span><span class="n">mask_on</span><span class="p">],</span> <span class="s1">&#39;-&#39;</span><span class="p">)</span>
+<span class="n">axs</span><span class="o">.</span><span class="n">scatter</span><span class="p">([</span><span class="n">x_t</span><span class="p">],</span> <span class="p">[</span><span class="n">y_t</span><span class="p">])</span>
+<span class="n">axs</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;n. preys&quot;</span><span class="p">)</span>
+<span class="n">axs</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;n. predators&quot;</span><span class="p">)</span>
+<span class="n">axs</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span><span class="mi">14</span><span class="p">])</span>
+<span class="n">axs</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span><span class="mi">14</span><span class="p">])</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Distance events trigger at minimal and maximal distance from the target point&quot;</span><span class="p">)</span>
+
+
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span> 
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/Optimal Control of the Lotka-Volterra equations_39_0.png" src="../_images/Optimal Control of the Lotka-Volterra equations_39_0.png" />
+</div>
+</div>
+<p>We are now ready to put everything together into a reduced shooting function that will be zero corresponding to the time optimal trajectory.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">reduced_shooting_function</span><span class="p">(</span><span class="n">x_0</span><span class="p">,</span> <span class="n">y_0</span><span class="p">,</span> <span class="n">lx_0</span><span class="p">,</span> <span class="n">ps</span><span class="p">):</span>
+    <span class="k">global</span> <span class="n">candidates_t</span>
+    <span class="k">global</span> <span class="n">candidates_d</span>
+    <span class="k">global</span> <span class="n">ta</span>
+
+    <span class="c1"># We reset the time</span>
+    <span class="n">ta</span><span class="o">.</span><span class="n">time</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="c1"># We compute the initiqal value for the y co-state (form H=0)</span>
+    <span class="n">ly_0</span> <span class="o">=</span> <span class="n">find_lambda_y0</span><span class="p">(</span><span class="n">x_0</span><span class="p">,</span> <span class="n">y_0</span><span class="p">,</span> <span class="n">lx_0</span><span class="p">,</span> <span class="n">ps</span><span class="p">)</span>
+    <span class="c1"># We compute the initial value of the optimal control</span>
+    <span class="n">ta</span><span class="o">.</span><span class="n">pars</span><span class="p">[</span><span class="mi">6</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">heaviside</span><span class="p">(</span><span class="n">switching_function</span><span class="p">(</span><span class="n">x_0</span><span class="p">,</span><span class="n">y_0</span><span class="p">,</span><span class="n">lx_0</span><span class="p">,</span><span class="n">ly_0</span><span class="p">,</span> <span class="n">ps</span><span class="p">),</span> <span class="mf">1.</span><span class="p">)</span>
+
+    <span class="c1"># We set the initial conditions</span>
+    <span class="n">ta</span><span class="o">.</span><span class="n">state</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">x_0</span><span class="p">;</span> <span class="n">ta</span><span class="o">.</span><span class="n">state</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">y_0</span><span class="p">;</span> <span class="n">ta</span><span class="o">.</span><span class="n">state</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">lx_0</span><span class="p">;</span> <span class="n">ta</span><span class="o">.</span><span class="n">state</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="n">ly_0</span>
+    <span class="c1"># We reset the candidates final times and distances</span>
+    <span class="n">candidates_t</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">candidates_d</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="c1"># define the time grid</span>
+    <span class="n">t_grid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">35</span><span class="p">,</span><span class="mi">1000</span><span class="p">)</span>
+    <span class="c1"># Perform the integration</span>
+    <span class="n">outcome</span><span class="p">,</span> <span class="n">min_h</span><span class="p">,</span> <span class="n">max_h</span><span class="p">,</span> <span class="n">steps</span><span class="p">,</span> <span class="n">sol</span> <span class="o">=</span> <span class="n">ta</span><span class="o">.</span><span class="n">propagate_grid</span><span class="p">(</span><span class="n">t_grid</span><span class="p">)</span>
+    <span class="c1"># We return the minimum distance</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">candidates_d</span><span class="p">)</span>
+    
+</pre></div>
+</div>
+</div>
+</div>
+<p>we solve the reduced shooting function. Note that the initial guess is fundamental. In this case, since we reduced the problem to a one only dimension, its trivial to find a good one.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">scipy.optimize</span> <span class="kn">import</span> <span class="n">minimize</span>
+<span class="n">res</span> <span class="o">=</span> <span class="n">minimize</span><span class="p">(</span><span class="k">lambda</span> <span class="n">lx_0</span><span class="p">:</span> <span class="n">reduced_shooting_function</span><span class="p">(</span><span class="n">x_0</span><span class="p">,</span> <span class="n">y_0</span><span class="p">,</span> <span class="n">lx_0</span><span class="p">,</span> <span class="n">ps</span><span class="p">),</span> <span class="o">-</span><span class="mf">0.47</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="mf">1e-8</span><span class="p">)</span>
+<span class="n">res</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>      fun: 1.903079140652692e-15
+ hess_inv: array([[0.01440261]])
+      jac: array([3.25875263e-09])
+  message: &#39;Optimization terminated successfully.&#39;
+     nfev: 14
+      nit: 3
+     njev: 7
+   status: 0
+  success: True
+        x: array([-0.47906457])
+</pre></div>
+</div>
+</div>
+</div>
+<p>And compute/plot the resulting optimal trajectory</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span><span class="n">candidates_d</span><span class="p">)</span>
+<span class="n">tf</span> <span class="o">=</span> <span class="n">candidates_t</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
+<span class="n">lx_0</span> <span class="o">=</span> <span class="n">res</span><span class="o">.</span><span class="n">x</span>
+<span class="c1"># We reset the time</span>
+<span class="n">ta</span><span class="o">.</span><span class="n">time</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="c1"># We compute the inititial value for the y co-state (form H=0)</span>
+<span class="n">ly_0</span> <span class="o">=</span> <span class="n">find_lambda_y0</span><span class="p">(</span><span class="n">x_0</span><span class="p">,</span> <span class="n">y_0</span><span class="p">,</span> <span class="n">lx_0</span><span class="p">,</span> <span class="n">ps</span><span class="p">)</span>
+
+<span class="n">switch_times</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">ta</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">taylor_adaptive</span><span class="p">(</span><span class="n">ode_sys</span><span class="p">,</span> <span class="p">[</span><span class="n">x_0</span><span class="p">,</span> <span class="n">y_0</span><span class="p">,</span><span class="n">lx_0</span><span class="p">,</span> <span class="n">ly_0</span><span class="p">],</span> <span class="n">pars</span><span class="o">=</span><span class="n">ps</span><span class="p">,</span> <span class="n">t_events</span> <span class="o">=</span> <span class="p">[</span><span class="n">switching_event</span><span class="p">])</span>
+<span class="c1"># We compute the initial value of the optimal control</span>
+<span class="n">ta</span><span class="o">.</span><span class="n">pars</span><span class="p">[</span><span class="mi">6</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">heaviside</span><span class="p">(</span><span class="n">switching_function</span><span class="p">(</span><span class="n">x_0</span><span class="p">,</span><span class="n">y_0</span><span class="p">,</span><span class="n">lx_0</span><span class="p">,</span><span class="n">ly_0</span><span class="p">,</span> <span class="n">ps</span><span class="p">),</span> <span class="mf">1.</span><span class="p">)</span>
+
+<span class="c1"># define the time grid</span>
+<span class="n">t_grid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">tf</span><span class="p">,</span><span class="mi">1000</span><span class="p">)</span>
+<span class="c1"># Perform the integration</span>
+<span class="n">outcome</span><span class="p">,</span> <span class="n">min_h</span><span class="p">,</span> <span class="n">max_h</span><span class="p">,</span> <span class="n">steps</span><span class="p">,</span> <span class="n">sol</span> <span class="o">=</span> <span class="n">ta</span><span class="o">.</span><span class="n">propagate_grid</span><span class="p">(</span><span class="n">t_grid</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">axs</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">13</span><span class="p">,</span><span class="mi">4</span><span class="p">))</span>
+<span class="n">preys</span> <span class="o">=</span> <span class="n">sol</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">predators</span> <span class="o">=</span> <span class="n">sol</span><span class="p">[:,</span><span class="mi">1</span><span class="p">]</span>
+<span class="n">lpreys</span> <span class="o">=</span> <span class="n">sol</span><span class="p">[:,</span><span class="mi">2</span><span class="p">]</span>
+<span class="n">lpredators</span> <span class="o">=</span> <span class="n">sol</span><span class="p">[:,</span><span class="mi">3</span><span class="p">]</span>
+
+<span class="n">sf_num</span> <span class="o">=</span> <span class="n">switching_function</span><span class="p">(</span><span class="n">preys</span><span class="p">,</span> <span class="n">predators</span><span class="p">,</span> <span class="n">lpreys</span><span class="p">,</span> <span class="n">lpredators</span><span class="p">,</span> <span class="n">ps</span><span class="p">)</span>
+<span class="n">H_num</span> <span class="o">=</span> <span class="n">hamiltonian</span><span class="p">(</span><span class="n">preys</span><span class="p">,</span> <span class="n">predators</span><span class="p">,</span> <span class="n">lpreys</span><span class="p">,</span> <span class="n">lpredators</span><span class="p">,</span> <span class="n">ps</span><span class="p">)</span>
+<span class="n">mask_on</span> <span class="o">=</span> <span class="n">sf_num</span> <span class="o">&gt;</span> <span class="mi">0</span>
+<span class="n">mask_off</span> <span class="o">=</span> <span class="n">sf_num</span> <span class="o">&lt;</span> <span class="mi">0</span>
+
+<span class="n">axs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">t_grid</span><span class="p">,</span> <span class="n">preys</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;n. preys&quot;</span><span class="p">)</span>
+<span class="n">axs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">t_grid</span><span class="p">,</span> <span class="n">predators</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;n. predators&quot;</span><span class="p">)</span>
+<span class="n">axs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">axs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;system time&quot;</span><span class="p">)</span>
+<span class="n">axs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;number in each species&quot;</span><span class="p">)</span>
+
+<span class="n">axs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">preys_unc</span><span class="p">,</span> <span class="n">predators_unc</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;uncontrolled&quot;</span><span class="p">)</span>
+<span class="n">axs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">preys</span><span class="p">,</span> <span class="n">predators</span><span class="p">,</span> <span class="s1">&#39;r--&#39;</span><span class="p">,</span> <span class="n">label</span> <span class="o">=</span> <span class="s2">&quot;on phase&quot;</span><span class="p">)</span>
+<span class="n">axs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">preys</span><span class="p">[</span><span class="n">mask_off</span><span class="p">],</span> <span class="n">predators</span><span class="p">[</span><span class="n">mask_off</span><span class="p">],</span> <span class="s1">&#39;k.&#39;</span><span class="p">,</span> <span class="n">label</span> <span class="o">=</span> <span class="s2">&quot;off phase&quot;</span><span class="p">)</span>
+<span class="n">axs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">scatter</span><span class="p">([</span><span class="n">x_t</span><span class="p">],</span> <span class="p">[</span><span class="n">y_t</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;target&#39;</span><span class="p">)</span>
+<span class="n">axs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;n. preys&quot;</span><span class="p">)</span>
+<span class="n">axs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;n. predators&quot;</span><span class="p">)</span>
+<span class="n">axs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span><span class="mi">15</span><span class="p">])</span>
+<span class="n">axs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span><span class="mi">14</span><span class="p">])</span>
+<span class="n">axs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+
+
+<span class="n">axs</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">t_grid</span><span class="p">,</span> <span class="n">sf_num</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;switching function&quot;</span><span class="p">)</span>
+<span class="n">axs</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">t_grid</span><span class="p">,</span> <span class="n">H_num</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;hamiltonian&quot;</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">time</span> <span class="ow">in</span> <span class="n">switch_times</span><span class="p">:</span>
+    <span class="n">axs</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">time</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;k&#39;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">)</span>
+<span class="n">axs</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;system time&quot;</span><span class="p">)</span>
+<span class="n">axs</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/Optimal Control of the Lotka-Volterra equations_46_0.png" src="../_images/Optimal Control of the Lotka-Volterra equations_46_0.png" />
+</div>
+</div>
+<p>The time optimal trajectory is thus computed in the blink of an eye, showing us how to control the species dynamics in this example.</p>
+</div>
+
+
+              </div>
+              
+        
+        <div class='prev-next-bottom'>
+            
+    <a class='left-prev' id="prev-link" href="Long%20term%20stability%20of%20Trappist-1.html" title="previous page">Long term stability of N-body simulations: the case of Trappist-1</a>
+    <a class='right-next' id="next-link" href="Poincar%C3%A9%20sections.html" title="next page">Poincaré sections</a>
+
+        </div>
+        
+        </div>
+    </div>
+    <footer class="footer mt-5 mt-md-0">
+    <div class="container">
+      <p>
+        
+          By Francesco Biscani and Dario Izzo<br/>
+        
+            &copy; Copyright 2020, 2021, Francesco Biscani and Dario Izzo.<br/>
+      </p>
+    </div>
+  </footer>
+</main>
+
+
+      </div>
+    </div>
+
+    
+  <script src="../_static/js/index.d3f166471bb80abb5163.js"></script>
+
+
+    
+  </body>
+</html>
