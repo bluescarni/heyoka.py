@@ -9,6 +9,8 @@ Changelog
 New
 ~~~
 
+- Add a tutorial about batch mode
+  (`#30 <https://github.com/bluescarni/heyoka.py/pull/30>`__).
 - Add tutorials about gravitational billiards
   (`#29 <https://github.com/bluescarni/heyoka.py/pull/29>`__,
   `#28 <https://github.com/bluescarni/heyoka.py/pull/28>`__).
