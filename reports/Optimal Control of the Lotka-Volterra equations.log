@@ -17,20 +17,18 @@ Traceback (most recent call last):
     raise CellExecutionError.from_cell_and_msg(cell, exec_reply_content)
 nbclient.exceptions.CellExecutionError: An error occurred while executing the following cell:
 ------------------
-import heyoka as hy
-import numpy as np
-from matplotlib import pyplot as plt
-
-import sympy.simplify as pretty
+from scipy.optimize import minimize
+res = minimize(lambda lx_0: reduced_shooting_function(x_0, y_0, lx_0, ps), -0.47, tol=1e-8)
+res
 ------------------
 
 [0;31m[0m
 [0;31mModuleNotFoundError[0mTraceback (most recent call last)
-[0;32m<ipython-input-1-ba2a1a18aa1d>[0m in [0;36m<module>[0;34m[0m
-[1;32m      3[0m [0;32mfrom[0m [0mmatplotlib[0m [0;32mimport[0m [0mpyplot[0m [0;32mas[0m [0mplt[0m[0;34m[0m[0;34m[0m[0m
-[1;32m      4[0m [0;34m[0m[0m
-[0;32m----> 5[0;31m [0;32mimport[0m [0msympy[0m[0;34m.[0m[0msimplify[0m [0;32mas[0m [0mpretty[0m[0;34m[0m[0;34m[0m[0m
-[0m
-[0;31mModuleNotFoundError[0m: No module named 'sympy'
-ModuleNotFoundError: No module named 'sympy'
+[0;32m<ipython-input-23-c71f80b42ac5>[0m in [0;36m<module>[0;34m[0m
+[0;32m----> 1[0;31m [0;32mfrom[0m [0mscipy[0m[0;34m.[0m[0moptimize[0m [0;32mimport[0m [0mminimize[0m[0;34m[0m[0;34m[0m[0m
+[0m[1;32m      2[0m [0mres[0m [0;34m=[0m [0mminimize[0m[0;34m([0m[0;32mlambda[0m [0mlx_0[0m[0;34m:[0m [0mreduced_shooting_function[0m[0;34m([0m[0mx_0[0m[0;34m,[0m [0my_0[0m[0;34m,[0m [0mlx_0[0m[0;34m,[0m [0mps[0m[0;34m)[0m[0;34m,[0m [0;34m-[0m[0;36m0.47[0m[0;34m,[0m [0mtol[0m[0;34m=[0m[0;36m1e-8[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
+[1;32m      3[0m [0mres[0m[0;34m[0m[0;34m[0m[0m
+
+[0;31mModuleNotFoundError[0m: No module named 'scipy'
+ModuleNotFoundError: No module named 'scipy'
 
