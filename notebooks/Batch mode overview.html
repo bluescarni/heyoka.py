@@ -1,0 +1,823 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Batch mode &#8212; heyoka.py 0.6.0 documentation</title>
+    
+  <link rel="stylesheet" href="../_static/css/index.f658d18f9b420779cfdf24aa0a7e2d77.css">
+
+    
+  <link rel="stylesheet"
+    href="../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    
+      
+  <link rel="stylesheet"
+    href="../_static/vendor/open-sans_all/1.44.1/index.css">
+  <link rel="stylesheet"
+    href="../_static/vendor/lato_latin-ext/1.44.1/index.css">
+
+    
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/sphinx-book-theme.e7340bb3dbd8dde6db86f25597f54a1b.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.css" />
+    
+  <link rel="preload" as="script" href="../_static/js/index.d3f166471bb80abb5163.js">
+
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/togglebutton.js"></script>
+    <script >var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    <script src="../_static/sphinx-book-theme.7d483ff0a819d6edff12ce0b1ead3928.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["\\(", "\\)"]], "displayMath": [["\\[", "\\]"]], "processRefs": false, "processEnvironments": false}})</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="The restricted three-body problem" href="The%20restricted%20three-body%20problem.html" />
+    <link rel="prev" title="Advanced tutorials" href="../advanced_tutorials.html" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="en" />
+
+
+
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+<div class="col-12 col-md-3 bd-sidebar site-navigation show" id="site-navigation">
+    
+        <div class="navbar-brand-box">
+<a class="navbar-brand text-wrap" href="../index.html">
+  
+  <img src="../_static/white_logo.png" class="logo" alt="logo">
+  
+  
+  <h1 class="site-logo" id="site-title">heyoka.py 0.6.0 documentation</h1>
+  
+</a>
+</div><form class="bd-search d-flex align-items-center" action="../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form>
+<nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+    <p class="caption collapsible-parent">
+ <span class="caption-text">
+  Contents
+ </span>
+</p>
+<ul class="current nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../install.html">
+   Installation
+  </a>
+ </li>
+ <li class="toctree-l1 collapsible-parent">
+  <a class="reference internal" href="../basic_tutorials.html">
+   Basic tutorials
+  </a>
+  <ul class="collapse-ul">
+   <li class="toctree-l2">
+    <a class="reference internal" href="../tut_taylor_method.html">
+     Taylor’s method
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="The%20expression%20system.html">
+     The expression system
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="The%20adaptive%20integrator.html">
+     The adaptive integrator
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="Customising%20the%20adaptive%20integrator.html">
+     Customising the adaptive integrator
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="ODEs%20with%20parameters.html">
+     ODEs with parameters
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="Non-autonomous%20systems.html">
+     Non-autonomous systems
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="Dense%20output.html">
+     Dense output
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="Event%20detection.html">
+     Event detection
+    </a>
+   </li>
+  </ul>
+  <i class="fas fa-chevron-down">
+  </i>
+ </li>
+ <li class="toctree-l1 current active collapsible-parent">
+  <a class="reference internal" href="../advanced_tutorials.html">
+   Advanced tutorials
+  </a>
+  <ul class="current collapse-ul">
+   <li class="toctree-l2 current active">
+    <a class="current reference internal" href="#">
+     Batch mode
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="The%20restricted%20three-body%20problem.html">
+     The restricted three-body problem
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="Long%20term%20stability%20of%20Trappist-1.html">
+     Long term stability of N-body simulations: the case of Trappist-1
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="Sampling%20events.html">
+     Sampling events
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="Poincar%C3%A9%20sections.html">
+     Poincaré sections
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="Optimal%20Control%20of%20the%20Lotka-Volterra%20equations.html">
+     Optimal Control of the Lotka-Volterra equations
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="The%20Keplerian%20billiard.html">
+     The Keplerian billiard
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="The%20two-fixed%20elliptic%20billiard.html">
+     The two-fixed centres elliptic billiard
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="The%20variational%20equations.html">
+     The variational equations
+    </a>
+   </li>
+  </ul>
+  <i class="fas fa-chevron-down">
+  </i>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../changelog.html">
+   Changelog
+  </a>
+ </li>
+</ul>
+
+</nav> <!-- To handle the deprecated key -->
+
+<div class="navbar_extra_footer">
+  Theme by the <a href="https://ebp.jupyterbook.org">Executable Book Project</a>
+</div>
+
+</div>
+
+
+          
+
+
+          
+<main class="col py-md-3 pl-md-4 bd-content overflow-auto" role="main">
+    
+    <div class="topbar container-xl fixed-top">
+    <div class="topbar-contents row">
+        <div class="col-12 col-md-3 bd-topbar-whitespace site-navigation show"></div>
+        <div class="col pl-md-4 topbar-main">
+            
+            <button id="navbar-toggler" class="navbar-toggler ml-0" type="button" data-toggle="collapse"
+                data-toggle="tooltip" data-placement="bottom" data-target=".site-navigation" aria-controls="navbar-menu"
+                aria-expanded="true" aria-label="Toggle navigation" aria-controls="site-navigation"
+                title="Toggle navigation" data-toggle="tooltip" data-placement="left">
+                <i class="fas fa-bars"></i>
+                <i class="fas fa-arrow-left"></i>
+                <i class="fas fa-arrow-up"></i>
+            </button>
+            
+            
+<div class="dropdown-buttons-trigger">
+    <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn" aria-label="Download this page"><i
+            class="fas fa-download"></i></button>
+
+    <div class="dropdown-buttons">
+        <!-- ipynb file if we had a myst markdown file -->
+        
+        <!-- Download raw file -->
+        <a class="dropdown-buttons" href="../_sources/notebooks/Batch mode overview.ipynb.txt"><button type="button"
+                class="btn btn-secondary topbarbtn" title="Download source file" data-toggle="tooltip"
+                data-placement="left">.ipynb</button></a>
+        <!-- Download PDF via print -->
+        <button type="button" id="download-print" class="btn btn-secondary topbarbtn" title="Print to PDF"
+            onClick="window.print()" data-toggle="tooltip" data-placement="left">.pdf</button>
+    </div>
+</div>
+
+            <!-- Source interaction buttons -->
+
+<div class="dropdown-buttons-trigger">
+    <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn"
+        aria-label="Connect with source repository"><i class="fab fa-github"></i></button>
+    <div class="dropdown-buttons sourcebuttons">
+        <a class="repository-button"
+            href="https://github.com/bluescarni/heyoka.py"><button type="button" class="btn btn-secondary topbarbtn"
+                data-toggle="tooltip" data-placement="left" title="Source repository"><i
+                    class="fab fa-github"></i>repository</button></a>
+        <a class="issues-button"
+            href="https://github.com/bluescarni/heyoka.py/issues/new?title=Issue%20on%20page%20%2Fnotebooks/Batch mode overview.html&body=Your%20issue%20content%20here."><button
+                type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip" data-placement="left"
+                title="Open an issue"><i class="fas fa-lightbulb"></i>open issue</button></a>
+        
+    </div>
+</div>
+
+
+            <!-- Full screen (wrap in <a> to have style consistency -->
+            <a class="full-screen-button"><button type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip"
+                    data-placement="bottom" onclick="toggleFullScreen()" aria-label="Fullscreen mode"
+                    title="Fullscreen mode"><i
+                        class="fas fa-expand"></i></button></a>
+
+            <!-- Launch buttons -->
+
+<div class="dropdown-buttons-trigger">
+    <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn"
+        aria-label="Launch interactive content"><i class="fas fa-rocket"></i></button>
+    <div class="dropdown-buttons">
+        
+        <a class="binder-button" href="https://mybinder.org/v2/gh/bluescarni/heyoka.py/main?urlpath=tree/doc/notebooks/Batch mode overview.ipynb"><button type="button"
+                class="btn btn-secondary topbarbtn" title="Launch Binder" data-toggle="tooltip"
+                data-placement="left"><img class="binder-button-logo"
+                    src="../_static/images/logo_binder.svg"
+                    alt="Interact on binder">Binder</button></a>
+        
+        
+        
+        
+    </div>
+</div>
+
+        </div>
+
+        <!-- Table of contents -->
+        <div class="d-none d-md-block col-md-2 bd-toc show">
+            
+        <div class="tocsection onthispage pt-5 pb-3">
+            <i class="fas fa-list"></i>
+            Contents
+        </div>
+        <nav id="bd-toc-nav">
+            <ul class="nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#the-adaptive-batch-integrator">
+   The adaptive batch integrator
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#step-by-step-integration">
+   Step-by-step integration
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#time-limited-propagation">
+   Time-limited propagation
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#dense-output">
+   Dense output
+  </a>
+ </li>
+</ul>
+
+        </nav>
+        
+        </div>
+    </div>
+</div>
+    <div id="main-content" class="row">
+        <div class="col-12 col-md-9 pl-md-3 pr-md-0">
+        
+              <div>
+                
+  <div class="section" id="batch-mode">
+<h1>Batch mode<a class="headerlink" href="#batch-mode" title="Permalink to this headline">¶</a></h1>
+<p>heyoka.py’s API supports a mode of operation called <em>batch mode</em>.
+In batch mode, all the scalar quantities appearing in a system of ODEs
+(i.e., state variables, time coordinate, parameters, etc.)
+are formally replaced by small vectors of fixed size <span class="math notranslate nohighlight">\(n\)</span>, so that,
+effectively, multiple ODE systems sharing the same mathematical formulation
+are being integrated simultaneously using different sets of numerical values.</p>
+<p>Because modern CPUs support <a class="reference external" href="https://en.wikipedia.org/wiki/SIMD">SIMD instructions</a>,
+the runtime cost of operating on a vector of <span class="math notranslate nohighlight">\(n\)</span> scalar values is roughly
+equivalent to the cost of operating on a single scalar value, and thus the use of
+batch mode can lead to an increase in floating-point throughput up to a factor of <span class="math notranslate nohighlight">\(n\)</span>.</p>
+<p>It is important to emphasise that batch mode does not reduce
+the CPU time required to integrate a system of ODEs. Rather, as a fine-grained
+form of data parallelism, batch mode allows to integrate multiple ODE systems in parallel
+at no additional cost, and it is thus most useful when the need arise
+to integrate the same ODE system with different initial conditions and parameters.</p>
+<p>Although batch mode can in principle be used with all floating-point types supported
+by heyoka.py, in practice at this time no CPU provides SIMD instructions for extended-precision
+datatypes. Thus, here we will consider the application of batch mode only to
+standard <code class="docutils literal notranslate"><span class="pre">double</span></code> precision computations.</p>
+<p>The value of the batch size <span class="math notranslate nohighlight">\(n\)</span> can be freely chosen by the user. In order
+to achieve optimal performance, however, <span class="math notranslate nohighlight">\(n\)</span> should match the SIMD width of the
+processor in use. Because at this time the most widespread SIMD instruction set is
+<a class="reference external" href="https://en.wikipedia.org/wiki/Advanced_Vector_Extensions">AVX</a> (available on
+most x86 processors sold since 2011), in this tutorial we will be using a
+batch size <span class="math notranslate nohighlight">\(n=4\)</span>.</p>
+<div class="section" id="the-adaptive-batch-integrator">
+<h2>The adaptive batch integrator<a class="headerlink" href="#the-adaptive-batch-integrator" title="Permalink to this headline">¶</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">taylor_adaptive_batch</span></code> class is the batch mode counterpart of the adaptive
+(scalar) integrator <a class="reference internal" href="The%20adaptive%20integrator.html"><span class="doc std std-doc">described earlier</span></a>. Although at a high-level
+the API of <code class="docutils literal notranslate"><span class="pre">taylor_adaptive_batch</span></code> is quite similar to the API of
+<code class="docutils literal notranslate"><span class="pre">taylor_adaptive</span></code>, there are also some important differences that need to be
+pointed out.</p>
+<p>In order to present a comprehensive example, we will consider again the integration
+of the <a class="reference internal" href="Non-autonomous%20systems.html"><span class="doc std std-doc">forced damped pendulum</span></a>, with a small modification:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+\begin{cases}
+x^\prime = v \\
+v^\prime = \cos t - \alpha v - \sin(x)
+\end{cases}.
+\end{split}\]</div>
+<p>Here <span class="math notranslate nohighlight">\(\alpha\)</span> is an air friction coefficient whose value is left undefined
+(i.e., <span class="math notranslate nohighlight">\(\alpha\)</span> is a <a class="reference internal" href="ODEs%20with%20parameters.html"><span class="doc std std-doc">runtime parameter</span></a>).</p>
+<p>Let us begin:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">heyoka</span> <span class="k">as</span> <span class="nn">hy</span>
+
+<span class="c1"># Create the symbolic variables x and v.</span>
+<span class="n">x</span><span class="p">,</span> <span class="n">v</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">make_vars</span><span class="p">(</span><span class="s2">&quot;x&quot;</span><span class="p">,</span> <span class="s2">&quot;v&quot;</span><span class="p">)</span>
+
+<span class="c1"># We will be using a batch size of 4.</span>
+<span class="n">batch_size</span> <span class="o">=</span> <span class="mi">4</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>As usual, we begin by creating the symbolic state variables <span class="math notranslate nohighlight">\(x\)</span> and <span class="math notranslate nohighlight">\(v\)</span>.
+We also store in a constant the value of the batch size <span class="math notranslate nohighlight">\(n = 4\)</span> for later use.</p>
+<p>Next, we define the equations of motion:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Equations of motion.</span>
+<span class="n">eqns</span> <span class="o">=</span> <span class="p">[(</span><span class="n">x</span><span class="p">,</span> <span class="n">v</span><span class="p">),</span>
+        <span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">hy</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">hy</span><span class="o">.</span><span class="n">time</span><span class="p">)</span> <span class="o">-</span> <span class="n">hy</span><span class="o">.</span><span class="n">par</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">v</span> <span class="o">-</span> <span class="n">hy</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">x</span><span class="p">))]</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>The friction coefficient <span class="math notranslate nohighlight">\(\alpha\)</span> is implemented as the runtime parameter at index 0 (<code class="docutils literal notranslate"><span class="pre">par[0]</span></code>).</p>
+<p>We can now proceed to the creation of the batch integrator. We will need to provide batches of initial conditions for <span class="math notranslate nohighlight">\(x\)</span> and <span class="math notranslate nohighlight">\(v\)</span>, and a batch of values for the runtime parameter <span class="math notranslate nohighlight">\(\alpha\)</span>. We will choose the following numerical values:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+\begin{cases}
+x_0 = \left( 0.01, 0.02, 0.03, 0.04 \right ) \\
+v_0 = \left( 1.85, 1.86, 1.87, 1.88 \right) \\
+\alpha = \left( 0.10, 0.11, 0.12, 0.13 \right)
+\end{cases}.
+\end{split}\]</div>
+<p>Let us see the code:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Create the integrator object.</span>
+<span class="n">ta</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">taylor_adaptive_batch</span><span class="p">(</span>
+                        <span class="c1"># The dynamics.</span>
+                        <span class="n">eqns</span><span class="p">,</span>
+                        <span class="c1"># Initial conditions for x and v.</span>
+                        <span class="n">state</span> <span class="o">=</span> <span class="p">[[</span><span class="mf">0.00</span><span class="p">,</span> <span class="mf">0.01</span><span class="p">,</span> <span class="mf">0.02</span><span class="p">,</span> <span class="mf">0.03</span><span class="p">],</span> <span class="p">[</span><span class="mf">1.85</span><span class="p">,</span> <span class="mf">1.86</span><span class="p">,</span> <span class="mf">1.87</span><span class="p">,</span> <span class="mf">1.88</span><span class="p">]],</span>
+                        <span class="c1"># Values for alpha.</span>
+                        <span class="n">pars</span> <span class="o">=</span> <span class="p">[[</span><span class="mf">0.10</span><span class="p">,</span> <span class="mf">0.11</span><span class="p">,</span> <span class="mf">0.12</span><span class="p">,</span> <span class="mf">0.13</span><span class="p">]]</span>
+                        <span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>The constructor of <code class="docutils literal notranslate"><span class="pre">taylor_adaptive_batch</span></code> is very similar to the constructor of
+<code class="docutils literal notranslate"><span class="pre">taylor_adaptive</span></code>: it has the same mandatory and optional arguments, but the expected
+array format for the initial conditions and parameter values is different. Specifically, a batch integrator
+expects as initial conditions and parameter values 2D arrays in which the number of columns represents the batch size.
+Thus, because in this specific case the array of initial conditions has shape <span class="math notranslate nohighlight">\(\left( 2, 4 \right)\)</span>
+and the array of parameter values has shape <span class="math notranslate nohighlight">\(\left( 1, 4 \right)\)</span>, the integrator infers that the batch size is 4.</p>
+<p>Because we didn’t provide values for the initial times, the time coordinates are
+all initialised to zero:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ta</span><span class="o">.</span><span class="n">time</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([0., 0., 0., 0.])
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="step-by-step-integration">
+<h2>Step-by-step integration<a class="headerlink" href="#step-by-step-integration" title="Permalink to this headline">¶</a></h2>
+<p>We are now ready to start integrating. Like <code class="docutils literal notranslate"><span class="pre">taylor_adaptive</span></code>, <code class="docutils literal notranslate"><span class="pre">taylor_adaptive_batch</span></code>
+provides <code class="docutils literal notranslate"><span class="pre">step()</span></code> functions for integrating forward or backward in time step-by-step.
+One important difference is that, in order to avoid costly memory allocations,
+the <code class="docutils literal notranslate"><span class="pre">step()</span></code> functions of the batch integrator do not return anything. Rather, the
+batch integrator maintains an internal vector of outcomes which is updated at the
+end of each timestep. Let’s take a look:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Perform a single step forward in time.</span>
+<span class="n">ta</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
+
+<span class="c1"># Print the outcomes to screen.</span>
+<span class="n">ta</span><span class="o">.</span><span class="n">step_res</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[(&lt;taylor_outcome.success: -4294967297&gt;, 0.205181018733418),
+ (&lt;taylor_outcome.success: -4294967297&gt;, 0.20619730819002183),
+ (&lt;taylor_outcome.success: -4294967297&gt;, 0.20501652806394124),
+ (&lt;taylor_outcome.success: -4294967297&gt;, 0.20408393560444854)]
+</pre></div>
+</div>
+</div>
+</div>
+<p>We can see how the integration timestep was successful for all elements of the batch, and how slightly different timesteps were chosen for each element of the batch.</p>
+<p>Let’s also print to screen the updated state and time arrays:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;State:</span><span class="se">\n</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ta</span><span class="o">.</span><span class="n">state</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Time:</span><span class="se">\n</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ta</span><span class="o">.</span><span class="n">time</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>State:
+[[0.39386703 0.40729224 0.41636627 0.42592189]
+ [1.9748992  1.97901839 1.98231555 1.98573654]]
+Time:
+[0.20518102 0.20619731 0.20501653 0.20408394]
+</pre></div>
+</div>
+</div>
+</div>
+<p>Note that because the initial conditions were all set to similar values,
+the state of the system after a single timestep also does not change much
+across the batch elements.</p>
+<p>Like for <code class="docutils literal notranslate"><span class="pre">taylor_adaptive</span></code>, the <code class="docutils literal notranslate"><span class="pre">step()</span></code> function can be invoked with
+a vector of time limits: if the adaptive timesteps
+selected by heyoka are larger (in absolute value) than the specified limits,
+then the timesteps will be clamped.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Perform a single step forward in time</span>
+<span class="c1"># clamping the maximum absolute values</span>
+<span class="c1"># of the timesteps.</span>
+<span class="n">ta</span><span class="o">.</span><span class="n">step</span><span class="p">([</span><span class="mf">0.010</span><span class="p">,</span> <span class="mf">0.011</span><span class="p">,</span> <span class="mf">0.012</span><span class="p">,</span> <span class="mf">0.013</span><span class="p">])</span>
+
+<span class="c1"># Print the outcomes, state and times to screen.</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Outcomes:</span><span class="se">\n</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ta</span><span class="o">.</span><span class="n">step_res</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;State:</span><span class="se">\n</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ta</span><span class="o">.</span><span class="n">state</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Time:</span><span class="se">\n</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ta</span><span class="o">.</span><span class="n">time</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Outcomes:
+[(&lt;taylor_outcome.time_limit: -4294967299&gt;, 0.01), (&lt;taylor_outcome.time_limit: -4294967299&gt;, 0.011), (&lt;taylor_outcome.time_limit: -4294967299&gt;, 0.012), (&lt;taylor_outcome.time_limit: -4294967299&gt;, 0.013)]
+State:
+[[0.41363557 0.42908306 0.44017771 0.45176173]
+ [1.97877363 1.98290874 1.98620849 1.9895667 ]]
+Time:
+[0.21518102 0.21719731 0.21701653 0.21708394]
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="time-limited-propagation">
+<h2>Time-limited propagation<a class="headerlink" href="#time-limited-propagation" title="Permalink to this headline">¶</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">propagate_*()</span></code> functions are also available for the
+batch integrator. Similarly to the <code class="docutils literal notranslate"><span class="pre">step()</span></code> functions, the outcomes of the <code class="docutils literal notranslate"><span class="pre">propagate_*()</span></code>
+functions are stored in internal vectors of tuples, with the tuple elements representing:</p>
+<ul class="simple">
+<li><p>the outcome of the integration,</p></li>
+<li><p>the minimum and maximum integration timesteps
+that were used in the propagation,</p></li>
+<li><p>the total number of steps that were taken.</p></li>
+</ul>
+<p>Let’s see a couple of examples:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Propagate for different time intervals.</span>
+<span class="n">ta</span><span class="o">.</span><span class="n">propagate_for</span><span class="p">([</span><span class="mf">10.</span><span class="p">,</span> <span class="mf">11.</span><span class="p">,</span> <span class="mf">12.</span><span class="p">,</span> <span class="mf">13.</span><span class="p">])</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Outcomes:</span><span class="se">\n</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ta</span><span class="o">.</span><span class="n">propagate_res</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;State:</span><span class="se">\n</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ta</span><span class="o">.</span><span class="n">state</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Time:</span><span class="se">\n</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ta</span><span class="o">.</span><span class="n">time</span><span class="p">))</span>
+
+<span class="c1"># Propagate up to different time coordinates.</span>
+<span class="n">ta</span><span class="o">.</span><span class="n">propagate_until</span><span class="p">([</span><span class="mf">20.</span><span class="p">,</span> <span class="mf">21.</span><span class="p">,</span> <span class="mf">22.</span><span class="p">,</span> <span class="mf">23.</span><span class="p">])</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Outcomes:</span><span class="se">\n</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ta</span><span class="o">.</span><span class="n">propagate_res</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;State:</span><span class="se">\n</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ta</span><span class="o">.</span><span class="n">state</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Time:</span><span class="se">\n</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ta</span><span class="o">.</span><span class="n">time</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Outcomes:
+[(&lt;taylor_outcome.time_limit: -4294967299&gt;, 0.19700448609475013, 0.42801809235455385, 34), (&lt;taylor_outcome.time_limit: -4294967299&gt;, 0.1914608992952717, 0.4281140304644993, 38), (&lt;taylor_outcome.time_limit: -4294967299&gt;, 0.18762172169221453, 0.43556334885135567, 41), (&lt;taylor_outcome.time_limit: -4294967299&gt;, 0.18423403769248833, 0.47053646102804997, 44)]
+State:
+[[ 4.6268855   2.73976697  1.1534837   0.23501885]
+ [-2.25814471 -1.91965361 -1.77541972 -1.13133003]]
+Time:
+[10.21518102 11.21719731 12.21701653 13.21708394]
+
+Outcomes:
+[(&lt;taylor_outcome.time_limit: -4294967299&gt;, 0.2048473837982106, 0.3080688556802493, 40), (&lt;taylor_outcome.time_limit: -4294967299&gt;, 0.2122087320009231, 0.32033034817214595, 38), (&lt;taylor_outcome.time_limit: -4294967299&gt;, 0.22595995123406543, 0.4129644953875974, 35), (&lt;taylor_outcome.time_limit: -4294967299&gt;, 0.21027114609377692, 0.3717536518626978, 34)]
+State:
+[[1.80080102 2.83619831 3.4747455  6.29634837]
+ [1.35919698 0.50159786 0.00737693 0.72663002]]
+Time:
+[20. 21. 22. 23.]
+</pre></div>
+</div>
+</div>
+</div>
+<p>Let us now reset the integrator to the original initial conditions, and use <code class="docutils literal notranslate"><span class="pre">propagate_grid()</span></code> to compute and then plot the time evolution of <span class="math notranslate nohighlight">\(x\)</span> for the different batch elements:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Reset time and state.</span>
+<span class="n">ta</span><span class="o">.</span><span class="n">time</span><span class="p">[:]</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+<span class="n">ta</span><span class="o">.</span><span class="n">state</span><span class="p">[:]</span> <span class="o">=</span> <span class="p">[[</span><span class="mf">0.00</span><span class="p">,</span> <span class="mf">0.01</span><span class="p">,</span> <span class="mf">0.02</span><span class="p">,</span> <span class="mf">0.03</span><span class="p">],</span> <span class="p">[</span><span class="mf">1.85</span><span class="p">,</span> <span class="mf">1.86</span><span class="p">,</span> <span class="mf">1.87</span><span class="p">,</span> <span class="mf">1.88</span><span class="p">]]</span>
+
+<span class="c1"># Create identical time grids.</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="n">t_grid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">1000</span><span class="p">),</span> <span class="n">batch_size</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">1000</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
+
+<span class="c1"># Propagate over the time grids.</span>
+<span class="n">out</span> <span class="o">=</span> <span class="n">ta</span><span class="o">.</span><span class="n">propagate_grid</span><span class="p">(</span><span class="n">t_grid</span><span class="p">)</span>
+
+<span class="c1"># Plot the time evolution of x.</span>
+<span class="kn">from</span> <span class="nn">matplotlib.pylab</span> <span class="kn">import</span> <span class="n">plt</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s2">&quot;figure.figsize&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">12</span><span class="p">,</span><span class="mi">6</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">t_grid</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">out</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Batch element 0&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">t_grid</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">out</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Batch element 1&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">t_grid</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">],</span> <span class="n">out</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Batch element 2&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">t_grid</span><span class="p">[:,</span> <span class="mi">3</span><span class="p">],</span> <span class="n">out</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Batch element 3&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;Time&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;x&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">();</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/Batch mode overview_17_0.png" src="../_images/Batch mode overview_17_0.png" />
+</div>
+</div>
+<p>In this example, we chose to propagate all batch elements using the same time grid, but we could have chosen to propagate different batch elements using different time grids.</p>
+<p>The plot for the time evolution of <span class="math notranslate nohighlight">\(x\)</span> shows how this dynamical system is sensitive to the initial conditions: whereas batch elements 0 and 1 evolve together towards the same periodic behaviour, batch elements 2 and 3 exhibit a qualitatively-different evolution.</p>
+<p>We can print to screen <code class="docutils literal notranslate"><span class="pre">propagate_res</span></code> to fnid out how many timesteps each batch required and what were the sizes of the smallest and largest integration timesteps:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ta</span><span class="o">.</span><span class="n">propagate_res</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[(&lt;taylor_outcome.time_limit: -4294967299&gt;,
+  0.1771218741465662,
+  0.42922678763927685,
+  445),
+ (&lt;taylor_outcome.time_limit: -4294967299&gt;,
+  0.17864079697444818,
+  0.4311641361512716,
+  442),
+ (&lt;taylor_outcome.time_limit: -4294967299&gt;,
+  0.17166730017468285,
+  0.48845285378298453,
+  370),
+ (&lt;taylor_outcome.time_limit: -4294967299&gt;,
+  0.1853603631822092,
+  0.4676193933698764,
+  364)]
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="dense-output">
+<h2>Dense output<a class="headerlink" href="#dense-output" title="Permalink to this headline">¶</a></h2>
+<p>The batch integrator also supports <a class="reference internal" href="Dense%20output.html"><span class="doc std std-doc">dense output</span></a>. Like for <code class="docutils literal notranslate"><span class="pre">taylor_adaptive</span></code>,
+enabling dense output is a two-step process. First we invoke one of the <code class="docutils literal notranslate"><span class="pre">step()</span></code> functions
+with the optional flag set to <code class="docutils literal notranslate"><span class="pre">True</span></code>. This will write the Taylor coefficients that were
+used to propagate the last timestep into an internal vector:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Reset time and state.</span>
+<span class="n">ta</span><span class="o">.</span><span class="n">time</span><span class="p">[:]</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+<span class="n">ta</span><span class="o">.</span><span class="n">state</span><span class="p">[:]</span> <span class="o">=</span> <span class="p">[[</span><span class="mf">0.00</span><span class="p">,</span> <span class="mf">0.01</span><span class="p">,</span> <span class="mf">0.02</span><span class="p">,</span> <span class="mf">0.03</span><span class="p">],</span> <span class="p">[</span><span class="mf">1.85</span><span class="p">,</span> <span class="mf">1.86</span><span class="p">,</span> <span class="mf">1.87</span><span class="p">,</span> <span class="mf">1.88</span><span class="p">]]</span>
+
+<span class="c1"># Propagate for a timestep, making</span>
+<span class="c1"># sure the Taylor coefficients are recorded.</span>
+<span class="n">ta</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="c1"># Print the array of Taylor coefficients.</span>
+<span class="n">ta</span><span class="o">.</span><span class="n">tc</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([[[ 0.00000000e+00,  1.00000000e-02,  2.00000000e-02,
+          3.00000000e-02],
+        [ 1.85000000e+00,  1.86000000e+00,  1.87000000e+00,
+          1.88000000e+00],
+        [ 4.07500000e-01,  3.92700083e-01,  3.77800667e-01,
+          3.62802250e-01],
+        [-3.21916667e-01, -3.24383503e-01, -3.26716362e-01,
+         -3.28913775e-01],
+        [-6.75770833e-02, -6.40280151e-02, -6.04283792e-02,
+         -5.67795484e-02],
+        [ 7.02109167e-02,  7.16133044e-02,  7.29717323e-02,
+          7.42848569e-02],
+        [ 2.57157556e-02,  2.45104498e-02,  2.32584223e-02,
+          2.19601549e-02],
+        [-1.57976537e-02, -1.66107095e-02, -1.74021378e-02,
+         -1.81703716e-02],
+        [-1.00353587e-02, -9.68202996e-03, -9.29913499e-03,
+         -8.88692852e-03],
+        [ 3.42185259e-03,  3.80286542e-03,  4.17724062e-03,
+          4.54381437e-03],
+        [ 3.71632697e-03,  3.63550405e-03,  3.53850922e-03,
+          3.42533322e-03],
+        [-5.74043833e-04, -7.39223443e-04, -9.03658931e-04,
+         -1.06661590e-03],
+        [-1.32460887e-03, -1.31766585e-03, -1.30272684e-03,
+         -1.27967575e-03],
+        [ 8.41486409e-07,  6.80660294e-05,  1.36166728e-04,
+          2.04736804e-04],
+        [ 4.54537630e-04,  4.61961397e-04,  4.65753785e-04,
+          4.65788152e-04],
+        [ 6.59812726e-05,  4.02165119e-05,  1.34874974e-05,
+         -1.40032406e-05],
+        [-1.49384493e-04, -1.56240569e-04, -1.61573706e-04,
+         -1.65285583e-04],
+        [-4.50881595e-05, -3.58225773e-05, -2.58851228e-05,
+         -1.53667581e-05],
+        [ 4.64593626e-05,  5.05932052e-05,  5.41409729e-05,
+          5.70383152e-05],
+        [ 2.29227501e-05,  1.98416708e-05,  1.63700226e-05,
+          1.25441216e-05],
+        [-1.33367091e-05, -1.54509288e-05, -1.73630712e-05,
+         -1.90354790e-05]],
+
+       [[ 1.85000000e+00,  1.86000000e+00,  1.87000000e+00,
+          1.88000000e+00],
+        [ 8.15000000e-01,  7.85400167e-01,  7.55601333e-01,
+          7.25604500e-01],
+        [-9.65750000e-01, -9.73150510e-01, -9.80149086e-01,
+         -9.86741324e-01],
+        [-2.70308333e-01, -2.56112060e-01, -2.41713517e-01,
+         -2.27118194e-01],
+        [ 3.51054583e-01,  3.58066522e-01,  3.64858662e-01,
+          3.71424284e-01],
+        [ 1.54294533e-01,  1.47062699e-01,  1.39550534e-01,
+          1.31760929e-01],
+        [-1.10583576e-01, -1.16274967e-01, -1.21814965e-01,
+         -1.27192601e-01],
+        [-8.02828694e-02, -7.74562397e-02, -7.43930799e-02,
+         -7.10954281e-02],
+        [ 3.07966733e-02,  3.42257887e-02,  3.75951656e-02,
+          4.08943294e-02],
+        [ 3.71632697e-02,  3.63550405e-02,  3.53850922e-02,
+          3.42533322e-02],
+        [-6.31448217e-03, -8.13145787e-03, -9.94024824e-03,
+         -1.17327749e-02],
+        [-1.58953064e-02, -1.58119902e-02, -1.56327221e-02,
+         -1.53561090e-02],
+        [ 1.09393233e-05,  8.84858383e-04,  1.77016746e-03,
+          2.66157845e-03],
+        [ 6.36352682e-03,  6.46745955e-03,  6.52055299e-03,
+          6.52103413e-03],
+        [ 9.89719089e-04,  6.03247679e-04,  2.02312461e-04,
+         -2.10048609e-04],
+        [-2.39015189e-03, -2.49984911e-03, -2.58517929e-03,
+         -2.64456933e-03],
+        [-7.66498711e-04, -6.08983813e-04, -4.40047088e-04,
+         -2.61234887e-04],
+        [ 8.36268527e-04,  9.10677694e-04,  9.74537513e-04,
+          1.02668967e-03],
+        [ 4.35532251e-04,  3.76991746e-04,  3.11030429e-04,
+          2.38338310e-04],
+        [-2.66734182e-04, -3.09018576e-04, -3.47261424e-04,
+         -3.80709580e-04],
+        [-2.15100964e-04, -1.95914860e-04, -1.72450071e-04,
+         -1.44963795e-04]]])
+</pre></div>
+</div>
+</div>
+</div>
+<p>Quite a mouthful! Let’s print to screen the order-0 Taylor coefficients
+of <span class="math notranslate nohighlight">\(x\)</span> and <span class="math notranslate nohighlight">\(v\)</span> for all batch elements:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ta</span><span class="o">.</span><span class="n">tc</span><span class="p">[:,</span> <span class="mi">0</span> <span class="p">,:]</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([[0.  , 0.01, 0.02, 0.03],
+       [1.85, 1.86, 1.87, 1.88]])
+</pre></div>
+</div>
+</div>
+</div>
+<p>Indeed, as expected the order-0 Taylor coefficients correspond to the initial conditions.</p>
+<p>After computing the Taylor coefficients, we can ask for the dense output
+at different time coordinates:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Compute the dense output at different time coordinates.</span>
+<span class="n">ta</span><span class="o">.</span><span class="n">update_d_output</span><span class="p">([</span><span class="mf">0.01</span><span class="p">,</span> <span class="mf">0.02</span><span class="p">,</span> <span class="mf">0.03</span><span class="p">,</span> <span class="mf">0.04</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([[0.01854043, 0.04735447, 0.07643115, 0.1057593 ],
+       [1.85805316, 1.87531675, 1.89177968, 1.90743182]])
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+
+              </div>
+              
+        
+        <div class='prev-next-bottom'>
+            
+    <a class='left-prev' id="prev-link" href="../advanced_tutorials.html" title="previous page">Advanced tutorials</a>
+    <a class='right-next' id="next-link" href="The%20restricted%20three-body%20problem.html" title="next page">The restricted three-body problem</a>
+
+        </div>
+        
+        </div>
+    </div>
+    <footer class="footer mt-5 mt-md-0">
+    <div class="container">
+      <p>
+        
+          By Francesco Biscani and Dario Izzo<br/>
+        
+            &copy; Copyright 2020, 2021, Francesco Biscani and Dario Izzo.<br/>
+      </p>
+    </div>
+  </footer>
+</main>
+
+
+      </div>
+    </div>
+
+    
+  <script src="../_static/js/index.d3f166471bb80abb5163.js"></script>
+
+
+    
+  </body>
+</html>

@@ -9,6 +9,17 @@ Changelog
 New
 ~~~
 
+- Add a tutorial about batch mode
+  (`#30 <https://github.com/bluescarni/heyoka.py/pull/30>`__).
+- Add tutorials about gravitational billiards
+  (`#29 <https://github.com/bluescarni/heyoka.py/pull/29>`__,
+  `#28 <https://github.com/bluescarni/heyoka.py/pull/28>`__).
+- Expose propagation over a time grid for the batch integrator
+  (`#29 <https://github.com/bluescarni/heyoka.py/pull/29>`__).
+- Add a tutorial about the computation of Poincaré sections
+  (`#27 <https://github.com/bluescarni/heyoka.py/pull/27>`__).
+- Add a tutorial on optimal control
+  (`#24 <https://github.com/bluescarni/heyoka.py/pull/24>`__).
 - Initial version of the event detection system
   (`#23 <https://github.com/bluescarni/heyoka.py/pull/23>`__).
 - Expose low-level functions to compute the jet of derivatives

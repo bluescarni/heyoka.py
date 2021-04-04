@@ -2,12 +2,12 @@
  "cells": [
   {
    "cell_type": "markdown",
-   "id": "ignored-spiritual",
+   "id": "premier-finger",
    "metadata": {},
    "source": [
     "# Sampling events\n",
     "\n",
-    "In this example, we will show how to use heyoka.py's event detection system to detect when the solution of a system of ODEs satisfies certain constraints.\n",
+    "In this example, we will show how to use heyoka.py's [event detection](<./Event detection.ipynb>) system to detect when the solution of a system of ODEs satisfies certain constraints.\n",
     "\n",
     "We will be considering the system of polynomial ODEs\n",
     "\n",
@@ -33,7 +33,7 @@
   {
    "cell_type": "code",
    "execution_count": 1,
-   "id": "infrared-facility",
+   "id": "actual-johnson",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -45,7 +45,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "extensive-shelf",
+   "id": "focal-representation",
    "metadata": {},
    "source": [
     "As a first step, we want to detect when the solution crosses the $x$ axis. The equation for this event is simply\n",
@@ -60,7 +60,7 @@
   {
    "cell_type": "code",
    "execution_count": 2,
-   "id": "manufactured-queue",
+   "id": "nearby-framework",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -81,7 +81,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "noble-portable",
+   "id": "provincial-likelihood",
    "metadata": {},
    "source": [
     "We can now proceed to the creation of the integrator:"
@@ -90,7 +90,7 @@
   {
    "cell_type": "code",
    "execution_count": 3,
-   "id": "absolute-playback",
+   "id": "vertical-mechanism",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -103,7 +103,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "acute-productivity",
+   "id": "statistical-trigger",
    "metadata": {},
    "source": [
     "The event is created as a *non-terminal* event, as it is just a logging event that does not alter the state or the dynamics of the system.\n",
@@ -114,7 +114,7 @@
   {
    "cell_type": "code",
    "execution_count": 4,
-   "id": "wanted-legislation",
+   "id": "supposed-religion",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -125,7 +125,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "dated-corner",
+   "id": "worst-examination",
    "metadata": {},
    "source": [
     "Let us plot the solution and mark the $x$ axis crossing positions:"
@@ -134,7 +134,7 @@
   {
    "cell_type": "code",
    "execution_count": 5,
-   "id": "preliminary-immigration",
+   "id": "lightweight-earthquake",
    "metadata": {},
    "outputs": [
     {
@@ -170,7 +170,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "dense-omega",
+   "id": "structural-oregon",
    "metadata": {},
    "source": [
     "The plot shows how the event detection system indeed fired each time the solution crossed the $x$ axis.\n",
@@ -193,7 +193,7 @@
   {
    "cell_type": "code",
    "execution_count": 6,
-   "id": "permanent-dover",
+   "id": "determined-district",
    "metadata": {},
    "outputs": [
     {
@@ -248,7 +248,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "noble-customs",
+   "id": "viral-illustration",
    "metadata": {},
    "source": [
     "The plot shows again how the event detection system was able to correctly detect the intersections of the solution with the curve."

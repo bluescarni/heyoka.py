@@ -2,12 +2,12 @@
  "cells": [
   {
    "cell_type": "markdown",
-   "id": "cross-recall",
+   "id": "congressional-brush",
    "metadata": {},
    "source": [
     "# Poincaré sections\n",
     "\n",
-    "In this example, we will be using heyoka.py's event detection feature to compute a [Poincaré section](https://en.wikipedia.org/wiki/Poincar%C3%A9_map) for a particular case of the [Arnold-Beltrami-Childress (ABC) flow](https://en.wikipedia.org/wiki/Arnold%E2%80%93Beltrami%E2%80%93Childress_flow).\n",
+    "In this example, we will be using heyoka.py's [event detection](<./Event detection.ipynb>) feature to compute a [Poincaré section](https://en.wikipedia.org/wiki/Poincar%C3%A9_map) for a particular case of the [Arnold-Beltrami-Childress (ABC) flow](https://en.wikipedia.org/wiki/Arnold%E2%80%93Beltrami%E2%80%93Childress_flow).\n",
     "The system of ODEs reads:\n",
     "\n",
     "$$\n",
@@ -26,7 +26,7 @@
   {
    "cell_type": "code",
    "execution_count": 1,
-   "id": "recognized-breed",
+   "id": "joint-solution",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -36,7 +36,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "therapeutic-chest",
+   "id": "tracked-actress",
    "metadata": {},
    "source": [
     "Next, we create the ODE system:"
@@ -45,7 +45,7 @@
   {
    "cell_type": "code",
    "execution_count": 2,
-   "id": "ecological-brook",
+   "id": "suited-inspiration",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -56,7 +56,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "genetic-bumper",
+   "id": "pregnant-participation",
    "metadata": {},
    "source": [
     "In order to detect when the solution crosses the $y=0$ plane, we will be using a *non-terminal* event. The event's callback will compute and store in a list the value of the $x$ and $z$ coordinates when the solution crosses the $y=0$ plane."
@@ -65,7 +65,7 @@
   {
    "cell_type": "code",
    "execution_count": 3,
-   "id": "labeled-chess",
+   "id": "gentle-drill",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -92,7 +92,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "greenhouse-throw",
+   "id": "union-orientation",
    "metadata": {},
    "source": [
     "We can now proceed to create the integrator. We set the initial conditions to $x=y=z=0$ (to be changed later) and we pass to the constructor the non-terminal event that we just created:"
@@ -101,7 +101,7 @@
   {
    "cell_type": "code",
    "execution_count": 4,
-   "id": "civil-locking",
+   "id": "insured-planet",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -110,7 +110,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "stainless-coverage",
+   "id": "distributed-porter",
    "metadata": {},
    "source": [
     "We will now generate a grid of initial conditions in $\\left[0, 2\\pi \\right]$ for $x$ and $z$, and, for each set of initial conditions, we will integrate the system up to $t=1000$. At the end of each integration, we will append to ``map_list`` the list of $\\left( x, z \\right)$ coordinates at which the trajectory intersected the $y=0$ plane:"
@@ -119,7 +119,7 @@
   {
    "cell_type": "code",
    "execution_count": 5,
-   "id": "immediate-sector",
+   "id": "lesser-medium",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -152,7 +152,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "thick-holly",
+   "id": "radio-hayes",
    "metadata": {},
    "source": [
     "We can now plot the Poincaré section:"
@@ -161,7 +161,7 @@
   {
    "cell_type": "code",
    "execution_count": 6,
-   "id": "bibliographic-project",
+   "id": "running-evans",
    "metadata": {},
    "outputs": [
     {
