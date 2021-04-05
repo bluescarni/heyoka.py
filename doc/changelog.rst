@@ -9,6 +9,8 @@ Changelog
 New
 ~~~
 
+- Add a tutorial about Brouwer's law
+  (`#31 <https://github.com/bluescarni/heyoka.py/pull/31>`__).
 - Add a tutorial about batch mode
   (`#30 <https://github.com/bluescarni/heyoka.py/pull/30>`__).
 - Add tutorials about gravitational billiards
