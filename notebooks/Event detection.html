@@ -4,7 +4,8 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+
     <title>Event detection &#8212; heyoka.py 0.6.0 documentation</title>
     
   <link rel="stylesheet" href="../_static/css/index.f658d18f9b420779cfdf24aa0a7e2d77.css">
@@ -74,7 +75,7 @@
   <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
 </form>
 <nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
-    <p class="caption collapsible-parent">
+    <p>
  <span class="caption-text">
   Contents
  </span>
@@ -152,6 +153,11 @@
    <li class="toctree-l2">
     <a class="reference internal" href="Long%20term%20stability%20of%20Trappist-1.html">
      Long term stability of N-body simulations: the case of Trappist-1
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="Outer%20Solar%20System.html">
+     Brouwer’s law in the outer Solar System
     </a>
    </li>
    <li class="toctree-l2">
@@ -343,7 +349,7 @@
         
               <div>
                 
-  <div class="section" id="event-detection">
+  <section id="event-detection">
 <h1>Event detection<a class="headerlink" href="#event-detection" title="Permalink to this headline">¶</a></h1>
 <p>When integrating systems of ODEs, the need often arises to detect the occurrence of specific
 conditions (or <em>events</em>) in the state of the system. Many real systems, for instance, are described by equations
@@ -373,7 +379,7 @@ in powers of time is available. Polynomial root finding techniques are then empl
 on the Taylor series of the event equations to accurately locate the time of occurrence of an event within the timestep.</p>
 <p>Like many other ODE integration libraries, heyoka.py makes a fundamental distinction between two types of events, <em>terminal</em> and <em>non-terminal</em>.
 We will begin with non-terminal events, as they are conceptually simpler.</p>
-<div class="section" id="non-terminal-events">
+<section id="non-terminal-events">
 <h2>Non-terminal events<a class="headerlink" href="#non-terminal-events" title="Permalink to this headline">¶</a></h2>
 <p>Non-terminal events are events that do not modify the state of an ODE system. That is, the occurrence of a non-terminal event does not
 change the system’s dynamics and it does not alter the state vector of the system. A typical use of non-terminal events is to detect and log
@@ -532,7 +538,7 @@ which can be computed exactly via elliptic functions. With the specific
 initial conditions of this example, <span class="math notranslate nohighlight">\(T = 2.0074035758801299\ldots\)</span>, and
 we can see from the event times printed to screen
 how the event detection system was accurate to machine precision.</p>
-<div class="section" id="event-direction">
+<section id="event-direction">
 <h3>Event direction<a class="headerlink" href="#event-direction" title="Permalink to this headline">¶</a></h3>
 <p>By default, heyoka.py will detect all zeroes of the event equations regardless
 of the <em>direction</em> of the zero crossing (i.e., the value of the time derivative
@@ -600,8 +606,8 @@ Let us take a look at the plot:</p>
 </div>
 <p>The times confirm that the event is detected only when <span class="math notranslate nohighlight">\(v\)</span> switches from negative to positive, i.e.,
 at <span class="math notranslate nohighlight">\(t=0\)</span>, <span class="math notranslate nohighlight">\(t=T\)</span> and <span class="math notranslate nohighlight">\(t=2T\)</span>.</p>
-</div>
-<div class="section" id="multiple-events">
+</section>
+<section id="multiple-events">
 <h3>Multiple events<a class="headerlink" href="#multiple-events" title="Permalink to this headline">¶</a></h3>
 <p>When multiple events trigger within the same timestep (or if the same event triggers
 multiple times), heyoka.py will process the events in chronological order
@@ -669,9 +675,9 @@ Event 1 triggering at t=4.0148091934271015
 </div>
 <p>Note how the events are indeed processed in chronological order, and how the event detection system is able to
 successfully recognize the second event triggering twice in close succession.</p>
-</div>
-</div>
-<div class="section" id="terminal-events">
+</section>
+</section>
+<section id="terminal-events">
 <h2>Terminal events<a class="headerlink" href="#terminal-events" title="Permalink to this headline">¶</a></h2>
 <p>The fundamental characteristic of terminal events is that, in contrast to non-terminal events,
 they alter the dynamics and/or the state of the system. A typical example of a terminal event is the
@@ -847,7 +853,7 @@ execution of the callback:</p>
 </div>
 <p>The screen output confirms that indeed the integration continued up to the final time <span class="math notranslate nohighlight">\(t = 10\)</span>.</p>
 <p>The plot shows how the event correctly triggered at <span class="math notranslate nohighlight">\(v=0\)</span> and how, in the time intervals in which <span class="math notranslate nohighlight">\(\alpha = 1\)</span>, the motion of the pendulum was damped by the air drag.</p>
-<div class="section" id="cooldown">
+<section id="cooldown">
 <h3>Cooldown<a class="headerlink" href="#cooldown" title="Permalink to this headline">¶</a></h3>
 <p>One notable complication when restarting an integration that was stopped in correspondence of a terminal event
 is the risk of immediately re-triggering the same event, which would lead to an endless loop without any progress
@@ -866,9 +872,9 @@ that multiple roots do not exist, just that they were not detected.</p>
 for terminal events. This could in principle lead to missing terminal events when the integration restarts.
 For this reason, a method called <code class="docutils literal notranslate"><span class="pre">reset_cooldowns()</span></code> is available to clear the cooldown timers of
 all terminal events.</p>
-</div>
-</div>
-<div class="section" id="limitations-and-caveats">
+</section>
+</section>
+<section id="limitations-and-caveats">
 <h2>Limitations and caveats<a class="headerlink" href="#limitations-and-caveats" title="Permalink to this headline">¶</a></h2>
 <p>Because heyoka.py’s event detection system is based on polynomial root finding techniques, it will experience
 issues when the Taylor series of the event equations have roots of multiplicity greater than 1. This is usually
@@ -886,8 +892,8 @@ This, at best, will result in reduced performance and, at worst, in missing even
 <p>As a general rule, users should then avoid defining event equations in which the event trigger times
 are stationary points.</p>
 <p>Note that missed events due to ill-conditioned polynomials will be flagged by heyoka.py’s logging system.</p>
-</div>
-</div>
+</section>
+</section>
 
 
               </div>

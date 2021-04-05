@@ -4,7 +4,8 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+
     <title>Batch mode &#8212; heyoka.py 0.6.0 documentation</title>
     
   <link rel="stylesheet" href="../_static/css/index.f658d18f9b420779cfdf24aa0a7e2d77.css">
@@ -74,7 +75,7 @@
   <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
 </form>
 <nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
-    <p class="caption collapsible-parent">
+    <p>
  <span class="caption-text">
   Contents
  </span>
@@ -152,6 +153,11 @@
    <li class="toctree-l2">
     <a class="reference internal" href="Long%20term%20stability%20of%20Trappist-1.html">
      Long term stability of N-body simulations: the case of Trappist-1
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="Outer%20Solar%20System.html">
+     Brouwer’s law in the outer Solar System
     </a>
    </li>
    <li class="toctree-l2">
@@ -329,7 +335,7 @@
         
               <div>
                 
-  <div class="section" id="batch-mode">
+  <section id="batch-mode">
 <h1>Batch mode<a class="headerlink" href="#batch-mode" title="Permalink to this headline">¶</a></h1>
 <p>heyoka.py’s API supports a mode of operation called <em>batch mode</em>.
 In batch mode, all the scalar quantities appearing in a system of ODEs
@@ -356,7 +362,7 @@ processor in use. Because at this time the most widespread SIMD instruction set 
 <a class="reference external" href="https://en.wikipedia.org/wiki/Advanced_Vector_Extensions">AVX</a> (available on
 most x86 processors sold since 2011), in this tutorial we will be using a
 batch size <span class="math notranslate nohighlight">\(n=4\)</span>.</p>
-<div class="section" id="the-adaptive-batch-integrator">
+<section id="the-adaptive-batch-integrator">
 <h2>The adaptive batch integrator<a class="headerlink" href="#the-adaptive-batch-integrator" title="Permalink to this headline">¶</a></h2>
 <p>The <code class="docutils literal notranslate"><span class="pre">taylor_adaptive_batch</span></code> class is the batch mode counterpart of the adaptive
 (scalar) integrator <a class="reference internal" href="The%20adaptive%20integrator.html"><span class="doc std std-doc">described earlier</span></a>. Although at a high-level
@@ -446,8 +452,8 @@ all initialised to zero:</p>
 </div>
 </div>
 </div>
-</div>
-<div class="section" id="step-by-step-integration">
+</section>
+<section id="step-by-step-integration">
 <h2>Step-by-step integration<a class="headerlink" href="#step-by-step-integration" title="Permalink to this headline">¶</a></h2>
 <p>We are now ready to start integrating. Like <code class="docutils literal notranslate"><span class="pre">taylor_adaptive</span></code>, <code class="docutils literal notranslate"><span class="pre">taylor_adaptive_batch</span></code>
 provides <code class="docutils literal notranslate"><span class="pre">step()</span></code> functions for integrating forward or backward in time step-by-step.
@@ -526,8 +532,8 @@ Time:
 </div>
 </div>
 </div>
-</div>
-<div class="section" id="time-limited-propagation">
+</section>
+<section id="time-limited-propagation">
 <h2>Time-limited propagation<a class="headerlink" href="#time-limited-propagation" title="Permalink to this headline">¶</a></h2>
 <p>The <code class="docutils literal notranslate"><span class="pre">propagate_*()</span></code> functions are also available for the
 batch integrator. Similarly to the <code class="docutils literal notranslate"><span class="pre">step()</span></code> functions, the outcomes of the <code class="docutils literal notranslate"><span class="pre">propagate_*()</span></code>
@@ -638,8 +644,8 @@ Time:
 </div>
 </div>
 </div>
-</div>
-<div class="section" id="dense-output">
+</section>
+<section id="dense-output">
 <h2>Dense output<a class="headerlink" href="#dense-output" title="Permalink to this headline">¶</a></h2>
 <p>The batch integrator also supports <a class="reference internal" href="Dense%20output.html"><span class="doc std std-doc">dense output</span></a>. Like for <code class="docutils literal notranslate"><span class="pre">taylor_adaptive</span></code>,
 enabling dense output is a two-step process. First we invoke one of the <code class="docutils literal notranslate"><span class="pre">step()</span></code> functions
@@ -782,8 +788,8 @@ at different time coordinates:</p>
 </div>
 </div>
 </div>
-</div>
-</div>
+</section>
+</section>
 
 
               </div>

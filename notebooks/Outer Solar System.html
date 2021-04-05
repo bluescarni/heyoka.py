@@ -1,0 +1,627 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+
+    <title>Brouwer’s law in the outer Solar System &#8212; heyoka.py 0.6.0 documentation</title>
+    
+  <link rel="stylesheet" href="../_static/css/index.f658d18f9b420779cfdf24aa0a7e2d77.css">
+
+    
+  <link rel="stylesheet"
+    href="../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    
+      
+  <link rel="stylesheet"
+    href="../_static/vendor/open-sans_all/1.44.1/index.css">
+  <link rel="stylesheet"
+    href="../_static/vendor/lato_latin-ext/1.44.1/index.css">
+
+    
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/sphinx-book-theme.e7340bb3dbd8dde6db86f25597f54a1b.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.css" />
+    
+  <link rel="preload" as="script" href="../_static/js/index.d3f166471bb80abb5163.js">
+
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/togglebutton.js"></script>
+    <script >var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    <script src="../_static/sphinx-book-theme.7d483ff0a819d6edff12ce0b1ead3928.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["\\(", "\\)"]], "displayMath": [["\\[", "\\]"]], "processRefs": false, "processEnvironments": false}})</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Sampling events" href="Sampling%20events.html" />
+    <link rel="prev" title="Long term stability of N-body simulations: the case of Trappist-1" href="Long%20term%20stability%20of%20Trappist-1.html" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="en" />
+
+
+
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+<div class="col-12 col-md-3 bd-sidebar site-navigation show" id="site-navigation">
+    
+        <div class="navbar-brand-box">
+<a class="navbar-brand text-wrap" href="../index.html">
+  
+  <img src="../_static/white_logo.png" class="logo" alt="logo">
+  
+  
+  <h1 class="site-logo" id="site-title">heyoka.py 0.6.0 documentation</h1>
+  
+</a>
+</div><form class="bd-search d-flex align-items-center" action="../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form>
+<nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+    <p>
+ <span class="caption-text">
+  Contents
+ </span>
+</p>
+<ul class="current nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../install.html">
+   Installation
+  </a>
+ </li>
+ <li class="toctree-l1 collapsible-parent">
+  <a class="reference internal" href="../basic_tutorials.html">
+   Basic tutorials
+  </a>
+  <ul class="collapse-ul">
+   <li class="toctree-l2">
+    <a class="reference internal" href="../tut_taylor_method.html">
+     Taylor’s method
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="The%20expression%20system.html">
+     The expression system
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="The%20adaptive%20integrator.html">
+     The adaptive integrator
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="Customising%20the%20adaptive%20integrator.html">
+     Customising the adaptive integrator
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="ODEs%20with%20parameters.html">
+     ODEs with parameters
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="Non-autonomous%20systems.html">
+     Non-autonomous systems
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="Dense%20output.html">
+     Dense output
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="Event%20detection.html">
+     Event detection
+    </a>
+   </li>
+  </ul>
+  <i class="fas fa-chevron-down">
+  </i>
+ </li>
+ <li class="toctree-l1 current active collapsible-parent">
+  <a class="reference internal" href="../advanced_tutorials.html">
+   Advanced tutorials
+  </a>
+  <ul class="current collapse-ul">
+   <li class="toctree-l2">
+    <a class="reference internal" href="Batch%20mode%20overview.html">
+     Batch mode
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="The%20restricted%20three-body%20problem.html">
+     The restricted three-body problem
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="Long%20term%20stability%20of%20Trappist-1.html">
+     Long term stability of N-body simulations: the case of Trappist-1
+    </a>
+   </li>
+   <li class="toctree-l2 current active">
+    <a class="current reference internal" href="#">
+     Brouwer’s law in the outer Solar System
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="Sampling%20events.html">
+     Sampling events
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="Poincar%C3%A9%20sections.html">
+     Poincaré sections
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="Optimal%20Control%20of%20the%20Lotka-Volterra%20equations.html">
+     Optimal Control of the Lotka-Volterra equations
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="The%20Keplerian%20billiard.html">
+     The Keplerian billiard
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="The%20two-fixed%20elliptic%20billiard.html">
+     The two-fixed centres elliptic billiard
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="The%20variational%20equations.html">
+     The variational equations
+    </a>
+   </li>
+  </ul>
+  <i class="fas fa-chevron-down">
+  </i>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../changelog.html">
+   Changelog
+  </a>
+ </li>
+</ul>
+
+</nav> <!-- To handle the deprecated key -->
+
+<div class="navbar_extra_footer">
+  Theme by the <a href="https://ebp.jupyterbook.org">Executable Book Project</a>
+</div>
+
+</div>
+
+
+          
+
+
+          
+<main class="col py-md-3 pl-md-4 bd-content overflow-auto" role="main">
+    
+    <div class="topbar container-xl fixed-top">
+    <div class="topbar-contents row">
+        <div class="col-12 col-md-3 bd-topbar-whitespace site-navigation show"></div>
+        <div class="col pl-md-4 topbar-main">
+            
+            <button id="navbar-toggler" class="navbar-toggler ml-0" type="button" data-toggle="collapse"
+                data-toggle="tooltip" data-placement="bottom" data-target=".site-navigation" aria-controls="navbar-menu"
+                aria-expanded="true" aria-label="Toggle navigation" aria-controls="site-navigation"
+                title="Toggle navigation" data-toggle="tooltip" data-placement="left">
+                <i class="fas fa-bars"></i>
+                <i class="fas fa-arrow-left"></i>
+                <i class="fas fa-arrow-up"></i>
+            </button>
+            
+            
+<div class="dropdown-buttons-trigger">
+    <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn" aria-label="Download this page"><i
+            class="fas fa-download"></i></button>
+
+    <div class="dropdown-buttons">
+        <!-- ipynb file if we had a myst markdown file -->
+        
+        <!-- Download raw file -->
+        <a class="dropdown-buttons" href="../_sources/notebooks/Outer Solar System.ipynb.txt"><button type="button"
+                class="btn btn-secondary topbarbtn" title="Download source file" data-toggle="tooltip"
+                data-placement="left">.ipynb</button></a>
+        <!-- Download PDF via print -->
+        <button type="button" id="download-print" class="btn btn-secondary topbarbtn" title="Print to PDF"
+            onClick="window.print()" data-toggle="tooltip" data-placement="left">.pdf</button>
+    </div>
+</div>
+
+            <!-- Source interaction buttons -->
+
+<div class="dropdown-buttons-trigger">
+    <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn"
+        aria-label="Connect with source repository"><i class="fab fa-github"></i></button>
+    <div class="dropdown-buttons sourcebuttons">
+        <a class="repository-button"
+            href="https://github.com/bluescarni/heyoka.py"><button type="button" class="btn btn-secondary topbarbtn"
+                data-toggle="tooltip" data-placement="left" title="Source repository"><i
+                    class="fab fa-github"></i>repository</button></a>
+        <a class="issues-button"
+            href="https://github.com/bluescarni/heyoka.py/issues/new?title=Issue%20on%20page%20%2Fnotebooks/Outer Solar System.html&body=Your%20issue%20content%20here."><button
+                type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip" data-placement="left"
+                title="Open an issue"><i class="fas fa-lightbulb"></i>open issue</button></a>
+        
+    </div>
+</div>
+
+
+            <!-- Full screen (wrap in <a> to have style consistency -->
+            <a class="full-screen-button"><button type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip"
+                    data-placement="bottom" onclick="toggleFullScreen()" aria-label="Fullscreen mode"
+                    title="Fullscreen mode"><i
+                        class="fas fa-expand"></i></button></a>
+
+            <!-- Launch buttons -->
+
+<div class="dropdown-buttons-trigger">
+    <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn"
+        aria-label="Launch interactive content"><i class="fas fa-rocket"></i></button>
+    <div class="dropdown-buttons">
+        
+        <a class="binder-button" href="https://mybinder.org/v2/gh/bluescarni/heyoka.py/main?urlpath=tree/doc/notebooks/Outer Solar System.ipynb"><button type="button"
+                class="btn btn-secondary topbarbtn" title="Launch Binder" data-toggle="tooltip"
+                data-placement="left"><img class="binder-button-logo"
+                    src="../_static/images/logo_binder.svg"
+                    alt="Interact on binder">Binder</button></a>
+        
+        
+        
+        
+    </div>
+</div>
+
+        </div>
+
+        <!-- Table of contents -->
+        <div class="d-none d-md-block col-md-2 bd-toc show">
+            
+        <div class="tocsection onthispage pt-5 pb-3">
+            <i class="fas fa-list"></i>
+            Contents
+        </div>
+        <nav id="bd-toc-nav">
+            <ul class="nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#the-dynamical-system">
+   The dynamical system
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#integrating-in-parallel">
+   Integrating in parallel
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#results">
+   Results
+  </a>
+ </li>
+</ul>
+
+        </nav>
+        
+        </div>
+    </div>
+</div>
+    <div id="main-content" class="row">
+        <div class="col-12 col-md-9 pl-md-3 pr-md-0">
+        
+              <div>
+                
+  <section id="brouwer-s-law-in-the-outer-solar-system">
+<h1>Brouwer’s law in the outer Solar System<a class="headerlink" href="#brouwer-s-law-in-the-outer-solar-system" title="Permalink to this headline">¶</a></h1>
+<p>In this tutorial we will show how heyoka.py can be used for long-term integrations of the outer Solar System accurate to machine precision.</p>
+<p>Long-term integrations of the Solar System are often undertaken with <a class="reference external" href="https://en.wikipedia.org/wiki/Symplectic_integrator">symplectic integrators</a>,
+which guarantee (from the point of view of the integration scheme) the conservation of dynamical invariants such
+as the total energy of the system. Because energy conservation is enforced by the integration scheme, in symplectic integrators the only
+source of error for the conservation of the total energy of the system derives from the use of approximate floating-point arithmetics.
+A result known as <em>Brouwer’s law</em> establishes that the energy error deriving from the use of floating-point arithmetics cannot grow slower
+than <span class="math notranslate nohighlight">\(\sim \sqrt{t}\)</span> (i.e., as a one-dimensional random walk). In other words, for any numerical integrator implemented on a real computer, the optimal behaviour (with respect
+to energy conservation in long-term integrations) is an error that grows with the square root of time.</p>
+<p>Although heyoka.py is <em>not</em> a symplectic integrator, it is nevertheless able to achieve Brouwer’s law, if properly configured. Specifically, in order to achieve Brouwer’s law
+with heyoka.py we will need to:</p>
+<ul class="simple">
+<li><p>lower the integration tolerance <em>below</em> machine precision, and</p></li>
+<li><p>adopt techniques to reduce the numerical errors arising from the use of floating-point arithmetics.</p></li>
+</ul>
+<section id="the-dynamical-system">
+<h2>The dynamical system<a class="headerlink" href="#the-dynamical-system" title="Permalink to this headline">¶</a></h2>
+<p>In this example we will study the dynamics the outer Solar System, that is, a 6-body problem consisting of the Sun, Jupiter, Saturn, Uranus, Neptune and Pluto,
+all considered as mutually-interacting point masses. We will adopt the Solar mass <span class="math notranslate nohighlight">\(M_\odot\)</span> as unit of mass, the astronomical unit as unit of distance and the
+calendar year (365 days) as unit of time.</p>
+<p>Let us begin with the definition of the numerical constants:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Masses, from Sun to Pluto.</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="n">masses</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">1.00000597682</span><span class="p">,</span> <span class="mi">1</span> <span class="o">/</span> <span class="mf">1047.355</span><span class="p">,</span> <span class="mi">1</span> <span class="o">/</span> <span class="mf">3501.6</span><span class="p">,</span> <span class="mi">1</span> <span class="o">/</span> <span class="mf">22869.</span><span class="p">,</span> <span class="mi">1</span> <span class="o">/</span> <span class="mf">19314.</span><span class="p">,</span> <span class="mf">7.4074074e-09</span><span class="p">])</span>
+
+<span class="c1"># The gravitational constant.</span>
+<span class="n">G</span> <span class="o">=</span> <span class="mf">0.01720209895</span> <span class="o">*</span> <span class="mf">0.01720209895</span> <span class="o">*</span> <span class="mi">365</span> <span class="o">*</span> <span class="mi">365</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Note how the Sun’s mass is not exactly 1 because we included in it the mass of the terrestrial planets.</p>
+<p>Next, we define a vector of cartesian initial conditions for the system. The numerical values are taken from <a class="reference external" href="https://ui.adsabs.harvard.edu/abs/1986AJ.....92..176A/abstract">this paper</a>.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ic</span> <span class="o">=</span> <span class="p">[</span><span class="c1"># Sun.</span>
+      <span class="o">-</span><span class="mf">4.06428567034226e-3</span><span class="p">,</span> <span class="o">-</span><span class="mf">6.08813756435987e-3</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.66162304225834e-6</span><span class="p">,</span> <span class="o">+</span><span class="mf">6.69048890636161e-6</span> <span class="o">*</span> <span class="mi">365</span><span class="p">,</span>
+      <span class="o">-</span><span class="mf">6.33922479583593e-6</span> <span class="o">*</span> <span class="mi">365</span><span class="p">,</span> <span class="o">-</span><span class="mf">3.13202145590767e-9</span> <span class="o">*</span> <span class="mi">365</span><span class="p">,</span>
+      <span class="c1"># Jupiter.</span>
+      <span class="o">+</span><span class="mf">3.40546614227466e+0</span><span class="p">,</span> <span class="o">+</span><span class="mf">3.62978190075864e+0</span><span class="p">,</span> <span class="o">+</span><span class="mf">3.42386261766577e-2</span><span class="p">,</span> <span class="o">-</span><span class="mf">5.59797969310664e-3</span> <span class="o">*</span> <span class="mi">365</span><span class="p">,</span>
+      <span class="o">+</span><span class="mf">5.51815399480116e-3</span> <span class="o">*</span> <span class="mi">365</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.66711392865591e-6</span> <span class="o">*</span> <span class="mi">365</span><span class="p">,</span>
+      <span class="c1"># Saturn.</span>
+      <span class="o">+</span><span class="mf">6.60801554403466e+0</span><span class="p">,</span> <span class="o">+</span><span class="mf">6.38084674585064e+0</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.36145963724542e-1</span><span class="p">,</span> <span class="o">-</span><span class="mf">4.17354020307064e-3</span> <span class="o">*</span> <span class="mi">365</span><span class="p">,</span>
+      <span class="o">+</span><span class="mf">3.99723751748116e-3</span> <span class="o">*</span> <span class="mi">365</span><span class="p">,</span> <span class="o">+</span><span class="mf">1.67206320571441e-5</span> <span class="o">*</span> <span class="mi">365</span><span class="p">,</span>
+      <span class="c1"># Uranus.</span>
+      <span class="o">+</span><span class="mf">1.11636331405597e+1</span><span class="p">,</span> <span class="o">+</span><span class="mf">1.60373479057256e+1</span><span class="p">,</span> <span class="o">+</span><span class="mf">3.61783279369958e-1</span><span class="p">,</span> <span class="o">-</span><span class="mf">3.25884806151064e-3</span> <span class="o">*</span> <span class="mi">365</span><span class="p">,</span>
+      <span class="o">+</span><span class="mf">2.06438412905916e-3</span> <span class="o">*</span> <span class="mi">365</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.17699042180559e-5</span> <span class="o">*</span> <span class="mi">365</span><span class="p">,</span>
+      <span class="c1"># Neptune.</span>
+      <span class="o">-</span><span class="mf">3.01777243405203e+1</span><span class="p">,</span> <span class="o">+</span><span class="mf">1.91155314998064e+0</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.53887595621042e-1</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.17471785045538e-4</span> <span class="o">*</span> <span class="mi">365</span><span class="p">,</span>
+      <span class="o">-</span><span class="mf">3.11361111025884e-3</span> <span class="o">*</span> <span class="mi">365</span><span class="p">,</span> <span class="o">+</span><span class="mf">3.58344705491441e-5</span> <span class="o">*</span> <span class="mi">365</span><span class="p">,</span>
+      <span class="c1"># Pluto.</span>
+      <span class="o">-</span><span class="mf">2.13858977531573e+1</span><span class="p">,</span> <span class="o">+</span><span class="mf">3.20719104739886e+1</span><span class="p">,</span> <span class="o">+</span><span class="mf">2.49245689556096e+0</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.76936577252484e-3</span> <span class="o">*</span> <span class="mi">365</span><span class="p">,</span>
+      <span class="o">-</span><span class="mf">2.06720938381724e-3</span> <span class="o">*</span> <span class="mi">365</span><span class="p">,</span> <span class="o">+</span><span class="mf">6.58091931493844e-4</span> <span class="o">*</span> <span class="mi">365</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>We can now proceed to the definition of the dynamical equations. We will be using the <code class="docutils literal notranslate"><span class="pre">make_nbody_sys()</span></code> function, which sets up an ODE system corresponding to an N-body problem in cartesian coordinates:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">heyoka</span> <span class="k">as</span> <span class="nn">hy</span>
+<span class="n">sys</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">make_nbody_sys</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="n">masses</span> <span class="o">=</span> <span class="n">masses</span><span class="p">,</span> <span class="n">Gconst</span> <span class="o">=</span> <span class="n">G</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>The next step is the creation of the numerical integrator. We will be using a <a class="reference internal" href="Batch%20mode%20overview.html"><span class="doc std std-doc">batch integrator</span></a>, which will allow us to substantially increase the floating-point throughput by integrating multiple sets of initial conditions at once. When creating the integrator, we will specify a tolerance of <span class="math notranslate nohighlight">\(10^{-18}\)</span> (below machine precision) and we will activate high-accuracy mode. In high-accuracy mode, the integrator internally uses techniques (based on <a class="reference external" href="https://en.wikipedia.org/wiki/Kahan_summation_algorithm">compensated summation</a> and similar algorithms) to reduce the numerical errors arising from the use of floating-point arithmetics, at the prices of a slight performance penalty.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Multiplex the initial conditions to batches of 4 elements.</span>
+<span class="n">ic_batch</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="n">ic</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
+
+<span class="c1"># Create the integrator object, specifying a tolerance</span>
+<span class="c1"># below machine precision and activating high-accuracy mode.</span>
+<span class="n">ta</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">taylor_adaptive_batch</span><span class="p">(</span><span class="n">sys</span><span class="p">,</span> <span class="n">ic_batch</span><span class="p">,</span> <span class="n">high_accuracy</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">tol</span> <span class="o">=</span> <span class="mf">1e-18</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="integrating-in-parallel">
+<h2>Integrating in parallel<a class="headerlink" href="#integrating-in-parallel" title="Permalink to this headline">¶</a></h2>
+<p>In order to add statistical weight to our experiment, we will be integrating multiple sets of initial conditions at the same time. Each set of initial conditions will be slightly and randomly altered with respect to the numerical values introduced earlier, which will allow us to study the energy-conservation behaviour of the integrator using an ensemble of different but related problems.</p>
+<p>As explained earlier, the use of a batch integrator already allows us to integrate multiple sets of initial conditions (4, in this case) at the same time. Additionally, we will concurrently run multiple batch integrators in different threads, in order to take full advantage of modern multi-core processors. The total integration time will be limited to 1 million years.</p>
+<p>Let us take a look at the code:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Define a logarithmic time grid over which</span>
+<span class="c1"># the integrations will be performed.</span>
+<span class="n">t_grid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">logspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">1000</span><span class="p">),</span> <span class="mi">4</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
+
+<span class="c1"># Multiplex the masses to batches of 4 elements.</span>
+<span class="n">masses_batch</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="n">masses</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
+
+<span class="c1"># A function for the computation of the total energy</span>
+<span class="c1"># of the system from the state vector.</span>
+<span class="k">def</span> <span class="nf">energy</span><span class="p">(</span><span class="n">st</span><span class="p">):</span>
+        <span class="c1"># Kinetic energy.</span>
+        <span class="n">vx</span> <span class="o">=</span> <span class="n">st</span><span class="p">[</span><span class="mi">3</span><span class="p">::</span><span class="mi">6</span><span class="p">]</span>
+        <span class="n">vy</span> <span class="o">=</span> <span class="n">st</span><span class="p">[</span><span class="mi">4</span><span class="p">::</span><span class="mi">6</span><span class="p">]</span>
+        <span class="n">vz</span> <span class="o">=</span> <span class="n">st</span><span class="p">[</span><span class="mi">5</span><span class="p">::</span><span class="mi">6</span><span class="p">]</span>
+        
+        <span class="n">kin</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">masses_batch</span> <span class="o">*</span> <span class="p">(</span><span class="n">vx</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">vy</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">vz</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="n">axis</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span>
+        
+        <span class="c1"># Potential energy.</span>
+        <span class="n">pot</span> <span class="o">=</span> <span class="mf">0.</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">6</span><span class="p">):</span>
+            <span class="n">xi</span> <span class="o">=</span> <span class="n">st</span><span class="p">[</span><span class="n">i</span><span class="o">*</span><span class="mi">6</span> <span class="o">+</span> <span class="mi">0</span><span class="p">,</span> <span class="p">:]</span>
+            <span class="n">yi</span> <span class="o">=</span> <span class="n">st</span><span class="p">[</span><span class="n">i</span><span class="o">*</span><span class="mi">6</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="p">:]</span>
+            <span class="n">zi</span> <span class="o">=</span> <span class="n">st</span><span class="p">[</span><span class="n">i</span><span class="o">*</span><span class="mi">6</span> <span class="o">+</span> <span class="mi">2</span><span class="p">,</span> <span class="p">:]</span>
+            
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="mi">6</span><span class="p">):</span>
+                <span class="n">xj</span> <span class="o">=</span> <span class="n">st</span><span class="p">[</span><span class="n">j</span><span class="o">*</span><span class="mi">6</span> <span class="o">+</span> <span class="mi">0</span><span class="p">,</span> <span class="p">:]</span>
+                <span class="n">yj</span> <span class="o">=</span> <span class="n">st</span><span class="p">[</span><span class="n">j</span><span class="o">*</span><span class="mi">6</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="p">:]</span>
+                <span class="n">zj</span> <span class="o">=</span> <span class="n">st</span><span class="p">[</span><span class="n">j</span><span class="o">*</span><span class="mi">6</span> <span class="o">+</span> <span class="mi">2</span><span class="p">,</span> <span class="p">:]</span>
+
+                <span class="n">pot</span> <span class="o">+=</span> <span class="o">-</span><span class="n">G</span> <span class="o">*</span> <span class="n">masses_batch</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">*</span> <span class="n">masses_batch</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">((</span><span class="n">xi</span> <span class="o">-</span> <span class="n">xj</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">xi</span> <span class="o">-</span> <span class="n">xj</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="n">yi</span> <span class="o">-</span> <span class="n">yj</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">yi</span> <span class="o">-</span> <span class="n">yj</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="n">zi</span> <span class="o">-</span> <span class="n">zj</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">zi</span> <span class="o">-</span> <span class="n">zj</span><span class="p">))</span>
+
+        <span class="k">return</span> <span class="n">kin</span> <span class="o">+</span> <span class="n">pot</span>
+
+<span class="c1"># The worker function that will be run in each thread.</span>
+<span class="k">def</span> <span class="nf">worker</span><span class="p">():</span>
+    <span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">deepcopy</span>
+    
+    <span class="c1"># Make a deep copy of the original integrator.</span>
+    <span class="n">ta_local</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">ta</span><span class="p">)</span>
+    
+    <span class="c1"># Randomly alter the initial conditions.</span>
+    <span class="n">new_state</span> <span class="o">=</span> <span class="n">ta_local</span><span class="o">.</span><span class="n">state</span> <span class="o">+</span> <span class="nb">abs</span><span class="p">(</span><span class="n">ta_local</span><span class="o">.</span><span class="n">state</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="o">-</span><span class="mf">1e-12</span><span class="p">,</span> <span class="mf">1e-12</span><span class="p">,</span> <span class="n">ta_local</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+    
+    <span class="c1"># Determine the new centre of mass and its velocity.</span>
+    <span class="n">com_x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">new_state</span><span class="p">[</span><span class="mi">0</span><span class="p">::</span><span class="mi">6</span><span class="p">]</span> <span class="o">*</span> <span class="n">masses_batch</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">masses_batch</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">com_y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">new_state</span><span class="p">[</span><span class="mi">1</span><span class="p">::</span><span class="mi">6</span><span class="p">]</span> <span class="o">*</span> <span class="n">masses_batch</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">masses_batch</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">com_z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">new_state</span><span class="p">[</span><span class="mi">2</span><span class="p">::</span><span class="mi">6</span><span class="p">]</span> <span class="o">*</span> <span class="n">masses_batch</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">masses_batch</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+    <span class="n">com_vx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">new_state</span><span class="p">[</span><span class="mi">3</span><span class="p">::</span><span class="mi">6</span><span class="p">]</span> <span class="o">*</span> <span class="n">masses_batch</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">masses_batch</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">com_vy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">new_state</span><span class="p">[</span><span class="mi">4</span><span class="p">::</span><span class="mi">6</span><span class="p">]</span> <span class="o">*</span> <span class="n">masses_batch</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">masses_batch</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">com_vz</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">new_state</span><span class="p">[</span><span class="mi">5</span><span class="p">::</span><span class="mi">6</span><span class="p">]</span> <span class="o">*</span> <span class="n">masses_batch</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">masses_batch</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+   
+    <span class="c1"># Recentre.</span>
+    <span class="n">new_state</span><span class="p">[</span><span class="mi">0</span><span class="p">::</span><span class="mi">6</span><span class="p">]</span> <span class="o">-=</span> <span class="n">com_x</span>
+    <span class="n">new_state</span><span class="p">[</span><span class="mi">1</span><span class="p">::</span><span class="mi">6</span><span class="p">]</span> <span class="o">-=</span> <span class="n">com_y</span>
+    <span class="n">new_state</span><span class="p">[</span><span class="mi">2</span><span class="p">::</span><span class="mi">6</span><span class="p">]</span> <span class="o">-=</span> <span class="n">com_z</span>
+    
+    <span class="n">new_state</span><span class="p">[</span><span class="mi">3</span><span class="p">::</span><span class="mi">6</span><span class="p">]</span> <span class="o">-=</span> <span class="n">com_vx</span>
+    <span class="n">new_state</span><span class="p">[</span><span class="mi">4</span><span class="p">::</span><span class="mi">6</span><span class="p">]</span> <span class="o">-=</span> <span class="n">com_vy</span>
+    <span class="n">new_state</span><span class="p">[</span><span class="mi">5</span><span class="p">::</span><span class="mi">6</span><span class="p">]</span> <span class="o">-=</span> <span class="n">com_vz</span>
+   
+    <span class="c1"># Assign the new state.</span>
+    <span class="n">ta_local</span><span class="o">.</span><span class="n">state</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">new_state</span>
+    
+    <span class="c1"># Compute the initial energy.</span>
+    <span class="n">E0</span> <span class="o">=</span> <span class="n">energy</span><span class="p">(</span><span class="n">ta_local</span><span class="o">.</span><span class="n">state</span><span class="p">)</span>
+
+    <span class="c1"># Integrate over the time grid.</span>
+    <span class="n">res</span> <span class="o">=</span> <span class="n">ta_local</span><span class="o">.</span><span class="n">propagate_grid</span><span class="p">(</span><span class="n">t_grid</span><span class="p">)</span>
+    
+    <span class="c1"># Check if any batch element produced an error.</span>
+    <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">oc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="n">hy</span><span class="o">.</span><span class="n">taylor_outcome</span><span class="o">.</span><span class="n">time_limit</span> <span class="k">for</span> <span class="n">oc</span> <span class="ow">in</span> <span class="n">ta_local</span><span class="o">.</span><span class="n">propagate_res</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Integration failed: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ta_local</span><span class="o">.</span><span class="n">propagate_res</span><span class="p">))</span>
+    
+    <span class="c1"># Compute and return the relative energy error.</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="nb">abs</span><span class="p">((</span><span class="n">E0</span> <span class="o">-</span> <span class="n">energy</span><span class="p">(</span><span class="n">st</span><span class="p">))</span> <span class="o">/</span> <span class="n">E0</span><span class="p">)</span> <span class="k">for</span> <span class="n">st</span> <span class="ow">in</span> <span class="n">res</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">worker()</span></code> function will be invoked concurrently from multiple threads of execution. It will first create a local copy of the integrator object, add some noise to the initial conditions, reset the centre of mass and then integrate the system for 1 million years.</p>
+<p>Let us now run 16 batch integrations concurrently, for a total of <span class="math notranslate nohighlight">\(16\times 4 = 64\)</span> sets of initial conditions:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">concurrent.futures</span>
+
+<span class="c1"># Run the integrations concurrently.</span>
+<span class="k">with</span> <span class="n">concurrent</span><span class="o">.</span><span class="n">futures</span><span class="o">.</span><span class="n">ThreadPoolExecutor</span><span class="p">()</span> <span class="k">as</span> <span class="n">executor</span><span class="p">:</span>
+    <span class="n">futures</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">16</span><span class="p">):</span>
+        <span class="n">futures</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">executor</span><span class="o">.</span><span class="n">submit</span><span class="p">(</span><span class="n">worker</span><span class="p">))</span>
+
+    <span class="c1"># Gather the results.</span>
+    <span class="n">res</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">future</span><span class="o">.</span><span class="n">result</span><span class="p">()</span> <span class="k">for</span> <span class="n">future</span> <span class="ow">in</span> <span class="n">concurrent</span><span class="o">.</span><span class="n">futures</span><span class="o">.</span><span class="n">as_completed</span><span class="p">(</span><span class="n">futures</span><span class="p">)])</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Let us take a look at the shape of the result array:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">res</span><span class="o">.</span><span class="n">shape</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(16, 1000, 4)
+</pre></div>
+</div>
+</div>
+</div>
+<p>The first dimension refers to the 16 separate integrations we ran in parallel, the second dimension to the 1000 points in the time grid and the last dimension to the 4 elements in each batch.
+Let us re-arrange the array in order to facilitate further analysis:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">res</span> <span class="o">=</span> <span class="n">res</span><span class="o">.</span><span class="n">transpose</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="mi">1000</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">))</span>
+<span class="n">res</span><span class="o">.</span><span class="n">shape</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(1000, 64)
+</pre></div>
+</div>
+</div>
+</div>
+<p>Now the first dimension refers to the time grid points, and we have squashed into the second dimension the results of all integrations for each time point.</p>
+</section>
+<section id="results">
+<h2>Results<a class="headerlink" href="#results" title="Permalink to this headline">¶</a></h2>
+<p>We are now ready to plot the results of the integrations. For each time point, we will be plotting:</p>
+<ul class="simple">
+<li><p>the relative energy error for all batch elements and parallel integrations,</p></li>
+<li><p>the root mean square of the relative energy error across all batch elements and parallel integrations.</p></li>
+</ul>
+<p>We will also add a dashed line representing Brouwer’s law (i.e., <span class="math notranslate nohighlight">\(\sqrt{t}\)</span>) for comparison:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">matplotlib.pylab</span> <span class="kn">import</span> <span class="n">plt</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s2">&quot;figure.figsize&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">12</span><span class="p">,</span><span class="mi">9</span><span class="p">)</span>
+
+<span class="c1"># Use log scale on both axes.</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xscale</span><span class="p">(</span><span class="s1">&#39;log&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">yscale</span><span class="p">(</span><span class="s1">&#39;log&#39;</span><span class="p">)</span>
+
+<span class="c1"># Plot all data points.</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">t_grid</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">res</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;gray&#39;</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s1">&#39;.&#39;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;None&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=.</span><span class="mi">4</span><span class="p">,</span> <span class="n">markersize</span><span class="o">=</span><span class="mf">3.5</span><span class="p">)</span>
+
+<span class="c1"># Plot the root mean square computed over all</span>
+<span class="c1"># data points at each timestep.</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">t_grid</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">res</span><span class="o">*</span><span class="n">res</span><span class="p">,</span> <span class="n">axis</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)),</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;k&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;RMS&quot;</span><span class="p">)</span>
+
+<span class="c1"># Plot sqrt(t).</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">t_grid</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="mf">1.5e-16</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">t_grid</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]),</span> <span class="s1">&#39;k--&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;$\sqrt</span><span class="si">{t}</span><span class="s2">$ (Brouwer&#39;s law)&quot;</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;Time (years)&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;Rel. energy error&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">();</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/Outer Solar System_17_0.png" src="../_images/Outer Solar System_17_0.png" />
+</div>
+</div>
+<p>The plot clearly shows how the average energy error starts out around machine precision and then begins to grow following Brouwer’s law. These results confirm that heyoka.py can optimally conserve the invariants of a dynamical system over long-term integrations.</p>
+</section>
+</section>
+
+
+              </div>
+              
+        
+        <div class='prev-next-bottom'>
+            
+    <a class='left-prev' id="prev-link" href="Long%20term%20stability%20of%20Trappist-1.html" title="previous page">Long term stability of N-body simulations: the case of Trappist-1</a>
+    <a class='right-next' id="next-link" href="Sampling%20events.html" title="next page">Sampling events</a>
+
+        </div>
+        
+        </div>
+    </div>
+    <footer class="footer mt-5 mt-md-0">
+    <div class="container">
+      <p>
+        
+          By Francesco Biscani and Dario Izzo<br/>
+        
+            &copy; Copyright 2020, 2021, Francesco Biscani and Dario Izzo.<br/>
+      </p>
+    </div>
+  </footer>
+</main>
+
+
+      </div>
+    </div>
+
+    
+  <script src="../_static/js/index.d3f166471bb80abb5163.js"></script>
+
+
+    
+  </body>
+</html>

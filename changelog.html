@@ -4,7 +4,8 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+
     <title>Changelog &#8212; heyoka.py 0.6.0 documentation</title>
     
   <link rel="stylesheet" href="_static/css/index.f658d18f9b420779cfdf24aa0a7e2d77.css">
@@ -71,7 +72,7 @@
   <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
 </form>
 <nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
-    <p class="caption collapsible-parent">
+    <p>
  <span class="caption-text">
   Contents
  </span>
@@ -149,6 +150,11 @@
    <li class="toctree-l2">
     <a class="reference internal" href="notebooks/Long%20term%20stability%20of%20Trappist-1.html">
      Long term stability of N-body simulations: the case of Trappist-1
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="notebooks/Outer%20Solar%20System.html">
+     Brouwer’s law in the outer Solar System
     </a>
    </li>
    <li class="toctree-l2">
@@ -350,13 +356,15 @@
         
               <div>
                 
-  <div class="section" id="changelog">
+  <section id="changelog">
 <span id="id1"></span><h1>Changelog<a class="headerlink" href="#changelog" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="unreleased">
+<section id="unreleased">
 <h2>0.6.0 (unreleased)<a class="headerlink" href="#unreleased" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="new">
+<section id="new">
 <h3>New<a class="headerlink" href="#new" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
+<li><p>Add a tutorial about Brouwer’s law
+(<a class="reference external" href="https://github.com/bluescarni/heyoka.py/pull/31">#31</a>).</p></li>
 <li><p>Add a tutorial about batch mode
 (<a class="reference external" href="https://github.com/bluescarni/heyoka.py/pull/30">#30</a>).</p></li>
 <li><p>Add tutorials about gravitational billiards
@@ -374,8 +382,8 @@
 for an ODE system
 (<a class="reference external" href="https://github.com/bluescarni/heyoka.py/pull/21">#21</a>).</p></li>
 </ul>
-</div>
-<div class="section" id="changes">
+</section>
+<section id="changes">
 <h3>Changes<a class="headerlink" href="#changes" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li><p><strong>BREAKING</strong>: the <code class="docutils literal notranslate"><span class="pre">propagate_grid()</span></code> method now requires
@@ -387,26 +395,26 @@ monotonically-ordered grid points
 heyoka C++ library
 (<a class="reference external" href="https://github.com/bluescarni/heyoka.py/pull/21">#21</a>).</p></li>
 </ul>
-</div>
-<div class="section" id="fix">
+</section>
+<section id="fix">
 <h3>Fix<a class="headerlink" href="#fix" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li><p>Properly restore the original <code class="docutils literal notranslate"><span class="pre">mpmath</span></code> precision after
 importing heyoka.py
 (<a class="reference external" href="https://github.com/bluescarni/heyoka.py/pull/21">#21</a>).</p></li>
 </ul>
-</div>
-</div>
-<div class="section" id="id2">
+</section>
+</section>
+<section id="id2">
 <h2>0.5.0 (2021-02-25)<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="id3">
+<section id="id3">
 <h3>New<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li><p>Expose symbolic differentiation.</p></li>
 <li><p>Add a new tutorial (restricted three-body problem).</p></li>
 </ul>
-</div>
-<div class="section" id="id4">
+</section>
+<section id="id4">
 <h3>Changes<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li><p>The interface of the integrator in batch mode has changed
@@ -419,11 +427,11 @@ instead of being flattened out
 heyoka C++ library
 (<a class="reference external" href="https://github.com/bluescarni/heyoka.py/pull/20">#20</a>).</p></li>
 </ul>
-</div>
-</div>
-<div class="section" id="id5">
+</section>
+</section>
+<section id="id5">
 <h2>0.4.0 (2021-02-20)<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="id6">
+<section id="id6">
 <h3>New<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li><p>Expose the new <code class="docutils literal notranslate"><span class="pre">powi()</span></code> function from heyoka 0.4.0
@@ -440,22 +448,22 @@ the Taylor coefficients at the end of a timestep
 <a class="reference external" href="https://github.com/bluescarni/heyoka.py/pull/12">#12</a>,
 <a class="reference external" href="https://github.com/bluescarni/heyoka.py/pull/11">#11</a>).</p></li>
 </ul>
-</div>
-<div class="section" id="id7">
+</section>
+<section id="id7">
 <h3>Changes<a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li><p>heyoka.py now requires at least version 0.4.0 of the
 heyoka C++ library.</p></li>
 </ul>
-</div>
-</div>
-<div class="section" id="id8">
+</section>
+</section>
+<section id="id8">
 <h2>0.3.0 (2021-02-13)<a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p>This is the initial public release of heyoka.py</p></li>
 </ul>
-</div>
-</div>
+</section>
+</section>
 
 
               </div>

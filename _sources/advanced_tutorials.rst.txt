@@ -17,6 +17,7 @@ Celestial mechanics and astrodynamics
 
   notebooks/The restricted three-body problem
   notebooks/Long term stability of Trappist-1
+  notebooks/Outer Solar System
 
 Event detection
 ---------------
