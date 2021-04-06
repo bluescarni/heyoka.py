@@ -501,7 +501,11 @@ calendar year (365 days) as unit of time.</p>
 </div>
 </div>
 <p>The <code class="docutils literal notranslate"><span class="pre">worker()</span></code> function will be invoked concurrently from multiple threads of execution. It will first create a local copy of the integrator object, add some noise to the initial conditions, reset the centre of mass and then integrate the system for 1 million years.</p>
-<p>Let us now run 16 batch integrations concurrently, for a total of <span class="math notranslate nohighlight">\(16\times 4 = 64\)</span> sets of initial conditions:</p>
+<p>Let us now run 16 batch integrations concurrently, for a total of <span class="math notranslate nohighlight">\(16\times 4 = 64\)</span> sets of initial conditions.</p>
+<blockquote>
+<div><p><strong>NOTE</strong>: the following code will take a while to run (from a few seconds to a few minutes, depending
+on the CPU). In order to shorten the runtime, you can reduce the number of threads and/or the total integration time.</p>
+</div></blockquote>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">concurrent.futures</span>
@@ -585,7 +589,7 @@ Let us re-arrange the array in order to facilitate further analysis:</p>
 <img alt="../_images/Outer Solar System_17_0.png" src="../_images/Outer Solar System_17_0.png" />
 </div>
 </div>
-<p>The plot clearly shows how the average energy error starts out around machine precision and then begins to grow following Brouwer’s law. These results confirm that heyoka.py can optimally conserve the invariants of a dynamical system over long-term integrations.</p>
+<p>The plot clearly shows how the average energy error starts out around machine precision and then begins to grow following Brouwer’s law. These results indicate that heyoka.py is able to optimally conserve the invariants of a dynamical system over long-term integrations.</p>
 </section>
 </section>
 
