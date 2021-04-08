@@ -492,7 +492,17 @@ x_1 \pm \frac{\mathrm{box\_size}}{2} = 0 \\
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="ne">KeyboardInterrupt</span>Traceback (most recent call last)
+<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="ne">AttributeError</span>Traceback (most recent call last)
+<span class="nn">~/local/lib/python3.8/site-packages/numpy/core/fromnumeric.py</span> in <span class="ni">ndim</span><span class="nt">(a)</span>
+<span class="g g-Whitespace">   </span><span class="mi">3138</span>     <span class="k">try</span><span class="p">:</span>
+<span class="ne">-&gt; </span><span class="mi">3139</span>         <span class="k">return</span> <span class="n">a</span><span class="o">.</span><span class="n">ndim</span>
+<span class="g g-Whitespace">   </span><span class="mi">3140</span>     <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+
+<span class="ne">AttributeError</span>: &#39;int&#39; object has no attribute &#39;ndim&#39;
+
+<span class="n">During</span> <span class="n">handling</span> <span class="n">of</span> <span class="n">the</span> <span class="n">above</span> <span class="n">exception</span><span class="p">,</span> <span class="n">another</span> <span class="n">exception</span> <span class="n">occurred</span><span class="p">:</span>
+
+<span class="ne">KeyboardInterrupt</span>Traceback (most recent call last)
 <span class="o">&lt;</span><span class="n">ipython</span><span class="o">-</span><span class="nb">input</span><span class="o">-</span><span class="mi">9</span><span class="o">-</span><span class="mi">5106</span><span class="n">fca56c3a</span><span class="o">&gt;</span> <span class="ow">in</span> <span class="o">&lt;</span><span class="n">module</span><span class="o">&gt;</span>
 <span class="g g-Whitespace">     </span><span class="mi">31</span> <span class="n">get_ipython</span><span class="p">()</span><span class="o">.</span><span class="n">run_line_magic</span><span class="p">(</span><span class="s1">&#39;matplotlib&#39;</span><span class="p">,</span> <span class="s1">&#39;inline&#39;</span><span class="p">)</span>
 <span class="g g-Whitespace">     </span><span class="mi">32</span> 
@@ -506,144 +516,190 @@ x_1 \pm \frac{\mathrm{box\_size}}{2} = 0 \\
 <span class="g g-Whitespace">   </span><span class="mi">1404</span> 
 
 <span class="nn">~/local/lib/python3.8/site-packages/matplotlib/animation.py</span> in <span class="ni">save</span><span class="nt">(self, filename, writer, fps, dpi, codec, bitrate, extra_args, metadata, extra_anim, savefig_kwargs, progress_callback)</span>
+<span class="g g-Whitespace">   </span><span class="mi">1171</span>                 <span class="k">for</span> <span class="n">anim</span><span class="p">,</span> <span class="n">d</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">all_anim</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+<span class="g g-Whitespace">   </span><span class="mi">1172</span>                     <span class="c1"># TODO: See if turning off blit is really necessary</span>
+<span class="ne">-&gt; </span><span class="mi">1173</span>                     <span class="n">anim</span><span class="o">.</span><span class="n">_draw_next_frame</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">blit</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="g g-Whitespace">   </span><span class="mi">1174</span>                     <span class="k">if</span> <span class="n">progress_callback</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
 <span class="g g-Whitespace">   </span><span class="mi">1175</span>                         <span class="n">progress_callback</span><span class="p">(</span><span class="n">frame_number</span><span class="p">,</span> <span class="n">total_frames</span><span class="p">)</span>
-<span class="g g-Whitespace">   </span><span class="mi">1176</span>                         <span class="n">frame_number</span> <span class="o">+=</span> <span class="mi">1</span>
-<span class="ne">-&gt; </span><span class="mi">1177</span>                 <span class="n">writer</span><span class="o">.</span><span class="n">grab_frame</span><span class="p">(</span><span class="o">**</span><span class="n">savefig_kwargs</span><span class="p">)</span>
-<span class="g g-Whitespace">   </span><span class="mi">1178</span> 
-<span class="g g-Whitespace">   </span><span class="mi">1179</span>     <span class="k">def</span> <span class="nf">_step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
 
-<span class="nn">~/local/lib/python3.8/site-packages/matplotlib/animation.py</span> in <span class="ni">grab_frame</span><span class="nt">(self, **savefig_kwargs)</span>
-<span class="g g-Whitespace">    </span><span class="mi">850</span>                 <span class="k">return</span>
-<span class="g g-Whitespace">    </span><span class="mi">851</span>             <span class="n">f</span> <span class="o">=</span> <span class="n">BytesIO</span><span class="p">()</span>
-<span class="ne">--&gt; </span><span class="mi">852</span>             <span class="bp">self</span><span class="o">.</span><span class="n">fig</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">frame_format</span><span class="p">,</span>
-<span class="g g-Whitespace">    </span><span class="mi">853</span>                              <span class="n">dpi</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dpi</span><span class="p">,</span> <span class="o">**</span><span class="n">savefig_kwargs</span><span class="p">)</span>
-<span class="g g-Whitespace">    </span><span class="mi">854</span>             <span class="n">imgdata64</span> <span class="o">=</span> <span class="n">base64</span><span class="o">.</span><span class="n">encodebytes</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">getvalue</span><span class="p">())</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;ascii&#39;</span><span class="p">)</span>
+<span class="nn">~/local/lib/python3.8/site-packages/matplotlib/animation.py</span> in <span class="ni">_draw_next_frame</span><span class="nt">(self, framedata, blit)</span>
+<span class="g g-Whitespace">   </span><span class="mi">1207</span>         <span class="bp">self</span><span class="o">.</span><span class="n">_pre_draw</span><span class="p">(</span><span class="n">framedata</span><span class="p">,</span> <span class="n">blit</span><span class="p">)</span>
+<span class="g g-Whitespace">   </span><span class="mi">1208</span>         <span class="bp">self</span><span class="o">.</span><span class="n">_draw_frame</span><span class="p">(</span><span class="n">framedata</span><span class="p">)</span>
+<span class="ne">-&gt; </span><span class="mi">1209</span>         <span class="bp">self</span><span class="o">.</span><span class="n">_post_draw</span><span class="p">(</span><span class="n">framedata</span><span class="p">,</span> <span class="n">blit</span><span class="p">)</span>
+<span class="g g-Whitespace">   </span><span class="mi">1210</span> 
+<span class="g g-Whitespace">   </span><span class="mi">1211</span>     <span class="k">def</span> <span class="nf">_init_draw</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 
-<span class="nn">~/local/lib/python3.8/site-packages/matplotlib/figure.py</span> in <span class="ni">savefig</span><span class="nt">(self, fname, transparent, **kwargs)</span>
-<span class="g g-Whitespace">   </span><span class="mi">2960</span>                 <span class="n">patch</span><span class="o">.</span><span class="n">set_edgecolor</span><span class="p">(</span><span class="s1">&#39;none&#39;</span><span class="p">)</span>
-<span class="g g-Whitespace">   </span><span class="mi">2961</span> 
-<span class="ne">-&gt; </span><span class="mi">2962</span>         <span class="bp">self</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">print_figure</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-<span class="g g-Whitespace">   </span><span class="mi">2963</span> 
-<span class="g g-Whitespace">   </span><span class="mi">2964</span>         <span class="k">if</span> <span class="n">transparent</span><span class="p">:</span>
+<span class="nn">~/local/lib/python3.8/site-packages/matplotlib/animation.py</span> in <span class="ni">_post_draw</span><span class="nt">(self, framedata, blit)</span>
+<span class="g g-Whitespace">   </span><span class="mi">1232</span>             <span class="bp">self</span><span class="o">.</span><span class="n">_blit_draw</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_drawn_artists</span><span class="p">)</span>
+<span class="g g-Whitespace">   </span><span class="mi">1233</span>         <span class="k">else</span><span class="p">:</span>
+<span class="ne">-&gt; </span><span class="mi">1234</span>             <span class="bp">self</span><span class="o">.</span><span class="n">_fig</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">draw_idle</span><span class="p">()</span>
+<span class="g g-Whitespace">   </span><span class="mi">1235</span> 
+<span class="g g-Whitespace">   </span><span class="mi">1236</span>     <span class="c1"># The rest of the code in this class is to facilitate easy blitting</span>
 
-<span class="nn">~/local/lib/python3.8/site-packages/matplotlib/backend_bases.py</span> in <span class="ni">print_figure</span><span class="nt">(self, filename, dpi, facecolor, edgecolor, orientation, format, bbox_inches, pad_inches, bbox_extra_artists, backend, **kwargs)</span>
-<span class="g g-Whitespace">   </span><span class="mi">2253</span>                 <span class="c1"># force the figure dpi to 72), so we need to set it again here.</span>
-<span class="g g-Whitespace">   </span><span class="mi">2254</span>                 <span class="k">with</span> <span class="n">cbook</span><span class="o">.</span><span class="n">_setattr_cm</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">figure</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="n">dpi</span><span class="p">):</span>
-<span class="ne">-&gt; </span><span class="mi">2255</span>                     <span class="n">result</span> <span class="o">=</span> <span class="n">print_method</span><span class="p">(</span>
-<span class="g g-Whitespace">   </span><span class="mi">2256</span>                         <span class="n">filename</span><span class="p">,</span>
-<span class="g g-Whitespace">   </span><span class="mi">2257</span>                         <span class="n">facecolor</span><span class="o">=</span><span class="n">facecolor</span><span class="p">,</span>
-
-<span class="nn">~/local/lib/python3.8/site-packages/matplotlib/backend_bases.py</span> in <span class="ni">wrapper</span><span class="nt">(*args, **kwargs)</span>
-<span class="g g-Whitespace">   </span><span class="mi">1667</span>             <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">arg</span><span class="p">)</span>
-<span class="g g-Whitespace">   </span><span class="mi">1668</span> 
-<span class="ne">-&gt; </span><span class="mi">1669</span>         <span class="k">return</span> <span class="n">func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-<span class="g g-Whitespace">   </span><span class="mi">1670</span> 
-<span class="g g-Whitespace">   </span><span class="mi">1671</span>     <span class="k">return</span> <span class="n">wrapper</span>
-
-<span class="nn">~/local/lib/python3.8/site-packages/matplotlib/backends/backend_agg.py</span> in <span class="ni">print_png</span><span class="nt">(self, filename_or_obj, metadata, pil_kwargs, *args)</span>
-<span class="g g-Whitespace">    </span><span class="mi">506</span>             <span class="o">*</span><span class="n">metadata</span><span class="o">*</span><span class="p">,</span> <span class="n">including</span> <span class="n">the</span> <span class="n">default</span> <span class="s1">&#39;Software&#39;</span> <span class="n">key</span><span class="o">.</span>
-<span class="g g-Whitespace">    </span><span class="mi">507</span>         <span class="s2">&quot;&quot;&quot;</span>
-<span class="ne">--&gt; </span><span class="mi">508</span><span class="s2">         FigureCanvasAgg.draw(self)</span>
-<span class="g g-Whitespace">    </span><span class="mi">509</span><span class="s2">         mpl.image.imsave(</span>
-<span class="g g-Whitespace">    </span><span class="mi">510</span><span class="s2">             filename_or_obj, self.buffer_rgba(), format=&quot;png&quot;, origin=&quot;upper&quot;,</span>
+<span class="nn">~/local/lib/python3.8/site-packages/matplotlib/backend_bases.py</span> in <span class="ni">draw_idle</span><span class="nt">(self, *args, **kwargs)</span>
+<span class="g g-Whitespace">   </span><span class="mi">2053</span>         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_idle_drawing</span><span class="p">:</span>
+<span class="g g-Whitespace">   </span><span class="mi">2054</span>             <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_idle_draw_cntx</span><span class="p">():</span>
+<span class="ne">-&gt; </span><span class="mi">2055</span>                 <span class="bp">self</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+<span class="g g-Whitespace">   </span><span class="mi">2056</span> 
+<span class="g g-Whitespace">   </span><span class="mi">2057</span>     <span class="k">def</span> <span class="nf">get_width_height</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 
 <span class="nn">~/local/lib/python3.8/site-packages/matplotlib/backends/backend_agg.py</span> in <span class="ni">draw</span><span class="nt">(self)</span>
-<span class="g g-Whitespace">    </span><span class="mi">404</span><span class="s2">              (self.toolbar._wait_cursor_for_draw_cm() if self.toolbar</span>
-<span class="g g-Whitespace">    </span><span class="mi">405</span><span class="s2">               else nullcontext()):</span>
-<span class="ne">--&gt; </span><span class="mi">406</span><span class="s2">             self.figure.draw(self.renderer)</span>
-<span class="g g-Whitespace">    </span><span class="mi">407</span><span class="s2">             # A GUI class may be need to update a window using this draw, so</span>
-<span class="g g-Whitespace">    </span><span class="mi">408</span><span class="s2">             # don&#39;t forget to call the superclass.</span>
+<span class="g g-Whitespace">    </span><span class="mi">404</span>              <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">toolbar</span><span class="o">.</span><span class="n">_wait_cursor_for_draw_cm</span><span class="p">()</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">toolbar</span>
+<span class="g g-Whitespace">    </span><span class="mi">405</span>               <span class="k">else</span> <span class="n">nullcontext</span><span class="p">()):</span>
+<span class="ne">--&gt; </span><span class="mi">406</span>             <span class="bp">self</span><span class="o">.</span><span class="n">figure</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">renderer</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">407</span>             <span class="c1"># A GUI class may be need to update a window using this draw, so</span>
+<span class="g g-Whitespace">    </span><span class="mi">408</span>             <span class="c1"># don&#39;t forget to call the superclass.</span>
 
 <span class="nn">~/local/lib/python3.8/site-packages/matplotlib/artist.py</span> in <span class="ni">draw_wrapper</span><span class="nt">(artist, renderer, *args, **kwargs)</span>
-<span class="g g-Whitespace">     </span><span class="mi">72</span><span class="s2">     @wraps(draw)</span>
-<span class="g g-Whitespace">     </span><span class="mi">73</span><span class="s2">     def draw_wrapper(artist, renderer, *args, **kwargs):</span>
-<span class="ne">---&gt; </span><span class="mi">74</span><span class="s2">         result = draw(artist, renderer, *args, **kwargs)</span>
-<span class="g g-Whitespace">     </span><span class="mi">75</span><span class="s2">         if renderer._rasterizing:</span>
-<span class="g g-Whitespace">     </span><span class="mi">76</span><span class="s2">             renderer.stop_rasterizing()</span>
+<span class="g g-Whitespace">     </span><span class="mi">72</span>     <span class="nd">@wraps</span><span class="p">(</span><span class="n">draw</span><span class="p">)</span>
+<span class="g g-Whitespace">     </span><span class="mi">73</span>     <span class="k">def</span> <span class="nf">draw_wrapper</span><span class="p">(</span><span class="n">artist</span><span class="p">,</span> <span class="n">renderer</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="ne">---&gt; </span><span class="mi">74</span>         <span class="n">result</span> <span class="o">=</span> <span class="n">draw</span><span class="p">(</span><span class="n">artist</span><span class="p">,</span> <span class="n">renderer</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+<span class="g g-Whitespace">     </span><span class="mi">75</span>         <span class="k">if</span> <span class="n">renderer</span><span class="o">.</span><span class="n">_rasterizing</span><span class="p">:</span>
+<span class="g g-Whitespace">     </span><span class="mi">76</span>             <span class="n">renderer</span><span class="o">.</span><span class="n">stop_rasterizing</span><span class="p">()</span>
 
 <span class="nn">~/local/lib/python3.8/site-packages/matplotlib/artist.py</span> in <span class="ni">draw_wrapper</span><span class="nt">(artist, renderer, *args, **kwargs)</span>
-<span class="g g-Whitespace">     </span><span class="mi">49</span><span class="s2">                 renderer.start_filter()</span>
-<span class="g g-Whitespace">     </span><span class="mi">50</span><span class="s2"> </span>
-<span class="ne">---&gt; </span><span class="mi">51</span><span class="s2">             return draw(artist, renderer, *args, **kwargs)</span>
-<span class="g g-Whitespace">     </span><span class="mi">52</span><span class="s2">         finally:</span>
-<span class="g g-Whitespace">     </span><span class="mi">53</span><span class="s2">             if artist.get_agg_filter() is not None:</span>
+<span class="g g-Whitespace">     </span><span class="mi">49</span>                 <span class="n">renderer</span><span class="o">.</span><span class="n">start_filter</span><span class="p">()</span>
+<span class="g g-Whitespace">     </span><span class="mi">50</span> 
+<span class="ne">---&gt; </span><span class="mi">51</span>             <span class="k">return</span> <span class="n">draw</span><span class="p">(</span><span class="n">artist</span><span class="p">,</span> <span class="n">renderer</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+<span class="g g-Whitespace">     </span><span class="mi">52</span>         <span class="k">finally</span><span class="p">:</span>
+<span class="g g-Whitespace">     </span><span class="mi">53</span>             <span class="k">if</span> <span class="n">artist</span><span class="o">.</span><span class="n">get_agg_filter</span><span class="p">()</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
 
 <span class="nn">~/local/lib/python3.8/site-packages/matplotlib/figure.py</span> in <span class="ni">draw</span><span class="nt">(self, renderer)</span>
-<span class="g g-Whitespace">   </span><span class="mi">2735</span><span class="s2"> </span>
-<span class="g g-Whitespace">   </span><span class="mi">2736</span><span class="s2">             self.patch.draw(renderer)</span>
-<span class="ne">-&gt; </span><span class="mi">2737</span><span class="s2">             mimage._draw_list_compositing_images(</span>
-<span class="g g-Whitespace">   </span><span class="mi">2738</span><span class="s2">                 renderer, self, artists, self.suppressComposite)</span>
-<span class="g g-Whitespace">   </span><span class="mi">2739</span><span class="s2"> </span>
+<span class="g g-Whitespace">   </span><span class="mi">2735</span> 
+<span class="g g-Whitespace">   </span><span class="mi">2736</span>             <span class="bp">self</span><span class="o">.</span><span class="n">patch</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="n">renderer</span><span class="p">)</span>
+<span class="ne">-&gt; </span><span class="mi">2737</span>             <span class="n">mimage</span><span class="o">.</span><span class="n">_draw_list_compositing_images</span><span class="p">(</span>
+<span class="g g-Whitespace">   </span><span class="mi">2738</span>                 <span class="n">renderer</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="n">artists</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">suppressComposite</span><span class="p">)</span>
+<span class="g g-Whitespace">   </span><span class="mi">2739</span> 
 
 <span class="nn">~/local/lib/python3.8/site-packages/matplotlib/image.py</span> in <span class="ni">_draw_list_compositing_images</span><span class="nt">(renderer, parent, artists, suppress_composite)</span>
-<span class="g g-Whitespace">    </span><span class="mi">130</span><span class="s2">     if not_composite or not has_images:</span>
-<span class="g g-Whitespace">    </span><span class="mi">131</span><span class="s2">         for a in artists:</span>
-<span class="ne">--&gt; </span><span class="mi">132</span><span class="s2">             a.draw(renderer)</span>
-<span class="g g-Whitespace">    </span><span class="mi">133</span><span class="s2">     else:</span>
-<span class="g g-Whitespace">    </span><span class="mi">134</span><span class="s2">         # Composite any adjacent images together</span>
+<span class="g g-Whitespace">    </span><span class="mi">130</span>     <span class="k">if</span> <span class="n">not_composite</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">has_images</span><span class="p">:</span>
+<span class="g g-Whitespace">    </span><span class="mi">131</span>         <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">artists</span><span class="p">:</span>
+<span class="ne">--&gt; </span><span class="mi">132</span>             <span class="n">a</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="n">renderer</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">133</span>     <span class="k">else</span><span class="p">:</span>
+<span class="g g-Whitespace">    </span><span class="mi">134</span>         <span class="c1"># Composite any adjacent images together</span>
 
 <span class="nn">~/local/lib/python3.8/site-packages/matplotlib/artist.py</span> in <span class="ni">draw_wrapper</span><span class="nt">(artist, renderer, *args, **kwargs)</span>
-<span class="g g-Whitespace">     </span><span class="mi">49</span><span class="s2">                 renderer.start_filter()</span>
-<span class="g g-Whitespace">     </span><span class="mi">50</span><span class="s2"> </span>
-<span class="ne">---&gt; </span><span class="mi">51</span><span class="s2">             return draw(artist, renderer, *args, **kwargs)</span>
-<span class="g g-Whitespace">     </span><span class="mi">52</span><span class="s2">         finally:</span>
-<span class="g g-Whitespace">     </span><span class="mi">53</span><span class="s2">             if artist.get_agg_filter() is not None:</span>
+<span class="g g-Whitespace">     </span><span class="mi">49</span>                 <span class="n">renderer</span><span class="o">.</span><span class="n">start_filter</span><span class="p">()</span>
+<span class="g g-Whitespace">     </span><span class="mi">50</span> 
+<span class="ne">---&gt; </span><span class="mi">51</span>             <span class="k">return</span> <span class="n">draw</span><span class="p">(</span><span class="n">artist</span><span class="p">,</span> <span class="n">renderer</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+<span class="g g-Whitespace">     </span><span class="mi">52</span>         <span class="k">finally</span><span class="p">:</span>
+<span class="g g-Whitespace">     </span><span class="mi">53</span>             <span class="k">if</span> <span class="n">artist</span><span class="o">.</span><span class="n">get_agg_filter</span><span class="p">()</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
 
 <span class="nn">~/local/lib/python3.8/site-packages/matplotlib/_api/deprecation.py</span> in <span class="ni">wrapper</span><span class="nt">(*inner_args, **inner_kwargs)</span>
-<span class="g g-Whitespace">    </span><span class="mi">429</span><span class="s2">                          else deprecation_addendum,</span>
-<span class="g g-Whitespace">    </span><span class="mi">430</span><span class="s2">                 **kwargs)</span>
-<span class="ne">--&gt; </span><span class="mi">431</span><span class="s2">         return func(*inner_args, **inner_kwargs)</span>
-<span class="g g-Whitespace">    </span><span class="mi">432</span><span class="s2"> </span>
-<span class="g g-Whitespace">    </span><span class="mi">433</span><span class="s2">     return wrapper</span>
+<span class="g g-Whitespace">    </span><span class="mi">429</span>                          <span class="k">else</span> <span class="n">deprecation_addendum</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">430</span>                 <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+<span class="ne">--&gt; </span><span class="mi">431</span>         <span class="k">return</span> <span class="n">func</span><span class="p">(</span><span class="o">*</span><span class="n">inner_args</span><span class="p">,</span> <span class="o">**</span><span class="n">inner_kwargs</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">432</span> 
+<span class="g g-Whitespace">    </span><span class="mi">433</span>     <span class="k">return</span> <span class="n">wrapper</span>
 
 <span class="nn">~/local/lib/python3.8/site-packages/matplotlib/axes/_base.py</span> in <span class="ni">draw</span><span class="nt">(self, renderer, inframe)</span>
-<span class="g g-Whitespace">   </span><span class="mi">2923</span><span class="s2">             renderer.stop_rasterizing()</span>
-<span class="g g-Whitespace">   </span><span class="mi">2924</span><span class="s2"> </span>
-<span class="ne">-&gt; </span><span class="mi">2925</span><span class="s2">         mimage._draw_list_compositing_images(renderer, self, artists)</span>
-<span class="g g-Whitespace">   </span><span class="mi">2926</span><span class="s2"> </span>
-<span class="g g-Whitespace">   </span><span class="mi">2927</span><span class="s2">         renderer.close_group(&#39;axes&#39;)</span>
+<span class="g g-Whitespace">   </span><span class="mi">2923</span>             <span class="n">renderer</span><span class="o">.</span><span class="n">stop_rasterizing</span><span class="p">()</span>
+<span class="g g-Whitespace">   </span><span class="mi">2924</span> 
+<span class="ne">-&gt; </span><span class="mi">2925</span>         <span class="n">mimage</span><span class="o">.</span><span class="n">_draw_list_compositing_images</span><span class="p">(</span><span class="n">renderer</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="n">artists</span><span class="p">)</span>
+<span class="g g-Whitespace">   </span><span class="mi">2926</span> 
+<span class="g g-Whitespace">   </span><span class="mi">2927</span>         <span class="n">renderer</span><span class="o">.</span><span class="n">close_group</span><span class="p">(</span><span class="s1">&#39;axes&#39;</span><span class="p">)</span>
 
 <span class="nn">~/local/lib/python3.8/site-packages/matplotlib/image.py</span> in <span class="ni">_draw_list_compositing_images</span><span class="nt">(renderer, parent, artists, suppress_composite)</span>
-<span class="g g-Whitespace">    </span><span class="mi">130</span><span class="s2">     if not_composite or not has_images:</span>
-<span class="g g-Whitespace">    </span><span class="mi">131</span><span class="s2">         for a in artists:</span>
-<span class="ne">--&gt; </span><span class="mi">132</span><span class="s2">             a.draw(renderer)</span>
-<span class="g g-Whitespace">    </span><span class="mi">133</span><span class="s2">     else:</span>
-<span class="g g-Whitespace">    </span><span class="mi">134</span><span class="s2">         # Composite any adjacent images together</span>
+<span class="g g-Whitespace">    </span><span class="mi">130</span>     <span class="k">if</span> <span class="n">not_composite</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">has_images</span><span class="p">:</span>
+<span class="g g-Whitespace">    </span><span class="mi">131</span>         <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">artists</span><span class="p">:</span>
+<span class="ne">--&gt; </span><span class="mi">132</span>             <span class="n">a</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="n">renderer</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">133</span>     <span class="k">else</span><span class="p">:</span>
+<span class="g g-Whitespace">    </span><span class="mi">134</span>         <span class="c1"># Composite any adjacent images together</span>
 
 <span class="nn">~/local/lib/python3.8/site-packages/matplotlib/artist.py</span> in <span class="ni">draw_wrapper</span><span class="nt">(artist, renderer, *args, **kwargs)</span>
-<span class="g g-Whitespace">     </span><span class="mi">49</span><span class="s2">                 renderer.start_filter()</span>
-<span class="g g-Whitespace">     </span><span class="mi">50</span><span class="s2"> </span>
-<span class="ne">---&gt; </span><span class="mi">51</span><span class="s2">             return draw(artist, renderer, *args, **kwargs)</span>
-<span class="g g-Whitespace">     </span><span class="mi">52</span><span class="s2">         finally:</span>
-<span class="g g-Whitespace">     </span><span class="mi">53</span><span class="s2">             if artist.get_agg_filter() is not None:</span>
+<span class="g g-Whitespace">     </span><span class="mi">49</span>                 <span class="n">renderer</span><span class="o">.</span><span class="n">start_filter</span><span class="p">()</span>
+<span class="g g-Whitespace">     </span><span class="mi">50</span> 
+<span class="ne">---&gt; </span><span class="mi">51</span>             <span class="k">return</span> <span class="n">draw</span><span class="p">(</span><span class="n">artist</span><span class="p">,</span> <span class="n">renderer</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+<span class="g g-Whitespace">     </span><span class="mi">52</span>         <span class="k">finally</span><span class="p">:</span>
+<span class="g g-Whitespace">     </span><span class="mi">53</span>             <span class="k">if</span> <span class="n">artist</span><span class="o">.</span><span class="n">get_agg_filter</span><span class="p">()</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
 
-<span class="nn">~/local/lib/python3.8/site-packages/matplotlib/patches.py</span> in <span class="ni">draw</span><span class="nt">(self, renderer)</span>
-<span class="g g-Whitespace">    </span><span class="mi">602</span><span class="s2">             return</span>
-<span class="g g-Whitespace">    </span><span class="mi">603</span><span class="s2">         # Patch has traditionally ignored the dashoffset.</span>
-<span class="ne">--&gt; </span><span class="mi">604</span><span class="s2">         with cbook._setattr_cm(self, _dashoffset=0), </span><span class="se">\</span>
-<span class="g g-Whitespace">    </span><span class="mi">605</span><span class="s2">                 self._bind_draw_path_function(renderer) as draw_path:</span>
-<span class="g g-Whitespace">    </span><span class="mi">606</span><span class="s2">             path = self.get_path()</span>
+<span class="nn">~/local/lib/python3.8/site-packages/matplotlib/axis.py</span> in <span class="ni">draw</span><span class="nt">(self, renderer, *args, **kwargs)</span>
+<span class="g g-Whitespace">   </span><span class="mi">1128</span>         <span class="n">renderer</span><span class="o">.</span><span class="n">open_group</span><span class="p">(</span><span class="vm">__name__</span><span class="p">,</span> <span class="n">gid</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">get_gid</span><span class="p">())</span>
+<span class="g g-Whitespace">   </span><span class="mi">1129</span> 
+<span class="ne">-&gt; </span><span class="mi">1130</span>         <span class="n">ticks_to_draw</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_update_ticks</span><span class="p">()</span>
+<span class="g g-Whitespace">   </span><span class="mi">1131</span>         <span class="n">ticklabelBoxes</span><span class="p">,</span> <span class="n">ticklabelBoxes2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_tick_bboxes</span><span class="p">(</span><span class="n">ticks_to_draw</span><span class="p">,</span>
+<span class="g g-Whitespace">   </span><span class="mi">1132</span>                                                                 <span class="n">renderer</span><span class="p">)</span>
 
-<span class="nn">~/local/lib/python3.8/contextlib.py</span> in <span class="ni">__enter__</span><span class="nt">(self)</span>
-<span class="g g-Whitespace">    </span><span class="mi">111</span><span class="s2">         del self.args, self.kwds, self.func</span>
-<span class="g g-Whitespace">    </span><span class="mi">112</span><span class="s2">         try:</span>
-<span class="ne">--&gt; </span><span class="mi">113</span><span class="s2">             return next(self.gen)</span>
-<span class="g g-Whitespace">    </span><span class="mi">114</span><span class="s2">         except StopIteration:</span>
-<span class="g g-Whitespace">    </span><span class="mi">115</span><span class="s2">             raise RuntimeError(&quot;generator didn&#39;t yield&quot;) from None</span>
+<span class="nn">~/local/lib/python3.8/site-packages/matplotlib/axis.py</span> in <span class="ni">_update_ticks</span><span class="nt">(self)</span>
+<span class="g g-Whitespace">   </span><span class="mi">1023</span>             <span class="n">tick</span><span class="o">.</span><span class="n">set_label1</span><span class="p">(</span><span class="n">label</span><span class="p">)</span>
+<span class="g g-Whitespace">   </span><span class="mi">1024</span>             <span class="n">tick</span><span class="o">.</span><span class="n">set_label2</span><span class="p">(</span><span class="n">label</span><span class="p">)</span>
+<span class="ne">-&gt; </span><span class="mi">1025</span>         <span class="n">minor_locs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_minorticklocs</span><span class="p">()</span>
+<span class="g g-Whitespace">   </span><span class="mi">1026</span>         <span class="n">minor_labels</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">minor</span><span class="o">.</span><span class="n">formatter</span><span class="o">.</span><span class="n">format_ticks</span><span class="p">(</span><span class="n">minor_locs</span><span class="p">)</span>
+<span class="g g-Whitespace">   </span><span class="mi">1027</span>         <span class="n">minor_ticks</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_minor_ticks</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">minor_locs</span><span class="p">))</span>
 
-<span class="nn">~/local/lib/python3.8/site-packages/matplotlib/patches.py</span> in <span class="ni">_bind_draw_path_function</span><span class="nt">(self, renderer)</span>
-<span class="g g-Whitespace">    </span><span class="mi">564</span><span class="s2">             lw = 0</span>
-<span class="g g-Whitespace">    </span><span class="mi">565</span><span class="s2">         gc.set_linewidth(lw)</span>
-<span class="ne">--&gt; </span><span class="mi">566</span><span class="s2">         gc.set_dashes(self._dashoffset, self._dashes)</span>
-<span class="g g-Whitespace">    </span><span class="mi">567</span><span class="s2">         gc.set_capstyle(self._capstyle)</span>
-<span class="g g-Whitespace">    </span><span class="mi">568</span><span class="s2">         gc.set_joinstyle(self._joinstyle)</span>
+<span class="nn">~/local/lib/python3.8/site-packages/matplotlib/axis.py</span> in <span class="ni">get_minorticklocs</span><span class="nt">(self)</span>
+<span class="g g-Whitespace">   </span><span class="mi">1252</span>         <span class="sd">&quot;&quot;&quot;Return this Axis&#39; minor tick locations in data coordinates.&quot;&quot;&quot;</span>
+<span class="g g-Whitespace">   </span><span class="mi">1253</span>         <span class="c1"># Remove minor ticks duplicating major ticks.</span>
+<span class="ne">-&gt; </span><span class="mi">1254</span>         <span class="n">major_locs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">major</span><span class="o">.</span><span class="n">locator</span><span class="p">()</span>
+<span class="g g-Whitespace">   </span><span class="mi">1255</span>         <span class="n">minor_locs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">minor</span><span class="o">.</span><span class="n">locator</span><span class="p">()</span>
+<span class="g g-Whitespace">   </span><span class="mi">1256</span>         <span class="n">transform</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_scale</span><span class="o">.</span><span class="n">get_transform</span><span class="p">()</span>
 
-<span class="nn">~/local/lib/python3.8/site-packages/matplotlib/backend_bases.py</span> in <span class="ni">set_dashes</span><span class="nt">(self, dash_offset, dash_list)</span>
-<span class="g g-Whitespace">    </span><span class="mi">946</span><span class="s2">         if dash_list is not None:</span>
-<span class="g g-Whitespace">    </span><span class="mi">947</span><span class="s2">             dl = np.asarray(dash_list)</span>
-<span class="ne">--&gt; </span><span class="mi">948</span><span class="s2">             if np.any(dl &lt; 0.0):</span>
-<span class="g g-Whitespace">    </span><span class="mi">949</span><span class="s2">                 raise ValueError(</span>
-<span class="g g-Whitespace">    </span><span class="mi">950</span><span class="s2">                     &quot;All values in the dash list must be positive&quot;)</span>
+<span class="nn">~/local/lib/python3.8/site-packages/matplotlib/ticker.py</span> in <span class="ni">__call__</span><span class="nt">(self)</span>
+<span class="g g-Whitespace">   </span><span class="mi">2262</span>     <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="g g-Whitespace">   </span><span class="mi">2263</span>         <span class="n">vmin</span><span class="p">,</span> <span class="n">vmax</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">axis</span><span class="o">.</span><span class="n">get_view_interval</span><span class="p">()</span>
+<span class="ne">-&gt; </span><span class="mi">2264</span>         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">tick_values</span><span class="p">(</span><span class="n">vmin</span><span class="p">,</span> <span class="n">vmax</span><span class="p">)</span>
+<span class="g g-Whitespace">   </span><span class="mi">2265</span> 
+<span class="g g-Whitespace">   </span><span class="mi">2266</span>     <span class="k">def</span> <span class="nf">tick_values</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vmin</span><span class="p">,</span> <span class="n">vmax</span><span class="p">):</span>
+
+<span class="nn">~/local/lib/python3.8/site-packages/matplotlib/ticker.py</span> in <span class="ni">tick_values</span><span class="nt">(self, vmin, vmax)</span>
+<span class="g g-Whitespace">   </span><span class="mi">2270</span>         <span class="n">vmin</span><span class="p">,</span> <span class="n">vmax</span> <span class="o">=</span> <span class="n">mtransforms</span><span class="o">.</span><span class="n">nonsingular</span><span class="p">(</span>
+<span class="g g-Whitespace">   </span><span class="mi">2271</span>             <span class="n">vmin</span><span class="p">,</span> <span class="n">vmax</span><span class="p">,</span> <span class="n">expander</span><span class="o">=</span><span class="mf">1e-13</span><span class="p">,</span> <span class="n">tiny</span><span class="o">=</span><span class="mf">1e-14</span><span class="p">)</span>
+<span class="ne">-&gt; </span><span class="mi">2272</span>         <span class="n">locs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_raw_ticks</span><span class="p">(</span><span class="n">vmin</span><span class="p">,</span> <span class="n">vmax</span><span class="p">)</span>
+<span class="g g-Whitespace">   </span><span class="mi">2273</span> 
+<span class="g g-Whitespace">   </span><span class="mi">2274</span>         <span class="n">prune</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_prune</span>
+
+<span class="nn">~/local/lib/python3.8/site-packages/matplotlib/ticker.py</span> in <span class="ni">_raw_ticks</span><span class="nt">(self, vmin, vmax)</span>
+<span class="g g-Whitespace">   </span><span class="mi">2209</span>         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_nbins</span> <span class="o">==</span> <span class="s1">&#39;auto&#39;</span><span class="p">:</span>
+<span class="g g-Whitespace">   </span><span class="mi">2210</span>             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">axis</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+<span class="ne">-&gt; </span><span class="mi">2211</span>                 <span class="n">nbins</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">axis</span><span class="o">.</span><span class="n">get_tick_space</span><span class="p">(),</span>
+<span class="g g-Whitespace">   </span><span class="mi">2212</span>                                 <span class="nb">max</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_min_n_ticks</span> <span class="o">-</span> <span class="mi">1</span><span class="p">),</span> <span class="mi">9</span><span class="p">)</span>
+<span class="g g-Whitespace">   </span><span class="mi">2213</span>             <span class="k">else</span><span class="p">:</span>
+
+<span class="nn">&lt;__array_function__ internals&gt;</span> in <span class="ni">clip</span><span class="nt">(*args, **kwargs)</span>
+
+<span class="nn">~/local/lib/python3.8/site-packages/numpy/core/fromnumeric.py</span> in <span class="ni">clip</span><span class="nt">(a, a_min, a_max, out, **kwargs)</span>
+<span class="g g-Whitespace">   </span><span class="mi">2101</span> 
+<span class="g g-Whitespace">   </span><span class="mi">2102</span>     <span class="sd">&quot;&quot;&quot;</span>
+<span class="ne">-&gt; </span><span class="mi">2103</span><span class="sd">     return _wrapfunc(a, &#39;clip&#39;, a_min, a_max, out=out, **kwargs)</span>
+<span class="g g-Whitespace">   </span><span class="mi">2104</span><span class="sd"> </span>
+<span class="g g-Whitespace">   </span><span class="mi">2105</span><span class="sd"> </span>
+
+<span class="nn">~/local/lib/python3.8/site-packages/numpy/core/fromnumeric.py</span> in <span class="ni">_wrapfunc</span><span class="nt">(obj, method, *args, **kwds)</span>
+<span class="g g-Whitespace">     </span><span class="mi">53</span><span class="sd">     bound = getattr(obj, method, None)</span>
+<span class="g g-Whitespace">     </span><span class="mi">54</span><span class="sd">     if bound is None:</span>
+<span class="ne">---&gt; </span><span class="mi">55</span><span class="sd">         return _wrapit(obj, method, *args, **kwds)</span>
+<span class="g g-Whitespace">     </span><span class="mi">56</span><span class="sd"> </span>
+<span class="g g-Whitespace">     </span><span class="mi">57</span><span class="sd">     try:</span>
+
+<span class="nn">~/local/lib/python3.8/site-packages/numpy/core/fromnumeric.py</span> in <span class="ni">_wrapit</span><span class="nt">(obj, method, *args, **kwds)</span>
+<span class="g g-Whitespace">     </span><span class="mi">42</span><span class="sd">     except AttributeError:</span>
+<span class="g g-Whitespace">     </span><span class="mi">43</span><span class="sd">         wrap = None</span>
+<span class="ne">---&gt; </span><span class="mi">44</span><span class="sd">     result = getattr(asarray(obj), method)(*args, **kwds)</span>
+<span class="g g-Whitespace">     </span><span class="mi">45</span><span class="sd">     if wrap:</span>
+<span class="g g-Whitespace">     </span><span class="mi">46</span><span class="sd">         if not isinstance(result, mu.ndarray):</span>
+
+<span class="nn">~/local/lib/python3.8/site-packages/numpy/core/_methods.py</span> in <span class="ni">_clip</span><span class="nt">(a, min, max, out, casting, **kwargs)</span>
+<span class="g g-Whitespace">    </span><span class="mi">134</span><span class="sd">             min = -float(&#39;inf&#39;)</span>
+<span class="g g-Whitespace">    </span><span class="mi">135</span><span class="sd">             using_deprecated_nan = True</span>
+<span class="ne">--&gt; </span><span class="mi">136</span><span class="sd">         if _clip_dep_is_scalar_nan(max):</span>
+<span class="g g-Whitespace">    </span><span class="mi">137</span><span class="sd">             max = float(&#39;inf&#39;)</span>
+<span class="g g-Whitespace">    </span><span class="mi">138</span><span class="sd">             using_deprecated_nan = True</span>
+
+<span class="nn">~/local/lib/python3.8/site-packages/numpy/core/_methods.py</span> in <span class="ni">_clip_dep_is_scalar_nan</span><span class="nt">(a)</span>
+<span class="g g-Whitespace">     </span><span class="mi">91</span><span class="sd">     # guarded to protect circular imports</span>
+<span class="g g-Whitespace">     </span><span class="mi">92</span><span class="sd">     from numpy.core.fromnumeric import ndim</span>
+<span class="ne">---&gt; </span><span class="mi">93</span><span class="sd">     if ndim(a) != 0:</span>
+<span class="g g-Whitespace">     </span><span class="mi">94</span><span class="sd">         return False</span>
+<span class="g g-Whitespace">     </span><span class="mi">95</span><span class="sd">     try:</span>
+
+<span class="nn">&lt;__array_function__ internals&gt;</span> in <span class="ni">ndim</span><span class="nt">(*args, **kwargs)</span>
+
+<span class="nn">~/local/lib/python3.8/site-packages/numpy/core/fromnumeric.py</span> in <span class="ni">ndim</span><span class="nt">(a)</span>
+<span class="g g-Whitespace">   </span><span class="mi">3137</span><span class="sd">     &quot;&quot;&quot;</span>
+<span class="g g-Whitespace">   </span><span class="mi">3138</span>     <span class="k">try</span><span class="p">:</span>
+<span class="ne">-&gt; </span><span class="mi">3139</span>         <span class="k">return</span> <span class="n">a</span><span class="o">.</span><span class="n">ndim</span>
+<span class="g g-Whitespace">   </span><span class="mi">3140</span>     <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+<span class="g g-Whitespace">   </span><span class="mi">3141</span>         <span class="k">return</span> <span class="n">asarray</span><span class="p">(</span><span class="n">a</span><span class="p">)</span><span class="o">.</span><span class="n">ndim</span>
 
 <span class="ne">KeyboardInterrupt</span>: 
 </pre></div>
