@@ -2,7 +2,7 @@
  "cells": [
   {
    "cell_type": "markdown",
-   "id": "guided-precipitation",
+   "id": "74541811",
    "metadata": {},
    "source": [
     "The adaptive integrator\n",
@@ -41,7 +41,7 @@
   {
    "cell_type": "code",
    "execution_count": 1,
-   "id": "stretch-recall",
+   "id": "7b0ebb82",
    "metadata": {},
    "outputs": [
     {
@@ -79,7 +79,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "automatic-beauty",
+   "id": "9f1f15b3",
    "metadata": {},
    "source": [
     "After creating the symbolic variables ``x`` and ``v``, we\n",
@@ -103,7 +103,7 @@
   {
    "cell_type": "code",
    "execution_count": 2,
-   "id": "seasonal-diabetes",
+   "id": "bd2a9ac0",
    "metadata": {},
    "outputs": [
     {
@@ -126,7 +126,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "unable-algebra",
+   "id": "b24e2dd0",
    "metadata": {},
    "source": [
     "First, we invoke the ``step()`` method, which returns a pair of values.\n",
@@ -140,7 +140,7 @@
   {
    "cell_type": "code",
    "execution_count": 3,
-   "id": "bright-double",
+   "id": "f75fed0c",
    "metadata": {},
    "outputs": [
     {
@@ -163,7 +163,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "frozen-fifteen",
+   "id": "1fda0d15",
    "metadata": {},
    "source": [
     "It is also possible to perform a single timestep backward in time\n",
@@ -173,7 +173,7 @@
   {
    "cell_type": "code",
    "execution_count": 4,
-   "id": "reasonable-disposal",
+   "id": "dc54bdd2",
    "metadata": {},
    "outputs": [
     {
@@ -196,7 +196,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "naked-header",
+   "id": "78144bc3",
    "metadata": {},
    "source": [
     "The ``step()`` method can also be called with an argument representing\n",
@@ -208,7 +208,7 @@
   {
    "cell_type": "code",
    "execution_count": 5,
-   "id": "friendly-chrome",
+   "id": "0186f288",
    "metadata": {},
    "outputs": [
     {
@@ -243,10 +243,23 @@
   },
   {
    "cell_type": "markdown",
-   "id": "egyptian-invite",
+   "id": "2411cb35",
    "metadata": {},
    "source": [
     "Note that the integration outcome is now ``time_limit``, instead of ``success``.\n",
+    "\n",
+    "Before moving on, we need to point out an important caveat when using the single\n",
+    "step functions:\n",
+    "\n",
+    "> **WARNING**: if the exact solution of the ODE system can be expressed as a polynomial function\n",
+    "> of time, the automatic timestep deduction algorithm may return a timestep of infinity.\n",
+    "> This is the case, for instance, when integrating the rectilinear motion of a free\n",
+    "> particle or the constant-gravity free-fall equation. In such cases, the step functions\n",
+    "> should be called with a finite ``max_delta_t`` argument, in order to clamp the timestep\n",
+    "> to a finite value.\n",
+    ">\n",
+    "> Note that the ``propagate_*()`` functions (described below)\n",
+    "> are not affected by this issue.\n",
     "\n",
     "Accessing state and time\n",
     "------------------------\n",
@@ -258,7 +271,7 @@
   {
    "cell_type": "code",
    "execution_count": 6,
-   "id": "divine-distinction",
+   "id": "ebf10bac",
    "metadata": {},
    "outputs": [
     {
@@ -291,7 +304,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "phantom-spectacular",
+   "id": "351f0c4a",
    "metadata": {},
    "source": [
     "Note that the time is stored as a scalar value, while the state is stored as a NumPy array. Because of technical reasons related to the management of the lifetime of arrays when interacting with the underlying heyoka C++ library, it is **not** possible to directly set the state via the syntax\n",
@@ -306,7 +319,7 @@
   {
    "cell_type": "code",
    "execution_count": 7,
-   "id": "right-familiar",
+   "id": "b62eb907",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -316,7 +329,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "flush-housing",
+   "id": "b6b3e66e",
    "metadata": {},
    "source": [
     "Time-limited propagation\n",
@@ -334,7 +347,7 @@
   {
    "cell_type": "code",
    "execution_count": 8,
-   "id": "packed-johnson",
+   "id": "a84060d0",
    "metadata": {},
    "outputs": [
     {
@@ -377,7 +390,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "handy-forge",
+   "id": "adfbf18a",
    "metadata": {},
    "source": [
     "The time-limited propagation methods return\n",
@@ -396,7 +409,7 @@
   {
    "cell_type": "code",
    "execution_count": 9,
-   "id": "generic-remark",
+   "id": "aa877a4e",
    "metadata": {},
    "outputs": [
     {
@@ -432,7 +445,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "critical-poverty",
+   "id": "45f92420",
    "metadata": {},
    "source": [
     "Note also that the time-limited propagation methods will stop\n",
@@ -458,7 +471,7 @@
   {
    "cell_type": "code",
    "execution_count": 10,
-   "id": "overall-surprise",
+   "id": "b07369e2",
    "metadata": {},
    "outputs": [
     {
@@ -498,7 +511,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "athletic-mailing",
+   "id": "2fc39da8",
    "metadata": {},
    "source": [
     "``propagate_grid()`` takes in input a grid of time points,\n",
@@ -517,7 +530,7 @@
   {
    "cell_type": "code",
    "execution_count": 11,
-   "id": "single-justice",
+   "id": "70aac3ac",
    "metadata": {},
    "outputs": [
     {
@@ -535,7 +548,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "numerical-passenger",
+   "id": "f8824388",
    "metadata": {},
    "source": [
     "As you can see from the screen output above (where we printed the ``out`` variable), the use of ``propagate_grid()`` resulted in 5 integration timesteps being taken. Had we used ``propagate_until()``, we would have needed 10 integration timesteps to obtain the same result.\n",

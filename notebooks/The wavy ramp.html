@@ -1,0 +1,563 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+
+    <title>The wavy ramp &#8212; heyoka.py 0.6.1 documentation</title>
+    
+  <link rel="stylesheet" href="../_static/css/index.f658d18f9b420779cfdf24aa0a7e2d77.css">
+
+    
+  <link rel="stylesheet"
+    href="../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    
+      
+  <link rel="stylesheet"
+    href="../_static/vendor/open-sans_all/1.44.1/index.css">
+  <link rel="stylesheet"
+    href="../_static/vendor/lato_latin-ext/1.44.1/index.css">
+
+    
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/sphinx-book-theme.e7340bb3dbd8dde6db86f25597f54a1b.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.css" />
+    
+  <link rel="preload" as="script" href="../_static/js/index.d3f166471bb80abb5163.js">
+
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/togglebutton.js"></script>
+    <script >var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    <script src="../_static/sphinx-book-theme.7d483ff0a819d6edff12ce0b1ead3928.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["\\(", "\\)"]], "displayMath": [["\\[", "\\]"]], "processRefs": false, "processEnvironments": false}})</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="The variational equations" href="The%20variational%20equations.html" />
+    <link rel="prev" title="The two-fixed centres elliptic billiard" href="The%20two-fixed%20elliptic%20billiard.html" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="en" />
+
+
+
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+<div class="col-12 col-md-3 bd-sidebar site-navigation show" id="site-navigation">
+    
+        <div class="navbar-brand-box">
+<a class="navbar-brand text-wrap" href="../index.html">
+  
+  <img src="../_static/white_logo.png" class="logo" alt="logo">
+  
+  
+  <h1 class="site-logo" id="site-title">heyoka.py 0.6.1 documentation</h1>
+  
+</a>
+</div><form class="bd-search d-flex align-items-center" action="../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form>
+<nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+    <p>
+ <span class="caption-text">
+  Contents
+ </span>
+</p>
+<ul class="current nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../install.html">
+   Installation
+  </a>
+ </li>
+ <li class="toctree-l1 collapsible-parent">
+  <a class="reference internal" href="../basic_tutorials.html">
+   Basic tutorials
+  </a>
+  <ul class="collapse-ul">
+   <li class="toctree-l2">
+    <a class="reference internal" href="../tut_taylor_method.html">
+     Taylor’s method
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="The%20expression%20system.html">
+     The expression system
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="The%20adaptive%20integrator.html">
+     The adaptive integrator
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="Customising%20the%20adaptive%20integrator.html">
+     Customising the adaptive integrator
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="ODEs%20with%20parameters.html">
+     ODEs with parameters
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="Non-autonomous%20systems.html">
+     Non-autonomous systems
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="Dense%20output.html">
+     Dense output
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="Event%20detection.html">
+     Event detection
+    </a>
+   </li>
+  </ul>
+  <i class="fas fa-chevron-down">
+  </i>
+ </li>
+ <li class="toctree-l1 current active collapsible-parent">
+  <a class="reference internal" href="../advanced_tutorials.html">
+   Advanced tutorials
+  </a>
+  <ul class="current collapse-ul">
+   <li class="toctree-l2">
+    <a class="reference internal" href="Batch%20mode%20overview.html">
+     Batch mode
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="The%20restricted%20three-body%20problem.html">
+     The restricted three-body problem
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="Long%20term%20stability%20of%20Trappist-1.html">
+     Long term stability of N-body simulations: the case of Trappist-1
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="Outer%20Solar%20System.html">
+     Brouwer’s law in the outer Solar System
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="Sampling%20events.html">
+     Sampling events
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="Poincar%C3%A9%20sections.html">
+     Poincaré sections
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="Optimal%20Control%20of%20the%20Lotka-Volterra%20equations.html">
+     Optimal Control of the Lotka-Volterra equations
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="The%20Keplerian%20billiard.html">
+     The Keplerian billiard
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="The%20two-fixed%20elliptic%20billiard.html">
+     The two-fixed centres elliptic billiard
+    </a>
+   </li>
+   <li class="toctree-l2 current active">
+    <a class="current reference internal" href="#">
+     The wavy ramp
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="The%20variational%20equations.html">
+     The variational equations
+    </a>
+   </li>
+  </ul>
+  <i class="fas fa-chevron-down">
+  </i>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../changelog.html">
+   Changelog
+  </a>
+ </li>
+</ul>
+
+</nav> <!-- To handle the deprecated key -->
+
+<div class="navbar_extra_footer">
+  Theme by the <a href="https://ebp.jupyterbook.org">Executable Book Project</a>
+</div>
+
+</div>
+
+
+          
+
+
+          
+<main class="col py-md-3 pl-md-4 bd-content overflow-auto" role="main">
+    
+    <div class="topbar container-xl fixed-top">
+    <div class="topbar-contents row">
+        <div class="col-12 col-md-3 bd-topbar-whitespace site-navigation show"></div>
+        <div class="col pl-md-4 topbar-main">
+            
+            <button id="navbar-toggler" class="navbar-toggler ml-0" type="button" data-toggle="collapse"
+                data-toggle="tooltip" data-placement="bottom" data-target=".site-navigation" aria-controls="navbar-menu"
+                aria-expanded="true" aria-label="Toggle navigation" aria-controls="site-navigation"
+                title="Toggle navigation" data-toggle="tooltip" data-placement="left">
+                <i class="fas fa-bars"></i>
+                <i class="fas fa-arrow-left"></i>
+                <i class="fas fa-arrow-up"></i>
+            </button>
+            
+            
+<div class="dropdown-buttons-trigger">
+    <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn" aria-label="Download this page"><i
+            class="fas fa-download"></i></button>
+
+    <div class="dropdown-buttons">
+        <!-- ipynb file if we had a myst markdown file -->
+        
+        <!-- Download raw file -->
+        <a class="dropdown-buttons" href="../_sources/notebooks/The wavy ramp.ipynb.txt"><button type="button"
+                class="btn btn-secondary topbarbtn" title="Download source file" data-toggle="tooltip"
+                data-placement="left">.ipynb</button></a>
+        <!-- Download PDF via print -->
+        <button type="button" id="download-print" class="btn btn-secondary topbarbtn" title="Print to PDF"
+            onClick="window.print()" data-toggle="tooltip" data-placement="left">.pdf</button>
+    </div>
+</div>
+
+            <!-- Source interaction buttons -->
+
+<div class="dropdown-buttons-trigger">
+    <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn"
+        aria-label="Connect with source repository"><i class="fab fa-github"></i></button>
+    <div class="dropdown-buttons sourcebuttons">
+        <a class="repository-button"
+            href="https://github.com/bluescarni/heyoka.py"><button type="button" class="btn btn-secondary topbarbtn"
+                data-toggle="tooltip" data-placement="left" title="Source repository"><i
+                    class="fab fa-github"></i>repository</button></a>
+        <a class="issues-button"
+            href="https://github.com/bluescarni/heyoka.py/issues/new?title=Issue%20on%20page%20%2Fnotebooks/The wavy ramp.html&body=Your%20issue%20content%20here."><button
+                type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip" data-placement="left"
+                title="Open an issue"><i class="fas fa-lightbulb"></i>open issue</button></a>
+        
+    </div>
+</div>
+
+
+            <!-- Full screen (wrap in <a> to have style consistency -->
+            <a class="full-screen-button"><button type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip"
+                    data-placement="bottom" onclick="toggleFullScreen()" aria-label="Fullscreen mode"
+                    title="Fullscreen mode"><i
+                        class="fas fa-expand"></i></button></a>
+
+            <!-- Launch buttons -->
+
+<div class="dropdown-buttons-trigger">
+    <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn"
+        aria-label="Launch interactive content"><i class="fas fa-rocket"></i></button>
+    <div class="dropdown-buttons">
+        
+        <a class="binder-button" href="https://mybinder.org/v2/gh/bluescarni/heyoka.py/main?urlpath=tree/doc/notebooks/The wavy ramp.ipynb"><button type="button"
+                class="btn btn-secondary topbarbtn" title="Launch Binder" data-toggle="tooltip"
+                data-placement="left"><img class="binder-button-logo"
+                    src="../_static/images/logo_binder.svg"
+                    alt="Interact on binder">Binder</button></a>
+        
+        
+        
+        
+    </div>
+</div>
+
+        </div>
+
+        <!-- Table of contents -->
+        <div class="d-none d-md-block col-md-2 bd-toc show">
+            
+        </div>
+    </div>
+</div>
+    <div id="main-content" class="row">
+        <div class="col-12 col-md-9 pl-md-3 pr-md-0">
+        
+              <div>
+                
+  <section id="the-wavy-ramp">
+<h1>The wavy ramp<a class="headerlink" href="#the-wavy-ramp" title="Permalink to this headline">¶</a></h1>
+<p>In this example, we will integrate the dynamics of a point mass bouncing down a non-linear ramp. The point mass behaves like a rubber ball, meaning that at every bounce it will dissipate part of its kinetic energy due to the <a class="reference external" href="https://en.wikipedia.org/wiki/Inelastic_collision">inelastic</a> character of the collisions.</p>
+<p>Let us begin, as usual, with the definition of the dynamics:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">heyoka</span> <span class="k">as</span> <span class="nn">hy</span>
+
+<span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">vx</span><span class="p">,</span> <span class="n">vy</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">make_vars</span><span class="p">(</span><span class="s2">&quot;x&quot;</span><span class="p">,</span> <span class="s2">&quot;y&quot;</span><span class="p">,</span> <span class="s2">&quot;vx&quot;</span><span class="p">,</span> <span class="s2">&quot;vy&quot;</span><span class="p">)</span>
+
+<span class="n">eqns</span> <span class="o">=</span> <span class="p">[(</span><span class="n">x</span><span class="p">,</span> <span class="n">vx</span><span class="p">),</span>
+        <span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">vy</span><span class="p">),</span>
+        <span class="p">(</span><span class="n">vx</span><span class="p">,</span> <span class="n">hy</span><span class="o">.</span><span class="n">expression</span><span class="p">(</span><span class="mf">0.</span><span class="p">)),</span>
+        <span class="c1"># Downwards constant acceleration.</span>
+        <span class="p">(</span><span class="n">vy</span><span class="p">,</span> <span class="n">hy</span><span class="o">.</span><span class="n">expression</span><span class="p">(</span><span class="o">-</span><span class="mf">9.8</span><span class="p">))]</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>In other words, we are setting up a 2D dynamical system in which the only acceleration is due to the (constant) gravitational field.</p>
+<p>The contour of the ramp is defined by the non-linear equation</p>
+<div class="math notranslate nohighlight">
+\[
+y = 1 - x + 0.05 \cos\left(11 \pi x \right).
+\]</div>
+<p>Let us take a look:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">matplotlib.pylab</span> <span class="kn">import</span> <span class="n">plt</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s2">&quot;figure.figsize&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">9</span><span class="p">,</span><span class="mi">6</span><span class="p">)</span>
+
+<span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+<span class="n">x_grid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mi">1000</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x_grid</span><span class="p">,</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">x_grid</span> <span class="o">+</span> <span class="mf">0.05</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="mi">11</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">x_grid</span><span class="p">)),</span> <span class="s1">&#39;k-&#39;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">fill_between</span><span class="p">(</span><span class="n">x_grid</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.</span><span class="p">,</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">x_grid</span> <span class="o">+</span> <span class="mf">0.05</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="mi">11</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">x_grid</span><span class="p">)),</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;gray&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="kc">None</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/The wavy ramp_3_0.png" src="../_images/The wavy ramp_3_0.png" />
+</div>
+</div>
+<p>We want the particle to bounce off both the wavy ramp and the ground (i.e., <span class="math notranslate nohighlight">\(x\)</span> axis). Thus, we will have to define two different event equations and two different callback functions to implement the bouncing behaviour. Let us begin with the event equations:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Event equation for the ramp.</span>
+<span class="n">eq_w_curve</span> <span class="o">=</span> <span class="n">y</span> <span class="o">-</span> <span class="p">(</span><span class="mf">1.</span> <span class="o">-</span> <span class="n">x</span> <span class="o">+</span> <span class="mf">0.05</span> <span class="o">*</span> <span class="n">hy</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="mi">11</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">x</span><span class="p">))</span>
+
+<span class="c1"># Event equation for the ground.</span>
+<span class="n">eq_bottom</span> <span class="o">=</span> <span class="n">y</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Next, we need to implement the callbacks. Because we are dealing with inelastic collisions, when the particle hits a surface it will lose part of its kinetic energy. The <a class="reference external" href="https://en.wikipedia.org/wiki/Coefficient_of_restitution">coefficient of restitution</a> <span class="math notranslate nohighlight">\(C_R \in \left[0, 1\right]\)</span> regulates how much energy is lost at every bounce.</p>
+<p>Additionally, because of the loss of energy, the particle will experience increasingly frequent collisions if it gets stuck in one of the local minima of the curve or when it starts bouncing off the ground. In practice, we want to stop the simulation once the collisions become too frequent.</p>
+<p>Let us see the code:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># The coefficient of restitution.</span>
+<span class="n">CR</span> <span class="o">=</span> <span class="o">.</span><span class="mi">8</span>
+
+<span class="c1"># Global variables to track</span>
+<span class="c1"># the time of the last collision</span>
+<span class="c1"># and the collision points.</span>
+<span class="n">last_t</span> <span class="o">=</span> <span class="mf">0.</span>
+<span class="n">bounce_points</span> <span class="o">=</span> <span class="p">[]</span>
+
+<span class="c1"># Callback for bouncing against the curve.</span>
+<span class="k">def</span> <span class="nf">cb_w_curve</span><span class="p">(</span><span class="n">ta</span><span class="p">,</span> <span class="n">mr</span><span class="p">):</span>
+    <span class="k">global</span> <span class="n">last_t</span>
+
+    <span class="c1"># If the last collision happened</span>
+    <span class="c1"># too recently, return False to</span>
+    <span class="c1"># stop the simulation.</span>
+    <span class="k">if</span> <span class="n">ta</span><span class="o">.</span><span class="n">time</span> <span class="o">-</span> <span class="n">last_t</span> <span class="o">&lt;</span> <span class="mf">1e-10</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">False</span>
+
+    <span class="c1"># Update last_t.</span>
+    <span class="n">last_t</span> <span class="o">=</span> <span class="n">ta</span><span class="o">.</span><span class="n">time</span>
+
+    <span class="c1"># Update bounce_points.</span>
+    <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">ta</span><span class="o">.</span><span class="n">state</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">2</span><span class="p">]</span>
+    <span class="n">bounce_points</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">))</span>
+    
+    <span class="c1"># Compute the normal unit vector</span>
+    <span class="c1"># using the gradient of the event</span>
+    <span class="c1"># equation.</span>
+    <span class="n">grad</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="o">+</span><span class="mf">0.05</span><span class="o">*</span><span class="mi">11</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mi">11</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span><span class="n">x</span><span class="p">),</span> <span class="mi">1</span><span class="p">])</span>
+    <span class="n">grad_uvec</span> <span class="o">=</span> <span class="n">grad</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">grad</span><span class="p">)</span>
+    
+    <span class="c1"># Compute the component of the velocity</span>
+    <span class="c1"># across the normal vector.</span>
+    <span class="n">xy_vel</span> <span class="o">=</span> <span class="n">ta</span><span class="o">.</span><span class="n">state</span><span class="p">[</span><span class="mi">2</span><span class="p">:</span><span class="mi">4</span><span class="p">]</span>
+    <span class="n">vproj</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">xy_vel</span><span class="p">,</span> <span class="n">grad_uvec</span><span class="p">)</span>
+    
+    <span class="c1"># Flip it and rescale it according</span>
+    <span class="c1"># to the coefficient of restitution.</span>
+    <span class="n">Dv</span> <span class="o">=</span> <span class="o">-</span><span class="n">vproj</span><span class="o">*</span><span class="n">grad_uvec</span>
+    <span class="n">xy_vel</span> <span class="o">+=</span> <span class="p">(</span><span class="mf">1.</span> <span class="o">+</span> <span class="n">CR</span><span class="p">)</span> <span class="o">*</span> <span class="n">Dv</span>
+
+    <span class="k">return</span> <span class="kc">True</span>
+
+<span class="c1"># Callback for bouncing off the ground.</span>
+<span class="k">def</span> <span class="nf">cb_bottom</span><span class="p">(</span><span class="n">ta</span><span class="p">,</span> <span class="n">mr</span><span class="p">):</span>
+    <span class="k">global</span> <span class="n">last_t</span>
+
+    <span class="c1"># If the last collision happened</span>
+    <span class="c1"># too recently, return False to</span>
+    <span class="c1"># stop the simulation.</span>
+    <span class="k">if</span> <span class="n">ta</span><span class="o">.</span><span class="n">time</span> <span class="o">-</span> <span class="n">last_t</span> <span class="o">&lt;</span> <span class="mf">1e-10</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">False</span>
+
+    <span class="c1"># Update last_t.</span>
+    <span class="n">last_t</span> <span class="o">=</span> <span class="n">ta</span><span class="o">.</span><span class="n">time</span>
+
+    <span class="c1"># Update bounce_points.</span>
+    <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">ta</span><span class="o">.</span><span class="n">state</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">2</span><span class="p">]</span>
+    <span class="n">bounce_points</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">))</span>
+    
+    <span class="c1"># Flip the y component of the velocity,</span>
+    <span class="c1"># and rescale it according</span>
+    <span class="c1"># to the coefficient of restitution.</span>
+    <span class="n">ta</span><span class="o">.</span><span class="n">state</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="n">CR</span><span class="o">*</span><span class="n">ta</span><span class="o">.</span><span class="n">state</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span>
+    
+    <span class="k">return</span> <span class="kc">True</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>We are now ready to create the integrator object. As initial conditions, we will put the particle at rest above the ramp on the <span class="math notranslate nohighlight">\(y\)</span> axis:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ta</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">taylor_adaptive</span><span class="p">(</span><span class="n">eqns</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mf">1.2</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">t_events</span> <span class="o">=</span> <span class="p">[</span><span class="n">hy</span><span class="o">.</span><span class="n">t_event</span><span class="p">(</span><span class="n">eq_w_curve</span><span class="p">,</span> <span class="n">callback</span> <span class="o">=</span> <span class="n">cb_w_curve</span><span class="p">),</span>
+                                                          <span class="n">hy</span><span class="o">.</span><span class="n">t_event</span><span class="p">(</span><span class="n">eq_bottom</span><span class="p">,</span> <span class="n">callback</span> <span class="o">=</span> <span class="n">cb_bottom</span><span class="p">)])</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>We can now integrate the system for a few time units:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">t_grid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">10000</span><span class="p">)</span>
+<span class="n">oc</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">res</span> <span class="o">=</span> <span class="n">ta</span><span class="o">.</span><span class="n">propagate_grid</span><span class="p">(</span><span class="n">t_grid</span><span class="p">)</span>
+
+<span class="c1"># Transform bounce_points in a NumPy array</span>
+<span class="c1"># for ease of use.</span>
+<span class="n">b_points</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">bounce_points</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Let us take a look at the trajectory:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s2">&quot;figure.figsize&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">12</span><span class="p">,</span><span class="mi">9</span><span class="p">)</span>
+<span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">res</span><span class="p">[:,</span><span class="mi">0</span><span class="p">],</span><span class="n">res</span><span class="p">[:,</span><span class="mi">1</span><span class="p">])</span>
+<span class="n">x_grid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mi">1000</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x_grid</span><span class="p">,</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">x_grid</span> <span class="o">+</span> <span class="mf">0.05</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="mi">11</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">x_grid</span><span class="p">)),</span> <span class="s1">&#39;k-&#39;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">b_points</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">b_points</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="s1">&#39;o&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">fill_between</span><span class="p">(</span><span class="n">x_grid</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.</span><span class="p">,</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">x_grid</span> <span class="o">+</span> <span class="mf">0.05</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="mi">11</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">x_grid</span><span class="p">)),</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;gray&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="kc">None</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/The wavy ramp_13_0.png" src="../_images/The wavy ramp_13_0.png" />
+</div>
+</div>
+<p>We can clearly see the dissipative behaviour of the inelastic collisions at play. Indeed, despite the fact that we asked to integrate the system up to <span class="math notranslate nohighlight">\(t=10\)</span>, the integration was stopped at</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ta</span><span class="o">.</span><span class="n">time</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>4.739023056879022
+</pre></div>
+</div>
+</div>
+</div>
+<p>instead, and the outcome <code class="docutils literal notranslate"><span class="pre">oc</span></code> informs us that the integration was stopped because of a stopping terminal event:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">oc</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;taylor_outcome.???: -2&gt;
+</pre></div>
+</div>
+</div>
+</div>
+<p>A value of <code class="docutils literal notranslate"><span class="pre">oc</span></code> negative and greater than <code class="docutils literal notranslate"><span class="pre">taylor_outcome.success</span></code> indicates a stopping terminal event. The index of the stopping terminal event is <code class="docutils literal notranslate"><span class="pre">-oc</span> <span class="pre">-</span> <span class="pre">1</span></code>:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Stopped by terminal event? </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">oc</span> <span class="o">&gt;</span> <span class="n">hy</span><span class="o">.</span><span class="n">taylor_outcome</span><span class="o">.</span><span class="n">success</span> <span class="ow">and</span> <span class="nb">int</span><span class="p">(</span><span class="n">oc</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Index of the terminal event: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="o">-</span><span class="nb">int</span><span class="p">(</span><span class="n">oc</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Stopped by terminal event? True
+Index of the terminal event: 1
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+
+
+              </div>
+              
+        
+        <div class='prev-next-bottom'>
+            
+    <a class='left-prev' id="prev-link" href="The%20two-fixed%20elliptic%20billiard.html" title="previous page">The two-fixed centres elliptic billiard</a>
+    <a class='right-next' id="next-link" href="The%20variational%20equations.html" title="next page">The variational equations</a>
+
+        </div>
+        
+        </div>
+    </div>
+    <footer class="footer mt-5 mt-md-0">
+    <div class="container">
+      <p>
+        
+          By Francesco Biscani and Dario Izzo<br/>
+        
+            &copy; Copyright 2020, 2021, Francesco Biscani and Dario Izzo.<br/>
+      </p>
+    </div>
+  </footer>
+</main>
+
+
+      </div>
+    </div>
+
+    
+  <script src="../_static/js/index.d3f166471bb80abb5163.js"></script>
+
+
+    
+  </body>
+</html>
