@@ -3,6 +3,15 @@
 Changelog
 =========
 
+0.7.0 (unreleased)
+------------------
+
+New
+~~~
+
+- Add the wavy ramp tutorial
+  (`#32 <https://github.com/bluescarni/heyoka.py/pull/32>`__).
+
 0.6.0 (2021-04-06)
 ------------------
 
