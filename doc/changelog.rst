@@ -3,13 +3,20 @@
 Changelog
 =========
 
-0.7.0 (unreleased)
+0.6.1 (unreleased)
 ------------------
 
 New
 ~~~
 
 - Add the wavy ramp tutorial
+  (`#32 <https://github.com/bluescarni/heyoka.py/pull/32>`__).
+
+Changes
+~~~~~~~
+
+- heyoka.py now requires at least version 0.6.1 of the
+  heyoka C++ library
   (`#32 <https://github.com/bluescarni/heyoka.py/pull/32>`__).
 
 0.6.0 (2021-04-06)
