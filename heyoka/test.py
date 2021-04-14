@@ -561,9 +561,7 @@ class event_detection_test_case(_ut.TestCase):
                                  nt_events=[nt_event(v*v-1e-10, cb0, fp_type=desc),
                                             nt_event(v, cb1, fp_type=desc)])
 
-            for _ in range(20):
-                oc, h = ta.step()
-                self.assertTrue(oc == taylor_outcome.success)
+            self.assertEqual(ta.propagate_until(fp_t(4))[0], taylor_outcome.time_limit)
 
             self.assertEqual(counter, 12)
 

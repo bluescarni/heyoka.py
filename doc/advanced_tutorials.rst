@@ -30,6 +30,7 @@ Event detection
   notebooks/Optimal Control of the Lotka-Volterra equations
   notebooks/The Keplerian billiard
   notebooks/The two-fixed elliptic billiard
+  notebooks/The wavy ramp
 
 Other
 -----
