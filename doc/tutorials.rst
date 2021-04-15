@@ -1,4 +1,4 @@
-Basic tutorials
+Tutorials
 ===============
 
 .. only:: html
@@ -24,6 +24,12 @@ Basic tutorials
 .. toctree::
   :maxdepth: 1
 
+Basics
+-------
+
+.. toctree::
+  :maxdepth: 1
+
   tut_taylor_method
   notebooks/The expression system.ipynb
   notebooks/The adaptive integrator.ipynb
@@ -31,4 +37,24 @@ Basic tutorials
   notebooks/ODEs with parameters.ipynb
   notebooks/Non-autonomous systems.ipynb
   notebooks/Dense output.ipynb
+
+Advanced features
+-----------------
+
+.. toctree::
+  :maxdepth: 1
+
+  notebooks/Batch mode overview
+
+Event detection
+---------------
+
+.. toctree::
+  :maxdepth: 1
+
   notebooks/Event detection.ipynb
+  notebooks/Sampling events
+  notebooks/The Keplerian billiard
+  notebooks/The two-fixed elliptic billiard
+  notebooks/The wavy ramp
+
