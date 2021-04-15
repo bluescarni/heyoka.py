@@ -57,4 +57,5 @@ Event detection
   notebooks/The Keplerian billiard
   notebooks/The two-fixed elliptic billiard
   notebooks/The wavy ramp
+  notebooks/Poincaré sections
 
