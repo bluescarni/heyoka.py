@@ -4,8 +4,7 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Sampling events &#8212; heyoka.py 0.6.1 documentation</title>
     
   <link rel="stylesheet" href="../_static/css/index.f658d18f9b420779cfdf24aa0a7e2d77.css">
@@ -45,7 +44,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Poincaré sections" href="Poincar%C3%A9%20sections.html" />
-    <link rel="prev" title="Brouwer’s law in the outer Solar System" href="Outer%20Solar%20System.html" />
+    <link rel="prev" title="Event detection" href="Event%20detection.html" />
 
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="docsearch:language" content="en" />
@@ -75,7 +74,7 @@
   <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
 </form>
 <nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
-    <p>
+    <p class="caption collapsible-parent">
  <span class="caption-text">
   Contents
  </span>
@@ -86,11 +85,11 @@
    Installation
   </a>
  </li>
- <li class="toctree-l1 collapsible-parent">
-  <a class="reference internal" href="../basic_tutorials.html">
-   Basic tutorials
+ <li class="toctree-l1 current active collapsible-parent">
+  <a class="reference internal" href="../tutorials.html">
+   Tutorials
   </a>
-  <ul class="collapse-ul">
+  <ul class="current collapse-ul">
    <li class="toctree-l2">
     <a class="reference internal" href="../tut_taylor_method.html">
      Taylor’s method
@@ -127,37 +126,13 @@
     </a>
    </li>
    <li class="toctree-l2">
-    <a class="reference internal" href="Event%20detection.html">
-     Event detection
-    </a>
-   </li>
-  </ul>
-  <i class="fas fa-chevron-down">
-  </i>
- </li>
- <li class="toctree-l1 current active collapsible-parent">
-  <a class="reference internal" href="../advanced_tutorials.html">
-   Advanced tutorials
-  </a>
-  <ul class="current collapse-ul">
-   <li class="toctree-l2">
     <a class="reference internal" href="Batch%20mode%20overview.html">
      Batch mode
     </a>
    </li>
    <li class="toctree-l2">
-    <a class="reference internal" href="The%20restricted%20three-body%20problem.html">
-     The restricted three-body problem
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="Long%20term%20stability%20of%20Trappist-1.html">
-     Long term stability of N-body simulations: the case of Trappist-1
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="Outer%20Solar%20System.html">
-     Brouwer’s law in the outer Solar System
+    <a class="reference internal" href="Event%20detection.html">
+     Event detection
     </a>
    </li>
    <li class="toctree-l2 current active">
@@ -168,11 +143,6 @@
    <li class="toctree-l2">
     <a class="reference internal" href="Poincar%C3%A9%20sections.html">
      Poincaré sections
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="Optimal%20Control%20of%20the%20Lotka-Volterra%20equations.html">
-     Optimal Control of the Lotka-Volterra equations
     </a>
    </li>
    <li class="toctree-l2">
@@ -190,9 +160,43 @@
      The wavy ramp
     </a>
    </li>
+  </ul>
+  <i class="fas fa-chevron-down">
+  </i>
+ </li>
+ <li class="toctree-l1 collapsible-parent">
+  <a class="reference internal" href="../examples.html">
+   Examples
+  </a>
+  <ul class="collapse-ul">
+   <li class="toctree-l2">
+    <a class="reference internal" href="The%20restricted%20three-body%20problem.html">
+     The restricted three-body problem
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="Long%20term%20stability%20of%20Trappist-1.html">
+     Long term stability of N-body simulations: the case of Trappist-1
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="Outer%20Solar%20System.html">
+     Brouwer’s law in the outer Solar System
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="Box%20control%20for%20Formation%20Flying%20Satellites.html">
+     Box control in satellite Formation Flying
+    </a>
+   </li>
    <li class="toctree-l2">
     <a class="reference internal" href="The%20variational%20equations.html">
      The variational equations
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="Optimal%20Control%20of%20the%20Lotka-Volterra%20equations.html">
+     Optimal Control of the Lotka-Volterra equations
     </a>
    </li>
   </ul>
@@ -310,7 +314,7 @@
         
               <div>
                 
-  <section id="sampling-events">
+  <div class="section" id="sampling-events">
 <h1>Sampling events<a class="headerlink" href="#sampling-events" title="Permalink to this headline">¶</a></h1>
 <p>In this example, we will show how to use heyoka.py’s <a class="reference internal" href="Event%20detection.html"><span class="doc std std-doc">event detection</span></a> system to detect when the solution of a system of ODEs satisfies certain constraints.</p>
 <p>We will be considering the system of polynomial ODEs</p>
@@ -469,7 +473,7 @@ y - 1.1 \sin\left( 5x \right) = 0
 </div>
 </div>
 <p>The plot shows again how the event detection system was able to correctly detect the intersections of the solution with the curve.</p>
-</section>
+</div>
 
 
               </div>
@@ -477,7 +481,7 @@ y - 1.1 \sin\left( 5x \right) = 0
         
         <div class='prev-next-bottom'>
             
-    <a class='left-prev' id="prev-link" href="Outer%20Solar%20System.html" title="previous page">Brouwer’s law in the outer Solar System</a>
+    <a class='left-prev' id="prev-link" href="Event%20detection.html" title="previous page">Event detection</a>
     <a class='right-next' id="next-link" href="Poincar%C3%A9%20sections.html" title="next page">Poincaré sections</a>
 
         </div>

@@ -4,8 +4,7 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Customising the adaptive integrator &#8212; heyoka.py 0.6.1 documentation</title>
     
   <link rel="stylesheet" href="../_static/css/index.f658d18f9b420779cfdf24aa0a7e2d77.css">
@@ -75,7 +74,7 @@
   <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
 </form>
 <nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
-    <p>
+    <p class="caption collapsible-parent">
  <span class="caption-text">
   Contents
  </span>
@@ -87,8 +86,8 @@
   </a>
  </li>
  <li class="toctree-l1 current active collapsible-parent">
-  <a class="reference internal" href="../basic_tutorials.html">
-   Basic tutorials
+  <a class="reference internal" href="../tutorials.html">
+   Tutorials
   </a>
   <ul class="current collapse-ul">
    <li class="toctree-l2">
@@ -127,37 +126,13 @@
     </a>
    </li>
    <li class="toctree-l2">
-    <a class="reference internal" href="Event%20detection.html">
-     Event detection
-    </a>
-   </li>
-  </ul>
-  <i class="fas fa-chevron-down">
-  </i>
- </li>
- <li class="toctree-l1 collapsible-parent">
-  <a class="reference internal" href="../advanced_tutorials.html">
-   Advanced tutorials
-  </a>
-  <ul class="collapse-ul">
-   <li class="toctree-l2">
     <a class="reference internal" href="Batch%20mode%20overview.html">
      Batch mode
     </a>
    </li>
    <li class="toctree-l2">
-    <a class="reference internal" href="The%20restricted%20three-body%20problem.html">
-     The restricted three-body problem
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="Long%20term%20stability%20of%20Trappist-1.html">
-     Long term stability of N-body simulations: the case of Trappist-1
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="Outer%20Solar%20System.html">
-     Brouwer’s law in the outer Solar System
+    <a class="reference internal" href="Event%20detection.html">
+     Event detection
     </a>
    </li>
    <li class="toctree-l2">
@@ -168,11 +143,6 @@
    <li class="toctree-l2">
     <a class="reference internal" href="Poincar%C3%A9%20sections.html">
      Poincaré sections
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="Optimal%20Control%20of%20the%20Lotka-Volterra%20equations.html">
-     Optimal Control of the Lotka-Volterra equations
     </a>
    </li>
    <li class="toctree-l2">
@@ -190,9 +160,43 @@
      The wavy ramp
     </a>
    </li>
+  </ul>
+  <i class="fas fa-chevron-down">
+  </i>
+ </li>
+ <li class="toctree-l1 collapsible-parent">
+  <a class="reference internal" href="../examples.html">
+   Examples
+  </a>
+  <ul class="collapse-ul">
+   <li class="toctree-l2">
+    <a class="reference internal" href="The%20restricted%20three-body%20problem.html">
+     The restricted three-body problem
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="Long%20term%20stability%20of%20Trappist-1.html">
+     Long term stability of N-body simulations: the case of Trappist-1
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="Outer%20Solar%20System.html">
+     Brouwer’s law in the outer Solar System
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="Box%20control%20for%20Formation%20Flying%20Satellites.html">
+     Box control in satellite Formation Flying
+    </a>
+   </li>
    <li class="toctree-l2">
     <a class="reference internal" href="The%20variational%20equations.html">
      The variational equations
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="Optimal%20Control%20of%20the%20Lotka-Volterra%20equations.html">
+     Optimal Control of the Lotka-Volterra equations
     </a>
    </li>
   </ul>
@@ -335,13 +339,13 @@
         
               <div>
                 
-  <section id="customising-the-adaptive-integrator">
+  <div class="section" id="customising-the-adaptive-integrator">
 <h1>Customising the adaptive integrator<a class="headerlink" href="#customising-the-adaptive-integrator" title="Permalink to this headline">¶</a></h1>
 <p>In the previous section we showed a few
 usage examples of the <code class="docutils literal notranslate"><span class="pre">taylor_adaptive</span></code> class using the default
 options. Here, we will show how the behaviour of the integrator
 can be customised in a variety of ways.</p>
-<section id="error-tolerance">
+<div class="section" id="error-tolerance">
 <h2>Error tolerance<a class="headerlink" href="#error-tolerance" title="Permalink to this headline">¶</a></h2>
 <p>As we mentioned earlier, by default the <code class="docutils literal notranslate"><span class="pre">taylor_adaptive</span></code> class
 uses an error tolerance equal to the machine
@@ -409,13 +413,13 @@ integration is reduced with respect to the default tolerance value:</p>
 <div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Taylor order            : 12
 Dimension               : 2
 Time                    : 0.0000000000000000
-State                   : [0.050000000001312876, 0.024999999997558964]
+State                   : [0.050000000001312848, 0.024999999997558649]
 </pre></div>
 </div>
 </div>
 </div>
-</section>
-<section id="compact-mode">
+</div>
+<div class="section" id="compact-mode">
 <h2>Compact mode<a class="headerlink" href="#compact-mode" title="Permalink to this headline">¶</a></h2>
 <p>By default, the just-in-time compilation process of heyoka.py
 aims at maximising runtime performance over everything else.
@@ -463,8 +467,8 @@ code generation mode:</p>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CPU times: user 6.42 s, sys: 51.8 ms, total: 6.48 s
-Wall time: 6.47 s
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CPU times: user 7.04 s, sys: 21.7 ms, total: 7.07 s
+Wall time: 7.32 s
 </pre></div>
 </div>
 </div>
@@ -479,8 +483,8 @@ keyword argument):</p>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CPU times: user 358 ms, sys: 115 µs, total: 358 ms
-Wall time: 358 ms
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CPU times: user 444 ms, sys: 0 ns, total: 444 ms
+Wall time: 468 ms
 </pre></div>
 </div>
 </div>
@@ -489,8 +493,8 @@ Wall time: 358 ms
 faster than the default
 code generation mode when it comes to the construction of the integrator
 object. For larger ODE systems, the gap will be even wider.</p>
-</section>
-<section id="high-accuracy-mode">
+</div>
+<div class="section" id="high-accuracy-mode">
 <h2>High-accuracy mode<a class="headerlink" href="#high-accuracy-mode" title="Permalink to this headline">¶</a></h2>
 <p>For long-term integrations at very low error tolerances, heyoka.py offers
 an opt-in <em>high-accuracy</em> mode. In high-accuracy mode, heyoka.py
@@ -506,8 +510,8 @@ which prevents catastrophic cancellation issues and ultimately helps maintaining
 machine precision over very long integrations.</p>
 <p>High-accuracy mode can be enabled via the <code class="docutils literal notranslate"><span class="pre">high_accuracy</span></code> keyword
 argument.</p>
-</section>
-</section>
+</div>
+</div>
 
 
               </div>

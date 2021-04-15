@@ -4,8 +4,7 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Batch mode &#8212; heyoka.py 0.6.1 documentation</title>
     
   <link rel="stylesheet" href="../_static/css/index.f658d18f9b420779cfdf24aa0a7e2d77.css">
@@ -44,8 +43,8 @@
     <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["\\(", "\\)"]], "displayMath": [["\\[", "\\]"]], "processRefs": false, "processEnvironments": false}})</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="The restricted three-body problem" href="The%20restricted%20three-body%20problem.html" />
-    <link rel="prev" title="Advanced tutorials" href="../advanced_tutorials.html" />
+    <link rel="next" title="Event detection" href="Event%20detection.html" />
+    <link rel="prev" title="Dense output" href="Dense%20output.html" />
 
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="docsearch:language" content="en" />
@@ -75,7 +74,7 @@
   <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
 </form>
 <nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
-    <p>
+    <p class="caption collapsible-parent">
  <span class="caption-text">
   Contents
  </span>
@@ -86,11 +85,11 @@
    Installation
   </a>
  </li>
- <li class="toctree-l1 collapsible-parent">
-  <a class="reference internal" href="../basic_tutorials.html">
-   Basic tutorials
+ <li class="toctree-l1 current active collapsible-parent">
+  <a class="reference internal" href="../tutorials.html">
+   Tutorials
   </a>
-  <ul class="collapse-ul">
+  <ul class="current collapse-ul">
    <li class="toctree-l2">
     <a class="reference internal" href="../tut_taylor_method.html">
      Taylor’s method
@@ -126,38 +125,14 @@
      Dense output
     </a>
    </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="Event%20detection.html">
-     Event detection
-    </a>
-   </li>
-  </ul>
-  <i class="fas fa-chevron-down">
-  </i>
- </li>
- <li class="toctree-l1 current active collapsible-parent">
-  <a class="reference internal" href="../advanced_tutorials.html">
-   Advanced tutorials
-  </a>
-  <ul class="current collapse-ul">
    <li class="toctree-l2 current active">
     <a class="current reference internal" href="#">
      Batch mode
     </a>
    </li>
    <li class="toctree-l2">
-    <a class="reference internal" href="The%20restricted%20three-body%20problem.html">
-     The restricted three-body problem
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="Long%20term%20stability%20of%20Trappist-1.html">
-     Long term stability of N-body simulations: the case of Trappist-1
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="Outer%20Solar%20System.html">
-     Brouwer’s law in the outer Solar System
+    <a class="reference internal" href="Event%20detection.html">
+     Event detection
     </a>
    </li>
    <li class="toctree-l2">
@@ -168,11 +143,6 @@
    <li class="toctree-l2">
     <a class="reference internal" href="Poincar%C3%A9%20sections.html">
      Poincaré sections
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="Optimal%20Control%20of%20the%20Lotka-Volterra%20equations.html">
-     Optimal Control of the Lotka-Volterra equations
     </a>
    </li>
    <li class="toctree-l2">
@@ -190,9 +160,43 @@
      The wavy ramp
     </a>
    </li>
+  </ul>
+  <i class="fas fa-chevron-down">
+  </i>
+ </li>
+ <li class="toctree-l1 collapsible-parent">
+  <a class="reference internal" href="../examples.html">
+   Examples
+  </a>
+  <ul class="collapse-ul">
+   <li class="toctree-l2">
+    <a class="reference internal" href="The%20restricted%20three-body%20problem.html">
+     The restricted three-body problem
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="Long%20term%20stability%20of%20Trappist-1.html">
+     Long term stability of N-body simulations: the case of Trappist-1
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="Outer%20Solar%20System.html">
+     Brouwer’s law in the outer Solar System
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="Box%20control%20for%20Formation%20Flying%20Satellites.html">
+     Box control in satellite Formation Flying
+    </a>
+   </li>
    <li class="toctree-l2">
     <a class="reference internal" href="The%20variational%20equations.html">
      The variational equations
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="Optimal%20Control%20of%20the%20Lotka-Volterra%20equations.html">
+     Optimal Control of the Lotka-Volterra equations
     </a>
    </li>
   </ul>
@@ -340,7 +344,7 @@
         
               <div>
                 
-  <section id="batch-mode">
+  <div class="section" id="batch-mode">
 <h1>Batch mode<a class="headerlink" href="#batch-mode" title="Permalink to this headline">¶</a></h1>
 <p>heyoka.py’s API supports a mode of operation called <em>batch mode</em>.
 In batch mode, all the scalar quantities appearing in a system of ODEs
@@ -367,7 +371,7 @@ processor in use. Because at this time the most widespread SIMD instruction set 
 <a class="reference external" href="https://en.wikipedia.org/wiki/Advanced_Vector_Extensions">AVX</a> (available on
 most x86 processors sold since 2011), in this tutorial we will be using a
 batch size <span class="math notranslate nohighlight">\(n=4\)</span>.</p>
-<section id="the-adaptive-batch-integrator">
+<div class="section" id="the-adaptive-batch-integrator">
 <h2>The adaptive batch integrator<a class="headerlink" href="#the-adaptive-batch-integrator" title="Permalink to this headline">¶</a></h2>
 <p>The <code class="docutils literal notranslate"><span class="pre">taylor_adaptive_batch</span></code> class is the batch mode counterpart of the adaptive
 (scalar) integrator <a class="reference internal" href="The%20adaptive%20integrator.html"><span class="doc std std-doc">described earlier</span></a>. Although at a high-level
@@ -457,8 +461,8 @@ all initialised to zero:</p>
 </div>
 </div>
 </div>
-</section>
-<section id="step-by-step-integration">
+</div>
+<div class="section" id="step-by-step-integration">
 <h2>Step-by-step integration<a class="headerlink" href="#step-by-step-integration" title="Permalink to this headline">¶</a></h2>
 <p>We are now ready to start integrating. Like <code class="docutils literal notranslate"><span class="pre">taylor_adaptive</span></code>, <code class="docutils literal notranslate"><span class="pre">taylor_adaptive_batch</span></code>
 provides <code class="docutils literal notranslate"><span class="pre">step()</span></code> functions for integrating forward or backward in time step-by-step.
@@ -537,8 +541,8 @@ Time:
 </div>
 </div>
 </div>
-</section>
-<section id="time-limited-propagation">
+</div>
+<div class="section" id="time-limited-propagation">
 <h2>Time-limited propagation<a class="headerlink" href="#time-limited-propagation" title="Permalink to this headline">¶</a></h2>
 <p>The <code class="docutils literal notranslate"><span class="pre">propagate_*()</span></code> functions are also available for the
 batch integrator. Similarly to the <code class="docutils literal notranslate"><span class="pre">step()</span></code> functions, the outcomes of the <code class="docutils literal notranslate"><span class="pre">propagate_*()</span></code>
@@ -570,7 +574,7 @@ that were used in the propagation,</p></li>
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Outcomes:
-[(&lt;taylor_outcome.time_limit: -4294967299&gt;, 0.19700448609475013, 0.42801809235455385, 34), (&lt;taylor_outcome.time_limit: -4294967299&gt;, 0.1914608992952717, 0.4281140304644993, 38), (&lt;taylor_outcome.time_limit: -4294967299&gt;, 0.18762172169221453, 0.43556334885135567, 41), (&lt;taylor_outcome.time_limit: -4294967299&gt;, 0.18423403769248833, 0.47053646102804997, 44)]
+[(&lt;taylor_outcome.time_limit: -4294967299&gt;, 0.1970044860947501, 0.42801809235455385, 34), (&lt;taylor_outcome.time_limit: -4294967299&gt;, 0.19146089929527163, 0.4281140304644997, 38), (&lt;taylor_outcome.time_limit: -4294967299&gt;, 0.18762172169221453, 0.4355633488513558, 41), (&lt;taylor_outcome.time_limit: -4294967299&gt;, 0.18423403769248833, 0.4705364610280495, 44)]
 State:
 [[ 4.6268855   2.73976697  1.1534837   0.23501885]
  [-2.25814471 -1.91965361 -1.77541972 -1.13133003]]
@@ -578,7 +582,7 @@ Time:
 [10.21518102 11.21719731 12.21701653 13.21708394]
 
 Outcomes:
-[(&lt;taylor_outcome.time_limit: -4294967299&gt;, 0.2048473837982106, 0.3080688556802493, 40), (&lt;taylor_outcome.time_limit: -4294967299&gt;, 0.2122087320009231, 0.32033034817214595, 38), (&lt;taylor_outcome.time_limit: -4294967299&gt;, 0.22595995123406543, 0.4129644953875974, 35), (&lt;taylor_outcome.time_limit: -4294967299&gt;, 0.21027114609377692, 0.3717536518626978, 34)]
+[(&lt;taylor_outcome.time_limit: -4294967299&gt;, 0.2048473837982105, 0.30806885568024933, 40), (&lt;taylor_outcome.time_limit: -4294967299&gt;, 0.21220873200092316, 0.3203303481721456, 38), (&lt;taylor_outcome.time_limit: -4294967299&gt;, 0.22595995123406573, 0.4129644953875965, 36), (&lt;taylor_outcome.time_limit: -4294967299&gt;, 0.21027114609377706, 0.3717536518626975, 35)]
 State:
 [[1.80080102 2.83619831 3.4747455  6.29634837]
  [1.35919698 0.50159786 0.00737693 0.72663002]]
@@ -630,27 +634,27 @@ Time:
 </div>
 <div class="cell_output docutils container">
 <div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[(&lt;taylor_outcome.time_limit: -4294967299&gt;,
-  0.1771218741465662,
+  0.1771218741465665,
   0.42922678763927685,
   445),
  (&lt;taylor_outcome.time_limit: -4294967299&gt;,
-  0.17864079697444818,
-  0.4311641361512716,
+  0.17864079697444896,
+  0.4311641361512722,
   442),
  (&lt;taylor_outcome.time_limit: -4294967299&gt;,
-  0.17166730017468285,
-  0.48845285378298453,
+  0.1716673001746401,
+  0.48845285378321457,
   370),
  (&lt;taylor_outcome.time_limit: -4294967299&gt;,
-  0.1853603631822092,
-  0.4676193933698764,
+  0.1853603631822091,
+  0.46761939336987696,
   364)]
 </pre></div>
 </div>
 </div>
 </div>
-</section>
-<section id="dense-output">
+</div>
+<div class="section" id="dense-output">
 <h2>Dense output<a class="headerlink" href="#dense-output" title="Permalink to this headline">¶</a></h2>
 <p>The batch integrator also supports <a class="reference internal" href="Dense%20output.html"><span class="doc std std-doc">dense output</span></a>. Like for <code class="docutils literal notranslate"><span class="pre">taylor_adaptive</span></code>,
 enabling dense output is a two-step process. First we invoke one of the <code class="docutils literal notranslate"><span class="pre">step()</span></code> functions
@@ -793,8 +797,8 @@ at different time coordinates:</p>
 </div>
 </div>
 </div>
-</section>
-</section>
+</div>
+</div>
 
 
               </div>
@@ -802,8 +806,8 @@ at different time coordinates:</p>
         
         <div class='prev-next-bottom'>
             
-    <a class='left-prev' id="prev-link" href="../advanced_tutorials.html" title="previous page">Advanced tutorials</a>
-    <a class='right-next' id="next-link" href="The%20restricted%20three-body%20problem.html" title="next page">The restricted three-body problem</a>
+    <a class='left-prev' id="prev-link" href="Dense%20output.html" title="previous page">Dense output</a>
+    <a class='right-next' id="next-link" href="Event%20detection.html" title="next page">Event detection</a>
 
         </div>
         

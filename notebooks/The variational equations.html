@@ -4,8 +4,7 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>The variational equations &#8212; heyoka.py 0.6.1 documentation</title>
     
   <link rel="stylesheet" href="../_static/css/index.f658d18f9b420779cfdf24aa0a7e2d77.css">
@@ -44,8 +43,8 @@
     <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["\\(", "\\)"]], "displayMath": [["\\[", "\\]"]], "processRefs": false, "processEnvironments": false}})</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Changelog" href="../changelog.html" />
-    <link rel="prev" title="The wavy ramp" href="The%20wavy%20ramp.html" />
+    <link rel="next" title="Optimal Control of the Lotka-Volterra equations" href="Optimal%20Control%20of%20the%20Lotka-Volterra%20equations.html" />
+    <link rel="prev" title="Box control in satellite Formation Flying" href="Box%20control%20for%20Formation%20Flying%20Satellites.html" />
 
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="docsearch:language" content="en" />
@@ -75,7 +74,7 @@
   <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
 </form>
 <nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
-    <p>
+    <p class="caption collapsible-parent">
  <span class="caption-text">
   Contents
  </span>
@@ -87,8 +86,8 @@
   </a>
  </li>
  <li class="toctree-l1 collapsible-parent">
-  <a class="reference internal" href="../basic_tutorials.html">
-   Basic tutorials
+  <a class="reference internal" href="../tutorials.html">
+   Tutorials
   </a>
   <ul class="collapse-ul">
    <li class="toctree-l2">
@@ -127,37 +126,13 @@
     </a>
    </li>
    <li class="toctree-l2">
-    <a class="reference internal" href="Event%20detection.html">
-     Event detection
-    </a>
-   </li>
-  </ul>
-  <i class="fas fa-chevron-down">
-  </i>
- </li>
- <li class="toctree-l1 current active collapsible-parent">
-  <a class="reference internal" href="../advanced_tutorials.html">
-   Advanced tutorials
-  </a>
-  <ul class="current collapse-ul">
-   <li class="toctree-l2">
     <a class="reference internal" href="Batch%20mode%20overview.html">
      Batch mode
     </a>
    </li>
    <li class="toctree-l2">
-    <a class="reference internal" href="The%20restricted%20three-body%20problem.html">
-     The restricted three-body problem
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="Long%20term%20stability%20of%20Trappist-1.html">
-     Long term stability of N-body simulations: the case of Trappist-1
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="Outer%20Solar%20System.html">
-     Brouwer’s law in the outer Solar System
+    <a class="reference internal" href="Event%20detection.html">
+     Event detection
     </a>
    </li>
    <li class="toctree-l2">
@@ -168,11 +143,6 @@
    <li class="toctree-l2">
     <a class="reference internal" href="Poincar%C3%A9%20sections.html">
      Poincaré sections
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="Optimal%20Control%20of%20the%20Lotka-Volterra%20equations.html">
-     Optimal Control of the Lotka-Volterra equations
     </a>
    </li>
    <li class="toctree-l2">
@@ -190,9 +160,43 @@
      The wavy ramp
     </a>
    </li>
+  </ul>
+  <i class="fas fa-chevron-down">
+  </i>
+ </li>
+ <li class="toctree-l1 current active collapsible-parent">
+  <a class="reference internal" href="../examples.html">
+   Examples
+  </a>
+  <ul class="current collapse-ul">
+   <li class="toctree-l2">
+    <a class="reference internal" href="The%20restricted%20three-body%20problem.html">
+     The restricted three-body problem
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="Long%20term%20stability%20of%20Trappist-1.html">
+     Long term stability of N-body simulations: the case of Trappist-1
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="Outer%20Solar%20System.html">
+     Brouwer’s law in the outer Solar System
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="Box%20control%20for%20Formation%20Flying%20Satellites.html">
+     Box control in satellite Formation Flying
+    </a>
+   </li>
    <li class="toctree-l2 current active">
     <a class="current reference internal" href="#">
      The variational equations
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="Optimal%20Control%20of%20the%20Lotka-Volterra%20equations.html">
+     Optimal Control of the Lotka-Volterra equations
     </a>
    </li>
   </ul>
@@ -310,7 +314,7 @@
         
               <div>
                 
-  <section id="the-variational-equations">
+  <div class="section" id="the-variational-equations">
 <h1>The variational equations<a class="headerlink" href="#the-variational-equations" title="Permalink to this headline">¶</a></h1>
 <p>In this tutorial, we will show how it is possible to exploit heyoka.py’s <a class="reference internal" href="The%20expression%20system.html"><span class="doc std std-doc">expression system</span></a> to implement first-order variational equations for a system of ODEs.</p>
 <p>First, let’s start with a brief recap on the variational equations. For simplicity, we will consider an autonomous ODE system in the variables <span class="math notranslate nohighlight">\(x\)</span> and <span class="math notranslate nohighlight">\(y\)</span> (the extension to more variables just complicates the notation):</p>
@@ -466,7 +470,7 @@ State                   : [0.050000000000000003, 0.025000000000000001, 1.0000000
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>-8.03149771688716e-09
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>-8.03150676520481e-09
 </pre></div>
 </div>
 </div>
@@ -484,12 +488,12 @@ State                   : [0.050000000000000003, 0.025000000000000001, 1.0000000
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>9.089951014118469e-15
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>4.163336342344337e-17
 </pre></div>
 </div>
 </div>
 </div>
-</section>
+</div>
 
 
               </div>
@@ -497,8 +501,8 @@ State                   : [0.050000000000000003, 0.025000000000000001, 1.0000000
         
         <div class='prev-next-bottom'>
             
-    <a class='left-prev' id="prev-link" href="The%20wavy%20ramp.html" title="previous page">The wavy ramp</a>
-    <a class='right-next' id="next-link" href="../changelog.html" title="next page">Changelog</a>
+    <a class='left-prev' id="prev-link" href="Box%20control%20for%20Formation%20Flying%20Satellites.html" title="previous page">Box control in satellite Formation Flying</a>
+    <a class='right-next' id="next-link" href="Optimal%20Control%20of%20the%20Lotka-Volterra%20equations.html" title="next page">Optimal Control of the Lotka-Volterra equations</a>
 
         </div>
         

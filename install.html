@@ -4,8 +4,7 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Installation &#8212; heyoka.py 0.6.1 documentation</title>
     
   <link rel="stylesheet" href="_static/css/index.f658d18f9b420779cfdf24aa0a7e2d77.css">
@@ -42,7 +41,7 @@
     <script src="_static/sphinx-book-theme.7d483ff0a819d6edff12ce0b1ead3928.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Basic tutorials" href="basic_tutorials.html" />
+    <link rel="next" title="Tutorials" href="tutorials.html" />
     <link rel="prev" title="heyoka.py" href="index.html" />
 
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -73,7 +72,7 @@
   <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
 </form>
 <nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
-    <p>
+    <p class="caption collapsible-parent">
  <span class="caption-text">
   Contents
  </span>
@@ -85,8 +84,8 @@
   </a>
  </li>
  <li class="toctree-l1 collapsible-parent">
-  <a class="reference internal" href="basic_tutorials.html">
-   Basic tutorials
+  <a class="reference internal" href="tutorials.html">
+   Tutorials
   </a>
   <ul class="collapse-ul">
    <li class="toctree-l2">
@@ -125,37 +124,13 @@
     </a>
    </li>
    <li class="toctree-l2">
-    <a class="reference internal" href="notebooks/Event%20detection.html">
-     Event detection
-    </a>
-   </li>
-  </ul>
-  <i class="fas fa-chevron-down">
-  </i>
- </li>
- <li class="toctree-l1 collapsible-parent">
-  <a class="reference internal" href="advanced_tutorials.html">
-   Advanced tutorials
-  </a>
-  <ul class="collapse-ul">
-   <li class="toctree-l2">
     <a class="reference internal" href="notebooks/Batch%20mode%20overview.html">
      Batch mode
     </a>
    </li>
    <li class="toctree-l2">
-    <a class="reference internal" href="notebooks/The%20restricted%20three-body%20problem.html">
-     The restricted three-body problem
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="notebooks/Long%20term%20stability%20of%20Trappist-1.html">
-     Long term stability of N-body simulations: the case of Trappist-1
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="notebooks/Outer%20Solar%20System.html">
-     Brouwer’s law in the outer Solar System
+    <a class="reference internal" href="notebooks/Event%20detection.html">
+     Event detection
     </a>
    </li>
    <li class="toctree-l2">
@@ -166,11 +141,6 @@
    <li class="toctree-l2">
     <a class="reference internal" href="notebooks/Poincar%C3%A9%20sections.html">
      Poincaré sections
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="notebooks/Optimal%20Control%20of%20the%20Lotka-Volterra%20equations.html">
-     Optimal Control of the Lotka-Volterra equations
     </a>
    </li>
    <li class="toctree-l2">
@@ -188,9 +158,43 @@
      The wavy ramp
     </a>
    </li>
+  </ul>
+  <i class="fas fa-chevron-down">
+  </i>
+ </li>
+ <li class="toctree-l1 collapsible-parent">
+  <a class="reference internal" href="examples.html">
+   Examples
+  </a>
+  <ul class="collapse-ul">
+   <li class="toctree-l2">
+    <a class="reference internal" href="notebooks/The%20restricted%20three-body%20problem.html">
+     The restricted three-body problem
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="notebooks/Long%20term%20stability%20of%20Trappist-1.html">
+     Long term stability of N-body simulations: the case of Trappist-1
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="notebooks/Outer%20Solar%20System.html">
+     Brouwer’s law in the outer Solar System
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="notebooks/Box%20control%20for%20Formation%20Flying%20Satellites.html">
+     Box control in satellite Formation Flying
+    </a>
+   </li>
    <li class="toctree-l2">
     <a class="reference internal" href="notebooks/The%20variational%20equations.html">
      The variational equations
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="notebooks/Optimal%20Control%20of%20the%20Lotka-Volterra%20equations.html">
+     Optimal Control of the Lotka-Volterra equations
     </a>
    </li>
   </ul>
@@ -333,9 +337,9 @@
         
               <div>
                 
-  <section id="installation">
+  <div class="section" id="installation">
 <h1>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h1>
-<section id="dependencies">
+<div class="section" id="dependencies">
 <h2>Dependencies<a class="headerlink" href="#dependencies" title="Permalink to this headline">¶</a></h2>
 <p>heyoka.py has the following <strong>mandatory</strong> runtime dependencies:</p>
 <ul class="simple">
@@ -355,10 +359,10 @@ was compiled with support for quadruple-precision computations),</p></li>
 <li><p>the <a class="reference external" href="https://github.com/bluescarni/mppp">mp++ library</a> (necessary if the heyoka C++ library
 was compiled with support for quadruple-precision computations).</p></li>
 </ul>
-</section>
-<section id="packages">
+</div>
+<div class="section" id="packages">
 <h2>Packages<a class="headerlink" href="#packages" title="Permalink to this headline">¶</a></h2>
-<section id="conda">
+<div class="section" id="conda">
 <h3>Conda<a class="headerlink" href="#conda" title="Permalink to this headline">¶</a></h3>
 <p>heyoka.py is available via the <a class="reference external" href="https://conda.io/docs/">conda</a>
 package manager for Linux, OSX and Windows
@@ -375,9 +379,9 @@ and they are regularly updated when new heyoka.py versions are released.</p>
 <p>Please refer to the <a class="reference external" href="https://conda.io/docs/">conda documentation</a>
 for instructions on how to setup and manage
 your conda installation.</p>
-</section>
-</section>
-<section id="installation-from-source">
+</div>
+</div>
+<div class="section" id="installation-from-source">
 <h2>Installation from source<a class="headerlink" href="#installation-from-source" title="Permalink to this headline">¶</a></h2>
 <p>In order to install heyoka.py from source, you will need:</p>
 <ul class="simple">
@@ -444,8 +448,8 @@ building heyoka.py:</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>cmake  --build . --target install
 </pre></div>
 </div>
-</section>
-<section id="verifying-the-installation">
+</div>
+<div class="section" id="verifying-the-installation">
 <h2>Verifying the installation<a class="headerlink" href="#verifying-the-installation" title="Permalink to this headline">¶</a></h2>
 <p>You can verify that heyoka.py was successfully compiled and
 installed by running the test suite. From a
@@ -456,13 +460,13 @@ Python session, run the following commands:</p>
 </div>
 <p>If these commands execute without any error, then
 your heyoka.py installation is ready for use.</p>
-</section>
-<section id="getting-help">
+</div>
+<div class="section" id="getting-help">
 <h2>Getting help<a class="headerlink" href="#getting-help" title="Permalink to this headline">¶</a></h2>
 <p>If you run into troubles installing heyoka.py, please do not hesitate
 to contact us by opening an issue report on <a class="reference external" href="https://github.com/bluescarni/heyoka.py/issues">github</a>.</p>
-</section>
-</section>
+</div>
+</div>
 
 
               </div>
@@ -471,7 +475,7 @@ to contact us by opening an issue report on <a class="reference external" href="
         <div class='prev-next-bottom'>
             
     <a class='left-prev' id="prev-link" href="index.html" title="previous page">heyoka.py</a>
-    <a class='right-next' id="next-link" href="basic_tutorials.html" title="next page">Basic tutorials</a>
+    <a class='right-next' id="next-link" href="tutorials.html" title="next page">Tutorials</a>
 
         </div>
         

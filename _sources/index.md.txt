@@ -31,7 +31,7 @@ The authors are Francesco Biscani (Max Planck Institute for Astronomy) and Dario
 :caption: Contents
 
 install
-basic_tutorials
-advanced_tutorials
+tutorials
+examples
 changelog
 ```

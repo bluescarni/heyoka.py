@@ -4,8 +4,7 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>The restricted three-body problem &#8212; heyoka.py 0.6.1 documentation</title>
     
   <link rel="stylesheet" href="../_static/css/index.f658d18f9b420779cfdf24aa0a7e2d77.css">
@@ -45,7 +44,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Long term stability of N-body simulations: the case of Trappist-1" href="Long%20term%20stability%20of%20Trappist-1.html" />
-    <link rel="prev" title="Batch mode" href="Batch%20mode%20overview.html" />
+    <link rel="prev" title="Examples" href="../examples.html" />
 
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="docsearch:language" content="en" />
@@ -75,7 +74,7 @@
   <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
 </form>
 <nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
-    <p>
+    <p class="caption collapsible-parent">
  <span class="caption-text">
   Contents
  </span>
@@ -87,8 +86,8 @@
   </a>
  </li>
  <li class="toctree-l1 collapsible-parent">
-  <a class="reference internal" href="../basic_tutorials.html">
-   Basic tutorials
+  <a class="reference internal" href="../tutorials.html">
+   Tutorials
   </a>
   <ul class="collapse-ul">
    <li class="toctree-l2">
@@ -127,37 +126,13 @@
     </a>
    </li>
    <li class="toctree-l2">
-    <a class="reference internal" href="Event%20detection.html">
-     Event detection
-    </a>
-   </li>
-  </ul>
-  <i class="fas fa-chevron-down">
-  </i>
- </li>
- <li class="toctree-l1 current active collapsible-parent">
-  <a class="reference internal" href="../advanced_tutorials.html">
-   Advanced tutorials
-  </a>
-  <ul class="current collapse-ul">
-   <li class="toctree-l2">
     <a class="reference internal" href="Batch%20mode%20overview.html">
      Batch mode
     </a>
    </li>
-   <li class="toctree-l2 current active">
-    <a class="current reference internal" href="#">
-     The restricted three-body problem
-    </a>
-   </li>
    <li class="toctree-l2">
-    <a class="reference internal" href="Long%20term%20stability%20of%20Trappist-1.html">
-     Long term stability of N-body simulations: the case of Trappist-1
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="Outer%20Solar%20System.html">
-     Brouwer’s law in the outer Solar System
+    <a class="reference internal" href="Event%20detection.html">
+     Event detection
     </a>
    </li>
    <li class="toctree-l2">
@@ -168,11 +143,6 @@
    <li class="toctree-l2">
     <a class="reference internal" href="Poincar%C3%A9%20sections.html">
      Poincaré sections
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="Optimal%20Control%20of%20the%20Lotka-Volterra%20equations.html">
-     Optimal Control of the Lotka-Volterra equations
     </a>
    </li>
    <li class="toctree-l2">
@@ -190,9 +160,43 @@
      The wavy ramp
     </a>
    </li>
+  </ul>
+  <i class="fas fa-chevron-down">
+  </i>
+ </li>
+ <li class="toctree-l1 current active collapsible-parent">
+  <a class="reference internal" href="../examples.html">
+   Examples
+  </a>
+  <ul class="current collapse-ul">
+   <li class="toctree-l2 current active">
+    <a class="current reference internal" href="#">
+     The restricted three-body problem
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="Long%20term%20stability%20of%20Trappist-1.html">
+     Long term stability of N-body simulations: the case of Trappist-1
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="Outer%20Solar%20System.html">
+     Brouwer’s law in the outer Solar System
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="Box%20control%20for%20Formation%20Flying%20Satellites.html">
+     Box control in satellite Formation Flying
+    </a>
+   </li>
    <li class="toctree-l2">
     <a class="reference internal" href="The%20variational%20equations.html">
      The variational equations
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="Optimal%20Control%20of%20the%20Lotka-Volterra%20equations.html">
+     Optimal Control of the Lotka-Volterra equations
     </a>
    </li>
   </ul>
@@ -310,7 +314,7 @@
         
               <div>
                 
-  <section id="the-restricted-three-body-problem">
+  <div class="section" id="the-restricted-three-body-problem">
 <h1>The restricted three-body problem<a class="headerlink" href="#the-restricted-three-body-problem" title="Permalink to this headline">¶</a></h1>
 <p>In this example, we will consider the restricted three-body problem (RTBP). The RTBP is a well-known dynamical system consisting of two massive bodies orbiting each other on circular Keplerian orbits, and a massless particle which moves under the gravitational influence of the two massive bodies.</p>
 <p>The problem is usually formulated in a rotating reference frame in which the two massive bodies are at rest. In the rotating reference frame, the equations of motion for the massless particle’s cartesian coordinates <span class="math notranslate nohighlight">\(\left(x, y, z\right)\)</span> and conjugated momenta <span class="math notranslate nohighlight">\(\left(p_x, p_y, p_z\right)\)</span> read:</p>
@@ -538,7 +542,7 @@
 </div>
 </div>
 <p>The relative error on Jacobi’s integral remains bounded below <span class="math notranslate nohighlight">\(10^{-13}\)</span>.</p>
-</section>
+</div>
 
 
               </div>
@@ -546,7 +550,7 @@
         
         <div class='prev-next-bottom'>
             
-    <a class='left-prev' id="prev-link" href="Batch%20mode%20overview.html" title="previous page">Batch mode</a>
+    <a class='left-prev' id="prev-link" href="../examples.html" title="previous page">Examples</a>
     <a class='right-next' id="next-link" href="Long%20term%20stability%20of%20Trappist-1.html" title="next page">Long term stability of N-body simulations: the case of Trappist-1</a>
 
         </div>

@@ -1,0 +1,936 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Box control in satellite Formation Flying &#8212; heyoka.py 0.6.1 documentation</title>
+    
+  <link rel="stylesheet" href="../_static/css/index.f658d18f9b420779cfdf24aa0a7e2d77.css">
+
+    
+  <link rel="stylesheet"
+    href="../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    
+      
+  <link rel="stylesheet"
+    href="../_static/vendor/open-sans_all/1.44.1/index.css">
+  <link rel="stylesheet"
+    href="../_static/vendor/lato_latin-ext/1.44.1/index.css">
+
+    
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/sphinx-book-theme.e7340bb3dbd8dde6db86f25597f54a1b.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.css" />
+    
+  <link rel="preload" as="script" href="../_static/js/index.d3f166471bb80abb5163.js">
+
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/togglebutton.js"></script>
+    <script >var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    <script src="../_static/sphinx-book-theme.7d483ff0a819d6edff12ce0b1ead3928.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["\\(", "\\)"]], "displayMath": [["\\[", "\\]"]], "processRefs": false, "processEnvironments": false}})</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="The variational equations" href="The%20variational%20equations.html" />
+    <link rel="prev" title="Brouwer’s law in the outer Solar System" href="Outer%20Solar%20System.html" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="en" />
+
+
+
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+<div class="col-12 col-md-3 bd-sidebar site-navigation show" id="site-navigation">
+    
+        <div class="navbar-brand-box">
+<a class="navbar-brand text-wrap" href="../index.html">
+  
+  <img src="../_static/white_logo.png" class="logo" alt="logo">
+  
+  
+  <h1 class="site-logo" id="site-title">heyoka.py 0.6.1 documentation</h1>
+  
+</a>
+</div><form class="bd-search d-flex align-items-center" action="../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form>
+<nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+    <p class="caption collapsible-parent">
+ <span class="caption-text">
+  Contents
+ </span>
+</p>
+<ul class="current nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../install.html">
+   Installation
+  </a>
+ </li>
+ <li class="toctree-l1 collapsible-parent">
+  <a class="reference internal" href="../tutorials.html">
+   Tutorials
+  </a>
+  <ul class="collapse-ul">
+   <li class="toctree-l2">
+    <a class="reference internal" href="../tut_taylor_method.html">
+     Taylor’s method
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="The%20expression%20system.html">
+     The expression system
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="The%20adaptive%20integrator.html">
+     The adaptive integrator
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="Customising%20the%20adaptive%20integrator.html">
+     Customising the adaptive integrator
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="ODEs%20with%20parameters.html">
+     ODEs with parameters
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="Non-autonomous%20systems.html">
+     Non-autonomous systems
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="Dense%20output.html">
+     Dense output
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="Batch%20mode%20overview.html">
+     Batch mode
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="Event%20detection.html">
+     Event detection
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="Sampling%20events.html">
+     Sampling events
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="Poincar%C3%A9%20sections.html">
+     Poincaré sections
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="The%20Keplerian%20billiard.html">
+     The Keplerian billiard
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="The%20two-fixed%20elliptic%20billiard.html">
+     The two-fixed centres elliptic billiard
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="The%20wavy%20ramp.html">
+     The wavy ramp
+    </a>
+   </li>
+  </ul>
+  <i class="fas fa-chevron-down">
+  </i>
+ </li>
+ <li class="toctree-l1 current active collapsible-parent">
+  <a class="reference internal" href="../examples.html">
+   Examples
+  </a>
+  <ul class="current collapse-ul">
+   <li class="toctree-l2">
+    <a class="reference internal" href="The%20restricted%20three-body%20problem.html">
+     The restricted three-body problem
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="Long%20term%20stability%20of%20Trappist-1.html">
+     Long term stability of N-body simulations: the case of Trappist-1
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="Outer%20Solar%20System.html">
+     Brouwer’s law in the outer Solar System
+    </a>
+   </li>
+   <li class="toctree-l2 current active">
+    <a class="current reference internal" href="#">
+     Box control in satellite Formation Flying
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="The%20variational%20equations.html">
+     The variational equations
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="Optimal%20Control%20of%20the%20Lotka-Volterra%20equations.html">
+     Optimal Control of the Lotka-Volterra equations
+    </a>
+   </li>
+  </ul>
+  <i class="fas fa-chevron-down">
+  </i>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../changelog.html">
+   Changelog
+  </a>
+ </li>
+</ul>
+
+</nav> <!-- To handle the deprecated key -->
+
+<div class="navbar_extra_footer">
+  Theme by the <a href="https://ebp.jupyterbook.org">Executable Book Project</a>
+</div>
+
+</div>
+
+
+          
+
+
+          
+<main class="col py-md-3 pl-md-4 bd-content overflow-auto" role="main">
+    
+    <div class="topbar container-xl fixed-top">
+    <div class="topbar-contents row">
+        <div class="col-12 col-md-3 bd-topbar-whitespace site-navigation show"></div>
+        <div class="col pl-md-4 topbar-main">
+            
+            <button id="navbar-toggler" class="navbar-toggler ml-0" type="button" data-toggle="collapse"
+                data-toggle="tooltip" data-placement="bottom" data-target=".site-navigation" aria-controls="navbar-menu"
+                aria-expanded="true" aria-label="Toggle navigation" aria-controls="site-navigation"
+                title="Toggle navigation" data-toggle="tooltip" data-placement="left">
+                <i class="fas fa-bars"></i>
+                <i class="fas fa-arrow-left"></i>
+                <i class="fas fa-arrow-up"></i>
+            </button>
+            
+            
+<div class="dropdown-buttons-trigger">
+    <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn" aria-label="Download this page"><i
+            class="fas fa-download"></i></button>
+
+    <div class="dropdown-buttons">
+        <!-- ipynb file if we had a myst markdown file -->
+        
+        <!-- Download raw file -->
+        <a class="dropdown-buttons" href="../_sources/notebooks/Box control for Formation Flying Satellites.ipynb.txt"><button type="button"
+                class="btn btn-secondary topbarbtn" title="Download source file" data-toggle="tooltip"
+                data-placement="left">.ipynb</button></a>
+        <!-- Download PDF via print -->
+        <button type="button" id="download-print" class="btn btn-secondary topbarbtn" title="Print to PDF"
+            onClick="window.print()" data-toggle="tooltip" data-placement="left">.pdf</button>
+    </div>
+</div>
+
+            <!-- Source interaction buttons -->
+
+<div class="dropdown-buttons-trigger">
+    <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn"
+        aria-label="Connect with source repository"><i class="fab fa-github"></i></button>
+    <div class="dropdown-buttons sourcebuttons">
+        <a class="repository-button"
+            href="https://github.com/bluescarni/heyoka.py"><button type="button" class="btn btn-secondary topbarbtn"
+                data-toggle="tooltip" data-placement="left" title="Source repository"><i
+                    class="fab fa-github"></i>repository</button></a>
+        <a class="issues-button"
+            href="https://github.com/bluescarni/heyoka.py/issues/new?title=Issue%20on%20page%20%2Fnotebooks/Box control for Formation Flying Satellites.html&body=Your%20issue%20content%20here."><button
+                type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip" data-placement="left"
+                title="Open an issue"><i class="fas fa-lightbulb"></i>open issue</button></a>
+        
+    </div>
+</div>
+
+
+            <!-- Full screen (wrap in <a> to have style consistency -->
+            <a class="full-screen-button"><button type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip"
+                    data-placement="bottom" onclick="toggleFullScreen()" aria-label="Fullscreen mode"
+                    title="Fullscreen mode"><i
+                        class="fas fa-expand"></i></button></a>
+
+            <!-- Launch buttons -->
+
+<div class="dropdown-buttons-trigger">
+    <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn"
+        aria-label="Launch interactive content"><i class="fas fa-rocket"></i></button>
+    <div class="dropdown-buttons">
+        
+        <a class="binder-button" href="https://mybinder.org/v2/gh/bluescarni/heyoka.py/main?urlpath=tree/doc/notebooks/Box control for Formation Flying Satellites.ipynb"><button type="button"
+                class="btn btn-secondary topbarbtn" title="Launch Binder" data-toggle="tooltip"
+                data-placement="left"><img class="binder-button-logo"
+                    src="../_static/images/logo_binder.svg"
+                    alt="Interact on binder">Binder</button></a>
+        
+        
+        
+        
+    </div>
+</div>
+
+        </div>
+
+        <!-- Table of contents -->
+        <div class="d-none d-md-block col-md-2 bd-toc show">
+            
+        <div class="tocsection onthispage pt-5 pb-3">
+            <i class="fas fa-list"></i>
+            Contents
+        </div>
+        <nav id="bd-toc-nav">
+            <ul class="nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#preliminaries">
+   Preliminaries
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#the-equations-of-motion">
+   The Equations of Motion
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#the-initial-conditions">
+   The Initial conditions
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#testing-the-adaptive-taylor-integration-and-plotting-the-trajectories">
+   Testing the Adaptive Taylor Integration and plotting the trajectories
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#controlling-the-formation-within-a-predefined-box">
+   Controlling the formation within a predefined box
+  </a>
+ </li>
+</ul>
+
+        </nav>
+        
+        </div>
+    </div>
+</div>
+    <div id="main-content" class="row">
+        <div class="col-12 col-md-9 pl-md-3 pr-md-0">
+        
+              <div>
+                
+  <div class="section" id="box-control-in-satellite-formation-flying">
+<h1>Box control in satellite Formation Flying<a class="headerlink" href="#box-control-in-satellite-formation-flying" title="Permalink to this headline">¶</a></h1>
+<p>We show how <em>heyoka.py</em> event detection machine can be used in an innovative formulation of the box-control problem for formation flying satellites. This is the problem of controlling a Deputy satellite to remain within a predefined control box defined in the Local Horizontal Local Vertical frame of the Chief satellite. Our solution is to apply impulsive DV when certain events trigger.</p>
+<p>To derive all equations we used and abused the <a class="reference external" href="https://vatankhahghadim.github.io/AER506/Notes/1%20-%20Fundamentals.pdf">Vectrix notation from Hugues</a>.</p>
+<div class="section" id="preliminaries">
+<h2>Preliminaries<a class="headerlink" href="#preliminaries" title="Permalink to this headline">¶</a></h2>
+<p>We consider the fundamental problem of satellite formation flying. A main satellite called Chief orbits some primary body (here the Earth). We consider two reference frames. <span class="math notranslate nohighlight">\(\mathcal F_i=\left[\hat{\mathbf e}_i, \hat{\mathbf e}_j, \hat{\mathbf e}_k \right]\)</span> is the inertial frame where the motion of both satellites will be described, while <span class="math notranslate nohighlight">\(\mathcal F_L=\left[\hat{\mathbf e}_r, \hat{\mathbf e}_\theta, \hat{\mathbf e}_h \right]\)</span> is the Local Horizontal Local Vertical frame referred to the Chief satellite. Its definition in terms of the Chief satellite position <span class="math notranslate nohighlight">\(\overrightarrow{\mathbf r}\)</span> and velocity <span class="math notranslate nohighlight">\(\overrightarrow{\mathbf v}\)</span> is:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+\left\{
+\begin{array}{ll}
+\hat{\mathbf e}_r &amp;= \frac{\overrightarrow{\mathbf r}}{r} \\
+\hat{\mathbf e}_\theta &amp;= \hat{\mathbf e}_h \times \hat{\mathbf e}_r\\ 
+\hat{\mathbf e}_h &amp;= \frac{\overrightarrow{\mathbf r} \times {\overrightarrow{\mathbf v}}} {\vert\overrightarrow{\mathbf r} \times {\overrightarrow{\mathbf v}}\vert}
+\end{array}
+\right.
+\end{split}\]</div>
+<p>We indicate with capital letters <span class="math notranslate nohighlight">\(X,Y,Z\)</span> the components of the satellite position vector in the frame <span class="math notranslate nohighlight">\(\mathcal F_i\)</span>, we introduce the quantities <span class="math notranslate nohighlight">\(r = \vert\overrightarrow{\mathbf r}\vert\)</span>, <span class="math notranslate nohighlight">\(r = \vert\overrightarrow{\mathbf h}\vert\)</span> and <span class="math notranslate nohighlight">\(\sigma = \overrightarrow{\mathbf r}\cdot \overrightarrow{\mathbf v}\)</span> and write the rotation matrix <span class="math notranslate nohighlight">\(\mathbf C_{Li} = \mathcal F_L^T \cdot \mathcal F_i\)</span> for the LHLV frame:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+\mathbf C_{Li} = 
+\frac{1}{hr}\left[
+\begin{array}{ccc}
+hX &amp; hY &amp; hZ \\
+r^2\dot X - \sigma X &amp; r^2\dot Y - \sigma Y &amp; r^2\dot Z - \sigma Z \\
+r(Y\dot Z - Z\dot Y) &amp; r(Z\dot X - X\dot Z) &amp; r(X\dot Y - Y\dot X) \\
+\end{array}
+\right]
+\end{split}\]</div>
+<p>which allows to find the <span class="math notranslate nohighlight">\(\mathcal F_i\)</span> components of a vector <span class="math notranslate nohighlight">\(\mathbf v_i\)</span> from its <span class="math notranslate nohighlight">\(\mathcal F_L\)</span> components as <span class="math notranslate nohighlight">\(\mathbf v_i = \mathbf C_{Li} \mathbf v_L\)</span>. The angular velocity of the LHLV frame is:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+\overrightarrow{\boldsymbol \omega} = \mathcal F_L \boldsymbol \omega_L = 
+\left[\hat{\mathbf e}_r, \hat{\mathbf e}_\theta, \hat{\mathbf e}_h \right]
+\left[
+\begin{array}{l}
+\omega_x\\
+\omega_y\\
+\omega_z\\
+\end{array}
+\right] = 
+\left[\hat{\mathbf e}_r, \hat{\mathbf e}_\theta, \hat{\mathbf e}_h \right]
+\left[
+\begin{array}{l}
+\frac rh  f_h\\
+0 \\
+\frac{h}{r^2}
+\end{array}
+\right]
+\end{split}\]</div>
+<p>where <span class="math notranslate nohighlight">\(f_h\)</span> is the perturbative acceleration acting on the satellite along the <span class="math notranslate nohighlight">\(\hat{\mathbf e}_h\)</span> direction.</p>
+</div>
+<div class="section" id="the-equations-of-motion">
+<h2>The Equations of Motion<a class="headerlink" href="#the-equations-of-motion" title="Permalink to this headline">¶</a></h2>
+<p>We consider the dynamics of both the Chief and the Deputy expressed in terms of their position and velocity in <span class="math notranslate nohighlight">\(\mathcal F_i\)</span> and subject to the J2 term only (the expression of additional terms for the Earth gravitational potential can be found <a class="reference external" href="https://space.stackexchange.com/questions/22266/j2-long-period-perturbations-in-the-inclination">here</a>:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+\left\{
+\begin{array}{ll}
+\ddot X_C &amp;= -\frac \mu{r_C^3}X_C + c\frac 1{r_C^5} \left(5\frac{Z_C^2}{r_C^2}-1 \right) X_C\\
+\ddot Y_C &amp;= -\frac \mu{r_C^3}Y_C + c\frac 1{r_C^5} \left(5\frac{Z_C^2}{r_C^2}-1 \right) Y_C\\ 
+\ddot Z_C &amp;= -\frac \mu{r_C^3}Z_C + c\frac 1{r_C^5} \left(5\frac{Z_C^2}{r_C^2}-1 \right) Z_C - 2c\frac 1{r_C^5} Z_C\\
+\ddot X_D &amp;= -\frac \mu{r_D^3}X_D + c\frac 1{r_D^5} \left(5\frac{Z_D^2}{r_D^2}-1 \right) X_D\\
+\ddot Y_D &amp;= -\frac \mu{r_D^3}Y_D + c\frac 1{r_D^5} \left(5\frac{Z_D^2}{r_D^2}-1 \right) Y_D\\ 
+\ddot Z_D &amp;= -\frac \mu{r_D^3}Z_D + c\frac 1{r_D^5} \left(5\frac{Z_D^2}{r_D^2}-1 \right) Z_D - 2c\frac 1{r_D^5} Z_D\\
+\end{array}
+\right.
+\end{split}\]</div>
+</div>
+<div class="section" id="the-initial-conditions">
+<h2>The Initial conditions<a class="headerlink" href="#the-initial-conditions" title="Permalink to this headline">¶</a></h2>
+<p>The initial conditions for the Chief satellite can be generic and are given in the <span class="math notranslate nohighlight">\(\mathcal F_i\)</span> frame. The initial conditions for the Deputy, instead, are given in the <span class="math notranslate nohighlight">\(\mathcal F_L\)</span> frame,. This simple fact couples the system breaking the symmetry of the equations of motion written above. Expressing the relative position and velocity as absolute and viceversa requires the use of <span class="math notranslate nohighlight">\(\mathbf C_{Li}\)</span>, and most importantly of <span class="math notranslate nohighlight">\(\omega_L\)</span> which is, in turn, affected by the perturbative accelerations acting on the Chief. The following transformations hold:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+\begin{array}{ll}
+\left[
+\begin{array}{l}
+ X_D\\
+ Y_D \\
+ Z_D
+\end{array}
+\right] &amp;= 
+\left[
+\begin{array}{l}
+ X_C\\
+ Y_C \\
+ Z_C
+\end{array}
+\right]+
+\mathbf C_{Li}^T \left[
+\begin{array}{l}
+ x\\
+ y \\
+ z
+\end{array}
+\right]
+\\
+\left[
+\begin{array}{l}
+\dot X_D\\
+\dot Y_D \\
+\dot Z_D
+\end{array}
+\right] &amp;= 
+\left[
+\begin{array}{l}
+\dot X_C\\
+\dot Y_C \\
+\dot Z_C
+\end{array}
+\right]+
+\mathbf C_{Li}^T \left[
+\begin{array}{l}
+ \dot x\\
+ \dot y \\
+ \dot z
+\end{array}
+\right]
++ \mathbf C_{Li}^T \boldsymbol w_L^\times \left[\begin{array}{l}
+ x\\
+ y \\
+ z
+\end{array}
+\right]
+\end{array}
+\end{split}\]</div>
+<p>where we have indicated with small letters <span class="math notranslate nohighlight">\(x,y,z\)</span> the components of the relative position vector of the Deputy.</p>
+<p>We can now start to code this in <em>heyoka.py</em>, we will introduce later the control part of the problem.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># The usual main imports</span>
+<span class="kn">import</span> <span class="nn">heyoka</span> <span class="k">as</span> <span class="nn">hy</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="o">%</span><span class="k">matplotlib</span> inline
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>We start writing down the Equation of Motion (EOM):</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># The state (using km as unit length)</span>
+<span class="n">xC</span><span class="p">,</span> <span class="n">yC</span><span class="p">,</span> <span class="n">zC</span><span class="p">,</span> <span class="n">vxC</span><span class="p">,</span> <span class="n">vyC</span><span class="p">,</span> <span class="n">vzC</span><span class="p">,</span> <span class="n">xD</span><span class="p">,</span> <span class="n">yD</span><span class="p">,</span> <span class="n">zD</span><span class="p">,</span> <span class="n">vxD</span><span class="p">,</span> <span class="n">vyD</span><span class="p">,</span> <span class="n">vzD</span><span class="p">,</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">make_vars</span><span class="p">(</span><span class="s2">&quot;xC&quot;</span><span class="p">,</span> <span class="s2">&quot;yC&quot;</span><span class="p">,</span> <span class="s2">&quot;zC&quot;</span><span class="p">,</span> <span class="s2">&quot;vxC&quot;</span><span class="p">,</span> <span class="s2">&quot;vyC&quot;</span><span class="p">,</span> <span class="s2">&quot;vzC&quot;</span><span class="p">,</span> <span class="s2">&quot;xD&quot;</span><span class="p">,</span> <span class="s2">&quot;yD&quot;</span><span class="p">,</span> <span class="s2">&quot;zD&quot;</span><span class="p">,</span> <span class="s2">&quot;vxD&quot;</span><span class="p">,</span> <span class="s2">&quot;vyD&quot;</span><span class="p">,</span> <span class="s2">&quot;vzD&quot;</span><span class="p">)</span>
+
+<span class="c1"># Parameters</span>
+<span class="n">mu</span> <span class="o">=</span> <span class="mf">398600.4418</span> <span class="c1">#km^3/sec^2 </span>
+<span class="n">J2</span> <span class="o">=</span> <span class="mf">1082.645E-6</span>
+<span class="n">Re</span> <span class="o">=</span> <span class="mi">6371</span> <span class="c1">#km</span>
+<span class="n">c</span> <span class="o">=</span> <span class="mf">3.</span><span class="o">/</span><span class="mf">2.</span> <span class="o">*</span> <span class="n">J2</span><span class="o">*</span><span class="n">mu</span><span class="o">*</span><span class="n">Re</span><span class="o">**</span><span class="mi">2</span>
+
+<span class="c1"># Auxiliary variables</span>
+<span class="n">rC2</span> <span class="o">=</span> <span class="n">xC</span><span class="o">**</span><span class="mi">2</span><span class="o">+</span><span class="n">yC</span><span class="o">**</span><span class="mi">2</span><span class="o">+</span><span class="n">zC</span><span class="o">**</span><span class="mi">2</span>
+<span class="n">rD2</span> <span class="o">=</span> <span class="n">xD</span><span class="o">**</span><span class="mi">2</span><span class="o">+</span><span class="n">yD</span><span class="o">**</span><span class="mi">2</span><span class="o">+</span><span class="n">zD</span><span class="o">**</span><span class="mi">2</span>
+
+<span class="c1"># EOM </span>
+<span class="c1"># Chief</span>
+<span class="n">dxC</span> <span class="o">=</span> <span class="n">vxC</span>
+<span class="n">dyC</span> <span class="o">=</span> <span class="n">vyC</span>
+<span class="n">dzC</span> <span class="o">=</span> <span class="n">vzC</span>
+<span class="n">dvxC</span> <span class="o">=</span> <span class="p">(</span><span class="o">-</span> <span class="n">mu</span> <span class="o">*</span> <span class="n">xC</span><span class="o">/</span><span class="n">rC2</span> <span class="o">-</span> <span class="n">c</span> <span class="o">*</span> <span class="n">xC</span> <span class="o">/</span> <span class="n">rC2</span><span class="o">**</span><span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="mi">5</span><span class="o">*</span><span class="n">zC</span><span class="o">**</span><span class="mi">2</span><span class="o">/</span><span class="n">rC2</span><span class="p">))</span> <span class="o">/</span> <span class="n">hy</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">rC2</span><span class="p">)</span>
+<span class="n">dvyC</span> <span class="o">=</span> <span class="p">(</span><span class="o">-</span> <span class="n">mu</span> <span class="o">*</span> <span class="n">yC</span><span class="o">/</span><span class="n">rC2</span> <span class="o">-</span> <span class="n">c</span> <span class="o">*</span> <span class="n">yC</span> <span class="o">/</span> <span class="n">rC2</span><span class="o">**</span><span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="mi">5</span><span class="o">*</span><span class="n">zC</span><span class="o">**</span><span class="mi">2</span><span class="o">/</span><span class="n">rC2</span><span class="p">))</span> <span class="o">/</span> <span class="n">hy</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">rC2</span><span class="p">)</span>
+<span class="n">dvzC</span> <span class="o">=</span> <span class="p">(</span><span class="o">-</span> <span class="n">mu</span> <span class="o">*</span> <span class="n">zC</span><span class="o">/</span><span class="n">rC2</span> <span class="o">-</span> <span class="n">c</span> <span class="o">*</span> <span class="n">zC</span> <span class="o">/</span> <span class="n">rC2</span><span class="o">**</span><span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="mi">3</span> <span class="o">-</span> <span class="mi">5</span><span class="o">*</span><span class="n">zC</span><span class="o">**</span><span class="mi">2</span><span class="o">/</span><span class="n">rC2</span><span class="p">))</span> <span class="o">/</span> <span class="n">hy</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">rC2</span><span class="p">)</span>
+
+<span class="c1"># Deputy</span>
+<span class="n">dxD</span> <span class="o">=</span> <span class="n">vxD</span>
+<span class="n">dyD</span> <span class="o">=</span> <span class="n">vyD</span>
+<span class="n">dzD</span> <span class="o">=</span> <span class="n">vzD</span>
+<span class="n">dvxD</span> <span class="o">=</span> <span class="p">(</span><span class="o">-</span> <span class="n">mu</span> <span class="o">*</span> <span class="n">xD</span><span class="o">/</span><span class="n">rD2</span> <span class="o">-</span> <span class="n">c</span> <span class="o">*</span> <span class="n">xD</span> <span class="o">/</span> <span class="n">rD2</span><span class="o">**</span><span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="mi">5</span><span class="o">*</span><span class="n">zD</span><span class="o">**</span><span class="mi">2</span><span class="o">/</span><span class="n">rD2</span><span class="p">))</span> <span class="o">/</span> <span class="n">hy</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">rD2</span><span class="p">)</span>
+<span class="n">dvyD</span> <span class="o">=</span> <span class="p">(</span><span class="o">-</span> <span class="n">mu</span> <span class="o">*</span> <span class="n">yD</span><span class="o">/</span><span class="n">rD2</span> <span class="o">-</span> <span class="n">c</span> <span class="o">*</span> <span class="n">yD</span> <span class="o">/</span> <span class="n">rD2</span><span class="o">**</span><span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="mi">5</span><span class="o">*</span><span class="n">zD</span><span class="o">**</span><span class="mi">2</span><span class="o">/</span><span class="n">rD2</span><span class="p">))</span> <span class="o">/</span> <span class="n">hy</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">rD2</span><span class="p">)</span>
+<span class="n">dvzD</span> <span class="o">=</span> <span class="p">(</span><span class="o">-</span> <span class="n">mu</span> <span class="o">*</span> <span class="n">zD</span><span class="o">/</span><span class="n">rD2</span> <span class="o">-</span> <span class="n">c</span> <span class="o">*</span> <span class="n">zD</span> <span class="o">/</span> <span class="n">rD2</span><span class="o">**</span><span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="mi">3</span> <span class="o">-</span> <span class="mi">5</span><span class="o">*</span><span class="n">zD</span><span class="o">**</span><span class="mi">2</span><span class="o">/</span><span class="n">rD2</span><span class="p">))</span> <span class="o">/</span> <span class="n">hy</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">rD2</span><span class="p">)</span>
+
+<span class="c1"># Equations</span>
+<span class="n">eqns</span> <span class="o">=</span> <span class="p">[(</span><span class="n">xC</span><span class="p">,</span> <span class="n">dxC</span><span class="p">),</span> <span class="p">(</span><span class="n">yC</span><span class="p">,</span> <span class="n">dyC</span><span class="p">),</span> <span class="p">(</span><span class="n">zC</span><span class="p">,</span> <span class="n">dzC</span><span class="p">),</span> <span class="p">(</span><span class="n">vxC</span><span class="p">,</span> <span class="n">dvxC</span><span class="p">),</span> <span class="p">(</span><span class="n">vyC</span><span class="p">,</span> <span class="n">dvyC</span><span class="p">),</span> <span class="p">(</span><span class="n">vzC</span><span class="p">,</span> <span class="n">dvzC</span><span class="p">),</span> <span class="p">(</span><span class="n">xD</span><span class="p">,</span> <span class="n">dxD</span><span class="p">),</span> <span class="p">(</span><span class="n">yD</span><span class="p">,</span> <span class="n">dyD</span><span class="p">),</span> <span class="p">(</span><span class="n">zD</span><span class="p">,</span> <span class="n">dzD</span><span class="p">),</span> <span class="p">(</span><span class="n">vxD</span><span class="p">,</span> <span class="n">dvxD</span><span class="p">),</span> <span class="p">(</span><span class="n">vyD</span><span class="p">,</span> <span class="n">dvyD</span><span class="p">),</span> <span class="p">(</span><span class="n">vzD</span><span class="p">,</span> <span class="n">dvzD</span><span class="p">)]</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>And some helper functions allowing conversions between inertial and LHLV frames:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">compute_LHLV_rot</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="n">fh</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Computes the rotation matrix C from inertial to LHLV. i.e. v_{LHLV} = C v_{inertial} </span>
+<span class="sd">    and the angular velocity of the LHLV frame</span>
+<span class="sd">    </span>
+<span class="sd">    Args:</span>
+<span class="sd">        state (1D np.array): the satellite state in the inertial frame</span>
+<span class="sd">        fh (float): disturbance acting on the satellite along the i_h axis (aligned with angular momentum)</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        np.matrix (3x3): the rotation matrix</span>
+<span class="sd">        np.matrix (3x1): the angular velocity</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># We dispatch to the correct implementation of sqrt according to the state type</span>
+    <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">state</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">==</span> <span class="nb">type</span><span class="p">(</span><span class="n">xC</span><span class="p">):</span>
+        <span class="n">sqrt</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">sqrt</span>
+        <span class="n">zero</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">expression</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">sqrt</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span>
+        <span class="n">state_type</span> <span class="o">=</span> <span class="nb">float</span>
+        <span class="n">zero</span> <span class="o">=</span> <span class="mf">0.</span>
+    <span class="c1"># Rotation Matrix</span>
+    <span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">Z</span><span class="p">,</span> <span class="n">DX</span><span class="p">,</span> <span class="n">DY</span><span class="p">,</span> <span class="n">DZ</span> <span class="o">=</span> <span class="n">state</span>
+    <span class="n">r2</span> <span class="o">=</span> <span class="n">X</span><span class="o">*</span><span class="n">X</span><span class="o">+</span><span class="n">Y</span><span class="o">*</span><span class="n">Y</span><span class="o">+</span><span class="n">Z</span><span class="o">*</span><span class="n">Z</span>
+    <span class="n">r</span> <span class="o">=</span> <span class="n">sqrt</span><span class="p">(</span><span class="n">r2</span><span class="p">)</span>
+    <span class="n">h2</span> <span class="o">=</span> <span class="p">(</span><span class="n">Y</span><span class="o">*</span><span class="n">DZ</span><span class="o">-</span><span class="n">Z</span><span class="o">*</span><span class="n">DY</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="p">(</span><span class="n">Z</span><span class="o">*</span><span class="n">DX</span><span class="o">-</span><span class="n">X</span><span class="o">*</span><span class="n">DZ</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="p">(</span><span class="n">X</span><span class="o">*</span><span class="n">DY</span><span class="o">-</span><span class="n">Y</span><span class="o">*</span><span class="n">DX</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span>
+    <span class="n">h</span> <span class="o">=</span> <span class="n">sqrt</span><span class="p">(</span><span class="n">h2</span><span class="p">)</span>
+    <span class="n">sigma</span> <span class="o">=</span> <span class="n">X</span><span class="o">*</span><span class="n">DX</span><span class="o">+</span><span class="n">Y</span><span class="o">*</span><span class="n">DY</span><span class="o">+</span><span class="n">Z</span><span class="o">*</span><span class="n">DZ</span>
+    <span class="n">retval1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">matrix</span><span class="p">([[</span><span class="n">h</span><span class="o">*</span><span class="n">X</span><span class="p">,</span> <span class="n">h</span><span class="o">*</span><span class="n">Y</span><span class="p">,</span> <span class="n">h</span><span class="o">*</span><span class="n">Z</span><span class="p">],</span> <span class="p">[</span><span class="n">r2</span><span class="o">*</span><span class="n">DX</span><span class="o">-</span><span class="n">sigma</span><span class="o">*</span><span class="n">X</span><span class="p">,</span> <span class="n">r2</span><span class="o">*</span><span class="n">DY</span><span class="o">-</span><span class="n">sigma</span><span class="o">*</span><span class="n">Y</span><span class="p">,</span> <span class="n">r2</span><span class="o">*</span><span class="n">DZ</span><span class="o">-</span><span class="n">sigma</span><span class="o">*</span><span class="n">Z</span><span class="p">],</span> <span class="p">[</span><span class="n">r</span><span class="o">*</span><span class="p">(</span><span class="n">Y</span><span class="o">*</span><span class="n">DZ</span><span class="o">-</span><span class="n">Z</span><span class="o">*</span><span class="n">DY</span><span class="p">),</span> <span class="n">r</span><span class="o">*</span><span class="p">(</span><span class="n">Z</span><span class="o">*</span><span class="n">DX</span><span class="o">-</span><span class="n">X</span><span class="o">*</span><span class="n">DZ</span><span class="p">),</span> <span class="n">r</span><span class="o">*</span><span class="p">(</span><span class="n">X</span><span class="o">*</span><span class="n">DY</span><span class="o">-</span><span class="n">Y</span><span class="o">*</span><span class="n">DX</span><span class="p">)]])</span> <span class="o">/</span> <span class="n">h</span> <span class="o">/</span> <span class="n">r</span>
+    
+    <span class="c1"># Angular velocity</span>
+    <span class="n">retval2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">matrix</span><span class="p">([[</span><span class="n">r</span><span class="o">/</span><span class="n">h</span><span class="o">*</span><span class="n">fh</span><span class="p">],[</span><span class="n">zero</span><span class="p">],[</span><span class="n">h</span><span class="o">/</span><span class="n">r2</span><span class="p">]])</span>
+    
+    <span class="k">return</span> <span class="n">retval1</span><span class="p">,</span> <span class="n">retval2</span>
+
+<span class="k">def</span> <span class="nf">to_relative</span><span class="p">(</span><span class="n">stateC</span><span class="p">,</span> <span class="n">stateD</span><span class="p">,</span> <span class="n">fh</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Transforms the state of the Deputy to the LHLV frame attached to the Chief</span>
+<span class="sd">    </span>
+<span class="sd">    Args:</span>
+<span class="sd">        stateC (1D np.array): the Chief state in the inertial frame </span>
+<span class="sd">        stateD (1D np.array): the Deputy state in the inertial frame</span>
+<span class="sd">        fh (float): disturbance acting on the Chief satellite along the i_h axis (aligned with angular momentum)</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        np.array, np.array: r,v in the LHLV frame</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># We reshape the input state into column vectors and alike</span>
+    <span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">Z</span><span class="p">,</span> <span class="n">DX</span><span class="p">,</span> <span class="n">DY</span><span class="p">,</span> <span class="n">DZ</span> <span class="o">=</span> <span class="n">stateC</span>
+    <span class="n">XD</span><span class="p">,</span> <span class="n">YD</span><span class="p">,</span> <span class="n">ZD</span><span class="p">,</span> <span class="n">DXD</span><span class="p">,</span> <span class="n">DYD</span><span class="p">,</span> <span class="n">DZD</span> <span class="o">=</span> <span class="n">stateD</span>
+    <span class="n">rC</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">matrix</span><span class="p">([[</span><span class="n">X</span><span class="p">],[</span><span class="n">Y</span><span class="p">],[</span><span class="n">Z</span><span class="p">]])</span>
+    <span class="n">rD</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">matrix</span><span class="p">([[</span><span class="n">XD</span><span class="p">],[</span><span class="n">YD</span><span class="p">],[</span><span class="n">ZD</span><span class="p">]])</span>
+    <span class="n">vC</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">matrix</span><span class="p">([[</span><span class="n">DX</span><span class="p">],[</span><span class="n">DY</span><span class="p">],[</span><span class="n">DZ</span><span class="p">]])</span>
+    <span class="n">vD</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">matrix</span><span class="p">([[</span><span class="n">DXD</span><span class="p">],[</span><span class="n">DYD</span><span class="p">],[</span><span class="n">DZD</span><span class="p">]])</span>
+    <span class="c1"># We compute the LHLV rotation matrix and angular velocity</span>
+    <span class="n">C</span><span class="p">,</span> <span class="n">omega</span> <span class="o">=</span> <span class="n">compute_LHLV_rot</span><span class="p">(</span><span class="n">stateC</span><span class="p">,</span> <span class="n">fh</span><span class="p">)</span>
+    <span class="c1"># We compute the relative state</span>
+    <span class="n">xD</span> <span class="o">=</span> <span class="n">C</span> <span class="o">*</span> <span class="p">(</span><span class="n">rD</span> <span class="o">-</span> <span class="n">rC</span><span class="p">)</span>
+    <span class="n">dxD</span> <span class="o">=</span> <span class="n">C</span> <span class="o">*</span> <span class="p">(</span><span class="n">vD</span> <span class="o">-</span> <span class="n">vC</span><span class="p">)</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">cross</span><span class="p">(</span><span class="n">omega</span><span class="o">.</span><span class="n">transpose</span><span class="p">(),</span> <span class="n">xD</span><span class="o">.</span><span class="n">transpose</span><span class="p">())</span><span class="o">.</span><span class="n">transpose</span><span class="p">()</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">xD</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span> <span class="n">xD</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span> <span class="n">xD</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span> <span class="n">dxD</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span> <span class="n">dxD</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span> <span class="n">dxD</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="mi">0</span><span class="p">]]</span>
+    
+    
+<span class="k">def</span> <span class="nf">to_absolute</span><span class="p">(</span><span class="n">stateC</span><span class="p">,</span> <span class="n">stateD</span><span class="p">,</span> <span class="n">fh</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Transforms the state of the Deputy to the inertial frame</span>
+<span class="sd">    </span>
+<span class="sd">    Args:</span>
+<span class="sd">        stateC (1D np.array): the Chief state in the inertial frame </span>
+<span class="sd">        stateD (1D np.array): the Deputy state in the LHLV frame attached to the Chief</span>
+<span class="sd">        fh (float): disturbance acting on the Chief satellite along the i_h axis (aligned with angular momentum)</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        np.array, np.array: r,v in the LHLV frame</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># We reshape the input state into column vectors and alike</span>
+    <span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">Z</span><span class="p">,</span> <span class="n">DX</span><span class="p">,</span> <span class="n">DY</span><span class="p">,</span> <span class="n">DZ</span> <span class="o">=</span> <span class="n">stateC</span>
+    <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">dx</span><span class="p">,</span> <span class="n">dy</span><span class="p">,</span> <span class="n">dz</span> <span class="o">=</span> <span class="n">stateD</span>
+    <span class="n">rC</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">matrix</span><span class="p">([[</span><span class="n">X</span><span class="p">],[</span><span class="n">Y</span><span class="p">],[</span><span class="n">Z</span><span class="p">]])</span>
+    <span class="n">xD</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">matrix</span><span class="p">([[</span><span class="n">x</span><span class="p">],[</span><span class="n">y</span><span class="p">],[</span><span class="n">z</span><span class="p">]])</span>
+    <span class="n">vC</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">matrix</span><span class="p">([[</span><span class="n">DX</span><span class="p">],[</span><span class="n">DY</span><span class="p">],[</span><span class="n">DZ</span><span class="p">]])</span>
+    <span class="n">dxD</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">matrix</span><span class="p">([[</span><span class="n">dx</span><span class="p">],[</span><span class="n">dy</span><span class="p">],[</span><span class="n">dz</span><span class="p">]])</span>
+    <span class="c1"># We compute the LHLV rotation matrix and angular velocity</span>
+    <span class="n">C</span><span class="p">,</span> <span class="n">omega</span> <span class="o">=</span> <span class="n">compute_LHLV_rot</span><span class="p">(</span><span class="n">stateC</span><span class="p">,</span> <span class="n">fh</span><span class="p">)</span>
+    <span class="n">C</span> <span class="o">=</span> <span class="n">C</span><span class="o">.</span><span class="n">transpose</span><span class="p">()</span>
+    <span class="c1"># We compute the absolute state</span>
+    <span class="n">rD</span> <span class="o">=</span> <span class="n">rC</span> <span class="o">+</span> <span class="n">C</span> <span class="o">*</span> <span class="n">xD</span>
+    <span class="n">vD</span> <span class="o">=</span> <span class="n">vC</span> <span class="o">+</span> <span class="n">C</span> <span class="o">*</span> <span class="p">(</span><span class="n">dxD</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">cross</span><span class="p">(</span><span class="n">omega</span><span class="o">.</span><span class="n">transpose</span><span class="p">(),</span> <span class="n">xD</span><span class="o">.</span><span class="n">transpose</span><span class="p">())</span><span class="o">.</span><span class="n">transpose</span><span class="p">())</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">rD</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span> <span class="n">rD</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span> <span class="n">rD</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span> <span class="n">vD</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span> <span class="n">vD</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span> <span class="n">vD</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="mi">0</span><span class="p">]]</span>
+
+<span class="k">def</span> <span class="nf">J2_LHLV</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="n">c</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Computes the J2 perturbation in the LHLV frame</span>
+<span class="sd">    </span>
+<span class="sd">    Args:</span>
+<span class="sd">        state (1D np.array): the state in the inertial frame </span>
+<span class="sd">        c (float): the constant 3/2 * J2 * mu * Re**2</span>
+<span class="sd">        </span>
+<span class="sd">    Returns:</span>
+<span class="sd">        np.array: the resulting J2 perturbation in the LHLV frame</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># We dispatch to the correct implementation of sqrt according to the state type</span>
+    <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">state</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">==</span> <span class="nb">type</span><span class="p">(</span><span class="n">xC</span><span class="p">):</span>
+        <span class="n">sqrt</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">sqrt</span>
+        <span class="n">state_type</span> <span class="o">=</span> <span class="nb">object</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">sqrt</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span>
+        <span class="n">state_type</span> <span class="o">=</span> <span class="nb">float</span>
+        
+    <span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">Z</span><span class="p">,</span> <span class="n">DX</span><span class="p">,</span> <span class="n">DY</span><span class="p">,</span> <span class="n">DZ</span> <span class="o">=</span> <span class="n">state</span>
+    <span class="n">r2</span> <span class="o">=</span> <span class="n">X</span><span class="o">*</span><span class="n">X</span><span class="o">+</span><span class="n">Y</span><span class="o">*</span><span class="n">Y</span><span class="o">+</span><span class="n">Z</span><span class="o">*</span><span class="n">Z</span>
+    <span class="n">r</span> <span class="o">=</span> <span class="n">sqrt</span><span class="p">(</span><span class="n">r2</span><span class="p">)</span>
+    <span class="n">h2</span> <span class="o">=</span> <span class="p">(</span><span class="n">Y</span><span class="o">*</span><span class="n">DZ</span><span class="o">-</span><span class="n">Z</span><span class="o">*</span><span class="n">DY</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="p">(</span><span class="n">Z</span><span class="o">*</span><span class="n">DX</span><span class="o">-</span><span class="n">X</span><span class="o">*</span><span class="n">DZ</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="p">(</span><span class="n">X</span><span class="o">*</span><span class="n">DY</span><span class="o">-</span><span class="n">Y</span><span class="o">*</span><span class="n">DX</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span>
+    <span class="n">h</span> <span class="o">=</span> <span class="n">sqrt</span><span class="p">(</span><span class="n">h2</span><span class="p">)</span>
+    <span class="n">sigma</span> <span class="o">=</span> <span class="n">X</span><span class="o">*</span><span class="n">DX</span><span class="o">+</span><span class="n">Y</span><span class="o">*</span><span class="n">DY</span><span class="o">+</span><span class="n">Z</span><span class="o">*</span><span class="n">DZ</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">c</span><span class="o">/</span><span class="n">r2</span><span class="o">**</span><span class="mi">2</span><span class="o">*</span><span class="p">(</span><span class="mi">3</span><span class="o">*</span><span class="n">Z</span><span class="o">/</span><span class="n">r2</span><span class="o">-</span><span class="mi">1</span><span class="p">),</span> <span class="o">-</span><span class="mi">2</span><span class="o">*</span><span class="n">c</span><span class="o">/</span><span class="n">h</span><span class="o">/</span><span class="n">r2</span><span class="o">**</span><span class="mi">3</span><span class="o">*</span><span class="n">Z</span><span class="o">*</span><span class="p">(</span><span class="n">r2</span><span class="o">*</span><span class="n">DZ</span><span class="o">-</span><span class="n">sigma</span><span class="o">*</span><span class="n">Z</span><span class="p">),</span> <span class="o">-</span> <span class="mi">2</span><span class="o">*</span><span class="n">c</span><span class="o">/</span><span class="n">h</span><span class="o">/</span><span class="n">r2</span><span class="o">**</span><span class="mi">2</span><span class="o">/</span><span class="n">r</span><span class="o">*</span><span class="n">Z</span><span class="o">*</span><span class="p">(</span><span class="n">X</span><span class="o">*</span><span class="n">DY</span><span class="o">-</span><span class="n">Y</span><span class="o">*</span><span class="n">DX</span><span class="p">)],</span> <span class="n">dtype</span> <span class="o">=</span> <span class="n">state_type</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="testing-the-adaptive-taylor-integration-and-plotting-the-trajectories">
+<h2>Testing the Adaptive Taylor Integration and plotting the trajectories<a class="headerlink" href="#testing-the-adaptive-taylor-integration-and-plotting-the-trajectories" title="Permalink to this headline">¶</a></h2>
+<p>Lets visualize the solution of the numerical integration in the LHLV frame for the Deputy and in the inertial frame for the Chief.</p>
+<p>We use, as reference orbit for the Chief, a circular orbit at 750km of altitude and an inclination of 98.2 degrees. The deputy is set to follow behind in the LHLV frame at a distance of 100m. We also add 1m offset in the z direction to make the problem third dimension count.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Chief Orbit</span>
+<span class="n">incl</span> <span class="o">=</span> <span class="mf">98.2</span><span class="o">/</span><span class="mi">180</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span>
+<span class="n">h</span> <span class="o">=</span> <span class="mi">750</span>
+<span class="n">a</span> <span class="o">=</span> <span class="n">Re</span><span class="o">+</span><span class="n">h</span>
+<span class="c1"># Deputy orbit</span>
+<span class="n">trailing</span> <span class="o">=</span> <span class="o">-</span><span class="mf">0.1</span> <span class="c1"># 100 m</span>
+<span class="n">hover</span> <span class="o">=</span> <span class="o">-</span><span class="mf">6.7567E-7</span>  <span class="c1"># accounts for non linearities and puts the Deputy trailing the Chief.</span>
+<span class="c1"># Initial Conditions for the Chief</span>
+<span class="n">chief_ic</span> <span class="o">=</span> <span class="p">[</span><span class="n">a</span><span class="p">,</span><span class="mf">0.</span><span class="p">,</span><span class="mf">0.</span><span class="p">,</span><span class="mf">0.</span><span class="p">,</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">mu</span><span class="o">/</span><span class="n">a</span><span class="p">)</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">incl</span><span class="p">),</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">mu</span><span class="o">/</span><span class="n">a</span><span class="p">)</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">incl</span><span class="p">)]</span>
+<span class="c1"># Initial Conditions for the Deputy (we start in the LHLV frame)</span>
+<span class="n">deputy_ic_r</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.</span><span class="p">,</span> <span class="n">trailing</span><span class="p">,</span> <span class="n">hover</span><span class="p">,</span> <span class="mf">0.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">]</span>
+<span class="n">fh</span> <span class="o">=</span> <span class="n">J2_LHLV</span><span class="p">(</span><span class="n">chief_ic</span><span class="p">,</span> <span class="n">c</span><span class="p">)[</span><span class="mi">2</span><span class="p">]</span>
+<span class="c1"># Initial Conditions for the Chief (in the inertial frame)</span>
+<span class="n">deputy_ic</span> <span class="o">=</span> <span class="n">to_absolute</span><span class="p">(</span><span class="n">chief_ic</span><span class="p">,</span> <span class="n">deputy_ic_r</span><span class="p">,</span> <span class="n">fh</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>we are now able to instantiate the the Taylor integrator:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># The Taylor integrator</span>
+<span class="n">ta</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">taylor_adaptive</span><span class="p">(</span><span class="n">eqns</span><span class="p">,</span> <span class="n">chief_ic</span> <span class="o">+</span> <span class="n">deputy_ic</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>and to perform the integration:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># As a test we propagate for 10 orbits</span>
+<span class="c1"># Number of points in the time grid</span>
+<span class="n">N</span> <span class="o">=</span> <span class="mi">1500</span>
+<span class="n">t_grid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">20</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">a</span><span class="o">**</span><span class="mi">3</span><span class="o">/</span><span class="n">mu</span><span class="p">),</span> <span class="n">N</span><span class="p">)</span>
+<span class="c1"># Propagate and return the state at the grid points</span>
+<span class="n">oc</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">res</span> <span class="o">=</span> <span class="n">ta</span><span class="o">.</span><span class="n">propagate_grid</span><span class="p">(</span><span class="n">t_grid</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Since we wrote the equation in the inertial frame we need to retreive the Deputy state in the LHL frame:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># We compute the results in the LHLV frame for the Deputy</span>
+<span class="n">deputy_rel</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">N</span><span class="p">,</span><span class="mi">6</span><span class="p">))</span>
+<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">item</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">res</span><span class="p">):</span>
+    <span class="n">fh</span> <span class="o">=</span> <span class="n">J2_LHLV</span><span class="p">(</span><span class="n">item</span><span class="p">[:</span><span class="mi">6</span><span class="p">],</span> <span class="n">c</span><span class="p">)[</span><span class="mi">2</span><span class="p">]</span>
+    <span class="n">deputy_rel</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">to_relative</span><span class="p">(</span><span class="n">item</span><span class="p">[:</span><span class="mi">6</span><span class="p">],</span> <span class="n">item</span><span class="p">[</span><span class="mi">6</span><span class="p">:],</span> <span class="n">fh</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>We can finally plot the resulting orbit:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># And plot</span>
+<span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span> <span class="o">=</span> <span class="p">(</span><span class="mi">9</span><span class="p">,</span><span class="mi">9</span><span class="p">))</span>
+<span class="n">ax1</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">projection</span><span class="o">=</span><span class="s1">&#39;3d&#39;</span><span class="p">)</span>
+<span class="n">ax2</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">projection</span><span class="o">=</span><span class="s1">&#39;3d&#39;</span><span class="p">)</span>
+
+<span class="n">ax1</span><span class="o">.</span><span class="n">plot3D</span><span class="p">(</span><span class="n">res</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">res</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">res</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">])</span>
+<span class="n">ax1</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Chief (inertial frame)&quot;</span><span class="p">)</span>
+<span class="n">ax1</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">([</span><span class="o">-</span><span class="mi">6000</span><span class="p">,</span><span class="mi">6000</span><span class="p">])</span>
+<span class="n">ax1</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">([</span><span class="o">-</span><span class="mi">6000</span><span class="p">,</span><span class="mi">6000</span><span class="p">])</span>
+<span class="n">ax1</span><span class="o">.</span><span class="n">set_zlim</span><span class="p">([</span><span class="o">-</span><span class="mi">6000</span><span class="p">,</span><span class="mi">6000</span><span class="p">])</span>
+<span class="n">ax2</span><span class="o">.</span><span class="n">plot3D</span><span class="p">(</span><span class="n">deputy_rel</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">deputy_rel</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">deputy_rel</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">])</span>
+<span class="n">ax2</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Deputy (LHLV frame)&quot;</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/Box control for Formation Flying Satellites_15_0.png" src="../_images/Box control for Formation Flying Satellites_15_0.png" />
+</div>
+</div>
+</div>
+<div class="section" id="controlling-the-formation-within-a-predefined-box">
+<h2>Controlling the formation within a predefined box<a class="headerlink" href="#controlling-the-formation-within-a-predefined-box" title="Permalink to this headline">¶</a></h2>
+<p>Now that we have established the equation of motion, we can simulate a box-control strategy.
+In essence, we want to keep the Deputy within a box centered around its initial trailing position and of a predefined size.</p>
+<p>To do so, each time the box border is reached, we will apply a <span class="math notranslate nohighlight">\(\Delta V\)</span> flipping the relative velocity component along the corresponding axis, thus keeping the Deputy within the desired box.</p>
+<p>First we write two callbacks which will flip or cancel the velocity and update the <span class="math notranslate nohighlight">\(\Delta V\)</span> count.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># This callback flips the selected component (x = 3, y = 4, z = 5)</span>
+<span class="c1"># of the relative velocity</span>
+<span class="k">def</span> <span class="nf">cb_flip_rel_component</span><span class="p">(</span><span class="n">ta</span><span class="p">,</span> <span class="n">mr</span><span class="p">,</span> <span class="n">component</span><span class="p">):</span>
+    <span class="k">global</span> <span class="n">DV</span>
+    <span class="c1"># Compute the perturbation effect on w</span>
+    <span class="n">fh</span> <span class="o">=</span> <span class="n">J2_LHLV</span><span class="p">(</span><span class="n">ta</span><span class="o">.</span><span class="n">state</span><span class="p">[:</span><span class="mi">6</span><span class="p">],</span> <span class="n">c</span><span class="p">)[</span><span class="mi">2</span><span class="p">]</span>
+    <span class="c1"># Getting the relative state of the Deputy</span>
+    <span class="n">rel_state</span> <span class="o">=</span> <span class="n">to_relative</span><span class="p">(</span><span class="n">ta</span><span class="o">.</span><span class="n">state</span><span class="p">[:</span><span class="mi">6</span><span class="p">],</span> <span class="n">ta</span><span class="o">.</span><span class="n">state</span><span class="p">[</span><span class="mi">6</span><span class="p">:],</span> <span class="n">fh</span><span class="p">)</span>
+    <span class="c1"># Flipping the corresponding component</span>
+    <span class="n">rel_state</span><span class="p">[</span><span class="n">component</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="n">rel_state</span><span class="p">[</span><span class="n">component</span><span class="p">]</span>
+    <span class="c1"># Getting the absolute state back</span>
+    <span class="n">new_abs_state</span> <span class="o">=</span> <span class="n">to_absolute</span><span class="p">(</span><span class="n">ta</span><span class="o">.</span><span class="n">state</span><span class="p">[:</span><span class="mi">6</span><span class="p">],</span> <span class="n">rel_state</span><span class="p">,</span> <span class="n">fh</span><span class="p">)</span>
+    <span class="c1"># Updating the Tatlor integrator internal state</span>
+    <span class="n">ta</span><span class="o">.</span><span class="n">state</span><span class="p">[</span><span class="mi">6</span><span class="p">:]</span> <span class="o">=</span> <span class="n">new_abs_state</span>
+    <span class="c1"># Updating the DV count</span>
+    <span class="n">DV</span><span class="o">+=</span><span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">rel_state</span><span class="p">[</span><span class="n">component</span><span class="p">])</span>
+    <span class="k">return</span> <span class="kc">True</span>
+
+<span class="c1"># This callback flips the selected component (x = 3, y = 4, z = 5)</span>
+<span class="c1"># of the relative velocity</span>
+<span class="k">def</span> <span class="nf">cb_zero_rel_component</span><span class="p">(</span><span class="n">ta</span><span class="p">,</span> <span class="n">mr</span><span class="p">,</span> <span class="n">component</span><span class="p">):</span>
+    <span class="k">global</span> <span class="n">DV</span>
+    <span class="c1"># Compute the perturbation effect on w</span>
+    <span class="n">fh</span> <span class="o">=</span> <span class="n">J2_LHLV</span><span class="p">(</span><span class="n">ta</span><span class="o">.</span><span class="n">state</span><span class="p">[:</span><span class="mi">6</span><span class="p">],</span> <span class="n">c</span><span class="p">)[</span><span class="mi">2</span><span class="p">]</span>
+    <span class="c1"># Getting the relative state of the Deputy</span>
+    <span class="n">rel_state</span> <span class="o">=</span> <span class="n">to_relative</span><span class="p">(</span><span class="n">ta</span><span class="o">.</span><span class="n">state</span><span class="p">[:</span><span class="mi">6</span><span class="p">],</span> <span class="n">ta</span><span class="o">.</span><span class="n">state</span><span class="p">[</span><span class="mi">6</span><span class="p">:],</span> <span class="n">fh</span><span class="p">)</span>
+    <span class="c1"># Zeroing the corresponding component</span>
+    <span class="n">rel_state</span><span class="p">[</span><span class="n">component</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.</span>
+    <span class="c1"># Getting the absolute state back</span>
+    <span class="n">new_abs_state</span> <span class="o">=</span> <span class="n">to_absolute</span><span class="p">(</span><span class="n">ta</span><span class="o">.</span><span class="n">state</span><span class="p">[:</span><span class="mi">6</span><span class="p">],</span> <span class="n">rel_state</span><span class="p">,</span> <span class="n">fh</span><span class="p">)</span>
+    <span class="c1"># Updating the Tatlor integrator internal state</span>
+    <span class="n">ta</span><span class="o">.</span><span class="n">state</span><span class="p">[</span><span class="mi">6</span><span class="p">:]</span> <span class="o">=</span> <span class="n">new_abs_state</span>
+    <span class="c1"># Updating the DV count</span>
+    <span class="n">DV</span><span class="o">+=</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">rel_state</span><span class="p">[</span><span class="n">component</span><span class="p">])</span>
+    <span class="k">return</span> <span class="kc">True</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>We then define the various events triggering when the box boundary is reached. Since the control box is defined in the LHLV frame, we first need to compute the expressions of the relative state as a function of the absolute state:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fh_sym</span> <span class="o">=</span> <span class="n">J2_LHLV</span><span class="p">([</span><span class="n">xC</span><span class="p">,</span> <span class="n">yC</span><span class="p">,</span> <span class="n">zC</span><span class="p">,</span> <span class="n">vxC</span><span class="p">,</span> <span class="n">vyC</span><span class="p">,</span> <span class="n">vzC</span><span class="p">],</span> <span class="n">c</span><span class="p">)[</span><span class="mi">2</span><span class="p">]</span>
+<span class="n">state_rel_sym</span> <span class="o">=</span> <span class="n">to_relative</span><span class="p">([</span><span class="n">xC</span><span class="p">,</span> <span class="n">yC</span><span class="p">,</span> <span class="n">zC</span><span class="p">,</span> <span class="n">vxC</span><span class="p">,</span> <span class="n">vyC</span><span class="p">,</span> <span class="n">vzC</span><span class="p">],[</span><span class="n">xD</span><span class="p">,</span> <span class="n">yD</span><span class="p">,</span> <span class="n">zD</span><span class="p">,</span> <span class="n">vxD</span><span class="p">,</span> <span class="n">vyD</span><span class="p">,</span> <span class="n">vzD</span><span class="p">],</span> <span class="n">fh_sym</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>The events can now be defined:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># The size of the control box is 10 cm</span>
+<span class="n">box_size</span> <span class="o">=</span> <span class="mf">0.0001</span>
+<span class="c1"># We define one event per cube side</span>
+<span class="n">ev_left</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">t_event</span><span class="p">(</span><span class="n">state_rel_sym</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>  <span class="o">-</span> <span class="n">box_size</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="n">callback</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">ta</span><span class="p">,</span> <span class="n">mr</span><span class="p">:</span> <span class="n">cb_flip_rel_component</span><span class="p">(</span><span class="n">ta</span><span class="p">,</span> <span class="n">mr</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="n">direction</span><span class="o">=</span><span class="n">hy</span><span class="o">.</span><span class="n">event_direction</span><span class="o">.</span><span class="n">positive</span><span class="p">)</span>
+<span class="n">ev_right</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">t_event</span><span class="p">(</span><span class="n">state_rel_sym</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">box_size</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="n">callback</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">ta</span><span class="p">,</span> <span class="n">mr</span><span class="p">:</span> <span class="n">cb_flip_rel_component</span><span class="p">(</span><span class="n">ta</span><span class="p">,</span> <span class="n">mr</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="n">direction</span><span class="o">=</span><span class="n">hy</span><span class="o">.</span><span class="n">event_direction</span><span class="o">.</span><span class="n">negative</span><span class="p">)</span>
+<span class="n">ev_front</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">t_event</span><span class="p">(</span><span class="n">state_rel_sym</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">trailing</span> <span class="o">-</span> <span class="n">box_size</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="n">callback</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">ta</span><span class="p">,</span> <span class="n">mr</span><span class="p">:</span> <span class="n">cb_flip_rel_component</span><span class="p">(</span><span class="n">ta</span><span class="p">,</span> <span class="n">mr</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span> <span class="n">direction</span><span class="o">=</span><span class="n">hy</span><span class="o">.</span><span class="n">event_direction</span><span class="o">.</span><span class="n">positive</span><span class="p">)</span>
+<span class="n">ev_back</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">t_event</span><span class="p">(</span><span class="n">state_rel_sym</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">trailing</span> <span class="o">+</span> <span class="n">box_size</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="n">callback</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">ta</span><span class="p">,</span> <span class="n">mr</span><span class="p">:</span> <span class="n">cb_flip_rel_component</span><span class="p">(</span><span class="n">ta</span><span class="p">,</span> <span class="n">mr</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span> <span class="n">direction</span><span class="o">=</span><span class="n">hy</span><span class="o">.</span><span class="n">event_direction</span><span class="o">.</span><span class="n">negative</span><span class="p">)</span>
+<span class="n">ev_top</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">t_event</span><span class="p">(</span><span class="n">state_rel_sym</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">-</span> <span class="n">hover</span> <span class="o">-</span> <span class="n">box_size</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="n">callback</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">ta</span><span class="p">,</span> <span class="n">mr</span><span class="p">:</span> <span class="n">cb_flip_rel_component</span><span class="p">(</span><span class="n">ta</span><span class="p">,</span> <span class="n">mr</span><span class="p">,</span> <span class="mi">5</span><span class="p">),</span> <span class="n">direction</span><span class="o">=</span><span class="n">hy</span><span class="o">.</span><span class="n">event_direction</span><span class="o">.</span><span class="n">positive</span><span class="p">)</span>
+<span class="n">ev_bottom</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">t_event</span><span class="p">(</span><span class="n">state_rel_sym</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">-</span> <span class="n">hover</span> <span class="o">+</span> <span class="n">box_size</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="n">callback</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">ta</span><span class="p">,</span> <span class="n">mr</span><span class="p">:</span> <span class="n">cb_flip_rel_component</span><span class="p">(</span><span class="n">ta</span><span class="p">,</span> <span class="n">mr</span><span class="p">,</span> <span class="mi">5</span><span class="p">),</span> <span class="n">direction</span><span class="o">=</span><span class="n">hy</span><span class="o">.</span><span class="n">event_direction</span><span class="o">.</span><span class="n">negative</span><span class="p">)</span>
+
+<span class="c1"># We define events when crossing the cube halves.</span>
+<span class="c1"># Here the callback will cancel the velocity along that direction, so we need a cooldown</span>
+<span class="c1"># As to avoid the event triggering immediately again.</span>
+<span class="n">ev_x</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">t_event</span><span class="p">(</span><span class="n">state_rel_sym</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="p">,</span> <span class="n">callback</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">ta</span><span class="p">,</span> <span class="n">mr</span><span class="p">:</span> <span class="n">cb_zero_rel_component</span><span class="p">(</span><span class="n">ta</span><span class="p">,</span> <span class="n">mr</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="n">cooldown</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+<span class="n">ev_y</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">t_event</span><span class="p">(</span><span class="n">state_rel_sym</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">trailing</span> <span class="p">,</span> <span class="n">callback</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">ta</span><span class="p">,</span> <span class="n">mr</span><span class="p">:</span> <span class="n">cb_zero_rel_component</span><span class="p">(</span><span class="n">ta</span><span class="p">,</span> <span class="n">mr</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span> <span class="n">cooldown</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+<span class="n">ev_z</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">t_event</span><span class="p">(</span><span class="n">state_rel_sym</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">-</span> <span class="n">hover</span><span class="p">,</span> <span class="n">callback</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">ta</span><span class="p">,</span> <span class="n">mr</span><span class="p">:</span> <span class="n">cb_zero_rel_component</span><span class="p">(</span><span class="n">ta</span><span class="p">,</span> <span class="n">mr</span><span class="p">,</span> <span class="mi">5</span><span class="p">),</span> <span class="n">cooldown</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+
+<span class="c1"># We put all the control box events in a list as to pass them to the adaptive Taylor constructor.</span>
+<span class="n">bounce_events</span> <span class="o">=</span> <span class="p">[</span><span class="n">ev_top</span><span class="p">,</span> <span class="n">ev_bottom</span><span class="p">,</span> <span class="n">ev_front</span><span class="p">,</span> <span class="n">ev_back</span><span class="p">,</span> <span class="n">ev_left</span><span class="p">,</span> <span class="n">ev_right</span><span class="p">]</span>
+
+<span class="c1"># We put all the stop events in a list as to pass them to the adaptive Taylor constructor.</span>
+<span class="n">stop_events</span> <span class="o">=</span> <span class="p">[</span><span class="n">ev_x</span><span class="p">,</span> <span class="n">ev_y</span><span class="p">,</span> <span class="n">ev_z</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>We may now instantiate the Taylor integrator, we use the compact mode here to obtain a faster compilation time, since the integration time is anyway very small:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ta</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">taylor_adaptive</span><span class="p">(</span><span class="n">eqns</span><span class="p">,</span> <span class="n">chief_ic</span> <span class="o">+</span> <span class="n">deputy_ic</span><span class="p">,</span> <span class="n">t_events</span><span class="o">=</span><span class="n">bounce_events</span><span class="o">+</span><span class="n">stop_events</span><span class="p">,</span> <span class="n">compact_mode</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>And propagate, taking care to reset first the <span class="math notranslate nohighlight">\(\Delta V\)</span> count:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Resetting the DV counter</span>
+<span class="n">DV</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="c1"># We propagate for one day</span>
+<span class="n">N</span> <span class="o">=</span> <span class="mi">1500</span>
+<span class="n">t_grid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">60</span><span class="o">*</span><span class="mi">60</span><span class="o">*</span><span class="mi">24</span><span class="p">,</span> <span class="n">N</span><span class="p">)</span>
+<span class="c1">#t_grid = np.linspace(0, 900, N)</span>
+<span class="n">oc</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">res</span> <span class="o">=</span> <span class="n">ta</span><span class="o">.</span><span class="n">propagate_grid</span><span class="p">(</span><span class="n">t_grid</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;DV to maintain the formation for one day:&quot;</span><span class="p">,</span> <span class="n">DV</span><span class="o">*</span><span class="mi">1000</span><span class="p">,</span> <span class="s2">&quot; m/s&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>DV to maintain the formation for one day: 0.06193150393985362  m/s
+</pre></div>
+</div>
+</div>
+</div>
+<p>We may now plot the trajectory as done above, first computing the LHLV Deputy position:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># We compute the results in the LHLV frame for the Deputy</span>
+<span class="n">deputy_rel</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">N</span><span class="p">,</span><span class="mi">6</span><span class="p">))</span>
+<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">item</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">res</span><span class="p">):</span>
+    <span class="n">fh</span> <span class="o">=</span> <span class="n">J2_LHLV</span><span class="p">(</span><span class="n">item</span><span class="p">[:</span><span class="mi">6</span><span class="p">],</span> <span class="n">c</span><span class="p">)[</span><span class="mi">2</span><span class="p">]</span>
+    <span class="n">deputy_rel</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">to_relative</span><span class="p">(</span><span class="n">item</span><span class="p">[:</span><span class="mi">6</span><span class="p">],</span> <span class="n">item</span><span class="p">[</span><span class="mi">6</span><span class="p">:],</span> <span class="n">fh</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>… then plotting the trajectories:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># And plot</span>
+<span class="n">limit</span> <span class="o">=</span> <span class="n">N</span>
+<span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span> <span class="o">=</span> <span class="p">(</span><span class="mi">9</span><span class="p">,</span><span class="mi">9</span><span class="p">))</span>
+<span class="n">ax1</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">projection</span><span class="o">=</span><span class="s1">&#39;3d&#39;</span><span class="p">)</span>
+<span class="n">ax2</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">projection</span><span class="o">=</span><span class="s1">&#39;3d&#39;</span><span class="p">)</span>
+
+<span class="n">ax1</span><span class="o">.</span><span class="n">plot3D</span><span class="p">(</span><span class="n">res</span><span class="p">[:</span><span class="n">limit</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">res</span><span class="p">[:</span><span class="n">limit</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">res</span><span class="p">[:</span><span class="n">limit</span><span class="p">,</span> <span class="mi">2</span><span class="p">])</span>
+<span class="n">ax1</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Chief (inertial frame)&quot;</span><span class="p">)</span>
+<span class="n">ax2</span><span class="o">.</span><span class="n">plot3D</span><span class="p">(</span><span class="n">deputy_rel</span><span class="p">[:</span><span class="n">limit</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">deputy_rel</span><span class="p">[:</span><span class="n">limit</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">deputy_rel</span><span class="p">[:</span><span class="n">limit</span><span class="p">,</span> <span class="mi">2</span><span class="p">])</span>
+<span class="n">ax2</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Deputy (LHLV frame)&quot;</span><span class="p">)</span>
+<span class="n">ax2</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">([</span><span class="o">-</span><span class="n">box_size</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="n">box_size</span><span class="o">/</span><span class="mi">2</span><span class="p">])</span>
+<span class="n">ax2</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">([</span><span class="n">trailing</span> <span class="o">-</span> <span class="n">box_size</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="n">trailing</span> <span class="o">+</span> <span class="n">box_size</span><span class="o">/</span><span class="mi">2</span><span class="p">])</span>
+<span class="n">ax2</span><span class="o">.</span><span class="n">set_zlim</span><span class="p">([</span><span class="n">hover</span><span class="o">-</span><span class="n">box_size</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="n">hover</span> <span class="o">+</span> <span class="n">box_size</span><span class="o">/</span><span class="mi">2</span><span class="p">]);</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/Box control for Formation Flying Satellites_29_0.png" src="../_images/Box control for Formation Flying Satellites_29_0.png" />
+</div>
+</div>
+<p>A different plot shows the x,y,z, components of the relative Deputy position along time:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">axs</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">13</span><span class="p">,</span><span class="mi">4</span><span class="p">))</span>
+<span class="n">axs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">t_grid</span><span class="p">[:</span><span class="n">limit</span><span class="p">],</span> <span class="n">deputy_rel</span><span class="p">[:</span><span class="n">limit</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
+<span class="n">axs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">hlines</span><span class="p">([</span> <span class="o">-</span> <span class="n">box_size</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="o">+</span> <span class="n">box_size</span> <span class="o">/</span> <span class="mi">2</span><span class="p">],</span> <span class="mi">0</span><span class="p">,</span> <span class="n">t_grid</span><span class="p">[:</span><span class="n">limit</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="s1">&#39;k&#39;</span><span class="p">)</span>
+<span class="n">axs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">t_grid</span><span class="p">[:</span><span class="n">limit</span><span class="p">],</span> <span class="n">deputy_rel</span><span class="p">[:</span><span class="n">limit</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+<span class="n">axs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">hlines</span><span class="p">([</span> <span class="n">trailing</span> <span class="o">-</span> <span class="n">box_size</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="n">trailing</span> <span class="o">+</span> <span class="n">box_size</span> <span class="o">/</span> <span class="mi">2</span><span class="p">],</span> <span class="mi">0</span><span class="p">,</span> <span class="n">t_grid</span><span class="p">[:</span><span class="n">limit</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="s1">&#39;k&#39;</span><span class="p">)</span>
+<span class="n">axs</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">t_grid</span><span class="p">[:</span><span class="n">limit</span><span class="p">],</span> <span class="n">deputy_rel</span><span class="p">[:</span><span class="n">limit</span><span class="p">,</span> <span class="mi">2</span><span class="p">])</span>
+<span class="n">axs</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">hlines</span><span class="p">([</span><span class="n">hover</span> <span class="o">-</span> <span class="n">box_size</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span><span class="n">hover</span> <span class="o">+</span> <span class="n">box_size</span> <span class="o">/</span> <span class="mi">2</span><span class="p">],</span> <span class="mi">0</span><span class="p">,</span> <span class="n">t_grid</span><span class="p">[:</span><span class="n">limit</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="s1">&#39;k&#39;</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/Box control for Formation Flying Satellites_31_0.png" src="../_images/Box control for Formation Flying Satellites_31_0.png" />
+</div>
+</div>
+<p>Thats all folks!</p>
+</div>
+</div>
+
+
+              </div>
+              
+        
+        <div class='prev-next-bottom'>
+            
+    <a class='left-prev' id="prev-link" href="Outer%20Solar%20System.html" title="previous page">Brouwer’s law in the outer Solar System</a>
+    <a class='right-next' id="next-link" href="The%20variational%20equations.html" title="next page">The variational equations</a>
+
+        </div>
+        
+        </div>
+    </div>
+    <footer class="footer mt-5 mt-md-0">
+    <div class="container">
+      <p>
+        
+          By Francesco Biscani and Dario Izzo<br/>
+        
+            &copy; Copyright 2020, 2021, Francesco Biscani and Dario Izzo.<br/>
+      </p>
+    </div>
+  </footer>
+</main>
+
+
+      </div>
+    </div>
+
+    
+  <script src="../_static/js/index.d3f166471bb80abb5163.js"></script>
+
+
+    
+  </body>
+</html>
