@@ -54,8 +54,8 @@ Event detection
 
   notebooks/Event detection.ipynb
   notebooks/Sampling events
+  notebooks/Poincaré sections
   notebooks/The Keplerian billiard
   notebooks/The two-fixed elliptic billiard
   notebooks/The wavy ramp
-  notebooks/Poincaré sections
 
