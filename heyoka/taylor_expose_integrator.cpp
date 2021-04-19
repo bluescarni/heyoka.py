@@ -11,7 +11,9 @@
 #include <algorithm>
 #include <cassert>
 #include <cstddef>
+#include <functional>
 #include <initializer_list>
+#include <limits>
 #include <sstream>
 #include <string>
 #include <tuple>
@@ -22,6 +24,7 @@
 
 #include <fmt/format.h>
 
+#include <pybind11/functional.h>
 #include <pybind11/numpy.h>
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
@@ -55,14 +58,88 @@ namespace detail
 namespace
 {
 
+// Common bits for the exposition of the scalar integrators
+// for double, long double and real128.
+template <typename T>
+void expose_taylor_integrator_common(py::class_<hey::taylor_adaptive<T>> &cl)
+{
+    using namespace pybind11::literals;
+    using prop_cb_t = std::function<void(hey::taylor_adaptive<T> &)>;
+    namespace kw = heyoka::kw;
+
+    cl.def_property_readonly("decomposition", &hey::taylor_adaptive<T>::get_decomposition)
+        .def_property("time", &hey::taylor_adaptive<T>::get_time, &hey::taylor_adaptive<T>::set_time)
+        // Step functions.
+        .def(
+            "step", [](hey::taylor_adaptive<T> &ta, bool wtc) { return ta.step(wtc); }, "write_tc"_a = false)
+        .def(
+            "step", [](hey::taylor_adaptive<T> &ta, T max_delta_t, bool wtc) { return ta.step(max_delta_t, wtc); },
+            "max_delta_t"_a, "write_tc"_a = false)
+        .def(
+            "step_backward", [](hey::taylor_adaptive<T> &ta, bool wtc) { return ta.step_backward(wtc); },
+            "write_tc"_a = false)
+        // propagate_*().
+        .def(
+            "propagate_for",
+            [](hey::taylor_adaptive<T> &ta, T delta_t, std::size_t max_steps, T max_delta_t, prop_cb_t cb_) {
+                // Create the callback wrapper.
+                auto cb = make_prop_cb(cb_);
+
+                // NOTE: after releasing the GIL here, the only potential
+                // calls into the Python interpreter are when invoking cb
+                // or the events' callbacks (which are all protected by GIL reacquire).
+                // Note that copying cb around or destroying it is harmless, as it contains only
+                // a reference to the original callback cb_, or it is an empty callback.
+                py::gil_scoped_release release;
+                return ta.propagate_for(delta_t, kw::max_steps = max_steps, kw::max_delta_t = max_delta_t,
+                                        kw::callback = cb);
+            },
+            "delta_t"_a, "max_steps"_a = 0, "max_delta_t"_a = std::numeric_limits<T>::infinity(),
+            "callback"_a = prop_cb_t{})
+        .def(
+            "propagate_until",
+            [](hey::taylor_adaptive<T> &ta, T t, std::size_t max_steps, T max_delta_t, prop_cb_t cb_) {
+                // Create the callback wrapper.
+                auto cb = make_prop_cb(cb_);
+
+                py::gil_scoped_release release;
+                return ta.propagate_until(t, kw::max_steps = max_steps, kw::max_delta_t = max_delta_t,
+                                          kw::callback = cb);
+            },
+            "t"_a, "max_steps"_a = 0, "max_delta_t"_a = std::numeric_limits<T>::infinity(), "callback"_a = prop_cb_t{})
+        // Repr.
+        .def("__repr__",
+             [](const hey::taylor_adaptive<T> &ta) {
+                 std::ostringstream oss;
+                 oss << ta;
+                 return oss.str();
+             })
+        // Copy/deepcopy.
+        .def("__copy__", [](const hey::taylor_adaptive<T> &ta) { return ta; })
+        .def(
+            "__deepcopy__", [](const hey::taylor_adaptive<T> &ta, py::dict) { return ta; }, "memo"_a)
+        // Various read-only properties.
+        .def_property_readonly("last_h", &hey::taylor_adaptive<T>::get_last_h)
+        .def_property_readonly("order", &hey::taylor_adaptive<T>::get_order)
+        .def_property_readonly("dim", &hey::taylor_adaptive<T>::get_dim)
+        .def_property_readonly("t_events", &hey::taylor_adaptive<T>::get_t_events)
+        .def_property_readonly("nt_events", &hey::taylor_adaptive<T>::get_nt_events)
+        // Cooldowns.
+        .def("reset_cooldowns", &hey::taylor_adaptive<T>::reset_cooldowns);
+}
+
+// Implementation of the exposition of the scalar integrators
+// for double and long double.
 template <typename T>
 void expose_taylor_integrator_impl(py::module &m, const std::string &suffix)
 {
     using namespace pybind11::literals;
     using fmt::literals::operator""_format;
+    namespace kw = heyoka::kw;
 
     using t_ev_t = hey::t_event<T>;
     using nt_ev_t = hey::nt_event<T>;
+    using prop_cb_t = std::function<void(hey::taylor_adaptive<T> &)>;
 
     auto ctor_impl = [](auto sys, std::vector<T> state, T time, std::vector<T> pars, T tol, bool high_accuracy,
                         bool compact_mode, std::vector<t_ev_t> tes, std::vector<nt_ev_t> ntes) {
@@ -84,15 +161,15 @@ void expose_taylor_integrator_impl(py::module &m, const std::string &suffix)
                                        kw::nt_events = std::move(ntes)};
     };
 
-    py::class_<hey::taylor_adaptive<T>>(m, ("_taylor_adaptive_{}"_format(suffix)).c_str())
-        .def(py::init([ctor_impl](std::vector<std::pair<hey::expression, hey::expression>> sys, std::vector<T> state,
-                                  T time, std::vector<T> pars, T tol, bool high_accuracy, bool compact_mode,
-                                  std::vector<t_ev_t> tes, std::vector<nt_ev_t> ntes) {
-                 return ctor_impl(std::move(sys), std::move(state), time, std::move(pars), tol, high_accuracy,
-                                  compact_mode, std::move(tes), std::move(ntes));
-             }),
-             "sys"_a, "state"_a, "time"_a = T(0), "pars"_a = py::list{}, "tol"_a = T(0), "high_accuracy"_a = false,
-             "compact_mode"_a = false, "t_events"_a = py::list{}, "nt_events"_a = py::list{})
+    py::class_<hey::taylor_adaptive<T>> cl(m, ("_taylor_adaptive_{}"_format(suffix)).c_str());
+    cl.def(py::init([ctor_impl](std::vector<std::pair<hey::expression, hey::expression>> sys, std::vector<T> state,
+                                T time, std::vector<T> pars, T tol, bool high_accuracy, bool compact_mode,
+                                std::vector<t_ev_t> tes, std::vector<nt_ev_t> ntes) {
+               return ctor_impl(std::move(sys), std::move(state), time, std::move(pars), tol, high_accuracy,
+                                compact_mode, std::move(tes), std::move(ntes));
+           }),
+           "sys"_a, "state"_a, "time"_a = T(0), "pars"_a = py::list{}, "tol"_a = T(0), "high_accuracy"_a = false,
+           "compact_mode"_a = false, "t_events"_a = py::list{}, "nt_events"_a = py::list{})
         .def(py::init([ctor_impl](std::vector<hey::expression> sys, std::vector<T> state, T time, std::vector<T> pars,
                                   T tol, bool high_accuracy, bool compact_mode, std::vector<t_ev_t> tes,
                                   std::vector<nt_ev_t> ntes) {
@@ -101,53 +178,6 @@ void expose_taylor_integrator_impl(py::module &m, const std::string &suffix)
              }),
              "sys"_a, "state"_a, "time"_a = T(0), "pars"_a = py::list{}, "tol"_a = T(0), "high_accuracy"_a = false,
              "compact_mode"_a = false, "t_events"_a = py::list{}, "nt_events"_a = py::list{})
-        .def_property_readonly("decomposition", &hey::taylor_adaptive<T>::get_decomposition)
-        .def(
-            "step", [](hey::taylor_adaptive<T> &ta, bool wtc) { return ta.step(wtc); }, "write_tc"_a = false)
-        .def(
-            "step", [](hey::taylor_adaptive<T> &ta, T max_delta_t, bool wtc) { return ta.step(max_delta_t, wtc); },
-            "max_delta_t"_a, "write_tc"_a = false)
-        .def(
-            "step_backward", [](hey::taylor_adaptive<T> &ta, bool wtc) { return ta.step_backward(wtc); },
-            "write_tc"_a = false)
-        .def(
-            "propagate_for",
-            [](hey::taylor_adaptive<T> &ta, T delta_t, std::size_t max_steps) {
-                py::gil_scoped_release release;
-                return ta.propagate_for(delta_t, max_steps);
-            },
-            "delta_t"_a, "max_steps"_a = 0)
-        .def(
-            "propagate_until",
-            [](hey::taylor_adaptive<T> &ta, T t, std::size_t max_steps) {
-                py::gil_scoped_release release;
-                return ta.propagate_until(t, max_steps);
-            },
-            "t"_a, "max_steps"_a = 0)
-        .def(
-            "propagate_grid",
-            [](hey::taylor_adaptive<T> &ta, const std::vector<T> &grid, std::size_t max_steps) {
-                decltype(ta.propagate_grid(grid, max_steps)) ret;
-
-                {
-                    py::gil_scoped_release release;
-                    ret = ta.propagate_grid(grid, max_steps);
-                }
-
-                // Determine the number of state vectors returned
-                // (could be < grid.size() if errors arise).
-                assert(std::get<4>(ret).size() % ta.get_dim() == 0u);
-                const auto nrows = boost::numeric_cast<py::ssize_t>(std::get<4>(ret).size() / ta.get_dim());
-                const auto ncols = boost::numeric_cast<py::ssize_t>(ta.get_dim());
-
-                // Convert the output to a NumPy array.
-                py::array_t<T> a_ret(py::array::ShapeContainer{nrows, ncols}, std::get<4>(ret).data());
-
-                return py::make_tuple(std::get<0>(ret), std::get<1>(ret), std::get<2>(ret), std::get<3>(ret),
-                                      std::move(a_ret));
-            },
-            "grid"_a, "max_steps"_a = 0)
-        .def_property("time", &hey::taylor_adaptive<T>::get_time, &hey::taylor_adaptive<T>::set_time)
         .def_property_readonly("state",
                                [](py::object &o) {
                                    auto *ta = py::cast<hey::taylor_adaptive<T> *>(o);
@@ -177,7 +207,6 @@ void expose_taylor_integrator_impl(py::module &m, const std::string &suffix)
 
                 return ret;
             })
-        .def_property_readonly("last_h", &hey::taylor_adaptive<T>::get_last_h)
         .def_property_readonly("d_output",
                                [](const py::object &o) {
                                    auto *ta = py::cast<const hey::taylor_adaptive<T> *>(o);
@@ -193,10 +222,10 @@ void expose_taylor_integrator_impl(py::module &m, const std::string &suffix)
                                })
         .def(
             "update_d_output",
-            [](py::object &o, T t) {
+            [](py::object &o, T t, bool rel_time) {
                 auto *ta = py::cast<hey::taylor_adaptive<T> *>(o);
 
-                ta->update_d_output(t);
+                ta->update_d_output(t, rel_time);
 
                 auto ret = py::array_t<T>(
                     py::array::ShapeContainer{boost::numeric_cast<py::ssize_t>(ta->get_d_output().size())},
@@ -207,23 +236,38 @@ void expose_taylor_integrator_impl(py::module &m, const std::string &suffix)
 
                 return ret;
             },
-            "t"_a)
-        .def_property_readonly("order", &hey::taylor_adaptive<T>::get_order)
-        .def_property_readonly("dim", &hey::taylor_adaptive<T>::get_dim)
-        .def_property_readonly("t_events", &hey::taylor_adaptive<T>::get_t_events)
-        .def_property_readonly("nt_events", &hey::taylor_adaptive<T>::get_nt_events)
-        .def("reset_cooldowns", &hey::taylor_adaptive<T>::reset_cooldowns)
-        // Repr.
-        .def("__repr__",
-             [](const hey::taylor_adaptive<T> &ta) {
-                 std::ostringstream oss;
-                 oss << ta;
-                 return oss.str();
-             })
-        // Copy/deepcopy.
-        .def("__copy__", [](const hey::taylor_adaptive<T> &ta) { return ta; })
+            "t"_a, "rel_time"_a = false)
         .def(
-            "__deepcopy__", [](const hey::taylor_adaptive<T> &ta, py::dict) { return ta; }, "memo"_a);
+            "propagate_grid",
+            [](hey::taylor_adaptive<T> &ta, const std::vector<T> &grid, std::size_t max_steps, T max_delta_t,
+               prop_cb_t cb_) {
+                // Create the callback wrapper.
+                auto cb = make_prop_cb(cb_);
+
+                decltype(ta.propagate_grid(grid, max_steps)) ret;
+
+                {
+                    py::gil_scoped_release release;
+                    ret = ta.propagate_grid(grid, kw::max_steps = max_steps, kw::max_delta_t = max_delta_t,
+                                            kw::callback = cb);
+                }
+
+                // Determine the number of state vectors returned
+                // (could be < grid.size() if errors arise).
+                assert(std::get<4>(ret).size() % ta.get_dim() == 0u);
+                const auto nrows = boost::numeric_cast<py::ssize_t>(std::get<4>(ret).size() / ta.get_dim());
+                const auto ncols = boost::numeric_cast<py::ssize_t>(ta.get_dim());
+
+                // Convert the output to a NumPy array.
+                py::array_t<T> a_ret(py::array::ShapeContainer{nrows, ncols}, std::get<4>(ret).data());
+
+                return py::make_tuple(std::get<0>(ret), std::get<1>(ret), std::get<2>(ret), std::get<3>(ret),
+                                      std::move(a_ret));
+            },
+            "grid"_a, "max_steps"_a = 0, "max_delta_t"_a = std::numeric_limits<T>::infinity(),
+            "callback"_a = prop_cb_t{});
+
+    expose_taylor_integrator_common(cl);
 }
 
 } // namespace
@@ -246,9 +290,11 @@ void expose_taylor_integrator_f128(py::module &m)
 {
     using namespace pybind11::literals;
     using fmt::literals::operator""_format;
+    namespace kw = heyoka::kw;
 
     using t_ev_t = hey::t_event<mppp::real128>;
     using nt_ev_t = hey::nt_event<mppp::real128>;
+    using prop_cb_t = std::function<void(hey::taylor_adaptive<mppp::real128> &)>;
 
     // NOTE: we need to temporarily alter
     // the precision in mpmath to successfully
@@ -277,149 +323,108 @@ void expose_taylor_integrator_f128(py::module &m)
                                                    kw::nt_events = std::move(ntes)};
     };
 
-    py::class_<hey::taylor_adaptive<mppp::real128>>(m, "_taylor_adaptive_f128")
-            .def(py::init([taf128_ctor_impl](std::vector<std::pair<hey::expression, hey::expression>> sys,
-                                             std::vector<mppp::real128> state, mppp::real128 time,
-                                             std::vector<mppp::real128> pars, mppp::real128 tol, bool high_accuracy,
-                                             bool compact_mode, std::vector<t_ev_t> tes, std::vector<nt_ev_t> ntes) {
-                     return taf128_ctor_impl(std::move(sys), std::move(state), time, std::move(pars), tol,
-                                             high_accuracy, compact_mode,std::move(tes), std::move(ntes));
-                 }),
-                 "sys"_a, "state"_a, "time"_a = mppp::real128{0}, "pars"_a = py::list{}, "tol"_a = mppp::real128{0},
-                 "high_accuracy"_a = false, "compact_mode"_a = false, "t_events"_a = py::list{}, "nt_events"_a = py::list{})
-            .def(py::init([taf128_ctor_impl](std::vector<hey::expression> sys, std::vector<mppp::real128> state,
-                                             mppp::real128 time, std::vector<mppp::real128> pars, mppp::real128 tol,
-                                             bool high_accuracy, bool compact_mode, std::vector<t_ev_t> tes, std::vector<nt_ev_t> ntes) {
-                     return taf128_ctor_impl(std::move(sys), std::move(state), time, std::move(pars), tol,
-                                             high_accuracy, compact_mode,std::move(tes), std::move(ntes));
-                 }),
-                 "sys"_a, "state"_a, "time"_a = mppp::real128{0}, "pars"_a = py::list{}, "tol"_a = mppp::real128{0},
-                 "high_accuracy"_a = false, "compact_mode"_a = false, "t_events"_a = py::list{}, "nt_events"_a = py::list{})
-            .def_property_readonly("decomposition", &hey::taylor_adaptive<mppp::real128>::get_decomposition)
-            .def(
-                "step", [](hey::taylor_adaptive<mppp::real128> &ta, bool wtc) { return ta.step(wtc); },
-                "write_tc"_a = false)
-            .def(
-                "step",
-                [](hey::taylor_adaptive<mppp::real128> &ta, mppp::real128 max_delta_t, bool wtc) {
-                    return ta.step(max_delta_t, wtc);
-                },
-                "max_delta_t"_a, "write_tc"_a = false)
-            .def(
-                "step_backward",
-                [](hey::taylor_adaptive<mppp::real128> &ta, bool wtc) { return ta.step_backward(wtc); },
-                "write_tc"_a = false)
-            .def(
-                "propagate_for",
-                [](hey::taylor_adaptive<mppp::real128> &ta, mppp::real128 delta_t, std::size_t max_steps) {
+    py::class_<hey::taylor_adaptive<mppp::real128>> cl(m, "_taylor_adaptive_f128");
+    cl.def(py::init([taf128_ctor_impl](std::vector<std::pair<hey::expression, hey::expression>> sys,
+                                       std::vector<mppp::real128> state, mppp::real128 time,
+                                       std::vector<mppp::real128> pars, mppp::real128 tol, bool high_accuracy,
+                                       bool compact_mode, std::vector<t_ev_t> tes, std::vector<nt_ev_t> ntes) {
+               return taf128_ctor_impl(std::move(sys), std::move(state), time, std::move(pars), tol, high_accuracy,
+                                       compact_mode, std::move(tes), std::move(ntes));
+           }),
+           "sys"_a, "state"_a, "time"_a = mppp::real128{0}, "pars"_a = py::list{}, "tol"_a = mppp::real128{0},
+           "high_accuracy"_a = false, "compact_mode"_a = false, "t_events"_a = py::list{}, "nt_events"_a = py::list{})
+        .def(py::init([taf128_ctor_impl](std::vector<hey::expression> sys, std::vector<mppp::real128> state,
+                                         mppp::real128 time, std::vector<mppp::real128> pars, mppp::real128 tol,
+                                         bool high_accuracy, bool compact_mode, std::vector<t_ev_t> tes,
+                                         std::vector<nt_ev_t> ntes) {
+                 return taf128_ctor_impl(std::move(sys), std::move(state), time, std::move(pars), tol, high_accuracy,
+                                         compact_mode, std::move(tes), std::move(ntes));
+             }),
+             "sys"_a, "state"_a, "time"_a = mppp::real128{0}, "pars"_a = py::list{}, "tol"_a = mppp::real128{0},
+             "high_accuracy"_a = false, "compact_mode"_a = false, "t_events"_a = py::list{}, "nt_events"_a = py::list{})
+        .def(
+            "propagate_grid",
+            [](hey::taylor_adaptive<mppp::real128> &ta, const std::vector<mppp::real128> &grid, std::size_t max_steps,
+               mppp::real128 max_delta_t, prop_cb_t cb_) {
+                // Create the callback wrapper.
+                auto cb = make_prop_cb(cb_);
+
+                decltype(ta.propagate_grid(grid, max_steps)) ret;
+
+                {
                     py::gil_scoped_release release;
-                    return ta.propagate_for(delta_t, max_steps);
-                },
-                "delta_t"_a, "max_steps"_a = 0)
-            .def(
-                "propagate_until",
-                [](hey::taylor_adaptive<mppp::real128> &ta, mppp::real128 t, std::size_t max_steps) {
-                    py::gil_scoped_release release;
-                    return ta.propagate_until(t, max_steps);
-                },
-                "t"_a, "max_steps"_a = 0)
-            .def(
-                "propagate_grid",
-                [](hey::taylor_adaptive<mppp::real128> &ta, const std::vector<mppp::real128> &grid,
-                   std::size_t max_steps) {
-                    decltype(ta.propagate_grid(grid, max_steps)) ret;
+                    ret = ta.propagate_grid(grid, kw::max_steps = max_steps, kw::max_delta_t = max_delta_t,
+                                            kw::callback = cb);
+                }
 
-                    {
-                        py::gil_scoped_release release;
-                        ret = ta.propagate_grid(grid, max_steps);
-                    }
+                // Determine the number of state vectors returned
+                // (could be < grid.size() if errors arise).
+                assert(std::get<4>(ret).size() % ta.get_dim() == 0u);
+                const auto nrows = std::get<4>(ret).size() / ta.get_dim();
+                const auto ncols = ta.get_dim();
 
-                    // Determine the number of state vectors returned
-                    // (could be < grid.size() if errors arise).
-                    assert(std::get<4>(ret).size() % ta.get_dim() == 0u);
-                    const auto nrows = std::get<4>(ret).size() / ta.get_dim();
-                    const auto ncols = ta.get_dim();
+                // Convert the output to a NumPy array.
+                auto a_ret = py::array(py::cast(std::get<4>(ret)));
 
-                    // Convert the output to a NumPy array.
-                    auto a_ret = py::array(py::cast(std::get<4>(ret)));
+                // Reshape.
+                a_ret.attr("shape") = py::make_tuple(nrows, ncols);
 
-                    // Reshape.
-                    a_ret.attr("shape") = py::make_tuple(nrows, ncols);
+                return py::make_tuple(std::get<0>(ret), std::get<1>(ret), std::get<2>(ret), std::get<3>(ret),
+                                      std::move(a_ret));
+            },
+            "grid"_a, "max_steps"_a = 0, "max_delta_t"_a = std::numeric_limits<mppp::real128>::infinity(),
+            "callback"_a = prop_cb_t{})
+        .def("get_state",
+             [](const hey::taylor_adaptive<mppp::real128> &ta) { return py::array(py::cast(ta.get_state())); })
+        .def("set_state",
+             [](hey::taylor_adaptive<mppp::real128> &ta, const std::vector<mppp::real128> &v) {
+                 if (v.size() != ta.get_state().size()) {
+                     heypy::py_throw(PyExc_ValueError,
+                                     "Invalid state vector passed to set_state(): "
+                                     "the new state vector has a size of {}, "
+                                     "but the size should be {} instead"_format(v.size(), ta.get_state().size())
+                                         .c_str());
+                 }
 
-                    return py::make_tuple(std::get<0>(ret), std::get<1>(ret), std::get<2>(ret), std::get<3>(ret),
-                                          std::move(a_ret));
-                },
-                "grid"_a, "max_steps"_a = 0)
-            .def_property("time", &hey::taylor_adaptive<mppp::real128>::get_time,
-                          &hey::taylor_adaptive<mppp::real128>::set_time)
-            .def("get_state",
-                 [](const hey::taylor_adaptive<mppp::real128> &ta) { return py::array(py::cast(ta.get_state())); })
-            .def("set_state",
-                 [](hey::taylor_adaptive<mppp::real128> &ta, const std::vector<mppp::real128> &v) {
-                     if (v.size() != ta.get_state().size()) {
-                        heypy::py_throw(PyExc_ValueError, "Invalid state vector passed to set_state(): "
-                        "the new state vector has a size of {}, "
-                        "but the size should be {} instead"_format(v.size(), ta.get_state().size()).c_str());
-                     }
+                 std::copy(v.begin(), v.end(), ta.get_state_data());
+             })
+        .def("get_pars",
+             [](const hey::taylor_adaptive<mppp::real128> &ta) { return py::array(py::cast(ta.get_pars())); })
+        .def("set_pars",
+             [](hey::taylor_adaptive<mppp::real128> &ta, const std::vector<mppp::real128> &v) {
+                 if (v.size() != ta.get_pars().size()) {
+                     heypy::py_throw(PyExc_ValueError,
+                                     "Invalid pars vector passed to set_pars(): "
+                                     "the new pars vector has a size of {}, but the size should be {} instead"_format(
+                                         v.size(), ta.get_pars().size())
+                                         .c_str());
+                 }
 
-                     std::copy(v.begin(), v.end(), ta.get_state_data());
-                 })
-            .def("get_pars",
-                 [](const hey::taylor_adaptive<mppp::real128> &ta) { return py::array(py::cast(ta.get_pars())); })
-            .def("set_pars",
-                 [](hey::taylor_adaptive<mppp::real128> &ta, const std::vector<mppp::real128> &v) {
-                     if (v.size() != ta.get_pars().size()) {
-                        heypy::py_throw(PyExc_ValueError, "Invalid pars vector passed to set_pars(): "
-                        "the new pars vector has a size of {}, but the size should be {} instead"_format(v.size(), ta.get_pars().size()).c_str());
-                     }
+                 std::copy(v.begin(), v.end(), ta.get_state_data());
+             })
+        .def_property_readonly("tc",
+                               [](const hey::taylor_adaptive<mppp::real128> &ta) {
+                                   auto ret = py::array(py::cast(ta.get_tc()));
 
-                     std::copy(v.begin(), v.end(), ta.get_state_data());
-                 })
-            .def_property_readonly("tc",
-                 [](const hey::taylor_adaptive<mppp::real128> &ta) {
-                     auto ret = py::array(py::cast(ta.get_tc()));
+                                   const auto nvars = ta.get_dim();
+                                   const auto ncoeff = ta.get_order() + 1u;
 
-                     const auto nvars = ta.get_dim();
-                     const auto ncoeff = ta.get_order() + 1u;
+                                   ret.attr("shape") = py::make_tuple(nvars, ncoeff);
 
-                     ret.attr("shape") = py::make_tuple(nvars, ncoeff);
+                                   return ret;
+                               })
+        .def("d_output",
+             [](const hey::taylor_adaptive<mppp::real128> &ta) { return py::array(py::cast(ta.get_d_output())); })
+        .def(
+            "update_d_output",
+            [](hey::taylor_adaptive<mppp::real128> &ta, mppp::real128 t, bool rel_time) {
+                ta.update_d_output(t, rel_time);
 
-                     return ret;
-                 })
-            .def_property_readonly("last_h", &hey::taylor_adaptive<mppp::real128>::get_last_h)
-            .def("d_output",
-                 [](const hey::taylor_adaptive<mppp::real128> &ta) { return py::array(py::cast(ta.get_d_output())); })
-            .def(
-                "update_d_output",
-                [](hey::taylor_adaptive<mppp::real128> &ta, mppp::real128 t) {
-                    ta.update_d_output(t);
+                return py::array(py::cast(ta.get_d_output()));
+            },
+            "t"_a, "rel_time"_a = false);
 
-                    return py::array(py::cast(ta.get_d_output()));
-                },
-                "t"_a)
-            .def_property_readonly("order", &hey::taylor_adaptive<mppp::real128>::get_order)
-            .def_property_readonly("dim", &hey::taylor_adaptive<mppp::real128>::get_dim)
-            .def_property_readonly("t_events", &hey::taylor_adaptive<mppp::real128>::get_t_events)
-            .def_property_readonly("nt_events", &hey::taylor_adaptive<mppp::real128>::get_nt_events)
-            .def("reset_cooldowns", &hey::taylor_adaptive<mppp::real128>::reset_cooldowns)
-            // Repr.
-            .def("__repr__",
-                 [](const hey::taylor_adaptive<mppp::real128> &ta) {
-                     std::ostringstream oss;
-                     oss << ta;
-                     return oss.str();
-                 })
-            // Copy/deepcopy.
-            .def("__copy__",
-                 [](const hey::taylor_adaptive<mppp::real128> &ta) {
-                     return ta;
-                 })
-            .def(
-                "__deepcopy__",
-                [](const hey::taylor_adaptive<mppp::real128> &ta, py::dict) {
-                    return ta;
-                },
-                "memo"_a);
+    detail::expose_taylor_integrator_common(cl);
 }
 
 #endif
