@@ -71,6 +71,6 @@ html_theme_options = {
 }
 
 jupyter_execute_notebooks = "force"
-execution_excludepatterns = ['*Trappist-1*', '*Outer*']
+execution_excludepatterns = ['*Trappist-1*', '*Outer*', '*Maxwell*']
 
 latex_engine = 'xelatex'
