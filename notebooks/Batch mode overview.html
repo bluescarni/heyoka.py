@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Batch mode &#8212; heyoka.py 0.6.1 documentation</title>
+    <title>Batch mode &#8212; heyoka.py 0.7.0 documentation</title>
     
   <link rel="stylesheet" href="../_static/css/index.f658d18f9b420779cfdf24aa0a7e2d77.css">
 
@@ -66,7 +66,7 @@
   <img src="../_static/white_logo.png" class="logo" alt="logo">
   
   
-  <h1 class="site-logo" id="site-title">heyoka.py 0.6.1 documentation</h1>
+  <h1 class="site-logo" id="site-title">heyoka.py 0.7.0 documentation</h1>
   
 </a>
 </div><form class="bd-search d-flex align-items-center" action="../search.html" method="get">
@@ -158,6 +158,11 @@
    <li class="toctree-l2">
     <a class="reference internal" href="The%20wavy%20ramp.html">
      The wavy ramp
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="The%20Maxwell-Boltzmann%20distribution.html">
+     The Maxwell-Boltzmann distribution
     </a>
    </li>
   </ul>
@@ -461,6 +466,7 @@ all initialised to zero:</p>
 </div>
 </div>
 </div>
+<p>Note that, contrary to the scalar integrator, in the batch integrator it is not possible to write directly into the array of time coordinates. The function <code class="docutils literal notranslate"><span class="pre">set_time()</span></code> must be used instead.</p>
 </div>
 <div class="section" id="step-by-step-integration">
 <h2>Step-by-step integration<a class="headerlink" href="#step-by-step-integration" title="Permalink to this headline">¶</a></h2>
@@ -582,7 +588,7 @@ Time:
 [10.21518102 11.21719731 12.21701653 13.21708394]
 
 Outcomes:
-[(&lt;taylor_outcome.time_limit: -4294967299&gt;, 0.2048473837982105, 0.30806885568024933, 40), (&lt;taylor_outcome.time_limit: -4294967299&gt;, 0.21220873200092316, 0.3203303481721456, 38), (&lt;taylor_outcome.time_limit: -4294967299&gt;, 0.22595995123406573, 0.4129644953875965, 36), (&lt;taylor_outcome.time_limit: -4294967299&gt;, 0.21027114609377706, 0.3717536518626975, 35)]
+[(&lt;taylor_outcome.time_limit: -4294967299&gt;, 0.2048473837982105, 0.30806885568024933, 40), (&lt;taylor_outcome.time_limit: -4294967299&gt;, 0.21220873200092316, 0.3203303481721456, 38), (&lt;taylor_outcome.time_limit: -4294967299&gt;, 0.22595995123406573, 0.4129644953875965, 35), (&lt;taylor_outcome.time_limit: -4294967299&gt;, 0.21027114609377706, 0.3717536518626975, 34)]
 State:
 [[1.80080102 2.83619831 3.4747455  6.29634837]
  [1.35919698 0.50159786 0.00737693 0.72663002]]
@@ -596,7 +602,7 @@ Time:
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Reset time and state.</span>
-<span class="n">ta</span><span class="o">.</span><span class="n">time</span><span class="p">[:]</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+<span class="n">ta</span><span class="o">.</span><span class="n">set_time</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
 <span class="n">ta</span><span class="o">.</span><span class="n">state</span><span class="p">[:]</span> <span class="o">=</span> <span class="p">[[</span><span class="mf">0.00</span><span class="p">,</span> <span class="mf">0.01</span><span class="p">,</span> <span class="mf">0.02</span><span class="p">,</span> <span class="mf">0.03</span><span class="p">],</span> <span class="p">[</span><span class="mf">1.85</span><span class="p">,</span> <span class="mf">1.86</span><span class="p">,</span> <span class="mf">1.87</span><span class="p">,</span> <span class="mf">1.88</span><span class="p">]]</span>
 
 <span class="c1"># Create identical time grids.</span>
@@ -620,7 +626,7 @@ Time:
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/Batch mode overview_17_0.png" src="../_images/Batch mode overview_17_0.png" />
+<img alt="../_images/Batch mode overview_18_0.png" src="../_images/Batch mode overview_18_0.png" />
 </div>
 </div>
 <p>In this example, we chose to propagate all batch elements using the same time grid, but we could have chosen to propagate different batch elements using different time grids.</p>
@@ -663,7 +669,7 @@ used to propagate the last timestep into an internal vector:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Reset time and state.</span>
-<span class="n">ta</span><span class="o">.</span><span class="n">time</span><span class="p">[:]</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+<span class="n">ta</span><span class="o">.</span><span class="n">set_time</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
 <span class="n">ta</span><span class="o">.</span><span class="n">state</span><span class="p">[:]</span> <span class="o">=</span> <span class="p">[[</span><span class="mf">0.00</span><span class="p">,</span> <span class="mf">0.01</span><span class="p">,</span> <span class="mf">0.02</span><span class="p">,</span> <span class="mf">0.03</span><span class="p">],</span> <span class="p">[</span><span class="mf">1.85</span><span class="p">,</span> <span class="mf">1.86</span><span class="p">,</span> <span class="mf">1.87</span><span class="p">,</span> <span class="mf">1.88</span><span class="p">]]</span>
 
 <span class="c1"># Propagate for a timestep, making</span>

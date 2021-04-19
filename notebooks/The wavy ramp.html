@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>The wavy ramp &#8212; heyoka.py 0.6.1 documentation</title>
+    <title>The wavy ramp &#8212; heyoka.py 0.7.0 documentation</title>
     
   <link rel="stylesheet" href="../_static/css/index.f658d18f9b420779cfdf24aa0a7e2d77.css">
 
@@ -43,7 +43,7 @@
     <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["\\(", "\\)"]], "displayMath": [["\\[", "\\]"]], "processRefs": false, "processEnvironments": false}})</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Examples" href="../examples.html" />
+    <link rel="next" title="The Maxwell-Boltzmann distribution" href="The%20Maxwell-Boltzmann%20distribution.html" />
     <link rel="prev" title="The two-fixed centres elliptic billiard" href="The%20two-fixed%20elliptic%20billiard.html" />
 
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -66,7 +66,7 @@
   <img src="../_static/white_logo.png" class="logo" alt="logo">
   
   
-  <h1 class="site-logo" id="site-title">heyoka.py 0.6.1 documentation</h1>
+  <h1 class="site-logo" id="site-title">heyoka.py 0.7.0 documentation</h1>
   
 </a>
 </div><form class="bd-search d-flex align-items-center" action="../search.html" method="get">
@@ -158,6 +158,11 @@
    <li class="toctree-l2 current active">
     <a class="current reference internal" href="#">
      The wavy ramp
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="The%20Maxwell-Boltzmann%20distribution.html">
+     The Maxwell-Boltzmann distribution
     </a>
    </li>
   </ul>
@@ -449,12 +454,13 @@ y = 1 - x + 0.05 \cos\left(11 \pi x \right).
 <p>We are now ready to create the integrator object. As initial conditions, we will put the particle at rest above the ramp on the <span class="math notranslate nohighlight">\(y\)</span> axis:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ta</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">taylor_adaptive</span><span class="p">(</span><span class="n">eqns</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mf">1.2</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">t_events</span> <span class="o">=</span> <span class="p">[</span><span class="n">hy</span><span class="o">.</span><span class="n">t_event</span><span class="p">(</span><span class="n">eq_w_curve</span><span class="p">,</span> <span class="n">callback</span> <span class="o">=</span> <span class="n">cb_w_curve</span><span class="p">),</span>
-                                                          <span class="n">hy</span><span class="o">.</span><span class="n">t_event</span><span class="p">(</span><span class="n">eq_bottom</span><span class="p">,</span> <span class="n">callback</span> <span class="o">=</span> <span class="n">cb_bottom</span><span class="p">)])</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ta</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">taylor_adaptive</span><span class="p">(</span><span class="n">eqns</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mf">1.2</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">t_events</span> <span class="o">=</span> <span class="p">[</span><span class="n">hy</span><span class="o">.</span><span class="n">t_event</span><span class="p">(</span><span class="n">eq_w_curve</span><span class="p">,</span> <span class="n">callback</span> <span class="o">=</span> <span class="n">cb_w_curve</span><span class="p">,</span> <span class="n">direction</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">event_direction</span><span class="o">.</span><span class="n">negative</span><span class="p">),</span>
+                                                          <span class="n">hy</span><span class="o">.</span><span class="n">t_event</span><span class="p">(</span><span class="n">eq_bottom</span><span class="p">,</span> <span class="n">callback</span> <span class="o">=</span> <span class="n">cb_bottom</span><span class="p">,</span> <span class="n">direction</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">event_direction</span><span class="o">.</span><span class="n">negative</span><span class="p">)])</span>
 </pre></div>
 </div>
 </div>
 </div>
+<p>Note how, as explained in the <a class="reference internal" href="The%20Keplerian%20billiard.html"><span class="doc std std-doc">Keplerian billiard</span></a> example, we assigned specific directions to the collision events. This is done in order to avoid triggering spurious double-bounce events that would lead to the particle penetrating through the ramp or the ground.</p>
 <p>We can now integrate the system for a few time units:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -536,7 +542,7 @@ Index of the terminal event: 1
         <div class='prev-next-bottom'>
             
     <a class='left-prev' id="prev-link" href="The%20two-fixed%20elliptic%20billiard.html" title="previous page">The two-fixed centres elliptic billiard</a>
-    <a class='right-next' id="next-link" href="../examples.html" title="next page">Examples</a>
+    <a class='right-next' id="next-link" href="The%20Maxwell-Boltzmann%20distribution.html" title="next page">The Maxwell-Boltzmann distribution</a>
 
         </div>
         

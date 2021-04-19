@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>The two-fixed centres elliptic billiard &#8212; heyoka.py 0.6.1 documentation</title>
+    <title>The two-fixed centres elliptic billiard &#8212; heyoka.py 0.7.0 documentation</title>
     
   <link rel="stylesheet" href="../_static/css/index.f658d18f9b420779cfdf24aa0a7e2d77.css">
 
@@ -66,7 +66,7 @@
   <img src="../_static/white_logo.png" class="logo" alt="logo">
   
   
-  <h1 class="site-logo" id="site-title">heyoka.py 0.6.1 documentation</h1>
+  <h1 class="site-logo" id="site-title">heyoka.py 0.7.0 documentation</h1>
   
 </a>
 </div><form class="bd-search d-flex align-items-center" action="../search.html" method="get">
@@ -158,6 +158,11 @@
    <li class="toctree-l2">
     <a class="reference internal" href="The%20wavy%20ramp.html">
      The wavy ramp
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="The%20Maxwell-Boltzmann%20distribution.html">
+     The Maxwell-Boltzmann distribution
     </a>
    </li>
   </ul>
@@ -316,7 +321,7 @@
                 
   <div class="section" id="the-two-fixed-centres-elliptic-billiard">
 <h1>The two-fixed centres elliptic billiard<a class="headerlink" href="#the-two-fixed-centres-elliptic-billiard" title="Permalink to this headline">¶</a></h1>
-<p>This example is a refinement of <a class="reference internal" href="The%20Keplerian%20billiard.html"><span class="doc std std-doc">the Keplerian billiard</span></a> described earlier in which we introduce <em>two</em> gravitational centres of attraction (rather than one) embedded in a non-rectangular billiard. Specifically, the billiard’s shape is defined by the <a class="reference external" href="https://en.wikipedia.org/wiki/Algebraic_curve">elliptic curve</a></p>
+<p>This example is a refinement of the <a class="reference internal" href="The%20Keplerian%20billiard.html"><span class="doc std std-doc">Keplerian billiard</span></a> described earlier in which we introduce <em>two</em> gravitational centres of attraction (rather than one) embedded in a non-rectangular billiard. Specifically, the billiard’s shape is defined by the <a class="reference external" href="https://en.wikipedia.org/wiki/Algebraic_curve">elliptic curve</a></p>
 <div class="math notranslate nohighlight">
 \[
 y^2 = \left(a - x \right)\cdot\left(x - b\right)\cdot\left(x^2 + c\right),
@@ -457,9 +462,9 @@ y^2 - \left(a - x \right)\cdot\left(x - b\right)\cdot\left(x^2 + c\right) = 0 \\
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Construct the events.</span>
-<span class="n">ev_0</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">t_event</span><span class="p">(</span><span class="n">eveq_0</span><span class="p">,</span> <span class="n">callback</span><span class="o">=</span><span class="n">cb_0</span><span class="p">)</span>
-<span class="n">ev_1</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">t_event</span><span class="p">(</span><span class="n">eveq_1</span><span class="p">,</span> <span class="n">callback</span><span class="o">=</span><span class="n">cb_1</span><span class="p">)</span>
-<span class="n">ev_curve</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">t_event</span><span class="p">(</span><span class="n">eveq_curve</span><span class="p">,</span> <span class="n">callback</span><span class="o">=</span><span class="n">cb_curve</span><span class="p">)</span>
+<span class="n">ev_0</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">t_event</span><span class="p">(</span><span class="n">eveq_0</span><span class="p">,</span> <span class="n">callback</span><span class="o">=</span><span class="n">cb_0</span><span class="p">,</span> <span class="n">direction</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">event_direction</span><span class="o">.</span><span class="n">negative</span><span class="p">)</span>
+<span class="n">ev_1</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">t_event</span><span class="p">(</span><span class="n">eveq_1</span><span class="p">,</span> <span class="n">callback</span><span class="o">=</span><span class="n">cb_1</span><span class="p">,</span> <span class="n">direction</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">event_direction</span><span class="o">.</span><span class="n">negative</span><span class="p">)</span>
+<span class="n">ev_curve</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">t_event</span><span class="p">(</span><span class="n">eveq_curve</span><span class="p">,</span> <span class="n">callback</span><span class="o">=</span><span class="n">cb_curve</span><span class="p">,</span> <span class="n">direction</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">event_direction</span><span class="o">.</span><span class="n">positive</span><span class="p">)</span>
 
 <span class="c1"># Construct the integrator.</span>
 <span class="n">ta</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">taylor_adaptive</span><span class="p">(</span><span class="n">eqns</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">.</span><span class="mi">8</span><span class="p">],</span> <span class="n">t_events</span> <span class="o">=</span> <span class="p">[</span><span class="n">ev_0</span><span class="p">,</span> <span class="n">ev_1</span><span class="p">,</span> <span class="n">ev_curve</span><span class="p">])</span>
@@ -467,7 +472,7 @@ y^2 - \left(a - x \right)\cdot\left(x - b\right)\cdot\left(x^2 + c\right) = 0 \\
 </div>
 </div>
 </div>
-<p>The test particle is initially placed in the neck of the billiard and moving towards the first centre of gravity.</p>
+<p>The test particle is initially placed in the neck of the billiard and moving towards the first centre of gravity. Note how, as explained in the <a class="reference internal" href="The%20Keplerian%20billiard.html"><span class="doc std std-doc">Keplerian billiard</span></a> example, we assigned specific directions to the collision events. This is done in order to avoid triggering spurious double-bounce events that would lead to the test particle exiting the box or entering one of the centres of force.</p>
 <p>We are now ready to integrate the system for a few time units:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">

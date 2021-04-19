@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Box control in satellite Formation Flying &#8212; heyoka.py 0.6.1 documentation</title>
+    <title>Box control in satellite Formation Flying &#8212; heyoka.py 0.7.0 documentation</title>
     
   <link rel="stylesheet" href="../_static/css/index.f658d18f9b420779cfdf24aa0a7e2d77.css">
 
@@ -66,7 +66,7 @@
   <img src="../_static/white_logo.png" class="logo" alt="logo">
   
   
-  <h1 class="site-logo" id="site-title">heyoka.py 0.6.1 documentation</h1>
+  <h1 class="site-logo" id="site-title">heyoka.py 0.7.0 documentation</h1>
   
 </a>
 </div><form class="bd-search d-flex align-items-center" action="../search.html" method="get">
@@ -158,6 +158,11 @@
    <li class="toctree-l2">
     <a class="reference internal" href="The%20wavy%20ramp.html">
      The wavy ramp
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="The%20Maxwell-Boltzmann%20distribution.html">
+     The Maxwell-Boltzmann distribution
     </a>
    </li>
   </ul>
@@ -351,7 +356,7 @@
                 
   <div class="section" id="box-control-in-satellite-formation-flying">
 <h1>Box control in satellite Formation Flying<a class="headerlink" href="#box-control-in-satellite-formation-flying" title="Permalink to this headline">¶</a></h1>
-<p>We show how <em>heyoka.py</em> event detection machine can be used in an innovative formulation of the box-control problem for formation flying satellites. This is the problem of controlling a Deputy satellite to remain within a predefined control box defined in the Local Horizontal Local Vertical frame of the Chief satellite. Our solution is to apply impulsive DV when certain events trigger.</p>
+<p>We show how <em>heyoka.py</em>’s <a class="reference internal" href="Event%20detection.html"><span class="doc std std-doc">event detection</span></a> machinery can be used in an innovative formulation of the box-control problem for formation flying satellites. This is the problem of controlling a Deputy satellite to remain within a predefined control box defined in the Local Horizontal Local Vertical frame of the Chief satellite. Our solution is to apply impulsive DV when certain events trigger.</p>
 <p>To derive all equations we used and abused the <a class="reference external" href="https://vatankhahghadim.github.io/AER506/Notes/1%20-%20Fundamentals.pdf">Vectrix notation from Hugues</a>.</p>
 <div class="section" id="preliminaries">
 <h2>Preliminaries<a class="headerlink" href="#preliminaries" title="Permalink to this headline">¶</a></h2>
@@ -484,7 +489,6 @@ r(Y\dot Z - Z\dot Y) &amp; r(Z\dot X - X\dot Z) &amp; r(X\dot Y - Y\dot X) \\
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
 <span class="o">%</span><span class="k">matplotlib</span> inline
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
 </pre></div>
 </div>

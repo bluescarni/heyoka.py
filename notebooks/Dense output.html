@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Dense output &#8212; heyoka.py 0.6.1 documentation</title>
+    <title>Dense output &#8212; heyoka.py 0.7.0 documentation</title>
     
   <link rel="stylesheet" href="../_static/css/index.f658d18f9b420779cfdf24aa0a7e2d77.css">
 
@@ -66,7 +66,7 @@
   <img src="../_static/white_logo.png" class="logo" alt="logo">
   
   
-  <h1 class="site-logo" id="site-title">heyoka.py 0.6.1 documentation</h1>
+  <h1 class="site-logo" id="site-title">heyoka.py 0.7.0 documentation</h1>
   
 </a>
 </div><form class="bd-search d-flex align-items-center" action="../search.html" method="get">
@@ -158,6 +158,11 @@
    <li class="toctree-l2">
     <a class="reference internal" href="The%20wavy%20ramp.html">
      The wavy ramp
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="The%20Maxwell-Boltzmann%20distribution.html">
+     The Maxwell-Boltzmann distribution
     </a>
    </li>
   </ul>
@@ -448,8 +453,10 @@ which is about halfway through the timestep that was just taken:</p>
 </div>
 <p>The <code class="docutils literal notranslate"><span class="pre">update_d_output()</span></code> method takes in input an <em>absolute</em> time coordinate
 and returns a reference to an internal array that will contain the state of the system
-at the specified time coordinate, as computed by the evaluation of the Taylor series. The
-dense output array can be accessed directly via the <code class="docutils literal notranslate"><span class="pre">d_output</span></code> property:</p>
+at the specified time coordinate, as computed by the evaluation of the Taylor series.
+<code class="docutils literal notranslate"><span class="pre">update_d_output()</span></code> can also be called with a time coordinate relative to the current time
+by passing <code class="docutils literal notranslate"><span class="pre">rel_time</span> <span class="pre">=</span> <span class="pre">True</span></code> as an additional function argument.</p>
+<p>The dense output array can be accessed directly via the <code class="docutils literal notranslate"><span class="pre">d_output</span></code> property:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ta</span><span class="o">.</span><span class="n">d_output</span>

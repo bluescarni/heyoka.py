@@ -3,6 +3,32 @@
 Changelog
 =========
 
+0.7.0 (unreleased)
+------------------
+
+New
+~~~
+
+- The ``propagate_*()`` functions now accept an optional
+  ``max_delta_t`` argument to limit the size of a timestep,
+  and an optional ``callback`` argument that will be invoked
+  at the end of each timestep
+  (`#34 <https://github.com/bluescarni/heyoka.py/pull/34>`__).
+- ``update_d_output()`` can now be called with a relative
+  (rather than absolute) time argument
+  (`#34 <https://github.com/bluescarni/heyoka.py/pull/34>`__).
+
+Changes
+~~~~~~~
+
+- **BREAKING**: the time coordinates in batch integrators
+  cannot be directly modified any more, and the new
+  ``set_time()`` function must be used instead
+  (`#34 <https://github.com/bluescarni/heyoka.py/pull/34>`__).
+- heyoka.py now requires at least version 0.7.0 of the
+  heyoka C++ library
+  (`#34 <https://github.com/bluescarni/heyoka.py/pull/34>`__).
+
 0.6.1 (2021-04-08)
 ------------------
 
