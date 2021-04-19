@@ -12,6 +12,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <exception>
+#include <functional>
 #include <initializer_list>
 #include <optional>
 #include <sstream>
@@ -23,6 +24,7 @@
 
 #include <fmt/format.h>
 
+#include <pybind11/functional.h>
 #include <pybind11/numpy.h>
 #include <pybind11/operators.h>
 #include <pybind11/pybind11.h>
@@ -72,6 +74,7 @@ PYBIND11_MODULE(core, m)
 
     using namespace pybind11::literals;
     using fmt::literals::operator""_format;
+    namespace kw = hey::kw;
 
     m.doc() = "The core heyoka module";
 
@@ -290,7 +293,6 @@ PYBIND11_MODULE(core, m)
                 m_vec.resize(static_cast<decltype(m_vec.size())>(n), hey::number{1.});
             }
 
-            namespace kw = hey::kw;
             return hey::make_nbody_sys(n, kw::Gconst = G, kw::masses = m_vec);
         },
         "n"_a, "Gconst"_a = py::cast(1.), "masses"_a = py::none{});
@@ -300,7 +302,6 @@ PYBIND11_MODULE(core, m)
         [](std::uint32_t n, py::object Gconst, std::optional<std::uint32_t> n_massive) {
             const auto G = heypy::to_number(Gconst);
 
-            namespace kw = hey::kw;
             if (n_massive) {
                 return hey::make_nbody_par_sys(n, kw::Gconst = G, kw::n_massive = *n_massive);
             } else {
@@ -332,7 +333,7 @@ PYBIND11_MODULE(core, m)
             for (auto w : omega) {
                 omega_vec.emplace_back(heypy::to_number(w));
             }
-            namespace kw = hey::kw;
+
             return hey::make_mascon_system(kw::Gconst = G, kw::points = points_vec, kw::masses = mass_vec,
                                            kw::omega = omega_vec);
         },
@@ -366,7 +367,7 @@ PYBIND11_MODULE(core, m)
             for (auto w : omega) {
                 omega_vec.emplace_back(heypy::to_number(w));
             }
-            namespace kw = hey::kw;
+
             return hey::energy_mascon_system(kw::Gconst = G, kw::state = state_vec, kw::points = points_vec,
                                              kw::masses = mass_vec, kw::omega = omega_vec);
         },
@@ -432,11 +433,13 @@ PYBIND11_MODULE(core, m)
 
 #endif
 
+    // The callback for the propagate_*() functions for
+    // the batch integrator.
+    using prop_cb_t = std::function<void(hey::taylor_adaptive_batch<double> &)>;
+
     // Batch adaptive integrator for double.
     auto tabd_ctor_impl = [](auto sys, py::array_t<double> state_, py::object time_, py::object pars_, double tol,
                              bool high_accuracy, bool compact_mode) {
-        namespace kw = hey::kw;
-
         // Convert state and pars to std::vector, after checking
         // dimensions and shape.
         if (state_.ndim() != 2) {
@@ -531,21 +534,35 @@ PYBIND11_MODULE(core, m)
                                [](const hey::taylor_adaptive_batch<double> &ta) { return ta.get_step_res(); })
         .def(
             "propagate_for",
-            [](hey::taylor_adaptive_batch<double> &ta, const std::vector<double> &delta_t, std::size_t max_steps) {
+            [](hey::taylor_adaptive_batch<double> &ta, const std::vector<double> &delta_t, std::size_t max_steps,
+               const std::vector<double> &max_delta_t, prop_cb_t cb_) {
+                // Create the callback wrapper.
+                auto cb = heypy::make_prop_cb(cb_);
+
+                // NOTE: after releasing the GIL here, the only potential
+                // calls into the Python interpreter are when invoking cb
+                // or the events' callbacks (which are all protected by GIL reacquire).
+                // Note that copying cb around or destroying it is harmless, as it contains only
+                // a reference to the original callback cb_, or it is an empty callback.
                 py::gil_scoped_release release;
-                ta.propagate_for(delta_t, max_steps);
+                ta.propagate_for(delta_t, kw::max_steps = max_steps, kw::max_delta_t = max_delta_t, kw::callback = cb);
             },
-            "delta_t"_a, "max_steps"_a = 0)
+            "delta_t"_a, "max_steps"_a = 0, "max_delta_t"_a = std::vector<double>{}, "callback"_a = prop_cb_t{})
         .def(
             "propagate_until",
-            [](hey::taylor_adaptive_batch<double> &ta, const std::vector<double> &t, std::size_t max_steps) {
+            [](hey::taylor_adaptive_batch<double> &ta, const std::vector<double> &t, std::size_t max_steps,
+               const std::vector<double> &max_delta_t, prop_cb_t cb_) {
+                // Create the callback wrapper.
+                auto cb = heypy::make_prop_cb(cb_);
+
                 py::gil_scoped_release release;
-                ta.propagate_until(t, max_steps);
+                ta.propagate_until(t, kw::max_steps = max_steps, kw::max_delta_t = max_delta_t, kw::callback = cb);
             },
-            "t"_a, "max_steps"_a = 0)
+            "t"_a, "max_steps"_a = 0, "max_delta_t"_a = std::vector<double>{}, "callback"_a = prop_cb_t{})
         .def(
             "propagate_grid",
-            [](hey::taylor_adaptive_batch<double> &ta, py::array_t<double> grid, std::size_t max_steps) {
+            [](hey::taylor_adaptive_batch<double> &ta, py::array_t<double> grid, std::size_t max_steps,
+               const std::vector<double> &max_delta_t, prop_cb_t cb_) {
                 // Check the grid dimension/shape.
                 if (grid.ndim() != 2) {
                     heypy::py_throw(
@@ -566,13 +583,17 @@ PYBIND11_MODULE(core, m)
                 // Convert to a std::vector.
                 const auto grid_v = py::cast<std::vector<double>>(grid.attr("flatten")());
 
+                // Create the callback wrapper.
+                auto cb = heypy::make_prop_cb(cb_);
+
                 // Run the propagation.
                 // NOTE: for batch integrators, ret is guaranteed to always have
                 // the same size regardless of errors.
                 decltype(ta.propagate_grid(grid_v, max_steps)) ret;
                 {
                     py::gil_scoped_release release;
-                    ret = ta.propagate_grid(grid_v, max_steps);
+                    ret = ta.propagate_grid(grid_v, kw::max_steps = max_steps, kw::max_delta_t = max_delta_t,
+                                            kw::callback = cb);
                 }
 
                 // Create the output array.
@@ -584,17 +605,22 @@ PYBIND11_MODULE(core, m)
 
                 return a_ret;
             },
-            "grid"_a, "max_steps"_a = 0)
+            "grid"_a, "max_steps"_a = 0, "max_delta_t"_a = std::vector<double>{}, "callback"_a = prop_cb_t{})
         .def_property_readonly("propagate_res",
                                [](const hey::taylor_adaptive_batch<double> &ta) { return ta.get_propagate_res(); })
-        .def_property_readonly(
-            "time",
-            [](py::object &o) {
-                auto *ta = py::cast<hey::taylor_adaptive_batch<double> *>(o);
-                return py::array_t<double>(
-                    py::array::ShapeContainer{boost::numeric_cast<py::ssize_t>(ta->get_time().size())},
-                    ta->get_time_data(), o);
-            })
+        .def_property_readonly("time",
+                               [](py::object &o) {
+                                   auto *ta = py::cast<hey::taylor_adaptive_batch<double> *>(o);
+                                   py::array_t<double> ret(py::array::ShapeContainer{boost::numeric_cast<py::ssize_t>(
+                                                               ta->get_time().size())},
+                                                           ta->get_time_data(), o);
+
+                                   // Ensure the returned array is read-only.
+                                   ret.attr("flags").attr("writeable") = false;
+
+                                   return ret;
+                               })
+        .def("set_time", &hey::taylor_adaptive_batch<double>::set_time)
         .def_property_readonly(
             "state",
             [](py::object &o) {
@@ -664,10 +690,10 @@ PYBIND11_MODULE(core, m)
             })
         .def(
             "update_d_output",
-            [](py::object &o, const std::vector<double> &t) {
+            [](py::object &o, const std::vector<double> &t, bool rel_time) {
                 auto *ta = py::cast<hey::taylor_adaptive_batch<double> *>(o);
 
-                ta->update_d_output(t);
+                ta->update_d_output(t, rel_time);
 
                 const auto nvars = boost::numeric_cast<py::ssize_t>(ta->get_dim());
                 const auto bs = boost::numeric_cast<py::ssize_t>(ta->get_batch_size());
@@ -679,7 +705,7 @@ PYBIND11_MODULE(core, m)
 
                 return ret;
             },
-            "t"_a)
+            "t"_a, "rel_time"_a = false)
         .def_property_readonly("order", &hey::taylor_adaptive_batch<double>::get_order)
         .def_property_readonly("dim", &hey::taylor_adaptive_batch<double>::get_dim)
         .def_property_readonly("batch_size", &hey::taylor_adaptive_batch<double>::get_batch_size)

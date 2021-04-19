@@ -243,7 +243,7 @@ class taylor_add_jet_test_case(_ut.TestCase):
             # Params + time.
             ta_par_t = taylor_adaptive_batch(
                 sys_par_t, init_state, tol=fp_t(1e-9), fp_type=desc, pars=pars)
-            ta_par_t.time[:] = [fp_t(0.01), fp_t(0.02), fp_t(0.03), fp_t(0.04)]
+            ta_par_t.set_time([fp_t(0.01), fp_t(0.02), fp_t(0.03), fp_t(0.04)])
 
             jet_par_t = taylor_add_jet(
                 sys_par_t, 5, fp_type=desc, batch_size=batch_size)
