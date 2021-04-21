@@ -108,7 +108,7 @@
    "id": "212917f5",
    "metadata": {},
    "source": [
-    "The next step is the creation of the numerical integrator. We will be using a [batch integrator](<./Batch mode overview.ipynb>), which will allow us to substantially increase the floating-point throughput by integrating multiple sets of initial conditions at once. When creating the integrator, we will specify a tolerance of $10^{-18}$ (below machine precision) and we will activate high-accuracy mode. In high-accuracy mode, the integrator internally uses techniques (based on [compensated summation](https://en.wikipedia.org/wiki/Kahan_summation_algorithm) and similar algorithms) to reduce the numerical errors arising from the use of floating-point arithmetics, at the prices of a slight performance penalty."
+    "The next step is the creation of the numerical integrator. We will be using a [batch integrator](<./Batch mode overview.ipynb>), which will allow us to substantially increase the floating-point throughput by integrating multiple sets of initial conditions at once. When creating the integrator, we will specify a tolerance of $10^{-18}$ (below machine precision) and we will activate high-accuracy mode. In high-accuracy mode, the integrator internally uses techniques (based on [compensated summation](https://en.wikipedia.org/wiki/Kahan_summation_algorithm) and similar algorithms) to reduce the numerical errors arising from the use of floating-point arithmetics, at the price of a slight performance penalty."
    ]
   },
   {
