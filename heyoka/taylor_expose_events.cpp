@@ -51,7 +51,6 @@ void expose_taylor_nt_event_impl(py::module &m, const std::string &suffix)
 {
     using namespace pybind11::literals;
     using fmt::literals::operator""_format;
-    namespace kw = hey::kw;
 
     using ev_t = hey::nt_event<T>;
     using callback_t = typename ev_t::callback_t;
@@ -67,9 +66,9 @@ void expose_taylor_nt_event_impl(py::module &m, const std::string &suffix)
                      cb(ta, time);
                  };
 
-                 return ev_t(std::move(ex), kw::callback = std::move(cbl), kw::direction = dir);
+                 return ev_t(std::move(ex), std::move(cbl), dir);
              }),
-             "expression"_a, "callback"_a = callback_t{}, "direction"_a = hey::event_direction::any)
+             "expression"_a, "callback"_a, "direction"_a = hey::event_direction::any)
         // Repr.
         .def("__repr__",
              [](const ev_t &e) {
