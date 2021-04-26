@@ -81,7 +81,8 @@ void expose_taylor_integrator_common(py::class_<hey::taylor_adaptive<T>> &cl)
         // propagate_*().
         .def(
             "propagate_for",
-            [](hey::taylor_adaptive<T> &ta, T delta_t, std::size_t max_steps, T max_delta_t, prop_cb_t cb_) {
+            [](hey::taylor_adaptive<T> &ta, T delta_t, std::size_t max_steps, T max_delta_t, prop_cb_t cb_,
+               bool write_tc) {
                 // Create the callback wrapper.
                 auto cb = make_prop_cb(cb_);
 
@@ -92,21 +93,22 @@ void expose_taylor_integrator_common(py::class_<hey::taylor_adaptive<T>> &cl)
                 // a reference to the original callback cb_, or it is an empty callback.
                 py::gil_scoped_release release;
                 return ta.propagate_for(delta_t, kw::max_steps = max_steps, kw::max_delta_t = max_delta_t,
-                                        kw::callback = cb);
+                                        kw::callback = cb, kw::write_tc = write_tc);
             },
             "delta_t"_a, "max_steps"_a = 0, "max_delta_t"_a = std::numeric_limits<T>::infinity(),
-            "callback"_a = prop_cb_t{})
+            "callback"_a = prop_cb_t{}, "write_tc"_a = false)
         .def(
             "propagate_until",
-            [](hey::taylor_adaptive<T> &ta, T t, std::size_t max_steps, T max_delta_t, prop_cb_t cb_) {
+            [](hey::taylor_adaptive<T> &ta, T t, std::size_t max_steps, T max_delta_t, prop_cb_t cb_, bool write_tc) {
                 // Create the callback wrapper.
                 auto cb = make_prop_cb(cb_);
 
                 py::gil_scoped_release release;
                 return ta.propagate_until(t, kw::max_steps = max_steps, kw::max_delta_t = max_delta_t,
-                                          kw::callback = cb);
+                                          kw::callback = cb, kw::write_tc = write_tc);
             },
-            "t"_a, "max_steps"_a = 0, "max_delta_t"_a = std::numeric_limits<T>::infinity(), "callback"_a = prop_cb_t{})
+            "t"_a, "max_steps"_a = 0, "max_delta_t"_a = std::numeric_limits<T>::infinity(), "callback"_a = prop_cb_t{},
+            "write_tc"_a = false)
         // Repr.
         .def("__repr__",
              [](const hey::taylor_adaptive<T> &ta) {
