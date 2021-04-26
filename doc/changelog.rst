@@ -6,9 +6,19 @@ Changelog
 0.8.0 (unreleased)
 ------------------
 
+New
+~~~
+
+- The ``propagate_for/until()`` functions now support writing
+  the Taylor coefficients at the end of each timestep
+  (`#37 <https://github.com/bluescarni/heyoka.py/pull/37>`__).
+
 Changes
 ~~~~~~~
 
+- **BREAKING**: :ref:`breaking changes <bchanges_0_8_0>`
+  in the event detection API
+  (`#37 <https://github.com/bluescarni/heyoka.py/pull/37>`__).
 - heyoka.py now requires at least version 0.8.0 of the
   heyoka C++ library
   (`#37 <https://github.com/bluescarni/heyoka.py/pull/37>`__).
