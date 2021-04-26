@@ -34,4 +34,5 @@ install
 tutorials
 examples
 changelog
+breaking_changes
 ```

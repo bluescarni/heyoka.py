@@ -537,7 +537,7 @@ class event_detection_test_case(_ut.TestCase):
             counter = 0
             cur_time = fp_t(0)
 
-            def cb0(ta, t):
+            def cb0(ta, t, d_sgn):
                 nonlocal counter
                 nonlocal cur_time
 
@@ -547,7 +547,7 @@ class event_detection_test_case(_ut.TestCase):
                 counter = counter + 1
                 cur_time = t
 
-            def cb1(ta, t):
+            def cb1(ta, t, d_sgn):
                 nonlocal counter
                 nonlocal cur_time
 
@@ -570,7 +570,7 @@ class event_detection_test_case(_ut.TestCase):
             counter_nt = 0
             cur_time = fp_t(0)
 
-            def cb0(ta, t):
+            def cb0(ta, t, d_sgn):
                 nonlocal counter_nt
                 nonlocal cur_time
 
@@ -579,7 +579,7 @@ class event_detection_test_case(_ut.TestCase):
                 counter_nt = counter_nt + 1
                 cur_time = t
 
-            def cb1(ta, mr):
+            def cb1(ta, mr, d_sgn):
                 nonlocal cur_time
                 nonlocal counter_t
 

@@ -51,22 +51,23 @@ void expose_taylor_nt_event_impl(py::module &m, const std::string &suffix)
 {
     using namespace pybind11::literals;
     using fmt::literals::operator""_format;
+    namespace kw = hey::kw;
 
     using ev_t = hey::nt_event<T>;
     using callback_t = typename ev_t::callback_t;
 
     py::class_<ev_t>(m, ("_nt_event_{}"_format(suffix)).c_str())
         .def(py::init([](hey::expression ex, callback_t callback, hey::event_direction dir) {
-                 auto cbl = [cb = std::move(callback)](hey::taylor_adaptive<T> &ta, T time) {
+                 auto cbl = [cb = std::move(callback)](hey::taylor_adaptive<T> &ta, T time, int d_sgn) {
                      // Make sure we lock the GIL before calling into the
                      // interpreter, as the callbacks may be invoked in long-running
                      // propagate functions which release the GIL.
                      py::gil_scoped_acquire acquire;
 
-                     cb(ta, time);
+                     cb(ta, time, d_sgn);
                  };
 
-                 return ev_t(std::move(ex), std::move(cbl), dir);
+                 return ev_t(std::move(ex), std::move(cbl), kw::direction = dir);
              }),
              "expression"_a, "callback"_a, "direction"_a = hey::event_direction::any)
         // Repr.
@@ -96,13 +97,13 @@ void expose_taylor_t_event_impl(py::module &m, const std::string &suffix)
     py::class_<ev_t>(m, ("_t_event_{}"_format(suffix)).c_str())
         .def(py::init([](hey::expression ex, callback_t callback, hey::event_direction dir, T cooldown) {
                  if (callback) {
-                     auto cbl = [cb = std::move(callback)](hey::taylor_adaptive<T> &ta, bool mr) {
+                     auto cbl = [cb = std::move(callback)](hey::taylor_adaptive<T> &ta, bool mr, int d_sgn) {
                          // Make sure we lock the GIL before calling into the
                          // interpreter, as the callbacks may be invoked in long-running
                          // propagate functions which release the GIL.
                          py::gil_scoped_acquire acquire;
 
-                         return cb(ta, mr);
+                         return cb(ta, mr, d_sgn);
                      };
 
                      return ev_t(std::move(ex), kw::callback = std::move(cbl), kw::direction = dir,
