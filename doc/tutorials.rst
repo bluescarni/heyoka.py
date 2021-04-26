@@ -1,5 +1,7 @@
+.. _tutorials:
+
 Tutorials
-===============
+=========
 
 .. only:: html
 

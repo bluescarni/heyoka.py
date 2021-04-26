@@ -1,5 +1,7 @@
+.. _examples:
+
 Examples
-==================
+========
 
 Celestial mechanics and astrodynamics
 -------------------------------------
