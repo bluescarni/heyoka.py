@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>The adaptive integrator &#8212; heyoka.py 0.7.0 documentation</title>
+    <title>The adaptive integrator &#8212; heyoka.py 0.8.0 documentation</title>
     
   <link href="../_static/css/theme.css" rel="stylesheet" />
   <link href="../_static/css/index.c5995385ac14fb8791e8eb36b4908be2.css" rel="stylesheet" />
@@ -63,7 +63,7 @@
       <img src="../_static/white_logo.png" class="logo" alt="logo">
       
       
-      <h1 class="site-logo" id="site-title">heyoka.py 0.7.0 documentation</h1>
+      <h1 class="site-logo" id="site-title">heyoka.py 0.8.0 documentation</h1>
       
     </a>
 </div><form class="bd-search d-flex align-items-center" action="../search.html" method="get">
@@ -134,7 +134,7 @@
    </li>
    <li class="toctree-l2">
     <a class="reference internal" href="Event%20detection.html">
-     Event detection
+     Event detection overview
     </a>
    </li>
    <li class="toctree-l2">
@@ -214,6 +214,11 @@
  <li class="toctree-l1">
   <a class="reference internal" href="../changelog.html">
    Changelog
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../breaking_changes.html">
+   Breaking changes
   </a>
  </li>
 </ul>
@@ -671,6 +676,32 @@ State                   : [0.050000000000000044, 0.024999999999999991]
 integrating if a non-finite value is detected in the state vector
 at the end of the timestep. In such case, the outcome of the
 integration will be <code class="docutils literal notranslate"><span class="pre">err_nf_state</span></code>.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">propagate_for()</span></code> and <code class="docutils literal notranslate"><span class="pre">propagate_until()</span></code> methods
+can be invoked with two additional optional keyword arguments:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">max_delta_t</span></code>: similarly to the <code class="docutils literal notranslate"><span class="pre">step()</span></code> function, this value
+represents the maximum timestep size in absolute value;</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">callback</span></code>: this is a callable which will be invoked at the end of
+each timestep, with the integrator object as only argument.</p></li>
+</ul>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Propagate to t = .5 using a max_delta_t and</span>
+<span class="c1"># providing a callback that prints the current time.</span>
+<span class="n">ta</span><span class="o">.</span><span class="n">propagate_until</span><span class="p">(</span><span class="n">t</span> <span class="o">=</span> <span class="o">.</span><span class="mi">5</span><span class="p">,</span> <span class="n">max_delta_t</span> <span class="o">=</span> <span class="o">.</span><span class="mi">1</span><span class="p">,</span> <span class="n">callback</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">ta</span><span class="p">:</span> <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Current time: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ta</span><span class="o">.</span><span class="n">time</span><span class="p">)));</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Current time: 0.1
+Current time: 0.2
+Current time: 0.30000000000000004
+Current time: 0.4
+Current time: 0.5
+</pre></div>
+</div>
+</div>
+</div>
 </div>
 <div class="section" id="propagation-over-a-time-grid">
 <h2>Propagation over a time grid<a class="headerlink" href="#propagation-over-a-time-grid" title="Permalink to this headline">¶</a></h2>
@@ -741,6 +772,37 @@ the state of the system at the time points in the grid:</p>
 </div>
 <p>As you can see from the screen output above (where we printed the <code class="docutils literal notranslate"><span class="pre">out</span></code> variable), the use of <code class="docutils literal notranslate"><span class="pre">propagate_grid()</span></code> resulted in 5 integration timesteps being taken. Had we used <code class="docutils literal notranslate"><span class="pre">propagate_until()</span></code>, we would have needed 10 integration timesteps to obtain the same result.</p>
 <p>There are no special requirements on the time values in the grid (apart from the fact that they must be finite and ordered monotonically).</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">propagate_grid()</span></code> method
+can be invoked with two additional optional keyword arguments:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">max_delta_t</span></code>: similarly to the <code class="docutils literal notranslate"><span class="pre">step()</span></code> function, this value
+represents the maximum timestep size in absolute value;</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">callback</span></code>: this is a callable which will be invoked at the end of
+each timestep, with the integrator object as only argument.</p></li>
+</ul>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Propagate over a grid using a max_delta_t and</span>
+<span class="c1"># providing a callback that prints the current time.</span>
+<span class="n">ta</span><span class="o">.</span><span class="n">propagate_grid</span><span class="p">(</span><span class="n">grid</span> <span class="o">=</span> <span class="p">[</span><span class="mf">1.1</span><span class="p">,</span> <span class="mf">1.2</span><span class="p">,</span> <span class="mf">1.3</span><span class="p">,</span> <span class="mf">1.4</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">,</span> <span class="mf">1.6</span><span class="p">,</span> <span class="mf">1.7</span><span class="p">,</span> <span class="mf">1.8</span><span class="p">,</span> <span class="mf">1.9</span><span class="p">,</span> <span class="mf">2.</span><span class="p">],</span>
+                  <span class="n">max_delta_t</span> <span class="o">=</span> <span class="o">.</span><span class="mi">1</span><span class="p">,</span> <span class="n">callback</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">ta</span><span class="p">:</span> <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Current time: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ta</span><span class="o">.</span><span class="n">time</span><span class="p">)));</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Current time: 1.2000000000000002
+Current time: 1.3
+Current time: 1.4000000000000001
+Current time: 1.5
+Current time: 1.6
+Current time: 1.7000000000000002
+Current time: 1.8
+Current time: 1.9000000000000001
+Current time: 2.0
+</pre></div>
+</div>
+</div>
+</div>
 </div>
 </div>
 

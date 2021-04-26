@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>The wavy ramp &#8212; heyoka.py 0.7.0 documentation</title>
+    <title>The wavy ramp &#8212; heyoka.py 0.8.0 documentation</title>
     
   <link href="../_static/css/theme.css" rel="stylesheet" />
   <link href="../_static/css/index.c5995385ac14fb8791e8eb36b4908be2.css" rel="stylesheet" />
@@ -63,7 +63,7 @@
       <img src="../_static/white_logo.png" class="logo" alt="logo">
       
       
-      <h1 class="site-logo" id="site-title">heyoka.py 0.7.0 documentation</h1>
+      <h1 class="site-logo" id="site-title">heyoka.py 0.8.0 documentation</h1>
       
     </a>
 </div><form class="bd-search d-flex align-items-center" action="../search.html" method="get">
@@ -134,7 +134,7 @@
    </li>
    <li class="toctree-l2">
     <a class="reference internal" href="Event%20detection.html">
-     Event detection
+     Event detection overview
     </a>
    </li>
    <li class="toctree-l2">
@@ -214,6 +214,11 @@
  <li class="toctree-l1">
   <a class="reference internal" href="../changelog.html">
    Changelog
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../breaking_changes.html">
+   Breaking changes
   </a>
  </li>
 </ul>
@@ -394,7 +399,7 @@ y = 1 - x + 0.05 \cos\left(11 \pi x \right).
 <span class="n">bounce_points</span> <span class="o">=</span> <span class="p">[]</span>
 
 <span class="c1"># Callback for bouncing against the curve.</span>
-<span class="k">def</span> <span class="nf">cb_w_curve</span><span class="p">(</span><span class="n">ta</span><span class="p">,</span> <span class="n">mr</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">cb_w_curve</span><span class="p">(</span><span class="n">ta</span><span class="p">,</span> <span class="n">mr</span><span class="p">,</span> <span class="n">d_sgn</span><span class="p">):</span>
     <span class="k">global</span> <span class="n">last_t</span>
 
     <span class="c1"># If the last collision happened</span>
@@ -429,7 +434,7 @@ y = 1 - x + 0.05 \cos\left(11 \pi x \right).
     <span class="k">return</span> <span class="kc">True</span>
 
 <span class="c1"># Callback for bouncing off the ground.</span>
-<span class="k">def</span> <span class="nf">cb_bottom</span><span class="p">(</span><span class="n">ta</span><span class="p">,</span> <span class="n">mr</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">cb_bottom</span><span class="p">(</span><span class="n">ta</span><span class="p">,</span> <span class="n">mr</span><span class="p">,</span> <span class="n">d_sgn</span><span class="p">):</span>
     <span class="k">global</span> <span class="n">last_t</span>
 
     <span class="c1"># If the last collision happened</span>

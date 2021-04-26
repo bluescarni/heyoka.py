@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Batch mode &#8212; heyoka.py 0.7.0 documentation</title>
+    <title>Batch mode &#8212; heyoka.py 0.8.0 documentation</title>
     
   <link href="../_static/css/theme.css" rel="stylesheet" />
   <link href="../_static/css/index.c5995385ac14fb8791e8eb36b4908be2.css" rel="stylesheet" />
@@ -40,7 +40,7 @@
     <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["\\(", "\\)"]], "displayMath": [["\\[", "\\]"]], "processRefs": false, "processEnvironments": false}})</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Event detection" href="Event%20detection.html" />
+    <link rel="next" title="Event detection overview" href="Event%20detection.html" />
     <link rel="prev" title="Dense output" href="Dense%20output.html" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="docsearch:language" content="en" />
@@ -63,7 +63,7 @@
       <img src="../_static/white_logo.png" class="logo" alt="logo">
       
       
-      <h1 class="site-logo" id="site-title">heyoka.py 0.7.0 documentation</h1>
+      <h1 class="site-logo" id="site-title">heyoka.py 0.8.0 documentation</h1>
       
     </a>
 </div><form class="bd-search d-flex align-items-center" action="../search.html" method="get">
@@ -134,7 +134,7 @@
    </li>
    <li class="toctree-l2">
     <a class="reference internal" href="Event%20detection.html">
-     Event detection
+     Event detection overview
     </a>
    </li>
    <li class="toctree-l2">
@@ -214,6 +214,11 @@
  <li class="toctree-l1">
   <a class="reference internal" href="../changelog.html">
    Changelog
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../breaking_changes.html">
+   Breaking changes
   </a>
  </li>
 </ul>
@@ -633,7 +638,7 @@ Time:
 </div>
 <p>In this example, we chose to propagate all batch elements using the same time grid, but we could have chosen to propagate different batch elements using different time grids.</p>
 <p>The plot for the time evolution of <span class="math notranslate nohighlight">\(x\)</span> shows how this dynamical system is sensitive to the initial conditions: whereas batch elements 0 and 1 evolve together towards the same periodic behaviour, batch elements 2 and 3 exhibit a qualitatively-different evolution.</p>
-<p>We can print to screen <code class="docutils literal notranslate"><span class="pre">propagate_res</span></code> to fnid out how many timesteps each batch required and what were the sizes of the smallest and largest integration timesteps:</p>
+<p>We can print to screen <code class="docutils literal notranslate"><span class="pre">propagate_res</span></code> to find out how many timesteps each batch required and what were the sizes of the smallest and largest integration timesteps:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ta</span><span class="o">.</span><span class="n">propagate_res</span>
@@ -815,7 +820,7 @@ at different time coordinates:</p>
         <div class='prev-next-bottom'>
             
     <a class='left-prev' id="prev-link" href="Dense%20output.html" title="previous page">Dense output</a>
-    <a class='right-next' id="next-link" href="Event%20detection.html" title="next page">Event detection</a>
+    <a class='right-next' id="next-link" href="Event%20detection.html" title="next page">Event detection overview</a>
 
         </div>
         

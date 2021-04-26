@@ -566,7 +566,8 @@
     "    return True\n",
     "        \n",
     "# The switching event\n",
-    "switching_event = hy.t_event(x * lx * hy.par[4] + y * ly * hy.par[5], callback = lambda ta, mr: switch_callback(ta, mr, True))\n",
+    "switching_event = hy.t_event(x * lx * hy.par[4] + y * ly * hy.par[5],\n",
+    "                             callback = lambda ta, mr, d_sgn: switch_callback(ta, mr, True))\n",
     "\n",
     "# The Taylor integrator\n",
     "ta = hy.taylor_adaptive(ode_sys, [x_0, y_0, lx_0, ly_0], pars = ps, t_events = [switching_event])\n",
@@ -715,7 +716,7 @@
    "metadata": {},
    "outputs": [],
    "source": [
-    "def distance_callback(ta, mr):\n",
+    "def distance_callback(ta, mr, d_sgn):\n",
     "    candidates_t.append(ta.time)\n",
     "    candidates_d.append((ta.state[0]-x_t)**2 + (ta.state[1]-y_t)**2)\n",
     "    # Do not stop the integration\n",
@@ -725,7 +726,8 @@
     "distance_event = hy.t_event((x- x_t)*fx + (y-y_t)*fy, callback = distance_callback)\n",
     "\n",
     "# We also redefine the switching event as we have no need to log the switching times (this is optional and has not real impact in this case)\n",
-    "switching_event_no_log = hy.t_event(x * lx * hy.par[4] + y * ly * hy.par[5], callback = lambda ta,mr: switch_callback(ta, mr, False))"
+    "switching_event_no_log = hy.t_event(x * lx * hy.par[4] + y * ly * hy.par[5],\n",
+    "                                    callback = lambda ta, mr, d_sgn: switch_callback(ta, mr, False))"
    ]
   },
   {
@@ -891,9 +893,9 @@
     {
      "data": {
       "text/plain": [
-       "      fun: 1.9031465266685205e-15\n",
+       "      fun: 1.9031415041423592e-15\n",
        " hess_inv: array([[0.01440261]])\n",
-       "      jac: array([3.24965303e-09])\n",
+       "      jac: array([3.25029357e-09])\n",
        "  message: 'Optimization terminated successfully.'\n",
        "     nfev: 14\n",
        "      nit: 3\n",

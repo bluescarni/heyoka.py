@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Sampling events &#8212; heyoka.py 0.7.0 documentation</title>
+    <title>Sampling events &#8212; heyoka.py 0.8.0 documentation</title>
     
   <link href="../_static/css/theme.css" rel="stylesheet" />
   <link href="../_static/css/index.c5995385ac14fb8791e8eb36b4908be2.css" rel="stylesheet" />
@@ -41,7 +41,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Poincaré sections" href="Poincar%C3%A9%20sections.html" />
-    <link rel="prev" title="Event detection" href="Event%20detection.html" />
+    <link rel="prev" title="Event detection overview" href="Event%20detection.html" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="docsearch:language" content="en" />
     
@@ -63,7 +63,7 @@
       <img src="../_static/white_logo.png" class="logo" alt="logo">
       
       
-      <h1 class="site-logo" id="site-title">heyoka.py 0.7.0 documentation</h1>
+      <h1 class="site-logo" id="site-title">heyoka.py 0.8.0 documentation</h1>
       
     </a>
 </div><form class="bd-search d-flex align-items-center" action="../search.html" method="get">
@@ -134,7 +134,7 @@
    </li>
    <li class="toctree-l2">
     <a class="reference internal" href="Event%20detection.html">
-     Event detection
+     Event detection overview
     </a>
    </li>
    <li class="toctree-l2 current active">
@@ -214,6 +214,11 @@
  <li class="toctree-l1">
   <a class="reference internal" href="../changelog.html">
    Changelog
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../breaking_changes.html">
+   Breaking changes
   </a>
  </li>
 </ul>
@@ -366,7 +371,7 @@ y = 0.
 <span class="n">ev_x</span> <span class="o">=</span> <span class="p">[]</span>
 
 <span class="c1"># The event&#39;s callback.</span>
-<span class="k">def</span> <span class="nf">cb</span><span class="p">(</span><span class="n">ta</span><span class="p">,</span> <span class="n">time</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">cb</span><span class="p">(</span><span class="n">ta</span><span class="p">,</span> <span class="n">time</span><span class="p">,</span> <span class="n">d_sgn</span><span class="p">):</span>
     <span class="c1"># Determine the state of the system</span>
     <span class="c1"># at the time of crossing.</span>
     <span class="n">ta</span><span class="o">.</span><span class="n">update_d_output</span><span class="p">(</span><span class="n">time</span><span class="p">)</span>
@@ -405,9 +410,8 @@ y = 0.
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">matplotlib.pylab</span> <span class="kn">import</span> <span class="n">plt</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s2">&quot;figure.figsize&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">12</span><span class="p">,</span><span class="mi">12</span><span class="p">)</span>
 
-<span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+<span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">9</span><span class="p">,</span> <span class="mi">9</span><span class="p">))</span>
 <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">111</span><span class="p">)</span>
 <span class="n">ax</span><span class="o">.</span><span class="n">set_aspect</span><span class="p">(</span><span class="s1">&#39;equal&#39;</span><span class="p">,</span> <span class="n">adjustable</span><span class="o">=</span><span class="s1">&#39;box&#39;</span><span class="p">)</span>
 
@@ -440,14 +444,14 @@ y - 1.1 \sin\left( 5x \right) = 0
 <p>rather than simply <span class="math notranslate nohighlight">\(y=0\)</span>. Additionally, we will also need to store explicitly the <span class="math notranslate nohighlight">\(y\)</span> coordinate of the crossing points. Let us take a look at the code:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">9</span><span class="p">,</span> <span class="mi">9</span><span class="p">))</span>
 
 <span class="c1"># Lists of x/y coordinates for the crossing points.</span>
 <span class="n">ev_x</span> <span class="o">=</span> <span class="p">[]</span>
 <span class="n">ev_y</span> <span class="o">=</span> <span class="p">[]</span>
 
 <span class="c1"># The (updated) callback function.</span>
-<span class="k">def</span> <span class="nf">cb</span><span class="p">(</span><span class="n">ta</span><span class="p">,</span> <span class="n">time</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">cb</span><span class="p">(</span><span class="n">ta</span><span class="p">,</span> <span class="n">time</span><span class="p">,</span> <span class="n">d_sgn</span><span class="p">):</span>
     <span class="n">ta</span><span class="o">.</span><span class="n">update_d_output</span><span class="p">(</span><span class="n">time</span><span class="p">)</span>
     <span class="n">ev_x</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ta</span><span class="o">.</span><span class="n">d_output</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
     <span class="n">ev_y</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ta</span><span class="o">.</span><span class="n">d_output</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
@@ -490,7 +494,7 @@ y - 1.1 \sin\left( 5x \right) = 0
         
         <div class='prev-next-bottom'>
             
-    <a class='left-prev' id="prev-link" href="Event%20detection.html" title="previous page">Event detection</a>
+    <a class='left-prev' id="prev-link" href="Event%20detection.html" title="previous page">Event detection overview</a>
     <a class='right-next' id="next-link" href="Poincar%C3%A9%20sections.html" title="next page">Poincaré sections</a>
 
         </div>

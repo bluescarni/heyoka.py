@@ -361,7 +361,7 @@
       "Current time : 5.0\n",
       "\n",
       "Outcome      : taylor_outcome.time_limit\n",
-      "Min. timestep: 0.20212172864807668\n",
+      "Min. timestep: 0.20212172864807665\n",
       "Max. timestep: 0.2181392923080563\n",
       "Num. of steps: 72\n",
       "Current time : 20.0\n"
@@ -417,15 +417,15 @@
      "output_type": "stream",
      "text": [
       "Outcome      : taylor_outcome.time_limit\n",
-      "Min. timestep: 0.20207792808238706\n",
-      "Max. timestep: 0.21818982934810385\n",
+      "Min. timestep: 0.20207792808238695\n",
+      "Max. timestep: 0.21818982934810394\n",
       "Num. of steps: 97\n",
       "Current time : 0.0\n",
       "\n",
       "Taylor order            : 20\n",
       "Dimension               : 2\n",
       "Time                    : 0.0000000000000000\n",
-      "State                   : [0.049999999999999843, 0.025000000000002819]\n",
+      "State                   : [0.050000000000000044, 0.024999999999999991]\n",
       "\n"
      ]
     }
@@ -445,7 +445,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "45f92420",
+   "id": "d012675f-273d-4387-b780-c841b0891104",
    "metadata": {},
    "source": [
     "Note also that the time-limited propagation methods will stop\n",
@@ -453,6 +453,44 @@
     "at the end of the timestep. In such case, the outcome of the\n",
     "integration will be ``err_nf_state``.\n",
     "\n",
+    "The ``propagate_for()`` and ``propagate_until()`` methods\n",
+    "can be invoked with two additional optional keyword arguments:\n",
+    "\n",
+    "- ``max_delta_t``: similarly to the ``step()`` function, this value\n",
+    "  represents the maximum timestep size in absolute value;\n",
+    "- ``callback``: this is a callable which will be invoked at the end of\n",
+    "  each timestep, with the integrator object as only argument."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 10,
+   "id": "ed030c82-59c9-4b45-8abe-75c90818cc13",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Current time: 0.1\n",
+      "Current time: 0.2\n",
+      "Current time: 0.30000000000000004\n",
+      "Current time: 0.4\n",
+      "Current time: 0.5\n"
+     ]
+    }
+   ],
+   "source": [
+    "# Propagate to t = .5 using a max_delta_t and\n",
+    "# providing a callback that prints the current time.\n",
+    "ta.propagate_until(t = .5, max_delta_t = .1, callback = lambda ta: print(\"Current time: {}\".format(ta.time)));"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "45f92420",
+   "metadata": {},
+   "source": [
     "Propagation over a time grid\n",
     "----------------------------\n",
     "\n",
@@ -470,7 +508,7 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 10,
+   "execution_count": 11,
    "id": "b07369e2",
    "metadata": {},
    "outputs": [
@@ -493,7 +531,7 @@
        "        [-0.04990399, -0.02681336]]))"
       ]
      },
-     "execution_count": 10,
+     "execution_count": 11,
      "metadata": {},
      "output_type": "execute_result"
     }
@@ -529,7 +567,7 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 11,
+   "execution_count": 12,
    "id": "70aac3ac",
    "metadata": {},
    "outputs": [
@@ -553,7 +591,44 @@
    "source": [
     "As you can see from the screen output above (where we printed the ``out`` variable), the use of ``propagate_grid()`` resulted in 5 integration timesteps being taken. Had we used ``propagate_until()``, we would have needed 10 integration timesteps to obtain the same result.\n",
     "\n",
-    "There are no special requirements on the time values in the grid (apart from the fact that they must be finite and ordered monotonically)."
+    "There are no special requirements on the time values in the grid (apart from the fact that they must be finite and ordered monotonically).\n",
+    "\n",
+    "The ``propagate_grid()`` method\n",
+    "can be invoked with two additional optional keyword arguments:\n",
+    "\n",
+    "- ``max_delta_t``: similarly to the ``step()`` function, this value\n",
+    "  represents the maximum timestep size in absolute value;\n",
+    "- ``callback``: this is a callable which will be invoked at the end of\n",
+    "  each timestep, with the integrator object as only argument."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 13,
+   "id": "4eb16baf-5196-4e8d-9a57-de2ed21ba935",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Current time: 1.2000000000000002\n",
+      "Current time: 1.3\n",
+      "Current time: 1.4000000000000001\n",
+      "Current time: 1.5\n",
+      "Current time: 1.6\n",
+      "Current time: 1.7000000000000002\n",
+      "Current time: 1.8\n",
+      "Current time: 1.9000000000000001\n",
+      "Current time: 2.0\n"
+     ]
+    }
+   ],
+   "source": [
+    "# Propagate over a grid using a max_delta_t and\n",
+    "# providing a callback that prints the current time.\n",
+    "ta.propagate_grid(grid = [1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.7, 1.8, 1.9, 2.],\n",
+    "                  max_delta_t = .1, callback = lambda ta: print(\"Current time: {}\".format(ta.time)));"
    ]
   }
  ],

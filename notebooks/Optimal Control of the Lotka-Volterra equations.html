@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Optimal Control of the Lotka-Volterra equations &#8212; heyoka.py 0.7.0 documentation</title>
+    <title>Optimal Control of the Lotka-Volterra equations &#8212; heyoka.py 0.8.0 documentation</title>
     
   <link href="../_static/css/theme.css" rel="stylesheet" />
   <link href="../_static/css/index.c5995385ac14fb8791e8eb36b4908be2.css" rel="stylesheet" />
@@ -63,7 +63,7 @@
       <img src="../_static/white_logo.png" class="logo" alt="logo">
       
       
-      <h1 class="site-logo" id="site-title">heyoka.py 0.7.0 documentation</h1>
+      <h1 class="site-logo" id="site-title">heyoka.py 0.8.0 documentation</h1>
       
     </a>
 </div><form class="bd-search d-flex align-items-center" action="../search.html" method="get">
@@ -134,7 +134,7 @@
    </li>
    <li class="toctree-l2">
     <a class="reference internal" href="Event%20detection.html">
-     Event detection
+     Event detection overview
     </a>
    </li>
    <li class="toctree-l2">
@@ -214,6 +214,11 @@
  <li class="toctree-l1">
   <a class="reference internal" href="../changelog.html">
    Changelog
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../breaking_changes.html">
+   Breaking changes
   </a>
  </li>
 </ul>
@@ -698,7 +703,8 @@ Parameters              : [1.1000000000000001, 0.20000000000000001, 0.1000000000
     <span class="k">return</span> <span class="kc">True</span>
         
 <span class="c1"># The switching event</span>
-<span class="n">switching_event</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">t_event</span><span class="p">(</span><span class="n">x</span> <span class="o">*</span> <span class="n">lx</span> <span class="o">*</span> <span class="n">hy</span><span class="o">.</span><span class="n">par</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span> <span class="o">+</span> <span class="n">y</span> <span class="o">*</span> <span class="n">ly</span> <span class="o">*</span> <span class="n">hy</span><span class="o">.</span><span class="n">par</span><span class="p">[</span><span class="mi">5</span><span class="p">],</span> <span class="n">callback</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">ta</span><span class="p">,</span> <span class="n">mr</span><span class="p">:</span> <span class="n">switch_callback</span><span class="p">(</span><span class="n">ta</span><span class="p">,</span> <span class="n">mr</span><span class="p">,</span> <span class="kc">True</span><span class="p">))</span>
+<span class="n">switching_event</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">t_event</span><span class="p">(</span><span class="n">x</span> <span class="o">*</span> <span class="n">lx</span> <span class="o">*</span> <span class="n">hy</span><span class="o">.</span><span class="n">par</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span> <span class="o">+</span> <span class="n">y</span> <span class="o">*</span> <span class="n">ly</span> <span class="o">*</span> <span class="n">hy</span><span class="o">.</span><span class="n">par</span><span class="p">[</span><span class="mi">5</span><span class="p">],</span>
+                             <span class="n">callback</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">ta</span><span class="p">,</span> <span class="n">mr</span><span class="p">,</span> <span class="n">d_sgn</span><span class="p">:</span> <span class="n">switch_callback</span><span class="p">(</span><span class="n">ta</span><span class="p">,</span> <span class="n">mr</span><span class="p">,</span> <span class="kc">True</span><span class="p">))</span>
 
 <span class="c1"># The Taylor integrator</span>
 <span class="n">ta</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">taylor_adaptive</span><span class="p">(</span><span class="n">ode_sys</span><span class="p">,</span> <span class="p">[</span><span class="n">x_0</span><span class="p">,</span> <span class="n">y_0</span><span class="p">,</span> <span class="n">lx_0</span><span class="p">,</span> <span class="n">ly_0</span><span class="p">],</span> <span class="n">pars</span> <span class="o">=</span> <span class="n">ps</span><span class="p">,</span> <span class="n">t_events</span> <span class="o">=</span> <span class="p">[</span><span class="n">switching_event</span><span class="p">])</span>
@@ -806,7 +812,7 @@ and it is implemented in the function below:</p>
 <p>We also need to introduce a distance event triggering when the derivative of the distance is zero, hence at the maximum and minimum distance points.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">distance_callback</span><span class="p">(</span><span class="n">ta</span><span class="p">,</span> <span class="n">mr</span><span class="p">):</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">distance_callback</span><span class="p">(</span><span class="n">ta</span><span class="p">,</span> <span class="n">mr</span><span class="p">,</span> <span class="n">d_sgn</span><span class="p">):</span>
     <span class="n">candidates_t</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ta</span><span class="o">.</span><span class="n">time</span><span class="p">)</span>
     <span class="n">candidates_d</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">ta</span><span class="o">.</span><span class="n">state</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">-</span><span class="n">x_t</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="p">(</span><span class="n">ta</span><span class="o">.</span><span class="n">state</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="n">y_t</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
     <span class="c1"># Do not stop the integration</span>
@@ -816,7 +822,8 @@ and it is implemented in the function below:</p>
 <span class="n">distance_event</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">t_event</span><span class="p">((</span><span class="n">x</span><span class="o">-</span> <span class="n">x_t</span><span class="p">)</span><span class="o">*</span><span class="n">fx</span> <span class="o">+</span> <span class="p">(</span><span class="n">y</span><span class="o">-</span><span class="n">y_t</span><span class="p">)</span><span class="o">*</span><span class="n">fy</span><span class="p">,</span> <span class="n">callback</span> <span class="o">=</span> <span class="n">distance_callback</span><span class="p">)</span>
 
 <span class="c1"># We also redefine the switching event as we have no need to log the switching times (this is optional and has not real impact in this case)</span>
-<span class="n">switching_event_no_log</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">t_event</span><span class="p">(</span><span class="n">x</span> <span class="o">*</span> <span class="n">lx</span> <span class="o">*</span> <span class="n">hy</span><span class="o">.</span><span class="n">par</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span> <span class="o">+</span> <span class="n">y</span> <span class="o">*</span> <span class="n">ly</span> <span class="o">*</span> <span class="n">hy</span><span class="o">.</span><span class="n">par</span><span class="p">[</span><span class="mi">5</span><span class="p">],</span> <span class="n">callback</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">ta</span><span class="p">,</span><span class="n">mr</span><span class="p">:</span> <span class="n">switch_callback</span><span class="p">(</span><span class="n">ta</span><span class="p">,</span> <span class="n">mr</span><span class="p">,</span> <span class="kc">False</span><span class="p">))</span>
+<span class="n">switching_event_no_log</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">t_event</span><span class="p">(</span><span class="n">x</span> <span class="o">*</span> <span class="n">lx</span> <span class="o">*</span> <span class="n">hy</span><span class="o">.</span><span class="n">par</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span> <span class="o">+</span> <span class="n">y</span> <span class="o">*</span> <span class="n">ly</span> <span class="o">*</span> <span class="n">hy</span><span class="o">.</span><span class="n">par</span><span class="p">[</span><span class="mi">5</span><span class="p">],</span>
+                                    <span class="n">callback</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">ta</span><span class="p">,</span> <span class="n">mr</span><span class="p">,</span> <span class="n">d_sgn</span><span class="p">:</span> <span class="n">switch_callback</span><span class="p">(</span><span class="n">ta</span><span class="p">,</span> <span class="n">mr</span><span class="p">,</span> <span class="kc">False</span><span class="p">))</span>
 </pre></div>
 </div>
 </div>
