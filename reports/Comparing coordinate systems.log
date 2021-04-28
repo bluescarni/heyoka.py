@@ -1,0 +1,54 @@
+Traceback (most recent call last):
+  File "/home/circleci/local/lib/python3.8/site-packages/jupyter_cache/executors/utils.py", line 51, in single_nb_execution
+    executenb(
+  File "/home/circleci/local/lib/python3.8/site-packages/nbclient/client.py", line 1112, in execute
+    return NotebookClient(nb=nb, resources=resources, km=km, **kwargs).execute()
+  File "/home/circleci/local/lib/python3.8/site-packages/nbclient/util.py", line 74, in wrapped
+    return just_run(coro(*args, **kwargs))
+  File "/home/circleci/local/lib/python3.8/site-packages/nbclient/util.py", line 53, in just_run
+    return loop.run_until_complete(coro)
+  File "/home/circleci/local/lib/python3.8/asyncio/base_events.py", line 616, in run_until_complete
+    return future.result()
+  File "/home/circleci/local/lib/python3.8/site-packages/nbclient/client.py", line 553, in async_execute
+    await self.async_execute_cell(
+  File "/home/circleci/local/lib/python3.8/site-packages/nbclient/client.py", line 857, in async_execute_cell
+    self._check_raise_for_error(cell, exec_reply)
+  File "/home/circleci/local/lib/python3.8/site-packages/nbclient/client.py", line 760, in _check_raise_for_error
+    raise CellExecutionError.from_cell_and_msg(cell, exec_reply_content)
+nbclient.exceptions.CellExecutionError: An error occurred while executing the following cell:
+------------------
+# Convert the initial conditions
+# into Delaunay elements.
+del_ic = cart2del(cart_ic)
+
+# Create the integrator.
+ta_del = hy.taylor_adaptive(
+    [(L, dL_dt),
+     (G, dG_dt),
+     (H, dH_dt),
+     (E, dE_dt),
+     (g, dg_dt),
+     (h, dh_dt)],
+    del_ic
+)
+------------------
+
+[0;31m[0m
+[0;31mModuleNotFoundError[0mTraceback (most recent call last)
+[0;32m<ipython-input-16-b04e36341ee4>[0m in [0;36m<module>[0;34m[0m
+[1;32m      1[0m [0;31m# Convert the initial conditions[0m[0;34m[0m[0;34m[0m[0;34m[0m[0m
+[1;32m      2[0m [0;31m# into Delaunay elements.[0m[0;34m[0m[0;34m[0m[0;34m[0m[0m
+[0;32m----> 3[0;31m [0mdel_ic[0m [0;34m=[0m [0mcart2del[0m[0;34m([0m[0mcart_ic[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
+[0m[1;32m      4[0m [0;34m[0m[0m
+[1;32m      5[0m [0;31m# Create the integrator.[0m[0;34m[0m[0;34m[0m[0;34m[0m[0m
+
+[0;32m<ipython-input-13-532c75305a70>[0m in [0;36mcart2del[0;34m(state)[0m
+[1;32m      1[0m [0;31m# Cartesian to Delaunay.[0m[0;34m[0m[0;34m[0m[0;34m[0m[0m
+[1;32m      2[0m [0;32mdef[0m [0mcart2del[0m[0;34m([0m[0mstate[0m[0;34m)[0m[0;34m:[0m[0;34m[0m[0;34m[0m[0m
+[0;32m----> 3[0;31m     [0;32mimport[0m [0mpykep[0m [0;32mas[0m [0mpk[0m[0;34m[0m[0;34m[0m[0m
+[0m[1;32m      4[0m [0;34m[0m[0m
+[1;32m      5[0m     [0mvx[0m[0;34m,[0m[0mvy[0m[0;34m,[0m[0mvz[0m[0;34m,[0m[0mx[0m[0;34m,[0m[0my[0m[0;34m,[0m[0mz[0m [0;34m=[0m [0mstate[0m[0;34m[0m[0;34m[0m[0m
+
+[0;31mModuleNotFoundError[0m: No module named 'pykep'
+ModuleNotFoundError: No module named 'pykep'
+

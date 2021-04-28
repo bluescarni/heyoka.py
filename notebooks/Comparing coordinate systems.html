@@ -1,0 +1,1077 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Comparing coordinate systems &#8212; heyoka.py 0.8.0 documentation</title>
+    
+  <link href="../_static/css/theme.css" rel="stylesheet" />
+  <link href="../_static/css/index.c5995385ac14fb8791e8eb36b4908be2.css" rel="stylesheet" />
+
+    
+  <link rel="stylesheet"
+    href="../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    
+      
+
+    
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/sphinx-book-theme.acff12b8f9c144ce68a297486a2fa670.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.css" />
+    
+  <link rel="preload" as="script" href="../_static/js/index.1c5a1a01449ed65a7b51.js">
+
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/togglebutton.js"></script>
+    <script >var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    <script src="../_static/sphinx-book-theme.12a9622fbb08dcb3a2a40b2c02b83a57.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["\\(", "\\)"]], "displayMath": [["\\[", "\\]"]], "processRefs": false, "processEnvironments": false}})</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="The variational equations" href="The%20variational%20equations.html" />
+    <link rel="prev" title="Box control in satellite Formation Flying" href="Box%20control%20for%20Formation%20Flying%20Satellites.html" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="en" />
+    
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
+    
+    <div class="container-fluid" id="banner"></div>
+
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+<div class="col-12 col-md-3 bd-sidebar site-navigation show" id="site-navigation">
+    
+        <div class="navbar-brand-box">
+    <a class="navbar-brand text-wrap" href="../index.html">
+      
+      <img src="../_static/white_logo.png" class="logo" alt="logo">
+      
+      
+      <h1 class="site-logo" id="site-title">heyoka.py 0.8.0 documentation</h1>
+      
+    </a>
+</div><form class="bd-search d-flex align-items-center" action="../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+    <div class="bd-toc-item active">
+        <p class="caption">
+ <span class="caption-text">
+  Contents
+ </span>
+</p>
+<ul class="current nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../install.html">
+   Installation
+  </a>
+ </li>
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="../tutorials.html">
+   Tutorials
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/>
+  <label for="toctree-checkbox-1">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../tut_taylor_method.html">
+     Taylor’s method
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="The%20expression%20system.html">
+     The expression system
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="The%20adaptive%20integrator.html">
+     The adaptive integrator
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="Customising%20the%20adaptive%20integrator.html">
+     Customising the adaptive integrator
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="ODEs%20with%20parameters.html">
+     ODEs with parameters
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="Non-autonomous%20systems.html">
+     Non-autonomous systems
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="Dense%20output.html">
+     Dense output
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="Batch%20mode%20overview.html">
+     Batch mode
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="Event%20detection.html">
+     Event detection overview
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="Sampling%20events.html">
+     Sampling events
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="Poincar%C3%A9%20sections.html">
+     Poincaré sections
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="The%20Keplerian%20billiard.html">
+     The Keplerian billiard
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="The%20two-fixed%20elliptic%20billiard.html">
+     The two-fixed centres elliptic billiard
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="The%20wavy%20ramp.html">
+     The wavy ramp
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="The%20Maxwell-Boltzmann%20distribution.html">
+     The Maxwell-Boltzmann distribution
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1 current active has-children">
+  <a class="reference internal" href="../examples.html">
+   Examples
+  </a>
+  <input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/>
+  <label for="toctree-checkbox-2">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul class="current">
+   <li class="toctree-l2">
+    <a class="reference internal" href="The%20restricted%20three-body%20problem.html">
+     The restricted three-body problem
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="Long%20term%20stability%20of%20Trappist-1.html">
+     Long term stability of N-body simulations: the case of Trappist-1
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="Outer%20Solar%20System.html">
+     Brouwer’s law in the outer Solar System
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="Box%20control%20for%20Formation%20Flying%20Satellites.html">
+     Box control in satellite Formation Flying
+    </a>
+   </li>
+   <li class="toctree-l2 current active">
+    <a class="current reference internal" href="#">
+     Comparing coordinate systems
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="The%20variational%20equations.html">
+     The variational equations
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="Optimal%20Control%20of%20the%20Lotka-Volterra%20equations.html">
+     Optimal Control of the Lotka-Volterra equations
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../changelog.html">
+   Changelog
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../breaking_changes.html">
+   Breaking changes
+  </a>
+ </li>
+</ul>
+
+    </div>
+</nav> <!-- To handle the deprecated key -->
+
+<div class="navbar_extra_footer">
+  Theme by the <a href="https://ebp.jupyterbook.org">Executable Book Project</a>
+</div>
+
+</div>
+
+
+          
+
+
+          
+<main class="col py-md-3 pl-md-4 bd-content overflow-auto" role="main">
+    
+    <div class="topbar container-xl fixed-top">
+    <div class="topbar-contents row">
+        <div class="col-12 col-md-3 bd-topbar-whitespace site-navigation show"></div>
+        <div class="col pl-md-4 topbar-main">
+            
+            <button id="navbar-toggler" class="navbar-toggler ml-0" type="button" data-toggle="collapse"
+                data-toggle="tooltip" data-placement="bottom" data-target=".site-navigation" aria-controls="navbar-menu"
+                aria-expanded="true" aria-label="Toggle navigation" aria-controls="site-navigation"
+                title="Toggle navigation" data-toggle="tooltip" data-placement="left">
+                <i class="fas fa-bars"></i>
+                <i class="fas fa-arrow-left"></i>
+                <i class="fas fa-arrow-up"></i>
+            </button>
+            
+            
+<div class="dropdown-buttons-trigger">
+    <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn" aria-label="Download this page"><i
+            class="fas fa-download"></i></button>
+
+    <div class="dropdown-buttons">
+        <!-- ipynb file if we had a myst markdown file -->
+        
+        <!-- Download raw file -->
+        <a class="dropdown-buttons" href="../_sources/notebooks/Comparing coordinate systems.ipynb.txt"><button type="button"
+                class="btn btn-secondary topbarbtn" title="Download source file" data-toggle="tooltip"
+                data-placement="left">.ipynb</button></a>
+        <!-- Download PDF via print -->
+        <button type="button" id="download-print" class="btn btn-secondary topbarbtn" title="Print to PDF"
+            onClick="window.print()" data-toggle="tooltip" data-placement="left">.pdf</button>
+    </div>
+</div>
+
+            <!-- Source interaction buttons -->
+
+<div class="dropdown-buttons-trigger">
+    <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn"
+        aria-label="Connect with source repository"><i class="fab fa-github"></i></button>
+    <div class="dropdown-buttons sourcebuttons">
+        <a class="repository-button"
+            href="https://github.com/bluescarni/heyoka.py"><button type="button" class="btn btn-secondary topbarbtn"
+                data-toggle="tooltip" data-placement="left" title="Source repository"><i
+                    class="fab fa-github"></i>repository</button></a>
+        <a class="issues-button"
+            href="https://github.com/bluescarni/heyoka.py/issues/new?title=Issue%20on%20page%20%2Fnotebooks/Comparing coordinate systems.html&body=Your%20issue%20content%20here."><button
+                type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip" data-placement="left"
+                title="Open an issue"><i class="fas fa-lightbulb"></i>open issue</button></a>
+        
+    </div>
+</div>
+
+            <!-- Full screen (wrap in <a> to have style consistency -->
+
+<a class="full-screen-button"><button type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip"
+        data-placement="bottom" onclick="toggleFullScreen()" aria-label="Fullscreen mode"
+        title="Fullscreen mode"><i
+            class="fas fa-expand"></i></button></a>
+
+            <!-- Launch buttons -->
+
+<div class="dropdown-buttons-trigger">
+    <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn"
+        aria-label="Launch interactive content"><i class="fas fa-rocket"></i></button>
+    <div class="dropdown-buttons">
+        
+        <a class="binder-button" href="https://mybinder.org/v2/gh/bluescarni/heyoka.py/main?urlpath=tree/doc/notebooks/Comparing coordinate systems.ipynb"><button type="button"
+                class="btn btn-secondary topbarbtn" title="Launch Binder" data-toggle="tooltip"
+                data-placement="left"><img class="binder-button-logo"
+                    src="../_static/images/logo_binder.svg"
+                    alt="Interact on binder">Binder</button></a>
+        
+        
+        
+        
+    </div>
+</div>
+
+        </div>
+
+        <!-- Table of contents -->
+        <div class="d-none d-md-block col-md-2 bd-toc show">
+            
+            <div class="tocsection onthispage pt-5 pb-3">
+                <i class="fas fa-list"></i> Contents
+            </div>
+            <nav id="bd-toc-nav">
+                <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#cartesian-coordinates">
+   Cartesian coordinates
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#spherical-coordinates">
+   Spherical coordinates
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#delaunay-elements">
+   Delaunay elements
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#delaunay-sundman">
+   Delaunay + Sundman
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#conclusions">
+   Conclusions
+  </a>
+ </li>
+</ul>
+
+            </nav>
+        </div>
+    </div>
+</div>
+    <div id="main-content" class="row">
+        <div class="col-12 col-md-9 pl-md-3 pr-md-0">
+        
+              <div>
+                
+  <div class="section" id="comparing-coordinate-systems">
+<h1>Comparing coordinate systems<a class="headerlink" href="#comparing-coordinate-systems" title="Permalink to this headline">¶</a></h1>
+<p>In this example, we will study how the choice of coordinate system influences the behaviour of heyoka.py’s adaptive integrator. We will focus on a simple (but nontrivial) dynamical system, consisting of a central Keplerian force field coupled to a force field constant in direction and magnitude. This dynamical system is known as the <em>Stark problem</em> or <em>accelerated Kepler problem</em>, and it has numerous applications of practical interest (including spaceflight mechanics, the dynamics of dust grains in the outer Solar System, atomic physics, etc.). Note that the Stark problem can be solved analytically via <a class="reference external" href="https://arxiv.org/abs/1306.6442">elliptic functions</a>, but of course here we will consider a numerical approach.</p>
+<p>Without loss of generality, we can choose to orient the constant force field towards the positive <span class="math notranslate nohighlight">\(z\)</span> direction. The Hamiltonian of the Stark problem in Cartesian coordinates (and adimensional units) thus reads:</p>
+<div class="math notranslate nohighlight">
+\[
+\mathcal{H}_\mathrm{cart}\left(v_x, v_y, v_z, x, y, z \right) = \frac{1}{2}\left( v_x^2+v_y^2+v_z^2 \right) - \frac{1}{\sqrt{x^2+y^2+z^2}} - \varepsilon z,
+\]</div>
+<p>where <span class="math notranslate nohighlight">\(\varepsilon\)</span> is the magnitude of the constant acceleration field. For this study, we will pick a “small” value <span class="math notranslate nohighlight">\(\varepsilon=10^{-3}\)</span>, so that the constant acceleration field act as a perturbation on the otherwise Keplerian motion of the test particle:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Value of the constant acceleration field.</span>
+<span class="n">eps</span> <span class="o">=</span> <span class="mf">1e-3</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>We will also select a set of initial conditions corresponding to a low-eccentricity, low-inclination orbit with semi-major axis <span class="math notranslate nohighlight">\(\sim 1\)</span>:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Initial Cartesian conditions.</span>
+<span class="n">cart_ic</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.48631041721670787</span><span class="p">,</span> <span class="mf">0.6097331894913622</span><span class="p">,</span> <span class="mf">0.05026407424597293</span><span class="p">,</span>
+           <span class="o">-</span><span class="mf">0.917207331153677</span><span class="p">,</span> <span class="mf">0.8411848961939183</span><span class="p">,</span> <span class="mf">0.10100071061790256</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>We will now proceed to integrate this dynamical system using several coordinate systems.</p>
+<div class="section" id="cartesian-coordinates">
+<h2>Cartesian coordinates<a class="headerlink" href="#cartesian-coordinates" title="Permalink to this headline">¶</a></h2>
+<p>We begin, as usual, with the creation of the symbolic Cartesian variables:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">heyoka</span> <span class="k">as</span> <span class="nn">hy</span>
+<span class="n">vx</span><span class="p">,</span> <span class="n">vy</span><span class="p">,</span> <span class="n">vz</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">make_vars</span><span class="p">(</span><span class="s2">&quot;vx&quot;</span><span class="p">,</span> <span class="s2">&quot;vy&quot;</span><span class="p">,</span> <span class="s2">&quot;vz&quot;</span><span class="p">,</span> <span class="s2">&quot;x&quot;</span><span class="p">,</span> <span class="s2">&quot;y&quot;</span><span class="p">,</span> <span class="s2">&quot;z&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Next, we build the Hamiltonian:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">Ham_cart</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="p">(</span><span class="n">vx</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">vy</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">vz</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">-</span> <span class="p">(</span><span class="n">x</span><span class="o">**</span><span class="mi">2</span><span class="o">+</span><span class="n">y</span><span class="o">**</span><span class="mi">2</span><span class="o">+</span><span class="n">z</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">**</span><span class="p">(</span><span class="o">-</span><span class="mf">0.5</span><span class="p">)</span> <span class="o">-</span> <span class="n">eps</span><span class="o">*</span><span class="n">z</span>
+<span class="n">Ham_cart</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(((0.50000000000000000 * ((square(vx) + square(vy)) + square(vz))) - pow(((square(x) + square(y)) + square(z)), -0.50000000000000000)) - (0.0010000000000000000 * z))
+</pre></div>
+</div>
+</div>
+</div>
+<p>We are now ready to construct the adaptive integrator. In order to implement the equations of motion, we will use heyoka.py’s expression system to symbolically differentiate the Hamiltonian:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Construct the integrator object.</span>
+<span class="n">ta_cart</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">taylor_adaptive</span><span class="p">(</span>
+    <span class="c1"># Hamilton&#39;s equations.</span>
+    <span class="p">[(</span><span class="n">vx</span><span class="p">,</span> <span class="o">-</span><span class="n">hy</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">Ham_cart</span><span class="p">,</span> <span class="n">x</span><span class="p">)),</span>
+     <span class="p">(</span><span class="n">vy</span><span class="p">,</span> <span class="o">-</span><span class="n">hy</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">Ham_cart</span><span class="p">,</span> <span class="n">y</span><span class="p">)),</span>
+     <span class="p">(</span><span class="n">vz</span><span class="p">,</span> <span class="o">-</span><span class="n">hy</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">Ham_cart</span><span class="p">,</span> <span class="n">z</span><span class="p">)),</span>
+     <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">hy</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">Ham_cart</span><span class="p">,</span> <span class="n">vx</span><span class="p">)),</span>
+     <span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">hy</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">Ham_cart</span><span class="p">,</span> <span class="n">vy</span><span class="p">)),</span>
+     <span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="n">hy</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">Ham_cart</span><span class="p">,</span> <span class="n">vz</span><span class="p">))],</span>
+    <span class="c1"># Initial conditions.</span>
+    <span class="n">cart_ic</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Let us now integrate the dynamics for a few time units and plot the resulting trajectory:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Define a time grid for the integration.</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="n">t_grid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">250</span><span class="p">,</span> <span class="mi">1000</span><span class="p">)</span>
+
+<span class="c1"># Integrate.</span>
+<span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">nsteps_cart</span><span class="p">,</span> <span class="n">out_cart</span> <span class="o">=</span> <span class="n">ta_cart</span><span class="o">.</span><span class="n">propagate_grid</span><span class="p">(</span><span class="n">t_grid</span><span class="p">)</span>
+
+<span class="c1"># Plot.</span>
+<span class="o">%</span><span class="k">matplotlib</span> inline
+<span class="kn">from</span> <span class="nn">matplotlib.pylab</span> <span class="kn">import</span> <span class="n">plt</span>
+
+<span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span> <span class="o">=</span> <span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">12</span><span class="p">))</span>
+
+<span class="n">ax1</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">ax1</span><span class="o">.</span><span class="n">set_aspect</span><span class="p">(</span><span class="s1">&#39;equal&#39;</span><span class="p">)</span>
+<span class="n">ax1</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">out_cart</span><span class="p">[:,</span> <span class="mi">3</span><span class="p">],</span> <span class="n">out_cart</span><span class="p">[:,</span> <span class="mi">4</span><span class="p">],</span> <span class="n">linewidth</span><span class="o">=.</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">ax1</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Top view&quot;</span><span class="p">)</span>
+<span class="n">ax1</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;$x$&quot;</span><span class="p">)</span>
+<span class="n">ax1</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;$y$&quot;</span><span class="p">)</span>
+
+<span class="n">ax2</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+<span class="n">ax2</span><span class="o">.</span><span class="n">set_aspect</span><span class="p">(</span><span class="s1">&#39;equal&#39;</span><span class="p">)</span>
+<span class="n">ax2</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">out_cart</span><span class="p">[:,</span> <span class="mi">3</span><span class="p">],</span> <span class="n">out_cart</span><span class="p">[:,</span> <span class="mi">5</span><span class="p">],</span> <span class="n">linewidth</span><span class="o">=.</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">ax2</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Side view&quot;</span><span class="p">)</span>
+<span class="n">ax2</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;$x$&quot;</span><span class="p">)</span>
+<span class="n">ax2</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;$z$&quot;</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">();</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/Comparing coordinate systems_11_0.png" src="../_images/Comparing coordinate systems_11_0.png" />
+</div>
+</div>
+<p>The plot shows how the initially-Keplerian orbit is slowly being deformed by the constant acceleration field.</p>
+<p>Let us also plot the time evolution of the Cartesian coordinates:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">plot_t_evol</span><span class="p">(</span><span class="n">out</span><span class="p">,</span> <span class="n">labels</span><span class="p">):</span>
+    <span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span> <span class="o">=</span> <span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span>
+    
+    <span class="n">max_abs</span> <span class="o">=</span> <span class="mi">8</span>
+    
+    <span class="n">ncoord</span> <span class="o">=</span> <span class="n">out</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">ncols</span> <span class="o">=</span> <span class="mi">3</span>
+    <span class="n">nrows</span> <span class="o">=</span> <span class="n">ncoord</span> <span class="o">//</span> <span class="n">ncols</span> <span class="o">+</span> <span class="p">(</span><span class="n">ncoord</span> <span class="o">%</span> <span class="n">ncols</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">ncoord</span><span class="p">):</span>
+        <span class="n">ax</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="n">nrows</span><span class="p">,</span> <span class="n">ncols</span><span class="p">,</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">t_grid</span><span class="p">,</span> <span class="n">out</span><span class="p">[:,</span> <span class="n">i</span><span class="p">])</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;Time&quot;</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="n">labels</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="o">-</span><span class="n">max_abs</span><span class="p">,</span> <span class="n">max_abs</span><span class="p">)</span>
+    
+    <span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+
+<span class="n">plot_t_evol</span><span class="p">(</span><span class="n">out_cart</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;$v_x$&quot;</span><span class="p">,</span> <span class="s2">&quot;$v_y$&quot;</span><span class="p">,</span> <span class="s2">&quot;$v_z$&quot;</span><span class="p">,</span> <span class="s2">&quot;$x$&quot;</span><span class="p">,</span> <span class="s2">&quot;$y$&quot;</span><span class="p">,</span> <span class="s2">&quot;$z$&quot;</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/Comparing coordinate systems_13_0.png" src="../_images/Comparing coordinate systems_13_0.png" />
+</div>
+</div>
+<p>Note that the oscillatory behaviour in these plots is a quasi-Keplerian motion driven by the central-force field. The additional constant acceleration has a longer-term secular effect which is however not immediately recognisable in these plots.</p>
+</div>
+<div class="section" id="spherical-coordinates">
+<h2>Spherical coordinates<a class="headerlink" href="#spherical-coordinates" title="Permalink to this headline">¶</a></h2>
+<p>Let us now switch to a <a class="reference external" href="https://en.wikipedia.org/wiki/Spherical_coordinate_system">spherical coordinate system</a>. Because we are operating in the Hamiltonian framework, we cannot use directly the time derivatives <span class="math notranslate nohighlight">\(\left( \dot{r}, \dot{\theta}, \dot{\phi} \right)\)</span> of the spherical coordinates as new momenta, and we have to use instead a set of canonical momenta <span class="math notranslate nohighlight">\(\left( p_r, p_\theta, p_\phi \right)\)</span>. The coordinate transformation <span class="math notranslate nohighlight">\(\left(v_x, v_y, v_z, x, y, z\right) \rightarrow \left( p_r, p_\theta, p_\phi, r, \theta, \phi \right)\)</span> reads:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+\begin{aligned}
+p_r &amp; = \dot{r}, &amp; r &amp; =  \sqrt{x^2+y^2+z^2}, \\
+p_\theta &amp; = r^2\dot{\theta}, &amp; \theta &amp; = \arccos \frac{z}{r}, \\
+p_\phi &amp; = r^2\dot{\phi}\sin^2\theta, &amp; \phi &amp; = \arctan \frac{y}{x}.
+\end{aligned}
+\end{split}\]</div>
+<p>The Hamiltonian of the Stark problem in spherical coordinates becomes:</p>
+<div class="math notranslate nohighlight">
+\[
+\mathcal{H}_\mathrm{sph} = \frac{1}{2}\left( p_r^2+\frac{p_\theta^2}{r^2} + \frac{p_\phi^2}{r^2\sin^2\theta} \right) - \frac{1}{r} - \varepsilon r \cos\theta.
+\]</div>
+<p>Let us define a couple of functions to convert a state vector between Cartesian and spherical coordinates:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Cartesian to spherical.</span>
+<span class="k">def</span> <span class="nf">cart2sph</span><span class="p">(</span><span class="n">state</span><span class="p">):</span>
+    <span class="kn">from</span> <span class="nn">numpy</span> <span class="kn">import</span> <span class="n">sqrt</span><span class="p">,</span> <span class="n">arccos</span><span class="p">,</span> <span class="n">arctan2</span>
+    <span class="n">vx</span><span class="p">,</span><span class="n">vy</span><span class="p">,</span><span class="n">vz</span><span class="p">,</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">z</span> <span class="o">=</span> <span class="n">state</span>
+    <span class="n">r</span> <span class="o">=</span> <span class="n">sqrt</span><span class="p">(</span><span class="n">x</span><span class="o">**</span><span class="mi">2</span><span class="o">+</span><span class="n">y</span><span class="o">**</span><span class="mi">2</span><span class="o">+</span><span class="n">z</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">th</span> <span class="o">=</span> <span class="n">arccos</span><span class="p">(</span><span class="n">z</span><span class="o">/</span><span class="n">r</span><span class="p">)</span>
+    <span class="n">phi</span> <span class="o">=</span> <span class="n">arctan2</span><span class="p">(</span><span class="n">y</span><span class="p">,</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">vr</span> <span class="o">=</span> <span class="p">(</span><span class="n">vx</span><span class="o">*</span><span class="n">x</span><span class="o">+</span><span class="n">vy</span><span class="o">*</span><span class="n">y</span><span class="o">+</span><span class="n">vz</span><span class="o">*</span><span class="n">z</span><span class="p">)</span><span class="o">/</span><span class="n">r</span>
+    <span class="n">vth</span> <span class="o">=</span> <span class="p">(</span><span class="n">z</span><span class="o">*</span><span class="n">vr</span><span class="o">-</span><span class="n">vz</span><span class="o">*</span><span class="n">r</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">r</span><span class="o">**</span><span class="mi">2</span><span class="o">*</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">z</span><span class="o">**</span><span class="mi">2</span><span class="o">/</span><span class="n">r</span><span class="o">**</span><span class="mi">2</span><span class="p">))</span>
+    <span class="n">vphi</span> <span class="o">=</span> <span class="p">(</span><span class="n">vy</span><span class="o">*</span><span class="n">x</span><span class="o">-</span><span class="n">vx</span><span class="o">*</span><span class="n">y</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">x</span><span class="o">**</span><span class="mi">2</span><span class="o">+</span><span class="n">y</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">vr</span><span class="p">,</span><span class="n">vth</span><span class="p">,</span><span class="n">vphi</span><span class="p">,</span><span class="n">r</span><span class="p">,</span><span class="n">th</span><span class="p">,</span><span class="n">phi</span>
+
+<span class="c1"># Spherical to Cartesian.</span>
+<span class="k">def</span> <span class="nf">sph2cart</span><span class="p">(</span><span class="n">state</span><span class="p">):</span>
+    <span class="kn">from</span> <span class="nn">numpy</span> <span class="kn">import</span> <span class="n">sin</span><span class="p">,</span> <span class="n">cos</span>
+    <span class="n">vr</span><span class="p">,</span><span class="n">vth</span><span class="p">,</span><span class="n">vphi</span><span class="p">,</span><span class="n">r</span><span class="p">,</span><span class="n">th</span><span class="p">,</span><span class="n">phi</span> <span class="o">=</span> <span class="n">state</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">r</span><span class="o">*</span><span class="n">sin</span><span class="p">(</span><span class="n">th</span><span class="p">)</span><span class="o">*</span><span class="n">cos</span><span class="p">(</span><span class="n">phi</span><span class="p">)</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="n">r</span><span class="o">*</span><span class="n">sin</span><span class="p">(</span><span class="n">th</span><span class="p">)</span><span class="o">*</span><span class="n">sin</span><span class="p">(</span><span class="n">phi</span><span class="p">)</span>
+    <span class="n">z</span> <span class="o">=</span> <span class="n">r</span><span class="o">*</span><span class="n">cos</span><span class="p">(</span><span class="n">th</span><span class="p">)</span>
+    <span class="n">vx</span> <span class="o">=</span> <span class="n">vr</span><span class="o">*</span><span class="n">sin</span><span class="p">(</span><span class="n">th</span><span class="p">)</span><span class="o">*</span><span class="n">cos</span><span class="p">(</span><span class="n">phi</span><span class="p">)</span><span class="o">+</span><span class="n">r</span><span class="o">*</span><span class="p">(</span><span class="n">vth</span><span class="o">*</span><span class="n">cos</span><span class="p">(</span><span class="n">th</span><span class="p">)</span><span class="o">*</span><span class="n">cos</span><span class="p">(</span><span class="n">phi</span><span class="p">)</span><span class="o">-</span><span class="n">vphi</span><span class="o">*</span><span class="n">sin</span><span class="p">(</span><span class="n">th</span><span class="p">)</span><span class="o">*</span><span class="n">sin</span><span class="p">(</span><span class="n">phi</span><span class="p">))</span>
+    <span class="n">vy</span> <span class="o">=</span> <span class="n">vr</span><span class="o">*</span><span class="n">sin</span><span class="p">(</span><span class="n">th</span><span class="p">)</span><span class="o">*</span><span class="n">sin</span><span class="p">(</span><span class="n">phi</span><span class="p">)</span><span class="o">+</span><span class="n">r</span><span class="o">*</span><span class="p">(</span><span class="n">vth</span><span class="o">*</span><span class="n">cos</span><span class="p">(</span><span class="n">th</span><span class="p">)</span><span class="o">*</span><span class="n">sin</span><span class="p">(</span><span class="n">phi</span><span class="p">)</span><span class="o">+</span><span class="n">vphi</span><span class="o">*</span><span class="n">sin</span><span class="p">(</span><span class="n">th</span><span class="p">)</span><span class="o">*</span><span class="n">cos</span><span class="p">(</span><span class="n">phi</span><span class="p">))</span>
+    <span class="n">vz</span> <span class="o">=</span> <span class="n">vr</span><span class="o">*</span><span class="n">cos</span><span class="p">(</span><span class="n">th</span><span class="p">)</span><span class="o">-</span><span class="n">r</span><span class="o">*</span><span class="n">vth</span><span class="o">*</span><span class="n">sin</span><span class="p">(</span><span class="n">th</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">vx</span><span class="p">,</span><span class="n">vy</span><span class="p">,</span><span class="n">vz</span><span class="p">,</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">z</span>
+
+<span class="c1"># Spherical to Hamiltonian spherical.</span>
+<span class="k">def</span> <span class="nf">sph2spham</span><span class="p">(</span><span class="n">state</span><span class="p">):</span>
+    <span class="kn">from</span> <span class="nn">numpy</span> <span class="kn">import</span> <span class="n">sin</span>
+    <span class="n">vr</span><span class="p">,</span><span class="n">vth</span><span class="p">,</span><span class="n">vphi</span><span class="p">,</span><span class="n">r</span><span class="p">,</span><span class="n">th</span><span class="p">,</span><span class="n">phi</span> <span class="o">=</span> <span class="n">state</span>
+    <span class="k">return</span> <span class="n">vr</span><span class="p">,</span><span class="n">r</span><span class="o">**</span><span class="mi">2</span><span class="o">*</span><span class="n">vth</span><span class="p">,</span><span class="n">r</span><span class="o">**</span><span class="mi">2</span><span class="o">*</span><span class="n">vphi</span><span class="o">*</span><span class="n">sin</span><span class="p">(</span><span class="n">th</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">,</span><span class="n">r</span><span class="p">,</span><span class="n">th</span><span class="p">,</span><span class="n">phi</span>
+
+<span class="c1"># Hamiltonian spherical to spherical.</span>
+<span class="k">def</span> <span class="nf">spham2sph</span><span class="p">(</span><span class="n">state</span><span class="p">):</span>
+    <span class="kn">from</span> <span class="nn">numpy</span> <span class="kn">import</span> <span class="n">sin</span>
+    <span class="n">pr</span><span class="p">,</span><span class="n">pth</span><span class="p">,</span><span class="n">pphi</span><span class="p">,</span><span class="n">r</span><span class="p">,</span><span class="n">th</span><span class="p">,</span><span class="n">phi</span> <span class="o">=</span> <span class="n">state</span>
+    <span class="k">return</span> <span class="n">pr</span><span class="p">,</span><span class="n">pth</span><span class="o">/</span><span class="n">r</span><span class="o">**</span><span class="mi">2</span><span class="p">,</span><span class="n">pphi</span><span class="o">/</span><span class="p">(</span><span class="n">r</span><span class="o">**</span><span class="mi">2</span><span class="o">*</span><span class="n">sin</span><span class="p">(</span><span class="n">th</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">),</span><span class="n">r</span><span class="p">,</span><span class="n">th</span><span class="p">,</span><span class="n">phi</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>We are now almost ready to numerically integrate the Stark problem in spherical coordinates. There is one additional complication however that we need to take into account.</p>
+<p>Because now we are operating in spherical coordinates, two of the coordinates are angles <span class="math notranslate nohighlight">\(\left(\theta, \phi \right)\)</span> whose numerical values can grow in principle unbounded even if the motion remains bounded. In this specific example, the angle <span class="math notranslate nohighlight">\(\phi\)</span> will keep on growing as the particle orbits around the origin.</p>
+<p>This constant growth can become a problem because heyoka.py uses the largest absolute value in the state vector to transform the relative integration tolerance into an absolute error allowed within the integration loop: in other words, if (the absolute value of) <span class="math notranslate nohighlight">\(\phi\)</span> keeps on growing, the integrator will progressively become less accurate.</p>
+<p>We can avoid this undesirable effect by periodically reducing <span class="math notranslate nohighlight">\(\phi\)</span> modulo <span class="math notranslate nohighlight">\(2\pi\)</span>. One possible way of implementing this is to define a callback function to be called at the end of every integration timestep:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">mod_cb_sph</span><span class="p">(</span><span class="n">ta</span><span class="p">):</span>
+    <span class="c1"># Fetch the current value of phi</span>
+    <span class="c1"># from the state vector.</span>
+    <span class="n">phi</span> <span class="o">=</span> <span class="n">ta</span><span class="o">.</span><span class="n">state</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span>
+    
+    <span class="c1"># If phi is outside the [-pi, pi] range,</span>
+    <span class="c1"># bring it back to [-pi, pi].</span>
+    <span class="k">if</span> <span class="n">phi</span> <span class="o">&lt;</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="ow">or</span> <span class="n">phi</span> <span class="o">&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">:</span>
+        <span class="n">ta</span><span class="o">.</span><span class="n">state</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">phi</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span> <span class="o">%</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>We can now proceed to the numerical integration:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Create the spherical symbolic variables.</span>
+<span class="n">pr</span><span class="p">,</span> <span class="n">pth</span><span class="p">,</span> <span class="n">pphi</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">th</span><span class="p">,</span> <span class="n">phi</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">make_vars</span><span class="p">(</span><span class="s2">&quot;pr&quot;</span><span class="p">,</span> <span class="s2">&quot;pth&quot;</span><span class="p">,</span> <span class="s2">&quot;pphi&quot;</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">,</span> <span class="s2">&quot;th&quot;</span><span class="p">,</span> <span class="s2">&quot;phi&quot;</span><span class="p">)</span>
+
+<span class="c1"># Define the Hamiltonian in spherical coordinates.</span>
+<span class="n">Ham_sph</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="p">(</span><span class="n">pr</span><span class="o">**</span><span class="mi">2</span><span class="o">+</span><span class="p">(</span><span class="n">pth</span><span class="o">/</span><span class="n">r</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="o">+</span><span class="p">(</span><span class="n">pphi</span><span class="o">/</span><span class="p">(</span><span class="n">r</span><span class="o">*</span><span class="n">hy</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">th</span><span class="p">)))</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">-</span> <span class="mf">1.</span><span class="o">/</span><span class="n">r</span> <span class="o">-</span> <span class="n">eps</span><span class="o">*</span><span class="n">r</span><span class="o">*</span><span class="n">hy</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">th</span><span class="p">)</span>
+
+<span class="c1"># Convert the initial Cartesian conditions.</span>
+<span class="n">sph_ic</span> <span class="o">=</span> <span class="n">sph2spham</span><span class="p">(</span><span class="n">cart2sph</span><span class="p">(</span><span class="n">cart_ic</span><span class="p">))</span>
+
+<span class="c1"># Create the integrator object.</span>
+<span class="n">ta_sph</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">taylor_adaptive</span><span class="p">(</span>
+    <span class="p">[(</span><span class="n">pr</span><span class="p">,</span> <span class="o">-</span><span class="n">hy</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">Ham_sph</span><span class="p">,</span> <span class="n">r</span><span class="p">)),</span>
+     <span class="p">(</span><span class="n">pth</span><span class="p">,</span> <span class="o">-</span><span class="n">hy</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">Ham_sph</span><span class="p">,</span> <span class="n">th</span><span class="p">)),</span>
+     <span class="p">(</span><span class="n">pphi</span><span class="p">,</span> <span class="o">-</span><span class="n">hy</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">Ham_sph</span><span class="p">,</span> <span class="n">phi</span><span class="p">)),</span>
+     <span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">hy</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">Ham_sph</span><span class="p">,</span> <span class="n">pr</span><span class="p">)),</span>
+     <span class="p">(</span><span class="n">th</span><span class="p">,</span> <span class="n">hy</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">Ham_sph</span><span class="p">,</span> <span class="n">pth</span><span class="p">)),</span>
+     <span class="p">(</span><span class="n">phi</span><span class="p">,</span> <span class="n">hy</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">Ham_sph</span><span class="p">,</span> <span class="n">pphi</span><span class="p">))],</span>
+    <span class="n">sph_ic</span>
+<span class="p">)</span>
+
+<span class="c1"># Run the integration.</span>
+<span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">nsteps_sph</span><span class="p">,</span> <span class="n">out_sph</span> <span class="o">=</span> <span class="n">ta_sph</span><span class="o">.</span><span class="n">propagate_grid</span><span class="p">(</span><span class="n">t_grid</span><span class="p">,</span>
+                                                     <span class="c1"># Callback to reduce the</span>
+                                                     <span class="c1"># value of phi to [-pi, pi].</span>
+                                                     <span class="n">callback</span> <span class="o">=</span> <span class="n">mod_cb_sph</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Let’s take a look at the results:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">plot_t_evol</span><span class="p">(</span><span class="n">out_sph</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;$p_r$&quot;</span><span class="p">,</span> <span class="sa">r</span><span class="s2">&quot;$p_\theta$&quot;</span><span class="p">,</span> <span class="sa">r</span><span class="s2">&quot;$p_\phi$&quot;</span><span class="p">,</span> <span class="s2">&quot;$r$&quot;</span><span class="p">,</span> <span class="sa">r</span><span class="s2">&quot;$\theta$&quot;</span><span class="p">,</span> <span class="sa">r</span><span class="s2">&quot;$\phi$&quot;</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/Comparing coordinate systems_21_0.png" src="../_images/Comparing coordinate systems_21_0.png" />
+</div>
+</div>
+<p>Comparing these plots with those for the Cartesian coordinates, we can see how the oscillatory quasi-Keplerian behaviour remains. However, the oscillation amplitude is reduced with respect to the Cartesian case, and one of the momenta (<span class="math notranslate nohighlight">\(p_\phi\)</span>, top right panel) has become a constant. This reflects the fact that the <span class="math notranslate nohighlight">\(z\)</span> component of the angular momentum in the Stark problem is a constant of motion.</p>
+<p>Note that the bottom right panel, referring to the time evolution of <span class="math notranslate nohighlight">\(\phi\)</span>, does <strong>not</strong> represent an oscillatory motion around 0: the sine-like shape is a visual effect of the periodic reduction of <span class="math notranslate nohighlight">\(\phi\)</span> to the <span class="math notranslate nohighlight">\(\left[ -\pi, \pi\right]\)</span> range, but in reality the time evolution of <span class="math notranslate nohighlight">\(\phi\)</span> is linear with a periodic modulation on top.</p>
+<p>The periodic modulations in these plots arise from the fact that the initial Keplerian orbit is not perfectly circular, and thus all coordinates (except <span class="math notranslate nohighlight">\(p_\phi\)</span>) oscillate as the motion deviates from a perfect circle within each orbit. For a circular orbit around the origin, all coordinates and momenta would be constants, except for <span class="math notranslate nohighlight">\(\phi\)</span> which would evolve linearly.</p>
+<p>The fact that the amplitude of the periodic modulations is reduced with respect to the Cartesian case has an effect on the number of timesteps necessary to integrate the system:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Number of steps (Cartesian): </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">nsteps_cart</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Number of steps (spherical): </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">nsteps_sph</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Number of steps (Cartesian): 1002
+Number of steps (spherical): 899
+</pre></div>
+</div>
+</div>
+</div>
+<p>The reduction is not dramatic, but nevertheless measurable.</p>
+<p>Spherical coordinates require fewer timesteps because the reduction in the amplitude of the oscillatory motions improves the convergence of the Taylor series that heyoka.py uses internally to propagate the motion at each timestep. In other words, when using spherical coordinates the Taylor series synthesised by heyoka.py at each timestep can describe accurately the solution of the system for longer intervals of time.</p>
+</div>
+<div class="section" id="delaunay-elements">
+<h2>Delaunay elements<a class="headerlink" href="#delaunay-elements" title="Permalink to this headline">¶</a></h2>
+<p>The results of the previous section suggest that introducing another system of coordinates which further reduces the amplitude of periodic oscillations may further decrease the number of timesteps required by the integrator. Because we are dealing with a perturbed Keplerian system, an obvious choice is to use <a class="reference external" href="https://en.wikipedia.org/wiki/Orbital_elements">Keplerian orbital elements</a>.</p>
+<p>In the Hamiltonian formalism, we cannot use directly the Keplerian elements as coordinates as they are not canonical variables. Instead, we can use the <a class="reference external" href="https://en.wikipedia.org/wiki/Orbital_elements#Delaunay_variables">Delaunay elements</a>, which are closely-related to the Keplerian elements via the following relations (valid in adimensional units):</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+\begin{aligned}
+L &amp; = \sqrt{a}, &amp; l &amp; =  M, \\
+G &amp; = \sqrt{a\left( 1 - e^2\right)}, &amp; g &amp; = \omega, \\
+H &amp; = \sqrt{a\left( 1 - e^2\right)} \cos i, &amp; h &amp; =  \Omega.
+\end{aligned}
+\end{split}\]</div>
+<p>In these formulae, <span class="math notranslate nohighlight">\(\left( a, e, i, M, \omega, \Omega \right)\)</span> are the usual Keplerian elements: semi-major axis, eccentricity, inclination, mean anomaly, longitude of pericentre and longitude of the ascending node.</p>
+<p>When employing Delaunay elements, a major complication is the appearance of the mean anomaly <span class="math notranslate nohighlight">\(l\)</span>, which is related to the eccentric anomaly <span class="math notranslate nohighlight">\(E\)</span> via <a class="reference external" href="https://en.wikipedia.org/wiki/Kepler%27s_equation">Kepler’s equation</a>, which, in terms of Delaunay elements, reads:</p>
+<div class="math notranslate nohighlight">
+\[
+l = E - \sqrt{1-\frac{G^2}{L^2}} \sin E.
+\]</div>
+<p>This equation cannot be inverted in finite terms using elementary functions, thus, from now on, we will regard the eccentric anomaly <span class="math notranslate nohighlight">\(E\)</span> as an unspecified function of <span class="math notranslate nohighlight">\(l\)</span>, <span class="math notranslate nohighlight">\(G\)</span> and <span class="math notranslate nohighlight">\(L\)</span>:</p>
+<div class="math notranslate nohighlight">
+\[
+E = E\left( l, G, L \right).
+\]</div>
+<p>The cartesian coordinate <span class="math notranslate nohighlight">\(z\)</span> can be written in terms of Delaunay elements as</p>
+<div class="math notranslate nohighlight">
+\[
+z = L\sqrt{1-\frac{H^2}{G^2}}\left[ L\left( \cos E - \sqrt{1-\frac{G^2}{L^2}} \right)\sin g + G\sin E \cos g \right],
+\]</div>
+<p>while the two-body problem Hamiltonian is simply</p>
+<div class="math notranslate nohighlight">
+\[
+\mathcal{H}_\mathrm{2bp} = -\frac{1}{2L^2}.
+\]</div>
+<p>Thus, the full Hamiltonian for the Stark problem in Delaunay elements reads:</p>
+<div class="math notranslate nohighlight">
+\[
+\mathcal{H}_\mathrm{Del} \left( L, G, H, l, g, h \right) = -\frac{1}{2L^2}-\varepsilon L\sqrt{1-\frac{H^2}{G^2}}\left[ L\left( \cos E - \sqrt{1-\frac{G^2}{L^2}} \right)\sin g + G\sin E \cos g \right].
+\]</div>
+<p>In order to write the equations of motion, we will have to take into account that <span class="math notranslate nohighlight">\(E\)</span> is a function of <span class="math notranslate nohighlight">\(\left( l, G, L \right)\)</span> whose derivatives can be explicitly computed from Kepler’s equation:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+\begin{aligned}
+\frac{\partial E}{\partial l} &amp; = \frac{1}{1-\sqrt{1-\frac{G^2}{L^2}}\cos E},\\
+\frac{\partial E}{\partial L} &amp; = \frac{G^2\sin E}{L^3\sqrt{1-\frac{G^2}{L^2}}\left(1-\sqrt{1-\frac{G^2}{L^2}}\cos E\right)},\\
+\frac{\partial E}{\partial G} &amp; = \frac{-G\sin E}{L^2\sqrt{1-\frac{G^2}{L^2}}\left(1-\sqrt{1-\frac{G^2}{L^2}}\cos E\right)}.
+\end{aligned}
+\end{split}\]</div>
+<p>We can now proceed to formulate the equations of motion:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+\begin{aligned}
+\frac{dL}{dt} &amp; =-\frac{\partial \mathcal{H}_\mathrm{Del}}{\partial E}\frac{\partial E}{\partial l}, &amp; \frac{dl}{dt} &amp; =  \frac{\partial \mathcal{H}_\mathrm{Del}}{\partial L}+\frac{\partial \mathcal{H}_\mathrm{Del}}{\partial E}\frac{\partial E}{\partial L}, \\
+\frac{dG}{dt} &amp; = -\frac{\partial \mathcal{H}_\mathrm{Del}}{\partial g}, &amp; \frac{dg}{dt} &amp; = \frac{\partial \mathcal{H}_\mathrm{Del}}{\partial G}+\frac{\partial \mathcal{H}_\mathrm{Del}}{\partial E}\frac{\partial E}{\partial G}, \\
+\frac{dH}{dt} &amp; = -\frac{\partial \mathcal{H}_\mathrm{Del}}{\partial h}=0, &amp; \frac{dh}{dt} &amp; =  \frac{\partial \mathcal{H}_\mathrm{Del}}{\partial H} .
+\end{aligned}
+\end{split}\]</div>
+<p>Note that the Hamiltonian does not depend directly on <span class="math notranslate nohighlight">\(l\)</span> (only indirectly via <span class="math notranslate nohighlight">\(E\)</span>). Thus, in the numerical integration, we will be replacing the differential equation for <span class="math notranslate nohighlight">\(l\)</span> with the differential equation for <span class="math notranslate nohighlight">\(E\)</span>:</p>
+<div class="math notranslate nohighlight">
+\[
+\frac{dE}{dt}=\frac{\partial E}{\partial l}\frac{dl}{dt}+\frac{\partial E}{\partial L}\frac{dL}{dt} + \frac{\partial E}{\partial G}\frac{dG}{dt}.
+\]</div>
+<p>The value of <span class="math notranslate nohighlight">\(l\)</span> for a given <span class="math notranslate nohighlight">\(E\)</span> can be obtained via Kepler’s equation.</p>
+<p>On the implementation side, let us begin with a couple of functions to convert between Cartesian coordinates and Delaunay elements. We will be using <a class="reference external" href="https://esa.github.io/pykep/">pykep</a> for the conversion between cartesian coordinates and Keplerian elements:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Cartesian to Delaunay.</span>
+<span class="k">def</span> <span class="nf">cart2del</span><span class="p">(</span><span class="n">state</span><span class="p">):</span>
+    <span class="kn">import</span> <span class="nn">pykep</span> <span class="k">as</span> <span class="nn">pk</span>
+    
+    <span class="n">vx</span><span class="p">,</span><span class="n">vy</span><span class="p">,</span><span class="n">vz</span><span class="p">,</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">z</span> <span class="o">=</span> <span class="n">state</span>
+
+    <span class="n">a</span><span class="p">,</span><span class="n">e</span><span class="p">,</span><span class="n">i</span><span class="p">,</span><span class="n">Om</span><span class="p">,</span><span class="n">om</span><span class="p">,</span><span class="n">E</span> <span class="o">=</span> <span class="n">pk</span><span class="o">.</span><span class="n">ic2par</span><span class="p">([</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">],</span> <span class="p">[</span><span class="n">vx</span><span class="p">,</span> <span class="n">vy</span><span class="p">,</span> <span class="n">vz</span><span class="p">])</span>
+    
+    <span class="n">L</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+    <span class="n">G</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">a</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">e</span><span class="o">**</span><span class="mi">2</span><span class="p">))</span>
+    <span class="n">H</span> <span class="o">=</span> <span class="n">G</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+    
+    <span class="n">g</span> <span class="o">=</span> <span class="n">om</span>
+    <span class="n">h</span> <span class="o">=</span> <span class="n">Om</span>
+    
+    <span class="k">return</span> <span class="p">[</span><span class="n">L</span><span class="p">,</span> <span class="n">G</span><span class="p">,</span> <span class="n">H</span><span class="p">,</span> <span class="n">E</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">h</span><span class="p">]</span>
+
+<span class="c1"># Delaunay to cartesian.</span>
+<span class="k">def</span> <span class="nf">del2cart</span><span class="p">(</span><span class="n">state</span><span class="p">):</span>
+    <span class="kn">import</span> <span class="nn">pykep</span> <span class="k">as</span> <span class="nn">pk</span>
+    
+    <span class="n">L</span><span class="p">,</span><span class="n">G</span><span class="p">,</span><span class="n">H</span><span class="p">,</span><span class="n">E</span><span class="p">,</span><span class="n">g</span><span class="p">,</span><span class="n">h</span> <span class="o">=</span> <span class="n">state</span>
+    
+    <span class="n">a</span> <span class="o">=</span> <span class="n">L</span><span class="o">**</span><span class="mi">2</span>
+    <span class="n">e</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">G</span><span class="o">**</span><span class="mi">2</span><span class="o">/</span><span class="n">L</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">i</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arccos</span><span class="p">(</span><span class="n">H</span><span class="o">/</span><span class="n">G</span><span class="p">)</span>
+    
+    <span class="n">Om</span> <span class="o">=</span> <span class="n">h</span>
+    <span class="n">om</span> <span class="o">=</span> <span class="n">g</span>
+    
+    <span class="n">ret</span> <span class="o">=</span> <span class="n">pk</span><span class="o">.</span><span class="n">par2ic</span><span class="p">([</span><span class="n">a</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">Om</span><span class="p">,</span> <span class="n">om</span><span class="p">,</span> <span class="n">E</span><span class="p">])</span>
+   
+    <span class="k">return</span> <span class="p">[</span><span class="n">ret</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">ret</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span> <span class="n">ret</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">2</span><span class="p">],</span> <span class="n">ret</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">ret</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span> <span class="n">ret</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">2</span><span class="p">]]</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Next, we formulate the Hamiltonian and the equations of motion:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Symbolic variables for the Delaunay elements.</span>
+<span class="n">L</span><span class="p">,</span> <span class="n">G</span><span class="p">,</span> <span class="n">H</span><span class="p">,</span> <span class="n">E</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">h</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">make_vars</span><span class="p">(</span><span class="s2">&quot;L&quot;</span><span class="p">,</span> <span class="s2">&quot;G&quot;</span><span class="p">,</span> <span class="s2">&quot;H&quot;</span><span class="p">,</span> <span class="s2">&quot;E&quot;</span><span class="p">,</span> <span class="s2">&quot;g&quot;</span><span class="p">,</span> <span class="s2">&quot;h&quot;</span><span class="p">)</span>
+
+<span class="c1"># The Hamiltonian.</span>
+<span class="n">Ham_del</span> <span class="o">=</span> <span class="o">-</span><span class="mf">0.5</span><span class="o">*</span><span class="n">L</span><span class="o">**-</span><span class="mi">2</span> <span class="o">-</span> <span class="n">eps</span><span class="o">*</span><span class="n">L</span><span class="o">*</span><span class="n">hy</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mf">1.</span><span class="o">-</span><span class="n">H</span><span class="o">**</span><span class="mi">2</span><span class="o">*</span><span class="n">G</span><span class="o">**-</span><span class="mi">2</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="n">L</span><span class="o">*</span><span class="p">(</span><span class="n">hy</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">E</span><span class="p">)</span><span class="o">-</span><span class="n">hy</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mf">1.</span><span class="o">-</span><span class="n">G</span><span class="o">**</span><span class="mi">2</span><span class="o">*</span><span class="n">L</span><span class="o">**-</span><span class="mi">2</span><span class="p">))</span><span class="o">*</span><span class="n">hy</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">g</span><span class="p">)</span><span class="o">+</span><span class="n">G</span><span class="o">*</span><span class="n">hy</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">E</span><span class="p">)</span><span class="o">*</span><span class="n">hy</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">g</span><span class="p">))</span>
+
+<span class="c1"># Derivatives of E wrt l, L and G.</span>
+<span class="n">dE_dl</span> <span class="o">=</span> <span class="p">(</span><span class="mf">1.</span> <span class="o">-</span> <span class="n">hy</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mf">1.</span><span class="o">-</span><span class="n">G</span><span class="o">**</span><span class="mi">2</span><span class="o">*</span><span class="n">L</span><span class="o">**-</span><span class="mi">2</span><span class="p">)</span><span class="o">*</span><span class="n">hy</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">E</span><span class="p">))</span><span class="o">**-</span><span class="mi">1</span>
+<span class="n">dE_dL</span> <span class="o">=</span> <span class="n">G</span><span class="o">**</span><span class="mi">2</span><span class="o">*</span><span class="n">hy</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">E</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">L</span><span class="o">**</span><span class="mi">3</span><span class="o">*</span><span class="n">hy</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mf">1.</span><span class="o">-</span><span class="n">G</span><span class="o">**</span><span class="mi">2</span><span class="o">*</span><span class="n">L</span><span class="o">**-</span><span class="mi">2</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="mf">1.</span> <span class="o">-</span> <span class="n">hy</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mf">1.</span><span class="o">-</span><span class="n">G</span><span class="o">**</span><span class="mi">2</span><span class="o">*</span><span class="n">L</span><span class="o">**-</span><span class="mi">2</span><span class="p">)</span><span class="o">*</span><span class="n">hy</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">E</span><span class="p">)))</span>
+<span class="n">dE_dG</span> <span class="o">=</span> <span class="o">-</span><span class="n">G</span><span class="o">*</span><span class="n">hy</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">E</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">L</span><span class="o">**</span><span class="mi">2</span><span class="o">*</span><span class="n">hy</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mf">1.</span><span class="o">-</span><span class="n">G</span><span class="o">**</span><span class="mi">2</span><span class="o">*</span><span class="n">L</span><span class="o">**-</span><span class="mi">2</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="mf">1.</span> <span class="o">-</span> <span class="n">hy</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mf">1.</span><span class="o">-</span><span class="n">G</span><span class="o">**</span><span class="mi">2</span><span class="o">*</span><span class="n">L</span><span class="o">**-</span><span class="mi">2</span><span class="p">)</span><span class="o">*</span><span class="n">hy</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">E</span><span class="p">)))</span>
+
+<span class="c1"># Equations of motion.</span>
+<span class="n">dL_dt</span> <span class="o">=</span> <span class="o">-</span><span class="n">hy</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">Ham_del</span><span class="p">,</span> <span class="n">E</span><span class="p">)</span> <span class="o">*</span> <span class="n">dE_dl</span>
+<span class="n">dG_dt</span> <span class="o">=</span> <span class="o">-</span><span class="n">hy</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">Ham_del</span><span class="p">,</span> <span class="n">g</span><span class="p">)</span>
+<span class="n">dH_dt</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">expression</span><span class="p">(</span><span class="mf">0.</span><span class="p">)</span>
+<span class="n">dl_dt</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">Ham_del</span><span class="p">,</span> <span class="n">L</span><span class="p">)</span> <span class="o">+</span> <span class="n">hy</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">Ham_del</span><span class="p">,</span> <span class="n">E</span><span class="p">)</span> <span class="o">*</span> <span class="n">dE_dL</span>
+<span class="n">dg_dt</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">Ham_del</span><span class="p">,</span> <span class="n">G</span><span class="p">)</span> <span class="o">+</span> <span class="n">hy</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">Ham_del</span><span class="p">,</span> <span class="n">E</span><span class="p">)</span> <span class="o">*</span> <span class="n">dE_dG</span>
+<span class="n">dh_dt</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">Ham_del</span><span class="p">,</span> <span class="n">H</span><span class="p">)</span>
+<span class="n">dE_dt</span> <span class="o">=</span> <span class="n">dE_dl</span> <span class="o">*</span> <span class="n">dl_dt</span> <span class="o">+</span> <span class="n">dE_dL</span> <span class="o">*</span> <span class="n">dL_dt</span> <span class="o">+</span> <span class="n">dE_dG</span> <span class="o">*</span> <span class="n">dG_dt</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Like in the case of spherical coordinates, we will also need to prevent <span class="math notranslate nohighlight">\(E\)</span> from growing indefinitely:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Callback to reduce E to the</span>
+<span class="c1"># [-pi, pi] range.</span>
+<span class="k">def</span> <span class="nf">mod_cb_del</span><span class="p">(</span><span class="n">ta</span><span class="p">):</span>
+    <span class="n">E</span> <span class="o">=</span> <span class="n">ta</span><span class="o">.</span><span class="n">state</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">E</span> <span class="o">&lt;</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="ow">or</span> <span class="n">E</span> <span class="o">&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">:</span>
+        <span class="n">ta</span><span class="o">.</span><span class="n">state</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">E</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span> <span class="o">%</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>We are now ready to create the integrator object:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Convert the initial conditions</span>
+<span class="c1"># into Delaunay elements.</span>
+<span class="n">del_ic</span> <span class="o">=</span> <span class="n">cart2del</span><span class="p">(</span><span class="n">cart_ic</span><span class="p">)</span>
+
+<span class="c1"># Create the integrator.</span>
+<span class="n">ta_del</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">taylor_adaptive</span><span class="p">(</span>
+    <span class="p">[(</span><span class="n">L</span><span class="p">,</span> <span class="n">dL_dt</span><span class="p">),</span>
+     <span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">dG_dt</span><span class="p">),</span>
+     <span class="p">(</span><span class="n">H</span><span class="p">,</span> <span class="n">dH_dt</span><span class="p">),</span>
+     <span class="p">(</span><span class="n">E</span><span class="p">,</span> <span class="n">dE_dt</span><span class="p">),</span>
+     <span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="n">dg_dt</span><span class="p">),</span>
+     <span class="p">(</span><span class="n">h</span><span class="p">,</span> <span class="n">dh_dt</span><span class="p">)],</span>
+    <span class="n">del_ic</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="ne">ModuleNotFoundError</span>Traceback (most recent call last)
+<span class="o">&lt;</span><span class="n">ipython</span><span class="o">-</span><span class="nb">input</span><span class="o">-</span><span class="mi">16</span><span class="o">-</span><span class="n">b04e36341ee4</span><span class="o">&gt;</span> <span class="ow">in</span> <span class="o">&lt;</span><span class="n">module</span><span class="o">&gt;</span>
+<span class="g g-Whitespace">      </span><span class="mi">1</span> <span class="c1"># Convert the initial conditions</span>
+<span class="g g-Whitespace">      </span><span class="mi">2</span> <span class="c1"># into Delaunay elements.</span>
+<span class="ne">----&gt; </span><span class="mi">3</span> <span class="n">del_ic</span> <span class="o">=</span> <span class="n">cart2del</span><span class="p">(</span><span class="n">cart_ic</span><span class="p">)</span>
+<span class="g g-Whitespace">      </span><span class="mi">4</span> 
+<span class="g g-Whitespace">      </span><span class="mi">5</span> <span class="c1"># Create the integrator.</span>
+
+<span class="nn">&lt;ipython-input-13-532c75305a70&gt;</span> in <span class="ni">cart2del</span><span class="nt">(state)</span>
+<span class="g g-Whitespace">      </span><span class="mi">1</span> <span class="c1"># Cartesian to Delaunay.</span>
+<span class="g g-Whitespace">      </span><span class="mi">2</span> <span class="k">def</span> <span class="nf">cart2del</span><span class="p">(</span><span class="n">state</span><span class="p">):</span>
+<span class="ne">----&gt; </span><span class="mi">3</span>     <span class="kn">import</span> <span class="nn">pykep</span> <span class="k">as</span> <span class="nn">pk</span>
+<span class="g g-Whitespace">      </span><span class="mi">4</span> 
+<span class="g g-Whitespace">      </span><span class="mi">5</span>     <span class="n">vx</span><span class="p">,</span><span class="n">vy</span><span class="p">,</span><span class="n">vz</span><span class="p">,</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">z</span> <span class="o">=</span> <span class="n">state</span>
+
+<span class="ne">ModuleNotFoundError</span>: No module named &#39;pykep&#39;
+</pre></div>
+</div>
+</div>
+</div>
+<p>Let us proceed to the numerical integration:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">nsteps_del</span><span class="p">,</span> <span class="n">out_del</span> <span class="o">=</span> <span class="n">ta_del</span><span class="o">.</span><span class="n">propagate_grid</span><span class="p">(</span><span class="n">t_grid</span><span class="p">,</span> <span class="n">callback</span> <span class="o">=</span> <span class="n">mod_cb_del</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>We can now take a look at the time evolution of the orbital elements:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">plot_t_evol</span><span class="p">(</span><span class="n">out_del</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;$L$&quot;</span><span class="p">,</span> <span class="s2">&quot;$G$&quot;</span><span class="p">,</span> <span class="s2">&quot;$H$&quot;</span><span class="p">,</span> <span class="s2">&quot;$E$&quot;</span><span class="p">,</span> <span class="s2">&quot;$g$&quot;</span><span class="p">,</span> <span class="s2">&quot;$h$&quot;</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/Comparing coordinate systems_35_0.png" src="../_images/Comparing coordinate systems_35_0.png" />
+</div>
+</div>
+<p>The plots for <span class="math notranslate nohighlight">\(L\)</span>, <span class="math notranslate nohighlight">\(G\)</span>, <span class="math notranslate nohighlight">\(H\)</span>, <span class="math notranslate nohighlight">\(g\)</span> and <span class="math notranslate nohighlight">\(h\)</span> clearly show how the Keplerian oscillations for these elements have been removed thanks to the use of orbital elements as a coordinate system. These elements would be constant in a perfectly Keplerian orbit, while in the Stark problem they undergo short-term oscillations with amplitude <span class="math notranslate nohighlight">\(\sim\varepsilon\)</span> and long-term evolution with timescale <span class="math notranslate nohighlight">\(\sim 1/\varepsilon\)</span>. We can see the perturbation induced by the constant acceleration field by zooming into, e.g., the plot for the <span class="math notranslate nohighlight">\(g\)</span> angle (the argument of pericentre):</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span> <span class="o">=</span> <span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+<span class="n">ax</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">t_grid</span><span class="p">[:</span><span class="mi">100</span><span class="p">],</span> <span class="n">out_del</span><span class="p">[:</span><span class="mi">100</span><span class="p">,</span> <span class="mi">4</span><span class="p">])</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;Time&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;$g$&quot;</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/Comparing coordinate systems_37_0.png" src="../_images/Comparing coordinate systems_37_0.png" />
+</div>
+</div>
+<p>Let us now zoom into the plot for <span class="math notranslate nohighlight">\(E\)</span>:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span> <span class="o">=</span> <span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+<span class="n">ax</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">t_grid</span><span class="p">[:</span><span class="mi">100</span><span class="p">],</span> <span class="n">out_del</span><span class="p">[:</span><span class="mi">100</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;Time&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;$E$&quot;</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/Comparing coordinate systems_39_0.png" src="../_images/Comparing coordinate systems_39_0.png" />
+</div>
+</div>
+<p>We can see how <span class="math notranslate nohighlight">\(E\)</span> is still subject to Keplerian oscillations. Indeed, even in a perfectly Keplerian orbit, the time evolution of <span class="math notranslate nohighlight">\(E\)</span> is linear only for circular orbits.</p>
+<p>Because of the presence of Keplerian oscillations in <span class="math notranslate nohighlight">\(E\)</span>, the reduction in number of integration timesteps after switching to Delaunay elements is measurable but not very large:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Number of steps (Cartesian): </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">nsteps_cart</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Number of steps (spherical): </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">nsteps_sph</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Number of steps (Delaunay) : </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">nsteps_del</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Number of steps (Cartesian): 1002
+Number of steps (spherical): 899
+Number of steps (Delaunay) : 764
+</pre></div>
+</div>
+</div>
+</div>
+<p>In order to further reduce the number of timesteps, we will have to implement one final trick.</p>
+</div>
+<div class="section" id="delaunay-sundman">
+<h2>Delaunay + Sundman<a class="headerlink" href="#delaunay-sundman" title="Permalink to this headline">¶</a></h2>
+<p>The idea we will be exploring in this section is to replace the time <span class="math notranslate nohighlight">\(t\)</span> with a fictitious time <span class="math notranslate nohighlight">\(\tau\)</span> defined by the differential relation</p>
+<div class="math notranslate nohighlight">
+\[
+\frac{dt}{d\tau} = r,
+\]</div>
+<p>where <span class="math notranslate nohighlight">\(r\)</span> is the distance from the Keplerian centre of force (i.e., the origin). This time transformation belongs to the class of <a class="reference external" href="https://en.wikipedia.org/wiki/Karl_F._Sundman">Sundman transformations</a>, which were originally introduced for regularisation purposes: the fictitious time <span class="math notranslate nohighlight">\(\tau\)</span> flows slower close to the centre of force, so that it is impossible for a test particle to reach the gravitational singularity as that would take an infinite amount of fictitious time <span class="math notranslate nohighlight">\(\tau\)</span>.</p>
+<p>Here, however, we are not interested in the regularisation properties of this transformation. Rather, what is of interest to us in this context is that, in Keplerian orbits, <span class="math notranslate nohighlight">\(E\)</span> evolves <em>linearly</em> with <span class="math notranslate nohighlight">\(\tau\)</span>. In other words, by replacing the time coordinate <span class="math notranslate nohighlight">\(t\)</span> with <span class="math notranslate nohighlight">\(\tau\)</span>, we will be able to remove the Keplerian oscillations of <span class="math notranslate nohighlight">\(E\)</span> in the Stark problem.</p>
+<p>We can introduce the new time coordinate <span class="math notranslate nohighlight">\(\tau\)</span> directly in the definition of the equations of motion. <span class="math notranslate nohighlight">\(r\)</span> can be expressed in terms of Delaunay elements as</p>
+<div class="math notranslate nohighlight">
+\[
+r = L^2\left( 1 - \sqrt{1-\frac{G^2}{L^2}}\cos E\right).
+\]</div>
+<p>For each Delaunay element <span class="math notranslate nohighlight">\(D_i\)</span> we can then write:</p>
+<div class="math notranslate nohighlight">
+\[
+\frac{dD_i}{d\tau} = \frac{dD_i}{dt}\frac{dt}{d\tau} = \frac{dD_i}{dt} L^2\left( 1 - \sqrt{1-\frac{G^2}{L^2}}\cos E\right).
+\]</div>
+<p>We will also append the differential equation for <span class="math notranslate nohighlight">\(dt/d\tau\)</span> to the ODE system, so that we can track the evolution of the real time <span class="math notranslate nohighlight">\(t\)</span> in fictitious time <span class="math notranslate nohighlight">\(\tau\)</span>:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Expression for dt/dtau.</span>
+<span class="n">dt_dtau</span> <span class="o">=</span> <span class="n">L</span><span class="o">**</span><span class="mi">2</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">hy</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mf">1.</span><span class="o">-</span><span class="n">G</span><span class="o">**</span><span class="mi">2</span><span class="o">*</span><span class="n">L</span><span class="o">**-</span><span class="mi">2</span><span class="p">)</span> <span class="o">*</span> <span class="n">hy</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">E</span><span class="p">))</span>
+
+<span class="c1"># Additional dynamical variable to</span>
+<span class="c1"># integrate t(tau).</span>
+<span class="n">t</span><span class="p">,</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">make_vars</span><span class="p">(</span><span class="s2">&quot;t&quot;</span><span class="p">)</span>
+
+<span class="n">ta_del_e</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">taylor_adaptive</span><span class="p">(</span>
+    <span class="p">[(</span><span class="n">L</span><span class="p">,</span> <span class="n">dL_dt</span><span class="o">*</span><span class="n">dt_dtau</span><span class="p">),</span>
+     <span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">dG_dt</span><span class="o">*</span><span class="n">dt_dtau</span><span class="p">),</span>
+     <span class="p">(</span><span class="n">H</span><span class="p">,</span> <span class="n">dH_dt</span><span class="o">*</span><span class="n">dt_dtau</span><span class="p">),</span>
+     <span class="p">(</span><span class="n">E</span><span class="p">,</span> <span class="n">dE_dt</span><span class="o">*</span><span class="n">dt_dtau</span><span class="p">),</span>
+     <span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="n">dg_dt</span><span class="o">*</span><span class="n">dt_dtau</span><span class="p">),</span>
+     <span class="p">(</span><span class="n">h</span><span class="p">,</span> <span class="n">dh_dt</span><span class="o">*</span><span class="n">dt_dtau</span><span class="p">),</span>
+     <span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">dt_dtau</span><span class="p">)</span>
+    <span class="p">],</span>
+    <span class="c1"># Both t and tau</span>
+    <span class="c1"># start at zero.</span>
+    <span class="n">del_ic</span> <span class="o">+</span> <span class="p">[</span><span class="mf">0.</span><span class="p">]</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>In order to prevent the real time <span class="math notranslate nohighlight">\(t\)</span> from growing indefinitely, we will periodically reset its value:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">mod_cb_del_e</span><span class="p">(</span><span class="n">ta</span><span class="p">):</span>
+    <span class="c1"># Reduce E to the [-pi, pi] range.</span>
+    <span class="n">E</span> <span class="o">=</span> <span class="n">ta</span><span class="o">.</span><span class="n">state</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">E</span> <span class="o">&lt;</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="ow">or</span> <span class="n">E</span> <span class="o">&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">:</span>
+        <span class="n">ta</span><span class="o">.</span><span class="n">state</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">E</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span> <span class="o">%</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span>
+
+    <span class="c1"># Modulo reduction of t when it</span>
+    <span class="c1"># grows past 5.</span>
+    <span class="n">t</span> <span class="o">=</span> <span class="n">ta</span><span class="o">.</span><span class="n">state</span><span class="p">[</span><span class="mi">6</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">t</span> <span class="o">&gt;</span> <span class="mi">5</span><span class="p">:</span>
+        <span class="n">ta</span><span class="o">.</span><span class="n">state</span><span class="p">[</span><span class="mi">6</span><span class="p">]</span> <span class="o">=</span> <span class="n">t</span> <span class="o">%</span> <span class="mi">5</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>We can now proceed to the integration:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">nsteps_del_e</span><span class="p">,</span> <span class="n">out_del_e</span> <span class="o">=</span> <span class="n">ta_del_e</span><span class="o">.</span><span class="n">propagate_grid</span><span class="p">(</span><span class="n">t_grid</span><span class="p">,</span> <span class="n">callback</span> <span class="o">=</span> <span class="n">mod_cb_del_e</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Let us plot the results:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">plot_t_evol</span><span class="p">(</span><span class="n">out_del_e</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;$L$&quot;</span><span class="p">,</span> <span class="s2">&quot;$G$&quot;</span><span class="p">,</span> <span class="s2">&quot;$H$&quot;</span><span class="p">,</span> <span class="s2">&quot;$E$&quot;</span><span class="p">,</span> <span class="s2">&quot;$g$&quot;</span><span class="p">,</span> <span class="s2">&quot;$h$&quot;</span><span class="p">,</span> <span class="s2">&quot;$t$&quot;</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/Comparing coordinate systems_50_0.png" src="../_images/Comparing coordinate systems_50_0.png" />
+</div>
+</div>
+<p>And let us zoom into the plot for <span class="math notranslate nohighlight">\(E\)</span>:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span> <span class="o">=</span> <span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+<span class="n">ax</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">t_grid</span><span class="p">[:</span><span class="mi">100</span><span class="p">],</span> <span class="n">out_del_e</span><span class="p">[:</span><span class="mi">100</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;Time&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;$E$&quot;</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/Comparing coordinate systems_52_0.png" src="../_images/Comparing coordinate systems_52_0.png" />
+</div>
+</div>
+<p>The plot indeed confirms that the Keplerian oscillations for <span class="math notranslate nohighlight">\(E\)</span> are gone.</p>
+<p>What about the number of steps?</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Number of steps (Cartesian): </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">nsteps_cart</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Number of steps (spherical): </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">nsteps_sph</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Number of steps (Delaunay) : </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">nsteps_del</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Number of steps (D + S)    : </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">nsteps_del_e</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Number of steps (Cartesian): 1002
+Number of steps (spherical): 899
+Number of steps (Delaunay) : 764
+Number of steps (D + S)    : 388
+</pre></div>
+</div>
+</div>
+</div>
+<p>We can see how, after the removal of the short-term Keplerian oscillations from <span class="math notranslate nohighlight">\(E\)</span>, the reduction in number of steps is substantial. Indeed, in the Delaunay + Sundman setup, the evolution of the coordinates in fictitious time deviates from constant or linear behaviour only through the external perturbation, whose magnitude <span class="math notranslate nohighlight">\(\varepsilon\)</span> is small.</p>
+<p>Let us conclude by summarising in a plot the number of steps required by each coordinate system:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span> <span class="o">=</span> <span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span>
+<span class="n">ax</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">bar</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">4</span><span class="p">),</span> <span class="p">[</span><span class="n">nsteps_cart</span><span class="p">,</span> <span class="n">nsteps_sph</span><span class="p">,</span> <span class="n">nsteps_del</span><span class="p">,</span> <span class="n">nsteps_del_e</span><span class="p">],</span> <span class="n">tick_label</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;Cartesian&quot;</span><span class="p">,</span> <span class="s2">&quot;Spherical&quot;</span><span class="p">,</span> <span class="s2">&quot;Delaunay&quot;</span><span class="p">,</span> <span class="s2">&quot;D + S&quot;</span><span class="p">])</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;N of steps&quot;</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/Comparing coordinate systems_56_0.png" src="../_images/Comparing coordinate systems_56_0.png" />
+</div>
+</div>
+</div>
+<div class="section" id="conclusions">
+<h2>Conclusions<a class="headerlink" href="#conclusions" title="Permalink to this headline">¶</a></h2>
+<p>In this example we have shown how the choice of coordinate system and time coordinate can influence the behaviour of a Taylor integrator. Intuitively, the closer the time evolution of a coordinate is to a polynomial, the longer the Taylor series can approximate the ODE solution, and the fewer number of steps is required.</p>
+<p>In these experiments we focused only on the number of steps as a performance metric. Clearly, the use of more sophisticated coordinate systems (such as the Delaunay elements) can lead to more complicated equations of motion, which in turn may lead to overall longer integration times. Nevertheless, the minimisation of the number of timestpes may be of interest in some cases (e.g., to reduce the accumulation of numerical errors in long-term integrations).</p>
+</div>
+</div>
+
+
+              </div>
+              
+        
+        <div class='prev-next-bottom'>
+            
+    <a class='left-prev' id="prev-link" href="Box%20control%20for%20Formation%20Flying%20Satellites.html" title="previous page">Box control in satellite Formation Flying</a>
+    <a class='right-next' id="next-link" href="The%20variational%20equations.html" title="next page">The variational equations</a>
+
+        </div>
+        
+        </div>
+    </div>
+    <footer class="footer mt-5 mt-md-0">
+    <div class="container">
+      <p>
+        
+          By Francesco Biscani and Dario Izzo<br/>
+        
+            &copy; Copyright 2020, 2021, Francesco Biscani and Dario Izzo.<br/>
+      </p>
+    </div>
+  </footer>
+</main>
+
+
+      </div>
+    </div>
+  
+  <script src="../_static/js/index.1c5a1a01449ed65a7b51.js"></script>
+
+  
+  </body>
+</html>
