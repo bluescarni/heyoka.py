@@ -23,9 +23,6 @@ Tutorials
      the features currently
      available only in the development version of heyoka.py.
 
-.. toctree::
-  :maxdepth: 1
-
 Basics
 -------
 
