@@ -13,6 +13,7 @@ Celestial mechanics and astrodynamics
   notebooks/Long term stability of Trappist-1
   notebooks/Outer Solar System
   notebooks/Box control for Formation Flying Satellites
+  notebooks/Comparing coordinate systems
 
 Others
 ---------------
