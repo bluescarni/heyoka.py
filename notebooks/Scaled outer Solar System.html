@@ -340,7 +340,7 @@
                 
   <div class="section" id="the-scaled-outer-solar-system">
 <h1>The scaled outer Solar System<a class="headerlink" href="#the-scaled-outer-solar-system" title="Permalink to this headline">¶</a></h1>
-<p>In this example we will be studying a rescaled version of the outer Solar System in which the masses of 4 giant planets (Jupiter, Saturn, Uranus and Neptune) have been increased by a factor of 50. It is <a class="reference external" href="https://iopscience.iop.org/article/10.1086/300541/meta">well known</a> that such a configuration is dynamically unstable: in the short term the planets undergo close encounters which eventually lead to the expulsion of one or more planets from the Solar System. We will use this setup to show a creative way of exploiting heyoka.py’s event detection system.</p>
+<p>In this example we will be studying a rescaled version of the outer Solar System in which the masses of the 4 giant planets (Jupiter, Saturn, Uranus and Neptune) have been increased by a factor of 50. It is <a class="reference external" href="https://iopscience.iop.org/article/10.1086/300541/meta">well known</a> that such a configuration is dynamically unstable: in the short term the planets undergo close encounters which eventually lead to the expulsion of one or more planets from the Solar System. We will use this setup to illustrate a creative way of exploiting heyoka.py’s event detection system.</p>
 <p>We begin with the definition of the system’s parameters and initial conditions (taken from the <a class="reference internal" href="Outer%20Solar%20System.html"><span class="doc std std-doc">Brouwer’s law example</span></a>):</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -404,7 +404,7 @@ D_{ij}\left( t \right) = \left[ x_i\left( t \right) - x_j\left( t \right) \right
 \[
 \frac{dD_{ij}\left( t \right)}{dt} = 0
 \]</div>
-<p>in heyoka.py’s <a class="reference internal" href="Event%20detection.html"><span class="doc std std-doc">event detection</span></a> system we will thus be able to track how the distance minima between planets evolve over time.</p>
+<p>in heyoka.py’s <a class="reference internal" href="Event%20detection.html"><span class="doc std std-doc">event detection</span></a> system we will thus be able to track how the minima of the planetary distances evolve over time.</p>
 <p>Let us begin with the definition of the event callback:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -466,7 +466,7 @@ D_{ij}\left( t \right) = \left[ x_i\left( t \right) - x_j\left( t \right) \right
 </div>
 </div>
 </div>
-<p>Note how we sepcified a <em>positive</em> direction for the event. This means that the event is detected only when the value of <span class="math notranslate nohighlight">\({dD_{ij}\left( t \right)}/{dt}\)</span> switches from negative to positive (and not viceversa). In other words, by specifying a positive event direction we will be filtering out the maxima of <span class="math notranslate nohighlight">\(D_{ij}\left( t \right)\)</span>, retaining only the minima.</p>
+<p>Note how we specified a <em>positive</em> direction for the event. This means that the event is detected only when the value of <span class="math notranslate nohighlight">\({dD_{ij}\left( t \right)}/{dt}\)</span> switches from negative to positive (and not viceversa). In other words, by specifying a positive event direction we will be filtering out the maxima of <span class="math notranslate nohighlight">\(D_{ij}\left( t \right)\)</span>, retaining only the minima.</p>
 <p>We are now ready to create the integrator object:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -518,7 +518,7 @@ D_{ij}\left( t \right) = \left[ x_i\left( t \right) - x_j\left( t \right) \right
 </div>
 </div>
 </div>
-<p>We can now visualise the results. We will be plotting the evolution in time of the distance minima for all planet-planet pairs:</p>
+<p>We can now visualise the results. We will be plotting the evolution in time of the minima of the planet-planet distances:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">js_ce</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">t</span><span class="p">:</span> <span class="n">t</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">t</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">==</span> <span class="mi">2</span><span class="p">,</span> <span class="n">ce_list</span><span class="p">))</span>

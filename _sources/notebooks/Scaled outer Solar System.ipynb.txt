@@ -7,7 +7,7 @@
    "source": [
     "# The scaled outer Solar System\n",
     "\n",
-    "In this example we will be studying a rescaled version of the outer Solar System in which the masses of 4 giant planets (Jupiter, Saturn, Uranus and Neptune) have been increased by a factor of 50. It is [well known](https://iopscience.iop.org/article/10.1086/300541/meta) that such a configuration is dynamically unstable: in the short term the planets undergo close encounters which eventually lead to the expulsion of one or more planets from the Solar System. We will use this setup to show a creative way of exploiting heyoka.py's event detection system.\n",
+    "In this example we will be studying a rescaled version of the outer Solar System in which the masses of the 4 giant planets (Jupiter, Saturn, Uranus and Neptune) have been increased by a factor of 50. It is [well known](https://iopscience.iop.org/article/10.1086/300541/meta) that such a configuration is dynamically unstable: in the short term the planets undergo close encounters which eventually lead to the expulsion of one or more planets from the Solar System. We will use this setup to illustrate a creative way of exploiting heyoka.py's event detection system.\n",
     "\n",
     "We begin with the definition of the system's parameters and initial conditions (taken from the [Brouwer's law example](<./Outer Solar System.ipynb>)):"
    ]
@@ -97,7 +97,7 @@
     "\\frac{dD_{ij}\\left( t \\right)}{dt} = 0\n",
     "$$\n",
     "\n",
-    "in heyoka.py's [event detection](<./Event detection.ipynb>) system we will thus be able to track how the distance minima between planets evolve over time.\n",
+    "in heyoka.py's [event detection](<./Event detection.ipynb>) system we will thus be able to track how the minima of the planetary distances evolve over time.\n",
     "\n",
     "Let us begin with the definition of the event callback:"
    ]
@@ -181,7 +181,7 @@
    "id": "16f549f1-fd0d-4bf9-93c0-49c152935fa5",
    "metadata": {},
    "source": [
-    "Note how we sepcified a *positive* direction for the event. This means that the event is detected only when the value of ${dD_{ij}\\left( t \\right)}/{dt}$ switches from negative to positive (and not viceversa). In other words, by specifying a positive event direction we will be filtering out the maxima of $D_{ij}\\left( t \\right)$, retaining only the minima.\n",
+    "Note how we specified a *positive* direction for the event. This means that the event is detected only when the value of ${dD_{ij}\\left( t \\right)}/{dt}$ switches from negative to positive (and not viceversa). In other words, by specifying a positive event direction we will be filtering out the maxima of $D_{ij}\\left( t \\right)$, retaining only the minima.\n",
     "\n",
     "We are now ready to create the integrator object:"
    ]
@@ -264,7 +264,7 @@
    "id": "64b89924-550a-4a60-b45c-4ccbd1db3ab3",
    "metadata": {},
    "source": [
-    "We can now visualise the results. We will be plotting the evolution in time of the distance minima for all planet-planet pairs:"
+    "We can now visualise the results. We will be plotting the evolution in time of the minima of the planet-planet distances:"
    ]
   },
   {
