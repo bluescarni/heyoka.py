@@ -637,7 +637,7 @@ D_{ij}\left( t \right) = \left[ x_i\left( t \right) - x_j\left( t \right) \right
 <img alt="../_images/Scaled outer Solar System_17_0.png" src="../_images/Scaled outer Solar System_17_0.png" />
 </div>
 </div>
-<p>The plots indeed confirm that Saturn and Uranus are ejected (i.e., the semi-major axes become negative). After the ejection of Saturn and Uranus, Jupiter settles in a stable quasi-Keplerian orbit, while Neptune ends up in an orbit strongly perturbed by Jupiter (but apparently stable, at least in the short term).</p>
+<p>The plots indeed confirm that Saturn and Uranus are ejected (i.e., the semi-major axes become negative). After the ejection of Saturn and Uranus, Jupiter settles in a stable quasi-Keplerian orbit, while Neptune ends up in an outer orbit perturbed by Jupiter. Note how the wide oscillations in semi-major axis for Neptune are due to the strong perturbation of Jupiter onto the Sun, which induces short-term oscillations in the Heliocentric orbital elements of the other planets.</p>
 <p>Let us take a look at the eccentricities:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -649,7 +649,70 @@ D_{ij}\left( t \right) = \left[ x_i\left( t \right) - x_j\left( t \right) \right
 <img alt="../_images/Scaled outer Solar System_19_0.png" src="../_images/Scaled outer Solar System_19_0.png" />
 </div>
 </div>
-<p>The eccentricities portray the same picture: after a turbulent chaotic initial peroid, Saturn and Uranus are ejected (<span class="math notranslate nohighlight">\(e &gt; 1\)</span>) and Jupiter settles into a medium-eccentricity quasi-Keplerian orbit. Like for the semi-major axis, the eccentricity of Neptune is also strongly perturbed by the presence of Jupiter.</p>
+<p>The eccentricities portray the same picture: after a turbulent and chaotic initial peroid, Saturn and Uranus are ejected (<span class="math notranslate nohighlight">\(e &gt; 1\)</span>) and Jupiter settles into a medium-eccentricity quasi-Keplerian orbit. Like in the previous plot, the rapid variations in the eccentricities of Saturn, Uranus and Neptune for <span class="math notranslate nohighlight">\(t \gtrsim 400\)</span> are due to the strong perturbation of Jupiter onto the Sun.</p>
+<p>Let us now zoom into the first close encounter between Jupiter and Saturn at <span class="math notranslate nohighlight">\(t\sim 163\)</span>. First, we create a new integrator taking as initial conditions the state of the system at <span class="math notranslate nohighlight">\(t=163\)</span> and disabling any form of event detection (as we do not need it any more):</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ta_ce</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">taylor_adaptive</span><span class="p">(</span><span class="n">sys</span><span class="p">,</span> <span class="n">out</span><span class="p">[</span><span class="mi">163</span><span class="p">],</span> <span class="n">high_accuracy</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">tol</span> <span class="o">=</span> <span class="mf">1e-18</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Next, we define a new time grid and we integrate over it:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Integrate for 1 year.</span>
+<span class="n">t_grid_ce</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">10000</span><span class="p">)</span>
+
+<span class="c1"># NOTE: min/max_h are the min/max timesteps</span>
+<span class="c1"># selected by the integrator.</span>
+<span class="n">_</span><span class="p">,</span> <span class="n">min_h</span><span class="p">,</span> <span class="n">max_h</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">out_ce</span> <span class="o">=</span> <span class="n">ta_ce</span><span class="o">.</span><span class="n">propagate_grid</span><span class="p">(</span><span class="n">t_grid_ce</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Let us now plot the close encounter:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">out_ce</span> <span class="o">=</span> <span class="n">out_ce</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span>
+<span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">9</span><span class="p">,</span> <span class="mi">9</span><span class="p">))</span>
+
+<span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">111</span><span class="p">)</span>
+
+<span class="n">ax</span><span class="o">.</span><span class="n">set_aspect</span><span class="p">(</span><span class="s1">&#39;equal&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">out_ce</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">out_ce</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Jupiter&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">out_ce</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">out_ce</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Saturn&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">((</span><span class="mf">4.38</span><span class="p">,</span> <span class="mf">4.44</span><span class="p">))</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">((</span><span class="o">-</span><span class="mf">2.20</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.15</span><span class="p">))</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_aspect</span><span class="p">(</span><span class="s1">&#39;equal&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;$x$&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;$y$&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/Scaled outer Solar System_25_0.png" src="../_images/Scaled outer Solar System_25_0.png" />
+</div>
+</div>
+<p>We can see how Jupiter’s motion becomes temporarily retrograde during the encounter with Saturn.</p>
+<p>Note how the integrator automatically decreased the timestep size in correspondence of the close encounter:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Min. timestep: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">min_h</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Max. timestep: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">max_h</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Min. timestep: 0.00013865629022107346
+Max. timestep: 0.124164535505792
+</pre></div>
+</div>
+</div>
+</div>
 </div>
 
 
