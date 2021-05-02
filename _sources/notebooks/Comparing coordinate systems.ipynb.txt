@@ -426,7 +426,7 @@
     "\n",
     "Note that the bottom right panel, referring to the time evolution of $\\phi$, does **not** represent an oscillatory motion around 0: the sine-like shape is a visual effect of the periodic reduction of $\\phi$ to the $\\left[ -\\pi, \\pi\\right]$ range, but in reality the time evolution of $\\phi$ is linear with a periodic modulation on top.\n",
     "\n",
-    "The periodic modulations in these plots arise from the fact that the initial Keplerian orbit is not perfectly circular, and thus all coordinates (except $p_\\phi$) oscillate as the motion deviates from a perfect circle within each orbit. For a circular orbit around the origin, all coordinates and momenta would be constants, except for $\\phi$ which would evolve linearly.\n",
+    "The periodic modulations in these plots arise from the fact that the initial Keplerian orbit is not perfectly circular and planar, and thus all coordinates (except $p_\\phi$) oscillate as the motion deviates from a perfect planar circle within each orbit. For a circular planar orbit around the origin, all coordinates and momenta would be constants, except for $\\phi$ which would evolve linearly.\n",
     "\n",
     "The fact that the amplitude of the periodic modulations is reduced with respect to the Cartesian case has an effect on the number of timesteps necessary to integrate the system:"
    ]
@@ -1100,7 +1100,7 @@
    "name": "python",
    "nbconvert_exporter": "python",
    "pygments_lexer": "ipython3",
-   "version": "3.9.2"
+   "version": "3.8.6"
   }
  },
  "nbformat": 4,
