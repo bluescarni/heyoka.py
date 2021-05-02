@@ -295,7 +295,7 @@ PYBIND11_MODULE(core, m)
 
             return hey::make_nbody_sys(n, kw::Gconst = G, kw::masses = m_vec);
         },
-        "n"_a, "Gconst"_a = py::cast(1.), "masses"_a = py::none{});
+        "n"_a, "Gconst"_a = 1., "masses"_a = py::none{});
 
     m.def(
         "make_nbody_par_sys",
@@ -308,7 +308,7 @@ PYBIND11_MODULE(core, m)
                 return hey::make_nbody_par_sys(n, kw::Gconst = G);
             }
         },
-        "n"_a, "Gconst"_a = py::cast(1.), "n_massive"_a = py::none{});
+        "n"_a, "Gconst"_a = 1., "n_massive"_a = py::none{});
 
     // mascon dynamics builder
     m.def(
@@ -438,8 +438,9 @@ PYBIND11_MODULE(core, m)
     using prop_cb_t = std::function<void(hey::taylor_adaptive_batch<double> &)>;
 
     // Batch adaptive integrator for double.
-    auto tabd_ctor_impl = [](auto sys, py::array_t<double> state_, py::object time_, py::object pars_, double tol,
-                             bool high_accuracy, bool compact_mode) {
+    auto tabd_ctor_impl = [](auto sys, py::array_t<double> state_, std::optional<py::array_t<double>> time_,
+                             std::optional<py::array_t<double>> pars_, double tol, bool high_accuracy,
+                             bool compact_mode) {
         // Convert state and pars to std::vector, after checking
         // dimensions and shape.
         if (state_.ndim() != 2) {
@@ -458,8 +459,8 @@ PYBIND11_MODULE(core, m)
 
         // If pars is none, an empty vector will be fine.
         std::vector<double> pars;
-        if (!pars_.is_none()) {
-            auto pars_arr = py::cast<py::array_t<double>>(pars_);
+        if (pars_) {
+            auto &pars_arr = *pars_;
 
             if (pars_arr.ndim() != 2 || boost::numeric_cast<std::uint32_t>(pars_arr.shape(1)) != batch_size) {
                 heypy::py_throw(PyExc_ValueError,
@@ -471,20 +472,9 @@ PYBIND11_MODULE(core, m)
             pars = py::cast<std::vector<double>>(pars_arr.attr("flatten")());
         }
 
-        if (time_.is_none()) {
-            py::gil_scoped_release release;
-
-            // Times not provided.
-            return hey::taylor_adaptive_batch<double>{std::move(sys),
-                                                      std::move(state),
-                                                      batch_size,
-                                                      kw::tol = tol,
-                                                      kw::high_accuracy = high_accuracy,
-                                                      kw::compact_mode = compact_mode,
-                                                      kw::pars = std::move(pars)};
-        } else {
+        if (time_) {
             // Times provided.
-            auto time_arr = py::cast<py::array_t<double>>(time_);
+            auto &time_arr = *time_;
             if (time_arr.ndim() != 1 || boost::numeric_cast<std::uint32_t>(time_arr.shape(0)) != batch_size) {
                 heypy::py_throw(PyExc_ValueError,
                                 "Invalid time vector passed to the constructor of a batch integrator: "
@@ -504,19 +494,34 @@ PYBIND11_MODULE(core, m)
                                                       kw::high_accuracy = high_accuracy,
                                                       kw::compact_mode = compact_mode,
                                                       kw::pars = std::move(pars)};
+        } else {
+            // Times not provided.
+            py::gil_scoped_release release;
+
+            return hey::taylor_adaptive_batch<double>{std::move(sys),
+                                                      std::move(state),
+                                                      batch_size,
+                                                      kw::tol = tol,
+                                                      kw::high_accuracy = high_accuracy,
+                                                      kw::compact_mode = compact_mode,
+                                                      kw::pars = std::move(pars)};
         }
     };
     py::class_<hey::taylor_adaptive_batch<double>>(m, "_taylor_adaptive_batch_dbl")
         .def(py::init([tabd_ctor_impl](std::vector<std::pair<hey::expression, hey::expression>> sys,
-                                       py::array_t<double> state, py::object time, py::object pars, double tol,
-                                       bool high_accuracy, bool compact_mode) {
-                 return tabd_ctor_impl(std::move(sys), state, time, pars, tol, high_accuracy, compact_mode);
+                                       py::array_t<double> state, std::optional<py::array_t<double>> time,
+                                       std::optional<py::array_t<double>> pars, double tol, bool high_accuracy,
+                                       bool compact_mode) {
+                 return tabd_ctor_impl(std::move(sys), state, std::move(time), std::move(pars), tol, high_accuracy,
+                                       compact_mode);
              }),
              "sys"_a, "state"_a, "time"_a = py::none{}, "pars"_a = py::none{}, "tol"_a = 0., "high_accuracy"_a = false,
              "compact_mode"_a = false)
-        .def(py::init([tabd_ctor_impl](std::vector<hey::expression> sys, py::array_t<double> state, py::object time,
-                                       py::object pars, double tol, bool high_accuracy, bool compact_mode) {
-                 return tabd_ctor_impl(std::move(sys), state, time, pars, tol, high_accuracy, compact_mode);
+        .def(py::init([tabd_ctor_impl](std::vector<hey::expression> sys, py::array_t<double> state,
+                                       std::optional<py::array_t<double>> time, std::optional<py::array_t<double>> pars,
+                                       double tol, bool high_accuracy, bool compact_mode) {
+                 return tabd_ctor_impl(std::move(sys), state, std::move(time), std::move(pars), tol, high_accuracy,
+                                       compact_mode);
              }),
              "sys"_a, "state"_a, "time"_a = py::none{}, "pars"_a = py::none{}, "tol"_a = 0., "high_accuracy"_a = false,
              "compact_mode"_a = false)
