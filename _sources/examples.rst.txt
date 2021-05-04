@@ -35,6 +35,7 @@ Celestial mechanics and astrodynamics
   notebooks/Box control for Formation Flying Satellites
   notebooks/Comparing coordinate systems
   notebooks/Scaled outer Solar System
+  notebooks/Planetary embryos
 
 Others
 ---------------

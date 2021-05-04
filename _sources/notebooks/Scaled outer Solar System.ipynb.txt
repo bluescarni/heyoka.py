@@ -125,7 +125,7 @@
     "        ta.update_d_output(time)\n",
     "        \n",
     "        # Extract the position vectors\n",
-    "        # from planets i and j.\n",
+    "        # for planets i and j.\n",
     "        st = ta.d_output.reshape(5, 6)\n",
     "        ri = st[self.i, 0:3]\n",
     "        rj = st[self.j, 0:3]\n",
@@ -181,7 +181,7 @@
    "id": "16f549f1-fd0d-4bf9-93c0-49c152935fa5",
    "metadata": {},
    "source": [
-    "Note how we specified a *positive* direction for the event. This means that the event is detected only when the value of ${dD_{ij}\\left( t \\right)}/{dt}$ switches from negative to positive (and not viceversa). In other words, by specifying a positive event direction we will be filtering out the maxima of $D_{ij}\\left( t \\right)$, retaining only the minima.\n",
+    "Note how we specified a *positive* direction for the events. This means that the event is detected only when the value of ${dD_{ij}\\left( t \\right)}/{dt}$ switches from negative to positive (and not viceversa). In other words, by specifying a positive event direction we will be filtering out the maxima of $D_{ij}\\left( t \\right)$, retaining only the minima.\n",
     "\n",
     "We are now ready to create the integrator object:"
    ]

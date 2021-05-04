@@ -210,6 +210,11 @@
     </a>
    </li>
    <li class="toctree-l2">
+    <a class="reference internal" href="Planetary%20embryos.html">
+     Planetary embryos in the inner Solar System
+    </a>
+   </li>
+   <li class="toctree-l2">
     <a class="reference internal" href="The%20variational%20equations.html">
      The variational equations
     </a>
@@ -717,7 +722,7 @@ Current time: 0.5
 <h2>Propagation over a time grid<a class="headerlink" href="#propagation-over-a-time-grid" title="Permalink to this headline">¶</a></h2>
 <p>Another way of propagating the state of a system in a <code class="docutils literal notranslate"><span class="pre">taylor_adaptive</span></code>
 integrator is over a time grid. In this mode, the integrator
-uses dense output (described in a later tutorial) to compute the state of the system
+uses <a class="reference internal" href="Dense%20output.html"><span class="doc std std-doc">dense output</span></a> to compute the state of the system
 over a grid of time coordinates provided by the user. If the grid is denser
 than the typical timestep size, this can be noticeably more efficient than
 repeatedly calling <code class="docutils literal notranslate"><span class="pre">propagate_until()</span></code> on the grid points, because

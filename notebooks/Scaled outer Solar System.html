@@ -40,7 +40,7 @@
     <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["\\(", "\\)"]], "displayMath": [["\\[", "\\]"]], "processRefs": false, "processEnvironments": false}})</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="The variational equations" href="The%20variational%20equations.html" />
+    <link rel="next" title="Planetary embryos in the inner Solar System" href="Planetary%20embryos.html" />
     <link rel="prev" title="Comparing coordinate systems" href="Comparing%20coordinate%20systems.html" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="docsearch:language" content="en" />
@@ -207,6 +207,11 @@
    <li class="toctree-l2 current active">
     <a class="current reference internal" href="#">
      The scaled outer Solar System
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="Planetary%20embryos.html">
+     Planetary embryos in the inner Solar System
     </a>
    </li>
    <li class="toctree-l2">
@@ -424,7 +429,7 @@ D_{ij}\left( t \right) = \left[ x_i\left( t \right) - x_j\left( t \right) \right
         <span class="n">ta</span><span class="o">.</span><span class="n">update_d_output</span><span class="p">(</span><span class="n">time</span><span class="p">)</span>
         
         <span class="c1"># Extract the position vectors</span>
-        <span class="c1"># from planets i and j.</span>
+        <span class="c1"># for planets i and j.</span>
         <span class="n">st</span> <span class="o">=</span> <span class="n">ta</span><span class="o">.</span><span class="n">d_output</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">)</span>
         <span class="n">ri</span> <span class="o">=</span> <span class="n">st</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">i</span><span class="p">,</span> <span class="mi">0</span><span class="p">:</span><span class="mi">3</span><span class="p">]</span>
         <span class="n">rj</span> <span class="o">=</span> <span class="n">st</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">j</span><span class="p">,</span> <span class="mi">0</span><span class="p">:</span><span class="mi">3</span><span class="p">]</span>
@@ -466,7 +471,7 @@ D_{ij}\left( t \right) = \left[ x_i\left( t \right) - x_j\left( t \right) \right
 </div>
 </div>
 </div>
-<p>Note how we specified a <em>positive</em> direction for the event. This means that the event is detected only when the value of <span class="math notranslate nohighlight">\({dD_{ij}\left( t \right)}/{dt}\)</span> switches from negative to positive (and not viceversa). In other words, by specifying a positive event direction we will be filtering out the maxima of <span class="math notranslate nohighlight">\(D_{ij}\left( t \right)\)</span>, retaining only the minima.</p>
+<p>Note how we specified a <em>positive</em> direction for the events. This means that the event is detected only when the value of <span class="math notranslate nohighlight">\({dD_{ij}\left( t \right)}/{dt}\)</span> switches from negative to positive (and not viceversa). In other words, by specifying a positive event direction we will be filtering out the maxima of <span class="math notranslate nohighlight">\(D_{ij}\left( t \right)\)</span>, retaining only the minima.</p>
 <p>We are now ready to create the integrator object:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -722,7 +727,7 @@ Max. timestep: 0.124164535505792
         <div class='prev-next-bottom'>
             
     <a class='left-prev' id="prev-link" href="Comparing%20coordinate%20systems.html" title="previous page">Comparing coordinate systems</a>
-    <a class='right-next' id="next-link" href="The%20variational%20equations.html" title="next page">The variational equations</a>
+    <a class='right-next' id="next-link" href="Planetary%20embryos.html" title="next page">Planetary embryos in the inner Solar System</a>
 
         </div>
         

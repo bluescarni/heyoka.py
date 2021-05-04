@@ -207,6 +207,11 @@
     </a>
    </li>
    <li class="toctree-l2">
+    <a class="reference internal" href="notebooks/Planetary%20embryos.html">
+     Planetary embryos in the inner Solar System
+    </a>
+   </li>
+   <li class="toctree-l2">
     <a class="reference internal" href="notebooks/The%20variational%20equations.html">
      The variational equations
     </a>
@@ -342,9 +347,28 @@ billions of timesteps,</p></li>
 automatic differentiation techniques and aggressive just-in-time
 compilation via <a class="reference external" href="https://llvm.org/">LLVM</a>.</p></li>
 </ul>
-<p>heyoka.py is based on the <a class="reference external" href="https://github.com/bluescarni/heyoka">heyoka C++ library</a>,
-and it is released under the <a class="reference external" href="https://www.mozilla.org/en-US/MPL/2.0/FAQ/">MPL-2.0</a> license.</p>
-<p>The authors are Francesco Biscani (Max Planck Institute for Astronomy) and Dario Izzo (European Space Agency).</p>
+<p>heyoka.py is based on the <a class="reference external" href="https://github.com/bluescarni/heyoka">heyoka C++ library</a>.</p>
+<p>If you are using heyoka.py as part of your research, teaching, or other activities, we would be grateful if you could star
+the repository and/or cite our work. For citation purposes, you can use the following BibTex entry, which refers
+to the heyoka.py paper (<a class="reference external" href="https://arxiv.org/abs/2105.00800">arXiv preprint</a>):</p>
+<div class="highlight-bibtex notranslate"><div class="highlight"><pre><span></span><span class="nc">@article</span><span class="p">{</span><span class="nl">10.1093/mnras/stab1032</span><span class="p">,</span>
+    <span class="na">author</span> <span class="p">=</span> <span class="s">{Biscani, Francesco and Izzo, Dario}</span><span class="p">,</span>
+    <span class="na">title</span> <span class="p">=</span> <span class="s">&quot;{Revisiting high-order Taylor methods for astrodynamics and celestial mechanics}&quot;</span><span class="p">,</span>
+    <span class="na">journal</span> <span class="p">=</span> <span class="s">{Monthly Notices of the Royal Astronomical Society}</span><span class="p">,</span>
+    <span class="na">volume</span> <span class="p">=</span> <span class="s">{504}</span><span class="p">,</span>
+    <span class="na">number</span> <span class="p">=</span> <span class="s">{2}</span><span class="p">,</span>
+    <span class="na">pages</span> <span class="p">=</span> <span class="s">{2614-2628}</span><span class="p">,</span>
+    <span class="na">year</span> <span class="p">=</span> <span class="s">{2021}</span><span class="p">,</span>
+    <span class="na">month</span> <span class="p">=</span> <span class="s">{04}</span><span class="p">,</span>
+    <span class="na">issn</span> <span class="p">=</span> <span class="s">{0035-8711}</span><span class="p">,</span>
+    <span class="na">doi</span> <span class="p">=</span> <span class="s">{10.1093/mnras/stab1032}</span><span class="p">,</span>
+    <span class="na">url</span> <span class="p">=</span> <span class="s">{https://doi.org/10.1093/mnras/stab1032}</span><span class="p">,</span>
+    <span class="na">eprint</span> <span class="p">=</span> <span class="s">{https://academic.oup.com/mnras/article-pdf/504/2/2614/37750349/stab1032.pdf}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>heyoka.py is released under the <a class="reference external" href="https://www.mozilla.org/en-US/MPL/2.0/FAQ/">MPL-2.0</a> license.
+The authors are Francesco Biscani (Max Planck Institute for Astronomy) and Dario Izzo (European Space Agency).</p>
 <div class="toctree-wrapper compound">
 <p class="caption"><span class="caption-text">Contents</span></p>
 <ul>
@@ -368,13 +392,14 @@ and it is released under the <a class="reference external" href="https://www.moz
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="changelog.html">Changelog</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="changelog.html#unreleased">0.9.0 (unreleased)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="changelog.html#id2">0.8.0 (2021-04-28)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="changelog.html#id3">0.7.0 (2021-04-22)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="changelog.html#id6">0.6.1 (2021-04-08)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="changelog.html#id9">0.6.0 (2021-04-06)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="changelog.html#id12">0.5.0 (2021-02-25)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="changelog.html#id15">0.4.0 (2021-02-20)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="changelog.html#id18">0.3.0 (2021-02-13)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="changelog.html#id4">0.7.0 (2021-04-22)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="changelog.html#id7">0.6.1 (2021-04-08)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="changelog.html#id10">0.6.0 (2021-04-06)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="changelog.html#id13">0.5.0 (2021-02-25)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="changelog.html#id16">0.4.0 (2021-02-20)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="changelog.html#id19">0.3.0 (2021-02-13)</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="breaking_changes.html">Breaking changes</a><ul>
