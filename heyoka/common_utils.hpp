@@ -44,6 +44,20 @@ struct scoped_quadprec_setter {
     int orig_prec = 0;
 };
 
+// Helper to expose the llvm_state getter
+// for an integrator object.
+template <typename T>
+inline void expose_llvm_state_property(py::class_<T> &c)
+{
+    c.def_property_readonly("llvm_state", &T::get_llvm_state,
+                            // NOTE: it seems like this might be unnecessary, as
+                            // the def_property() functions already deal with references
+                            // correctly:
+                            // https://pybind11.readthedocs.io/en/stable/advanced/functions.html
+                            // Perhaps we can remove this after testing is implemented.
+                            py::return_value_policy::reference_internal);
+}
+
 } // namespace heyoka_py
 
 #endif

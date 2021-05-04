@@ -41,6 +41,7 @@
 
 #include <heyoka/exceptions.hpp>
 #include <heyoka/expression.hpp>
+#include <heyoka/llvm_state.hpp>
 #include <heyoka/mascon.hpp>
 #include <heyoka/math.hpp>
 #include <heyoka/nbody.hpp>
@@ -433,6 +434,22 @@ PYBIND11_MODULE(core, m)
 
 #endif
 
+    // LLVM state.
+    py::class_<hey::llvm_state>(m, "llvm_state")
+        .def("get_ir", &hey::llvm_state::get_ir)
+        .def("get_object_code", [](hey::llvm_state &s) { return py::bytes(s.get_object_code()); })
+        // Repr.
+        .def("__repr__",
+             [](const hey::llvm_state &s) {
+                 std::ostringstream oss;
+                 oss << s;
+                 return oss.str();
+             })
+        // Copy/deepcopy.
+        .def("__copy__", [](const hey::llvm_state &s) { return s; })
+        .def(
+            "__deepcopy__", [](const hey::llvm_state &s, py::dict) { return s; }, "memo"_a);
+
     // The callback for the propagate_*() functions for
     // the batch integrator.
     using prop_cb_t = std::function<void(hey::taylor_adaptive_batch<double> &)>;
@@ -507,7 +524,8 @@ PYBIND11_MODULE(core, m)
                                                       kw::pars = std::move(pars)};
         }
     };
-    py::class_<hey::taylor_adaptive_batch<double>>(m, "_taylor_adaptive_batch_dbl")
+    py::class_<hey::taylor_adaptive_batch<double>> tabd_c(m, "_taylor_adaptive_batch_dbl");
+    tabd_c
         .def(py::init([tabd_ctor_impl](std::vector<std::pair<hey::expression, hey::expression>> sys,
                                        py::array_t<double> state, std::optional<py::array_t<double>> time,
                                        std::optional<py::array_t<double>> pars, double tol, bool high_accuracy,
@@ -729,6 +747,9 @@ PYBIND11_MODULE(core, m)
         .def("__copy__", [](const hey::taylor_adaptive_batch<double> &ta) { return ta; })
         .def(
             "__deepcopy__", [](const hey::taylor_adaptive_batch<double> &ta, py::dict) { return ta; }, "memo"_a);
+
+    // Expose the llvm state getter.
+    heypy::expose_llvm_state_property(tabd_c);
 }
 
 #if defined(__clang__)

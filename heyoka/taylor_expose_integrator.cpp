@@ -128,6 +128,9 @@ void expose_taylor_integrator_common(py::class_<hey::taylor_adaptive<T>> &cl)
         .def_property_readonly("nt_events", &hey::taylor_adaptive<T>::get_nt_events)
         // Cooldowns.
         .def("reset_cooldowns", &hey::taylor_adaptive<T>::reset_cooldowns);
+
+    // Expose the llvm state getter.
+    expose_llvm_state_property(cl);
 }
 
 // Implementation of the exposition of the scalar integrators
