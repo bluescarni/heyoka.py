@@ -9,6 +9,8 @@ Changelog
 New
 ~~~
 
+- New tutorial on planetary embryos
+  (`#39 <https://github.com/bluescarni/heyoka.py/pull/39>`__).
 - Initial exposition of the ``llvm_state`` class
   (`#39 <https://github.com/bluescarni/heyoka.py/pull/39>`__).
 
