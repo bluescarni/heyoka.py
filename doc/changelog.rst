@@ -3,6 +3,15 @@
 Changelog
 =========
 
+0.9.0 (unreleased)
+------------------
+
+New
+~~~
+
+- Initial exposition of the ``llvm_state`` class
+  (`#39 <https://github.com/bluescarni/heyoka.py/pull/39>`__).
+
 0.8.0 (2021-04-28)
 ------------------
 
