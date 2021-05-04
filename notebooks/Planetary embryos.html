@@ -403,6 +403,9 @@
 <span class="kn">import</span> <span class="nn">random</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
+<span class="c1"># Set the global random seed.</span>
+<span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">42</span><span class="p">)</span>
+
 <span class="c1"># Init the vector of masses with the</span>
 <span class="c1"># mass of the Sun.</span>
 <span class="n">masses</span> <span class="o">=</span> <span class="p">[</span><span class="mf">1.</span><span class="p">]</span>
@@ -588,7 +591,7 @@
 </div>
 <div class="cell_output docutils container">
 <script type="application/vnd.jupyter.widget-view+json">
-{"model_id": "dde706c0272946fab0397bcdb33bfb67", "version_major": 2, "version_minor": 0}
+{"model_id": "905b4ccdba434fe09ae34f1f6eb39047", "version_major": 2, "version_minor": 0}
 </script></div>
 </div>
 </div>
@@ -612,14 +615,13 @@
 <span class="n">plt</span><span class="o">.</span><span class="n">xscale</span><span class="p">(</span><span class="s1">&#39;log&#39;</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">yscale</span><span class="p">(</span><span class="s1">&#39;log&#39;</span><span class="p">)</span>
 
-<span class="n">logbins</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">logspace</span><span class="p">(</span><span class="o">-</span><span class="mi">6</span><span class="p">,</span> <span class="o">-</span><span class="mi">3</span><span class="p">,</span> <span class="mi">36</span><span class="p">)</span>
+<span class="n">logbins</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">logspace</span><span class="p">(</span><span class="o">-</span><span class="mi">8</span><span class="p">,</span> <span class="o">-</span><span class="mi">3</span><span class="p">,</span> <span class="mi">54</span><span class="p">)</span>
 
 <span class="n">vals</span><span class="p">,</span> <span class="n">bin_edges</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">ce_dist</span><span class="p">,</span> <span class="n">cumulative</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="n">logbins</span><span class="p">,</span> <span class="n">histtype</span><span class="o">=</span><span class="s1">&#39;step&#39;</span><span class="p">,</span> <span class="n">edgecolor</span><span class="o">=</span><span class="s1">&#39;None&#39;</span><span class="p">)</span>
 <span class="n">bin_centers</span> <span class="o">=</span> <span class="mf">0.5</span><span class="o">*</span><span class="p">(</span><span class="n">bin_edges</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span><span class="o">+</span><span class="n">bin_edges</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">bin_centers</span><span class="p">,</span> <span class="n">vals</span> <span class="p">,</span> <span class="s1">&#39;b-&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">bin_centers</span><span class="p">,</span> <span class="n">vals</span> <span class="p">,</span> <span class="s1">&#39;bx&#39;</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;Encounter distance (AU)&quot;</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;N of encounters (cumulative)&quot;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span>
 
 <span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
 </pre></div>
@@ -629,8 +631,8 @@
 <img alt="../_images/Planetary embryos_19_0.png" src="../_images/Planetary embryos_19_0.png" />
 </div>
 </div>
-<p>We can see how the closest encounter distance throughout the simulation was <span class="math notranslate nohighlight">\(\sim 1.3\cdot 10^{-6}\,\mathrm{AU}\)</span>, or circa <span class="math notranslate nohighlight">\(200\,\mathrm{km}\)</span>. The cumulative number of close encounters seem to increase with a power law.</p>
-<p>We can also take a look at the evolution of the Heliocentric orbital elements:</p>
+<p>We can see how the closest encounter distance throughout the simulation was <span class="math notranslate nohighlight">\(\sim 1.85\cdot 10^{-8}\,\mathrm{AU}\)</span>, or circa <span class="math notranslate nohighlight">\(2.8\,\mathrm{km}\)</span>. The cumulative number of close encounters seem to increase with a power law.</p>
+<p>Let us now take a look at the evolution of the Heliocentric orbital elements:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Extract the position and velocity vectors</span>
@@ -655,7 +657,21 @@
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">9</span><span class="p">))</span>
 
 <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">N_embryos</span><span class="p">):</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">t_grid</span><span class="p">,</span> <span class="n">out_kep</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="p">:,</span> <span class="mi">0</span><span class="p">])</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">t_grid</span><span class="p">,</span> <span class="n">out_kep</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="p">:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">alpha</span><span class="o">=.</span><span class="mi">7</span><span class="p">)</span>
+
+<span class="c1"># Isolate the closest encounters.</span>
+<span class="n">ce_filt</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">t</span><span class="p">:</span> <span class="n">t</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="mf">1e-5</span><span class="p">,</span> <span class="n">ce_list</span><span class="p">))</span>
+
+<span class="c1"># Add them to the plot.</span>
+<span class="k">for</span> <span class="n">tm</span><span class="p">,</span> <span class="n">idx_i</span><span class="p">,</span> <span class="n">idx_j</span><span class="p">,</span> <span class="n">dist</span> <span class="ow">in</span> <span class="n">ce_filt</span><span class="p">:</span>
+    <span class="n">tidx</span> <span class="o">=</span> <span class="n">t_grid</span><span class="o">.</span><span class="n">searchsorted</span><span class="p">(</span><span class="n">tm</span><span class="p">)</span>
+    <span class="n">ai</span> <span class="o">=</span> <span class="n">out_kep</span><span class="p">[</span><span class="n">idx_i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">tidx</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+    <span class="n">aj</span> <span class="o">=</span> <span class="n">out_kep</span><span class="p">[</span><span class="n">idx_j</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">tidx</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+    <span class="n">xvals</span> <span class="o">=</span> <span class="p">[</span><span class="n">tm</span><span class="p">,</span> <span class="n">tm</span><span class="p">]</span>
+    <span class="n">yvals</span> <span class="o">=</span> <span class="p">[</span><span class="n">ai</span><span class="p">,</span> <span class="n">aj</span><span class="p">]</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">xvals</span><span class="p">,</span> <span class="n">yvals</span><span class="p">,</span> <span class="s1">&#39;ko--&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">tm</span><span class="o">-</span><span class="mi">200</span><span class="p">,</span> <span class="nb">max</span><span class="p">(</span><span class="n">yvals</span><span class="p">)</span> <span class="o">+</span> <span class="o">.</span><span class="mi">01</span><span class="p">,</span>
+             <span class="s1">&#39;</span><span class="si">{:.2}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">dist</span><span class="p">),</span> <span class="n">fontsize</span><span class="o">=</span><span class="s1">&#39;large&#39;</span><span class="p">)</span>
 
 <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;$t$ (years)&quot;</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;$a\,\left(\mathrm</span><span class="si">{AU}</span><span class="s2">\right)$&quot;</span><span class="p">)</span>
@@ -668,6 +684,7 @@
 <img alt="../_images/Planetary embryos_23_0.png" src="../_images/Planetary embryos_23_0.png" />
 </div>
 </div>
+<p>In the plot we also added vertical dashed lines representing all encounters closer than <span class="math notranslate nohighlight">\(10^{-5}\,\mathrm{AU}\)</span> (or <span class="math notranslate nohighlight">\(\sim 1500\,\mathrm{km})\)</span>. The lines begin and end in correspondence of the embryos involved in the encounter, and the text above the lines represents the encounter distance.</p>
 <p>And here’s the plot for the eccentricities:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -675,7 +692,7 @@
 
 <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">N_embryos</span><span class="p">):</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">t_grid</span><span class="p">,</span> <span class="n">out_kep</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="p">:,</span> <span class="mi">1</span><span class="p">])</span>
-    
+
 <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;$t$ (years)&quot;</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;$e$&quot;</span><span class="p">)</span>
 
@@ -687,7 +704,7 @@
 <img alt="../_images/Planetary embryos_25_0.png" src="../_images/Planetary embryos_25_0.png" />
 </div>
 </div>
-<p>We can see how dynamical instabilities initially tend to involve pairs of embryos, but they quickly propagate to embryos in adjacent orbits almost like a chain reaction.</p>
+<p>We can see how dynamical instabilities initially tend to involve pairs of embryos, but they can quickly propagate to embryos in adjacent orbits in a “domino effect” fashion.</p>
 </div>
 </div>
 
