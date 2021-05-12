@@ -358,7 +358,7 @@ y^2 = \left(a - x \right)\cdot\left(x - b\right)\cdot\left(x^2 + c\right),
 <span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s2">&quot;figure.figsize&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">9</span><span class="p">,</span> <span class="mi">9</span><span class="p">)</span>
 
 <span class="c1"># The curve&#39;s parameters.</span>
-<span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">,</span> <span class="o">.</span><span class="mi">01</span>
+<span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">,</span> <span class="mf">.01</span>
 
 <span class="c1"># The centres&#39; positions on the x axis.</span>
 <span class="n">p0</span> <span class="o">=</span> <span class="mf">3.</span><span class="o">*</span><span class="n">a</span><span class="o">/</span><span class="mf">5.</span>
@@ -491,7 +491,7 @@ y^2 - \left(a - x \right)\cdot\left(x - b\right)\cdot\left(x^2 + c\right) = 0 \\
 <span class="n">ev_curve</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">t_event</span><span class="p">(</span><span class="n">eveq_curve</span><span class="p">,</span> <span class="n">callback</span><span class="o">=</span><span class="n">cb_curve</span><span class="p">,</span> <span class="n">direction</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">event_direction</span><span class="o">.</span><span class="n">positive</span><span class="p">)</span>
 
 <span class="c1"># Construct the integrator.</span>
-<span class="n">ta</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">taylor_adaptive</span><span class="p">(</span><span class="n">eqns</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">.</span><span class="mi">8</span><span class="p">],</span> <span class="n">t_events</span> <span class="o">=</span> <span class="p">[</span><span class="n">ev_0</span><span class="p">,</span> <span class="n">ev_1</span><span class="p">,</span> <span class="n">ev_curve</span><span class="p">])</span>
+<span class="n">ta</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">taylor_adaptive</span><span class="p">(</span><span class="n">eqns</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mf">.8</span><span class="p">],</span> <span class="n">t_events</span> <span class="o">=</span> <span class="p">[</span><span class="n">ev_0</span><span class="p">,</span> <span class="n">ev_1</span><span class="p">,</span> <span class="n">ev_curve</span><span class="p">])</span>
 </pre></div>
 </div>
 </div>

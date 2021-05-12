@@ -180,7 +180,7 @@
    "id": "8a0d615f",
    "metadata": {},
    "source": [
-    "Note that, contrary to the scalar integrator, in the batch integrator it is not possible to write directly into the array of time coordinates. The function ``set_time()`` must be used instead."
+    "Note that, contrary to the scalar integrator, in the batch integrator it is not possible to write directly into the array of time coordinates. The ``set_time()`` method must be used instead."
    ]
   },
   {
