@@ -9,7 +9,7 @@ Changelog
 New
 ~~~
 
-- Add the inverse of Kepler’s elliptic equation to the expression system
+- Add the inverse of Kepler's elliptic equation to the expression system
   (`#41 <https://github.com/bluescarni/heyoka.py/pull/41>`__).
 - New tutorial on planetary embryos
   (`#39 <https://github.com/bluescarni/heyoka.py/pull/39>`__).

@@ -34,6 +34,7 @@ Celestial mechanics and astrodynamics
   notebooks/Outer Solar System
   notebooks/Box control for Formation Flying Satellites
   notebooks/Comparing coordinate systems
+  notebooks/Inverting Kepler's equation in ODEs
   notebooks/Scaled outer Solar System
   notebooks/Planetary embryos
 
