@@ -694,6 +694,25 @@ class batch_integrator_test_case(_ut.TestCase):
         self.assertTrue(np.max(np.abs(sres[3][4] - bres[:,:,3]).flatten()) < 1e-14)
 
 
+class kepE_test_case(_ut.TestCase):
+    def runTest(self):
+        from . import kepE, with_real128, diff, make_vars, sin, cos
+        import numpy as np
+
+        x, y = make_vars("x", "y")
+        self.assertEqual(diff(kepE(x, y), x), sin(kepE(x, y)) / (1. - x * cos(kepE(x, y))))
+        self.assertEqual(diff(kepE(x, y), y), 1. / (1. - x * cos(kepE(x, y))))
+        self.assertEqual(diff(kepE(x, np.longdouble("1.1")), x), sin(kepE(x, np.longdouble("1.1"))) / (1. - x * cos(kepE(x, np.longdouble("1.1")))))
+        self.assertEqual(diff(kepE(np.longdouble("1.1"), y), y), 1. / (1. - np.longdouble("1.1") * cos(kepE(np.longdouble("1.1"), y))))
+
+        if not with_real128:
+            return
+
+        from mpmath import mpf
+
+        self.assertEqual(diff(kepE(x, mpf("1.1")), x), sin(kepE(x, mpf("1.1"))) / (1. - x * cos(kepE(x, mpf("1.1")))))
+        self.assertEqual(diff(kepE(mpf("1.1"), y), y), 1. / (1. - mpf("1.1") * cos(kepE(mpf("1.1"), y))))
+
 def run_test_suite():
     from . import make_nbody_sys, taylor_adaptive, with_real128
 
@@ -712,6 +731,7 @@ def run_test_suite():
     suite.addTest(event_detection_test_case())
     suite.addTest(expression_eval_test_case())
     suite.addTest(batch_integrator_test_case())
+    suite.addTest(kepE_test_case())
 
 
     test_result = _ut.TextTestRunner(verbosity=2).run(suite)
