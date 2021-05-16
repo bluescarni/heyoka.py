@@ -267,6 +267,21 @@ PYBIND11_MODULE(core, m)
     m.def("erf", &hey::erf);
     m.def("powi", &hey::powi);
 
+    // kepE().
+    m.def("kepE", [](hey::expression e, hey::expression M) { return hey::kepE(std::move(e), std::move(M)); });
+
+    m.def("kepE", [](double e, hey::expression M) { return hey::kepE(e, std::move(M)); });
+    m.def("kepE", [](long double e, hey::expression M) { return hey::kepE(e, std::move(M)); });
+#if defined(HEYOKA_HAVE_REAL128)
+    m.def("kepE", [](mppp::real128 e, hey::expression M) { return hey::kepE(e, std::move(M)); });
+#endif
+
+    m.def("kepE", [](hey::expression e, double M) { return hey::kepE(std::move(e), M); });
+    m.def("kepE", [](hey::expression e, long double M) { return hey::kepE(std::move(e), M); });
+#if defined(HEYOKA_HAVE_REAL128)
+    m.def("kepE", [](hey::expression e, mppp::real128 M) { return hey::kepE(std::move(e), M); });
+#endif
+
     // Time.
     m.attr("time") = hey::time;
 
