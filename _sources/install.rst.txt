@@ -9,7 +9,7 @@ heyoka.py has the following **mandatory** runtime dependencies:
 * `Python <https://www.python.org/>`__ 3.4 or later (Python 2.x is
   **not** supported),
 * the `heyoka C++ library <https://github.com/bluescarni/heyoka>`__,
-  version 0.8.0 or later,
+  version 0.9.0 or later,
 * the `{fmt} <https://fmt.dev/latest/index.html>`__ library,
 * the `spdlog <https://github.com/gabime/spdlog>`__ library,
 * `NumPy <https://numpy.org/>`__.
@@ -57,7 +57,7 @@ In order to install heyoka.py from source, you will need:
 * a `Python <https://www.python.org/>`__ installation,
 * `pybind11 <https://github.com/pybind/pybind11>`__ (version >= 2.6),
 * the `heyoka C++ library <https://github.com/bluescarni/heyoka>`__,
-  version 0.8.0 or later,
+  version 0.9.0 or later,
 * the `{fmt} <https://fmt.dev/latest/index.html>`__ library,
 * the `spdlog <https://github.com/gabime/spdlog>`__ library,
 * the `Boost libraries <https://www.boost.org/>`__,

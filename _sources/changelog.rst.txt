@@ -9,10 +9,19 @@ Changelog
 New
 ~~~
 
+- Add the inverse of Kepler's elliptic equation to the expression system
+  (`#41 <https://github.com/bluescarni/heyoka.py/pull/41>`__).
 - New tutorial on planetary embryos
   (`#39 <https://github.com/bluescarni/heyoka.py/pull/39>`__).
 - Initial exposition of the ``llvm_state`` class
   (`#39 <https://github.com/bluescarni/heyoka.py/pull/39>`__).
+
+Changes
+~~~~~~~
+
+- heyoka.py now requires at least version 0.9.0 of the
+  heyoka C++ library
+  (`#41 <https://github.com/bluescarni/heyoka.py/pull/41>`__).
 
 0.8.0 (2021-04-28)
 ------------------

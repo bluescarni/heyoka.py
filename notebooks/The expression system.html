@@ -205,6 +205,11 @@
     </a>
    </li>
    <li class="toctree-l2">
+    <a class="reference internal" href="Inverting%20Kepler%27s%20equation%20in%20ODEs.html">
+     Inverting Kepler’s equation in ODEs
+    </a>
+   </li>
+   <li class="toctree-l2">
     <a class="reference internal" href="Scaled%20outer%20Solar%20System.html">
      The scaled outer Solar System
     </a>
@@ -350,7 +355,7 @@ needs to be able to represent the right-hand side of an ODE system in symbolic
 form in order to be able to compute its high-order derivatives via automatic
 differentiation. heyoka.py represents generic mathematical expressions
 via a simple <a class="reference external" href="https://en.wikipedia.org/wiki/Abstract_syntax_tree">abstract syntax tree (AST)</a>
-in which the internal nodes are either mathematical operators or n-ary functions,
+in which the internal nodes are n-ary functions
 and the leaf nodes can be:</p>
 <ul class="simple">
 <li><p>symbolic variables,</p></li>
@@ -422,7 +427,8 @@ also supports the following elementary functions (with more to come in the near 
 <li><p>the basic trigonometric and hyperbolic functions, and their inverse counterparts,</p></li>
 <li><p>the natural logarithm and exponential,</p></li>
 <li><p>the standard logistic function (sigmoid),</p></li>
-<li><p>the error function.</p></li>
+<li><p>the error function,</p></li>
+<li><p>the inverse of Kepler’s elliptic equation.</p></li>
 </ul>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
