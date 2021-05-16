@@ -37,7 +37,7 @@
     "\n",
     "Because Kepler's equation is trascendental, it cannot be inverted to yield an explicit expression for $E$ in terms of elementary functions. In the [previous tutorial](<./Comparing coordinate systems.ipynb>) we worked around this issue by leaving $E$ as an unspecified function in the Hamiltonian; we then augmented Hamilton's equations via the derivatives of $E$ (which can be formulated explicitly) and numerically solved the augmented system of differential equations.\n",
     "\n",
-    "Here we will employ a different approach, and we will use instead the function ``kepE()`` provided by heyoka.py's expression system. As the name suggests, ``kepE()`` represents symbolically the inversion of Kepler's elliptic equation. That is, ``kepE(e, M)`` is the binvariate function $E\\left(e,M\\right)$ implicitly defined by Kepler's elliptic equation:\n",
+    "Here we will employ a different approach, and we will use instead the function ``kepE()`` provided by heyoka.py's expression system. As the name suggests, ``kepE()`` represents symbolically the inversion of Kepler's elliptic equation. That is, ``kepE(e, M)`` is the bivariate function $E\\left(e,M\\right)$ implicitly defined by Kepler's elliptic equation:\n",
     "\n",
     "$$\n",
     "M = E - e \\sin E.\n",
