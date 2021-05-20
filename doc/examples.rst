@@ -37,6 +37,7 @@ Celestial mechanics and astrodynamics
   notebooks/Inverting Kepler's equation in ODEs
   notebooks/Scaled outer Solar System
   notebooks/Planetary embryos
+  notebooks/mercury_precession
 
 Others
 ---------------
