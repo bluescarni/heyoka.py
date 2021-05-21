@@ -22,6 +22,8 @@ heyoka.py
     <a href="https://github.com/bluescarni/heyoka.py/issues/new/choose">Report bug</a>
     ·
     <a href="https://github.com/bluescarni/heyoka.py/issues/new/choose">Request feature</a>
+    ·
+    <a href="https://github.com/bluescarni/heyoka.py/discussions">Discuss</a>
   </p>
 </p>
 
