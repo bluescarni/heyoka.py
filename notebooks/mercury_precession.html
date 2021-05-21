@@ -1,0 +1,500 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mercury’s relativistic precession &#8212; heyoka.py 0.9.0 documentation</title>
+    
+  <link href="../_static/css/theme.css" rel="stylesheet" />
+  <link href="../_static/css/index.c5995385ac14fb8791e8eb36b4908be2.css" rel="stylesheet" />
+
+    
+  <link rel="stylesheet"
+    href="../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    
+      
+
+    
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/sphinx-book-theme.acff12b8f9c144ce68a297486a2fa670.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.css" />
+    
+  <link rel="preload" as="script" href="../_static/js/index.1c5a1a01449ed65a7b51.js">
+
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/togglebutton.js"></script>
+    <script >var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    <script src="../_static/sphinx-book-theme.12a9622fbb08dcb3a2a40b2c02b83a57.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["\\(", "\\)"]], "displayMath": [["\\[", "\\]"]], "processRefs": false, "processEnvironments": false}})</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="The variational equations" href="The%20variational%20equations.html" />
+    <link rel="prev" title="Planetary embryos in the inner Solar System" href="Planetary%20embryos.html" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="en" />
+    
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
+    
+    <div class="container-fluid" id="banner"></div>
+
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+<div class="col-12 col-md-3 bd-sidebar site-navigation show" id="site-navigation">
+    
+        <div class="navbar-brand-box">
+    <a class="navbar-brand text-wrap" href="../index.html">
+      
+      <img src="../_static/white_logo.png" class="logo" alt="logo">
+      
+      
+      <h1 class="site-logo" id="site-title">heyoka.py 0.9.0 documentation</h1>
+      
+    </a>
+</div><form class="bd-search d-flex align-items-center" action="../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+    <div class="bd-toc-item active">
+        <p class="caption">
+ <span class="caption-text">
+  Contents
+ </span>
+</p>
+<ul class="current nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../install.html">
+   Installation
+  </a>
+ </li>
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="../tutorials.html">
+   Tutorials
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/>
+  <label for="toctree-checkbox-1">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../tut_taylor_method.html">
+     Taylor’s method
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="The%20expression%20system.html">
+     The expression system
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="The%20adaptive%20integrator.html">
+     The adaptive integrator
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="Customising%20the%20adaptive%20integrator.html">
+     Customising the adaptive integrator
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="ODEs%20with%20parameters.html">
+     ODEs with parameters
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="Non-autonomous%20systems.html">
+     Non-autonomous systems
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="Dense%20output.html">
+     Dense output
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="Batch%20mode%20overview.html">
+     Batch mode
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="Event%20detection.html">
+     Event detection overview
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="Sampling%20events.html">
+     Sampling events
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="Poincar%C3%A9%20sections.html">
+     Poincaré sections
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="The%20Keplerian%20billiard.html">
+     The Keplerian billiard
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="The%20two-fixed%20elliptic%20billiard.html">
+     The two-fixed centres elliptic billiard
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="The%20wavy%20ramp.html">
+     The wavy ramp
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="The%20Maxwell-Boltzmann%20distribution.html">
+     The Maxwell-Boltzmann distribution
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1 current active has-children">
+  <a class="reference internal" href="../examples.html">
+   Examples
+  </a>
+  <input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/>
+  <label for="toctree-checkbox-2">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul class="current">
+   <li class="toctree-l2">
+    <a class="reference internal" href="The%20restricted%20three-body%20problem.html">
+     The restricted three-body problem
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="Long%20term%20stability%20of%20Trappist-1.html">
+     Long term stability of N-body simulations: the case of Trappist-1
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="Outer%20Solar%20System.html">
+     Brouwer’s law in the outer Solar System
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="Box%20control%20for%20Formation%20Flying%20Satellites.html">
+     Box control in satellite Formation Flying
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="Comparing%20coordinate%20systems.html">
+     Comparing coordinate systems
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="Inverting%20Kepler%27s%20equation%20in%20ODEs.html">
+     Inverting Kepler’s equation in ODEs
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="Scaled%20outer%20Solar%20System.html">
+     The scaled outer Solar System
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="Planetary%20embryos.html">
+     Planetary embryos in the inner Solar System
+    </a>
+   </li>
+   <li class="toctree-l2 current active">
+    <a class="current reference internal" href="#">
+     Mercury’s relativistic precession
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="The%20variational%20equations.html">
+     The variational equations
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="Optimal%20Control%20of%20the%20Lotka-Volterra%20equations.html">
+     Optimal Control of the Lotka-Volterra equations
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../changelog.html">
+   Changelog
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../breaking_changes.html">
+   Breaking changes
+  </a>
+ </li>
+</ul>
+
+    </div>
+</nav> <!-- To handle the deprecated key -->
+
+<div class="navbar_extra_footer">
+  Theme by the <a href="https://ebp.jupyterbook.org">Executable Book Project</a>
+</div>
+
+</div>
+
+
+          
+
+
+          
+<main class="col py-md-3 pl-md-4 bd-content overflow-auto" role="main">
+    
+    <div class="topbar container-xl fixed-top">
+    <div class="topbar-contents row">
+        <div class="col-12 col-md-3 bd-topbar-whitespace site-navigation show"></div>
+        <div class="col pl-md-4 topbar-main">
+            
+            <button id="navbar-toggler" class="navbar-toggler ml-0" type="button" data-toggle="collapse"
+                data-toggle="tooltip" data-placement="bottom" data-target=".site-navigation" aria-controls="navbar-menu"
+                aria-expanded="true" aria-label="Toggle navigation" aria-controls="site-navigation"
+                title="Toggle navigation" data-toggle="tooltip" data-placement="left">
+                <i class="fas fa-bars"></i>
+                <i class="fas fa-arrow-left"></i>
+                <i class="fas fa-arrow-up"></i>
+            </button>
+            
+            
+<div class="dropdown-buttons-trigger">
+    <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn" aria-label="Download this page"><i
+            class="fas fa-download"></i></button>
+
+    <div class="dropdown-buttons">
+        <!-- ipynb file if we had a myst markdown file -->
+        
+        <!-- Download raw file -->
+        <a class="dropdown-buttons" href="../_sources/notebooks/mercury_precession.ipynb.txt"><button type="button"
+                class="btn btn-secondary topbarbtn" title="Download source file" data-toggle="tooltip"
+                data-placement="left">.ipynb</button></a>
+        <!-- Download PDF via print -->
+        <button type="button" id="download-print" class="btn btn-secondary topbarbtn" title="Print to PDF"
+            onClick="window.print()" data-toggle="tooltip" data-placement="left">.pdf</button>
+    </div>
+</div>
+
+            <!-- Source interaction buttons -->
+
+<div class="dropdown-buttons-trigger">
+    <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn"
+        aria-label="Connect with source repository"><i class="fab fa-github"></i></button>
+    <div class="dropdown-buttons sourcebuttons">
+        <a class="repository-button"
+            href="https://github.com/bluescarni/heyoka.py"><button type="button" class="btn btn-secondary topbarbtn"
+                data-toggle="tooltip" data-placement="left" title="Source repository"><i
+                    class="fab fa-github"></i>repository</button></a>
+        <a class="issues-button"
+            href="https://github.com/bluescarni/heyoka.py/issues/new?title=Issue%20on%20page%20%2Fnotebooks/mercury_precession.html&body=Your%20issue%20content%20here."><button
+                type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip" data-placement="left"
+                title="Open an issue"><i class="fas fa-lightbulb"></i>open issue</button></a>
+        
+    </div>
+</div>
+
+            <!-- Full screen (wrap in <a> to have style consistency -->
+
+<a class="full-screen-button"><button type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip"
+        data-placement="bottom" onclick="toggleFullScreen()" aria-label="Fullscreen mode"
+        title="Fullscreen mode"><i
+            class="fas fa-expand"></i></button></a>
+
+            <!-- Launch buttons -->
+
+<div class="dropdown-buttons-trigger">
+    <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn"
+        aria-label="Launch interactive content"><i class="fas fa-rocket"></i></button>
+    <div class="dropdown-buttons">
+        
+        <a class="binder-button" href="https://mybinder.org/v2/gh/bluescarni/heyoka.py/main?urlpath=tree/doc/notebooks/mercury_precession.ipynb"><button type="button"
+                class="btn btn-secondary topbarbtn" title="Launch Binder" data-toggle="tooltip"
+                data-placement="left"><img class="binder-button-logo"
+                    src="../_static/images/logo_binder.svg"
+                    alt="Interact on binder">Binder</button></a>
+        
+        
+        
+        
+    </div>
+</div>
+
+        </div>
+
+        <!-- Table of contents -->
+        <div class="d-none d-md-block col-md-2 bd-toc show">
+            
+        </div>
+    </div>
+</div>
+    <div id="main-content" class="row">
+        <div class="col-12 col-md-9 pl-md-3 pr-md-0">
+        
+              <div>
+                
+  <div class="section" id="mercury-s-relativistic-precession">
+<h1>Mercury’s relativistic precession<a class="headerlink" href="#mercury-s-relativistic-precession" title="Permalink to this headline">¶</a></h1>
+<p>One of the early successes of <a class="reference external" href="https://en.wikipedia.org/wiki/General_relativity">general relativity</a> (GR) was the explanation of an <a class="reference external" href="https://en.wikipedia.org/wiki/Mercury_(planet)#Advance_of_perihelion">excess in the precession of Mercury’s perihelion</a> that could not be accounted for via Newtonian gravity. In this tutorial
+we will show how we can reproduce this classical result with heyoka.py.</p>
+<p>In the weak gravitational field regime, the formulation of GR can be greatly simplified via the formalism of <a class="reference external" href="https://en.wikipedia.org/wiki/Post-Newtonian_expansion">post-Newtonian approximations</a> (PN). In the specific case of Mercury’s relativistic perihelion precession, a first-order post-Newtonian expansion of the full GR equations is sufficient. The 1PN Hamiltonian of a test particle orbiting a spherical mass reads, in Cartesian coordinates:</p>
+<div class="math notranslate nohighlight">
+\[
+\mathcal{H}_\mathrm{1PN} \left(v_x, v_y, v_z, x, y, z \right) = \frac{1}{2}v^2-\frac{\mu}{r} + \varepsilon \left(\frac{\mu^2}{2r^2} -\frac{1}{8}v^4-\frac{3}{2}\frac{\mu v^2}{r} \right),
+\]</div>
+<p>where <span class="math notranslate nohighlight">\(\varepsilon = 1/c^2\)</span>, <span class="math notranslate nohighlight">\(v=\sqrt{v_x^2+v_y^2+v_z^2}\)</span>, <span class="math notranslate nohighlight">\(r=\sqrt{x^2+y^2+z^2}\)</span> and <span class="math notranslate nohighlight">\(\mu=GM\)</span> is the gravitational parameter of the system. In other words, <span class="math notranslate nohighlight">\(\mathcal{H}_\mathrm{1PN}\)</span> is a Keplerian one-body Hamiltonian augmented by a velocity-dependent perturbation of magnitude <span class="math notranslate nohighlight">\(\varepsilon\)</span>.</p>
+<p>Let us write down the Hamiltonian using heyoka.py’s expression system:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">heyoka</span> <span class="k">as</span> <span class="nn">hy</span>
+
+<span class="c1"># Create the symbolic variables.</span>
+<span class="n">vx</span><span class="p">,</span> <span class="n">vy</span><span class="p">,</span> <span class="n">vz</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">make_vars</span><span class="p">(</span><span class="s2">&quot;vx&quot;</span><span class="p">,</span> <span class="s2">&quot;vy&quot;</span><span class="p">,</span> <span class="s2">&quot;vz&quot;</span><span class="p">,</span> <span class="s2">&quot;x&quot;</span><span class="p">,</span> <span class="s2">&quot;y&quot;</span><span class="p">,</span> <span class="s2">&quot;z&quot;</span><span class="p">)</span>
+
+<span class="c1"># mu and eps constants.</span>
+<span class="n">mu</span> <span class="o">=</span> <span class="mf">0.01720209895</span> <span class="o">*</span> <span class="mf">0.01720209895</span> <span class="o">*</span> <span class="mi">365</span> <span class="o">*</span> <span class="mi">365</span>
+<span class="n">eps</span> <span class="o">=</span> <span class="mf">2.5037803127808595e-10</span>
+
+<span class="c1"># Auxiliary quantities.</span>
+<span class="n">v2</span> <span class="o">=</span> <span class="n">vx</span><span class="o">*</span><span class="n">vx</span> <span class="o">+</span> <span class="n">vy</span><span class="o">*</span><span class="n">vy</span> <span class="o">+</span> <span class="n">vz</span><span class="o">*</span><span class="n">vz</span>
+<span class="n">r2</span> <span class="o">=</span> <span class="n">x</span><span class="o">*</span><span class="n">x</span> <span class="o">+</span> <span class="n">y</span><span class="o">*</span><span class="n">y</span> <span class="o">+</span> <span class="n">z</span><span class="o">*</span><span class="n">z</span>
+<span class="n">r</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">r2</span><span class="p">)</span>
+
+<span class="c1"># Define the Hamiltonian.</span>
+<span class="n">Ham</span> <span class="o">=</span> <span class="mf">1.</span><span class="o">/</span><span class="mi">2</span><span class="o">*</span><span class="n">v2</span> <span class="o">-</span> <span class="n">mu</span><span class="o">/</span><span class="n">r</span> <span class="o">+</span> <span class="n">eps</span> <span class="o">*</span> <span class="p">(</span><span class="n">mu</span><span class="o">**</span><span class="mi">2</span><span class="o">/</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">r2</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="o">/</span><span class="mf">8.</span><span class="o">*</span><span class="n">v2</span><span class="o">*</span><span class="n">v2</span> <span class="o">-</span> <span class="mf">3.</span><span class="o">/</span><span class="mf">2.</span><span class="o">*</span><span class="n">mu</span><span class="o">*</span><span class="n">v2</span><span class="o">/</span><span class="n">r</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>As usual, we are using Solar masses, astronomical units and years as units of measure.</p>
+<p>Let us now define the initial conditions for Mercury’s orbit. Semi-major axis, eccentricity and inclination are those of Mercury’s current orbit. The initial argument of perihelion <span class="math notranslate nohighlight">\(\omega_0\)</span> is set to a value of 1:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pykep</span> <span class="k">as</span> <span class="nn">pk</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="c1"># Mercury&#39;s initial position and velocity.</span>
+<span class="n">r0</span><span class="p">,</span> <span class="n">v0</span> <span class="o">=</span> <span class="n">pk</span><span class="o">.</span><span class="n">par2ic</span><span class="p">([</span><span class="mf">0.387098</span><span class="p">,</span> <span class="mf">0.205630</span><span class="p">,</span> <span class="mi">7</span><span class="o">*</span><span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mi">360</span><span class="p">,</span> <span class="mf">0.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">],</span> <span class="n">mu</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>We can now proceed to the creation of the integrator object:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ta</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">taylor_adaptive</span><span class="p">(</span>
+    <span class="c1"># Hamilton&#39;s equations.</span>
+    <span class="p">[(</span><span class="n">vx</span><span class="p">,</span> <span class="o">-</span><span class="n">hy</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">Ham</span><span class="p">,</span> <span class="n">x</span><span class="p">)),</span>
+     <span class="p">(</span><span class="n">vy</span><span class="p">,</span> <span class="o">-</span><span class="n">hy</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">Ham</span><span class="p">,</span> <span class="n">y</span><span class="p">)),</span>
+     <span class="p">(</span><span class="n">vz</span><span class="p">,</span> <span class="o">-</span><span class="n">hy</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">Ham</span><span class="p">,</span> <span class="n">z</span><span class="p">)),</span>
+     <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">hy</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">Ham</span><span class="p">,</span> <span class="n">vx</span><span class="p">)),</span>
+     <span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">hy</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">Ham</span><span class="p">,</span> <span class="n">vy</span><span class="p">)),</span>
+     <span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="n">hy</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">Ham</span><span class="p">,</span> <span class="n">vz</span><span class="p">))],</span>
+    <span class="c1"># Initial conditions.</span>
+    <span class="n">v0</span> <span class="o">+</span> <span class="n">r0</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Let us now numerically integrate for 100 years:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">tgrid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">1000</span><span class="p">)</span>
+
+<span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">out</span> <span class="o">=</span> <span class="n">ta</span><span class="o">.</span><span class="n">propagate_grid</span><span class="p">(</span><span class="n">tgrid</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>We can now convert the result of the numerical integration to Keplerian orbital elements:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">kep_out</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">pk</span><span class="o">.</span><span class="n">ic2par</span><span class="p">(</span><span class="n">_</span><span class="p">[</span><span class="mi">3</span><span class="p">:],</span> <span class="n">_</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">3</span><span class="p">],</span> <span class="n">mu</span> <span class="o">=</span> <span class="n">mu</span><span class="p">)</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">out</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>We are now ready to visualise the results. GR predicts for Mercury a relativistic precession of <span class="math notranslate nohighlight">\(42.98^{\prime\prime}\)</span> per century, or roughly <span class="math notranslate nohighlight">\(2.08373\times 10^{-4}\,\mathrm{rad}\)</span> per century. Let us then plot the time evolution of the argument of perihelion and compare it to the theoretical prediction:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%</span><span class="k">matplotlib</span> inline
+<span class="kn">from</span> <span class="nn">matplotlib.pylab</span> <span class="kn">import</span> <span class="n">plt</span>
+
+<span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">tgrid</span><span class="p">,</span> <span class="n">kep_out</span><span class="p">[:,</span> <span class="mi">4</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Numerical integration&quot;</span><span class="p">)</span>
+<span class="c1"># NOTE: offset slightly the line for the theoretical</span>
+<span class="c1"># prediction in order to improve the readability.</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">tgrid</span><span class="p">,</span> <span class="mf">1.0000035</span> <span class="o">+</span> <span class="mf">2.08373e-4</span> <span class="o">*</span> <span class="n">tgrid</span><span class="o">/</span><span class="mf">100.</span><span class="p">,</span> <span class="s1">&#39;k--&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Theoretical prediction&quot;</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;Time (years)&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;$\omega$&quot;</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/mercury_precession_11_0.png" src="../_images/mercury_precession_11_0.png" />
+</div>
+</div>
+<p>Note that we added a slight offset to the theoretical prediction, because otherwise the two lines would have been overlapping, resulting in an unreadable graph.</p>
+<p>We can see how the numerically-computed precession matches very well the theoretical prediction. Note also how, in addition to the long-term linear behaviour, the numerical integration also highlights small short-term periodic oscillations which are also due to relativistic effects.</p>
+</div>
+
+
+              </div>
+              
+        
+        <div class='prev-next-bottom'>
+            
+    <a class='left-prev' id="prev-link" href="Planetary%20embryos.html" title="previous page">Planetary embryos in the inner Solar System</a>
+    <a class='right-next' id="next-link" href="The%20variational%20equations.html" title="next page">The variational equations</a>
+
+        </div>
+        
+        </div>
+    </div>
+    <footer class="footer mt-5 mt-md-0">
+    <div class="container">
+      <p>
+        
+          By Francesco Biscani and Dario Izzo<br/>
+        
+            &copy; Copyright 2020, 2021, Francesco Biscani and Dario Izzo.<br/>
+      </p>
+    </div>
+  </footer>
+</main>
+
+
+      </div>
+    </div>
+  
+  <script src="../_static/js/index.1c5a1a01449ed65a7b51.js"></script>
+
+  
+  </body>
+</html>
