@@ -11,7 +11,7 @@ import unittest as _ut
 
 class taylor_add_jet_test_case(_ut.TestCase):
     def runTest(self):
-        from . import taylor_add_jet, make_vars, sin, taylor_adaptive, par, time, taylor_adaptive_batch, with_real128
+        from . import taylor_add_jet, make_vars, sin, taylor_adaptive, par, time, taylor_adaptive_batch, with_real128, tpoly
         import numpy as np
 
         x, v = make_vars("x", "v")
@@ -19,6 +19,7 @@ class taylor_add_jet_test_case(_ut.TestCase):
         sys = [(x, v), (v, -9.8 * sin(x))]
         sys_par = [(x, v), (v, -par[0] * sin(x))]
         sys_par_t = [(x, v), (v, -par[0] * sin(x) + time)]
+        sys_par_t2 = [(x, v), (v, -par[0] * sin(x) + tpoly(par[1], par[6]))]
 
         fp_types = [("double", float), ("long double", np.longdouble)]
 
@@ -27,6 +28,7 @@ class taylor_add_jet_test_case(_ut.TestCase):
             # with the Taylor coefficients.
             init_state = [fp_t(0.05), fp_t(0.025)]
             pars = [fp_t(-9.8)]
+            pars2 = [fp_t(-9.8), fp_t(.01), fp_t(.02), fp_t(.03), fp_t(.04), fp_t(.05), fp_t(.06)]
 
             ta = taylor_adaptive(sys, init_state, tol=fp_t(1e-9), fp_type=desc)
 
@@ -79,6 +81,21 @@ class taylor_add_jet_test_case(_ut.TestCase):
             jet_par_t(st, pars=par_arr, time=time_arr)
 
             self.assertTrue(np.all(ta_par_t.tc[:, :6].transpose() == st))
+
+            ta_par_t2 = taylor_adaptive(
+                sys_par_t2, init_state, tol=fp_t(1e-9), fp_type=desc, pars=pars2)
+            ta_par_t2.time = fp_t(0.01)
+
+            jet_par_t2 = taylor_add_jet(sys_par_t2, 5, fp_type=desc)
+            st = np.full((6, 2), fp_t(0), dtype=fp_t)
+            st[0] = init_state
+            par_arr2 = np.array(pars2, dtype=fp_t)
+            time_arr = np.full((1,), fp_t(0.01), dtype=fp_t)
+
+            ta_par_t2.step(write_tc=True)
+            jet_par_t2(st, pars=par_arr2, time=time_arr)
+
+            self.assertTrue(np.all(ta_par_t2.tc[:, :6].transpose() == st))
 
             # Failure modes.
 
@@ -134,6 +151,11 @@ class taylor_add_jet_test_case(_ut.TestCase):
             # Time needed but not provided.
             with self.assertRaises(ValueError) as cm:
                 jet_par_t(st, pars=par_arr)
+            self.assertTrue("Invalid vectors passed to a function for the computation of the jet of "
+                            "Taylor derivatives: the ODE system is non-autonomous, but no time array was "
+                            "passed as input argument" in str(cm.exception))
+            with self.assertRaises(ValueError) as cm:
+                jet_par_t2(st, pars=par_arr2)
             self.assertTrue("Invalid vectors passed to a function for the computation of the jet of "
                             "Taylor derivatives: the ODE system is non-autonomous, but no time array was "
                             "passed as input argument" in str(cm.exception))

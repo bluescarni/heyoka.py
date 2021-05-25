@@ -285,6 +285,9 @@ PYBIND11_MODULE(core, m)
     // Time.
     m.attr("time") = hey::time;
 
+    // tpoly().
+    m.def("tpoly", &hey::tpoly);
+
     // Diff.
     m.def("diff", [](const hey::expression &ex, const std::string &s) { return hey::diff(ex, s); });
     m.def("diff", [](const hey::expression &ex, const hey::expression &var) { return hey::diff(ex, var); });
