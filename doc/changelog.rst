@@ -10,7 +10,7 @@ New
 ~~~
 
 - Add time polynomials to the expression system
-  (`#43 <https://github.com/bluescarni/heyoka.py/pull/43>`__).
+  (`#44 <https://github.com/bluescarni/heyoka.py/pull/44>`__).
 - New tutorial on Mercury's relativistic precession
   (`#42 <https://github.com/bluescarni/heyoka.py/pull/42>`__).
 - Add the inverse of Kepler's elliptic equation to the expression system
