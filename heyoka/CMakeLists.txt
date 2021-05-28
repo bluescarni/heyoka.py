@@ -21,6 +21,7 @@ Python3_add_library(core MODULE WITH_SOABI
     taylor_expose_integrator.cpp
     taylor_expose_events.cpp
     logging.cpp
+    setup_sympy.cpp
 )
 
 target_link_libraries(core PRIVATE heyoka::heyoka fmt::fmt spdlog::spdlog)
