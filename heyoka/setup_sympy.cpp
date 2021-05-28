@@ -30,7 +30,6 @@
 #if defined(HEYOKA_HAVE_REAL128)
 
 #include <mp++/extra/pybind11.hpp>
-#include <mp++/real128.hpp>
 
 #endif
 
@@ -99,7 +98,9 @@ py::object to_sympy_impl(const hy::func &f)
         py_throw(PyExc_TypeError, ("Cannot convert to sympy the heyoka function {}"_format(f)).c_str());
     }
 
-    if (auto pobj = std::get_if<py::object>(&it->second)) {
+    if (auto pobj = std::get_if<0>(&it->second)) {
+        // We can use directly a sympy function. Convert
+        // the function arguments and invoke the function.
         py::list args;
         for (const auto &arg : f.args()) {
             args.append(to_sympy(arg));
@@ -107,7 +108,8 @@ py::object to_sympy_impl(const hy::func &f)
 
         return (*pobj)(*args);
     } else {
-        return std::get<std::function<py::object(const hy::func &)>>(it->second)(f);
+        // Cannot use directly a sympy function, invoke the wrapper.
+        return std::get<1>(it->second)(f);
     }
 }
 
@@ -175,6 +177,7 @@ void setup_sympy(py::module &m)
         };
 
         // kepE.
+        // NOTE: this will remain an unevaluated binary function.
         auto sympy_kepE = py::object(detail::spy->attr("Function")("kepE"));
         detail::fmap[typeid(hy::detail::kepE_impl)] = sympy_kepE;
 
@@ -201,10 +204,12 @@ void setup_sympy(py::module &m)
         };
 
         // time.
+        // NOTE: this will remain an unevaluated nullary function.
         auto sympy_time = py::object(detail::spy->attr("Function")("time"));
         detail::fmap[typeid(hy::detail::time_impl)] = sympy_time;
 
         // tpoly.
+        // NOTE: this will remain an unevaluated binary function.
         auto sympy_tpoly = py::object(detail::spy->attr("Function")("tpoly"));
         detail::fmap[typeid(hy::detail::tpoly_impl)] = sympy_tpoly;
 
