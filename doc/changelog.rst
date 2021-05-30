@@ -3,6 +3,22 @@
 Changelog
 =========
 
+0.10.0 (unreleased)
+-------------------
+
+New
+~~~
+
+- heyoka.py expressions can now be converted to/from sympy expressions
+  (`#46 <https://github.com/bluescarni/heyoka.py/pull/46>`__).
+
+Changes
+~~~~~~~
+
+- heyoka.py now requires at least version 0.10.0 of the
+  heyoka C++ library
+  (`#46 <https://github.com/bluescarni/heyoka.py/pull/46>`__).
+
 0.9.0 (2021-05-25)
 ------------------
 
