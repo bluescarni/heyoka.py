@@ -51,6 +51,7 @@
 #include "common_utils.hpp"
 #include "logging.hpp"
 #include "long_double_caster.hpp"
+#include "setup_sympy.hpp"
 #include "taylor_add_jet.hpp"
 #include "taylor_expose_events.hpp"
 #include "taylor_expose_integrator.hpp"
@@ -234,8 +235,9 @@ PYBIND11_MODULE(core, m)
                            const std::vector<mppp::real128> &pars) { return hey::eval<mppp::real128>(e, map, pars); });
 #endif
 
-    // Pairwise sum.
-    m.def("pairwise_sum", [](const std::vector<hey::expression> &v_ex) { return hey::pairwise_sum(v_ex); });
+    // Pairwise sum/prod.
+    m.def("pairwise_sum", [](std::vector<hey::expression> v_ex) { return hey::pairwise_sum(std::move(v_ex)); });
+    m.def("pairwise_prod", [](std::vector<hey::expression> v_ex) { return hey::pairwise_prod(std::move(v_ex)); });
 
     // make_vars() helper.
     m.def("make_vars", [](py::args v_str) {
@@ -768,6 +770,9 @@ PYBIND11_MODULE(core, m)
 
     // Expose the llvm state getter.
     heypy::expose_llvm_state_property(tabd_c);
+
+    // Setup the sympy integration bits.
+    heypy::setup_sympy(m);
 }
 
 #if defined(__clang__)

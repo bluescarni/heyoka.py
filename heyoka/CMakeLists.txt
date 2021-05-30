@@ -2,7 +2,7 @@
 configure_file("${CMAKE_CURRENT_SOURCE_DIR}/_version.py.in" "${CMAKE_CURRENT_BINARY_DIR}/_version.py" @ONLY)
 
 # The list of heyoka.py's Python files.
-set(HEYOKA_PY_PYTHON_FILES __init__.py test.py)
+set(HEYOKA_PY_PYTHON_FILES __init__.py test.py _sympy_utils.py)
 
 # Copy the python files in the current binary dir,
 # so that we can import heyoka from the build dir.
@@ -21,6 +21,7 @@ Python3_add_library(core MODULE WITH_SOABI
     taylor_expose_integrator.cpp
     taylor_expose_events.cpp
     logging.cpp
+    setup_sympy.cpp
 )
 
 target_link_libraries(core PRIVATE heyoka::heyoka fmt::fmt spdlog::spdlog)
