@@ -904,6 +904,10 @@ class sympy_test_case(_ut.TestCase):
         self.assertEqual(core.tpoly(core.par[0], core.par[10]), from_sympy(spy.Function("heyoka_tpoly")(spy.Symbol("par[0]"), spy.Symbol("par[10]"))))
         self.assertEqual(to_sympy(core.tpoly(core.par[0], core.par[10])), spy.Function("heyoka_tpoly")(spy.Symbol("par[0]"), spy.Symbol("par[10]")))
 
+        with self.assertRaises(TypeError) as cm:
+            from_sympy(abs(x))
+        self.assertTrue("Unable to convert the sympy function" in str(cm.exception))
+
 def run_test_suite():
     from . import make_nbody_sys, taylor_adaptive, with_real128
 

@@ -62,7 +62,7 @@ namespace
 // or to callbacks for the creation of sympy wrappers.
 std::unordered_map<std::type_index, std::variant<py::object, std::function<py::object(const hy::func &)>>> fmap;
 
-// Global variables that will contain the sympy module,
+// Global variable that will contain the sympy module,
 // if available.
 std::optional<py::object> spy;
 
@@ -92,6 +92,7 @@ py::object to_sympy_impl(const hy::number &num)
         [](const auto &x) {
             using std::isfinite;
 
+            // NOTE: forbid conversion if the value is not finite.
             if (!isfinite(x)) {
                 using namespace fmt::literals;
                 py_throw(PyExc_ValueError, ("Cannot convert to sympy the nonfinite number {}"_format(x)).c_str());
