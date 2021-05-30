@@ -235,8 +235,9 @@ PYBIND11_MODULE(core, m)
                            const std::vector<mppp::real128> &pars) { return hey::eval<mppp::real128>(e, map, pars); });
 #endif
 
-    // Pairwise sum.
-    m.def("pairwise_sum", [](const std::vector<hey::expression> &v_ex) { return hey::pairwise_sum(v_ex); });
+    // Pairwise sum/prod.
+    m.def("pairwise_sum", [](std::vector<hey::expression> v_ex) { return hey::pairwise_sum(std::move(v_ex)); });
+    m.def("pairwise_prod", [](std::vector<hey::expression> v_ex) { return hey::pairwise_prod(std::move(v_ex)); });
 
     // make_vars() helper.
     m.def("make_vars", [](py::args v_str) {
@@ -285,6 +286,9 @@ PYBIND11_MODULE(core, m)
 
     // Time.
     m.attr("time") = hey::time;
+    // NOTE: expose also a function version
+    // for internal use in the sympy conversion utils.
+    m.def("_time_func", []() { return hey::time; });
 
     // tpoly().
     m.def("tpoly", &hey::tpoly);

@@ -145,3 +145,11 @@ def t_event(ex, **kwargs):
     if with_real128 and fp_type == "real128":
         from .core import _t_event_f128
         return _t_event_f128(ex, **kwargs)
+
+def from_sympy(ex):
+    from ._sympy_utils import _with_sympy, _from_sympy_impl
+
+    if not _with_sympy:
+        raise ImportError("The 'from_sympy()' function is not available because sympy is not installed")
+
+    return _from_sympy_impl(ex)

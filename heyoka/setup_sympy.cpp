@@ -9,6 +9,7 @@
 #include <heyoka/config.hpp>
 
 #include <cassert>
+#include <cmath>
 #include <functional>
 #include <iostream>
 #include <optional>
@@ -30,6 +31,7 @@
 #if defined(HEYOKA_HAVE_REAL128)
 
 #include <mp++/extra/pybind11.hpp>
+#include <mp++/real128.hpp>
 
 #endif
 
@@ -86,7 +88,18 @@ py::object to_sympy_impl(const hy::param &par)
 // the numerical value.
 py::object to_sympy_impl(const hy::number &num)
 {
-    return std::visit([](const auto &x) { return py::cast(x); }, num.value());
+    return std::visit(
+        [](const auto &x) {
+            using std::isfinite;
+
+            if (!isfinite(x)) {
+                using namespace fmt::literals;
+                py_throw(PyExc_ValueError, ("Cannot convert to sympy the nonfinite number {}"_format(x)).c_str());
+            }
+
+            return py::cast(x);
+        },
+        num.value());
 }
 
 py::object to_sympy_impl(const hy::func &f)
@@ -178,7 +191,7 @@ void setup_sympy(py::module &m)
 
         // kepE.
         // NOTE: this will remain an unevaluated binary function.
-        auto sympy_kepE = py::object(detail::spy->attr("Function")("kepE"));
+        auto sympy_kepE = py::object(detail::spy->attr("Function")("heyoka_kepE"));
         detail::fmap[typeid(hy::detail::kepE_impl)] = sympy_kepE;
 
         // neg.
@@ -205,12 +218,12 @@ void setup_sympy(py::module &m)
 
         // time.
         // NOTE: this will remain an unevaluated nullary function.
-        auto sympy_time = py::object(detail::spy->attr("Function")("time"));
+        auto sympy_time = py::object(detail::spy->attr("Function")("heyoka_time"));
         detail::fmap[typeid(hy::detail::time_impl)] = sympy_time;
 
         // tpoly.
         // NOTE: this will remain an unevaluated binary function.
-        auto sympy_tpoly = py::object(detail::spy->attr("Function")("tpoly"));
+        auto sympy_tpoly = py::object(detail::spy->attr("Function")("heyoka_tpoly"));
         detail::fmap[typeid(hy::detail::tpoly_impl)] = sympy_tpoly;
 
         // Expose the conversion function.
