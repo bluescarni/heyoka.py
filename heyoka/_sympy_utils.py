@@ -133,7 +133,7 @@ def _build_fmap():
     retval[_spy.Mul] = mul_wrapper
 
     retval[_spy.Function("heyoka_kepE")] = core.kepE
-    retval[_spy.Function("heyoka_time")] = core._time_func
+    retval[_spy.Function("heyoka_time")] = lambda: core.time
     retval[_spy.Function("heyoka_tpoly")] = core.tpoly
 
     return retval

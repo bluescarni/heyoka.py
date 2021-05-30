@@ -286,9 +286,6 @@ PYBIND11_MODULE(core, m)
 
     // Time.
     m.attr("time") = hey::time;
-    // NOTE: expose also a function version
-    // for internal use in the sympy conversion utils.
-    m.def("_time_func", []() { return hey::time; });
 
     // tpoly().
     m.def("tpoly", &hey::tpoly);
