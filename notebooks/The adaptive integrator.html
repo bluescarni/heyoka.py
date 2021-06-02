@@ -128,6 +128,11 @@
     </a>
    </li>
    <li class="toctree-l2">
+    <a class="reference internal" href="sympy_interop.html">
+     Interoperability with SymPy
+    </a>
+   </li>
+   <li class="toctree-l2">
     <a class="reference internal" href="Batch%20mode%20overview.html">
      Batch mode
     </a>
@@ -595,7 +600,8 @@ Current state vector: [0.05  0.025]
 </div>
 </div>
 </div>
-<p>Note that the time is stored as a scalar value, while the state is stored as a NumPy array. Because of technical reasons related to the management of the lifetime of arrays when interacting with the underlying heyoka C++ library, it is <strong>not</strong> possible to directly set the state via the syntax</p>
+<p>Note that the time is stored as a scalar value, while the state is stored as a NumPy array.</p>
+<p>Because of technical reasons related to the management of the lifetime of arrays when interacting with the underlying heyoka C++ library, it is <strong>not</strong> possible to directly set the state via the syntax</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ta</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.05</span><span class="p">,</span> <span class="mf">0.025</span><span class="p">]</span> <span class="c1"># Won&#39;t work!</span>
 </pre></div>
 </div>

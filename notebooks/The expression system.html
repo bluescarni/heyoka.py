@@ -128,6 +128,11 @@
     </a>
    </li>
    <li class="toctree-l2">
+    <a class="reference internal" href="sympy_interop.html">
+     Interoperability with SymPy
+    </a>
+   </li>
+   <li class="toctree-l2">
     <a class="reference internal" href="Batch%20mode%20overview.html">
      Batch mode
     </a>
@@ -455,6 +460,10 @@ to the complexity of the ODEs, in order to achieve optimal performance
 it is important to ensure that
 the mathematical expressions supplied to heyoka.py are simplified as
 much as possible.</p>
+<p>Note that, starting form version 0.10, heyoka.py’s expressions can be converted to/from <a class="reference external" href="https://www.sympy.org/en/index.html">SymPy</a> expressions.
+It is thus possible to use SymPy for the automatic simplifcation of heyoka.py’s expressions, and, more generally, to symbolically manipulate
+heyoka.py’s expressions using the wide array of SymPy’s capabilities. See the <a class="reference internal" href="sympy_interop.html"><span class="doc std std-doc">SymPy interoperability tutorial</span></a>
+for a detailed example.</p>
 </div>
 
 

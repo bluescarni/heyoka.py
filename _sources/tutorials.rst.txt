@@ -36,6 +36,7 @@ Basics
   notebooks/ODEs with parameters.ipynb
   notebooks/Non-autonomous systems.ipynb
   notebooks/Dense output.ipynb
+  notebooks/sympy_interop.ipynb
 
 Advanced features
 -----------------
