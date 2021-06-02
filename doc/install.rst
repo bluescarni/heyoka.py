@@ -20,7 +20,9 @@ dependencies:
 * `mpmath <https://mpmath.org/>`__ (necessary if the heyoka C++ library
   was compiled with support for quadruple-precision computations),
 * the `mp++ library <https://github.com/bluescarni/mppp>`__ (necessary if the heyoka C++ library
-  was compiled with support for quadruple-precision computations).
+  was compiled with support for quadruple-precision computations),
+* `SymPy <https://www.sympy.org/en/index.html>`__ (for converting heyoka.py
+  expressions to/from SymPy expressions).
 
 Packages
 --------

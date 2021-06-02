@@ -9,7 +9,9 @@ Changelog
 New
 ~~~
 
-- heyoka.py expressions can now be converted to/from sympy expressions
+- New tutorial on SymPy interoperability
+  (`#47 <https://github.com/bluescarni/heyoka.py/pull/47>`__).
+- heyoka.py expressions can now be converted to/from SymPy expressions
   (`#46 <https://github.com/bluescarni/heyoka.py/pull/46>`__).
 
 Changes
