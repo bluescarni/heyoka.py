@@ -391,12 +391,12 @@
 
 <span class="c1"># Initial conditions corresponding (roughly)</span>
 <span class="c1"># to Mercury&#39;s current orbit.</span>
-<span class="n">ic</span> <span class="o">=</span> <span class="p">(</span><span class="mf">0.16614243942411336</span><span class="p">,</span>
-     <span class="mf">0.2568228239702581</span><span class="p">,</span>
-     <span class="mf">0.0315338776710321</span><span class="p">,</span>
-     <span class="o">-</span><span class="mf">10.461611630114545</span><span class="p">,</span>
+<span class="n">ic</span> <span class="o">=</span> <span class="p">(</span><span class="o">-</span><span class="mf">10.461611630114545</span><span class="p">,</span>
      <span class="mf">6.667253667139184</span><span class="p">,</span>
-     <span class="mf">0.818635813947965</span><span class="p">)</span>
+     <span class="mf">0.818635813947965</span><span class="p">,</span>
+     <span class="mf">0.16614243942411336</span><span class="p">,</span>
+     <span class="mf">0.2568228239702581</span><span class="p">,</span>
+     <span class="mf">0.0315338776710321</span><span class="p">)</span>
 
 <span class="c1"># Define the Hamiltonian.</span>
 <span class="n">Ham</span> <span class="o">=</span> <span class="mf">1.</span><span class="o">/</span><span class="mi">2</span><span class="o">*</span><span class="n">v2</span> <span class="o">-</span> <span class="n">mu</span><span class="o">/</span><span class="n">r</span> <span class="o">+</span> <span class="n">eps</span> <span class="o">*</span> <span class="p">(</span><span class="n">mu</span><span class="o">**</span><span class="mi">2</span><span class="o">/</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">r2</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="o">/</span><span class="mf">8.</span><span class="o">*</span><span class="n">v2</span><span class="o">*</span><span class="n">v2</span> <span class="o">-</span> <span class="mf">3.</span><span class="o">/</span><span class="mf">2.</span><span class="o">*</span><span class="n">mu</span><span class="o">*</span><span class="n">v2</span><span class="o">/</span><span class="n">r</span><span class="p">)</span>
@@ -510,38 +510,38 @@
 <p>What is the performance impact of these simplifications? Let us find out:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">time</span> <span class="n">ta_spy</span><span class="o">.</span><span class="n">propagate_until</span><span class="p">(</span><span class="mi">100000</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">time</span> <span class="n">ta_spy</span><span class="o">.</span><span class="n">propagate_until</span><span class="p">(</span><span class="mi">10000</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CPU times: user 1.8 s, sys: 0 ns, total: 1.8 s
-Wall time: 1.8 s
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CPU times: user 2.7 s, sys: 0 ns, total: 2.7 s
+Wall time: 2.69 s
 </pre></div>
 </div>
 <div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(&lt;taylor_outcome.time_limit: -4294967299&gt;,
- 0.001761263820542031,
- 1.2851406296576346,
- 609222)
+ 0.006522499652827622,
+ 0.017389869745091484,
+ 1012008)
 </pre></div>
 </div>
 </div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">time</span> <span class="n">ta</span><span class="o">.</span><span class="n">propagate_until</span><span class="p">(</span><span class="mi">100000</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">time</span> <span class="n">ta</span><span class="o">.</span><span class="n">propagate_until</span><span class="p">(</span><span class="mi">10000</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CPU times: user 1.86 s, sys: 0 ns, total: 1.86 s
-Wall time: 1.86 s
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CPU times: user 2.9 s, sys: 0 ns, total: 2.9 s
+Wall time: 2.9 s
 </pre></div>
 </div>
 <div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(&lt;taylor_outcome.time_limit: -4294967299&gt;,
- 0.0017612638204760674,
- 1.2851406296926475,
- 609222)
+ 0.00652249965282763,
+ 0.01738986978245727,
+ 1012008)
 </pre></div>
 </div>
 </div>

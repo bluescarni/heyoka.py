@@ -47,12 +47,12 @@
     "\n",
     "# Initial conditions corresponding (roughly)\n",
     "# to Mercury's current orbit.\n",
-    "ic = (0.16614243942411336,\n",
-    "     0.2568228239702581,\n",
-    "     0.0315338776710321,\n",
-    "     -10.461611630114545,\n",
+    "ic = (-10.461611630114545,\n",
     "     6.667253667139184,\n",
-    "     0.818635813947965)\n",
+    "     0.818635813947965,\n",
+    "     0.16614243942411336,\n",
+    "     0.2568228239702581,\n",
+    "     0.0315338776710321)\n",
     "\n",
     "# Define the Hamiltonian.\n",
     "Ham = 1./2*v2 - mu/r + eps * (mu**2/(2*r2) - 1/8.*v2*v2 - 3./2.*mu*v2/r)"
@@ -279,17 +279,17 @@
      "name": "stdout",
      "output_type": "stream",
      "text": [
-      "CPU times: user 1.38 s, sys: 0 ns, total: 1.38 s\n",
-      "Wall time: 1.38 s\n"
+      "CPU times: user 2.28 s, sys: 0 ns, total: 2.28 s\n",
+      "Wall time: 2.28 s\n"
      ]
     },
     {
      "data": {
       "text/plain": [
        "(<taylor_outcome.time_limit: -4294967299>,\n",
-       " 0.001761263820542031,\n",
-       " 1.2851406296576346,\n",
-       " 609222)"
+       " 0.006522499652827622,\n",
+       " 0.017389869745091484,\n",
+       " 1012008)"
       ]
      },
      "execution_count": 9,
@@ -298,7 +298,7 @@
     }
    ],
    "source": [
-    "time ta_spy.propagate_until(100000)"
+    "time ta_spy.propagate_until(10000)"
    ]
   },
   {
@@ -311,17 +311,17 @@
      "name": "stdout",
      "output_type": "stream",
      "text": [
-      "CPU times: user 1.62 s, sys: 0 ns, total: 1.62 s\n",
-      "Wall time: 1.62 s\n"
+      "CPU times: user 2.74 s, sys: 0 ns, total: 2.74 s\n",
+      "Wall time: 2.74 s\n"
      ]
     },
     {
      "data": {
       "text/plain": [
        "(<taylor_outcome.time_limit: -4294967299>,\n",
-       " 0.0017612638204607478,\n",
-       " 1.2851406297008257,\n",
-       " 609222)"
+       " 0.006522499652827699,\n",
+       " 0.017389869692863855,\n",
+       " 1012008)"
       ]
      },
      "execution_count": 10,
@@ -330,7 +330,7 @@
     }
    ],
    "source": [
-    "time ta.propagate_until(100000)"
+    "time ta.propagate_until(10000)"
    ]
   },
   {
