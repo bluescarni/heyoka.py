@@ -28,7 +28,8 @@ class taylor_add_jet_test_case(_ut.TestCase):
             # with the Taylor coefficients.
             init_state = [fp_t(0.05), fp_t(0.025)]
             pars = [fp_t(-9.8)]
-            pars2 = [fp_t(-9.8), fp_t(.01), fp_t(.02), fp_t(.03), fp_t(.04), fp_t(.05), fp_t(.06)]
+            pars2 = [fp_t(-9.8), fp_t(.01), fp_t(.02), fp_t(.03),
+                     fp_t(.04), fp_t(.05), fp_t(.06)]
 
             ta = taylor_adaptive(sys, init_state, tol=fp_t(1e-9), fp_type=desc)
 
@@ -583,7 +584,8 @@ class event_detection_test_case(_ut.TestCase):
                                  nt_events=[nt_event(v*v-1e-10, cb0, fp_type=desc),
                                             nt_event(v, cb1, fp_type=desc)])
 
-            self.assertEqual(ta.propagate_until(fp_t(4))[0], taylor_outcome.time_limit)
+            self.assertEqual(ta.propagate_until(fp_t(4))[
+                             0], taylor_outcome.time_limit)
 
             self.assertEqual(counter, 12)
 
@@ -640,32 +642,34 @@ class event_detection_test_case(_ut.TestCase):
             self.assertEqual(counter_nt, 3)
             self.assertEqual(counter_t, 2)
 
+
 class expression_eval_test_case(_ut.TestCase):
     def runTest(self):
-            from . import sin, make_vars, with_real128, eval
-            import numpy as np
-            from math import log10
+        from . import sin, make_vars, with_real128, eval
+        import numpy as np
+        from math import log10
 
-            x, = make_vars("x")
+        x, = make_vars("x")
 
-            fp_types = [("double", float, int(-log10(np.finfo(float).eps)) - 1),
-                        ("long double", np.longdouble, int(-log10(np.finfo(np.longdouble).eps)) - 1)]
+        fp_types = [("double", float, int(-log10(np.finfo(float).eps)) - 1),
+                    ("long double", np.longdouble, int(-log10(np.finfo(np.longdouble).eps)) - 1)]
 
-            if with_real128:
-                from mpmath import mpf
-                fp_types.append(("real128", mpf, 32))
+        if with_real128:
+            from mpmath import mpf
+            fp_types.append(("real128", mpf, 32))
 
-            for desc, fp_t, places in fp_types:
-                target = fp_t("0.123456789012345678901234567890")
-                a = eval(x, {"x": target}, fp_type=desc)
-                self.assertEqual(a, target)
-                a = eval(x**3.1, {"x": target}, fp_type=desc)
-                self.assertAlmostEqual(a, target**3.1, places=places)
+        for desc, fp_t, places in fp_types:
+            target = fp_t("0.123456789012345678901234567890")
+            a = eval(x, {"x": target}, fp_type=desc)
+            self.assertEqual(a, target)
+            a = eval(x**3.1, {"x": target}, fp_type=desc)
+            self.assertAlmostEqual(a, target**3.1, places=places)
 
 
 class batch_integrator_test_case(_ut.TestCase):
     def runTest(self):
         self.run_propagate_grid_tests()
+
     def run_propagate_grid_tests(self):
         from . import make_vars, taylor_adaptive, taylor_adaptive_batch, sin
         import numpy as np
@@ -710,10 +714,14 @@ class batch_integrator_test_case(_ut.TestCase):
                 tas[2].propagate_grid(grid[:, 2]),
                 tas[3].propagate_grid(grid[:, 3])]
 
-        self.assertTrue(np.max(np.abs(sres[0][4] - bres[:,:,0]).flatten()) < 1e-14)
-        self.assertTrue(np.max(np.abs(sres[1][4] - bres[:,:,1]).flatten()) < 1e-14)
-        self.assertTrue(np.max(np.abs(sres[2][4] - bres[:,:,2]).flatten()) < 1e-14)
-        self.assertTrue(np.max(np.abs(sres[3][4] - bres[:,:,3]).flatten()) < 1e-14)
+        self.assertTrue(
+            np.max(np.abs(sres[0][4] - bres[:, :, 0]).flatten()) < 1e-14)
+        self.assertTrue(
+            np.max(np.abs(sres[1][4] - bres[:, :, 1]).flatten()) < 1e-14)
+        self.assertTrue(
+            np.max(np.abs(sres[2][4] - bres[:, :, 2]).flatten()) < 1e-14)
+        self.assertTrue(
+            np.max(np.abs(sres[3][4] - bres[:, :, 3]).flatten()) < 1e-14)
 
 
 class kepE_test_case(_ut.TestCase):
@@ -722,18 +730,24 @@ class kepE_test_case(_ut.TestCase):
         import numpy as np
 
         x, y = make_vars("x", "y")
-        self.assertEqual(diff(kepE(x, y), x), sin(kepE(x, y)) / (1. - x * cos(kepE(x, y))))
+        self.assertEqual(diff(kepE(x, y), x), sin(
+            kepE(x, y)) / (1. - x * cos(kepE(x, y))))
         self.assertEqual(diff(kepE(x, y), y), 1. / (1. - x * cos(kepE(x, y))))
-        self.assertEqual(diff(kepE(x, np.longdouble("1.1")), x), sin(kepE(x, np.longdouble("1.1"))) / (1. - x * cos(kepE(x, np.longdouble("1.1")))))
-        self.assertEqual(diff(kepE(np.longdouble("1.1"), y), y), 1. / (1. - np.longdouble("1.1") * cos(kepE(np.longdouble("1.1"), y))))
+        self.assertEqual(diff(kepE(x, np.longdouble("1.1")), x), sin(
+            kepE(x, np.longdouble("1.1"))) / (1. - x * cos(kepE(x, np.longdouble("1.1")))))
+        self.assertEqual(diff(kepE(np.longdouble("1.1"), y), y), 1. /
+                         (1. - np.longdouble("1.1") * cos(kepE(np.longdouble("1.1"), y))))
 
         if not with_real128:
             return
 
         from mpmath import mpf
 
-        self.assertEqual(diff(kepE(x, mpf("1.1")), x), sin(kepE(x, mpf("1.1"))) / (1. - x * cos(kepE(x, mpf("1.1")))))
-        self.assertEqual(diff(kepE(mpf("1.1"), y), y), 1. / (1. - mpf("1.1") * cos(kepE(mpf("1.1"), y))))
+        self.assertEqual(diff(kepE(x, mpf("1.1")), x), sin(
+            kepE(x, mpf("1.1"))) / (1. - x * cos(kepE(x, mpf("1.1")))))
+        self.assertEqual(diff(kepE(mpf("1.1"), y), y), 1. /
+                         (1. - mpf("1.1") * cos(kepE(mpf("1.1"), y))))
+
 
 class sympy_test_case(_ut.TestCase):
     def runTest(self):
@@ -754,7 +768,8 @@ class sympy_test_case(_ut.TestCase):
 
         with self.assertRaises(ValueError) as cm:
             from_sympy(Rational(3, 5))
-        self.assertTrue("Cannot convert from sympy a rational number whose denominator is not a power of 2" in str(cm.exception))
+        self.assertTrue(
+            "Cannot convert from sympy a rational number whose denominator is not a power of 2" in str(cm.exception))
 
         # From integer.
         self.assertEqual(from_sympy(Integer(-42)), expression(-42.))
@@ -767,17 +782,23 @@ class sympy_test_case(_ut.TestCase):
             self.assertEqual(to_sympy(expression(1.1)), Float(1.1))
             self.assertEqual(from_sympy(Float(1.1)), expression(1.1))
 
-            self.assertEqual(to_sympy(expression((2**40+1)/(2**128))), Rational(2**40+1, 2**128))
-            self.assertEqual(from_sympy(Rational(2**40+1, 2**128)), expression((2**40+1)/(2**128)))
+            self.assertEqual(
+                to_sympy(expression((2**40+1)/(2**128))), Rational(2**40+1, 2**128))
+            self.assertEqual(from_sympy(Rational(2**40+1, 2**128)),
+                             expression((2**40+1)/(2**128)))
 
         # Long double precision.
         with workprec(np.finfo(np.longdouble).nmant + 1):
-            self.assertEqual(to_sympy(expression(np.longdouble("1.1"))), Float("1.1", precision = np.finfo(np.longdouble).nmant + 1))
-            self.assertEqual(from_sympy(Float("1.1")), expression(np.longdouble("1.1")))
+            self.assertEqual(to_sympy(expression(np.longdouble("1.1"))), Float(
+                "1.1", precision=np.finfo(np.longdouble).nmant + 1))
+            self.assertEqual(from_sympy(Float("1.1")),
+                             expression(np.longdouble("1.1")))
 
             expo = np.finfo(np.longdouble).nmant - 10
-            self.assertEqual(to_sympy(expression(np.longdouble(2**expo+1)/np.longdouble(2**128))), Rational(2**expo+1, 2**128))
-            self.assertEqual(from_sympy(Rational(2**expo+1, 2**128)), expression(np.longdouble(2**expo+1)/np.longdouble(2**128)))
+            self.assertEqual(to_sympy(expression(np.longdouble(
+                2**expo+1)/np.longdouble(2**128))), Rational(2**expo+1, 2**128))
+            self.assertEqual(from_sympy(Rational(2**expo+1, 2**128)),
+                             expression(np.longdouble(2**expo+1)/np.longdouble(2**128)))
 
         # Too high precision.
         with self.assertRaises(ValueError) as cm:
@@ -789,36 +810,42 @@ class sympy_test_case(_ut.TestCase):
 
         # Quad precision.
         with workprec(113):
-            self.assertEqual(to_sympy(expression(mpf("1.1"))), Float("1.1", precision = 113))
+            self.assertEqual(to_sympy(expression(mpf("1.1"))),
+                             Float("1.1", precision=113))
             self.assertEqual(from_sympy(Float("1.1")), expression(mpf("1.1")))
 
             expo = 100
-            self.assertEqual(to_sympy(expression(mpf(2**expo+1)/mpf(2**128))), Rational(2**expo+1, 2**128))
-            self.assertEqual(from_sympy(Rational(2**expo+1, 2**128)), expression(mpf(2**expo+1)/mpf(2**128)))
+            self.assertEqual(
+                to_sympy(expression(mpf(2**expo+1)/mpf(2**128))), Rational(2**expo+1, 2**128))
+            self.assertEqual(from_sympy(Rational(2**expo+1, 2**128)),
+                             expression(mpf(2**expo+1)/mpf(2**128)))
 
     def test_sympar_conversion(self):
         from . import to_sympy, from_sympy, expression, par
         from sympy import Symbol
 
-        self.assertEqual(Symbol("x"), to_sympy(expression("x")))
-        self.assertEqual(Symbol("par[0]"), to_sympy(par[0]))
-        self.assertEqual(Symbol("par[9]"), to_sympy(par[9]))
-        self.assertEqual(Symbol("par[123]"), to_sympy(par[123]))
-        self.assertEqual(Symbol("par[-123]"), to_sympy(expression("par[-123]")))
-        self.assertEqual(Symbol("par[]"), to_sympy(expression("par[]")))
+        self.assertEqual(Symbol("x", real=True), to_sympy(expression("x")))
+        self.assertEqual(Symbol("par[0]", real=True), to_sympy(par[0]))
+        self.assertEqual(Symbol("par[9]", real=True), to_sympy(par[9]))
+        self.assertEqual(Symbol("par[123]", real=True), to_sympy(par[123]))
+        self.assertEqual(Symbol("par[-123]", real=True),
+                         to_sympy(expression("par[-123]")))
+        self.assertEqual(Symbol("par[]", real=True),
+                         to_sympy(expression("par[]")))
 
         self.assertEqual(from_sympy(Symbol("x")), expression("x"))
         self.assertEqual(from_sympy(Symbol("par[0]")), par[0])
         self.assertEqual(from_sympy(Symbol("par[9]")), par[9])
         self.assertEqual(from_sympy(Symbol("par[123]")), par[123])
-        self.assertEqual(from_sympy(Symbol("par[-123]")), expression("par[-123]"))
+        self.assertEqual(from_sympy(
+            Symbol("par[-123]")), expression("par[-123]"))
         self.assertEqual(from_sympy(Symbol("par[]")), expression("par[]"))
 
     def test_func_conversion(self):
         import sympy as spy
         from . import core, make_vars, from_sympy, to_sympy
-        from sympy.abc import x, y, z, a, b, c
 
+        x, y, z, a, b, c = spy.symbols("x y z a b c", real=True)
         hx, hy, hz, ha, hb, hc = make_vars("x", "y", "z", "a", "b", "c")
 
         self.assertEqual(core.acos(hx), from_sympy(spy.acos(x)))
@@ -870,7 +897,7 @@ class sympy_test_case(_ut.TestCase):
         self.assertEqual(to_sympy(core.tanh(hx)), spy.tanh(x))
 
         self.assertEqual(hx**3.5, from_sympy(x**3.5))
-        self.assertEqual(to_sympy(hx**3.5),x**3.5)
+        self.assertEqual(to_sympy(hx**3.5), x**3.5)
 
         self.assertEqual(hx+hy+hz, from_sympy(x+y+z))
         self.assertEqual(to_sympy(hx+hy+hz), x+y+z)
@@ -882,31 +909,38 @@ class sympy_test_case(_ut.TestCase):
         self.assertEqual((ha*hb)*(hc*hx)*(hy*hz), from_sympy(x*y*z*a*b*c))
         self.assertEqual(to_sympy(ha*hb*hc*hx*hy*hz), x*y*z*a*b*c)
 
-        self.assertEqual(hx+ -1.*hy + -1.*hz, from_sympy(x-y-z))
+        self.assertEqual(hx + -1.*hy + -1.*hz, from_sympy(x-y-z))
         self.assertEqual(to_sympy(hx - hy - hz), x-y-z)
 
         self.assertEqual(hx * hz**-1., from_sympy(x/z))
         self.assertEqual(to_sympy(hx / hz), x / z)
 
-        self.assertEqual(core.kepE(hx, hy), from_sympy(spy.Function("heyoka_kepE")(x, y)))
-        self.assertEqual(to_sympy(core.kepE(hx, hy)), spy.Function("heyoka_kepE")(x, y))
+        self.assertEqual(core.kepE(hx, hy), from_sympy(
+            spy.Function("heyoka_kepE")(x, y)))
+        self.assertEqual(to_sympy(core.kepE(hx, hy)),
+                         spy.Function("heyoka_kepE")(x, y))
 
         self.assertEqual(-1. * hx, from_sympy(-x))
         self.assertEqual(to_sympy(-hx), -x)
 
-        self.assertEqual(to_sympy(core.sigmoid(hx + hy)), 1. / (1. + spy.exp(-x - y)))
+        self.assertEqual(to_sympy(core.sigmoid(hx + hy)),
+                         1. / (1. + spy.exp(-x - y)))
 
         self.assertEqual(core.square(hx + hy), (hx + hy) * (hx + hy))
 
         self.assertEqual(core.time, from_sympy(spy.Function("heyoka_time")()))
         self.assertEqual(to_sympy(core.time), spy.Function("heyoka_time")())
 
-        self.assertEqual(core.tpoly(core.par[0], core.par[10]), from_sympy(spy.Function("heyoka_tpoly")(spy.Symbol("par[0]"), spy.Symbol("par[10]"))))
-        self.assertEqual(to_sympy(core.tpoly(core.par[0], core.par[10])), spy.Function("heyoka_tpoly")(spy.Symbol("par[0]"), spy.Symbol("par[10]")))
+        self.assertEqual(core.tpoly(core.par[0], core.par[10]), from_sympy(
+            spy.Function("heyoka_tpoly")(spy.Symbol("par[0]"), spy.Symbol("par[10]"))))
+        self.assertEqual(to_sympy(core.tpoly(core.par[0], core.par[10])), spy.Function(
+            "heyoka_tpoly")(spy.Symbol("par[0]", real=True), spy.Symbol("par[10]", real=True)))
 
         with self.assertRaises(TypeError) as cm:
             from_sympy(abs(x))
-        self.assertTrue("Unable to convert the sympy function" in str(cm.exception))
+        self.assertTrue(
+            "Unable to convert the sympy function" in str(cm.exception))
+
 
 def run_test_suite():
     from . import make_nbody_sys, taylor_adaptive, with_real128
@@ -928,7 +962,6 @@ def run_test_suite():
     suite.addTest(batch_integrator_test_case())
     suite.addTest(kepE_test_case())
     suite.addTest(sympy_test_case())
-
 
     test_result = _ut.TextTestRunner(verbosity=2).run(suite)
 
