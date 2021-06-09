@@ -51,6 +51,7 @@
 #include "common_utils.hpp"
 #include "logging.hpp"
 #include "long_double_caster.hpp"
+#include "setup_networkx.hpp"
 #include "setup_sympy.hpp"
 #include "taylor_add_jet.hpp"
 #include "taylor_expose_events.hpp"
@@ -784,6 +785,9 @@ PYBIND11_MODULE(core, m)
 
     // Setup the sympy integration bits.
     heypy::setup_sympy(m);
+
+    // Setup the networkx integration bits.
+    heypy::setup_networkx(m);
 }
 
 #if defined(__clang__)
