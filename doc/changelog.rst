@@ -9,14 +9,24 @@ Changelog
 New
 ~~~
 
+- The callback that can be passed to the ``propagate_*()`` methods
+  can now be used to stop the integration
+  (`#48 <https://github.com/bluescarni/heyoka.py/pull/48>`__).
 - New tutorial on SymPy interoperability
   (`#47 <https://github.com/bluescarni/heyoka.py/pull/47>`__).
+- Add a pairwise product primitive
+  (`#46 <https://github.com/bluescarni/heyoka.py/pull/46>`__).
 - heyoka.py expressions can now be converted to/from SymPy expressions
   (`#46 <https://github.com/bluescarni/heyoka.py/pull/46>`__).
 
 Changes
 ~~~~~~~
 
+- **BREAKING**: a :ref:`breaking change <bchanges_0_10_0>`
+  in the ``propagate_*()`` callback API
+  (`#48 <https://github.com/bluescarni/heyoka.py/pull/48>`__).
+- Division by zero in the expression system now raises an error
+  (`#48 <https://github.com/bluescarni/heyoka.py/pull/48>`__).
 - heyoka.py now requires at least version 0.10.0 of the
   heyoka C++ library
   (`#46 <https://github.com/bluescarni/heyoka.py/pull/46>`__).
