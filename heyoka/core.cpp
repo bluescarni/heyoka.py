@@ -126,6 +126,16 @@ PYBIND11_MODULE(core, m)
         }
     });
 
+    py::register_exception_translator([](std::exception_ptr p) {
+        try {
+            if (p) {
+                std::rethrow_exception(p);
+            }
+        } catch (const hey::zero_division_error &zde) {
+            PyErr_SetString(PyExc_ZeroDivisionError, zde.what());
+        }
+    });
+
     // NOTE: typedef to avoid complications in the
     // exposition of the operators.
     using ld_t = long double;
@@ -399,7 +409,8 @@ PYBIND11_MODULE(core, m)
         .value("success", hey::taylor_outcome::success)
         .value("step_limit", hey::taylor_outcome::step_limit)
         .value("time_limit", hey::taylor_outcome::time_limit)
-        .value("err_nf_state", hey::taylor_outcome::err_nf_state);
+        .value("err_nf_state", hey::taylor_outcome::err_nf_state)
+        .value("cb_stop", hey::taylor_outcome::cb_stop);
 
     // event_direction enum.
     py::enum_<hey::event_direction>(m, "event_direction")
@@ -472,7 +483,7 @@ PYBIND11_MODULE(core, m)
 
     // The callback for the propagate_*() functions for
     // the batch integrator.
-    using prop_cb_t = std::function<void(hey::taylor_adaptive_batch<double> &)>;
+    using prop_cb_t = std::function<bool(hey::taylor_adaptive_batch<double> &)>;
 
     // Batch adaptive integrator for double.
     auto tabd_ctor_impl = [](auto sys, py::array_t<double> state_, std::optional<py::array_t<double>> time_,

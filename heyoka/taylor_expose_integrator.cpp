@@ -64,7 +64,7 @@ template <typename T>
 void expose_taylor_integrator_common(py::class_<hey::taylor_adaptive<T>> &cl)
 {
     using namespace pybind11::literals;
-    using prop_cb_t = std::function<void(hey::taylor_adaptive<T> &)>;
+    using prop_cb_t = std::function<bool(hey::taylor_adaptive<T> &)>;
     namespace kw = heyoka::kw;
 
     cl.def_property_readonly("decomposition", &hey::taylor_adaptive<T>::get_decomposition)
@@ -144,7 +144,7 @@ void expose_taylor_integrator_impl(py::module &m, const std::string &suffix)
 
     using t_ev_t = hey::t_event<T>;
     using nt_ev_t = hey::nt_event<T>;
-    using prop_cb_t = std::function<void(hey::taylor_adaptive<T> &)>;
+    using prop_cb_t = std::function<bool(hey::taylor_adaptive<T> &)>;
 
     auto ctor_impl = [](auto sys, std::vector<T> state, T time, std::vector<T> pars, T tol, bool high_accuracy,
                         bool compact_mode, std::vector<t_ev_t> tes, std::vector<nt_ev_t> ntes) {
@@ -299,7 +299,7 @@ void expose_taylor_integrator_f128(py::module &m)
 
     using t_ev_t = hey::t_event<mppp::real128>;
     using nt_ev_t = hey::nt_event<mppp::real128>;
-    using prop_cb_t = std::function<void(hey::taylor_adaptive<mppp::real128> &)>;
+    using prop_cb_t = std::function<bool(hey::taylor_adaptive<mppp::real128> &)>;
 
     // NOTE: we need to temporarily alter
     // the precision in mpmath to successfully

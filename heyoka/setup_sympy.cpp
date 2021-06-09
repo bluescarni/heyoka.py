@@ -72,16 +72,26 @@ py::object to_sympy(const hy::expression &);
 // Implementation of the conversion functions for the node types.
 py::object to_sympy_impl(const hy::variable &var)
 {
-    return spy->attr("Symbol")(var.name());
+    // NOTE: heyoka symbols can assume only
+    // real values.
+    py::kwargs kwa;
+    kwa["real"] = true;
+
+    return spy->attr("Symbol")(var.name(), **kwa);
 }
 
 py::object to_sympy_impl(const hy::param &par)
 {
-    using namespace fmt::literals;
-
     // NOTE: params are converted to symbolic variables
     // following a naming convention.
-    return spy->attr("Symbol")("par[{}]"_format(par.idx()));
+    using namespace fmt::literals;
+
+    // NOTE: heyoka params can assume only
+    // real values.
+    py::kwargs kwa;
+    kwa["real"] = true;
+
+    return spy->attr("Symbol")("par[{}]"_format(par.idx()), **kwa);
 }
 
 // Number conversion corresponds to casting to python

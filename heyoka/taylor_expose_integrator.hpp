@@ -38,16 +38,16 @@ void expose_taylor_integrator_f128(py::module &);
 // never ends up calling into the Python interpreter.
 // If cb is an empty callback, a copy of cb will be returned.
 template <typename T>
-inline auto make_prop_cb(const std::function<void(T &)> &cb)
+inline auto make_prop_cb(const std::function<bool(T &)> &cb)
 {
     if (cb) {
         auto ret = [&cb](T &ta) {
             py::gil_scoped_acquire acquire;
 
-            cb(ta);
+            return cb(ta);
         };
 
-        return std::function<void(T &)>(std::move(ret));
+        return std::function<bool(T &)>(std::move(ret));
     } else {
         return cb;
     }
