@@ -942,6 +942,18 @@ class sympy_test_case(_ut.TestCase):
             "Unable to convert the sympy function" in str(cm.exception))
 
 
+class zero_division_error_test_case(_ut.TestCase):
+    def runTest(self):
+        from . import make_vars
+
+        x, = make_vars("x")
+
+        with self.assertRaises(ZeroDivisionError) as cm:
+            x / 0.
+        self.assertTrue(
+            "Division by zero" in str(cm.exception))
+
+
 def run_test_suite():
     from . import make_nbody_sys, taylor_adaptive, with_real128
 
@@ -962,6 +974,7 @@ def run_test_suite():
     suite.addTest(batch_integrator_test_case())
     suite.addTest(kepE_test_case())
     suite.addTest(sympy_test_case())
+    suite.addTest(zero_division_error_test_case())
 
     test_result = _ut.TextTestRunner(verbosity=2).run(suite)
 
