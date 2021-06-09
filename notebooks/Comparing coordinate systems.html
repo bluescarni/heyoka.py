@@ -606,6 +606,8 @@ p_\phi &amp; = r^2\dot{\phi}\sin^2\theta, &amp; \phi &amp; = \arctan \frac{y}{x}
     <span class="c1"># bring it back to [-pi, pi].</span>
     <span class="k">if</span> <span class="n">phi</span> <span class="o">&lt;</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="ow">or</span> <span class="n">phi</span> <span class="o">&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">:</span>
         <span class="n">ta</span><span class="o">.</span><span class="n">state</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">phi</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span> <span class="o">%</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span>
+    
+    <span class="k">return</span> <span class="kc">True</span>
 </pre></div>
 </div>
 </div>
@@ -811,6 +813,8 @@ z = L\sqrt{1-\frac{H^2}{G^2}}\left[ L\left( \cos E - \sqrt{1-\frac{G^2}{L^2}} \r
     <span class="n">E</span> <span class="o">=</span> <span class="n">ta</span><span class="o">.</span><span class="n">state</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span>
     <span class="k">if</span> <span class="n">E</span> <span class="o">&lt;</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="ow">or</span> <span class="n">E</span> <span class="o">&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">:</span>
         <span class="n">ta</span><span class="o">.</span><span class="n">state</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">E</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span> <span class="o">%</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span>
+    
+    <span class="k">return</span> <span class="kc">True</span>
 </pre></div>
 </div>
 </div>
@@ -965,6 +969,8 @@ r = L^2\left( 1 - \sqrt{1-\frac{G^2}{L^2}}\cos E\right).
     <span class="n">t</span> <span class="o">=</span> <span class="n">ta</span><span class="o">.</span><span class="n">state</span><span class="p">[</span><span class="mi">6</span><span class="p">]</span>
     <span class="k">if</span> <span class="n">t</span> <span class="o">&gt;</span> <span class="mi">5</span><span class="p">:</span>
         <span class="n">ta</span><span class="o">.</span><span class="n">state</span><span class="p">[</span><span class="mi">6</span><span class="p">]</span> <span class="o">=</span> <span class="n">t</span> <span class="o">%</span> <span class="mi">5</span>
+    
+    <span class="k">return</span> <span class="kc">True</span>
 </pre></div>
 </div>
 </div>

@@ -595,6 +595,8 @@
         <span class="n">dt</span> <span class="o">=</span> <span class="n">ta</span><span class="o">.</span><span class="n">time</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">cur</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">pbar</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">ta</span><span class="o">.</span><span class="n">time</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">cur</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">cur</span> <span class="o">+=</span> <span class="n">dt</span>
+        
+        <span class="k">return</span> <span class="kc">True</span>
 
 <span class="c1"># Integrate over a regular time grid</span>
 <span class="c1"># up to 10000 years.</span>

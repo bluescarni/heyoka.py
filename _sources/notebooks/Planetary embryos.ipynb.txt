@@ -313,6 +313,8 @@
     "        dt = ta.time - self.cur\n",
     "        self.pbar.update(ta.time - self.cur)\n",
     "        self.cur += dt\n",
+    "        \n",
+    "        return True\n",
     "\n",
     "# Integrate over a regular time grid\n",
     "# up to 10000 years.\n",

@@ -341,7 +341,9 @@
     "    # If phi is outside the [-pi, pi] range,\n",
     "    # bring it back to [-pi, pi].\n",
     "    if phi < -np.pi or phi > np.pi:\n",
-    "        ta.state[5] = (phi + np.pi) % (2 * np.pi) - np.pi"
+    "        ta.state[5] = (phi + np.pi) % (2 * np.pi) - np.pi\n",
+    "    \n",
+    "    return True"
    ]
   },
   {
@@ -635,7 +637,9 @@
     "def mod_cb_del(ta):\n",
     "    E = ta.state[3]\n",
     "    if E < -np.pi or E > np.pi:\n",
-    "        ta.state[3] = (E + np.pi) % (2 * np.pi) - np.pi"
+    "        ta.state[3] = (E + np.pi) % (2 * np.pi) - np.pi\n",
+    "    \n",
+    "    return True"
    ]
   },
   {
@@ -914,7 +918,9 @@
     "    # grows past 5.\n",
     "    t = ta.state[6]\n",
     "    if t > 5:\n",
-    "        ta.state[6] = t % 5"
+    "        ta.state[6] = t % 5\n",
+    "    \n",
+    "    return True"
    ]
   },
   {

@@ -500,8 +500,13 @@
 <div class="section" id="new">
 <h3>New<a class="headerlink" href="#new" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
+<li><p>The callback that can be passed to the <code class="docutils literal notranslate"><span class="pre">propagate_*()</span></code> methods
+can now be used to stop the integration
+(<a class="reference external" href="https://github.com/bluescarni/heyoka.py/pull/48">#48</a>).</p></li>
 <li><p>New tutorial on SymPy interoperability
 (<a class="reference external" href="https://github.com/bluescarni/heyoka.py/pull/47">#47</a>).</p></li>
+<li><p>Add a pairwise product primitive
+(<a class="reference external" href="https://github.com/bluescarni/heyoka.py/pull/46">#46</a>).</p></li>
 <li><p>heyoka.py expressions can now be converted to/from SymPy expressions
 (<a class="reference external" href="https://github.com/bluescarni/heyoka.py/pull/46">#46</a>).</p></li>
 </ul>
@@ -509,6 +514,11 @@
 <div class="section" id="changes">
 <h3>Changes<a class="headerlink" href="#changes" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
+<li><p><strong>BREAKING</strong>: a <a class="reference internal" href="breaking_changes.html#bchanges-0-10-0"><span class="std std-ref">breaking change</span></a>
+in the <code class="docutils literal notranslate"><span class="pre">propagate_*()</span></code> callback API
+(<a class="reference external" href="https://github.com/bluescarni/heyoka.py/pull/48">#48</a>).</p></li>
+<li><p>Division by zero in the expression system now raises an error
+(<a class="reference external" href="https://github.com/bluescarni/heyoka.py/pull/48">#48</a>).</p></li>
 <li><p>heyoka.py now requires at least version 0.10.0 of the
 heyoka C++ library
 (<a class="reference external" href="https://github.com/bluescarni/heyoka.py/pull/46">#46</a>).</p></li>
