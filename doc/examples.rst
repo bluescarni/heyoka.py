@@ -38,6 +38,7 @@ Celestial mechanics and astrodynamics
   notebooks/Scaled outer Solar System
   notebooks/Planetary embryos
   notebooks/mercury_precession
+  notebooks/ttv
 
 Others
 ---------------
