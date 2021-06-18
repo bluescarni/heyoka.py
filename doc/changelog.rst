@@ -6,6 +6,12 @@ Changelog
 0.11.0 (unreleased)
 -------------------
 
+New
+~~~
+
+- New tutorial on transit timing variations
+  (`#50 <https://github.com/bluescarni/heyoka.py/pull/50>`__).
+
 Changes
 ~~~~~~~
 
