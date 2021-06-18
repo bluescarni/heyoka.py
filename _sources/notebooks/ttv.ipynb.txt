@@ -240,7 +240,7 @@
    "id": "5dc5a888-a29c-49e4-8472-5f1ffd6029be",
    "metadata": {},
    "source": [
-    "The transit times deviate from a liner behaviour because of the perturbations induced onto the inner planet by the outer planet."
+    "The transit times deviate from a purely linear behaviour because of the perturbations induced onto the inner planet by the outer planet."
    ]
   }
  ],
