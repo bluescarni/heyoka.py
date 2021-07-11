@@ -1,7 +1,7 @@
 channels:
   - conda-forge
 dependencies:
-  - heyoka.py=0.10.0
+  - heyoka.py=0.11.0
   - pykep
   - matplotlib
   - sympy
