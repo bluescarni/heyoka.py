@@ -136,7 +136,7 @@ if(${pybind11_VERSION} VERSION_LESS "2.6")
 endif()
 
 # Boost.
-find_package(Boost REQUIRED)
+find_package(Boost REQUIRED serialization)
 
 # fmt.
 find_package(fmt REQUIRED CONFIG)

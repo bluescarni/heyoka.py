@@ -24,11 +24,11 @@ Python3_add_library(core MODULE WITH_SOABI
     setup_sympy.cpp
 )
 
-target_link_libraries(core PRIVATE heyoka::heyoka fmt::fmt spdlog::spdlog)
+target_link_libraries(core PRIVATE heyoka::heyoka fmt::fmt spdlog::spdlog Boost::boost Boost::serialization)
 if(heyoka_WITH_MPPP)
     target_link_libraries(core PRIVATE mp++::mp++)
 endif()
-target_include_directories(core SYSTEM PRIVATE "${pybind11_INCLUDE_DIR}" "${Boost_INCLUDE_DIRS}")
+target_include_directories(core SYSTEM PRIVATE "${pybind11_INCLUDE_DIR}")
 target_compile_definitions(core PRIVATE "${pybind11_DEFINITIONS}")
 target_compile_options(core PRIVATE
     "$<$<CONFIG:Debug>:${HEYOKA_PY_CXX_FLAGS_DEBUG}>"
