@@ -12,9 +12,11 @@
 #include <sstream>
 #include <string>
 #include <type_traits>
+#include <typeinfo>
 #include <utility>
 #include <vector>
 
+#include <boost/core/demangle.hpp>
 #include <boost/numeric/conversion/cast.hpp>
 #include <boost/serialization/binary_object.hpp>
 
@@ -84,10 +86,28 @@ struct ev_callback {
         // propagate functions which release the GIL.
         py::gil_scoped_acquire acquire;
 
+        // NOTE: the conversion of the input arguments to Python
+        // objects should always work, because all callback arguments
+        // are guaranteed to have conversions to Python. We want to manually
+        // check the conversion of the return value because if that fails
+        // the pybind11 error message is not very helpful, and thus
+        // we try to provide a more detailed error message.
+
         if constexpr (std::is_same_v<void, Ret>) {
             m_obj(std::forward<Args>(args)...);
         } else {
-            return py::cast<Ret>(m_obj(std::forward<Args>(args)...));
+            auto ret = m_obj(std::forward<Args>(args)...);
+
+            try {
+                return py::cast<Ret>(ret);
+            } catch (const py::cast_error &) {
+                using fmt::literals::operator""_format;
+
+                py_throw(PyExc_TypeError, ("Unable to convert a Python object of type '{}' to the C++ type '{}' "
+                                           "in the construction of the return value of an event callback"_format(
+                                               heypy::str(heypy::type(ret)), boost::core::demangle(typeid(Ret).name())))
+                                              .c_str());
+            }
         }
     }
 
@@ -313,35 +333,44 @@ void expose_taylor_nt_event_f128(py::module &m)
 
 #endif
 
-// NOTE: create a couple of shortcuts for the event callback wrappers,
+// NOTE: create shortcuts for the event callback wrappers,
 // because if we use their full name we ran into issues with the
 // Boost.Serialization library complaining that the class name is too long.
-template <typename T>
-using nt_callback = detail::ev_callback<void, heyoka::taylor_adaptive<T> &, T, int>;
+using nt_cb_dbl = detail::ev_callback<void, heyoka::taylor_adaptive<double> &, double, int>;
+using nt_cb_ldbl = detail::ev_callback<void, heyoka::taylor_adaptive<long double> &, long double, int>;
 
-template <typename T>
-using t_callback = detail::ev_callback<bool, heyoka::taylor_adaptive<T> &, bool, int>;
+#if defined(HEYOKA_HAVE_REAL128)
+
+using nt_cb_f128 = detail::ev_callback<void, heyoka::taylor_adaptive<mppp::real128> &, mppp::real128, int>;
+
+#endif
+
+using t_cb_dbl = detail::ev_callback<bool, heyoka::taylor_adaptive<double> &, bool, int>;
+using t_cb_ldbl = detail::ev_callback<bool, heyoka::taylor_adaptive<long double> &, bool, int>;
+
+#if defined(HEYOKA_HAVE_REAL128)
+
+using t_cb_f128 = detail::ev_callback<bool, heyoka::taylor_adaptive<mppp::real128> &, bool, int>;
+
+#endif
 
 } // namespace heyoka_py
 
 // Register the callback wrappers in the serialisation system.
-HEYOKA_S11N_CALLABLE_EXPORT(heyoka_py::nt_callback<double>, void, heyoka::taylor_adaptive<double> &, double, int)
-HEYOKA_S11N_CALLABLE_EXPORT(heyoka_py::nt_callback<long double>, void, heyoka::taylor_adaptive<long double> &,
-                            long double, int)
+HEYOKA_S11N_CALLABLE_EXPORT(heyoka_py::nt_cb_dbl, void, heyoka::taylor_adaptive<double> &, double, int)
+HEYOKA_S11N_CALLABLE_EXPORT(heyoka_py::nt_cb_ldbl, void, heyoka::taylor_adaptive<long double> &, long double, int)
 
 #if defined(HEYOKA_HAVE_REAL128)
 
-HEYOKA_S11N_CALLABLE_EXPORT(heyoka_py::nt_callback<mppp::real128>, void, heyoka::taylor_adaptive<mppp::real128> &,
-                            mppp::real128, int)
+HEYOKA_S11N_CALLABLE_EXPORT(heyoka_py::nt_cb_f128, void, heyoka::taylor_adaptive<mppp::real128> &, mppp::real128, int)
 
 #endif
 
-HEYOKA_S11N_CALLABLE_EXPORT(heyoka_py::t_callback<double>, bool, heyoka::taylor_adaptive<double> &, bool, int)
-HEYOKA_S11N_CALLABLE_EXPORT(heyoka_py::t_callback<long double>, bool, heyoka::taylor_adaptive<long double> &, bool, int)
+HEYOKA_S11N_CALLABLE_EXPORT(heyoka_py::t_cb_dbl, bool, heyoka::taylor_adaptive<double> &, bool, int)
+HEYOKA_S11N_CALLABLE_EXPORT(heyoka_py::t_cb_ldbl, bool, heyoka::taylor_adaptive<long double> &, bool, int)
 
 #if defined(HEYOKA_HAVE_REAL128)
 
-HEYOKA_S11N_CALLABLE_EXPORT(heyoka_py::t_callback<mppp::real128>, bool, heyoka::taylor_adaptive<mppp::real128> &, bool,
-                            int)
+HEYOKA_S11N_CALLABLE_EXPORT(heyoka_py::t_cb_f128, bool, heyoka::taylor_adaptive<mppp::real128> &, bool, int)
 
 #endif

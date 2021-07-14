@@ -465,6 +465,7 @@ class event_classes_test_case(_ut.TestCase):
     def runTest(self):
         from . import t_event, nt_event, make_vars, event_direction, with_real128
         import numpy as np
+        import pickle
 
         x, v = make_vars("x", "v")
 
@@ -505,6 +506,18 @@ class event_classes_test_case(_ut.TestCase):
             self.assertTrue(
                 "Invalid value selected for the direction of a non-terminal event" in str(cm.exception))
 
+            with self.assertRaises(TypeError) as cm:
+                nt_event(ex=x + v, callback=3, fp_type=desc)
+            self.assertTrue(
+                "An object of type '{}' cannot be used as an event callback because it is not callable".format(str(type(3))) in str(cm.exception))
+
+            ev = nt_event(ex=x + v, callback=lambda _: _,
+                          direction=event_direction.negative, fp_type=desc)
+            ev = pickle.loads(pickle.dumps(ev))
+            self.assertTrue(" non-terminal" in repr(ev))
+            self.assertTrue("(x + v)" in repr(ev))
+            self.assertTrue("event_direction::negative" in repr(ev))
+
             # Terminal event.
             ev = t_event(x + v, fp_type=desc)
 
@@ -538,6 +551,21 @@ class event_classes_test_case(_ut.TestCase):
             self.assertTrue(
                 "Invalid value selected for the direction of a terminal event" in str(cm.exception))
 
+            with self.assertRaises(TypeError) as cm:
+                t_event(x + v, callback=3, fp_type=desc)
+            self.assertTrue(
+                "An object of type '{}' cannot be used as an event callback because it is not callable".format(str(type(3))) in str(cm.exception))
+
+            ev = t_event(x + v, fp_type=desc, direction=event_direction.positive,
+                         cooldown=fp_t(3), callback=lambda _: _)
+
+            ev = pickle.loads(pickle.dumps(ev))
+            self.assertTrue(" terminal" in repr(ev))
+            self.assertTrue("(x + v)" in repr(ev))
+            self.assertTrue("event_direction::positive" in repr(ev))
+            self.assertTrue(": yes" in repr(ev))
+            self.assertTrue("3" in repr(ev))
+
 
 class event_detection_test_case(_ut.TestCase):
     def runTest(self):
@@ -560,12 +588,19 @@ class event_detection_test_case(_ut.TestCase):
             counter = 0
             cur_time = fp_t(0)
 
+            # Track the memory address of the integrator object
+            # in order to make sure that it is passed correctly
+            # into the callback.
+            ta_id = None
+
             def cb0(ta, t, d_sgn):
                 nonlocal counter
                 nonlocal cur_time
+                nonlocal ta_id
 
                 self.assertTrue(t > cur_time)
                 self.assertTrue(counter % 3 == 0 or counter % 3 == 2)
+                self.assertEqual(ta_id, id(ta))
 
                 counter = counter + 1
                 cur_time = t
@@ -573,9 +608,11 @@ class event_detection_test_case(_ut.TestCase):
             def cb1(ta, t, d_sgn):
                 nonlocal counter
                 nonlocal cur_time
+                nonlocal ta_id
 
                 self.assertTrue(t > cur_time)
                 self.assertTrue(counter % 3 == 1)
+                self.assertEqual(ta_id, id(ta))
 
                 counter = counter + 1
                 cur_time = t
@@ -584,10 +621,22 @@ class event_detection_test_case(_ut.TestCase):
                                  nt_events=[nt_event(v*v-1e-10, cb0, fp_type=desc),
                                             nt_event(v, cb1, fp_type=desc)])
 
+            ta_id = id(ta)
+
             self.assertEqual(ta.propagate_until(fp_t(4))[
                              0], taylor_outcome.time_limit)
 
             self.assertEqual(counter, 12)
+
+            # Callback with wrong signature.
+            def cb2(ta, t):
+                pass
+
+            ta = taylor_adaptive(sys=sys, state=[fp_t(0), fp_t(0.25)], fp_type=desc,
+                                 nt_events=[nt_event(v*v-1e-10, cb2, fp_type=desc)])
+
+            with self.assertRaises(TypeError):
+                ta.propagate_until(fp_t(4))
 
             # Terminal events.
             counter_t = 0
@@ -597,8 +646,10 @@ class event_detection_test_case(_ut.TestCase):
             def cb0(ta, t, d_sgn):
                 nonlocal counter_nt
                 nonlocal cur_time
+                nonlocal ta_id
 
                 self.assertTrue(t > cur_time)
+                self.assertEqual(ta_id, id(ta))
 
                 counter_nt = counter_nt + 1
                 cur_time = t
@@ -606,9 +657,11 @@ class event_detection_test_case(_ut.TestCase):
             def cb1(ta, mr, d_sgn):
                 nonlocal cur_time
                 nonlocal counter_t
+                nonlocal ta_id
 
                 self.assertFalse(mr)
                 self.assertTrue(ta.time > cur_time)
+                self.assertEqual(ta_id, id(ta))
 
                 counter_t = counter_t + 1
                 cur_time = ta.time
@@ -619,6 +672,8 @@ class event_detection_test_case(_ut.TestCase):
                                  nt_events=[
                                      nt_event(v*v-1e-10, cb0, fp_type=desc)],
                                  t_events=[t_event(v, callback=cb1, fp_type=desc)])
+
+            ta_id = id(ta)
 
             while True:
                 oc, _ = ta.step()
@@ -641,6 +696,28 @@ class event_detection_test_case(_ut.TestCase):
             self.assertTrue(ta.time > 1)
             self.assertEqual(counter_nt, 3)
             self.assertEqual(counter_t, 2)
+
+            # Callback with wrong signature.
+            def cb2(ta, t):
+                pass
+
+            ta = taylor_adaptive(sys=sys, state=[fp_t(0), fp_t(0.25)], fp_type=desc,
+                                 t_events=[t_event(v*v-1e-10, callback=cb2, fp_type=desc)])
+
+            with self.assertRaises(TypeError):
+                ta.propagate_until(fp_t(4))
+
+            # Callback with wrong retval.
+            def cb3(ta, mr, d_sgn):
+                return "hello"
+
+            ta = taylor_adaptive(sys=sys, state=[fp_t(0), fp_t(0.25)], fp_type=desc,
+                                 t_events=[t_event(v*v-1e-10, callback=cb3, fp_type=desc)])
+
+            with self.assertRaises(TypeError) as cm:
+                ta.propagate_until(fp_t(4))
+            self.assertTrue(
+                "in the construction of the return value of an event callback" in str(cm.exception))
 
 
 class expression_eval_test_case(_ut.TestCase):
