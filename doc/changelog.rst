@@ -3,6 +3,22 @@
 Changelog
 =========
 
+0.12.0 (unreleased)
+-------------------
+
+New
+~~~
+
+- Pickling support has been added to all classes
+  (`#53 <https://github.com/bluescarni/heyoka.py/pull/53>`__).
+
+Changes
+~~~~~~~
+
+- heyoka.py now requires at least version 0.12.0 of the
+  heyoka C++ library
+  (`#53 <https://github.com/bluescarni/heyoka.py/pull/53>`__).
+
 0.11.0 (2021-07-06)
 -------------------
 
