@@ -566,6 +566,17 @@ class event_classes_test_case(_ut.TestCase):
             self.assertTrue(": yes" in repr(ev))
             self.assertTrue("3" in repr(ev))
 
+            # Test also with empty callback.
+            ev = t_event(x + v, fp_type=desc, direction=event_direction.positive,
+                         cooldown=fp_t(3))
+
+            ev = pickle.loads(pickle.dumps(ev))
+            self.assertTrue(" terminal" in repr(ev))
+            self.assertTrue("(x + v)" in repr(ev))
+            self.assertTrue("event_direction::positive" in repr(ev))
+            self.assertTrue(": no" in repr(ev))
+            self.assertTrue("3" in repr(ev))
+
 
 class event_detection_test_case(_ut.TestCase):
     def runTest(self):
