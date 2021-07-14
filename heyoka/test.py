@@ -743,9 +743,93 @@ class expression_eval_test_case(_ut.TestCase):
             self.assertAlmostEqual(a, target**3.1, places=places)
 
 
+class scalar_integrator_test_case(_ut.TestCase):
+    def runTest(self):
+        self.test_s11n()
+
+    def test_s11n(self):
+        from . import nt_event, make_vars, with_real128, sin, taylor_adaptive
+        import numpy as np
+        import pickle
+
+        x, v = make_vars("x", "v")
+
+        fp_types = [("double", float), ("long double", np.longdouble)]
+
+        if with_real128:
+            from mpmath import mpf
+            fp_types.append(("real128", mpf))
+
+        # Use a pendulum for testing purposes.
+        sys = [(x, v), (v, -9.8 * sin(x))]
+
+        def cb0(ta, t, d_sgn):
+            pass
+
+        for desc, fp_t in fp_types:
+            ta = taylor_adaptive(sys=sys, state=[fp_t(0), fp_t(0.25)], fp_type=desc,
+                                 nt_events=[nt_event(v*v-1e-10, cb0, fp_type=desc)])
+
+            ta.step()
+            ta.step()
+            ta.step()
+            ta.step()
+
+            ta2 = pickle.loads(pickle.dumps(ta))
+
+            self.assertEqual(len(ta.t_events), len(ta2.t_events))
+            self.assertEqual(len(ta.nt_events), len(ta2.nt_events))
+
+            if desc != "real128":
+                self.assertTrue(np.all(ta.state == ta2.state))
+                self.assertTrue(np.all(ta.time == ta2.time))
+            else:
+                self.assertTrue(np.all(ta.get_state() == ta2.get_state()))
+                self.assertTrue(np.all(ta.time == ta2.time))
+
+            ta.step()
+            ta2.step()
+
+            if desc != "real128":
+                self.assertTrue(np.all(ta.state == ta2.state))
+                self.assertTrue(np.all(ta.time == ta2.time))
+            else:
+                self.assertTrue(np.all(ta.get_state() == ta2.get_state()))
+                self.assertTrue(np.all(ta.time == ta2.time))
+
+
 class batch_integrator_test_case(_ut.TestCase):
     def runTest(self):
         self.run_propagate_grid_tests()
+        self.test_s11n()
+
+    def test_s11n(self):
+        from . import make_vars, sin, taylor_adaptive_batch
+        import numpy as np
+        import pickle
+
+        x, v = make_vars("x", "v")
+
+        # Use a pendulum for testing purposes.
+        sys = [(x, v), (v, -9.8 * sin(x))]
+
+        ta = taylor_adaptive_batch(sys=sys, state=[[0, .01], [0.25, 0.26]])
+
+        ta.step()
+        ta.step()
+        ta.step()
+        ta.step()
+
+        ta2 = pickle.loads(pickle.dumps(ta))
+
+        self.assertTrue(np.all(ta.state == ta2.state))
+        self.assertTrue(np.all(ta.time == ta2.time))
+
+        ta.step()
+        ta2.step()
+
+        self.assertTrue(np.all(ta.state == ta2.state))
+        self.assertTrue(np.all(ta.time == ta2.time))
 
     def run_propagate_grid_tests(self):
         from . import make_vars, taylor_adaptive, taylor_adaptive_batch, sin
@@ -1031,6 +1115,51 @@ class zero_division_error_test_case(_ut.TestCase):
             "Division by zero" in str(cm.exception))
 
 
+class expression_test_case(_ut.TestCase):
+    def runTest(self):
+        self.test_s11n()
+
+    def test_s11n(self):
+        from . import make_vars, expression, with_real128, sin, cos
+        from numpy import longdouble
+        import pickle
+
+        x, y = make_vars("x", "y")
+
+        ex = x + 2.*y
+        self.assertEqual(ex, pickle.loads(pickle.dumps(ex)))
+
+        ex = sin(longdouble('1.1')*x) + 2.*y
+        self.assertEqual(ex, pickle.loads(pickle.dumps(ex)))
+
+        if not with_real128:
+            return
+
+        from mpmath import mpf
+
+        # Quad precision.
+        ex = sin(longdouble('1.1')*x) + mpf('1.3')*cos(2.*y)
+        self.assertEqual(ex, pickle.loads(pickle.dumps(ex)))
+
+
+class llvm_state_test_case(_ut.TestCase):
+    def runTest(self):
+        self.test_s11n()
+
+    def test_s11n(self):
+        from . import make_vars, sin, taylor_adaptive
+        import pickle
+
+        x, v = make_vars("x", "v")
+
+        sys = [(x, v), (v, -9.8 * sin(x))]
+
+        ta = taylor_adaptive(sys=sys, state=[0., 0.25])
+        ls = ta.llvm_state
+
+        self.assertEqual(ls.get_ir(), pickle.loads(pickle.dumps(ls)).get_ir())
+
+
 def run_test_suite():
     from . import make_nbody_sys, taylor_adaptive, with_real128
 
@@ -1045,10 +1174,13 @@ def run_test_suite():
     retval = 0
 
     suite = _ut.TestLoader().loadTestsFromTestCase(taylor_add_jet_test_case)
+    suite.addTest(llvm_state_test_case())
+    suite.addTest(expression_test_case())
     suite.addTest(event_classes_test_case())
     suite.addTest(event_detection_test_case())
     suite.addTest(expression_eval_test_case())
     suite.addTest(batch_integrator_test_case())
+    suite.addTest(scalar_integrator_test_case())
     suite.addTest(kepE_test_case())
     suite.addTest(sympy_test_case())
     suite.addTest(zero_division_error_test_case())
