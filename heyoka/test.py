@@ -482,23 +482,55 @@ class event_classes_test_case(_ut.TestCase):
             self.assertTrue(" non-terminal" in repr(ev))
             self.assertTrue("(x + v)" in repr(ev))
             self.assertTrue("event_direction::any" in repr(ev))
+            self.assertEqual(ev.expression, x + v)
+            self.assertEqual(ev.direction, event_direction.any)
+            self.assertFalse(ev.callback is None)
 
             ev = nt_event(ex=x + v, callback=lambda _: _, fp_type=desc)
             self.assertTrue(" non-terminal" in repr(ev))
             self.assertTrue("(x + v)" in repr(ev))
             self.assertTrue("event_direction::any" in repr(ev))
+            self.assertEqual(ev.expression, x + v)
+            self.assertEqual(ev.direction, event_direction.any)
+            self.assertFalse(ev.callback is None)
 
             ev = nt_event(ex=x + v, callback=lambda _: _,
                           direction=event_direction.positive, fp_type=desc)
             self.assertTrue(" non-terminal" in repr(ev))
             self.assertTrue("(x + v)" in repr(ev))
             self.assertTrue("event_direction::positive" in repr(ev))
+            self.assertEqual(ev.expression, x + v)
+            self.assertEqual(ev.direction, event_direction.positive)
+            self.assertFalse(ev.callback is None)
 
             ev = nt_event(ex=x + v, callback=lambda _: _,
                           direction=event_direction.negative, fp_type=desc)
             self.assertTrue(" non-terminal" in repr(ev))
             self.assertTrue("(x + v)" in repr(ev))
             self.assertTrue("event_direction::negative" in repr(ev))
+            self.assertEqual(ev.expression, x + v)
+            self.assertEqual(ev.direction, event_direction.negative)
+            self.assertFalse(ev.callback is None)
+
+            class local_cb:
+                def __init__(self):
+                    self.n = 0
+
+                def __call__(self, ta, t, d_sgn):
+                    self.n = self.n + 1
+
+            lcb = local_cb()
+            ev = nt_event(ex=x + v, callback=lcb,
+                          direction=event_direction.negative, fp_type=desc)
+            self.assertEqual(ev.callback.n, 0)
+            cb = ev.callback
+            cb(1, 2, 3)
+            cb(1, 2, 3)
+            cb(1, 2, 3)
+            self.assertEqual(ev.callback.n, 3)
+            ev.callback.n = 0
+            self.assertEqual(ev.callback.n, 0)
+            self.assertEqual(id(lcb), id(ev.callback))
 
             with self.assertRaises(ValueError) as cm:
                 nt_event(ex=x + v, callback=lambda _: _,
@@ -510,6 +542,11 @@ class event_classes_test_case(_ut.TestCase):
                 nt_event(ex=x + v, callback=3, fp_type=desc)
             self.assertTrue(
                 "An object of type '{}' cannot be used as an event callback because it is not callable".format(str(type(3))) in str(cm.exception))
+
+            with self.assertRaises(TypeError) as cm:
+                nt_event(ex=x + v, callback=None, fp_type=desc)
+            self.assertTrue(
+                "An object of type '{}' cannot be used as an event callback because it is not callable".format(str(type(None))) in str(cm.exception))
 
             ev = nt_event(ex=x + v, callback=lambda _: _,
                           direction=event_direction.negative, fp_type=desc)
@@ -526,6 +563,10 @@ class event_classes_test_case(_ut.TestCase):
             self.assertTrue("event_direction::any" in repr(ev))
             self.assertTrue(": no" in repr(ev))
             self.assertTrue("auto" in repr(ev))
+            self.assertEqual(ev.expression, x + v)
+            self.assertEqual(ev.direction, event_direction.any)
+            self.assertEqual(ev.cooldown, fp_t(-1))
+            self.assertTrue(ev.callback is None)
 
             ev = t_event(x + v, fp_type=desc,
                          direction=event_direction.negative, cooldown=fp_t(3))
@@ -535,6 +576,10 @@ class event_classes_test_case(_ut.TestCase):
             self.assertTrue("event_direction::negative" in repr(ev))
             self.assertTrue(": no" in repr(ev))
             self.assertTrue("3" in repr(ev))
+            self.assertEqual(ev.expression, x + v)
+            self.assertEqual(ev.direction, event_direction.negative)
+            self.assertEqual(ev.cooldown, fp_t(3))
+            self.assertTrue(ev.callback is None)
 
             ev = t_event(x + v, fp_type=desc, direction=event_direction.positive,
                          cooldown=fp_t(3), callback=lambda _: _)
@@ -544,6 +589,44 @@ class event_classes_test_case(_ut.TestCase):
             self.assertTrue("event_direction::positive" in repr(ev))
             self.assertTrue(": yes" in repr(ev))
             self.assertTrue("3" in repr(ev))
+            self.assertEqual(ev.expression, x + v)
+            self.assertEqual(ev.direction, event_direction.positive)
+            self.assertEqual(ev.cooldown, fp_t(3))
+            self.assertFalse(ev.callback is None)
+
+            class local_cb:
+                def __init__(self):
+                    self.n = 0
+
+                def __call__(self, ta, mr, d_sgn):
+                    self.n = self.n + 1
+
+            lcb = local_cb()
+            ev = t_event(x + v, fp_type=desc, direction=event_direction.positive,
+                         cooldown=fp_t(3), callback=lcb)
+
+            self.assertTrue(" terminal" in repr(ev))
+            self.assertTrue("(x + v)" in repr(ev))
+            self.assertTrue("event_direction::positive" in repr(ev))
+            self.assertTrue(": yes" in repr(ev))
+            self.assertTrue("3" in repr(ev))
+            self.assertEqual(ev.expression, x + v)
+            self.assertEqual(ev.direction, event_direction.positive)
+            self.assertEqual(ev.cooldown, fp_t(3))
+            self.assertFalse(ev.callback is None)
+            self.assertEqual(ev.callback.n, 0)
+            cb = ev.callback
+            cb(1, 2, 3)
+            cb(1, 2, 3)
+            cb(1, 2, 3)
+            self.assertEqual(ev.callback.n, 3)
+            ev.callback.n = 0
+            self.assertEqual(ev.callback.n, 0)
+            self.assertEqual(id(lcb), id(ev.callback))
+
+            ev = t_event(x + v, fp_type=desc, direction=event_direction.positive,
+                         cooldown=fp_t(3), callback=None)
+            self.assertTrue(ev.callback is None)
 
             with self.assertRaises(ValueError) as cm:
                 t_event(x + v, fp_type=desc, direction=event_direction(45),

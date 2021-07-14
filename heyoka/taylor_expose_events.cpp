@@ -187,6 +187,23 @@ void expose_taylor_nt_event_impl(py::module &m, const std::string &suffix)
                  oss << e;
                  return oss.str();
              })
+        // Expression.
+        .def_property_readonly("expression", &ev_t::get_expression)
+        // Callback.
+        .def_property_readonly(
+            "callback",
+            [](const ev_t &e) -> py::object {
+                const auto ptr
+                    = e.get_callback().template extract<ev_callback<void, hey::taylor_adaptive<T> &, T, int>>();
+
+                if (ptr) {
+                    return ptr->m_obj;
+                } else {
+                    return py::none{};
+                }
+            })
+        // Direction.
+        .def_property_readonly("direction", &ev_t::get_direction)
         // Copy/deepcopy.
         .def("__copy__", [](const ev_t &e) { return e; })
         .def(
@@ -233,6 +250,25 @@ void expose_taylor_t_event_impl(py::module &m, const std::string &suffix)
                  oss << e;
                  return oss.str();
              })
+        // Expression.
+        .def_property_readonly("expression", &ev_t::get_expression)
+        // Callback.
+        .def_property_readonly(
+            "callback",
+            [](const ev_t &e) -> py::object {
+                const auto ptr
+                    = e.get_callback().template extract<ev_callback<bool, hey::taylor_adaptive<T> &, bool, int>>();
+
+                if (ptr) {
+                    return ptr->m_obj;
+                } else {
+                    return py::none{};
+                }
+            })
+        // Direction.
+        .def_property_readonly("direction", &ev_t::get_direction)
+        // Cooldown.
+        .def_property_readonly("cooldown", &ev_t::get_cooldown)
         // Copy/deepcopy.
         .def("__copy__", [](const ev_t &e) { return e; })
         .def(
