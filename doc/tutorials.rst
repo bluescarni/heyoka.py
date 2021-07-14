@@ -37,6 +37,7 @@ Basics
   notebooks/Non-autonomous systems.ipynb
   notebooks/Dense output.ipynb
   notebooks/sympy_interop.ipynb
+  notebooks/pickling.ipynb
 
 Advanced features
 -----------------
