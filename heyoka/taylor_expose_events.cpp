@@ -313,6 +313,9 @@ void expose_taylor_nt_event_f128(py::module &m)
 
 #endif
 
+// NOTE: create a couple of shortcuts for the event callback wrappers,
+// because if we use their full name we ran into issues with the
+// Boost.Serialization library complaining that the class name is too long.
 template <typename T>
 using nt_callback = detail::ev_callback<void, heyoka::taylor_adaptive<T> &, T, int>;
 
@@ -321,6 +324,7 @@ using t_callback = detail::ev_callback<bool, heyoka::taylor_adaptive<T> &, bool,
 
 } // namespace heyoka_py
 
+// Register the callback wrappers in the serialisation system.
 HEYOKA_S11N_CALLABLE_EXPORT(heyoka_py::nt_callback<double>, void, heyoka::taylor_adaptive<double> &, double, int)
 HEYOKA_S11N_CALLABLE_EXPORT(heyoka_py::nt_callback<long double>, void, heyoka::taylor_adaptive<long double> &,
                             long double, int)
