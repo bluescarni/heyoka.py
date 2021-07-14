@@ -891,6 +891,29 @@ class scalar_integrator_test_case(_ut.TestCase):
                 self.assertTrue(np.all(ta.get_state() == ta2.get_state()))
                 self.assertTrue(np.all(ta.time == ta2.time))
 
+            # Try also an integrator with stateful event callback.
+            class cb1:
+                def __init__(self):
+                    self.n = 0
+
+                def __call__(self, ta, t, d_sgn):
+                    self.n = self.n + 1
+
+            clb = cb1()
+            ta = taylor_adaptive(sys=sys, state=[fp_t(0), fp_t(0.25)], fp_type=desc,
+                                 nt_events=[nt_event(v*v-1e-10, clb, fp_type=desc)])
+
+            self.assertNotEqual(id(clb), id(ta.nt_events[0].callback))
+
+            self.assertEqual(ta.nt_events[0].callback.n, 0)
+
+            ta.propagate_until(fp_t(10))
+
+            ta2 = pickle.loads(pickle.dumps(ta))
+
+            self.assertEqual(
+                ta.nt_events[0].callback.n, ta2.nt_events[0].callback.n)
+
 
 class batch_integrator_test_case(_ut.TestCase):
     def runTest(self):
