@@ -11,6 +11,8 @@ New
 
 - Pickling support has been added to all classes
   (`#53 <https://github.com/bluescarni/heyoka.py/pull/53>`__).
+- Event properties can now be accessed after construction
+  (`#53 <https://github.com/bluescarni/heyoka.py/pull/53>`__).
 
 Changes
 ~~~~~~~
