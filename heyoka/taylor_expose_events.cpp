@@ -39,6 +39,7 @@
 
 #include "common_utils.hpp"
 #include "long_double_caster.hpp"
+#include "pickle_wrappers.hpp"
 #include "taylor_expose_events.hpp"
 
 namespace heyoka_py
@@ -155,45 +156,6 @@ private:
     BOOST_SERIALIZATION_SPLIT_MEMBER()
 };
 
-template <typename E>
-py::tuple event_pickle_getstate(const E &ev)
-{
-    std::ostringstream oss;
-    {
-        boost::archive::binary_oarchive oa(oss);
-        oa << ev;
-    }
-
-    return py::make_tuple(py::bytes(oss.str()));
-}
-
-template <typename E>
-E event_pickle_setstate(py::tuple state)
-{
-    using fmt::literals::operator""_format;
-
-    if (py::len(state) != 1) {
-        py_throw(PyExc_ValueError, ("The state tuple passed for event deserialization "
-                                    "must have 1 element, but instead it has {} element(s)"_format(py::len(state)))
-                                       .c_str());
-    }
-
-    auto ptr = PyBytes_AsString(state[0].ptr());
-    if (!ptr) {
-        py_throw(PyExc_TypeError, "A bytes object is needed to deserialize an event");
-    }
-
-    std::istringstream iss;
-    iss.str(std::string(ptr, ptr + py::len(state[0])));
-    E ev;
-    {
-        boost::archive::binary_iarchive iarchive(iss);
-        iarchive >> ev;
-    }
-
-    return ev;
-}
-
 // Helper to expose non-terminal events.
 template <typename T>
 void expose_taylor_nt_event_impl(py::module &m, const std::string &suffix)
@@ -230,7 +192,7 @@ void expose_taylor_nt_event_impl(py::module &m, const std::string &suffix)
         .def(
             "__deepcopy__", [](const ev_t &e, py::dict) { return e; }, "memo"_a)
         // Pickle support.
-        .def(py::pickle(&event_pickle_getstate<ev_t>, &event_pickle_setstate<ev_t>));
+        .def(py::pickle(&pickle_getstate_wrapper<ev_t>, &pickle_setstate_wrapper<ev_t>));
 }
 
 // Helper to expose terminal events.
@@ -276,7 +238,7 @@ void expose_taylor_t_event_impl(py::module &m, const std::string &suffix)
         .def(
             "__deepcopy__", [](const ev_t &e, py::dict) { return e; }, "memo"_a)
         // Pickle support.
-        .def(py::pickle(&event_pickle_getstate<ev_t>, &event_pickle_setstate<ev_t>));
+        .def(py::pickle(&pickle_getstate_wrapper<ev_t>, &pickle_setstate_wrapper<ev_t>));
 }
 
 } // namespace

@@ -43,6 +43,7 @@
 
 #include "common_utils.hpp"
 #include "long_double_caster.hpp"
+#include "pickle_wrappers.hpp"
 #include "taylor_expose_integrator.hpp"
 
 namespace heyoka_py
@@ -120,6 +121,9 @@ void expose_taylor_integrator_common(py::class_<hey::taylor_adaptive<T>> &cl)
         .def("__copy__", [](const hey::taylor_adaptive<T> &ta) { return ta; })
         .def(
             "__deepcopy__", [](const hey::taylor_adaptive<T> &ta, py::dict) { return ta; }, "memo"_a)
+        // Pickle support.
+        .def(py::pickle(&pickle_getstate_wrapper<hey::taylor_adaptive<T>>,
+                        &pickle_setstate_wrapper<hey::taylor_adaptive<T>>))
         // Various read-only properties.
         .def_property_readonly("last_h", &hey::taylor_adaptive<T>::get_last_h)
         .def_property_readonly("order", &hey::taylor_adaptive<T>::get_order)
