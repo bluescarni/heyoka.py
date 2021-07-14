@@ -8,6 +8,7 @@
 
 #include <heyoka/config.hpp>
 
+#include <cassert>
 #include <cstddef>
 #include <sstream>
 #include <string>
@@ -192,15 +193,14 @@ void expose_taylor_nt_event_impl(py::module &m, const std::string &suffix)
         // Callback.
         .def_property_readonly(
             "callback",
-            [](const ev_t &e) -> py::object {
+            [](const ev_t &e) {
                 const auto ptr
                     = e.get_callback().template extract<ev_callback<void, hey::taylor_adaptive<T> &, T, int>>();
 
-                if (ptr) {
-                    return ptr->m_obj;
-                } else {
-                    return py::none{};
-                }
+                // NOTE: ptr should never be null, unless
+                // the event was unpickled from a broken archive.
+                assert(ptr);
+                return ptr->m_obj;
             })
         // Direction.
         .def_property_readonly("direction", &ev_t::get_direction)
@@ -259,6 +259,8 @@ void expose_taylor_t_event_impl(py::module &m, const std::string &suffix)
                 const auto ptr
                     = e.get_callback().template extract<ev_callback<bool, hey::taylor_adaptive<T> &, bool, int>>();
 
+                // NOTE: the callback could be empty, in which case
+                // extraction returns a null pointer.
                 if (ptr) {
                     return ptr->m_obj;
                 } else {
