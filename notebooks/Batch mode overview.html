@@ -454,11 +454,6 @@ v^\prime = \cos t - \alpha v - \sin(x)
 </pre></div>
 </div>
 </div>
-<div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[2021-07-15 08:46:55.565] [heyoka] [info] heyoka logger initialised
-</pre></div>
-</div>
-</div>
 </div>
 <p>As usual, we begin by creating the symbolic state variables <span class="math notranslate nohighlight">\(x\)</span> and <span class="math notranslate nohighlight">\(v\)</span>.
 We also store in a constant the value of the batch size <span class="math notranslate nohighlight">\(n = 4\)</span> for later use.</p>
@@ -715,8 +710,8 @@ Time:
 <div class="section" id="dense-output">
 <h2>Dense output<a class="headerlink" href="#dense-output" title="Permalink to this headline">¶</a></h2>
 <p>The batch integrator also supports <a class="reference internal" href="Dense%20output.html"><span class="doc std std-doc">dense output</span></a>. Like for <code class="docutils literal notranslate"><span class="pre">taylor_adaptive</span></code>,
-enabling dense output is a two-step process. First we invoke one of the <code class="docutils literal notranslate"><span class="pre">step()</span></code> functions
-with the optional flag set to <code class="docutils literal notranslate"><span class="pre">True</span></code>. This will write the Taylor coefficients that were
+enabling dense output is a two-step process. First we invoke one of the <code class="docutils literal notranslate"><span class="pre">step()</span></code> (or <code class="docutils literal notranslate"><span class="pre">propagate_*()</span></code>) functions
+with the optional flag <code class="docutils literal notranslate"><span class="pre">write_tc</span></code> set to <code class="docutils literal notranslate"><span class="pre">True</span></code>. This will write the Taylor coefficients that were
 used to propagate the last timestep into an internal vector:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -726,7 +721,7 @@ used to propagate the last timestep into an internal vector:</p>
 
 <span class="c1"># Propagate for a timestep, making</span>
 <span class="c1"># sure the Taylor coefficients are recorded.</span>
-<span class="n">ta</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">ta</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><span class="n">write_tc</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
 
 <span class="c1"># Print the array of Taylor coefficients.</span>
 <span class="n">ta</span><span class="o">.</span><span class="n">tc</span>
