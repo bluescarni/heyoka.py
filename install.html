@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Installation &#8212; heyoka.py 0.11.0 documentation</title>
+    <title>Installation &#8212; heyoka.py 0.12.0 documentation</title>
     
   <link href="_static/css/theme.css" rel="stylesheet" />
   <link href="_static/css/index.c5995385ac14fb8791e8eb36b4908be2.css" rel="stylesheet" />
@@ -61,7 +61,7 @@
       <img src="_static/white_logo.png" class="logo" alt="logo">
       
       
-      <h1 class="site-logo" id="site-title">heyoka.py 0.11.0 documentation</h1>
+      <h1 class="site-logo" id="site-title">heyoka.py 0.12.0 documentation</h1>
       
     </a>
 </div><form class="bd-search d-flex align-items-center" action="search.html" method="get">
@@ -128,6 +128,11 @@
    <li class="toctree-l2">
     <a class="reference internal" href="notebooks/sympy_interop.html">
      Interoperability with SymPy
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="notebooks/pickling.html">
+     Pickle support
     </a>
    </li>
    <li class="toctree-l2">
@@ -387,25 +392,27 @@
   <div class="section" id="installation">
 <h1>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="dependencies">
-<h2>Dependencies<a class="headerlink" href="#dependencies" title="Permalink to this headline">¶</a></h2>
-<p>heyoka.py has the following <strong>mandatory</strong> runtime dependencies:</p>
+<span id="installation-deps"></span><h2>Dependencies<a class="headerlink" href="#dependencies" title="Permalink to this headline">¶</a></h2>
+<p>heyoka.py has several Python and C++ dependencies. On the C++ side, heyoka.py depends on:</p>
 <ul class="simple">
-<li><p><a class="reference external" href="https://www.python.org/">Python</a> 3.4 or later (Python 2.x is
-<strong>not</strong> supported),</p></li>
 <li><p>the <a class="reference external" href="https://github.com/bluescarni/heyoka">heyoka C++ library</a>,
-version 0.11.0 or later,</p></li>
-<li><p>the <a class="reference external" href="https://fmt.dev/latest/index.html">{fmt}</a> library,</p></li>
-<li><p>the <a class="reference external" href="https://github.com/gabime/spdlog">spdlog</a> library,</p></li>
-<li><p><a class="reference external" href="https://numpy.org/">NumPy</a>.</p></li>
+version 0.12.0 or later (<strong>mandatory</strong>),</p></li>
+<li><p>the <a class="reference external" href="https://www.boost.org/">Boost</a> C++ libraries (<strong>mandatory</strong>),</p></li>
+<li><p>the <a class="reference external" href="https://fmt.dev/latest/index.html">{fmt}</a> library (<strong>mandatory</strong>),</p></li>
+<li><p>the <a class="reference external" href="https://github.com/gabime/spdlog">spdlog</a> library (<strong>mandatory</strong>),</p></li>
+<li><p>the <a class="reference external" href="https://github.com/bluescarni/mppp">mp++</a> library (<strong>mandatory</strong> if the
+heyoka C++ library was compiled with the <code class="docutils literal notranslate"><span class="pre">HEYOKA_WITH_MPPP</span></code> option on - see the
+<a class="reference external" href="https://bluescarni.github.io/heyoka/install.html#installation" title="(in heyoka)"><span class="xref std std-ref">heyoka C++ installation instructions</span></a>).</p></li>
 </ul>
-<p>Additionally, heyoka.py has the following <strong>optional</strong> runtime
-dependencies:</p>
+<p>On the Python side, heyoka.py requires at least Python 3.4
+(Python 2.x is <strong>not</strong> supported) and depends on:</p>
 <ul class="simple">
-<li><p><a class="reference external" href="https://mpmath.org/">mpmath</a> (necessary if the heyoka C++ library
-was compiled with support for quadruple-precision computations),</p></li>
-<li><p>the <a class="reference external" href="https://github.com/bluescarni/mppp">mp++ library</a> (necessary if the heyoka C++ library
-was compiled with support for quadruple-precision computations),</p></li>
-<li><p><a class="reference external" href="https://www.sympy.org/en/index.html">SymPy</a> (for converting heyoka.py
+<li><p><a class="reference external" href="https://numpy.org/">NumPy</a> (<strong>mandatory</strong>),</p></li>
+<li><p><a class="reference external" href="https://github.com/cloudpipe/cloudpickle">cloudpickle</a> (<strong>mandatory</strong>),</p></li>
+<li><p><a class="reference external" href="https://mpmath.org/">mpmath</a> (<strong>mandatory</strong> if the
+heyoka C++ library was compiled with the <code class="docutils literal notranslate"><span class="pre">HEYOKA_WITH_MPPP</span></code> option on - see the
+<a class="reference external" href="https://bluescarni.github.io/heyoka/install.html#installation" title="(in heyoka)"><span class="xref std std-ref">heyoka C++ installation instructions</span></a>),</p></li>
+<li><p><a class="reference external" href="https://www.sympy.org/en/index.html">SymPy</a> (<em>optional</em>, for converting heyoka.py
 expressions to/from SymPy expressions).</p></li>
 </ul>
 </div>
@@ -432,20 +439,18 @@ your conda installation.</p>
 </div>
 <div class="section" id="installation-from-source">
 <h2>Installation from source<a class="headerlink" href="#installation-from-source" title="Permalink to this headline">¶</a></h2>
-<p>In order to install heyoka.py from source, you will need:</p>
+<p>heyoka.py is written in modern C++, and it requires a compiler able to understand
+at least C++17. The library is regularly tested on
+a continuous integration pipeline which currently includes:</p>
 <ul class="simple">
-<li><p>a C++17 capable compiler (recent versions of GCC,
-Clang or MSVC should do),</p></li>
-<li><p>a <a class="reference external" href="https://www.python.org/">Python</a> installation,</p></li>
+<li><p>GCC 9 on Linux,</p></li>
+<li><p>Clang 11 on OSX,</p></li>
+<li><p>MSVC 2017 + <code class="docutils literal notranslate"><span class="pre">clang-cl</span></code> on Windows.</p></li>
+</ul>
+<p>In addition to the dependencies enumerated <a class="reference internal" href="#installation-deps"><span class="std std-ref">earlier</span></a>,
+installation from source requires also:</p>
+<ul class="simple">
 <li><p><a class="reference external" href="https://github.com/pybind/pybind11">pybind11</a> (version &gt;= 2.6),</p></li>
-<li><p>the <a class="reference external" href="https://github.com/bluescarni/heyoka">heyoka C++ library</a>,
-version 0.11.0 or later,</p></li>
-<li><p>the <a class="reference external" href="https://fmt.dev/latest/index.html">{fmt}</a> library,</p></li>
-<li><p>the <a class="reference external" href="https://github.com/gabime/spdlog">spdlog</a> library,</p></li>
-<li><p>the <a class="reference external" href="https://www.boost.org/">Boost libraries</a>,</p></li>
-<li><p>the <a class="reference external" href="https://github.com/bluescarni/mppp">mp++ library</a> (optional,
-necessary only if the heyoka C++ library
-was compiled with support for quadruple-precision computations),</p></li>
 <li><p><a class="reference external" href="https://cmake.org/">CMake</a>, version 3.8 or later.</p></li>
 </ul>
 <p>After making sure the dependencies are installed on your system, you can
@@ -456,7 +461,7 @@ version of heyoka.py via <code class="docutils literal notranslate"><span class=
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>git clone https://github.com/bluescarni/heyoka.py.git
 </pre></div>
 </div>
-<p>We follow the usual PR-based development workflow, thus heyoka.py’s <code class="docutils literal notranslate"><span class="pre">master</span></code>
+<p>We follow the usual PR-based development workflow, thus heyoka.py’s <code class="docutils literal notranslate"><span class="pre">main</span></code>
 branch is normally kept in a working state.</p>
 <p>After downloading and/or unpacking heyoka.py’s
 source code, go to heyoka.py’s

@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>The expression system &#8212; heyoka.py 0.11.0 documentation</title>
+    <title>The expression system &#8212; heyoka.py 0.12.0 documentation</title>
     
   <link href="../_static/css/theme.css" rel="stylesheet" />
   <link href="../_static/css/index.c5995385ac14fb8791e8eb36b4908be2.css" rel="stylesheet" />
@@ -63,7 +63,7 @@
       <img src="../_static/white_logo.png" class="logo" alt="logo">
       
       
-      <h1 class="site-logo" id="site-title">heyoka.py 0.11.0 documentation</h1>
+      <h1 class="site-logo" id="site-title">heyoka.py 0.12.0 documentation</h1>
       
     </a>
 </div><form class="bd-search d-flex align-items-center" action="../search.html" method="get">
@@ -130,6 +130,11 @@
    <li class="toctree-l2">
     <a class="reference internal" href="sympy_interop.html">
      Interoperability with SymPy
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="pickling.html">
+     Pickle support
     </a>
    </li>
    <li class="toctree-l2">
@@ -401,7 +406,7 @@ mathematical notation:</p>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[2021-07-06 11:58:58.281] [heyoka] [info] heyoka logger initialised
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[2021-07-15 08:49:52.697] [heyoka] [info] heyoka logger initialised
 </pre></div>
 </div>
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>The euclidean distance is: sqrt(((square(x) + square(y)) + square(z)))
@@ -409,7 +414,7 @@ mathematical notation:</p>
 </div>
 </div>
 </div>
-<p>Numerical constants can be created using any of the floating-point types supported by heyoka.py:</p>
+<p>Numerical constants can be created using any of the floating-point types supported by heyoka.py. For instance:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Double-precision 1.1: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">hy</span><span class="o">.</span><span class="n">expression</span><span class="p">(</span><span class="mf">1.1</span><span class="p">)))</span>
@@ -432,10 +437,11 @@ Quadruple-precision 1.1: 1.10000000000000000000000000000000008
 </div>
 </div>
 </div>
-<p>Note that support for extended-precision floating-point types varies depending on the software/hardware platform. Specifically:</p>
+<p>Note that, while double precision is always supported in heyoka.py, support for extended-precision floating-point types varies depending on the software/hardware platform. Specifically:</p>
 <ul class="simple">
-<li><p>extended-precision support requires an x86 processor and a compiler toolchain that makes available the 80-bit floating-point type as the C++ <code class="docutils literal notranslate"><span class="pre">long</span> <span class="pre">double</span></code> type;</p></li>
-<li><p>quadruple-precision support requires the availability of the non-standard <code class="docutils literal notranslate"><span class="pre">__float128</span></code> type, which is provided by GCC and clang on some 64-bit platforms. Additionally, <a class="reference external" href="https://mpmath.org/">mpmath</a> must be installed and the working precision must be set exactly to 113 bits (as shown above).</p></li>
+<li><p>on x86 processors, the <code class="docutils literal notranslate"><span class="pre">long</span> <span class="pre">double</span></code> type corresponds to 80-bit extended precision on most platforms (the exception being MSVC on Windows, where <code class="docutils literal notranslate"><span class="pre">long</span> <span class="pre">double</span> <span class="pre">==</span> <span class="pre">double</span></code>);</p></li>
+<li><p>on some platforms (e.g., Unix ARM 64), the <code class="docutils literal notranslate"><span class="pre">long</span> <span class="pre">double</span></code> type implements the IEEE <a class="reference external" href="https://en.wikipedia.org/wiki/Quadruple-precision_floating-point_format">quadruple-precision floating-point format</a>;</p></li>
+<li><p>on some platforms where <code class="docutils literal notranslate"><span class="pre">long</span> <span class="pre">double</span></code> does <strong>not</strong> have quadruple precision, a non-standard quadruple-precision type called <code class="docutils literal notranslate"><span class="pre">__float128</span></code> is instead available. On such platforms, if heyoka.py and the heyoka C++ library were compiled with support for the <a class="reference external" href="https://github.com/bluescarni/mppp">mp++ library</a> and <a class="reference external" href="https://mpmath.org/">mpmath</a> is installed, quadruple precision is supported via the <code class="docutils literal notranslate"><span class="pre">mpf</span></code> type (provided that the <code class="docutils literal notranslate"><span class="pre">mpmath</span></code> working precision is set exactly to 113 bits, as shown above).</p></li>
 </ul>
 <p>In addition to the standard mathematical operators, heyoka.py’s expression system
 also supports the following elementary functions (with more to come in the near future):</p>

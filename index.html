@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>heyoka.py &#8212; heyoka.py 0.11.0 documentation</title>
+    <title>heyoka.py &#8212; heyoka.py 0.12.0 documentation</title>
     
   <link href="_static/css/theme.css" rel="stylesheet" />
   <link href="_static/css/index.c5995385ac14fb8791e8eb36b4908be2.css" rel="stylesheet" />
@@ -60,7 +60,7 @@
       <img src="_static/white_logo.png" class="logo" alt="logo">
       
       
-      <h1 class="site-logo" id="site-title">heyoka.py 0.11.0 documentation</h1>
+      <h1 class="site-logo" id="site-title">heyoka.py 0.12.0 documentation</h1>
       
     </a>
 </div><form class="bd-search d-flex align-items-center" action="search.html" method="get">
@@ -127,6 +127,11 @@
    <li class="toctree-l2">
     <a class="reference internal" href="notebooks/sympy_interop.html">
      Interoperability with SymPy
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="notebooks/pickling.html">
+     Pickle support
     </a>
    </li>
    <li class="toctree-l2">
@@ -363,6 +368,7 @@ billions of timesteps,</p></li>
 <li><p>accurate and reliable event detection,</p></li>
 <li><p>batch mode integration to harness the power of modern
 <a class="reference external" href="https://en.wikipedia.org/wiki/SIMD">SIMD</a> instruction sets,</p></li>
+<li><p>interoperability with <a class="reference external" href="https://www.sympy.org/en/index.html">SymPy</a>,</p></li>
 <li><p>a high-performance implementation of Taylor’s method based on
 automatic differentiation techniques and aggressive just-in-time
 compilation via <a class="reference external" href="https://llvm.org/">LLVM</a>.</p></li>
@@ -412,16 +418,17 @@ The authors are Francesco Biscani (Max Planck Institute for Astronomy) and Dario
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="changelog.html">Changelog</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="changelog.html#unreleased">0.12.0 (unreleased)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="changelog.html#id2">0.11.0 (2021-07-06)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="changelog.html#id3">0.10.0 (2021-06-09)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="changelog.html#id6">0.9.0 (2021-05-25)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="changelog.html#id9">0.8.0 (2021-04-28)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="changelog.html#id12">0.7.0 (2021-04-22)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="changelog.html#id15">0.6.1 (2021-04-08)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="changelog.html#id18">0.6.0 (2021-04-06)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="changelog.html#id21">0.5.0 (2021-02-25)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="changelog.html#id24">0.4.0 (2021-02-20)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="changelog.html#id27">0.3.0 (2021-02-13)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="changelog.html#id5">0.10.0 (2021-06-09)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="changelog.html#id8">0.9.0 (2021-05-25)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="changelog.html#id11">0.8.0 (2021-04-28)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="changelog.html#id14">0.7.0 (2021-04-22)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="changelog.html#id17">0.6.1 (2021-04-08)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="changelog.html#id20">0.6.0 (2021-04-06)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="changelog.html#id23">0.5.0 (2021-02-25)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="changelog.html#id26">0.4.0 (2021-02-20)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="changelog.html#id29">0.3.0 (2021-02-13)</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="breaking_changes.html">Breaking changes</a><ul>
