@@ -1,27 +1,31 @@
 Installation
 ============
 
+.. _installation_deps:
+
 Dependencies
 ------------
 
-heyoka.py has the following **mandatory** runtime dependencies:
+heyoka.py has several Python and C++ dependencies. On the C++ side, heyoka.py depends on:
 
-* `Python <https://www.python.org/>`__ 3.4 or later (Python 2.x is
-  **not** supported),
 * the `heyoka C++ library <https://github.com/bluescarni/heyoka>`__,
-  version 0.11.0 or later,
-* the `{fmt} <https://fmt.dev/latest/index.html>`__ library,
-* the `spdlog <https://github.com/gabime/spdlog>`__ library,
-* `NumPy <https://numpy.org/>`__.
+  version 0.12.0 or later (**mandatory**),
+* the `Boost <https://www.boost.org/>`__ C++ libraries (**mandatory**),
+* the `{fmt} <https://fmt.dev/latest/index.html>`__ library (**mandatory**),
+* the `spdlog <https://github.com/gabime/spdlog>`__ library (**mandatory**),
+* the `mp++ <https://github.com/bluescarni/mppp>`__ library (**mandatory** if the
+  heyoka C++ library was compiled with the ``HEYOKA_WITH_MPPP`` option on - see the
+  :ref:`heyoka C++ installation instructions <hy:installation>`).
 
-Additionally, heyoka.py has the following **optional** runtime
-dependencies:
+On the Python side, heyoka.py requires at least Python 3.4
+(Python 2.x is **not** supported) and depends on:
 
-* `mpmath <https://mpmath.org/>`__ (necessary if the heyoka C++ library
-  was compiled with support for quadruple-precision computations),
-* the `mp++ library <https://github.com/bluescarni/mppp>`__ (necessary if the heyoka C++ library
-  was compiled with support for quadruple-precision computations),
-* `SymPy <https://www.sympy.org/en/index.html>`__ (for converting heyoka.py
+* `NumPy <https://numpy.org/>`__ (**mandatory**),
+* `cloudpickle <https://github.com/cloudpipe/cloudpickle>`__ (**mandatory**),
+* `mpmath <https://mpmath.org/>`__ (**mandatory** if the
+  heyoka C++ library was compiled with the ``HEYOKA_WITH_MPPP`` option on - see the
+  :ref:`heyoka C++ installation instructions <hy:installation>`),
+* `SymPy <https://www.sympy.org/en/index.html>`__ (*optional*, for converting heyoka.py
   expressions to/from SymPy expressions).
 
 Packages
@@ -52,20 +56,18 @@ your conda installation.
 Installation from source
 ------------------------
 
-In order to install heyoka.py from source, you will need:
+heyoka.py is written in modern C++, and it requires a compiler able to understand
+at least C++17. The library is regularly tested on
+a continuous integration pipeline which currently includes:
 
-* a C++17 capable compiler (recent versions of GCC,
-  Clang or MSVC should do),
-* a `Python <https://www.python.org/>`__ installation,
+* GCC 9 on Linux,
+* Clang 11 on OSX,
+* MSVC 2017 + ``clang-cl`` on Windows.
+
+In addition to the dependencies enumerated :ref:`earlier <installation_deps>`,
+installation from source requires also:
+
 * `pybind11 <https://github.com/pybind/pybind11>`__ (version >= 2.6),
-* the `heyoka C++ library <https://github.com/bluescarni/heyoka>`__,
-  version 0.11.0 or later,
-* the `{fmt} <https://fmt.dev/latest/index.html>`__ library,
-* the `spdlog <https://github.com/gabime/spdlog>`__ library,
-* the `Boost libraries <https://www.boost.org/>`__,
-* the `mp++ library <https://github.com/bluescarni/mppp>`__ (optional,
-  necessary only if the heyoka C++ library
-  was compiled with support for quadruple-precision computations),
 * `CMake <https://cmake.org/>`__, version 3.8 or later.
 
 After making sure the dependencies are installed on your system, you can
@@ -78,7 +80,7 @@ version of heyoka.py via ``git``:
 
    $ git clone https://github.com/bluescarni/heyoka.py.git
 
-We follow the usual PR-based development workflow, thus heyoka.py's ``master``
+We follow the usual PR-based development workflow, thus heyoka.py's ``main``
 branch is normally kept in a working state.
 
 After downloading and/or unpacking heyoka.py's

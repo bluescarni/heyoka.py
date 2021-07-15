@@ -51,6 +51,7 @@
 #include "common_utils.hpp"
 #include "logging.hpp"
 #include "long_double_caster.hpp"
+#include "pickle_wrappers.hpp"
 #include "setup_sympy.hpp"
 #include "taylor_add_jet.hpp"
 #include "taylor_expose_events.hpp"
@@ -233,7 +234,10 @@ PYBIND11_MODULE(core, m)
         // Copy/deepcopy.
         .def("__copy__", [](const hey::expression &e) { return e; })
         .def(
-            "__deepcopy__", [](const hey::expression &e, py::dict) { return e; }, "memo"_a);
+            "__deepcopy__", [](const hey::expression &e, py::dict) { return e; }, "memo"_a)
+        // Pickle support.
+        .def(py::pickle(&heypy::pickle_getstate_wrapper<hey::expression>,
+                        &heypy::pickle_setstate_wrapper<hey::expression>));
 
     // Eval
     m.def("_eval_dbl", [](const hey::expression &e, const std::unordered_map<std::string, double> &map,
@@ -479,7 +483,10 @@ PYBIND11_MODULE(core, m)
         // Copy/deepcopy.
         .def("__copy__", [](const hey::llvm_state &s) { return s; })
         .def(
-            "__deepcopy__", [](const hey::llvm_state &s, py::dict) { return s; }, "memo"_a);
+            "__deepcopy__", [](const hey::llvm_state &s, py::dict) { return s; }, "memo"_a)
+        // Pickle support.
+        .def(py::pickle(&heypy::pickle_getstate_wrapper<hey::llvm_state>,
+                        &heypy::pickle_setstate_wrapper<hey::llvm_state>));
 
     // The callback for the propagate_*() functions for
     // the batch integrator.
@@ -777,7 +784,10 @@ PYBIND11_MODULE(core, m)
         // Copy/deepcopy.
         .def("__copy__", [](const hey::taylor_adaptive_batch<double> &ta) { return ta; })
         .def(
-            "__deepcopy__", [](const hey::taylor_adaptive_batch<double> &ta, py::dict) { return ta; }, "memo"_a);
+            "__deepcopy__", [](const hey::taylor_adaptive_batch<double> &ta, py::dict) { return ta; }, "memo"_a)
+        // Pickle support.
+        .def(py::pickle(&heypy::pickle_getstate_wrapper<hey::taylor_adaptive_batch<double>>,
+                        &heypy::pickle_setstate_wrapper<hey::taylor_adaptive_batch<double>>));
 
     // Expose the llvm state getter.
     heypy::expose_llvm_state_property(tabd_c);

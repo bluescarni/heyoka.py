@@ -465,6 +465,9 @@ class event_classes_test_case(_ut.TestCase):
     def runTest(self):
         from . import t_event, nt_event, make_vars, event_direction, with_real128
         import numpy as np
+        import pickle
+        from sys import getrefcount
+        import gc
 
         x, v = make_vars("x", "v")
 
@@ -478,26 +481,64 @@ class event_classes_test_case(_ut.TestCase):
             # Non-terminal event.
             ev = nt_event(x + v, lambda _: _, fp_type=desc)
 
+            # Verify that the reference count of ev
+            # is increased when we fetch the expression.
+            rc = getrefcount(ev)
+            ex = ev.expression
+            self.assertEqual(getrefcount(ev), rc + 1)
+
             self.assertTrue(" non-terminal" in repr(ev))
             self.assertTrue("(x + v)" in repr(ev))
             self.assertTrue("event_direction::any" in repr(ev))
+            self.assertEqual(ev.expression, x + v)
+            self.assertEqual(ev.direction, event_direction.any)
+            self.assertFalse(ev.callback is None)
 
             ev = nt_event(ex=x + v, callback=lambda _: _, fp_type=desc)
             self.assertTrue(" non-terminal" in repr(ev))
             self.assertTrue("(x + v)" in repr(ev))
             self.assertTrue("event_direction::any" in repr(ev))
+            self.assertEqual(ev.expression, x + v)
+            self.assertEqual(ev.direction, event_direction.any)
+            self.assertFalse(ev.callback is None)
 
             ev = nt_event(ex=x + v, callback=lambda _: _,
                           direction=event_direction.positive, fp_type=desc)
             self.assertTrue(" non-terminal" in repr(ev))
             self.assertTrue("(x + v)" in repr(ev))
             self.assertTrue("event_direction::positive" in repr(ev))
+            self.assertEqual(ev.expression, x + v)
+            self.assertEqual(ev.direction, event_direction.positive)
+            self.assertFalse(ev.callback is None)
 
             ev = nt_event(ex=x + v, callback=lambda _: _,
                           direction=event_direction.negative, fp_type=desc)
             self.assertTrue(" non-terminal" in repr(ev))
             self.assertTrue("(x + v)" in repr(ev))
             self.assertTrue("event_direction::negative" in repr(ev))
+            self.assertEqual(ev.expression, x + v)
+            self.assertEqual(ev.direction, event_direction.negative)
+            self.assertFalse(ev.callback is None)
+
+            class local_cb:
+                def __init__(self):
+                    self.n = 0
+
+                def __call__(self, ta, t, d_sgn):
+                    self.n = self.n + 1
+
+            lcb = local_cb()
+            ev = nt_event(ex=x + v, callback=lcb,
+                          direction=event_direction.negative, fp_type=desc)
+            self.assertEqual(ev.callback.n, 0)
+            cb = ev.callback
+            cb(1, 2, 3)
+            cb(1, 2, 3)
+            cb(1, 2, 3)
+            self.assertEqual(ev.callback.n, 3)
+            ev.callback.n = 0
+            self.assertEqual(ev.callback.n, 0)
+            self.assertEqual(id(lcb), id(ev.callback))
 
             with self.assertRaises(ValueError) as cm:
                 nt_event(ex=x + v, callback=lambda _: _,
@@ -505,14 +546,53 @@ class event_classes_test_case(_ut.TestCase):
             self.assertTrue(
                 "Invalid value selected for the direction of a non-terminal event" in str(cm.exception))
 
+            with self.assertRaises(TypeError) as cm:
+                nt_event(ex=x + v, callback=3, fp_type=desc)
+            self.assertTrue(
+                "An object of type '{}' cannot be used as an event callback because it is not callable".format(str(type(3))) in str(cm.exception))
+
+            with self.assertRaises(TypeError) as cm:
+                nt_event(ex=x + v, callback=None, fp_type=desc)
+            self.assertTrue(
+                "An object of type '{}' cannot be used as an event callback because it is not callable".format(str(type(None))) in str(cm.exception))
+
+            ev = nt_event(ex=x + v, callback=lambda _: _,
+                          direction=event_direction.negative, fp_type=desc)
+            ev = pickle.loads(pickle.dumps(ev))
+            self.assertTrue(" non-terminal" in repr(ev))
+            self.assertTrue("(x + v)" in repr(ev))
+            self.assertTrue("event_direction::negative" in repr(ev))
+
+            # Test to ensure a callback extracted from the event
+            # is kept alive and usable when the event is destroyed.
+            ev = nt_event(ex=x + v, callback=local_cb(),
+                          direction=event_direction.negative, fp_type=desc)
+            out_cb = ev.callback
+            del(ev)
+            gc.collect()
+            out_cb(1, 2, 3)
+            out_cb(1, 2, 3)
+            out_cb(1, 2, 3)
+            self.assertEqual(out_cb.n, 3)
+
             # Terminal event.
             ev = t_event(x + v, fp_type=desc)
+
+            # Verify that the reference count of ev
+            # is increased when we fetch the expression.
+            rc = getrefcount(ev)
+            ex = ev.expression
+            self.assertEqual(getrefcount(ev), rc + 1)
 
             self.assertTrue(" terminal" in repr(ev))
             self.assertTrue("(x + v)" in repr(ev))
             self.assertTrue("event_direction::any" in repr(ev))
             self.assertTrue(": no" in repr(ev))
             self.assertTrue("auto" in repr(ev))
+            self.assertEqual(ev.expression, x + v)
+            self.assertEqual(ev.direction, event_direction.any)
+            self.assertEqual(ev.cooldown, fp_t(-1))
+            self.assertTrue(ev.callback is None)
 
             ev = t_event(x + v, fp_type=desc,
                          direction=event_direction.negative, cooldown=fp_t(3))
@@ -522,6 +602,10 @@ class event_classes_test_case(_ut.TestCase):
             self.assertTrue("event_direction::negative" in repr(ev))
             self.assertTrue(": no" in repr(ev))
             self.assertTrue("3" in repr(ev))
+            self.assertEqual(ev.expression, x + v)
+            self.assertEqual(ev.direction, event_direction.negative)
+            self.assertEqual(ev.cooldown, fp_t(3))
+            self.assertTrue(ev.callback is None)
 
             ev = t_event(x + v, fp_type=desc, direction=event_direction.positive,
                          cooldown=fp_t(3), callback=lambda _: _)
@@ -531,12 +615,88 @@ class event_classes_test_case(_ut.TestCase):
             self.assertTrue("event_direction::positive" in repr(ev))
             self.assertTrue(": yes" in repr(ev))
             self.assertTrue("3" in repr(ev))
+            self.assertEqual(ev.expression, x + v)
+            self.assertEqual(ev.direction, event_direction.positive)
+            self.assertEqual(ev.cooldown, fp_t(3))
+            self.assertFalse(ev.callback is None)
+
+            class local_cb:
+                def __init__(self):
+                    self.n = 0
+
+                def __call__(self, ta, mr, d_sgn):
+                    self.n = self.n + 1
+
+            lcb = local_cb()
+            ev = t_event(x + v, fp_type=desc, direction=event_direction.positive,
+                         cooldown=fp_t(3), callback=lcb)
+
+            self.assertTrue(" terminal" in repr(ev))
+            self.assertTrue("(x + v)" in repr(ev))
+            self.assertTrue("event_direction::positive" in repr(ev))
+            self.assertTrue(": yes" in repr(ev))
+            self.assertTrue("3" in repr(ev))
+            self.assertEqual(ev.expression, x + v)
+            self.assertEqual(ev.direction, event_direction.positive)
+            self.assertEqual(ev.cooldown, fp_t(3))
+            self.assertFalse(ev.callback is None)
+            self.assertEqual(ev.callback.n, 0)
+            cb = ev.callback
+            cb(1, 2, 3)
+            cb(1, 2, 3)
+            cb(1, 2, 3)
+            self.assertEqual(ev.callback.n, 3)
+            ev.callback.n = 0
+            self.assertEqual(ev.callback.n, 0)
+            self.assertEqual(id(lcb), id(ev.callback))
+
+            ev = t_event(x + v, fp_type=desc, direction=event_direction.positive,
+                         cooldown=fp_t(3), callback=None)
+            self.assertTrue(ev.callback is None)
 
             with self.assertRaises(ValueError) as cm:
                 t_event(x + v, fp_type=desc, direction=event_direction(45),
                         cooldown=fp_t(3), callback=lambda _: _)
             self.assertTrue(
                 "Invalid value selected for the direction of a terminal event" in str(cm.exception))
+
+            with self.assertRaises(TypeError) as cm:
+                t_event(x + v, callback=3, fp_type=desc)
+            self.assertTrue(
+                "An object of type '{}' cannot be used as an event callback because it is not callable".format(str(type(3))) in str(cm.exception))
+
+            ev = t_event(x + v, fp_type=desc, direction=event_direction.positive,
+                         cooldown=fp_t(3), callback=lambda _: _)
+
+            ev = pickle.loads(pickle.dumps(ev))
+            self.assertTrue(" terminal" in repr(ev))
+            self.assertTrue("(x + v)" in repr(ev))
+            self.assertTrue("event_direction::positive" in repr(ev))
+            self.assertTrue(": yes" in repr(ev))
+            self.assertTrue("3" in repr(ev))
+
+            # Test also with empty callback.
+            ev = t_event(x + v, fp_type=desc, direction=event_direction.positive,
+                         cooldown=fp_t(3))
+
+            ev = pickle.loads(pickle.dumps(ev))
+            self.assertTrue(" terminal" in repr(ev))
+            self.assertTrue("(x + v)" in repr(ev))
+            self.assertTrue("event_direction::positive" in repr(ev))
+            self.assertTrue(": no" in repr(ev))
+            self.assertTrue("3" in repr(ev))
+
+            # Test to ensure a callback extracted from the event
+            # is kept alive and usable when the event is destroyed.
+            ev = t_event(ex=x + v, callback=local_cb(),
+                         direction=event_direction.negative, fp_type=desc)
+            out_cb = ev.callback
+            del(ev)
+            gc.collect()
+            out_cb(1, 2, 3)
+            out_cb(1, 2, 3)
+            out_cb(1, 2, 3)
+            self.assertEqual(out_cb.n, 3)
 
 
 class event_detection_test_case(_ut.TestCase):
@@ -560,12 +720,19 @@ class event_detection_test_case(_ut.TestCase):
             counter = 0
             cur_time = fp_t(0)
 
+            # Track the memory address of the integrator object
+            # in order to make sure that it is passed correctly
+            # into the callback.
+            ta_id = None
+
             def cb0(ta, t, d_sgn):
                 nonlocal counter
                 nonlocal cur_time
+                nonlocal ta_id
 
                 self.assertTrue(t > cur_time)
                 self.assertTrue(counter % 3 == 0 or counter % 3 == 2)
+                self.assertEqual(ta_id, id(ta))
 
                 counter = counter + 1
                 cur_time = t
@@ -573,9 +740,11 @@ class event_detection_test_case(_ut.TestCase):
             def cb1(ta, t, d_sgn):
                 nonlocal counter
                 nonlocal cur_time
+                nonlocal ta_id
 
                 self.assertTrue(t > cur_time)
                 self.assertTrue(counter % 3 == 1)
+                self.assertEqual(ta_id, id(ta))
 
                 counter = counter + 1
                 cur_time = t
@@ -584,10 +753,22 @@ class event_detection_test_case(_ut.TestCase):
                                  nt_events=[nt_event(v*v-1e-10, cb0, fp_type=desc),
                                             nt_event(v, cb1, fp_type=desc)])
 
+            ta_id = id(ta)
+
             self.assertEqual(ta.propagate_until(fp_t(4))[
                              0], taylor_outcome.time_limit)
 
             self.assertEqual(counter, 12)
+
+            # Callback with wrong signature.
+            def cb2(ta, t):
+                pass
+
+            ta = taylor_adaptive(sys=sys, state=[fp_t(0), fp_t(0.25)], fp_type=desc,
+                                 nt_events=[nt_event(v*v-1e-10, cb2, fp_type=desc)])
+
+            with self.assertRaises(TypeError):
+                ta.propagate_until(fp_t(4))
 
             # Terminal events.
             counter_t = 0
@@ -597,8 +778,10 @@ class event_detection_test_case(_ut.TestCase):
             def cb0(ta, t, d_sgn):
                 nonlocal counter_nt
                 nonlocal cur_time
+                nonlocal ta_id
 
                 self.assertTrue(t > cur_time)
+                self.assertEqual(ta_id, id(ta))
 
                 counter_nt = counter_nt + 1
                 cur_time = t
@@ -606,9 +789,11 @@ class event_detection_test_case(_ut.TestCase):
             def cb1(ta, mr, d_sgn):
                 nonlocal cur_time
                 nonlocal counter_t
+                nonlocal ta_id
 
                 self.assertFalse(mr)
                 self.assertTrue(ta.time > cur_time)
+                self.assertEqual(ta_id, id(ta))
 
                 counter_t = counter_t + 1
                 cur_time = ta.time
@@ -619,6 +804,8 @@ class event_detection_test_case(_ut.TestCase):
                                  nt_events=[
                                      nt_event(v*v-1e-10, cb0, fp_type=desc)],
                                  t_events=[t_event(v, callback=cb1, fp_type=desc)])
+
+            ta_id = id(ta)
 
             while True:
                 oc, _ = ta.step()
@@ -641,6 +828,28 @@ class event_detection_test_case(_ut.TestCase):
             self.assertTrue(ta.time > 1)
             self.assertEqual(counter_nt, 3)
             self.assertEqual(counter_t, 2)
+
+            # Callback with wrong signature.
+            def cb2(ta, t):
+                pass
+
+            ta = taylor_adaptive(sys=sys, state=[fp_t(0), fp_t(0.25)], fp_type=desc,
+                                 t_events=[t_event(v*v-1e-10, callback=cb2, fp_type=desc)])
+
+            with self.assertRaises(TypeError):
+                ta.propagate_until(fp_t(4))
+
+            # Callback with wrong retval.
+            def cb3(ta, mr, d_sgn):
+                return "hello"
+
+            ta = taylor_adaptive(sys=sys, state=[fp_t(0), fp_t(0.25)], fp_type=desc,
+                                 t_events=[t_event(v*v-1e-10, callback=cb3, fp_type=desc)])
+
+            with self.assertRaises(TypeError) as cm:
+                ta.propagate_until(fp_t(4))
+            self.assertTrue(
+                "in the construction of the return value of an event callback" in str(cm.exception))
 
 
 class expression_eval_test_case(_ut.TestCase):
@@ -666,9 +875,116 @@ class expression_eval_test_case(_ut.TestCase):
             self.assertAlmostEqual(a, target**3.1, places=places)
 
 
+class scalar_integrator_test_case(_ut.TestCase):
+    def runTest(self):
+        self.test_s11n()
+
+    def test_s11n(self):
+        from . import nt_event, make_vars, with_real128, sin, taylor_adaptive
+        import numpy as np
+        import pickle
+
+        x, v = make_vars("x", "v")
+
+        fp_types = [("double", float), ("long double", np.longdouble)]
+
+        if with_real128:
+            from mpmath import mpf
+            fp_types.append(("real128", mpf))
+
+        # Use a pendulum for testing purposes.
+        sys = [(x, v), (v, -9.8 * sin(x))]
+
+        def cb0(ta, t, d_sgn):
+            pass
+
+        for desc, fp_t in fp_types:
+            ta = taylor_adaptive(sys=sys, state=[fp_t(0), fp_t(0.25)], fp_type=desc,
+                                 nt_events=[nt_event(v*v-1e-10, cb0, fp_type=desc)])
+
+            ta.step()
+            ta.step()
+            ta.step()
+            ta.step()
+
+            ta2 = pickle.loads(pickle.dumps(ta))
+
+            self.assertEqual(len(ta.t_events), len(ta2.t_events))
+            self.assertEqual(len(ta.nt_events), len(ta2.nt_events))
+
+            if desc != "real128":
+                self.assertTrue(np.all(ta.state == ta2.state))
+                self.assertTrue(np.all(ta.time == ta2.time))
+            else:
+                self.assertTrue(np.all(ta.get_state() == ta2.get_state()))
+                self.assertTrue(np.all(ta.time == ta2.time))
+
+            ta.step()
+            ta2.step()
+
+            if desc != "real128":
+                self.assertTrue(np.all(ta.state == ta2.state))
+                self.assertTrue(np.all(ta.time == ta2.time))
+            else:
+                self.assertTrue(np.all(ta.get_state() == ta2.get_state()))
+                self.assertTrue(np.all(ta.time == ta2.time))
+
+            # Try also an integrator with stateful event callback.
+            class cb1:
+                def __init__(self):
+                    self.n = 0
+
+                def __call__(self, ta, t, d_sgn):
+                    self.n = self.n + 1
+
+            clb = cb1()
+            ta = taylor_adaptive(sys=sys, state=[fp_t(0), fp_t(0.25)], fp_type=desc,
+                                 nt_events=[nt_event(v*v-1e-10, clb, fp_type=desc)])
+
+            self.assertNotEqual(id(clb), id(ta.nt_events[0].callback))
+
+            self.assertEqual(ta.nt_events[0].callback.n, 0)
+
+            ta.propagate_until(fp_t(10))
+
+            ta2 = pickle.loads(pickle.dumps(ta))
+
+            self.assertEqual(
+                ta.nt_events[0].callback.n, ta2.nt_events[0].callback.n)
+
+
 class batch_integrator_test_case(_ut.TestCase):
     def runTest(self):
         self.run_propagate_grid_tests()
+        self.test_s11n()
+
+    def test_s11n(self):
+        from . import make_vars, sin, taylor_adaptive_batch
+        import numpy as np
+        import pickle
+
+        x, v = make_vars("x", "v")
+
+        # Use a pendulum for testing purposes.
+        sys = [(x, v), (v, -9.8 * sin(x))]
+
+        ta = taylor_adaptive_batch(sys=sys, state=[[0, .01], [0.25, 0.26]])
+
+        ta.step()
+        ta.step()
+        ta.step()
+        ta.step()
+
+        ta2 = pickle.loads(pickle.dumps(ta))
+
+        self.assertTrue(np.all(ta.state == ta2.state))
+        self.assertTrue(np.all(ta.time == ta2.time))
+
+        ta.step()
+        ta2.step()
+
+        self.assertTrue(np.all(ta.state == ta2.state))
+        self.assertTrue(np.all(ta.time == ta2.time))
 
     def run_propagate_grid_tests(self):
         from . import make_vars, taylor_adaptive, taylor_adaptive_batch, sin
@@ -954,6 +1270,57 @@ class zero_division_error_test_case(_ut.TestCase):
             "Division by zero" in str(cm.exception))
 
 
+class expression_test_case(_ut.TestCase):
+    def runTest(self):
+        self.test_s11n()
+
+    def test_s11n(self):
+        from . import make_vars, expression, with_real128, sin, cos
+        from numpy import longdouble
+        import pickle
+
+        x, y = make_vars("x", "y")
+
+        ex = x + 2.*y
+        self.assertEqual(ex, pickle.loads(pickle.dumps(ex)))
+
+        ex = sin(longdouble('1.1')*x) + 2.*y
+        self.assertEqual(ex, pickle.loads(pickle.dumps(ex)))
+
+        if not with_real128:
+            return
+
+        from mpmath import mpf
+
+        # Quad precision.
+        ex = sin(longdouble('1.1')*x) + mpf('1.3')*cos(2.*y)
+        self.assertEqual(ex, pickle.loads(pickle.dumps(ex)))
+
+
+class llvm_state_test_case(_ut.TestCase):
+    def runTest(self):
+        self.test_s11n()
+
+    def test_s11n(self):
+        from . import make_vars, sin, taylor_adaptive
+        import pickle
+        from sys import getrefcount
+
+        x, v = make_vars("x", "v")
+
+        sys = [(x, v), (v, -9.8 * sin(x))]
+
+        ta = taylor_adaptive(sys=sys, state=[0., 0.25])
+
+        # Verify that the reference count of ta
+        # is increased when we fetch the llvm_state.
+        rc = getrefcount(ta)
+        ls = ta.llvm_state
+        self.assertEqual(getrefcount(ta), rc + 1)
+
+        self.assertEqual(ls.get_ir(), pickle.loads(pickle.dumps(ls)).get_ir())
+
+
 def run_test_suite():
     from . import make_nbody_sys, taylor_adaptive, with_real128
 
@@ -968,10 +1335,13 @@ def run_test_suite():
     retval = 0
 
     suite = _ut.TestLoader().loadTestsFromTestCase(taylor_add_jet_test_case)
+    suite.addTest(llvm_state_test_case())
+    suite.addTest(expression_test_case())
     suite.addTest(event_classes_test_case())
     suite.addTest(event_detection_test_case())
     suite.addTest(expression_eval_test_case())
     suite.addTest(batch_integrator_test_case())
+    suite.addTest(scalar_integrator_test_case())
     suite.addTest(kepE_test_case())
     suite.addTest(sympy_test_case())
     suite.addTest(zero_division_error_test_case())

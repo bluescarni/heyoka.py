@@ -12,6 +12,7 @@ from . import test
 from ._version import __version__
 
 import os as _os
+import cloudpickle as _cloudpickle
 
 if _os.name == 'posix':
     # NOTE: on some platforms Python by default opens extensions
@@ -48,6 +49,7 @@ else:
 
 del _os
 
+
 def taylor_adaptive(sys, state, **kwargs):
     from .core import _taylor_adaptive_dbl, _taylor_adaptive_ldbl
 
@@ -66,7 +68,8 @@ def taylor_adaptive(sys, state, **kwargs):
     raise TypeError(
         "the floating-point type \"{}\" is not recognized/supported".format(fp_type))
 
-def eval(e, map, pars = [], **kwargs):
+
+def eval(e, map, pars=[], **kwargs):
     from .core import _eval_dbl, _eval_ldbl
 
     fp_type = kwargs.pop("fp_type", "double")
@@ -83,6 +86,7 @@ def eval(e, map, pars = [], **kwargs):
 
     raise TypeError(
         "the floating-point type \"{}\" is not recognized/supported".format(fp_type))
+
 
 def taylor_adaptive_batch(sys, state, **kwargs):
     from .core import _taylor_adaptive_batch_dbl
@@ -146,10 +150,42 @@ def t_event(ex, **kwargs):
         from .core import _t_event_f128
         return _t_event_f128(ex, **kwargs)
 
+
 def from_sympy(ex):
     from ._sympy_utils import _with_sympy, _from_sympy_impl
 
     if not _with_sympy:
-        raise ImportError("The 'from_sympy()' function is not available because sympy is not installed")
+        raise ImportError(
+            "The 'from_sympy()' function is not available because sympy is not installed")
 
     return _from_sympy_impl(ex)
+
+
+# Machinery for the setup of the serialization backend.
+_serialization_backend = _cloudpickle
+
+
+def set_serialization_backend(name):
+    if not isinstance(name, str):
+        raise TypeError(
+            "The serialization backend must be specified as a string, but an object of type {} was provided instead".format(type(name)))
+    global _serialization_backend
+    if name == "pickle":
+        import pickle
+        _serialization_backend = pickle
+    elif name == "cloudpickle":
+        _serialization_backend = _cloudpickle
+    elif name == "dill":
+        try:
+            import dill
+            _serialization_backend = dill
+        except ImportError:
+            raise ImportError(
+                "The 'dill' serialization backend was specified, but the dill module is not installed.")
+    else:
+        raise ValueError(
+            "The serialization backend '{}' is not valid. The valid backends are: ['pickle', 'cloudpickle', 'dill']".format(name))
+
+
+def get_serialization_backend():
+    return _serialization_backend
