@@ -466,6 +466,7 @@ class event_classes_test_case(_ut.TestCase):
         from . import t_event, nt_event, make_vars, event_direction, with_real128
         import numpy as np
         import pickle
+        from sys import getrefcount
 
         x, v = make_vars("x", "v")
 
@@ -478,6 +479,12 @@ class event_classes_test_case(_ut.TestCase):
         for desc, fp_t in fp_types:
             # Non-terminal event.
             ev = nt_event(x + v, lambda _: _, fp_type=desc)
+
+            # Verify that the reference count of ev
+            # is increased when we fetch the expression.
+            rc = getrefcount(ev)
+            ex = ev.expression
+            self.assertEqual(getrefcount(ev), rc + 1)
 
             self.assertTrue(" non-terminal" in repr(ev))
             self.assertTrue("(x + v)" in repr(ev))
@@ -557,6 +564,12 @@ class event_classes_test_case(_ut.TestCase):
 
             # Terminal event.
             ev = t_event(x + v, fp_type=desc)
+
+            # Verify that the reference count of ev
+            # is increased when we fetch the expression.
+            rc = getrefcount(ev)
+            ex = ev.expression
+            self.assertEqual(getrefcount(ev), rc + 1)
 
             self.assertTrue(" terminal" in repr(ev))
             self.assertTrue("(x + v)" in repr(ev))
@@ -1266,13 +1279,19 @@ class llvm_state_test_case(_ut.TestCase):
     def test_s11n(self):
         from . import make_vars, sin, taylor_adaptive
         import pickle
+        from sys import getrefcount
 
         x, v = make_vars("x", "v")
 
         sys = [(x, v), (v, -9.8 * sin(x))]
 
         ta = taylor_adaptive(sys=sys, state=[0., 0.25])
+
+        # Verify that the reference count of ta
+        # is increased when we fetch the llvm_state.
+        rc = getrefcount(ta)
         ls = ta.llvm_state
+        self.assertEqual(getrefcount(ta), rc + 1)
 
         self.assertEqual(ls.get_ir(), pickle.loads(pickle.dumps(ls)).get_ir())
 
