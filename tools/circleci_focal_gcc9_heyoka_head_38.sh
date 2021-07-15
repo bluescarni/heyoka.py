@@ -16,8 +16,11 @@ export PATH="$HOME/miniconda/bin:$PATH"
 bash miniconda.sh -b -p $HOME/miniconda
 conda config --add channels conda-forge
 conda config --set channel_priority strict
-conda create -y -q -p $deps_dir python=3.8 git pybind11 numpy mpmath cmake llvmdev boost-cpp mppp sleef fmt"<8" spdlog sympy cloudpickle
+conda create -y -q -p $deps_dir python=3.8 git pybind11 numpy mpmath cmake llvmdev boost-cpp mppp sleef fmt"<8" spdlog sphinx myst-nb matplotlib pip sympy scipy pykep cloudpickle
 source activate $deps_dir
+pip install --user sphinx-book-theme
+
+export HEYOKA_PY_PROJECT_DIR=`pwd`
 
 # Checkout, build and install heyoka's HEAD.
 git clone https://github.com/bluescarni/heyoka.git heyoka_cpp
@@ -40,6 +43,12 @@ make -j2 VERBOSE=1 install
 cd
 
 python -c "from heyoka import test; test.run_test_suite()"
+
+cd $HEYOKA_PY_PROJECT_DIR
+
+cd doc
+
+make html linkcheck
 
 set +e
 set +x
