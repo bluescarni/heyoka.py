@@ -466,7 +466,6 @@ class event_classes_test_case(_ut.TestCase):
         from . import t_event, nt_event, make_vars, event_direction, with_real128
         import numpy as np
         import pickle
-        from sys import getrefcount
         import gc
 
         x, v = make_vars("x", "v")
@@ -480,12 +479,6 @@ class event_classes_test_case(_ut.TestCase):
         for desc, fp_t in fp_types:
             # Non-terminal event.
             ev = nt_event(x + v, lambda _: _, fp_type=desc)
-
-            # Verify that the reference count of ev
-            # is increased when we fetch the expression.
-            rc = getrefcount(ev)
-            ex = ev.expression
-            self.assertEqual(getrefcount(ev), rc + 1)
 
             self.assertTrue(" non-terminal" in repr(ev))
             self.assertTrue("(x + v)" in repr(ev))
@@ -577,12 +570,6 @@ class event_classes_test_case(_ut.TestCase):
 
             # Terminal event.
             ev = t_event(x + v, fp_type=desc)
-
-            # Verify that the reference count of ev
-            # is increased when we fetch the expression.
-            rc = getrefcount(ev)
-            ex = ev.expression
-            self.assertEqual(getrefcount(ev), rc + 1)
 
             self.assertTrue(" terminal" in repr(ev))
             self.assertTrue("(x + v)" in repr(ev))
