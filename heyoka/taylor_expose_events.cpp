@@ -200,6 +200,11 @@ void expose_taylor_nt_event_impl(py::module &m, const std::string &suffix)
                 // NOTE: ptr should never be null, unless
                 // the event was unpickled from a broken archive.
                 assert(ptr);
+
+                // NOTE: returning a copy of the py::object will increase
+                // the refcount of the underlying Python entity, which will
+                // thus remain safe to use even if the parent event
+                // is destroyed.
                 return ptr->m_obj;
             })
         // Direction.
@@ -262,6 +267,10 @@ void expose_taylor_t_event_impl(py::module &m, const std::string &suffix)
                 // NOTE: the callback could be empty, in which case
                 // extraction returns a null pointer.
                 if (ptr) {
+                    // NOTE: returning a copy of the py::object will increase
+                    // the refcount of the underlying Python entity, which will
+                    // thus remain safe to use even if the parent event
+                    // is destroyed.
                     return ptr->m_obj;
                 } else {
                     return py::none{};

@@ -467,6 +467,7 @@ class event_classes_test_case(_ut.TestCase):
         import numpy as np
         import pickle
         from sys import getrefcount
+        import gc
 
         x, v = make_vars("x", "v")
 
@@ -561,6 +562,18 @@ class event_classes_test_case(_ut.TestCase):
             self.assertTrue(" non-terminal" in repr(ev))
             self.assertTrue("(x + v)" in repr(ev))
             self.assertTrue("event_direction::negative" in repr(ev))
+
+            # Test to ensure a callback extracted from the event
+            # is kept alive and usable when the event is destroyed.
+            ev = nt_event(ex=x + v, callback=local_cb(),
+                          direction=event_direction.negative, fp_type=desc)
+            out_cb = ev.callback
+            del(ev)
+            gc.collect()
+            out_cb(1, 2, 3)
+            out_cb(1, 2, 3)
+            out_cb(1, 2, 3)
+            self.assertEqual(out_cb.n, 3)
 
             # Terminal event.
             ev = t_event(x + v, fp_type=desc)
@@ -672,6 +685,18 @@ class event_classes_test_case(_ut.TestCase):
             self.assertTrue("event_direction::positive" in repr(ev))
             self.assertTrue(": no" in repr(ev))
             self.assertTrue("3" in repr(ev))
+
+            # Test to ensure a callback extracted from the event
+            # is kept alive and usable when the event is destroyed.
+            ev = t_event(ex=x + v, callback=local_cb(),
+                         direction=event_direction.negative, fp_type=desc)
+            out_cb = ev.callback
+            del(ev)
+            gc.collect()
+            out_cb(1, 2, 3)
+            out_cb(1, 2, 3)
+            out_cb(1, 2, 3)
+            self.assertEqual(out_cb.n, 3)
 
 
 class event_detection_test_case(_ut.TestCase):
