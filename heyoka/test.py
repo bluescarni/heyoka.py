@@ -12,6 +12,7 @@ import unittest as _ut
 class taylor_add_jet_test_case(_ut.TestCase):
     def runTest(self):
         from . import taylor_add_jet, make_vars, sin, taylor_adaptive, par, time, taylor_adaptive_batch, with_real128, tpoly
+        from .core import _ppc_arch
         import numpy as np
 
         x, v = make_vars("x", "v")
@@ -21,7 +22,10 @@ class taylor_add_jet_test_case(_ut.TestCase):
         sys_par_t = [(x, v), (v, -par[0] * sin(x) + time)]
         sys_par_t2 = [(x, v), (v, -par[0] * sin(x) + tpoly(par[1], par[6]))]
 
-        fp_types = [("double", float), ("long double", np.longdouble)]
+        if _ppc_arch:
+            fp_types = [("double", float)]
+        else:
+            fp_types = [("double", float), ("long double", np.longdouble)]
 
         for desc, fp_t in fp_types:
             # Check that the jet is consistent
@@ -464,13 +468,17 @@ class taylor_add_jet_test_case(_ut.TestCase):
 class event_classes_test_case(_ut.TestCase):
     def runTest(self):
         from . import t_event, nt_event, make_vars, event_direction, with_real128
+        from .core import _ppc_arch
         import numpy as np
         import pickle
         import gc
 
         x, v = make_vars("x", "v")
 
-        fp_types = [("double", float), ("long double", np.longdouble)]
+        if _ppc_arch:
+            fp_types = [("double", float)]
+        else:
+            fp_types = [("double", float), ("long double", np.longdouble)]
 
         if with_real128:
             from mpmath import mpf
@@ -689,11 +697,15 @@ class event_classes_test_case(_ut.TestCase):
 class event_detection_test_case(_ut.TestCase):
     def runTest(self):
         from . import t_event, nt_event, make_vars, event_direction, with_real128, sin, taylor_adaptive, taylor_outcome
+        from .core import _ppc_arch
         import numpy as np
 
         x, v = make_vars("x", "v")
 
-        fp_types = [("double", float), ("long double", np.longdouble)]
+        if _ppc_arch:
+            fp_types = [("double", float)]
+        else:
+            fp_types = [("double", float), ("long double", np.longdouble)]
 
         if with_real128:
             from mpmath import mpf
@@ -842,13 +854,18 @@ class event_detection_test_case(_ut.TestCase):
 class expression_eval_test_case(_ut.TestCase):
     def runTest(self):
         from . import sin, make_vars, with_real128, eval
+        from .core import _ppc_arch
         import numpy as np
         from math import log10
 
         x, = make_vars("x")
 
-        fp_types = [("double", float, int(-log10(np.finfo(float).eps)) - 1),
-                    ("long double", np.longdouble, int(-log10(np.finfo(np.longdouble).eps)) - 1)]
+        if _ppc_arch:
+            fp_types = [
+                ("double", float, int(-log10(np.finfo(float).eps)) - 1)]
+        else:
+            fp_types = [("double", float, int(-log10(np.finfo(float).eps)) - 1),
+                        ("long double", np.longdouble, int(-log10(np.finfo(np.longdouble).eps)) - 1)]
 
         if with_real128:
             from mpmath import mpf
@@ -868,12 +885,16 @@ class scalar_integrator_test_case(_ut.TestCase):
 
     def test_s11n(self):
         from . import nt_event, make_vars, with_real128, sin, taylor_adaptive
+        from .core import _ppc_arch
         import numpy as np
         import pickle
 
         x, v = make_vars("x", "v")
 
-        fp_types = [("double", float), ("long double", np.longdouble)]
+        if _ppc_arch:
+            fp_types = [("double", float)]
+        else:
+            fp_types = [("double", float), ("long double", np.longdouble)]
 
         if with_real128:
             from mpmath import mpf
@@ -1030,16 +1051,19 @@ class batch_integrator_test_case(_ut.TestCase):
 class kepE_test_case(_ut.TestCase):
     def runTest(self):
         from . import kepE, with_real128, diff, make_vars, sin, cos
+        from .core import _ppc_arch
         import numpy as np
 
         x, y = make_vars("x", "y")
         self.assertEqual(diff(kepE(x, y), x), sin(
             kepE(x, y)) / (1. - x * cos(kepE(x, y))))
         self.assertEqual(diff(kepE(x, y), y), 1. / (1. - x * cos(kepE(x, y))))
-        self.assertEqual(diff(kepE(x, np.longdouble("1.1")), x), sin(
-            kepE(x, np.longdouble("1.1"))) / (1. - x * cos(kepE(x, np.longdouble("1.1")))))
-        self.assertEqual(diff(kepE(np.longdouble("1.1"), y), y), 1. /
-                         (1. - np.longdouble("1.1") * cos(kepE(np.longdouble("1.1"), y))))
+
+        if not _ppc_arch:
+            self.assertEqual(diff(kepE(x, np.longdouble("1.1")), x), sin(
+                kepE(x, np.longdouble("1.1"))) / (1. - x * cos(kepE(x, np.longdouble("1.1")))))
+            self.assertEqual(diff(kepE(np.longdouble("1.1"), y), y), 1. /
+                             (1. - np.longdouble("1.1") * cos(kepE(np.longdouble("1.1"), y))))
 
         if not with_real128:
             return
@@ -1065,6 +1089,7 @@ class sympy_test_case(_ut.TestCase):
 
     def test_number_conversion(self):
         from . import to_sympy, from_sympy, expression, with_real128
+        from .core import _ppc_arch
         from sympy import Float, Rational, Integer
         from mpmath import workprec, mpf
         import numpy as np
@@ -1091,17 +1116,18 @@ class sympy_test_case(_ut.TestCase):
                              expression((2**40+1)/(2**128)))
 
         # Long double precision.
-        with workprec(np.finfo(np.longdouble).nmant + 1):
-            self.assertEqual(to_sympy(expression(np.longdouble("1.1"))), Float(
-                "1.1", precision=np.finfo(np.longdouble).nmant + 1))
-            self.assertEqual(from_sympy(Float("1.1")),
-                             expression(np.longdouble("1.1")))
+        if not _ppc_arch:
+            with workprec(np.finfo(np.longdouble).nmant + 1):
+                self.assertEqual(to_sympy(expression(np.longdouble("1.1"))), Float(
+                    "1.1", precision=np.finfo(np.longdouble).nmant + 1))
+                self.assertEqual(from_sympy(Float("1.1")),
+                                 expression(np.longdouble("1.1")))
 
-            expo = np.finfo(np.longdouble).nmant - 10
-            self.assertEqual(to_sympy(expression(np.longdouble(
-                2**expo+1)/np.longdouble(2**128))), Rational(2**expo+1, 2**128))
-            self.assertEqual(from_sympy(Rational(2**expo+1, 2**128)),
-                             expression(np.longdouble(2**expo+1)/np.longdouble(2**128)))
+                expo = np.finfo(np.longdouble).nmant - 10
+                self.assertEqual(to_sympy(expression(np.longdouble(
+                    2**expo+1)/np.longdouble(2**128))), Rational(2**expo+1, 2**128))
+                self.assertEqual(from_sympy(Rational(2**expo+1, 2**128)),
+                                 expression(np.longdouble(2**expo+1)/np.longdouble(2**128)))
 
         # Too high precision.
         with self.assertRaises(ValueError) as cm:
@@ -1263,6 +1289,7 @@ class expression_test_case(_ut.TestCase):
 
     def test_s11n(self):
         from . import make_vars, expression, with_real128, sin, cos
+        from .core import _ppc_arch
         from numpy import longdouble
         import pickle
 
@@ -1271,8 +1298,9 @@ class expression_test_case(_ut.TestCase):
         ex = x + 2.*y
         self.assertEqual(ex, pickle.loads(pickle.dumps(ex)))
 
-        ex = sin(longdouble('1.1')*x) + 2.*y
-        self.assertEqual(ex, pickle.loads(pickle.dumps(ex)))
+        if not _ppc_arch:
+            ex = sin(longdouble('1.1')*x) + 2.*y
+            self.assertEqual(ex, pickle.loads(pickle.dumps(ex)))
 
         if not with_real128:
             return
@@ -1280,8 +1308,9 @@ class expression_test_case(_ut.TestCase):
         from mpmath import mpf
 
         # Quad precision.
-        ex = sin(longdouble('1.1')*x) + mpf('1.3')*cos(2.*y)
-        self.assertEqual(ex, pickle.loads(pickle.dumps(ex)))
+        if not _ppc_arch:
+            ex = sin(longdouble('1.1')*x) + mpf('1.3')*cos(2.*y)
+            self.assertEqual(ex, pickle.loads(pickle.dumps(ex)))
 
 
 class llvm_state_test_case(_ut.TestCase):
