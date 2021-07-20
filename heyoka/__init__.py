@@ -14,7 +14,7 @@ from ._version import __version__
 import os as _os
 import cloudpickle as _cloudpickle
 
-if _os.name == 'posix':
+if _os.name == 'posix' and False:
     # NOTE: on some platforms Python by default opens extensions
     # with the RTLD_LOCAL flag, which creates problems because
     # public symbols used by heyoka (e.g., sleef functions, quad
