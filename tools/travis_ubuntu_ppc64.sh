@@ -24,7 +24,7 @@ mkdir build
 cd build
 
 # GCC build.
-cmake ../ -DCMAKE_INSTALL_PREFIX=$deps_dir -DCMAKE_PREFIX_PATH=$deps_dir -DCMAKE_BUILD_TYPE=Debug -DHEYOKA_WITH_SLEEF=yes -DBoost_NO_BOOST_CMAKE=ON
+cmake ../ -DCMAKE_INSTALL_PREFIX=$deps_dir -DCMAKE_PREFIX_PATH=$deps_dir -DCMAKE_BUILD_TYPE=Debug -DHEYOKA_WITH_SLEEF=yes -DBoost_NO_BOOST_CMAKE=ON -DCMAKE_CXX_FLAGS="-fsanitize=address"
 make -j2 VERBOSE=1 install
 
 cd ../../
@@ -33,12 +33,12 @@ cd ../../
 mkdir build
 cd build
 
-cmake ../ -DCMAKE_INSTALL_PREFIX=$deps_dir -DCMAKE_PREFIX_PATH=$deps_dir -DCMAKE_BUILD_TYPE=Debug -DHEYOKA_PY_ENABLE_IPO=yes -DBoost_NO_BOOST_CMAKE=ON
+cmake ../ -DCMAKE_INSTALL_PREFIX=$deps_dir -DCMAKE_PREFIX_PATH=$deps_dir -DCMAKE_BUILD_TYPE=Debug -DHEYOKA_PY_ENABLE_IPO=yes -DBoost_NO_BOOST_CMAKE=ON -DCMAKE_CXX_FLAGS="-fsanitize=address"
 make -j2 VERBOSE=1 install
 
 cd
 
-python -c "from heyoka import test; test.run_test_suite()"
+LD_PRELOAD=$(gcc -print-file-name=libasan.so) python -c "from heyoka import test; test.run_test_suite()"
 
 set +e
 set +x
