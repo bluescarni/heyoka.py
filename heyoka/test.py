@@ -1350,9 +1350,8 @@ def run_test_suite():
 
     retval = 0
 
-    # suite = _ut.TestLoader().loadTestsFromTestCase(taylor_add_jet_test_case)
-    # suite.addTest(llvm_state_test_case())
-    suite = _ut.TestLoader().loadTestsFromTestCase(llvm_state_test_case)
+    suite = _ut.TestLoader().loadTestsFromTestCase(taylor_add_jet_test_case)
+    suite.addTest(llvm_state_test_case())
     suite.addTest(expression_test_case())
     suite.addTest(event_classes_test_case())
     suite.addTest(event_detection_test_case())
