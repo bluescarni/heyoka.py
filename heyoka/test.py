@@ -214,6 +214,11 @@ class taylor_add_jet_test_case(_ut.TestCase):
                             "Taylor derivatives: the shape must be (1), but it is "
                             "(5) instead" in str(cm.exception))
 
+        # Check throwing behaviour with long double on PPC.
+        if _ppc_arch:
+            with self.assertRaises(NotImplementedError):
+                taylor_add_jet(sys, 5, fp_type="long double")
+
         # Batch mode testing.
         fp_types = [("double", float)]
 
