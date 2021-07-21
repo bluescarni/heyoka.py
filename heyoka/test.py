@@ -965,6 +965,14 @@ class scalar_integrator_test_case(_ut.TestCase):
             self.assertEqual(
                 ta.nt_events[0].callback.n, ta2.nt_events[0].callback.n)
 
+        # Check throwing behaviour with long double on PPC.
+        if _ppc_arch:
+            fp_t = np.longdouble
+
+            with self.assertRaises(NotImplementedError):
+                taylor_adaptive(sys=sys, state=[fp_t(
+                    0), fp_t(0.25)], fp_type='long double')
+
 
 class batch_integrator_test_case(_ut.TestCase):
     def runTest(self):
