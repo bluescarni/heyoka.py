@@ -7,7 +7,7 @@ set -x
 set -e
 
 # Core deps.
-sudo apt-get install build-essential wget
+sudo apt-get install build-essential wget gdb
 
 # Install conda+deps.
 wget https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-Linux-ppc64le.sh -O miniconda.sh
@@ -38,7 +38,11 @@ make -j2 VERBOSE=1 install
 
 cd
 
-python -c "from heyoka import test; test.run_test_suite()"
+echo "run\nbt\nquit\n" > gdb_script
+
+gdb -x gdb_script  --args python -c "import heyoka; heyoka.test.run_test_suite();"
+
+#python -c "from heyoka import test; test.run_test_suite()"
 
 set +e
 set +x
