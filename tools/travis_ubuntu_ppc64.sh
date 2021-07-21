@@ -7,7 +7,7 @@ set -x
 set -e
 
 # Core deps.
-sudo apt-get install build-essential wget
+sudo apt-get install build-essential wget valgrind
 
 # Install conda+deps.
 wget https://github.com/conda-forge/miniforge/releases/latest/download/Mambaforge-Linux-ppc64le.sh -O miniconda.sh
@@ -38,7 +38,7 @@ make -j2 VERBOSE=1 install
 
 cd
 
-python -c "from heyoka import test; test.run_test_suite()"
+valgrind python -c "from heyoka import test; test.run_test_suite()"
 
 set +e
 set +x
