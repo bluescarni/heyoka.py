@@ -38,7 +38,7 @@ make -j2 VERBOSE=1 install
 
 cd
 
-echo "run\nbt\nquit\n" > gdb_script
+echo -e "run\nbt\nquit\n" > gdb_script
 
 gdb -x gdb_script  --args python -c "import heyoka; heyoka.test.run_test_suite();"
 
