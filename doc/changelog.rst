@@ -9,6 +9,8 @@ Changelog
 New
 ~~~
 
+- Add support for 64-bit PowerPC processors
+  (`#56 <https://github.com/bluescarni/heyoka/pull/56>`__).
 - Add support for 64-bit ARM processors
   (`#55 <https://github.com/bluescarni/heyoka/pull/55>`__).
 - Pickling support has been added to all classes
