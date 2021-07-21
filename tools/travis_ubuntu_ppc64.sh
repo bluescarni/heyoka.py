@@ -23,8 +23,10 @@ cd heyoka_cpp
 mkdir build
 cd build
 
+export LDFLAGS="-shared-libasan ${LDFLAGS}"
+
 # GCC build.
-CC=clang CXX=clang++ cmake ../ -DCMAKE_INSTALL_PREFIX=$deps_dir -DCMAKE_PREFIX_PATH=$deps_dir -DCMAKE_BUILD_TYPE=Debug -DHEYOKA_WITH_SLEEF=yes -DBoost_NO_BOOST_CMAKE=ON -DCMAKE_CXX_FLAGS="-Wl,-shared-libasan -fsanitize=address -fno-common -U_FORTIFY_SOURCE"
+CC=clang CXX=clang++ cmake ../ -DCMAKE_INSTALL_PREFIX=$deps_dir -DCMAKE_PREFIX_PATH=$deps_dir -DCMAKE_BUILD_TYPE=Debug -DHEYOKA_WITH_SLEEF=yes -DBoost_NO_BOOST_CMAKE=ON -DCMAKE_CXX_FLAGS="-fsanitize=address -fno-common -U_FORTIFY_SOURCE"
 make -j2 VERBOSE=1 install
 
 cd ../../
@@ -33,7 +35,7 @@ cd ../../
 mkdir build
 cd build
 
-CC=clang CXX=clang++ cmake ../ -DCMAKE_INSTALL_PREFIX=$deps_dir -DCMAKE_PREFIX_PATH=$deps_dir -DCMAKE_BUILD_TYPE=Debug -DHEYOKA_PY_ENABLE_IPO=yes -DBoost_NO_BOOST_CMAKE=ON -DCMAKE_CXX_FLAGS="-Wl,-shared-libasan -fsanitize=address -fno-common -U_FORTIFY_SOURCE"
+CC=clang CXX=clang++ cmake ../ -DCMAKE_INSTALL_PREFIX=$deps_dir -DCMAKE_PREFIX_PATH=$deps_dir -DCMAKE_BUILD_TYPE=Debug -DHEYOKA_PY_ENABLE_IPO=yes -DBoost_NO_BOOST_CMAKE=ON -DCMAKE_CXX_FLAGS="-fsanitize=address -fno-common -U_FORTIFY_SOURCE"
 make -j2 VERBOSE=1 install
 
 cd
