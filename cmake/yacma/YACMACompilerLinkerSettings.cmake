@@ -95,7 +95,7 @@ if(NOT _YACMACompilerLinkerSettingsRun)
         # NOTE: enable unconditionally, as it seems like the CMake
         # machinery for detecting this fails. Perhaps the source code
         # used for checking the flag emits warnings?
-        list(APPEND _YACMA_CXX_FLAGS_DEBUG "-Werror")
+        # list(APPEND _YACMA_CXX_FLAGS_DEBUG "-Werror")
         # New warnings in clang 8.
         # NOTE: a few issues with macros here, let's disable for now.
         # _YACMA_CHECK_ENABLE_DEBUG_CXX_FLAG(-Wextra-semi-stmt)
