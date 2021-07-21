@@ -90,6 +90,15 @@ PYBIND11_MODULE(core, m)
 #endif
         ;
 
+    // Flag PPC arch.
+    m.attr("_ppc_arch") =
+#if defined(HEYOKA_ARCH_PPC)
+        true
+#else
+        false
+#endif
+        ;
+
     // Connect heyoka's logging to Python's logging.
     heypy::enable_logging();
 

@@ -10,17 +10,12 @@ set -e
 sudo apt-get install build-essential wget
 
 # Install conda+deps.
-wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh
+wget https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-Linux-ppc64le.sh -O miniconda.sh
 export deps_dir=$HOME/local
 export PATH="$HOME/miniconda/bin:$PATH"
 bash miniconda.sh -b -p $HOME/miniconda
-conda config --add channels conda-forge
-conda config --set channel_priority strict
-conda create -y -q -p $deps_dir python=3.8 git pybind11 numpy mpmath cmake llvmdev boost-cpp mppp sleef fmt spdlog sphinx myst-nb matplotlib pip sympy scipy pykep cloudpickle
+conda create -y -q -p $deps_dir cxx-compiler c-compiler cmake llvmdev boost-cpp sleef xtensor xtensor-blas blas blas-devel fmt spdlog python=3.8 pybind11 numpy mpmath sympy cloudpickle
 source activate $deps_dir
-pip install --user sphinx-book-theme
-
-export HEYOKA_PY_PROJECT_DIR=`pwd`
 
 # Checkout, build and install heyoka's HEAD.
 git clone https://github.com/bluescarni/heyoka.git heyoka_cpp
@@ -28,7 +23,8 @@ cd heyoka_cpp
 mkdir build
 cd build
 
-cmake ../ -DCMAKE_INSTALL_PREFIX=$deps_dir -DCMAKE_PREFIX_PATH=$deps_dir -DCMAKE_BUILD_TYPE=Debug -DHEYOKA_WITH_MPPP=yes -DHEYOKA_WITH_SLEEF=yes -DBoost_NO_BOOST_CMAKE=ON
+# GCC build.
+cmake ../ -DCMAKE_INSTALL_PREFIX=$deps_dir -DCMAKE_PREFIX_PATH=$deps_dir -DCMAKE_BUILD_TYPE=Debug -DHEYOKA_WITH_SLEEF=yes -DBoost_NO_BOOST_CMAKE=ON
 make -j2 VERBOSE=1 install
 
 cd ../../
@@ -43,12 +39,6 @@ make -j2 VERBOSE=1 install
 cd
 
 python -c "from heyoka import test; test.run_test_suite()"
-
-cd $HEYOKA_PY_PROJECT_DIR
-
-cd doc
-
-make html linkcheck
 
 set +e
 set +x
