@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # Echo each command
-set -x
+#set -x
 
 # Exit on error.
 set -e
@@ -56,4 +56,4 @@ done
 #LD_PRELOAD=$(clang -print-file-name=libclang_rt.asan-powerpc64le.so) python -c "from heyoka import test; test.run_test_suite()"
 
 set +e
-set +x
+#set +x
