@@ -4,7 +4,7 @@
 #set -x
 
 # Exit on error.
-set -e
+#set -e
 
 # Core deps.
 sudo apt-get install build-essential wget clang
@@ -42,8 +42,7 @@ cd
 
 while true
 do
-	export OUTPUT=`LD_PRELOAD=$(clang -print-file-name=libclang_rt.asan-powerpc64le.so) python -c "from heyoka import test; test.run_test_suite()" 2>&1`
-    echo $OUTPUT > out.txt
+	LD_PRELOAD=$(clang -print-file-name=libclang_rt.asan-powerpc64le.so) python -c "from heyoka import test; test.run_test_suite()" 2>&1 > out.txt
     export BLAF=`grep -i invalid out.txt`
 	if [[ "${BLAF}" != "" ]]; then
         echo "INVALID, printing:"
@@ -57,5 +56,5 @@ done
 
 #LD_PRELOAD=$(clang -print-file-name=libclang_rt.asan-powerpc64le.so) python -c "from heyoka import test; test.run_test_suite()"
 
-set +e
+#set +e
 #set +x
