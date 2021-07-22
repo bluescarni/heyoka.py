@@ -44,11 +44,13 @@ while true
 do
 	export OUTPUT=`LD_PRELOAD=$(clang -print-file-name=libclang_rt.asan-powerpc64le.so) python -c "from heyoka import test; test.run_test_suite()" 2>&1`
     echo $OUTPUT > out.txt
-    export OUTPUT=`grep -i invalid out.txt`
-	if [[ "${OUTPUT}" != "" ]]; then
+    export BLAF=`grep -i invalid out.txt`
+	if [[ "${BLAF}" != "" ]]; then
         echo "INVALID, printing:"
         cat out.txt
         exit 1
+    else
+        echo "Nothing found"
     fi
     rm out.txt
 done
