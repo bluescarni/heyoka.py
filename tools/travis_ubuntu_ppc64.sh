@@ -40,7 +40,19 @@ make -j2 VERBOSE=1 install
 
 cd
 
-LD_PRELOAD=$(clang -print-file-name=libclang_rt.asan-powerpc64le.so) python -c "from heyoka import test; test.run_test_suite()"
+while true
+do
+	LD_PRELOAD=$(clang -print-file-name=libclang_rt.asan-powerpc64le.so) python -c "from heyoka import test; test.run_test_suite()" 2>&1 > out.txt
+    export OUTPUT=`grep invalid out.txt`
+	if [[ "${OUTPUT}" != "" ]]; then
+        echo "INVALID, printing:"
+        cat out.txt
+        exit 1
+    fi
+    rm out.txt
+done
+
+#LD_PRELOAD=$(clang -print-file-name=libclang_rt.asan-powerpc64le.so) python -c "from heyoka import test; test.run_test_suite()"
 
 set +e
 set +x
