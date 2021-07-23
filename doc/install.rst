@@ -28,7 +28,7 @@ On the Python side, heyoka.py requires at least Python 3.4
 * `SymPy <https://www.sympy.org/en/index.html>`__ (*optional*, for converting heyoka.py
   expressions to/from SymPy expressions).
 
-The tested and supported CPU architectures at this time are x86-64, 64-bit ARM and 64-bit PowerPC.
+The tested and supported CPU architectures at this time are x86-64 and 64-bit ARM.
 
 Packages
 --------
