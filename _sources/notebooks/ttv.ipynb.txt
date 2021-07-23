@@ -7,7 +7,7 @@
    "source": [
     "# Calculating transit timing variations\n",
     "\n",
-    "In this example we will be using heyoka.py's [event detection](<./Event detection.ipynb>) system to find the transit times in a two-planet system. This example is directly inspired by a [notebook](https://rebound.readthedocs.io/en/latest/ipython_examples/TransitTimingVariations.html) in the documentation of the [REBOUND](https://rebound.readthedocs.io) software package.\n",
+    "In this example we will be using heyoka.py's [event detection](<./Event detection.ipynb>) system to find the transit times in a two-planet system. This example is directly inspired by a [notebook](https://rebound.readthedocs.io/en/latest/ipython_examples/TransitTimingVariations/) in the documentation of the [REBOUND](https://rebound.readthedocs.io) software package.\n",
     "\n",
     "We begin as usual with importing heyoka.py and a couple of extra useful modules:"
    ]
