@@ -506,25 +506,6 @@ D_{ij}\left( t \right) = \left[ x_i\left( t \right) - x_j\left( t \right) \right
 </pre></div>
 </div>
 </div>
-<div class="cell_output docutils container">
-<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
-<span class="ne">KeyboardInterrupt</span><span class="g g-Whitespace">                         </span>Traceback (most recent call last)
-<span class="o">/</span><span class="n">tmp</span><span class="o">/</span><span class="n">ipykernel_5088</span><span class="o">/</span><span class="mf">3722706376.</span><span class="n">py</span> <span class="ow">in</span> <span class="o">&lt;</span><span class="n">module</span><span class="o">&gt;</span>
-<span class="ne">----&gt; </span><span class="mi">1</span> <span class="n">ta</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">taylor_adaptive</span><span class="p">(</span><span class="n">sys</span><span class="p">,</span> <span class="n">ic</span><span class="p">,</span> <span class="n">high_accuracy</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">tol</span> <span class="o">=</span> <span class="mf">1e-18</span><span class="p">,</span>
-<span class="g g-Whitespace">      </span><span class="mi">2</span>                         <span class="c1"># The list of non-terminal events.</span>
-<span class="g g-Whitespace">      </span><span class="mi">3</span>                         <span class="n">nt_events</span> <span class="o">=</span> <span class="n">evs</span><span class="p">)</span>
-
-<span class="nn">~/local/lib/python3.8/site-packages/heyoka/__init__.py</span> in <span class="ni">taylor_adaptive</span><span class="nt">(sys, state, **kwargs)</span>
-<span class="g g-Whitespace">     </span><span class="mi">57</span> 
-<span class="g g-Whitespace">     </span><span class="mi">58</span>     <span class="k">if</span> <span class="n">fp_type</span> <span class="o">==</span> <span class="s2">&quot;double&quot;</span><span class="p">:</span>
-<span class="ne">---&gt; </span><span class="mi">59</span>         <span class="k">return</span> <span class="n">_taylor_adaptive_dbl</span><span class="p">(</span><span class="n">sys</span><span class="p">,</span> <span class="n">state</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-<span class="g g-Whitespace">     </span><span class="mi">60</span> 
-<span class="g g-Whitespace">     </span><span class="mi">61</span>     <span class="k">if</span> <span class="n">fp_type</span> <span class="o">==</span> <span class="s2">&quot;long double&quot;</span><span class="p">:</span>
-
-<span class="ne">KeyboardInterrupt</span>: 
-</pre></div>
-</div>
-</div>
 </div>
 <p>Before proceeding with the integration, it is convenient the recentre the centre of mass in the origin with zero velocity, so that the bodies do not drift during the integration:</p>
 <div class="cell docutils container">
