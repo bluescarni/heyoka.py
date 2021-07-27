@@ -781,6 +781,7 @@ PYBIND11_MODULE(core, m)
             },
             "t"_a, "rel_time"_a = false)
         .def_property_readonly("order", &hey::taylor_adaptive_batch<double>::get_order)
+        .def_property_readonly("tol", &hey::taylor_adaptive_batch<double>::get_tol)
         .def_property_readonly("dim", &hey::taylor_adaptive_batch<double>::get_dim)
         .def_property_readonly("batch_size", &hey::taylor_adaptive_batch<double>::get_batch_size)
         // Repr.
