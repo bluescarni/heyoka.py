@@ -3,6 +3,22 @@
 Changelog
 =========
 
+0.14.0 (unreleased)
+-------------------
+
+New
+~~~
+
+- The tolerance value is now stored in the integrator objects
+  (`#58 <https://github.com/bluescarni/heyoka/pull/58>`__).
+
+Changes
+~~~~~~~
+
+- heyoka.py now requires at least version 0.14.0 of the
+  heyoka C++ library
+  (`#58 <https://github.com/bluescarni/heyoka.py/pull/58>`__).
+
 0.12.0 (2021-07-23)
 -------------------
 

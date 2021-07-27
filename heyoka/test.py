@@ -965,6 +965,11 @@ class scalar_integrator_test_case(_ut.TestCase):
             self.assertEqual(
                 ta.nt_events[0].callback.n, ta2.nt_events[0].callback.n)
 
+            ta = taylor_adaptive(sys=sys, state=[fp_t(0), fp_t(0.25)], fp_type=desc,
+                                 tol=fp_t(1e-6))
+
+            self.assertEqual(ta.tol, fp_t(1e-6))
+
         # Check throwing behaviour with long double on PPC.
         if _ppc_arch:
             fp_t = np.longdouble
@@ -1006,6 +1011,11 @@ class batch_integrator_test_case(_ut.TestCase):
 
         self.assertTrue(np.all(ta.state == ta2.state))
         self.assertTrue(np.all(ta.time == ta2.time))
+
+        ta = taylor_adaptive_batch(
+            sys=sys, state=[[0, .01], [0.25, 0.26]], tol=1e-6)
+
+        self.assertEqual(ta.tol, 1e-6)
 
     def run_propagate_grid_tests(self):
         from . import make_vars, taylor_adaptive, taylor_adaptive_batch, sin

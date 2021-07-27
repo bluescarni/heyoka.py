@@ -127,6 +127,7 @@ void expose_taylor_integrator_common(py::class_<hey::taylor_adaptive<T>> &cl)
         // Various read-only properties.
         .def_property_readonly("last_h", &hey::taylor_adaptive<T>::get_last_h)
         .def_property_readonly("order", &hey::taylor_adaptive<T>::get_order)
+        .def_property_readonly("tol", &hey::taylor_adaptive<T>::get_tol)
         .def_property_readonly("dim", &hey::taylor_adaptive<T>::get_dim)
         .def_property_readonly("t_events", &hey::taylor_adaptive<T>::get_t_events)
         .def_property_readonly("nt_events", &hey::taylor_adaptive<T>::get_nt_events)
