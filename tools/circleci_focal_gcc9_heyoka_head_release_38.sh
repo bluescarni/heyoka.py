@@ -16,9 +16,8 @@ export PATH="$HOME/miniconda/bin:$PATH"
 bash miniconda.sh -b -p $HOME/miniconda
 conda config --add channels conda-forge
 conda config --set channel_priority strict
-conda create -y -q -p $deps_dir python=3.8 git pybind11 numpy mpmath cmake llvmdev boost-cpp mppp sleef fmt spdlog sphinx myst-nb matplotlib pip sympy scipy pykep cloudpickle
+conda create -y -q -p $deps_dir python=3.8 git pybind11 numpy mpmath cmake llvmdev boost-cpp mppp sleef fmt spdlog sphinx myst-nb matplotlib sympy scipy pykep cloudpickle sphinx-book-theme
 source activate $deps_dir
-pip install --user sphinx-book-theme
 
 export HEYOKA_PY_PROJECT_DIR=`pwd`
 
