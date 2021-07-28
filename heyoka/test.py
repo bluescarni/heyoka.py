@@ -703,7 +703,9 @@ class event_detection_test_case(_ut.TestCase):
     def runTest(self):
         from . import t_event, nt_event, make_vars, event_direction, with_real128, sin, taylor_adaptive, taylor_outcome
         from .core import _ppc_arch
+        from sys import getrefcount
         import numpy as np
+        from copy import deepcopy
 
         x, v = make_vars("x", "v")
 
@@ -763,6 +765,65 @@ class event_detection_test_case(_ut.TestCase):
                              0], taylor_outcome.time_limit)
 
             self.assertEqual(counter, 12)
+
+            # Make sure that when accessing events
+            # from the integrator property we always
+            # get the same object.
+            class cb0:
+                def __init__(self):
+                    self.lst = []
+
+                def __call__(self, ta, t, d_sgn):
+                    pass
+
+            class cb1:
+                def __init__(self):
+                    self.lst = []
+
+                def __call__(self, ta, t, d_sgn):
+                    pass
+
+            ta = taylor_adaptive(sys=sys, state=[fp_t(0), fp_t(0.25)], fp_type=desc,
+                                 nt_events=[nt_event(v*v-1e-10, cb0(), fp_type=desc),
+                                            nt_event(v, cb1(), fp_type=desc),
+                                            nt_event(v, cb1(), fp_type=desc)])
+
+            # Check that the refcount increases by 3
+            # (the number of events).
+            rc = getrefcount(ta)
+            nt_list = ta.nt_events
+            new_rc = getrefcount(ta)
+            self.assertEqual(new_rc, rc + 3)
+
+            self.assertEqual(id(ta.nt_events[0].callback), id(
+                ta.nt_events[0].callback))
+            self.assertEqual(id(ta.nt_events[0].callback.lst), id(
+                ta.nt_events[0].callback.lst))
+            self.assertEqual(id(ta.nt_events[1].callback), id(
+                ta.nt_events[1].callback))
+            self.assertEqual(id(ta.nt_events[1].callback.lst), id(
+                ta.nt_events[1].callback.lst))
+            self.assertEqual(id(ta.nt_events[2].callback), id(
+                ta.nt_events[2].callback))
+            self.assertEqual(id(ta.nt_events[2].callback.lst), id(
+                ta.nt_events[2].callback.lst))
+
+            # Ensure a deep copy of the integrator performs
+            # a deep copy of the events.
+            ta_copy = deepcopy(ta)
+
+            self.assertNotEqual(id(ta_copy.nt_events[0].callback), id(
+                ta.nt_events[0].callback))
+            self.assertNotEqual(id(ta_copy.nt_events[0].callback.lst), id(
+                ta.nt_events[0].callback.lst))
+            self.assertNotEqual(id(ta_copy.nt_events[1].callback), id(
+                ta.nt_events[1].callback))
+            self.assertNotEqual(id(ta_copy.nt_events[1].callback.lst), id(
+                ta.nt_events[1].callback.lst))
+            self.assertNotEqual(id(ta_copy.nt_events[2].callback), id(
+                ta.nt_events[2].callback))
+            self.assertNotEqual(id(ta_copy.nt_events[2].callback.lst), id(
+                ta.nt_events[2].callback.lst))
 
             # Callback with wrong signature.
             def cb2(ta, t):
@@ -832,6 +893,66 @@ class event_detection_test_case(_ut.TestCase):
             self.assertTrue(ta.time > 1)
             self.assertEqual(counter_nt, 3)
             self.assertEqual(counter_t, 2)
+
+            # Make sure that when accessing events
+            # from the integrator property we always
+            # get the same object.
+            class cb0:
+                def __init__(self):
+                    self.lst = []
+
+                def __call__(self, ta, mr, d_sgn):
+                    pass
+
+            class cb1:
+                def __init__(self):
+                    self.lst = []
+
+                def __call__(self, ta, mr, d_sgn):
+                    pass
+
+            ta = taylor_adaptive(sys=sys, state=[fp_t(0), fp_t(0.25)], fp_type=desc,
+                                 t_events=[t_event(v*v-1e-10, callback=cb0(), fp_type=desc),
+                                           t_event(v, callback=cb1(),
+                                                   fp_type=desc),
+                                           t_event(v, callback=cb1(), fp_type=desc)])
+
+            # Check that the refcount increases by 3
+            # (the number of events).
+            rc = getrefcount(ta)
+            t_list = ta.t_events
+            new_rc = getrefcount(ta)
+            self.assertEqual(new_rc, rc + 3)
+
+            self.assertEqual(id(ta.t_events[0].callback), id(
+                ta.t_events[0].callback))
+            self.assertEqual(id(ta.t_events[0].callback.lst), id(
+                ta.t_events[0].callback.lst))
+            self.assertEqual(id(ta.t_events[1].callback), id(
+                ta.t_events[1].callback))
+            self.assertEqual(id(ta.t_events[1].callback.lst), id(
+                ta.t_events[1].callback.lst))
+            self.assertEqual(id(ta.t_events[2].callback), id(
+                ta.t_events[2].callback))
+            self.assertEqual(id(ta.t_events[2].callback.lst), id(
+                ta.t_events[2].callback.lst))
+
+            # Ensure a deep copy of the integrator performs
+            # a deep copy of the events.
+            ta_copy = deepcopy(ta)
+
+            self.assertNotEqual(id(ta_copy.t_events[0].callback), id(
+                ta.t_events[0].callback))
+            self.assertNotEqual(id(ta_copy.t_events[0].callback.lst), id(
+                ta.t_events[0].callback.lst))
+            self.assertNotEqual(id(ta_copy.t_events[1].callback), id(
+                ta.t_events[1].callback))
+            self.assertNotEqual(id(ta_copy.t_events[1].callback.lst), id(
+                ta.t_events[1].callback.lst))
+            self.assertNotEqual(id(ta_copy.t_events[2].callback), id(
+                ta.t_events[2].callback))
+            self.assertNotEqual(id(ta_copy.t_events[2].callback.lst), id(
+                ta.t_events[2].callback.lst))
 
             # Callback with wrong signature.
             def cb2(ta, t):
