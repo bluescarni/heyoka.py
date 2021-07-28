@@ -9,6 +9,9 @@ Changelog
 New
 ~~~
 
+- Add a new example on the numerical detection of integrals
+  of motion
+  (`#59 <https://github.com/bluescarni/heyoka/pull/59>`__).
 - The tolerance value is now stored in the integrator objects
   (`#58 <https://github.com/bluescarni/heyoka/pull/58>`__).
 
