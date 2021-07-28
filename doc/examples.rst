@@ -40,6 +40,14 @@ Celestial mechanics and astrodynamics
   notebooks/mercury_precession
   notebooks/ttv
 
+Dynamical systems
+-----------------
+
+.. toctree::
+  :maxdepth: 1
+
+  notebooks/second_integral
+
 Others
 ---------------
 
