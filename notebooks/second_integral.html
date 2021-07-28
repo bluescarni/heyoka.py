@@ -1,0 +1,638 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>The second integral of motion &#8212; heyoka.py 0.14.0 documentation</title>
+    
+  <link href="../_static/css/theme.css" rel="stylesheet" />
+  <link href="../_static/css/index.c5995385ac14fb8791e8eb36b4908be2.css" rel="stylesheet" />
+
+    
+  <link rel="stylesheet"
+    href="../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    
+      
+
+    
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/sphinx-book-theme.e8e5499552300ddf5d7adccae7cc3b70.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.css" />
+    
+  <link rel="preload" as="script" href="../_static/js/index.1c5a1a01449ed65a7b51.js">
+
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/togglebutton.js"></script>
+    <script >var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    <script src="../_static/sphinx-book-theme.12a9622fbb08dcb3a2a40b2c02b83a57.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["\\(", "\\)"]], "displayMath": [["\\[", "\\]"]], "processRefs": false, "processEnvironments": false}})</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="The variational equations" href="The%20variational%20equations.html" />
+    <link rel="prev" title="Calculating transit timing variations" href="ttv.html" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="en" />
+    
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
+    
+    <div class="container-fluid" id="banner"></div>
+
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+<div class="col-12 col-md-3 bd-sidebar site-navigation show" id="site-navigation">
+    
+        <div class="navbar-brand-box">
+    <a class="navbar-brand text-wrap" href="../index.html">
+      
+      <img src="../_static/white_logo.png" class="logo" alt="logo">
+      
+      
+      <h1 class="site-logo" id="site-title">heyoka.py 0.14.0 documentation</h1>
+      
+    </a>
+</div><form class="bd-search d-flex align-items-center" action="../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+    <div class="bd-toc-item active">
+        <p class="caption">
+ <span class="caption-text">
+  Contents
+ </span>
+</p>
+<ul class="current nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../install.html">
+   Installation
+  </a>
+ </li>
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="../tutorials.html">
+   Tutorials
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/>
+  <label for="toctree-checkbox-1">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../tut_taylor_method.html">
+     Taylor’s method
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="The%20expression%20system.html">
+     The expression system
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="The%20adaptive%20integrator.html">
+     The adaptive integrator
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="Customising%20the%20adaptive%20integrator.html">
+     Customising the adaptive integrator
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="ODEs%20with%20parameters.html">
+     ODEs with parameters
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="Non-autonomous%20systems.html">
+     Non-autonomous systems
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="Dense%20output.html">
+     Dense output
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="sympy_interop.html">
+     Interoperability with SymPy
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="pickling.html">
+     Pickle support
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="Batch%20mode%20overview.html">
+     Batch mode
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="Event%20detection.html">
+     Event detection overview
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="Sampling%20events.html">
+     Sampling events
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="Poincar%C3%A9%20sections.html">
+     Poincaré sections
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="The%20Keplerian%20billiard.html">
+     The Keplerian billiard
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="The%20two-fixed%20elliptic%20billiard.html">
+     The two-fixed centres elliptic billiard
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="The%20wavy%20ramp.html">
+     The wavy ramp
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="The%20Maxwell-Boltzmann%20distribution.html">
+     The Maxwell-Boltzmann distribution
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1 current active has-children">
+  <a class="reference internal" href="../examples.html">
+   Examples
+  </a>
+  <input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/>
+  <label for="toctree-checkbox-2">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul class="current">
+   <li class="toctree-l2">
+    <a class="reference internal" href="The%20restricted%20three-body%20problem.html">
+     The restricted three-body problem
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="Long%20term%20stability%20of%20Trappist-1.html">
+     Long term stability of N-body simulations: the case of Trappist-1
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="Outer%20Solar%20System.html">
+     Brouwer’s law in the outer Solar System
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="Box%20control%20for%20Formation%20Flying%20Satellites.html">
+     Box control in satellite Formation Flying
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="Comparing%20coordinate%20systems.html">
+     Comparing coordinate systems
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="Inverting%20Kepler%27s%20equation%20in%20ODEs.html">
+     Inverting Kepler’s equation in ODEs
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="Scaled%20outer%20Solar%20System.html">
+     The scaled outer Solar System
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="Planetary%20embryos.html">
+     Planetary embryos in the inner Solar System
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="mercury_precession.html">
+     Mercury’s relativistic precession
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="ttv.html">
+     Calculating transit timing variations
+    </a>
+   </li>
+   <li class="toctree-l2 current active">
+    <a class="current reference internal" href="#">
+     The second integral of motion
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="The%20variational%20equations.html">
+     The variational equations
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="Optimal%20Control%20of%20the%20Lotka-Volterra%20equations.html">
+     Optimal Control of the Lotka-Volterra equations
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../changelog.html">
+   Changelog
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../breaking_changes.html">
+   Breaking changes
+  </a>
+ </li>
+</ul>
+
+    </div>
+</nav> <!-- To handle the deprecated key -->
+
+<div class="navbar_extra_footer">
+  Theme by the <a href="https://ebp.jupyterbook.org">Executable Book Project</a>
+</div>
+
+</div>
+
+
+          
+
+
+          
+<main class="col py-md-3 pl-md-4 bd-content overflow-auto" role="main">
+    
+    <div class="topbar container-xl fixed-top">
+    <div class="topbar-contents row">
+        <div class="col-12 col-md-3 bd-topbar-whitespace site-navigation show"></div>
+        <div class="col pl-md-4 topbar-main">
+            
+            <button id="navbar-toggler" class="navbar-toggler ml-0" type="button" data-toggle="collapse"
+                data-toggle="tooltip" data-placement="bottom" data-target=".site-navigation" aria-controls="navbar-menu"
+                aria-expanded="true" aria-label="Toggle navigation" aria-controls="site-navigation"
+                title="Toggle navigation" data-toggle="tooltip" data-placement="left">
+                <i class="fas fa-bars"></i>
+                <i class="fas fa-arrow-left"></i>
+                <i class="fas fa-arrow-up"></i>
+            </button>
+            
+            
+<div class="dropdown-buttons-trigger">
+    <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn" aria-label="Download this page"><i
+            class="fas fa-download"></i></button>
+
+    <div class="dropdown-buttons">
+        <!-- ipynb file if we had a myst markdown file -->
+        
+        <!-- Download raw file -->
+        <a class="dropdown-buttons" href="../_sources/notebooks/second_integral.ipynb.txt"><button type="button"
+                class="btn btn-secondary topbarbtn" title="Download source file" data-toggle="tooltip"
+                data-placement="left">.ipynb</button></a>
+        <!-- Download PDF via print -->
+        <button type="button" id="download-print" class="btn btn-secondary topbarbtn" title="Print to PDF"
+            onClick="window.print()" data-toggle="tooltip" data-placement="left">.pdf</button>
+    </div>
+</div>
+
+            <!-- Source interaction buttons -->
+
+<div class="dropdown-buttons-trigger">
+    <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn"
+        aria-label="Connect with source repository"><i class="fab fa-github"></i></button>
+    <div class="dropdown-buttons sourcebuttons">
+        <a class="repository-button"
+            href="https://github.com/bluescarni/heyoka.py"><button type="button" class="btn btn-secondary topbarbtn"
+                data-toggle="tooltip" data-placement="left" title="Source repository"><i
+                    class="fab fa-github"></i>repository</button></a>
+        <a class="issues-button"
+            href="https://github.com/bluescarni/heyoka.py/issues/new?title=Issue%20on%20page%20%2Fnotebooks/second_integral.html&body=Your%20issue%20content%20here."><button
+                type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip" data-placement="left"
+                title="Open an issue"><i class="fas fa-lightbulb"></i>open issue</button></a>
+        
+    </div>
+</div>
+
+            <!-- Full screen (wrap in <a> to have style consistency -->
+
+<a class="full-screen-button"><button type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip"
+        data-placement="bottom" onclick="toggleFullScreen()" aria-label="Fullscreen mode"
+        title="Fullscreen mode"><i
+            class="fas fa-expand"></i></button></a>
+
+            <!-- Launch buttons -->
+
+<div class="dropdown-buttons-trigger">
+    <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn"
+        aria-label="Launch interactive content"><i class="fas fa-rocket"></i></button>
+    <div class="dropdown-buttons">
+        
+        <a class="binder-button" href="https://mybinder.org/v2/gh/bluescarni/heyoka.py/main?urlpath=tree/doc/notebooks/second_integral.ipynb"><button type="button"
+                class="btn btn-secondary topbarbtn" title="Launch Binder" data-toggle="tooltip"
+                data-placement="left"><img class="binder-button-logo"
+                    src="../_static/images/logo_binder.svg"
+                    alt="Interact on binder">Binder</button></a>
+        
+        
+        
+        
+    </div>
+</div>
+
+        </div>
+
+        <!-- Table of contents -->
+        <div class="d-none d-md-block col-md-2 bd-toc show">
+            
+            <div class="tocsection onthispage pt-5 pb-3">
+                <i class="fas fa-list"></i> Contents
+            </div>
+            <nav id="bd-toc-nav">
+                <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#procedure">
+   Procedure
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#running-the-experiments">
+   Running the experiments
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#conclusions">
+   Conclusions
+  </a>
+ </li>
+</ul>
+
+            </nav>
+        </div>
+    </div>
+</div>
+    <div id="main-content" class="row">
+        <div class="col-12 col-md-9 pl-md-3 pr-md-0">
+        
+              <div>
+                
+  <div class="section" id="the-second-integral-of-motion">
+<h1>The second integral of motion<a class="headerlink" href="#the-second-integral-of-motion" title="Permalink to this headline">¶</a></h1>
+<p>In this example we will reproduce a <a class="reference external" href="https://ui.adsabs.harvard.edu/abs/1964AJ.....69...73H/abstract">famous numerical experiment</a> investigating the existence of a second integral of motion in axisymmetric potentials. Specifically, we will focus on a two-dimensional dynamical system described by the Hamiltonian</p>
+<div class="math notranslate nohighlight">
+\[
+\mathcal{H}\left(\dot{x}, \dot{y}, x, y \right) = \frac{1}{2}\left(\dot{x}^2+\dot{y}^2\right) + U\left(x, y\right),
+\]</div>
+<p>where</p>
+<div class="math notranslate nohighlight">
+\[
+U\left(x, y\right) = \frac{1}{2}\left( x^2 + y^2 + 2x^2y - \frac{2}{3}y^3 \right).
+\]</div>
+<p><span class="math notranslate nohighlight">\(x\)</span> and <span class="math notranslate nohighlight">\(y\)</span> are the cylindrical coordinates (<span class="math notranslate nohighlight">\(R\)</span> and <span class="math notranslate nohighlight">\(z\)</span>) of a point mass moving under the influence of the axially-symmetric potential <span class="math notranslate nohighlight">\(U\left(x, y\right)\)</span>.</p>
+<p>Because we are dealing with an autonomous dynamical system, the Hamiltonian <span class="math notranslate nohighlight">\(\mathcal{H}\)</span> is a constant of motion, corresponding to the total energy of the system.
+Our objective is to investigate the existence of <em>another</em> integral of motion independent of <span class="math notranslate nohighlight">\(\mathcal{H}\)</span>: if that were the case, we could solve analytically this dynamical system via the <a class="reference external" href="https://en.wikipedia.org/wiki/Liouville%E2%80%93Arnold_theorem">Liouville-Arnold theorem</a>.</p>
+<div class="section" id="procedure">
+<h2>Procedure<a class="headerlink" href="#procedure" title="Permalink to this headline">¶</a></h2>
+<p>Because <span class="math notranslate nohighlight">\(\mathcal{H}\)</span> is a constant of motion, we can invert the definition of the Hamiltonian to yield</p>
+<div class="math notranslate nohighlight">
+\[
+\frac{1}{2}\dot{x}^2 = \mathcal{H} - U\left(x, y\right) - \frac{1}{2}\dot{y}^2,\label{eq:H_inv}\tag{1}
+\]</div>
+<p>which, in turn, implies the constraint</p>
+<div class="math notranslate nohighlight">
+\[
+\mathcal{H} - U\left(x, y\right) - \frac{1}{2}\dot{y}^2 \geq 0,\label{eq:constr}\tag{2}
+\]</div>
+<p>because <span class="math notranslate nohighlight">\(\frac{1}{2}\dot{x}^2\)</span> cannot assume negative values. Eq. (\ref{eq:constr}) implicitly defines a <em>volume</em> in the <span class="math notranslate nohighlight">\(\left(x, y, \dot{y}\right)\)</span> phase space within which the motion of the particle is bounded. On the other hand, <em>if</em> another integral of motion <span class="math notranslate nohighlight">\(\mathcal{C} = \mathcal{C}\left( \dot{x}, \dot{y}, x, y \right)\)</span> exists, we can invert it to determine
+<span class="math notranslate nohighlight">\(\dot{x} = \dot{x}\left( x, y, \dot{y}, \mathcal{C} \right)\)</span>, plug this definition of <span class="math notranslate nohighlight">\(\dot{x}\)</span> into eq. (\ref{eq:H_inv}) and obtain an equation of type</p>
+<div class="math notranslate nohighlight">
+\[
+f\left(x, y, \dot{y}, \mathcal{H}, \mathcal{C}\right) = 0
+\]</div>
+<p>which defines a <em>surface</em> embedded in the phase space <span class="math notranslate nohighlight">\(\left(x, y, \dot{y}\right)\)</span>, rather than a volume. In other words, the existence of another integral of motion <span class="math notranslate nohighlight">\(\mathcal{C}\)</span> further constraints the possible motion of the particle in the <span class="math notranslate nohighlight">\(\left(x, y, \dot{y}\right)\)</span> space. Thus, the strategy of our investigation revolves around detecting if the particle motion in phase space is constrained on a surface, rather than within a volume. How can we do that?</p>
+<p>A possible answer to this question is to consider the intersections of the particle’s trajectory in phase space with a fixed 2D plane (or, in other words, a <a class="reference external" href="https://en.wikipedia.org/wiki/Poincar%C3%A9_map">Poincare’ section</a>). If the particle’s trajectory is constrained by a surface (i.e., if the additional integral of motion <span class="math notranslate nohighlight">\(\mathcal{C}\)</span> <em>does</em> exist), the Poincare’ section will consist of a curve representing the intersection of the surface with the 2D plane. If, instead, the particle’s trajectory is constrained by a volume (i.e., if the additional integral of motion <span class="math notranslate nohighlight">\(\mathcal{C}\)</span> <em>does not</em> exist), the Poincare’ section will resemble a densely-filled surface, rather than a curve.</p>
+</div>
+<div class="section" id="running-the-experiments">
+<h2>Running the experiments<a class="headerlink" href="#running-the-experiments" title="Permalink to this headline">¶</a></h2>
+<p>For the computation of Poincare’ sections, we use the plane defined by the condition <span class="math notranslate nohighlight">\(x = 0\)</span> (i.e., the <span class="math notranslate nohighlight">\(\left(y, \dot{y}\right)\)</span> plane), and, for the sake of consistency with the <a class="reference external" href="https://ui.adsabs.harvard.edu/abs/1964AJ.....69...73H/abstract">original paper</a>, we consider only intersections for which <span class="math notranslate nohighlight">\(\dot{x} &gt; 0\)</span> (i.e., the particle is moving from below to above the plane). We will compute different Poincare’ sections at different energy levels (i.e., values of the <span class="math notranslate nohighlight">\(\mathcal{H}\)</span> constant). The initial value of <span class="math notranslate nohighlight">\(x\)</span> is always <span class="math notranslate nohighlight">\(0\)</span> (so that the motion always starts on the plane of the Poincare’ section), and the initial values for <span class="math notranslate nohighlight">\(y\)</span> and <span class="math notranslate nohighlight">\(\dot{y}\)</span> are randomly selected. The initial value for <span class="math notranslate nohighlight">\(\dot{x}\)</span> is then implicitly defined by the value of the energy constant.</p>
+<p>Let us begin by defining a function for the generation of a set of initial conditions from an energy value:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">generate_ic</span><span class="p">(</span><span class="n">H</span><span class="p">):</span>
+    <span class="kn">import</span> <span class="nn">random</span>
+    <span class="kn">from</span> <span class="nn">math</span> <span class="kn">import</span> <span class="n">sqrt</span>
+    
+    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="c1"># Generate y and vy randomly.</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="o">-</span><span class="mf">.5</span><span class="p">,</span> <span class="mf">.5</span><span class="p">)</span>
+        <span class="n">vy</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="o">-</span><span class="mf">.5</span><span class="p">,</span> <span class="mf">.5</span><span class="p">)</span>
+        
+        <span class="c1"># Compute vx**2 via the inversion of the</span>
+        <span class="c1"># Hamiltonian, after setting x = 0.</span>
+        <span class="n">sq_vx</span> <span class="o">=</span> <span class="mi">2</span><span class="o">*</span><span class="n">H</span> <span class="o">-</span> <span class="n">vy</span><span class="o">*</span><span class="n">vy</span> <span class="o">-</span> <span class="n">y</span><span class="o">*</span><span class="n">y</span> <span class="o">+</span> <span class="mi">2</span><span class="o">/</span><span class="mf">3.</span><span class="o">*</span><span class="n">y</span><span class="o">*</span><span class="n">y</span><span class="o">*</span><span class="n">y</span>
+        
+        <span class="c1"># Check if vx**2 is positive. Otherwise,</span>
+        <span class="c1"># we will throw the dice again.</span>
+        <span class="k">if</span> <span class="n">sq_vx</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="c1"># Add a random sign to vx.</span>
+            <span class="n">vx</span> <span class="o">=</span> <span class="n">sqrt</span><span class="p">(</span><span class="n">sq_vx</span><span class="p">)</span> <span class="k">if</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span> <span class="k">else</span> <span class="o">-</span><span class="n">sqrt</span><span class="p">(</span><span class="n">sq_vx</span><span class="p">)</span>
+            <span class="k">break</span>
+    
+    <span class="k">return</span> <span class="n">vx</span><span class="p">,</span> <span class="n">vy</span><span class="p">,</span> <span class="mf">0.</span><span class="p">,</span> <span class="n">y</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Next, we define an expression representing the Hamiltonian:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">heyoka</span> <span class="k">as</span> <span class="nn">hy</span>
+<span class="n">vx</span><span class="p">,</span> <span class="n">vy</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">make_vars</span><span class="p">(</span><span class="s2">&quot;vx&quot;</span><span class="p">,</span> <span class="s2">&quot;vy&quot;</span><span class="p">,</span> <span class="s2">&quot;x&quot;</span><span class="p">,</span> <span class="s2">&quot;y&quot;</span><span class="p">)</span>
+
+<span class="n">Ham</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="p">(</span><span class="n">vx</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">vy</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">+</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="p">(</span><span class="n">x</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">y</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="mi">2</span><span class="o">*</span><span class="n">x</span><span class="o">**</span><span class="mi">2</span><span class="o">*</span><span class="n">y</span> <span class="o">-</span> <span class="mi">2</span><span class="o">/</span><span class="mf">3.</span><span class="o">*</span><span class="n">y</span><span class="o">**</span><span class="mi">3</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>In order to detect when the particle crosses the <span class="math notranslate nohighlight">\(x=0\)</span> plane, we will be using heyoka.py’s <a class="reference internal" href="Event%20detection.html"><span class="doc std std-doc">event detection system</span></a>. The event equation is simply</p>
+<div class="math notranslate nohighlight">
+\[
+x = 0,
+\]</div>
+<p>whereas for the callback we will be using a function object which will record internally the values of <span class="math notranslate nohighlight">\(\dot{y}\)</span> and <span class="math notranslate nohighlight">\(y\)</span> when the particle crosses the <span class="math notranslate nohighlight">\(x=0\)</span> plane:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Definition of the event callback.</span>
+<span class="k">class</span> <span class="nc">ps_callback</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">vy_y_list</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ta</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">d_sgn</span><span class="p">):</span>
+        <span class="c1"># Compute the state of the system</span>
+        <span class="c1"># at the event trigger time.</span>
+        <span class="n">ta</span><span class="o">.</span><span class="n">update_d_output</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+
+        <span class="c1"># Add the (vy, y) values to the</span>
+        <span class="c1"># internal list.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">vy_y_list</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">ta</span><span class="o">.</span><span class="n">d_output</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">ta</span><span class="o">.</span><span class="n">d_output</span><span class="p">[</span><span class="mi">3</span><span class="p">]))</span>
+
+<span class="c1"># Create the event.</span>
+<span class="n">ev</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">nt_event</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">ps_callback</span><span class="p">(),</span> <span class="n">direction</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">event_direction</span><span class="o">.</span><span class="n">positive</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>We can then proceed to the construction of the integrator object:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ta</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">taylor_adaptive</span><span class="p">(</span>
+    <span class="c1"># Hamilton&#39;s equations.</span>
+    <span class="p">[</span>
+        <span class="p">(</span><span class="n">vx</span><span class="p">,</span> <span class="o">-</span><span class="n">hy</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">Ham</span><span class="p">,</span> <span class="n">x</span><span class="p">)),</span>
+        <span class="p">(</span><span class="n">vy</span><span class="p">,</span> <span class="o">-</span><span class="n">hy</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">Ham</span><span class="p">,</span> <span class="n">y</span><span class="p">)),</span>
+        <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">hy</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">Ham</span><span class="p">,</span> <span class="n">vx</span><span class="p">)),</span>
+        <span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">hy</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">Ham</span><span class="p">,</span> <span class="n">vy</span><span class="p">))</span>
+    <span class="p">],</span>
+    <span class="c1"># Initial conditions (all zeroes for now).</span>
+    <span class="p">[</span><span class="mf">0.</span><span class="p">]</span> <span class="o">*</span> <span class="mi">4</span><span class="p">,</span>
+    <span class="c1"># Event list.</span>
+    <span class="n">nt_events</span> <span class="o">=</span> <span class="p">[</span><span class="n">ev</span><span class="p">]</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>We can now proceed to numerically compute and plot the Poincare’ sections. We define a small helper function that, given an input energy level, generates and integrate a few random orbits. The event object will record internally the intersections of these orbits with the <span class="math notranslate nohighlight">\(x=0\)</span> plane, which will then be used to plot the Poincare’ section:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">plot_poincare</span><span class="p">(</span><span class="n">H</span><span class="p">):</span>
+    <span class="kn">from</span> <span class="nn">matplotlib.pylab</span> <span class="kn">import</span> <span class="n">plt</span>
+    <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+    <span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">9</span><span class="p">))</span>
+
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">20</span><span class="p">):</span>
+        <span class="c1"># Reset the integrator time.</span>
+        <span class="n">ta</span><span class="o">.</span><span class="n">time</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="c1"># Generate random initial conditions.</span>
+        <span class="n">ta</span><span class="o">.</span><span class="n">state</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">generate_ic</span><span class="p">(</span><span class="n">H</span><span class="p">)</span>
+        <span class="c1"># Reset the list of intersection points</span>
+        <span class="c1"># in the event object.</span>
+        <span class="n">ta</span><span class="o">.</span><span class="n">nt_events</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">callback</span><span class="o">.</span><span class="n">vy_y_list</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="c1"># Integrate for a few time units.</span>
+        <span class="n">ta</span><span class="o">.</span><span class="n">propagate_until</span><span class="p">(</span><span class="mi">2000</span><span class="p">)</span>
+
+        <span class="c1"># Extract the intersection points as</span>
+        <span class="c1"># a 2D numpy array.</span>
+        <span class="n">pts</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">ta</span><span class="o">.</span><span class="n">nt_events</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">callback</span><span class="o">.</span><span class="n">vy_y_list</span><span class="p">)</span>
+
+        <span class="c1"># Plot the intersection points.</span>
+        <span class="c1"># NOTE: each set of initial conditions will</span>
+        <span class="c1"># be plotted with a different color.</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">pts</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">pts</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">s</span><span class="o">=</span><span class="mf">2.5</span><span class="p">)</span>
+
+    <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;$y$&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;$\dot</span><span class="si">{y}</span><span class="s1">$&#39;</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>As done in the <a class="reference external" href="https://ui.adsabs.harvard.edu/abs/1964AJ.....69...73H/abstract">original paper</a>, let us first plot a Poincare’ section for the energy level <span class="math notranslate nohighlight">\(\mathcal{H} = 0.083333\)</span>:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">plot_poincare</span><span class="p">(</span><span class="mf">0.083333</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/second_integral_11_0.png" src="../_images/second_integral_11_0.png" />
+</div>
+</div>
+<p>This Poincare’ section is suggesting that the integral of motion <span class="math notranslate nohighlight">\(\mathcal{C}\)</span> does indeed exist, because the intersections of all random orbits are clearly tracing curves on the <span class="math notranslate nohighlight">\(x=0\)</span> plane.</p>
+<blockquote>
+<div><p><strong>NOTE</strong>: if you are running this tutorial in interactive mode, feel free to re-execute the previous cell to randomly generate a new Poincare’ section with the same energy level.</p>
+</div></blockquote>
+<p>But what happens if we try to compute the Poincare’ section for another energy level?</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">plot_poincare</span><span class="p">(</span><span class="mf">0.125</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/second_integral_13_0.png" src="../_images/second_integral_13_0.png" />
+</div>
+</div>
+<p>The qualitative picture is now radically different. Although islands of stable motion persist, now most trajectories seem to be densely filling the plane, rather than tracing curves on it. Let us further increase the energy level:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">plot_poincare</span><span class="p">(</span><span class="mf">0.16667</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/second_integral_15_0.png" src="../_images/second_integral_15_0.png" />
+</div>
+</div>
+<p>At higher energies, the densely-filling behaviour (which Henon and Heiles call <em>ergodic</em>) is even more prevalent than before.</p>
+</div>
+<div class="section" id="conclusions">
+<h2>Conclusions<a class="headerlink" href="#conclusions" title="Permalink to this headline">¶</a></h2>
+<p>These numerical experiments indicate that, in general, no additional integrals of motion (beside the energy) exist for axisymmetric potentials. Note that this result does not imply that no additional integrals exist for <em>some</em> axisymmetric potentials (e.g., see <a class="reference external" href="https://en.wikipedia.org/wiki/Euler%27s_three-body_problem">Euler’s three body problem</a>, which is solvable via elliptic functions), but that just an additional integral of motion cannot be defined generically for <em>all</em> axisymmetric potentials.</p>
+</div>
+</div>
+
+
+              </div>
+              
+        
+        <div class='prev-next-bottom'>
+            
+    <a class='left-prev' id="prev-link" href="ttv.html" title="previous page">Calculating transit timing variations</a>
+    <a class='right-next' id="next-link" href="The%20variational%20equations.html" title="next page">The variational equations</a>
+
+        </div>
+        
+        </div>
+    </div>
+    <footer class="footer mt-5 mt-md-0">
+    <div class="container">
+      <p>
+        
+          By Francesco Biscani and Dario Izzo<br/>
+        
+            &copy; Copyright 2020, 2021, Francesco Biscani and Dario Izzo.<br/>
+      </p>
+    </div>
+  </footer>
+</main>
+
+
+      </div>
+    </div>
+  
+  <script src="../_static/js/index.1c5a1a01449ed65a7b51.js"></script>
+
+  
+  </body>
+</html>
