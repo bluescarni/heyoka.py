@@ -450,7 +450,7 @@ y = 1 - x + 0.05 \cos\left(11 \pi x \right).
     <span class="c1"># If the last collision happened</span>
     <span class="c1"># too recently, return False to</span>
     <span class="c1"># stop the simulation.</span>
-    <span class="k">if</span> <span class="n">ta</span><span class="o">.</span><span class="n">time</span> <span class="o">-</span> <span class="n">last_t</span> <span class="o">&lt;</span> <span class="mf">1e-10</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">ta</span><span class="o">.</span><span class="n">time</span> <span class="o">-</span> <span class="n">last_t</span> <span class="o">&lt;</span> <span class="mf">1e-6</span><span class="p">:</span>
         <span class="k">return</span> <span class="kc">False</span>
 
     <span class="c1"># Update last_t.</span>
@@ -481,11 +481,11 @@ y = 1 - x + 0.05 \cos\left(11 \pi x \right).
 <span class="c1"># Callback for bouncing off the ground.</span>
 <span class="k">def</span> <span class="nf">cb_bottom</span><span class="p">(</span><span class="n">ta</span><span class="p">,</span> <span class="n">mr</span><span class="p">,</span> <span class="n">d_sgn</span><span class="p">):</span>
     <span class="k">global</span> <span class="n">last_t</span>
-
+    
     <span class="c1"># If the last collision happened</span>
     <span class="c1"># too recently, return False to</span>
     <span class="c1"># stop the simulation.</span>
-    <span class="k">if</span> <span class="n">ta</span><span class="o">.</span><span class="n">time</span> <span class="o">-</span> <span class="n">last_t</span> <span class="o">&lt;</span> <span class="mf">1e-10</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">ta</span><span class="o">.</span><span class="n">time</span> <span class="o">-</span> <span class="n">last_t</span> <span class="o">&lt;</span> <span class="mf">1e-6</span><span class="p">:</span>
         <span class="k">return</span> <span class="kc">False</span>
 
     <span class="c1"># Update last_t.</span>
@@ -554,7 +554,7 @@ y = 1 - x + 0.05 \cos\left(11 \pi x \right).
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>4.739023056877456
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>4.739019126545036
 </pre></div>
 </div>
 </div>
