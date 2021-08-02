@@ -70,7 +70,7 @@ In addition to the dependencies enumerated :ref:`earlier <installation_deps>`,
 installation from source requires also:
 
 * `pybind11 <https://github.com/pybind/pybind11>`__ (version >= 2.6),
-* `CMake <https://cmake.org/>`__, version 3.8 or later.
+* `CMake <https://cmake.org/>`__, version 3.17 or later.
 
 After making sure the dependencies are installed on your system, you can
 download the heyoka.py source code from the
@@ -108,7 +108,7 @@ such as:
   will be installed. If left empty (the default), heyoka.py will be installed
   in the global modules directory of your Python installation.
 * ``HEYOKA_PY_ENABLE_IPO``: set this flag to ``ON`` to compile heyoka.py
-  with link-time optimisations. Requires CMake >= 3.9 and compiler support,
+  with link-time optimisations. Requires compiler support,
   defaults to ``OFF``.
 
 Please consult `CMake's documentation <https://cmake.org/cmake/help/latest/>`_
