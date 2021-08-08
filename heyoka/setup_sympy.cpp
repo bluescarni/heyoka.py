@@ -165,6 +165,7 @@ void setup_sympy(py::module &m)
         detail::fmap[typeid(hy::detail::asin_impl)] = py::object(detail::spy->attr("asin"));
         detail::fmap[typeid(hy::detail::asinh_impl)] = py::object(detail::spy->attr("asinh"));
         detail::fmap[typeid(hy::detail::atan_impl)] = py::object(detail::spy->attr("atan"));
+        detail::fmap[typeid(hy::detail::atan2_impl)] = py::object(detail::spy->attr("atan2"));
         detail::fmap[typeid(hy::detail::atanh_impl)] = py::object(detail::spy->attr("atanh"));
         detail::fmap[typeid(hy::detail::cos_impl)] = py::object(detail::spy->attr("cos"));
         detail::fmap[typeid(hy::detail::cosh_impl)] = py::object(detail::spy->attr("cosh"));

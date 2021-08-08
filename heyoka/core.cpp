@@ -307,6 +307,21 @@ PYBIND11_MODULE(core, m)
     m.def("kepE", [](hey::expression e, mppp::real128 M) { return hey::kepE(std::move(e), M); });
 #endif
 
+    // atan2().
+    m.def("atan2", [](hey::expression y, hey::expression x) { return hey::atan2(std::move(y), std::move(x)); });
+
+    m.def("atan2", [](double y, hey::expression x) { return hey::atan2(y, std::move(x)); });
+    m.def("atan2", [](long double y, hey::expression x) { return hey::atan2(y, std::move(x)); });
+#if defined(HEYOKA_HAVE_REAL128)
+    m.def("atan2", [](mppp::real128 y, hey::expression x) { return hey::atan2(y, std::move(x)); });
+#endif
+
+    m.def("atan2", [](hey::expression y, double x) { return hey::atan2(std::move(y), x); });
+    m.def("atan2", [](hey::expression y, long double x) { return hey::atan2(std::move(y), x); });
+#if defined(HEYOKA_HAVE_REAL128)
+    m.def("atan2", [](hey::expression y, mppp::real128 x) { return hey::atan2(std::move(y), x); });
+#endif
+
     // Time.
     m.attr("time") = hey::time;
 
