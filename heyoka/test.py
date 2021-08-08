@@ -1336,6 +1336,9 @@ class sympy_test_case(_ut.TestCase):
         self.assertEqual(core.atan(hx), from_sympy(spy.atan(x)))
         self.assertEqual(to_sympy(core.atan(hx)), spy.atan(x))
 
+        self.assertEqual(core.atan2(hy, hx), from_sympy(spy.atan2(y, x)))
+        self.assertEqual(to_sympy(core.atan2(hy, hx)), spy.atan2(y, x))
+
         self.assertEqual(core.atanh(hx), from_sympy(spy.atanh(x)))
         self.assertEqual(to_sympy(core.atanh(hx)), spy.atanh(x))
 
