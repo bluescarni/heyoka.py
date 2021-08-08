@@ -3,6 +3,23 @@
 Changelog
 =========
 
+0.15.0 (unreleased)
+-------------------
+
+New
+~~~
+
+- Add support for the two-argument inverse tangent function
+  ``atan2()`` in the expression system
+  (`#64 <https://github.com/bluescarni/heyoka/pull/64>`__).
+
+Changes
+~~~~~~~
+
+- heyoka.py now requires at least version 0.15.0 of the
+  heyoka C++ library
+  (`#64 <https://github.com/bluescarni/heyoka.py/pull/64>`__).
+
 0.14.0 (2021-08-03)
 -------------------
 
