@@ -23,7 +23,7 @@
 
     
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="_static/sphinx-book-theme.5f77b4aec8189eecf79907ce328c390d.css" type="text/css" />
+    <link rel="stylesheet" href="_static/sphinx-book-theme.e8f53015daec13862f6db5e763c41738.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="_static/togglebutton.css" />
     <link rel="stylesheet" type="text/css" href="_static/mystnb.css" />
     
@@ -67,7 +67,7 @@
 </div><form class="bd-search d-flex align-items-center" action="search.html" method="get">
   <i class="icon fas fa-search"></i>
   <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
-</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
     <div class="bd-toc-item active">
         <p class="caption">
  <span class="caption-text">
@@ -238,6 +238,11 @@
     </a>
    </li>
    <li class="toctree-l2">
+    <a class="reference internal" href="notebooks/vsop2013.html">
+     Introduction to the VSOP2013 planetary theory
+    </a>
+   </li>
+   <li class="toctree-l2">
     <a class="reference internal" href="notebooks/second_integral.html">
      The second integral of motion
     </a>
@@ -349,7 +354,7 @@
             <div class="tocsection onthispage pt-5 pb-3">
                 <i class="fas fa-list"></i> Contents
             </div>
-            <nav id="bd-toc-nav">
+            <nav id="bd-toc-nav" aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
  <li class="toc-h2 nav-item toc-entry">
   <a class="reference internal nav-link" href="#unreleased">
@@ -583,9 +588,15 @@
 <div class="section" id="new">
 <h3>New<a class="headerlink" href="#new" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
+<li><p>Add an implementation of the VSOP2013 analytical solution
+for the motion of the planets of the Solar System, usable
+in the definition of differential equations
+(<a class="reference external" href="https://github.com/bluescarni/heyoka.py/pull/67">#67</a>).
+A tutorial describing this new feature is available in
+the documentation.</p></li>
 <li><p>Add support for the two-argument inverse tangent function
 <code class="docutils literal notranslate"><span class="pre">atan2()</span></code> in the expression system
-(<a class="reference external" href="https://github.com/bluescarni/heyoka/pull/64">#64</a>).</p></li>
+(<a class="reference external" href="https://github.com/bluescarni/heyoka.py/pull/64">#64</a>).</p></li>
 </ul>
 </div>
 <div class="section" id="changes">
@@ -604,9 +615,9 @@ heyoka C++ library
 <ul class="simple">
 <li><p>Add a new example on the numerical detection of integrals
 of motion
-(<a class="reference external" href="https://github.com/bluescarni/heyoka/pull/59">#59</a>).</p></li>
+(<a class="reference external" href="https://github.com/bluescarni/heyoka.py/pull/59">#59</a>).</p></li>
 <li><p>The tolerance value is now stored in the integrator objects
-(<a class="reference external" href="https://github.com/bluescarni/heyoka/pull/58">#58</a>).</p></li>
+(<a class="reference external" href="https://github.com/bluescarni/heyoka.py/pull/58">#58</a>).</p></li>
 </ul>
 </div>
 <div class="section" id="id4">
@@ -624,7 +635,7 @@ heyoka C++ library
 <h3>New<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li><p>Add support for 64-bit ARM processors
-(<a class="reference external" href="https://github.com/bluescarni/heyoka/pull/55">#55</a>).</p></li>
+(<a class="reference external" href="https://github.com/bluescarni/heyoka.py/pull/55">#55</a>).</p></li>
 <li><p>Pickling support has been added to all classes
 (<a class="reference external" href="https://github.com/bluescarni/heyoka.py/pull/53">#53</a>).</p></li>
 <li><p>Event properties can now be accessed after construction
@@ -896,12 +907,32 @@ heyoka C++ library.</p></li>
               </div>
               
         
-        <div class='prev-next-bottom'>
             
-    <a class='left-prev' id="prev-link" href="notebooks/Optimal%20Control%20of%20the%20Lotka-Volterra%20equations.html" title="previous page">Optimal Control of the Lotka-Volterra equations</a>
-    <a class='right-next' id="next-link" href="breaking_changes.html" title="next page">Breaking changes</a>
 
-        </div>
+
+
+<div class='prev-next-bottom'>
+    
+    <div id="prev">
+        <a class="left-prev" href="notebooks/Optimal%20Control%20of%20the%20Lotka-Volterra%20equations.html" title="previous page">
+            <i class="prevnext-label fas fa-angle-left"></i>
+            <div class="prevnext-info">
+                <p class="prevnext-label">previous</p>
+                <p class="prevnext-title">Optimal Control of the Lotka-Volterra equations</p>
+            </div>
+        </a>
+    </div>
+     <div id="next">
+        <a class="right-next" href="breaking_changes.html" title="next page">
+            <div class="prevnext-info">
+                <p class="prevnext-label">next</p>
+                <p class="prevnext-title">Breaking changes</p>
+            </div>
+            <i class="prevnext-label fas fa-angle-right"></i>
+        </a>
+     </div>
+
+</div>
         
         </div>
     </div>
