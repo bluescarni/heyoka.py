@@ -12,12 +12,12 @@ New
 - Add an implementation of the VSOP2013 analytical solution
   for the motion of the planets of the Solar System, usable
   in the definition of differential equations
-  (`#65 <https://github.com/bluescarni/heyoka/pull/65>`__).
+  (`#67 <https://github.com/bluescarni/heyoka.py/pull/67>`__).
   A tutorial describing this new feature is available in
   the documentation.
 - Add support for the two-argument inverse tangent function
   ``atan2()`` in the expression system
-  (`#64 <https://github.com/bluescarni/heyoka/pull/64>`__).
+  (`#64 <https://github.com/bluescarni/heyoka.py/pull/64>`__).
 
 Changes
 ~~~~~~~
@@ -34,9 +34,9 @@ New
 
 - Add a new example on the numerical detection of integrals
   of motion
-  (`#59 <https://github.com/bluescarni/heyoka/pull/59>`__).
+  (`#59 <https://github.com/bluescarni/heyoka.py/pull/59>`__).
 - The tolerance value is now stored in the integrator objects
-  (`#58 <https://github.com/bluescarni/heyoka/pull/58>`__).
+  (`#58 <https://github.com/bluescarni/heyoka.py/pull/58>`__).
 
 Changes
 ~~~~~~~
@@ -52,7 +52,7 @@ New
 ~~~
 
 - Add support for 64-bit ARM processors
-  (`#55 <https://github.com/bluescarni/heyoka/pull/55>`__).
+  (`#55 <https://github.com/bluescarni/heyoka.py/pull/55>`__).
 - Pickling support has been added to all classes
   (`#53 <https://github.com/bluescarni/heyoka.py/pull/53>`__).
 - Event properties can now be accessed after construction
