@@ -39,6 +39,7 @@ Celestial mechanics and astrodynamics
   notebooks/Planetary embryos
   notebooks/mercury_precession
   notebooks/ttv
+  notebooks/vsop2013
 
 Dynamical systems
 -----------------

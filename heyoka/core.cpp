@@ -39,6 +39,7 @@
 
 #endif
 
+#include <heyoka/celmec/vsop2013.hpp>
 #include <heyoka/exceptions.hpp>
 #include <heyoka/expression.hpp>
 #include <heyoka/llvm_state.hpp>
@@ -819,6 +820,26 @@ PYBIND11_MODULE(core, m)
 
     // Setup the sympy integration bits.
     heypy::setup_sympy(m);
+
+    // Expose the vsop2013 functions.
+    m.def(
+        "vsop2013_elliptic",
+        [](std::uint32_t pl_idx, std::uint32_t var_idx, hey::expression t_expr, double thresh) {
+            return hey::vsop2013_elliptic(pl_idx, var_idx, kw::time = std::move(t_expr), kw::thresh = thresh);
+        },
+        "pl_idx"_a, "var_idx"_a = 0, "time"_a = hey::time, "thresh"_a = 1e-9);
+    m.def(
+        "vsop2013_cartesian",
+        [](std::uint32_t pl_idx, hey::expression t_expr, double thresh) {
+            return hey::vsop2013_cartesian(pl_idx, kw::time = std::move(t_expr), kw::thresh = thresh);
+        },
+        "pl_idx"_a, "time"_a = hey::time, "thresh"_a = 1e-9);
+    m.def(
+        "vsop2013_cartesian_icrf",
+        [](std::uint32_t pl_idx, hey::expression t_expr, double thresh) {
+            return hey::vsop2013_cartesian_icrf(pl_idx, kw::time = std::move(t_expr), kw::thresh = thresh);
+        },
+        "pl_idx"_a, "time"_a = hey::time, "thresh"_a = 1e-9);
 }
 
 #if defined(__clang__)
