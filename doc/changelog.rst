@@ -9,6 +9,12 @@ Changelog
 New
 ~~~
 
+- Add an implementation of the VSOP2013 analytical solution
+  for the motion of the planets of the Solar System, usable
+  in the definition of differential equations
+  (`#65 <https://github.com/bluescarni/heyoka/pull/65>`__).
+  A tutorial describing this new feature is available in
+  the documentation.
 - Add support for the two-argument inverse tangent function
   ``atan2()`` in the expression system
   (`#64 <https://github.com/bluescarni/heyoka/pull/64>`__).
