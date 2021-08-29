@@ -9,11 +9,13 @@ Changelog
 New
 ~~~
 
+- Add an example on the computation of definite integrals
+  (`#68 <https://github.com/bluescarni/heyoka.py/pull/68>`__).
 - Add an implementation of the VSOP2013 analytical solution
   for the motion of the planets of the Solar System, usable
   in the definition of differential equations
   (`#67 <https://github.com/bluescarni/heyoka.py/pull/67>`__).
-  A tutorial describing this new feature is available in
+  An example describing this new feature is available in
   the documentation.
 - Add support for the two-argument inverse tangent function
   ``atan2()`` in the expression system
