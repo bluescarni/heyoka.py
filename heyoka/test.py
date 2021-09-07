@@ -1465,8 +1465,8 @@ class expression_test_case(_ut.TestCase):
 
         x, y, z = make_vars("x", "y", "z")
 
-        self.assertEqual(len(x) == 1)
-        self.assertEqual(len((x - y - z) + (y * z)) == 9)
+        self.assertEqual(len(x), 1)
+        self.assertEqual(len((x - y - z) + (y * z)), 9)
 
 
 class llvm_state_test_case(_ut.TestCase):
