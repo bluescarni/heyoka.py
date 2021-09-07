@@ -1278,7 +1278,7 @@ class sympy_test_case(_ut.TestCase):
             from_sympy(Integer(2**500 + 1))
         self.assertTrue("the required precision" in str(cm.exception))
 
-        if not with_real128:
+        if not with_real128 or _ppc_arch:
             return
 
         # Quad precision.
