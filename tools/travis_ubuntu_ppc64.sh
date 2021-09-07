@@ -14,7 +14,7 @@ wget https://github.com/conda-forge/miniforge/releases/latest/download/Mambaforg
 export deps_dir=$HOME/local
 export PATH="$HOME/miniconda/bin:$PATH"
 bash miniconda.sh -b -p $HOME/miniconda
-mamba create -y -q -p $deps_dir cxx-compiler c-compiler cmake llvmdev tbb-devel tbb astroquery boost-cpp sleef xtensor xtensor-blas blas blas-devel fmt spdlog python=3.8 pybind11 numpy mpmath sympy cloudpickle mppp git
+mamba create -y -q -p $deps_dir cxx-compiler c-compiler cmake llvmdev tbb-devel tbb astroquery boost-cpp sleef xtensor xtensor-blas blas blas-devel fmt spdlog python=3.8 pybind11 numpy mpmath sympy cloudpickle mppp git make
 source activate $deps_dir
 
 # Checkout, build and install heyoka's HEAD.
