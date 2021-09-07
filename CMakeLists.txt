@@ -20,6 +20,8 @@ message(STATUS "heyoka.py version: ${heyoka.py_VERSION}")
 
 option(HEYOKA_PY_ENABLE_IPO "Enable IPO (requires compiler support)." OFF)
 mark_as_advanced(HEYOKA_PY_ENABLE_IPO)
+option(HEYOKA_PY_SETUP_DOCS "Setup the files for building the docs." ON)
+mark_as_advanced(HEYOKA_PY_SETUP_DOCS)
 
 # Run the YACMA compiler setup.
 include(YACMACompilerLinkerSettings)
@@ -158,5 +160,7 @@ endif()
 # Add the module directory.
 add_subdirectory(heyoka)
 
-# Configure docs
-configure_file("${CMAKE_CURRENT_SOURCE_DIR}/doc/conf.py.in" "${CMAKE_CURRENT_SOURCE_DIR}/doc/conf.py" @ONLY)
+if(HEYOKA_PY_SETUP_DOCS)
+    # Configure docs
+    configure_file("${CMAKE_CURRENT_SOURCE_DIR}/doc/conf.py.in" "${CMAKE_CURRENT_SOURCE_DIR}/doc/conf.py" @ONLY)
+endif()

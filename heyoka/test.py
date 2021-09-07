@@ -1278,7 +1278,7 @@ class sympy_test_case(_ut.TestCase):
             from_sympy(Integer(2**500 + 1))
         self.assertTrue("the required precision" in str(cm.exception))
 
-        if not with_real128:
+        if not with_real128 or _ppc_arch:
             return
 
         # Quad precision.
@@ -1433,6 +1433,7 @@ class zero_division_error_test_case(_ut.TestCase):
 class expression_test_case(_ut.TestCase):
     def runTest(self):
         self.test_s11n()
+        self.test_len()
 
     def test_s11n(self):
         from . import make_vars, expression, with_real128, sin, cos
@@ -1458,6 +1459,14 @@ class expression_test_case(_ut.TestCase):
         if not _ppc_arch:
             ex = sin(longdouble('1.1')*x) + mpf('1.3')*cos(2.*y)
             self.assertEqual(ex, pickle.loads(pickle.dumps(ex)))
+
+    def test_len(self):
+        from . import make_vars
+
+        x, y, z = make_vars("x", "y", "z")
+
+        self.assertEqual(len(x), 1)
+        self.assertEqual(len((x - y - z) + (y * z)), 9)
 
 
 class llvm_state_test_case(_ut.TestCase):

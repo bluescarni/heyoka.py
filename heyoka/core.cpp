@@ -234,6 +234,8 @@ PYBIND11_MODULE(core, m)
 #if defined(HEYOKA_HAVE_REAL128)
         .def("__pow__", [](const hey::expression &b, mppp::real128 e) { return hey::pow(b, e); })
 #endif
+        // Expression size.
+        .def("__len__", [](const hey::expression &e) { return hey::get_n_nodes(e); })
         // Repr.
         .def("__repr__",
              [](const hey::expression &e) {
