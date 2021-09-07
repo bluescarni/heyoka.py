@@ -17,6 +17,9 @@ bash miniconda.sh -b -p $HOME/miniconda
 mamba create -y -q -p $deps_dir cxx-compiler c-compiler cmake llvmdev tbb-devel tbb astroquery boost-cpp sleef xtensor xtensor-blas blas blas-devel fmt spdlog python=3.8 pybind11 numpy mpmath sympy cloudpickle mppp git make
 source activate $deps_dir
 
+which python
+python -c 'import site; print(site.getsitepackages())'
+
 # Checkout, build and install heyoka's HEAD.
 git clone https://github.com/bluescarni/heyoka.git heyoka_cpp
 cd heyoka_cpp
@@ -36,7 +39,7 @@ cd build
 cmake ../heyoka.py -DCMAKE_INSTALL_PREFIX=$deps_dir -DCMAKE_PREFIX_PATH=$deps_dir -DCMAKE_BUILD_TYPE=Release -DBoost_NO_BOOST_CMAKE=ON -DHEYOKA_PY_SETUP_DOCS=no
 make -j2 VERBOSE=1 install
 
-cd
+cd /
 
 python -c "from heyoka import test; test.run_test_suite()"
 
