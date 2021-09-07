@@ -9,6 +9,8 @@ Changelog
 New
 ~~~
 
+- Add a function to compute the size of an expression
+  (`#69 <https://github.com/bluescarni/heyoka.py/pull/69>`__).
 - Add an example on the computation of definite integrals
   (`#68 <https://github.com/bluescarni/heyoka.py/pull/68>`__).
 - Add an implementation of the VSOP2013 analytical solution
@@ -27,6 +29,12 @@ Changes
 - heyoka.py now requires at least version 0.15.0 of the
   heyoka C++ library
   (`#64 <https://github.com/bluescarni/heyoka.py/pull/64>`__).
+
+Fix
+~~~
+
+- Test fixes on PPC64
+  (`#69 <https://github.com/bluescarni/heyoka.py/pull/69>`__).
 
 0.14.0 (2021-08-03)
 -------------------

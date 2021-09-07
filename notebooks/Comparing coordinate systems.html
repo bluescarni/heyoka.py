@@ -37,7 +37,7 @@
     <script >var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
     <script src="../_static/sphinx-book-theme.12a9622fbb08dcb3a2a40b2c02b83a57.js"></script>
     <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["\\(", "\\)"]], "displayMath": [["\\[", "\\]"]], "processRefs": false, "processEnvironments": false}})</script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Inverting Kepler’s equation in ODEs" href="Inverting%20Kepler%27s%20equation%20in%20ODEs.html" />
@@ -416,7 +416,7 @@
         
               <div>
                 
-  <div class="section" id="comparing-coordinate-systems">
+  <div class="tex2jax_ignore mathjax_ignore section" id="comparing-coordinate-systems">
 <h1>Comparing coordinate systems<a class="headerlink" href="#comparing-coordinate-systems" title="Permalink to this headline">¶</a></h1>
 <p>In this example, we will study how the choice of coordinate system influences the behaviour of heyoka.py’s adaptive integrator. We will focus on a simple (but nontrivial) dynamical system, consisting of a central Keplerian force field coupled to a force field constant in direction and magnitude. This dynamical system is known as the <em>Stark problem</em> or <em>accelerated Kepler problem</em>, and it has numerous applications of practical interest (including spaceflight mechanics, the dynamics of dust grains in the outer Solar System, atomic physics, etc.). Note that the Stark problem can be solved analytically via <a class="reference external" href="https://arxiv.org/abs/1306.6442">elliptic functions</a>, but of course here we will consider a numerical approach.</p>
 <p>Without loss of generality, we can choose to orient the constant force field towards the positive <span class="math notranslate nohighlight">\(z\)</span> direction. The Hamiltonian of the Stark problem in Cartesian coordinates (and adimensional units) thus reads:</p>

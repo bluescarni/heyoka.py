@@ -376,6 +376,11 @@
      Changes
     </a>
    </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#fix">
+     Fix
+    </a>
+   </li>
   </ul>
  </li>
  <li class="toc-h2 nav-item toc-entry">
@@ -530,48 +535,48 @@
     </a>
    </li>
    <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#fix">
+    <a class="reference internal nav-link" href="#id29">
      Fix
     </a>
    </li>
   </ul>
  </li>
  <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#id29">
+  <a class="reference internal nav-link" href="#id30">
    0.5.0 (2021-02-25)
   </a>
   <ul class="nav section-nav flex-column">
    <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#id30">
+    <a class="reference internal nav-link" href="#id31">
      New
     </a>
    </li>
    <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#id31">
+    <a class="reference internal nav-link" href="#id32">
      Changes
     </a>
    </li>
   </ul>
  </li>
  <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#id32">
+  <a class="reference internal nav-link" href="#id33">
    0.4.0 (2021-02-20)
   </a>
   <ul class="nav section-nav flex-column">
    <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#id33">
+    <a class="reference internal nav-link" href="#id34">
      New
     </a>
    </li>
    <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#id34">
+    <a class="reference internal nav-link" href="#id35">
      Changes
     </a>
    </li>
   </ul>
  </li>
  <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#id35">
+  <a class="reference internal nav-link" href="#id36">
    0.3.0 (2021-02-13)
   </a>
  </li>
@@ -593,6 +598,8 @@
 <div class="section" id="new">
 <h3>New<a class="headerlink" href="#new" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
+<li><p>Add a function to compute the size of an expression
+(<a class="reference external" href="https://github.com/bluescarni/heyoka.py/pull/69">#69</a>).</p></li>
 <li><p>Add an example on the computation of definite integrals
 (<a class="reference external" href="https://github.com/bluescarni/heyoka.py/pull/68">#68</a>).</p></li>
 <li><p>Add an implementation of the VSOP2013 analytical solution
@@ -612,6 +619,13 @@ the documentation.</p></li>
 <li><p>heyoka.py now requires at least version 0.15.0 of the
 heyoka C++ library
 (<a class="reference external" href="https://github.com/bluescarni/heyoka.py/pull/64">#64</a>).</p></li>
+</ul>
+</div>
+<div class="section" id="fix">
+<h3>Fix<a class="headerlink" href="#fix" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Test fixes on PPC64
+(<a class="reference external" href="https://github.com/bluescarni/heyoka.py/pull/69">#69</a>).</p></li>
 </ul>
 </div>
 </div>
@@ -841,8 +855,8 @@ heyoka C++ library
 (<a class="reference external" href="https://github.com/bluescarni/heyoka.py/pull/21">#21</a>).</p></li>
 </ul>
 </div>
-<div class="section" id="fix">
-<h3>Fix<a class="headerlink" href="#fix" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id29">
+<h3>Fix<a class="headerlink" href="#id29" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li><p>Properly restore the original <code class="docutils literal notranslate"><span class="pre">mpmath</span></code> precision after
 importing heyoka.py
@@ -850,17 +864,17 @@ importing heyoka.py
 </ul>
 </div>
 </div>
-<div class="section" id="id29">
-<h2>0.5.0 (2021-02-25)<a class="headerlink" href="#id29" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="id30">
-<h3>New<a class="headerlink" href="#id30" title="Permalink to this headline">¶</a></h3>
+<h2>0.5.0 (2021-02-25)<a class="headerlink" href="#id30" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id31">
+<h3>New<a class="headerlink" href="#id31" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li><p>Expose symbolic differentiation.</p></li>
 <li><p>Add a new tutorial (restricted three-body problem).</p></li>
 </ul>
 </div>
-<div class="section" id="id31">
-<h3>Changes<a class="headerlink" href="#id31" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id32">
+<h3>Changes<a class="headerlink" href="#id32" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li><p>The interface of the integrator in batch mode has changed
 to work with arrays in which the batch size has its own dimension,
@@ -874,10 +888,10 @@ heyoka C++ library
 </ul>
 </div>
 </div>
-<div class="section" id="id32">
-<h2>0.4.0 (2021-02-20)<a class="headerlink" href="#id32" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="id33">
-<h3>New<a class="headerlink" href="#id33" title="Permalink to this headline">¶</a></h3>
+<h2>0.4.0 (2021-02-20)<a class="headerlink" href="#id33" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id34">
+<h3>New<a class="headerlink" href="#id34" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li><p>Expose the new <code class="docutils literal notranslate"><span class="pre">powi()</span></code> function from heyoka 0.4.0
 (<a class="reference external" href="https://github.com/bluescarni/heyoka.py/pull/18">#18</a>).</p></li>
@@ -894,16 +908,16 @@ the Taylor coefficients at the end of a timestep
 <a class="reference external" href="https://github.com/bluescarni/heyoka.py/pull/11">#11</a>).</p></li>
 </ul>
 </div>
-<div class="section" id="id34">
-<h3>Changes<a class="headerlink" href="#id34" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id35">
+<h3>Changes<a class="headerlink" href="#id35" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li><p>heyoka.py now requires at least version 0.4.0 of the
 heyoka C++ library.</p></li>
 </ul>
 </div>
 </div>
-<div class="section" id="id35">
-<h2>0.3.0 (2021-02-13)<a class="headerlink" href="#id35" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id36">
+<h2>0.3.0 (2021-02-13)<a class="headerlink" href="#id36" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p>This is the initial public release of heyoka.py</p></li>
 </ul>
