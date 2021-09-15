@@ -1417,6 +1417,12 @@ class sympy_test_case(_ut.TestCase):
         self.assertTrue(
             "Unable to convert the sympy function" in str(cm.exception))
 
+        # Test caching behaviour.
+        foo = hx + hy
+        bar = foo / (foo * hz + 1)
+        bar_spy = to_sympy(bar)
+        self.assertEqual(id(bar_spy.args[1]), id(bar_spy.args[0].args[0].args[1].args[1]))
+
 
 class zero_division_error_test_case(_ut.TestCase):
     def runTest(self):
