@@ -17,6 +17,7 @@
 #include <optional>
 #include <sstream>
 #include <string>
+#include <unordered_map>
 #include <utility>
 #include <vector>
 
@@ -264,6 +265,11 @@ PYBIND11_MODULE(core, m)
     // Pairwise sum/prod.
     m.def("pairwise_sum", [](std::vector<hey::expression> v_ex) { return hey::pairwise_sum(std::move(v_ex)); });
     m.def("pairwise_prod", [](std::vector<hey::expression> v_ex) { return hey::pairwise_prod(std::move(v_ex)); });
+
+    // Subs.
+    m.def("subs", [](const hey::expression &e, const std::unordered_map<std::string, hey::expression> &smap) {
+        return hey::subs(e, smap);
+    });
 
     // make_vars() helper.
     m.def("make_vars", [](py::args v_str) {
