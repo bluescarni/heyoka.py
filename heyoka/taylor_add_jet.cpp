@@ -182,8 +182,8 @@ void expose_taylor_add_jet_impl(py::module &m, const char *name)
 
     m.def(
         name,
-        [](U sys, std::uint32_t order, std::uint32_t batch_size, bool high_accuracy, bool compact_mode,
-           std::vector<hey::expression> sv_funcs) {
+        [](const U &sys, std::uint32_t order, std::uint32_t batch_size, bool high_accuracy, bool compact_mode,
+           const std::vector<hey::expression> &sv_funcs) {
             // Let's figure out if sys contains params and/or time.
             bool has_time = false;
             std::uint32_t n_params = 0;
@@ -213,8 +213,7 @@ void expose_taylor_add_jet_impl(py::module &m, const char *name)
                 // NOTE: release the GIL during compilation.
                 py::gil_scoped_release release;
 
-                hey::taylor_add_jet<T>(s, "jet", std::move(sys), order, batch_size, high_accuracy, compact_mode,
-                                       std::move(sv_funcs));
+                hey::taylor_add_jet<T>(s, "jet", sys, order, batch_size, high_accuracy, compact_mode, sv_funcs);
 
                 s.compile();
 

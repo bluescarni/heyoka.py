@@ -151,7 +151,7 @@ void expose_taylor_integrator_impl(py::module &m, const std::string &suffix)
     using nt_ev_t = hey::nt_event<T>;
     using prop_cb_t = std::function<bool(hey::taylor_adaptive<T> &)>;
 
-    auto ctor_impl = [](auto sys, std::vector<T> state, T time, std::vector<T> pars, T tol, bool high_accuracy,
+    auto ctor_impl = [](const auto &sys, std::vector<T> state, T time, std::vector<T> pars, T tol, bool high_accuracy,
                         bool compact_mode, std::vector<t_ev_t> tes, std::vector<nt_ev_t> ntes) {
         // NOTE: GIL release is fine here even if the events contain
         // Python objects, as the event vectors are moved in
@@ -160,7 +160,7 @@ void expose_taylor_integrator_impl(py::module &m, const std::string &suffix)
         py::gil_scoped_release release;
 
         namespace kw = hey::kw;
-        return hey::taylor_adaptive<T>{std::move(sys),
+        return hey::taylor_adaptive<T>{sys,
                                        std::move(state),
                                        kw::time = time,
                                        kw::tol = tol,
@@ -172,19 +172,19 @@ void expose_taylor_integrator_impl(py::module &m, const std::string &suffix)
     };
 
     py::class_<hey::taylor_adaptive<T>> cl(m, ("_taylor_adaptive_{}"_format(suffix)).c_str());
-    cl.def(py::init([ctor_impl](std::vector<std::pair<hey::expression, hey::expression>> sys, std::vector<T> state,
-                                T time, std::vector<T> pars, T tol, bool high_accuracy, bool compact_mode,
-                                std::vector<t_ev_t> tes, std::vector<nt_ev_t> ntes) {
-               return ctor_impl(std::move(sys), std::move(state), time, std::move(pars), tol, high_accuracy,
-                                compact_mode, std::move(tes), std::move(ntes));
+    cl.def(py::init([ctor_impl](const std::vector<std::pair<hey::expression, hey::expression>> &sys,
+                                std::vector<T> state, T time, std::vector<T> pars, T tol, bool high_accuracy,
+                                bool compact_mode, std::vector<t_ev_t> tes, std::vector<nt_ev_t> ntes) {
+               return ctor_impl(sys, std::move(state), time, std::move(pars), tol, high_accuracy, compact_mode,
+                                std::move(tes), std::move(ntes));
            }),
            "sys"_a, "state"_a, "time"_a = T(0), "pars"_a = py::list{}, "tol"_a = T(0), "high_accuracy"_a = false,
            "compact_mode"_a = false, "t_events"_a = py::list{}, "nt_events"_a = py::list{})
-        .def(py::init([ctor_impl](std::vector<hey::expression> sys, std::vector<T> state, T time, std::vector<T> pars,
-                                  T tol, bool high_accuracy, bool compact_mode, std::vector<t_ev_t> tes,
-                                  std::vector<nt_ev_t> ntes) {
-                 return ctor_impl(std::move(sys), std::move(state), time, std::move(pars), tol, high_accuracy,
-                                  compact_mode, std::move(tes), std::move(ntes));
+        .def(py::init([ctor_impl](const std::vector<hey::expression> &sys, std::vector<T> state, T time,
+                                  std::vector<T> pars, T tol, bool high_accuracy, bool compact_mode,
+                                  std::vector<t_ev_t> tes, std::vector<nt_ev_t> ntes) {
+                 return ctor_impl(sys, std::move(state), time, std::move(pars), tol, high_accuracy, compact_mode,
+                                  std::move(tes), std::move(ntes));
              }),
              "sys"_a, "state"_a, "time"_a = T(0), "pars"_a = py::list{}, "tol"_a = T(0), "high_accuracy"_a = false,
              "compact_mode"_a = false, "t_events"_a = py::list{}, "nt_events"_a = py::list{})
@@ -312,7 +312,7 @@ void expose_taylor_integrator_f128(py::module &m)
     // for the constructor.
     scoped_quadprec_setter qs;
 
-    auto taf128_ctor_impl = [](auto sys, std::vector<mppp::real128> state, mppp::real128 time,
+    auto taf128_ctor_impl = [](const auto &sys, std::vector<mppp::real128> state, mppp::real128 time,
                                std::vector<mppp::real128> pars, mppp::real128 tol, bool high_accuracy,
                                bool compact_mode, std::vector<t_ev_t> tes, std::vector<nt_ev_t> ntes) {
         // NOTE: GIL release is fine here even if the events contain
@@ -322,7 +322,7 @@ void expose_taylor_integrator_f128(py::module &m)
         py::gil_scoped_release release;
 
         namespace kw = hey::kw;
-        return hey::taylor_adaptive<mppp::real128>{std::move(sys),
+        return hey::taylor_adaptive<mppp::real128>{sys,
                                                    std::move(state),
                                                    kw::time = time,
                                                    kw::tol = tol,
@@ -334,21 +334,21 @@ void expose_taylor_integrator_f128(py::module &m)
     };
 
     py::class_<hey::taylor_adaptive<mppp::real128>> cl(m, "_taylor_adaptive_f128");
-    cl.def(py::init([taf128_ctor_impl](std::vector<std::pair<hey::expression, hey::expression>> sys,
+    cl.def(py::init([taf128_ctor_impl](const std::vector<std::pair<hey::expression, hey::expression>> &sys,
                                        std::vector<mppp::real128> state, mppp::real128 time,
                                        std::vector<mppp::real128> pars, mppp::real128 tol, bool high_accuracy,
                                        bool compact_mode, std::vector<t_ev_t> tes, std::vector<nt_ev_t> ntes) {
-               return taf128_ctor_impl(std::move(sys), std::move(state), time, std::move(pars), tol, high_accuracy,
-                                       compact_mode, std::move(tes), std::move(ntes));
+               return taf128_ctor_impl(sys, std::move(state), time, std::move(pars), tol, high_accuracy, compact_mode,
+                                       std::move(tes), std::move(ntes));
            }),
            "sys"_a, "state"_a, "time"_a = mppp::real128{0}, "pars"_a = py::list{}, "tol"_a = mppp::real128{0},
            "high_accuracy"_a = false, "compact_mode"_a = false, "t_events"_a = py::list{}, "nt_events"_a = py::list{})
-        .def(py::init([taf128_ctor_impl](std::vector<hey::expression> sys, std::vector<mppp::real128> state,
+        .def(py::init([taf128_ctor_impl](const std::vector<hey::expression> &sys, std::vector<mppp::real128> state,
                                          mppp::real128 time, std::vector<mppp::real128> pars, mppp::real128 tol,
                                          bool high_accuracy, bool compact_mode, std::vector<t_ev_t> tes,
                                          std::vector<nt_ev_t> ntes) {
-                 return taf128_ctor_impl(std::move(sys), std::move(state), time, std::move(pars), tol, high_accuracy,
-                                         compact_mode, std::move(tes), std::move(ntes));
+                 return taf128_ctor_impl(sys, std::move(state), time, std::move(pars), tol, high_accuracy, compact_mode,
+                                         std::move(tes), std::move(ntes));
              }),
              "sys"_a, "state"_a, "time"_a = mppp::real128{0}, "pars"_a = py::list{}, "tol"_a = mppp::real128{0},
              "high_accuracy"_a = false, "compact_mode"_a = false, "t_events"_a = py::list{}, "nt_events"_a = py::list{})
