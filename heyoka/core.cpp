@@ -244,9 +244,9 @@ PYBIND11_MODULE(core, m)
                  return oss.str();
              })
         // Copy/deepcopy.
-        .def("__copy__", [](const hey::expression &e) { return e; })
+        .def("__copy__", [](const hey::expression &e) { return hey::copy(e); })
         .def(
-            "__deepcopy__", [](const hey::expression &e, py::dict) { return e; }, "memo"_a)
+            "__deepcopy__", [](const hey::expression &e, py::dict) { return hey::copy(e); }, "memo"_a)
         // Pickle support.
         .def(py::pickle(&heypy::pickle_getstate_wrapper<hey::expression>,
                         &heypy::pickle_setstate_wrapper<hey::expression>));
