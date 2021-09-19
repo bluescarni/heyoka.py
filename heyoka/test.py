@@ -1231,6 +1231,34 @@ class sympy_test_case(_ut.TestCase):
         self.test_sympar_conversion()
         self.test_func_conversion()
 
+        from . import from_sympy, make_vars
+
+        with self.assertRaises(TypeError) as cm:
+            from_sympy(3.5)
+        self.assertTrue(
+            "The 'ex' parameter must be a sympy expression but it is of type" in str(cm.exception))
+
+        with self.assertRaises(TypeError) as cm:
+            from_sympy(sympy.Symbol("x"), [])
+        self.assertTrue(
+            "The 's_dict' parameter must be a dict but it is of type" in str(cm.exception))
+
+        with self.assertRaises(TypeError) as cm:
+            from_sympy(sympy.Symbol("x"), {3.5: 3.5})
+        self.assertTrue(
+            "The keys in 's_dict' must all be sympy expressions" in str(cm.exception))
+
+        with self.assertRaises(TypeError) as cm:
+            from_sympy(sympy.Symbol("x"), {sympy.Symbol("x"): 3.5})
+        self.assertTrue(
+            "The values in 's_dict' must all be heyoka expressions" in str(cm.exception))
+
+        # Test the s_dict functionality of from_sympy().
+        x, y = sympy.symbols("x y", real=True)
+        hx, hy, hz = make_vars("x", "y", "z")
+
+        self.assertEqual(from_sympy((x-y)*(x+y), s_dict={x-y: hz}), (hx+hy)*hz)
+
     def test_number_conversion(self):
         from . import to_sympy, from_sympy, expression, with_real128
         from .core import _ppc_arch
@@ -1316,7 +1344,7 @@ class sympy_test_case(_ut.TestCase):
 
     def test_func_conversion(self):
         import sympy as spy
-        from . import core, make_vars, from_sympy, to_sympy
+        from . import core, make_vars, from_sympy, to_sympy, pi
 
         x, y, z, a, b, c = spy.symbols("x y z a b c", real=True)
         hx, hy, hz, ha, hb, hc = make_vars("x", "y", "z", "a", "b", "c")
@@ -1415,13 +1443,19 @@ class sympy_test_case(_ut.TestCase):
         with self.assertRaises(TypeError) as cm:
             from_sympy(abs(x))
         self.assertTrue(
-            "Unable to convert the sympy function" in str(cm.exception))
+            "Unable to convert the sympy object" in str(cm.exception))
 
         # Test caching behaviour.
         foo = hx + hy
         bar = foo / (foo * hz + 1)
         bar_spy = to_sympy(bar)
-        self.assertEqual(id(bar_spy.args[1]), id(bar_spy.args[0].args[0].args[1].args[1]))
+        self.assertEqual(id(bar_spy.args[1]), id(
+            bar_spy.args[0].args[0].args[1].args[1]))
+
+        # pi constant.
+        self.assertEqual(to_sympy(pi), spy.pi)
+        self.assertEqual(from_sympy(spy.pi), pi)
+        self.assertEqual(to_sympy(from_sympy(spy.pi)), spy.pi)
 
 
 class zero_division_error_test_case(_ut.TestCase):

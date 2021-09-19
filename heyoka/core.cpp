@@ -334,6 +334,9 @@ PYBIND11_MODULE(core, m)
     // Time.
     m.attr("time") = hey::time;
 
+    // pi.
+    m.attr("pi") = hey::pi;
+
     // tpoly().
     m.def("tpoly", &hey::tpoly);
 

@@ -269,6 +269,12 @@ void setup_sympy(py::module &m)
         auto sympy_tpoly = py::object(detail::spy->attr("Function")("heyoka_tpoly"));
         detail::fmap[typeid(hy::detail::tpoly_impl)] = sympy_tpoly;
 
+        // pi.
+        detail::fmap[typeid(hy::detail::pi_impl)]
+            = [](std::unordered_map<const void *, py::object> &, const hy::func &) {
+                  return py::object(detail::spy->attr("pi"));
+              };
+
         // Expose the conversion function.
         m.def("to_sympy", &detail::to_sympy);
 
