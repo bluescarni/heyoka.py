@@ -168,7 +168,7 @@ void expose_taylor_nt_event_impl(py::module &m, const std::string &suffix)
     using ev_t = hey::nt_event<T>;
 
     py::class_<ev_t>(m, ("_nt_event_{}"_format(suffix)).c_str())
-        .def(py::init([](hey::expression ex, py::object callback, hey::event_direction dir) {
+        .def(py::init([](const hey::expression &ex, py::object callback, hey::event_direction dir) {
                  if (!heypy::callable(callback)) {
                      heypy::py_throw(
                          PyExc_TypeError,
@@ -177,7 +177,7 @@ void expose_taylor_nt_event_impl(py::module &m, const std::string &suffix)
                              .c_str());
                  }
 
-                 return ev_t(std::move(ex), ev_callback<void, hey::taylor_adaptive<T> &, T, int>{std::move(callback)},
+                 return ev_t(ex, ev_callback<void, hey::taylor_adaptive<T> &, T, int>{std::move(callback)},
                              kw::direction = dir);
              }),
              "expression"_a, "callback"_a, "direction"_a = hey::event_direction::any)
@@ -232,9 +232,9 @@ void expose_taylor_t_event_impl(py::module &m, const std::string &suffix)
 
     py::class_<ev_t>(m, ("_t_event_{}"_format(suffix)).c_str())
         .def(
-            py::init([](hey::expression ex, py::object callback, hey::event_direction dir, T cooldown) {
+            py::init([](const hey::expression &ex, py::object callback, hey::event_direction dir, T cooldown) {
                 if (callback.is_none()) {
-                    return ev_t(std::move(ex), kw::direction = dir, kw::cooldown = cooldown);
+                    return ev_t(ex, kw::direction = dir, kw::cooldown = cooldown);
                 } else {
                     if (!heypy::callable(callback)) {
                         heypy::py_throw(
@@ -244,10 +244,9 @@ void expose_taylor_t_event_impl(py::module &m, const std::string &suffix)
                                 .c_str());
                     }
 
-                    return ev_t(std::move(ex),
-                                kw::callback
-                                = ev_callback<bool, hey::taylor_adaptive<T> &, bool, int>{std::move(callback)},
-                                kw::direction = dir, kw::cooldown = cooldown);
+                    return ev_t(
+                        ex, kw::callback = ev_callback<bool, hey::taylor_adaptive<T> &, bool, int>{std::move(callback)},
+                        kw::direction = dir, kw::cooldown = cooldown);
                 }
             }),
             "expression"_a, "callback"_a = py::none{}, "direction"_a = hey::event_direction::any, "cooldown"_a = T(-1))

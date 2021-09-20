@@ -40,6 +40,7 @@ Celestial mechanics and astrodynamics
   notebooks/mercury_precession
   notebooks/ttv
   notebooks/vsop2013
+  notebooks/tides_spokes
 
 Dynamical systems
 -----------------

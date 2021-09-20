@@ -17,6 +17,7 @@
 #include <optional>
 #include <sstream>
 #include <string>
+#include <unordered_map>
 #include <utility>
 #include <vector>
 
@@ -244,9 +245,9 @@ PYBIND11_MODULE(core, m)
                  return oss.str();
              })
         // Copy/deepcopy.
-        .def("__copy__", [](const hey::expression &e) { return e; })
+        .def("__copy__", [](const hey::expression &e) { return hey::copy(e); })
         .def(
-            "__deepcopy__", [](const hey::expression &e, py::dict) { return e; }, "memo"_a)
+            "__deepcopy__", [](const hey::expression &e, py::dict) { return hey::copy(e); }, "memo"_a)
         // Pickle support.
         .def(py::pickle(&heypy::pickle_getstate_wrapper<hey::expression>,
                         &heypy::pickle_setstate_wrapper<hey::expression>));
@@ -264,6 +265,11 @@ PYBIND11_MODULE(core, m)
     // Pairwise sum/prod.
     m.def("pairwise_sum", [](std::vector<hey::expression> v_ex) { return hey::pairwise_sum(std::move(v_ex)); });
     m.def("pairwise_prod", [](std::vector<hey::expression> v_ex) { return hey::pairwise_prod(std::move(v_ex)); });
+
+    // Subs.
+    m.def("subs", [](const hey::expression &e, const std::unordered_map<std::string, hey::expression> &smap) {
+        return hey::subs(e, smap);
+    });
 
     // make_vars() helper.
     m.def("make_vars", [](py::args v_str) {
@@ -327,6 +333,9 @@ PYBIND11_MODULE(core, m)
 
     // Time.
     m.attr("time") = hey::time;
+
+    // pi.
+    m.attr("pi") = hey::pi;
 
     // tpoly().
     m.def("tpoly", &hey::tpoly);
@@ -520,7 +529,7 @@ PYBIND11_MODULE(core, m)
     using prop_cb_t = std::function<bool(hey::taylor_adaptive_batch<double> &)>;
 
     // Batch adaptive integrator for double.
-    auto tabd_ctor_impl = [](auto sys, py::array_t<double> state_, std::optional<py::array_t<double>> time_,
+    auto tabd_ctor_impl = [](const auto &sys, py::array_t<double> state_, std::optional<py::array_t<double>> time_,
                              std::optional<py::array_t<double>> pars_, double tol, bool high_accuracy,
                              bool compact_mode) {
         // Convert state and pars to std::vector, after checking
@@ -568,7 +577,7 @@ PYBIND11_MODULE(core, m)
 
             py::gil_scoped_release release;
 
-            return hey::taylor_adaptive_batch<double>{std::move(sys),
+            return hey::taylor_adaptive_batch<double>{sys,
                                                       std::move(state),
                                                       batch_size,
                                                       kw::time = std::move(time),
@@ -580,7 +589,7 @@ PYBIND11_MODULE(core, m)
             // Times not provided.
             py::gil_scoped_release release;
 
-            return hey::taylor_adaptive_batch<double>{std::move(sys),
+            return hey::taylor_adaptive_batch<double>{sys,
                                                       std::move(state),
                                                       batch_size,
                                                       kw::tol = tol,
@@ -591,24 +600,22 @@ PYBIND11_MODULE(core, m)
     };
     py::class_<hey::taylor_adaptive_batch<double>> tabd_c(m, "_taylor_adaptive_batch_dbl");
     tabd_c
-        .def(py::init([tabd_ctor_impl](std::vector<std::pair<hey::expression, hey::expression>> sys,
+        .def(py::init([tabd_ctor_impl](const std::vector<std::pair<hey::expression, hey::expression>> &sys,
                                        py::array_t<double> state, std::optional<py::array_t<double>> time,
                                        std::optional<py::array_t<double>> pars, double tol, bool high_accuracy,
                                        bool compact_mode) {
-                 return tabd_ctor_impl(std::move(sys), state, std::move(time), std::move(pars), tol, high_accuracy,
-                                       compact_mode);
+                 return tabd_ctor_impl(sys, state, std::move(time), std::move(pars), tol, high_accuracy, compact_mode);
              }),
              "sys"_a, "state"_a, "time"_a = py::none{}, "pars"_a = py::none{}, "tol"_a = 0., "high_accuracy"_a = false,
              "compact_mode"_a = false)
-        .def(py::init([tabd_ctor_impl](std::vector<hey::expression> sys, py::array_t<double> state,
+        .def(py::init([tabd_ctor_impl](const std::vector<hey::expression> &sys, py::array_t<double> state,
                                        std::optional<py::array_t<double>> time, std::optional<py::array_t<double>> pars,
                                        double tol, bool high_accuracy, bool compact_mode) {
-                 return tabd_ctor_impl(std::move(sys), state, std::move(time), std::move(pars), tol, high_accuracy,
-                                       compact_mode);
+                 return tabd_ctor_impl(sys, state, std::move(time), std::move(pars), tol, high_accuracy, compact_mode);
              }),
              "sys"_a, "state"_a, "time"_a = py::none{}, "pars"_a = py::none{}, "tol"_a = 0., "high_accuracy"_a = false,
              "compact_mode"_a = false)
-        .def("get_decomposition", &hey::taylor_adaptive_batch<double>::get_decomposition)
+        .def_property_readonly("decomposition", &hey::taylor_adaptive_batch<double>::get_decomposition)
         .def(
             "step", [](hey::taylor_adaptive_batch<double> &ta, bool wtc) { ta.step(wtc); }, "write_tc"_a = false)
         .def(

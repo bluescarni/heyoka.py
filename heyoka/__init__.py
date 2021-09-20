@@ -151,14 +151,32 @@ def t_event(ex, **kwargs):
         return _t_event_f128(ex, **kwargs)
 
 
-def from_sympy(ex):
+def from_sympy(ex, s_dict={}):
     from ._sympy_utils import _with_sympy, _from_sympy_impl
 
     if not _with_sympy:
         raise ImportError(
             "The 'from_sympy()' function is not available because sympy is not installed")
 
-    return _from_sympy_impl(ex)
+    from sympy import Basic
+    from .core import expression
+
+    if not isinstance(ex, Basic):
+        raise TypeError(
+            "The 'ex' parameter must be a sympy expression but it is of type {} instead".format(type(ex)))
+
+    if not isinstance(s_dict, dict):
+        raise TypeError(
+            "The 's_dict' parameter must be a dict but it is of type {} instead".format(type(s_dict)))
+
+    if any(not isinstance(_, Basic) for _ in s_dict):
+        raise TypeError("The keys in 's_dict' must all be sympy expressions")
+
+    if any(not isinstance(s_dict[_], expression) for _ in s_dict):
+        raise TypeError(
+            "The values in 's_dict' must all be heyoka expressions")
+
+    return _from_sympy_impl(ex, s_dict, {})
 
 
 # Machinery for the setup of the serialization backend.

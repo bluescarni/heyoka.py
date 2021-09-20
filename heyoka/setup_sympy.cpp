@@ -60,17 +60,20 @@ namespace
 
 // The dictionary for mapping heyoka functions either directly to sympy functions
 // or to callbacks for the creation of sympy wrappers.
-std::unordered_map<std::type_index, std::variant<py::object, std::function<py::object(const hy::func &)>>> fmap;
+std::unordered_map<std::type_index,
+                   std::variant<py::object, std::function<py::object(std::unordered_map<const void *, py::object> &,
+                                                                     const hy::func &)>>>
+    fmap;
 
 // Global variable that will contain the sympy module,
 // if available.
 std::optional<py::object> spy;
 
 // Fwd-declare the main conversion function.
-py::object to_sympy(const hy::expression &);
+py::object to_sympy_impl(std::unordered_map<const void *, py::object> &, const hy::expression &);
 
 // Implementation of the conversion functions for the node types.
-py::object to_sympy_impl(const hy::variable &var)
+py::object to_sympy_impl(std::unordered_map<const void *, py::object> &, const hy::variable &var)
 {
     // NOTE: heyoka symbols can assume only
     // real values.
@@ -80,7 +83,7 @@ py::object to_sympy_impl(const hy::variable &var)
     return spy->attr("Symbol")(var.name(), **kwa);
 }
 
-py::object to_sympy_impl(const hy::param &par)
+py::object to_sympy_impl(std::unordered_map<const void *, py::object> &, const hy::param &par)
 {
     // NOTE: params are converted to symbolic variables
     // following a naming convention.
@@ -96,7 +99,7 @@ py::object to_sympy_impl(const hy::param &par)
 
 // Number conversion corresponds to casting to python
 // the numerical value.
-py::object to_sympy_impl(const hy::number &num)
+py::object to_sympy_impl(std::unordered_map<const void *, py::object> &, const hy::number &num)
 {
     return std::visit(
         [](const auto &x) {
@@ -113,8 +116,16 @@ py::object to_sympy_impl(const hy::number &num)
         num.value());
 }
 
-py::object to_sympy_impl(const hy::func &f)
+py::object to_sympy_impl(std::unordered_map<const void *, py::object> &func_map, const hy::func &f)
 {
+    const auto f_id = f.get_ptr();
+
+    if (auto it = func_map.find(f_id); it != func_map.end()) {
+        // We already converted the current function, return the
+        // cached result.
+        return it->second;
+    }
+
     auto it = fmap.find(f.get_type_index());
 
     if (it == fmap.end()) {
@@ -122,24 +133,39 @@ py::object to_sympy_impl(const hy::func &f)
         py_throw(PyExc_TypeError, ("Cannot convert to sympy the heyoka function {}"_format(f)).c_str());
     }
 
+    py::object retval;
     if (auto pobj = std::get_if<0>(&it->second)) {
         // We can use directly a sympy function. Convert
         // the function arguments and invoke the function.
         py::list args;
         for (const auto &arg : f.args()) {
-            args.append(to_sympy(arg));
+            args.append(to_sympy_impl(func_map, arg));
         }
 
-        return (*pobj)(*args);
+        retval = (*pobj)(*args);
     } else {
         // Cannot use directly a sympy function, invoke the wrapper.
-        return std::get<1>(it->second)(f);
+        retval = std::get<1>(it->second)(func_map, f);
     }
+
+    // Update the cache.
+    [[maybe_unused]] const auto [_, flag] = func_map.insert(std::pair{f_id, retval});
+    // NOTE: an expression cannot contain itself.
+    assert(flag);
+
+    return retval;
+}
+
+py::object to_sympy_impl(std::unordered_map<const void *, py::object> &func_map, const hy::expression &ex)
+{
+    return std::visit([&func_map](const auto &v) { return to_sympy_impl(func_map, v); }, ex.value());
 }
 
 py::object to_sympy(const hy::expression &ex)
 {
-    return std::visit([](const auto &v) { return to_sympy_impl(v); }, ex.value());
+    std::unordered_map<const void *, py::object> func_map;
+
+    return to_sympy_impl(func_map, ex);
 }
 
 } // namespace
@@ -180,26 +206,27 @@ void setup_sympy(py::module &m)
         detail::fmap[typeid(hy::detail::pow_impl)] = py::object(detail::spy->attr("Pow"));
 
         // Binary op.
-        detail::fmap[typeid(hy::detail::binary_op)] = [](const hy::func &f) {
-            assert(f.args().size() == 2u);
+        detail::fmap[typeid(hy::detail::binary_op)]
+            = [](std::unordered_map<const void *, py::object> &func_map, const hy::func &f) {
+                  assert(f.args().size() == 2u);
 
-            auto op0 = detail::to_sympy(f.args()[0]);
-            auto op1 = detail::to_sympy(f.args()[1]);
+                  auto op0 = detail::to_sympy_impl(func_map, f.args()[0]);
+                  auto op1 = detail::to_sympy_impl(func_map, f.args()[1]);
 
-            const auto op_type = f.extract<hy::detail::binary_op>()->op();
+                  const auto op_type = f.extract<hy::detail::binary_op>()->op();
 
-            switch (op_type) {
-                case hy::detail::binary_op::type::add:
-                    return op0 + op1;
-                case hy::detail::binary_op::type::sub:
-                    return op0 - op1;
-                case hy::detail::binary_op::type::mul:
-                    return op0 * op1;
-                default:
-                    assert(op_type == hy::detail::binary_op::type::div);
-                    return op0 / op1;
-            }
-        };
+                  switch (op_type) {
+                      case hy::detail::binary_op::type::add:
+                          return op0 + op1;
+                      case hy::detail::binary_op::type::sub:
+                          return op0 - op1;
+                      case hy::detail::binary_op::type::mul:
+                          return op0 * op1;
+                      default:
+                          assert(op_type == hy::detail::binary_op::type::div);
+                          return op0 / op1;
+                  }
+              };
 
         // kepE.
         // NOTE: this will remain an unevaluated binary function.
@@ -207,26 +234,30 @@ void setup_sympy(py::module &m)
         detail::fmap[typeid(hy::detail::kepE_impl)] = sympy_kepE;
 
         // neg.
-        detail::fmap[typeid(hy::detail::neg_impl)] = [](const hy::func &f) {
-            assert(f.args().size() == 1u);
+        detail::fmap[typeid(hy::detail::neg_impl)]
+            = [](std::unordered_map<const void *, py::object> &func_map, const hy::func &f) {
+                  assert(f.args().size() == 1u);
 
-            return -detail::to_sympy(f.args()[0]);
-        };
+                  return -detail::to_sympy_impl(func_map, f.args()[0]);
+              };
 
         // sigmoid.
-        detail::fmap[typeid(hy::detail::sigmoid_impl)] = [](const hy::func &f) {
-            assert(f.args().size() == 1u);
+        detail::fmap[typeid(hy::detail::sigmoid_impl)]
+            = [](std::unordered_map<const void *, py::object> &func_map, const hy::func &f) {
+                  assert(f.args().size() == 1u);
 
-            return py::cast(1.) / (py::cast(1.) + detail::spy->attr("exp")(-detail::to_sympy(f.args()[0])));
-        };
+                  return py::cast(1.)
+                         / (py::cast(1.) + detail::spy->attr("exp")(-detail::to_sympy_impl(func_map, f.args()[0])));
+              };
 
         // square.
-        detail::fmap[typeid(hy::detail::square_impl)] = [](const hy::func &f) {
-            assert(f.args().size() == 1u);
+        detail::fmap[typeid(hy::detail::square_impl)]
+            = [](std::unordered_map<const void *, py::object> &func_map, const hy::func &f) {
+                  assert(f.args().size() == 1u);
 
-            auto op = detail::to_sympy(f.args()[0]);
-            return op * op;
-        };
+                  auto op = detail::to_sympy_impl(func_map, f.args()[0]);
+                  return op * op;
+              };
 
         // time.
         // NOTE: this will remain an unevaluated nullary function.
@@ -237,6 +268,12 @@ void setup_sympy(py::module &m)
         // NOTE: this will remain an unevaluated binary function.
         auto sympy_tpoly = py::object(detail::spy->attr("Function")("heyoka_tpoly"));
         detail::fmap[typeid(hy::detail::tpoly_impl)] = sympy_tpoly;
+
+        // pi.
+        detail::fmap[typeid(hy::detail::pi_impl)]
+            = [](std::unordered_map<const void *, py::object> &, const hy::func &) {
+                  return py::object(detail::spy->attr("pi"));
+              };
 
         // Expose the conversion function.
         m.def("to_sympy", &detail::to_sympy);

@@ -9,6 +9,13 @@ Changelog
 New
 ~~~
 
+- Add a tutorial on the simulation of tides
+  (`#70 <https://github.com/bluescarni/heyoka.py/pull/70>`__).
+- Add the possibility to customise the behaviour of the
+  ``from_sympy()`` function
+  (`#70 <https://github.com/bluescarni/heyoka.py/pull/70>`__).
+- Add :math:`\pi` as a symbolic constant to the expression system
+  (`#70 <https://github.com/bluescarni/heyoka.py/pull/70>`__).
 - Add a function to compute the size of an expression
   (`#69 <https://github.com/bluescarni/heyoka.py/pull/69>`__).
 - Add an example on the computation of definite integrals

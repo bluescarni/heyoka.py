@@ -110,7 +110,7 @@ def _build_fmap():
     if not _with_sympy:
         return None
 
-    from . import core
+    from . import core, pi
 
     retval = {}
 
@@ -131,6 +131,8 @@ def _build_fmap():
     retval[_spy.tan] = core.tan
     retval[_spy.tanh] = core.tanh
     retval[_spy.Pow] = lambda x, y: x**y
+    # NOTE: sympy.pi is an instance of this type.
+    retval[_spy.core.numbers.Pi] = lambda: pi
 
     def add_wrapper(*args):
         return core.pairwise_sum(args)
@@ -152,22 +154,37 @@ def _build_fmap():
 _fmap = _build_fmap()
 
 
-def _from_sympy_function(func):
-    args = [_from_sympy_impl(arg) for arg in func.args]
+def _from_sympy_function(func, s_dict, c_dict):
+    args = [_from_sympy_impl(arg, s_dict, c_dict) for arg in func.args]
 
     tp = type(func)
 
     if not tp in _fmap:
-        raise TypeError("Unable to convert the sympy function {}".format(tp))
+        raise TypeError("Unable to convert the sympy object {}".format(func))
 
     return _fmap[tp](*args)
 
 
-def _from_sympy_impl(ex):
+def _from_sympy_impl(ex, s_dict, c_dict):
+    # Check s_dict first.
+    if ex in s_dict:
+        return s_dict[ex]
+
+    # Check if we already converted this expression.
+    if id(ex) in c_dict:
+        return c_dict[id(ex)]
+
     if isinstance(ex, _spy.Number):
-        return _from_sympy_number(ex)
+        ret = _from_sympy_number(ex)
+        c_dict[id(ex)] = ret
+        return ret
 
     if isinstance(ex, _spy.Symbol):
-        return _from_sympy_symbol(ex)
+        ret = _from_sympy_symbol(ex)
+        c_dict[id(ex)] = ret
+        return ret
 
-    return _from_sympy_function(ex)
+    ret = _from_sympy_function(ex, s_dict, c_dict)
+    c_dict[id(ex)] = ret
+
+    return ret
