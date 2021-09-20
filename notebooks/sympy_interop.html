@@ -245,6 +245,11 @@
     </a>
    </li>
    <li class="toctree-l2">
+    <a class="reference internal" href="tides_spokes.html">
+     Elastic tides
+    </a>
+   </li>
+   <li class="toctree-l2">
     <a class="reference internal" href="second_integral.html">
      The second integral of motion
     </a>
@@ -375,6 +380,19 @@
         <!-- Table of contents -->
         <div class="d-none d-md-block col-md-2 bd-toc show">
             
+            <div class="tocsection onthispage pt-5 pb-3">
+                <i class="fas fa-list"></i> Contents
+            </div>
+            <nav id="bd-toc-nav" aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#more-details-on-the-conversion-process">
+   More details on the conversion process
+  </a>
+ </li>
+</ul>
+
+            </nav>
         </div>
     </div>
 </div>
@@ -391,7 +409,11 @@
 <li><p>the application of symbolic algorithms not available in heyoka.py (e.g., symbolic integration),</p></li>
 <li><p>LaTeX pretty-printing.</p></li>
 </ul>
-<p>In this tutorial, we will show how SymPy interoperability can be used for expression simplification purposes, which ultimately leads to a measurable performance increase in the numerical integration of a system of ODEs. For this example, we will consider the relativistic dynamics of Mercury’s orbit around the Sun, which, in the first post-Newtonian approximation, can be described by the following Hamiltonian:</p>
+<p>In this tutorial, we will show how SymPy interoperability can be used for expression simplification purposes, which ultimately leads to a measurable performance increase in the numerical integration of a system of ODEs.</p>
+<blockquote>
+<div><p><strong>NOTE</strong>: <a class="reference internal" href="tides_spokes.html"><span class="doc std std-doc">another tutorial</span></a> showcasing a more complex interaction between heyoka.py and SymPy is available.</p>
+</div></blockquote>
+<p>For this example, we will consider the relativistic dynamics of Mercury’s orbit around the Sun, which, in the first post-Newtonian approximation, can be described by the following Hamiltonian:</p>
 <div class="math notranslate nohighlight">
 \[
 \mathcal{H}_\mathrm{1PN} \left(v_x, v_y, v_z, x, y, z \right) = \frac{1}{2}v^2-\frac{\mu}{r} + \varepsilon \left(\frac{\mu^2}{2r^2} -\frac{1}{8}v^4-\frac{3}{2}\frac{\mu v^2}{r} \right).
@@ -493,8 +515,9 @@
 <p>Let us now try to simplify Hamilton’s equations of motion using SymPy. We first define a small wrapper to invoke SymPy’s <code class="docutils literal notranslate"><span class="pre">simplify()</span></code> function on a heyoka.py expression:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">simplify</span><span class="p">(</span><span class="n">ex</span><span class="p">):</span>
-    <span class="kn">import</span> <span class="nn">sympy</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sympy</span>
+
+<span class="k">def</span> <span class="nf">simplify</span><span class="p">(</span><span class="n">ex</span><span class="p">):</span>
     <span class="k">return</span> <span class="n">hy</span><span class="o">.</span><span class="n">from_sympy</span><span class="p">(</span><span class="n">sympy</span><span class="o">.</span><span class="n">simplify</span><span class="p">(</span><span class="n">hy</span><span class="o">.</span><span class="n">to_sympy</span><span class="p">(</span><span class="n">ex</span><span class="p">)))</span>
 </pre></div>
 </div>
@@ -540,8 +563,8 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CPU times: user 3 s, sys: 0 ns, total: 3 s
-Wall time: 3 s
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CPU times: user 4.25 s, sys: 0 ns, total: 4.25 s
+Wall time: 5.16 s
 </pre></div>
 </div>
 <div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(&lt;taylor_outcome.time_limit: -4294967299&gt;,
@@ -559,8 +582,8 @@ Wall time: 3 s
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CPU times: user 3.29 s, sys: 0 ns, total: 3.29 s
-Wall time: 3.29 s
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CPU times: user 4.87 s, sys: 1.95 ms, total: 4.88 s
+Wall time: 5.62 s
 </pre></div>
 </div>
 <div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(&lt;taylor_outcome.time_limit: -4294967299&gt;,
@@ -572,7 +595,43 @@ Wall time: 3.29 s
 </div>
 </div>
 <p>The performance increase is measurable but not as large as the reduction in symbolic complexity. This probably means that SymPy simplified expression whose high-order Taylor derivatives are cheap to compute (e.g., additions, multiplications by a constant, etc.).</p>
-<p>As a final word of warning, users should be aware that the general-purpose <code class="docutils literal notranslate"><span class="pre">simplify()</span></code> function from SymPy can be quite expensive from a computational point of view, especially for large expressions. SymPy provides various specialised <a class="reference external" href="https://docs.sympy.org/latest/tutorial/simplification.html">simplification primitives</a> that can be considerably more efficient.</p>
+<p>As a word of warning, users should be aware that the general-purpose <code class="docutils literal notranslate"><span class="pre">simplify()</span></code> function from SymPy can be quite expensive from a computational point of view, especially for large expressions. SymPy provides various specialised <a class="reference external" href="https://docs.sympy.org/latest/tutorial/simplification.html">simplification primitives</a> that can be considerably more efficient.</p>
+<div class="section" id="more-details-on-the-conversion-process">
+<h2>More details on the conversion process<a class="headerlink" href="#more-details-on-the-conversion-process" title="Permalink to this headline">¶</a></h2>
+<p>When converting a heyoka.py expression to SymPy, the following conventions are adopted:</p>
+<ul class="simple">
+<li><p>variables are converted to SymPy <code class="docutils literal notranslate"><span class="pre">Symbol</span></code>s,</p></li>
+<li><p>constants are converted to SymPy numbers,</p></li>
+<li><p><a class="reference internal" href="ODEs%20with%20parameters.html"><span class="doc std std-doc">runtime parameters</span></a> are converted to SymPy <code class="docutils literal notranslate"><span class="pre">Symbol</span></code>s conventionally called <code class="docutils literal notranslate"><span class="pre">&quot;par[n]&quot;</span></code>, where <code class="docutils literal notranslate"><span class="pre">n</span></code> is the parameter index,</p></li>
+<li><p>functions are mapped to the corresponding SymPy functions.</p></li>
+</ul>
+<p>Similarly, when converting a SymPy expression to heyoka.py, the following conventions are adopted:</p>
+<ul class="simple">
+<li><p>SymPy <code class="docutils literal notranslate"><span class="pre">Symbol</span></code>s are converted to heyoka.py variables, unless the name of the symbol is <code class="docutils literal notranslate"><span class="pre">&quot;par[n]&quot;</span></code>, in which case the <code class="docutils literal notranslate"><span class="pre">Symbol</span></code> is converted to a runtime parameter,</p></li>
+<li><p>SymPy numbers are converted to heyoka.py constants, if the conversion is lossless (otherwise an error is raised),</p></li>
+<li><p>SymPy functions are mapped to heyoka.py functions.</p></li>
+</ul>
+<p>When converting a SymPy expression to heyoka.py, it is possible to customise the conversion process by passing a substitution dictionary to the <code class="docutils literal notranslate"><span class="pre">from_sympy()</span></code> function. Here’s an example:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Create a few SymPy symbols.</span>
+<span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span> <span class="o">=</span> <span class="n">sympy</span><span class="o">.</span><span class="n">symbols</span><span class="p">(</span><span class="s2">&quot;x y z&quot;</span><span class="p">)</span>
+
+<span class="c1"># Convert the expression x*(y+z) to heyoka.py,</span>
+<span class="c1"># but provide a custom substitution rule for</span>
+<span class="c1"># the subexpression y+z.</span>
+<span class="n">hy</span><span class="o">.</span><span class="n">from_sympy</span><span class="p">(</span><span class="n">x</span> <span class="o">*</span> <span class="p">(</span><span class="n">y</span><span class="o">+</span><span class="n">z</span><span class="p">),</span> <span class="p">{</span><span class="n">y</span><span class="o">+</span><span class="n">z</span><span class="p">:</span> <span class="n">hy</span><span class="o">.</span><span class="n">expression</span><span class="p">(</span><span class="s2">&quot;t&quot;</span><span class="p">)})</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(x * t)
+</pre></div>
+</div>
+</div>
+</div>
+<p>Note that the same effect could be achieved by doing the substitution in SymPy <em>before</em> the conversion to heyoka.py. However, for large expressions, using the custom substitution dictionary in the <code class="docutils literal notranslate"><span class="pre">from_sympy()</span></code> function will perform better.</p>
+</div>
 </div>
 
 

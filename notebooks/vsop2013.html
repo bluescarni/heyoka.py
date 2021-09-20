@@ -40,7 +40,7 @@
     <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="The second integral of motion" href="second_integral.html" />
+    <link rel="next" title="Elastic tides" href="tides_spokes.html" />
     <link rel="prev" title="Calculating transit timing variations" href="ttv.html" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="docsearch:language" content="en" />
@@ -242,6 +242,11 @@
    <li class="toctree-l2 current active">
     <a class="current reference internal" href="#">
      Introduction to the VSOP2013 planetary theory
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="tides_spokes.html">
+     Elastic tides
     </a>
    </li>
    <li class="toctree-l2">
@@ -449,7 +454,9 @@
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>String length of Mars&#39; semi-major axis solution @ 1e-07: 49001
 String length of Mars&#39; semi-major axis solution @ 1e-09: 488373
-String length of Mars&#39; semi-major axis solution @ 1e-11: 4760576
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>String length of Mars&#39; semi-major axis solution @ 1e-11: 4760576
 </pre></div>
 </div>
 </div>
@@ -579,15 +586,122 @@ Mars&#39; semi-major axis solution, threshold = 6e-5, time rescaled by a factor 
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/vsop2013_5_0.png" src="../_images/vsop2013_5_0.png" />
+<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
+<span class="ne">KeyboardInterrupt</span><span class="g g-Whitespace">                         </span>Traceback (most recent call last)
+<span class="o">/</span><span class="n">tmp</span><span class="o">/</span><span class="n">ipykernel_6492</span><span class="o">/</span><span class="mf">1448808588.</span><span class="n">py</span> <span class="ow">in</span> <span class="o">&lt;</span><span class="n">module</span><span class="o">&gt;</span>
+<span class="g g-Whitespace">     </span><span class="mi">78</span> <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;Threshold value&quot;</span><span class="p">)</span>
+<span class="g g-Whitespace">     </span><span class="mi">79</span> <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;Error wrt HORIZONS (km)&quot;</span><span class="p">)</span>
+<span class="ne">---&gt; </span><span class="mi">80</span> <span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">();</span>
+
+<span class="nn">~/local/lib/python3.8/site-packages/matplotlib/_api/deprecation.py</span> in <span class="ni">wrapper</span><span class="nt">(*args, **kwargs)</span>
+<span class="g g-Whitespace">    </span><span class="mi">469</span>                 <span class="s2">&quot;parameter will become keyword-only </span><span class="si">%(removal)s</span><span class="s2">.&quot;</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">470</span>                 <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">obj_type</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;parameter of </span><span class="si">{</span><span class="n">func</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">()&quot;</span><span class="p">)</span>
+<span class="ne">--&gt; </span><span class="mi">471</span>         <span class="k">return</span> <span class="n">func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">472</span> 
+<span class="g g-Whitespace">    </span><span class="mi">473</span>     <span class="k">return</span> <span class="n">wrapper</span>
+
+<span class="nn">~/local/lib/python3.8/site-packages/matplotlib/pyplot.py</span> in <span class="ni">tight_layout</span><span class="nt">(pad, h_pad, w_pad, rect)</span>
+<span class="g g-Whitespace">   </span><span class="mi">1659</span>         <span class="n">subplots</span> <span class="n">area</span> <span class="p">(</span><span class="n">including</span> <span class="n">labels</span><span class="p">)</span> <span class="n">will</span> <span class="n">fit</span><span class="o">.</span>
+<span class="g g-Whitespace">   </span><span class="mi">1660</span>     <span class="s2">&quot;&quot;&quot;</span>
+<span class="ne">-&gt; </span><span class="mi">1661</span><span class="s2">     gcf().tight_layout(pad=pad, h_pad=h_pad, w_pad=w_pad, rect=rect)</span>
+<span class="g g-Whitespace">   </span><span class="mi">1662</span><span class="s2"> </span>
+<span class="g g-Whitespace">   </span><span class="mi">1663</span><span class="s2"> </span>
+
+<span class="nn">~/local/lib/python3.8/site-packages/matplotlib/figure.py</span> in <span class="ni">tight_layout</span><span class="nt">(self, pad, h_pad, w_pad, rect)</span>
+<span class="g g-Whitespace">   </span><span class="mi">3162</span><span class="s2">                else suppress())</span>
+<span class="g g-Whitespace">   </span><span class="mi">3163</span><span class="s2">         with ctx:</span>
+<span class="ne">-&gt; </span><span class="mi">3164</span><span class="s2">             kwargs = get_tight_layout_figure(</span>
+<span class="g g-Whitespace">   </span><span class="mi">3165</span><span class="s2">                 self, self.axes, subplotspec_list, renderer,</span>
+<span class="g g-Whitespace">   </span><span class="mi">3166</span><span class="s2">                 pad=pad, h_pad=h_pad, w_pad=w_pad, rect=rect)</span>
+
+<span class="nn">~/local/lib/python3.8/site-packages/matplotlib/tight_layout.py</span> in <span class="ni">get_tight_layout_figure</span><span class="nt">(fig, axes_list, subplotspec_list, renderer, pad, h_pad, w_pad, rect)</span>
+<span class="g g-Whitespace">    </span><span class="mi">310</span><span class="s2">                               (colNum2 + 1) * div_col - 1))</span>
+<span class="g g-Whitespace">    </span><span class="mi">311</span><span class="s2"> </span>
+<span class="ne">--&gt; </span><span class="mi">312</span><span class="s2">     kwargs = auto_adjust_subplotpars(fig, renderer,</span>
+<span class="g g-Whitespace">    </span><span class="mi">313</span><span class="s2">                                      nrows_ncols=(max_nrows, max_ncols),</span>
+<span class="g g-Whitespace">    </span><span class="mi">314</span><span class="s2">                                      num1num2_list=num1num2_list,</span>
+
+<span class="nn">~/local/lib/python3.8/site-packages/matplotlib/tight_layout.py</span> in <span class="ni">auto_adjust_subplotpars</span><span class="nt">(fig, renderer, nrows_ncols, num1num2_list, subplot_list, ax_bbox_list, pad, h_pad, w_pad, rect)</span>
+<span class="g g-Whitespace">     </span><span class="mi">82</span><span class="s2">             if ax.get_visible():</span>
+<span class="g g-Whitespace">     </span><span class="mi">83</span><span class="s2">                 try:</span>
+<span class="ne">---&gt; </span><span class="mi">84</span><span class="s2">                     bb += [ax.get_tightbbox(renderer, for_layout_only=True)]</span>
+<span class="g g-Whitespace">     </span><span class="mi">85</span><span class="s2">                 except TypeError:</span>
+<span class="g g-Whitespace">     </span><span class="mi">86</span><span class="s2">                     bb += [ax.get_tightbbox(renderer)]</span>
+
+<span class="nn">~/local/lib/python3.8/site-packages/matplotlib/axes/_base.py</span> in <span class="ni">get_tightbbox</span><span class="nt">(self, renderer, call_axes_locator, bbox_extra_artists, for_layout_only)</span>
+<span class="g g-Whitespace">   </span><span class="mi">4437</span><span class="s2">             if self.yaxis.get_visible():</span>
+<span class="g g-Whitespace">   </span><span class="mi">4438</span><span class="s2">                 try:</span>
+<span class="ne">-&gt; </span><span class="mi">4439</span><span class="s2">                     bb_yaxis = self.yaxis.get_tightbbox(</span>
+<span class="g g-Whitespace">   </span><span class="mi">4440</span><span class="s2">                         renderer, for_layout_only=for_layout_only)</span>
+<span class="g g-Whitespace">   </span><span class="mi">4441</span><span class="s2">                 except TypeError:</span>
+
+<span class="nn">~/local/lib/python3.8/site-packages/matplotlib/axis.py</span> in <span class="ni">get_tightbbox</span><span class="nt">(self, renderer, for_layout_only)</span>
+<span class="g g-Whitespace">   </span><span class="mi">1084</span><span class="s2">             return</span>
+<span class="g g-Whitespace">   </span><span class="mi">1085</span><span class="s2"> </span>
+<span class="ne">-&gt; </span><span class="mi">1086</span><span class="s2">         ticks_to_draw = self._update_ticks()</span>
+<span class="g g-Whitespace">   </span><span class="mi">1087</span><span class="s2"> </span>
+<span class="g g-Whitespace">   </span><span class="mi">1088</span><span class="s2">         self._update_label_position(renderer)</span>
+
+<span class="nn">~/local/lib/python3.8/site-packages/matplotlib/axis.py</span> in <span class="ni">_update_ticks</span><span class="nt">(self)</span>
+<span class="g g-Whitespace">   </span><span class="mi">1036</span><span class="s2">         minor_locs = self.get_minorticklocs()</span>
+<span class="g g-Whitespace">   </span><span class="mi">1037</span><span class="s2">         minor_labels = self.minor.formatter.format_ticks(minor_locs)</span>
+<span class="ne">-&gt; </span><span class="mi">1038</span><span class="s2">         minor_ticks = self.get_minor_ticks(len(minor_locs))</span>
+<span class="g g-Whitespace">   </span><span class="mi">1039</span><span class="s2">         self.minor.formatter.set_locs(minor_locs)</span>
+<span class="g g-Whitespace">   </span><span class="mi">1040</span><span class="s2">         for tick, loc, label in zip(minor_ticks, minor_locs, minor_labels):</span>
+
+<span class="nn">~/local/lib/python3.8/site-packages/matplotlib/axis.py</span> in <span class="ni">get_minor_ticks</span><span class="nt">(self, numticks)</span>
+<span class="g g-Whitespace">   </span><span class="mi">1370</span><span class="s2">         while len(self.minorTicks) &lt; numticks:</span>
+<span class="g g-Whitespace">   </span><span class="mi">1371</span><span class="s2">             # Update the new tick label properties from the old.</span>
+<span class="ne">-&gt; </span><span class="mi">1372</span><span class="s2">             tick = self._get_tick(major=False)</span>
+<span class="g g-Whitespace">   </span><span class="mi">1373</span><span class="s2">             self.minorTicks.append(tick)</span>
+<span class="g g-Whitespace">   </span><span class="mi">1374</span><span class="s2">             self._copy_tick_props(self.minorTicks[0], tick)</span>
+
+<span class="nn">~/local/lib/python3.8/site-packages/matplotlib/axis.py</span> in <span class="ni">_get_tick</span><span class="nt">(self, major)</span>
+<span class="g g-Whitespace">   </span><span class="mi">2330</span><span class="s2">         else:</span>
+<span class="g g-Whitespace">   </span><span class="mi">2331</span><span class="s2">             tick_kw = self._minor_tick_kw</span>
+<span class="ne">-&gt; </span><span class="mi">2332</span><span class="s2">         return YTick(self.axes, 0, major=major, **tick_kw)</span>
+<span class="g g-Whitespace">   </span><span class="mi">2333</span><span class="s2"> </span>
+<span class="g g-Whitespace">   </span><span class="mi">2334</span><span class="s2">     def set_label_position(self, position):</span>
+
+<span class="nn">~/local/lib/python3.8/site-packages/matplotlib/axis.py</span> in <span class="ni">__init__</span><span class="nt">(self, *args, **kwargs)</span>
+<span class="g g-Whitespace">    </span><span class="mi">485</span><span class="s2"> </span>
+<span class="g g-Whitespace">    </span><span class="mi">486</span><span class="s2">     def __init__(self, *args, **kwargs):</span>
+<span class="ne">--&gt; </span><span class="mi">487</span><span class="s2">         super().__init__(*args, **kwargs)</span>
+<span class="g g-Whitespace">    </span><span class="mi">488</span><span class="s2">         # x in axes coords, y in data coords</span>
+<span class="g g-Whitespace">    </span><span class="mi">489</span><span class="s2">         self.tick1line.set(</span>
+
+<span class="nn">~/local/lib/python3.8/site-packages/matplotlib/_api/deprecation.py</span> in <span class="ni">wrapper</span><span class="nt">(*inner_args, **inner_kwargs)</span>
+<span class="g g-Whitespace">    </span><span class="mi">429</span><span class="s2">                          else deprecation_addendum,</span>
+<span class="g g-Whitespace">    </span><span class="mi">430</span><span class="s2">                 **kwargs)</span>
+<span class="ne">--&gt; </span><span class="mi">431</span><span class="s2">         return func(*inner_args, **inner_kwargs)</span>
+<span class="g g-Whitespace">    </span><span class="mi">432</span><span class="s2"> </span>
+<span class="g g-Whitespace">    </span><span class="mi">433</span><span class="s2">     return wrapper</span>
+
+<span class="nn">~/local/lib/python3.8/site-packages/matplotlib/axis.py</span> in <span class="ni">__init__</span><span class="nt">(self, axes, loc, label, size, width, color, tickdir, pad, labelsize, labelcolor, zorder, gridOn, tick1On, tick2On, label1On, label2On, major, labelrotation, grid_color, grid_linestyle, grid_linewidth, grid_alpha, **kw)</span>
+<span class="g g-Whitespace">    </span><span class="mi">156</span><span class="s2">             markeredgecolor=color, markersize=size, markeredgewidth=width,</span>
+<span class="g g-Whitespace">    </span><span class="mi">157</span><span class="s2">         )</span>
+<span class="ne">--&gt; </span><span class="mi">158</span><span class="s2">         self.tick2line = mlines.Line2D(</span>
+<span class="g g-Whitespace">    </span><span class="mi">159</span><span class="s2">             [], [],</span>
+<span class="g g-Whitespace">    </span><span class="mi">160</span><span class="s2">             color=color, linestyle=&quot;none&quot;, zorder=zorder, visible=tick2On,</span>
+
+<span class="nn">~/local/lib/python3.8/site-packages/matplotlib/lines.py</span> in <span class="ni">__init__</span><span class="nt">(self, xdata, ydata, linewidth, linestyle, color, marker, markersize, markeredgewidth, markeredgecolor, markerfacecolor, markerfacecoloralt, fillstyle, antialiased, dash_capstyle, solid_capstyle, dash_joinstyle, solid_joinstyle, pickradius, drawstyle, markevery, **kwargs)</span>
+<span class="g g-Whitespace">    </span><span class="mi">389</span><span class="s2"> </span>
+<span class="g g-Whitespace">    </span><span class="mi">390</span><span class="s2">         self.set_markerfacecolor(markerfacecolor)</span>
+<span class="ne">--&gt; </span><span class="mi">391</span><span class="s2">         self.set_markerfacecoloralt(markerfacecoloralt)</span>
+<span class="g g-Whitespace">    </span><span class="mi">392</span><span class="s2">         self.set_markeredgecolor(markeredgecolor)</span>
+<span class="g g-Whitespace">    </span><span class="mi">393</span><span class="s2">         self.set_markeredgewidth(markeredgewidth)</span>
+
+<span class="ne">KeyboardInterrupt</span>: 
+</pre></div>
+</div>
+<img alt="../_images/vsop2013_5_1.png" src="../_images/vsop2013_5_1.png" />
 </div>
 </div>
 <p>We can see how VSOP2013 matches up well with respect to HORIZONS, and how lower truncation levels indeed increase the precision of the VSOP2013 solution (up to an error of hundreds of meters for a threshold of <span class="math notranslate nohighlight">\(10^{-10}\)</span>).</p>
 </div>
 <div class="section" id="limitations-and-caveats">
 <h2>Limitations and caveats<a class="headerlink" href="#limitations-and-caveats" title="Permalink to this headline">¶</a></h2>
-<p>The biggest limitation when working with the VSOP2013 theory in heyoka.py is the size of the analytical formulae, which, at very high precisions, occupy a large amount of memory. This is a problem especially for the Cartesian formulae, which contain multiple repetitions of the formulae for the orbital elements. Note that redundancy in the Cartesian formulae is an issue only during the construction of the formulae: when the formulae are used in the construction of an integrator object, heyoka.py will be able to remove the redundancy via a process of common subexpression elimination, so that, as far as ODE integration is concerned, Cartesian coordinates and orbital elements have roughly the same computational cost and memory footprint.</p>
-<p>Another possible issue is that VSOP2013 does not directly provide formulae for the state vector of the Sun. The barycentric position of the Sun can be estimated via the heliocentric planetary formulae after imposing that the system’s barycentre is fixed in the origin. It is not clear at this time if this approach is 100% accurate (as VSOP2013 includes perturbations on the planets by asteroids, whose state vectors are not provided in the solution), but it should be adequate for most practical purposes.</p>
+<p>A possible issue in astrodynamical applications is that VSOP2013 does not directly provide formulae for the state vector of the Sun. The barycentric position of the Sun can be estimated via the heliocentric planetary formulae after imposing that the system’s barycentre is fixed in the origin. It is not clear at this time if this approach is 100% accurate (as VSOP2013 includes perturbations on the planets by asteroids, whose state vectors are not provided in the solution), but it should be adequate for most practical purposes.</p>
 </div>
 </div>
 
@@ -611,10 +725,10 @@ Mars&#39; semi-major axis solution, threshold = 6e-5, time rescaled by a factor 
         </a>
     </div>
      <div id="next">
-        <a class="right-next" href="second_integral.html" title="next page">
+        <a class="right-next" href="tides_spokes.html" title="next page">
             <div class="prevnext-info">
                 <p class="prevnext-label">next</p>
-                <p class="prevnext-title">The second integral of motion</p>
+                <p class="prevnext-title">Elastic tides</p>
             </div>
             <i class="prevnext-label fas fa-angle-right"></i>
         </a>
