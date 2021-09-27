@@ -1533,6 +1533,20 @@ class llvm_state_test_case(_ut.TestCase):
         self.assertEqual(ls.get_ir(), pickle.loads(pickle.dumps(ls)).get_ir())
 
 
+class expression_test_case(_ut.TestCase):
+    def runTest(self):
+        self.test_diff()
+
+    def test_diff(self):
+        from . import make_vars, sin, cos, diff, par
+
+        x, y = make_vars("x", "y")
+        self.assertEqual(diff(cos(x*x-y), "x"), -sin(x*x-y) * (2.*x))
+        self.assertEqual(diff(cos(x*x-y), x), -sin(x*x-y) * (2.*x))
+        self.assertEqual(
+            diff(cos(par[0]*par[0]-y), par[0]), -sin(par[0]*par[0]-y) * (2.*par[0]))
+
+
 def run_test_suite():
     from . import make_nbody_sys, taylor_adaptive, with_real128
 
@@ -1547,6 +1561,7 @@ def run_test_suite():
     retval = 0
 
     suite = _ut.TestLoader().loadTestsFromTestCase(taylor_add_jet_test_case)
+    suite.addTest(expression_test_case())
     suite.addTest(llvm_state_test_case())
     suite.addTest(expression_test_case())
     suite.addTest(event_classes_test_case())
