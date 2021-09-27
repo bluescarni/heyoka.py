@@ -181,6 +181,11 @@ void test_critical_msg()
 
 void expose_logging_setters(py::module_ &m)
 {
+    m.def("set_logger_level_trace", []() {
+        hey::set_logger_level_trace();
+        detail::log_sync_levels();
+    });
+
     m.def("set_logger_level_debug", []() {
         hey::set_logger_level_debug();
         detail::log_sync_levels();
