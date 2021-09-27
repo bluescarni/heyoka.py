@@ -65,7 +65,7 @@
    "id": "young-minimum",
    "metadata": {},
    "source": [
-    "Numerical constants can be created using any of the floating-point types supported by heyoka.py. For instance, on a typical Linux installation of heyoka.py, one may write:"
+    "Numerical constants can be created using any of the floating-point types supported by heyoka.py. For instance, on a typical Linux installation of heyoka.py on an x86 processor, one may write:"
    ]
   },
   {
@@ -103,11 +103,11 @@
    "source": [
     "Note that, while double precision is always supported in heyoka.py via the ``float`` Python type, support for extended-precision floating-point types varies depending on the software/hardware platform. Specifically:\n",
     "\n",
-    "- on x86 processors, the ``long double`` type corresponds to 80-bit extended precision on most platforms (the exception being MSVC on Windows, where ``long double == double``);\n",
-    "- on some platforms (e.g., Unix ARM 64), the ``long double`` type implements the IEEE [quadruple-precision floating-point format](https://en.wikipedia.org/wiki/Quadruple-precision_floating-point_format);\n",
-    "- on some platforms where ``long double`` does **not** have quadruple precision, a non-standard quadruple-precision type called ``__float128`` is instead available (this is the case, for instance, on x86-64 Linux). On such platforms, if heyoka.py and the heyoka C++ library were compiled with support for the [mp++ library](https://github.com/bluescarni/mppp) and [mpmath](https://mpmath.org/) is installed, quadruple precision is supported via the ``mpf`` type (provided that the ``mpmath`` working precision is set exactly to 113 bits, as shown above).\n",
+    "- on x86 processors, the NumPy ``longdouble`` type corresponds to 80-bit extended precision on most platforms (the exception being MSVC on Windows, where ``longdouble == float``);\n",
+    "- on some platforms (e.g., Unix ARM 64), the ``longdouble`` type implements the IEEE [quadruple-precision floating-point format](https://en.wikipedia.org/wiki/Quadruple-precision_floating-point_format);\n",
+    "- on some platforms where ``longdouble`` does **not** have quadruple precision, a nonstandard quadruple-precision type called ``__float128`` is instead available in C/C++ (this is the case, for instance, on x86-64 Linux and on some PowerPC platforms). On such platforms, if heyoka.py and the heyoka C++ library were compiled with support for the [mp++ library](https://github.com/bluescarni/mppp) and [mpmath](https://mpmath.org/) is installed, quadruple precision is supported via the ``mpf`` type (provided that the ``mpmath`` working precision is set exactly to 113 bits, as shown above).\n",
     "\n",
-    "Note that the non-IEEE ``long double`` type available on some PowerPC platforms (which implements a double-length floating-point representation with 106 significant bits) is **not** supported by heyoka.py at this time.\n",
+    "Note that the non-IEEE ``longdouble`` type available on some PowerPC platforms (which implements a double-length floating-point representation with 106 significant bits) is **not** supported by heyoka.py at this time.\n",
     "\n",
     "In addition to the standard mathematical operators, heyoka.py's expression system\n",
     "also supports the following elementary functions (with more to come in the near future):\n",

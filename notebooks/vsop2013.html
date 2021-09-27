@@ -4,11 +4,11 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>Introduction to the VSOP2013 planetary theory &#8212; heyoka.py 0.15.0 documentation</title>
     
-  <link href="../_static/css/theme.css" rel="stylesheet" />
-  <link href="../_static/css/index.c5995385ac14fb8791e8eb36b4908be2.css" rel="stylesheet" />
+  <link rel="stylesheet" href="../_static/css/index.f658d18f9b420779cfdf24aa0a7e2d77.css">
 
     
   <link rel="stylesheet"
@@ -20,36 +20,40 @@
 
     
       
+  <link rel="stylesheet"
+    href="../_static/vendor/open-sans_all/1.44.1/index.css">
+  <link rel="stylesheet"
+    href="../_static/vendor/lato_latin-ext/1.44.1/index.css">
 
     
-    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="../_static/sphinx-book-theme.e8f53015daec13862f6db5e763c41738.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-book-theme.c441f2ba0852f4cabcb80105e3a46ae6.css" />
     <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css" />
     <link rel="stylesheet" type="text/css" href="../_static/mystnb.css" />
     
-  <link rel="preload" as="script" href="../_static/js/index.1c5a1a01449ed65a7b51.js">
+  <link rel="preload" as="script" href="../_static/js/index.d3f166471bb80abb5163.js">
 
-    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
     <script src="../_static/jquery.js"></script>
     <script src="../_static/underscore.js"></script>
     <script src="../_static/doctools.js"></script>
     <script src="../_static/togglebutton.js"></script>
-    <script >var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
-    <script src="../_static/sphinx-book-theme.12a9622fbb08dcb3a2a40b2c02b83a57.js"></script>
-    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    <script src="../_static/sphinx-book-theme.7d483ff0a819d6edff12ce0b1ead3928.js"></script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Elastic tides" href="tides_spokes.html" />
     <link rel="prev" title="Calculating transit timing variations" href="ttv.html" />
+
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="docsearch:language" content="en" />
-    
+
+
+
   </head>
   <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
-    
-    <div class="container-fluid" id="banner"></div>
-
     
 
     <div class="container-xl">
@@ -58,40 +62,35 @@
 <div class="col-12 col-md-3 bd-sidebar site-navigation show" id="site-navigation">
     
         <div class="navbar-brand-box">
-    <a class="navbar-brand text-wrap" href="../index.html">
-      
-      <img src="../_static/white_logo.png" class="logo" alt="logo">
-      
-      
-      <h1 class="site-logo" id="site-title">heyoka.py 0.15.0 documentation</h1>
-      
-    </a>
+<a class="navbar-brand text-wrap" href="../index.html">
+  
+  <img src="../_static/white_logo.png" class="logo" alt="logo">
+  
+  
+  <h1 class="site-logo" id="site-title">heyoka.py 0.15.0 documentation</h1>
+  
+</a>
 </div><form class="bd-search d-flex align-items-center" action="../search.html" method="get">
   <i class="icon fas fa-search"></i>
   <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
-</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
-    <div class="bd-toc-item active">
-        <p class="caption">
+</form>
+<nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+    <p class="caption collapsible-parent" role="heading">
  <span class="caption-text">
   Contents
  </span>
 </p>
-<ul class="current nav bd-sidenav">
+<ul class="current nav sidenav_l1">
  <li class="toctree-l1">
   <a class="reference internal" href="../install.html">
    Installation
   </a>
  </li>
- <li class="toctree-l1 has-children">
+ <li class="toctree-l1 collapsible-parent">
   <a class="reference internal" href="../tutorials.html">
    Tutorials
   </a>
-  <input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/>
-  <label for="toctree-checkbox-1">
-   <i class="fas fa-chevron-down">
-   </i>
-  </label>
-  <ul>
+  <ul class="collapse-ul">
    <li class="toctree-l2">
     <a class="reference internal" href="../tut_taylor_method.html">
      Taylor’s method
@@ -178,17 +177,14 @@
     </a>
    </li>
   </ul>
+  <i class="fas fa-chevron-down">
+  </i>
  </li>
- <li class="toctree-l1 current active has-children">
+ <li class="toctree-l1 current active collapsible-parent">
   <a class="reference internal" href="../examples.html">
    Examples
   </a>
-  <input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/>
-  <label for="toctree-checkbox-2">
-   <i class="fas fa-chevron-down">
-   </i>
-  </label>
-  <ul class="current">
+  <ul class="current collapse-ul">
    <li class="toctree-l2">
     <a class="reference internal" href="The%20restricted%20three-body%20problem.html">
      The restricted three-body problem
@@ -270,6 +266,8 @@
     </a>
    </li>
   </ul>
+  <i class="fas fa-chevron-down">
+  </i>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="../changelog.html">
@@ -281,9 +279,13 @@
    Breaking changes
   </a>
  </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../acknowledgement.html">
+   Acknowledgement
+  </a>
+ </li>
 </ul>
 
-    </div>
 </nav> <!-- To handle the deprecated key -->
 
 <div class="navbar_extra_footer">
@@ -349,12 +351,12 @@
     </div>
 </div>
 
-            <!-- Full screen (wrap in <a> to have style consistency -->
 
-<a class="full-screen-button"><button type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip"
-        data-placement="bottom" onclick="toggleFullScreen()" aria-label="Fullscreen mode"
-        title="Fullscreen mode"><i
-            class="fas fa-expand"></i></button></a>
+            <!-- Full screen (wrap in <a> to have style consistency -->
+            <a class="full-screen-button"><button type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip"
+                    data-placement="bottom" onclick="toggleFullScreen()" aria-label="Fullscreen mode"
+                    title="Fullscreen mode"><i
+                        class="fas fa-expand"></i></button></a>
 
             <!-- Launch buttons -->
 
@@ -380,11 +382,12 @@
         <!-- Table of contents -->
         <div class="d-none d-md-block col-md-2 bd-toc show">
             
-            <div class="tocsection onthispage pt-5 pb-3">
-                <i class="fas fa-list"></i> Contents
-            </div>
-            <nav id="bd-toc-nav" aria-label="Page">
-                <ul class="visible nav section-nav flex-column">
+        <div class="tocsection onthispage pt-5 pb-3">
+            <i class="fas fa-list"></i>
+            Contents
+        </div>
+        <nav id="bd-toc-nav">
+            <ul class="nav section-nav flex-column">
  <li class="toc-h2 nav-item toc-entry">
   <a class="reference internal nav-link" href="#api-overview">
    API overview
@@ -412,7 +415,8 @@
  </li>
 </ul>
 
-            </nav>
+        </nav>
+        
         </div>
     </div>
 </div>
@@ -421,10 +425,10 @@
         
               <div>
                 
-  <div class="tex2jax_ignore mathjax_ignore section" id="introduction-to-the-vsop2013-planetary-theory">
+  <section class="tex2jax_ignore mathjax_ignore" id="introduction-to-the-vsop2013-planetary-theory">
 <h1>Introduction to the VSOP2013 planetary theory<a class="headerlink" href="#introduction-to-the-vsop2013-planetary-theory" title="Permalink to this headline">¶</a></h1>
 <p>Starting from version 0.15, heyoka.py provides an implementation of the <a class="reference external" href="https://en.wikipedia.org/wiki/VSOP_%28planets%29">VSOP2013</a> planetary theory. VSOP2013 consists of a set of (large) analytical formulae which calculate the heliocentric orbital elements of the 8 planets of the Solar System (plus the dwarf planet Pluto) as a function of time. Because the VSOP2013 theory is expressed as a set of analytical, differentiable formulae, it can be implemented in heyoka.py’s expression system and it can thus be used in the formulation of differential equations.</p>
-<div class="section" id="api-overview">
+<section id="api-overview">
 <h2>API overview<a class="headerlink" href="#api-overview" title="Permalink to this headline">¶</a></h2>
 <p>heyoka.py provides three functions to generate the analytical formulae for the VSOP2013 theory.</p>
 <p>The first one, <code class="docutils literal notranslate"><span class="pre">vsop2013_elliptic()</span></code>, returns the formulae for the heliocentric elliptic orbital elements for a given planet. The 6 elliptic orbital elements are, in order:</p>
@@ -437,8 +441,8 @@
 <p>This function requires as input the planet index (from 1 to 9) and the orbital element index (from 1 to 6). The orbital elements are referred to the inertial frame defined by the dynamical equinox and ecliptic J2000. Note that the VSOP2013 solution for the Earth (planet index 3) actually refers to the Earth-Moon barycentre.</p>
 <p>The second function, <code class="docutils literal notranslate"><span class="pre">vsop2013_cartesian()</span></code>, returns the heliocentric Cartesian state vector <span class="math notranslate nohighlight">\(\left( x, y, z, v_x, v_y, v_z \right)\)</span> for a given planet. The Cartesian state is computed via a direct conversion of the orbital elements returned by <code class="docutils literal notranslate"><span class="pre">vsop2013_elliptic()</span></code>, and thus it also refers to the inertial frame defined by the dynamical equinox and ecliptic J2000.</p>
 <p>The third function, <code class="docutils literal notranslate"><span class="pre">vsop2013_cartesian_icrf()</span></code>, returns the heliocentric Cartesian state vector for a given planet in the <a class="reference external" href="https://en.wikipedia.org/wiki/International_Celestial_Reference_System_and_Frame">International Celestial Reference Frame (ICRF)</a>. The ICRF state vector is computed by applying a rotation to the output of <code class="docutils literal notranslate"><span class="pre">vsop2013_cartesian()</span></code>.</p>
-</div>
-<div class="section" id="precision-and-truncation-threshold">
+</section>
+<section id="precision-and-truncation-threshold">
 <h2>Precision and truncation threshold<a class="headerlink" href="#precision-and-truncation-threshold" title="Permalink to this headline">¶</a></h2>
 <p>The VSOP2013 solution is formulated as large Fourier/Poisson series whose numerical coefficients decay exponentially. When using the full VSOP2013 solution, the precision with respect to high-accuracy numerical integrations is roughly sub-meter for the inner planets (except Mars) and kilometers for the outer planets (except Pluto). By dropping the smaller terms from the series, the precision of the theory degrades but computational efficiency greatly increases. See the <a class="reference external" href="https://ftp.imcce.fr/pub/ephem/planets/vsop2013/solution/README.pdf">VSOP2013 readme</a> for more details and estimates of the precision at various truncation levels.</p>
 <p>By default, all <code class="docutils literal notranslate"><span class="pre">vsop2013_*()</span></code> functions filter out from the solution terms whose numerical coefficients have a magnitude smaller than <span class="math notranslate nohighlight">\(10^{-9}\)</span>. The truncation threshold can be changed via the <code class="docutils literal notranslate"><span class="pre">thresh</span></code> keyword argument:</p>
@@ -452,17 +456,17 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>String length of Mars&#39; semi-major axis solution @ 1e-07: 49001
-String length of Mars&#39; semi-major axis solution @ 1e-09: 488373
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>String length of Mars&#39; semi-major axis solution @ 1e-07: 48475
+String length of Mars&#39; semi-major axis solution @ 1e-09: 484731
 </pre></div>
 </div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>String length of Mars&#39; semi-major axis solution @ 1e-11: 4760576
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>String length of Mars&#39; semi-major axis solution @ 1e-11: 4725718
 </pre></div>
 </div>
 </div>
 </div>
-</div>
-<div class="section" id="time-coordinate">
+</section>
+<section id="time-coordinate">
 <h2>Time coordinate<a class="headerlink" href="#time-coordinate" title="Permalink to this headline">¶</a></h2>
 <p>The precision of the VSOP2013 solution is highest betwen <span class="math notranslate nohighlight">\(1890\,\mathrm{CE}\)</span> and <span class="math notranslate nohighlight">\(2000\,\mathrm{CE}\)</span>, and it slowly degrades outside this time range. See the <a class="reference external" href="https://ftp.imcce.fr/pub/ephem/planets/vsop2013/solution/README.pdf">VSOP2013 readme</a> for estimates of the precision degradation up to a few thousand years in the past/future.</p>
 <p>VSOP2013 uses <a class="reference external" href="https://en.wikipedia.org/wiki/Barycentric_Dynamical_Time">barycentric dynamical time (TDB)</a>, expressed in thousands of Julian years from J2000 (JD2451545.0). Note than one Julian year = 365250 days.</p>
@@ -489,8 +493,8 @@ Mars&#39; semi-major axis solution, threshold = 6e-5, time rescaled by a factor 
 </div>
 </div>
 </div>
-</div>
-<div class="section" id="checking-the-implementation">
+</section>
+<section id="checking-the-implementation">
 <h2>Checking the implementation<a class="headerlink" href="#checking-the-implementation" title="Permalink to this headline">¶</a></h2>
 <p>In order to check the correctness of heyoka.py’s implementation of the VSOP2013 theory, we are going to use the <a class="reference external" href="https://ssd.jpl.nasa.gov/?horizons">NASA HORIZONS service</a> via the <a class="reference external" href="https://astroquery.readthedocs.io/en/latest/">Astroquery</a> package. Our objective is to compare the planetary positions computed by VSOP2013 at different threshold levels with those computed by HORIZONS.</p>
 <p>On the heyoka.py side, we will have to perform the computation of the planetary positions in a bit of a roundabout way. Specifically, given an explicit time-dependent formula <span class="math notranslate nohighlight">\(x_p\left( t \right)\)</span> produced by VSOP2013 for, say, the <span class="math notranslate nohighlight">\(x\)</span> coordinate of a planet, we will formulate an ODE of type</p>
@@ -586,155 +590,27 @@ Mars&#39; semi-major axis solution, threshold = 6e-5, time rescaled by a factor 
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
-<span class="ne">KeyboardInterrupt</span><span class="g g-Whitespace">                         </span>Traceback (most recent call last)
-<span class="o">/</span><span class="n">tmp</span><span class="o">/</span><span class="n">ipykernel_6492</span><span class="o">/</span><span class="mf">1448808588.</span><span class="n">py</span> <span class="ow">in</span> <span class="o">&lt;</span><span class="n">module</span><span class="o">&gt;</span>
-<span class="g g-Whitespace">     </span><span class="mi">78</span> <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;Threshold value&quot;</span><span class="p">)</span>
-<span class="g g-Whitespace">     </span><span class="mi">79</span> <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;Error wrt HORIZONS (km)&quot;</span><span class="p">)</span>
-<span class="ne">---&gt; </span><span class="mi">80</span> <span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">();</span>
-
-<span class="nn">~/local/lib/python3.8/site-packages/matplotlib/_api/deprecation.py</span> in <span class="ni">wrapper</span><span class="nt">(*args, **kwargs)</span>
-<span class="g g-Whitespace">    </span><span class="mi">469</span>                 <span class="s2">&quot;parameter will become keyword-only </span><span class="si">%(removal)s</span><span class="s2">.&quot;</span><span class="p">,</span>
-<span class="g g-Whitespace">    </span><span class="mi">470</span>                 <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">obj_type</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;parameter of </span><span class="si">{</span><span class="n">func</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">()&quot;</span><span class="p">)</span>
-<span class="ne">--&gt; </span><span class="mi">471</span>         <span class="k">return</span> <span class="n">func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-<span class="g g-Whitespace">    </span><span class="mi">472</span> 
-<span class="g g-Whitespace">    </span><span class="mi">473</span>     <span class="k">return</span> <span class="n">wrapper</span>
-
-<span class="nn">~/local/lib/python3.8/site-packages/matplotlib/pyplot.py</span> in <span class="ni">tight_layout</span><span class="nt">(pad, h_pad, w_pad, rect)</span>
-<span class="g g-Whitespace">   </span><span class="mi">1659</span>         <span class="n">subplots</span> <span class="n">area</span> <span class="p">(</span><span class="n">including</span> <span class="n">labels</span><span class="p">)</span> <span class="n">will</span> <span class="n">fit</span><span class="o">.</span>
-<span class="g g-Whitespace">   </span><span class="mi">1660</span>     <span class="s2">&quot;&quot;&quot;</span>
-<span class="ne">-&gt; </span><span class="mi">1661</span><span class="s2">     gcf().tight_layout(pad=pad, h_pad=h_pad, w_pad=w_pad, rect=rect)</span>
-<span class="g g-Whitespace">   </span><span class="mi">1662</span><span class="s2"> </span>
-<span class="g g-Whitespace">   </span><span class="mi">1663</span><span class="s2"> </span>
-
-<span class="nn">~/local/lib/python3.8/site-packages/matplotlib/figure.py</span> in <span class="ni">tight_layout</span><span class="nt">(self, pad, h_pad, w_pad, rect)</span>
-<span class="g g-Whitespace">   </span><span class="mi">3162</span><span class="s2">                else suppress())</span>
-<span class="g g-Whitespace">   </span><span class="mi">3163</span><span class="s2">         with ctx:</span>
-<span class="ne">-&gt; </span><span class="mi">3164</span><span class="s2">             kwargs = get_tight_layout_figure(</span>
-<span class="g g-Whitespace">   </span><span class="mi">3165</span><span class="s2">                 self, self.axes, subplotspec_list, renderer,</span>
-<span class="g g-Whitespace">   </span><span class="mi">3166</span><span class="s2">                 pad=pad, h_pad=h_pad, w_pad=w_pad, rect=rect)</span>
-
-<span class="nn">~/local/lib/python3.8/site-packages/matplotlib/tight_layout.py</span> in <span class="ni">get_tight_layout_figure</span><span class="nt">(fig, axes_list, subplotspec_list, renderer, pad, h_pad, w_pad, rect)</span>
-<span class="g g-Whitespace">    </span><span class="mi">310</span><span class="s2">                               (colNum2 + 1) * div_col - 1))</span>
-<span class="g g-Whitespace">    </span><span class="mi">311</span><span class="s2"> </span>
-<span class="ne">--&gt; </span><span class="mi">312</span><span class="s2">     kwargs = auto_adjust_subplotpars(fig, renderer,</span>
-<span class="g g-Whitespace">    </span><span class="mi">313</span><span class="s2">                                      nrows_ncols=(max_nrows, max_ncols),</span>
-<span class="g g-Whitespace">    </span><span class="mi">314</span><span class="s2">                                      num1num2_list=num1num2_list,</span>
-
-<span class="nn">~/local/lib/python3.8/site-packages/matplotlib/tight_layout.py</span> in <span class="ni">auto_adjust_subplotpars</span><span class="nt">(fig, renderer, nrows_ncols, num1num2_list, subplot_list, ax_bbox_list, pad, h_pad, w_pad, rect)</span>
-<span class="g g-Whitespace">     </span><span class="mi">82</span><span class="s2">             if ax.get_visible():</span>
-<span class="g g-Whitespace">     </span><span class="mi">83</span><span class="s2">                 try:</span>
-<span class="ne">---&gt; </span><span class="mi">84</span><span class="s2">                     bb += [ax.get_tightbbox(renderer, for_layout_only=True)]</span>
-<span class="g g-Whitespace">     </span><span class="mi">85</span><span class="s2">                 except TypeError:</span>
-<span class="g g-Whitespace">     </span><span class="mi">86</span><span class="s2">                     bb += [ax.get_tightbbox(renderer)]</span>
-
-<span class="nn">~/local/lib/python3.8/site-packages/matplotlib/axes/_base.py</span> in <span class="ni">get_tightbbox</span><span class="nt">(self, renderer, call_axes_locator, bbox_extra_artists, for_layout_only)</span>
-<span class="g g-Whitespace">   </span><span class="mi">4437</span><span class="s2">             if self.yaxis.get_visible():</span>
-<span class="g g-Whitespace">   </span><span class="mi">4438</span><span class="s2">                 try:</span>
-<span class="ne">-&gt; </span><span class="mi">4439</span><span class="s2">                     bb_yaxis = self.yaxis.get_tightbbox(</span>
-<span class="g g-Whitespace">   </span><span class="mi">4440</span><span class="s2">                         renderer, for_layout_only=for_layout_only)</span>
-<span class="g g-Whitespace">   </span><span class="mi">4441</span><span class="s2">                 except TypeError:</span>
-
-<span class="nn">~/local/lib/python3.8/site-packages/matplotlib/axis.py</span> in <span class="ni">get_tightbbox</span><span class="nt">(self, renderer, for_layout_only)</span>
-<span class="g g-Whitespace">   </span><span class="mi">1084</span><span class="s2">             return</span>
-<span class="g g-Whitespace">   </span><span class="mi">1085</span><span class="s2"> </span>
-<span class="ne">-&gt; </span><span class="mi">1086</span><span class="s2">         ticks_to_draw = self._update_ticks()</span>
-<span class="g g-Whitespace">   </span><span class="mi">1087</span><span class="s2"> </span>
-<span class="g g-Whitespace">   </span><span class="mi">1088</span><span class="s2">         self._update_label_position(renderer)</span>
-
-<span class="nn">~/local/lib/python3.8/site-packages/matplotlib/axis.py</span> in <span class="ni">_update_ticks</span><span class="nt">(self)</span>
-<span class="g g-Whitespace">   </span><span class="mi">1036</span><span class="s2">         minor_locs = self.get_minorticklocs()</span>
-<span class="g g-Whitespace">   </span><span class="mi">1037</span><span class="s2">         minor_labels = self.minor.formatter.format_ticks(minor_locs)</span>
-<span class="ne">-&gt; </span><span class="mi">1038</span><span class="s2">         minor_ticks = self.get_minor_ticks(len(minor_locs))</span>
-<span class="g g-Whitespace">   </span><span class="mi">1039</span><span class="s2">         self.minor.formatter.set_locs(minor_locs)</span>
-<span class="g g-Whitespace">   </span><span class="mi">1040</span><span class="s2">         for tick, loc, label in zip(minor_ticks, minor_locs, minor_labels):</span>
-
-<span class="nn">~/local/lib/python3.8/site-packages/matplotlib/axis.py</span> in <span class="ni">get_minor_ticks</span><span class="nt">(self, numticks)</span>
-<span class="g g-Whitespace">   </span><span class="mi">1370</span><span class="s2">         while len(self.minorTicks) &lt; numticks:</span>
-<span class="g g-Whitespace">   </span><span class="mi">1371</span><span class="s2">             # Update the new tick label properties from the old.</span>
-<span class="ne">-&gt; </span><span class="mi">1372</span><span class="s2">             tick = self._get_tick(major=False)</span>
-<span class="g g-Whitespace">   </span><span class="mi">1373</span><span class="s2">             self.minorTicks.append(tick)</span>
-<span class="g g-Whitespace">   </span><span class="mi">1374</span><span class="s2">             self._copy_tick_props(self.minorTicks[0], tick)</span>
-
-<span class="nn">~/local/lib/python3.8/site-packages/matplotlib/axis.py</span> in <span class="ni">_get_tick</span><span class="nt">(self, major)</span>
-<span class="g g-Whitespace">   </span><span class="mi">2330</span><span class="s2">         else:</span>
-<span class="g g-Whitespace">   </span><span class="mi">2331</span><span class="s2">             tick_kw = self._minor_tick_kw</span>
-<span class="ne">-&gt; </span><span class="mi">2332</span><span class="s2">         return YTick(self.axes, 0, major=major, **tick_kw)</span>
-<span class="g g-Whitespace">   </span><span class="mi">2333</span><span class="s2"> </span>
-<span class="g g-Whitespace">   </span><span class="mi">2334</span><span class="s2">     def set_label_position(self, position):</span>
-
-<span class="nn">~/local/lib/python3.8/site-packages/matplotlib/axis.py</span> in <span class="ni">__init__</span><span class="nt">(self, *args, **kwargs)</span>
-<span class="g g-Whitespace">    </span><span class="mi">485</span><span class="s2"> </span>
-<span class="g g-Whitespace">    </span><span class="mi">486</span><span class="s2">     def __init__(self, *args, **kwargs):</span>
-<span class="ne">--&gt; </span><span class="mi">487</span><span class="s2">         super().__init__(*args, **kwargs)</span>
-<span class="g g-Whitespace">    </span><span class="mi">488</span><span class="s2">         # x in axes coords, y in data coords</span>
-<span class="g g-Whitespace">    </span><span class="mi">489</span><span class="s2">         self.tick1line.set(</span>
-
-<span class="nn">~/local/lib/python3.8/site-packages/matplotlib/_api/deprecation.py</span> in <span class="ni">wrapper</span><span class="nt">(*inner_args, **inner_kwargs)</span>
-<span class="g g-Whitespace">    </span><span class="mi">429</span><span class="s2">                          else deprecation_addendum,</span>
-<span class="g g-Whitespace">    </span><span class="mi">430</span><span class="s2">                 **kwargs)</span>
-<span class="ne">--&gt; </span><span class="mi">431</span><span class="s2">         return func(*inner_args, **inner_kwargs)</span>
-<span class="g g-Whitespace">    </span><span class="mi">432</span><span class="s2"> </span>
-<span class="g g-Whitespace">    </span><span class="mi">433</span><span class="s2">     return wrapper</span>
-
-<span class="nn">~/local/lib/python3.8/site-packages/matplotlib/axis.py</span> in <span class="ni">__init__</span><span class="nt">(self, axes, loc, label, size, width, color, tickdir, pad, labelsize, labelcolor, zorder, gridOn, tick1On, tick2On, label1On, label2On, major, labelrotation, grid_color, grid_linestyle, grid_linewidth, grid_alpha, **kw)</span>
-<span class="g g-Whitespace">    </span><span class="mi">156</span><span class="s2">             markeredgecolor=color, markersize=size, markeredgewidth=width,</span>
-<span class="g g-Whitespace">    </span><span class="mi">157</span><span class="s2">         )</span>
-<span class="ne">--&gt; </span><span class="mi">158</span><span class="s2">         self.tick2line = mlines.Line2D(</span>
-<span class="g g-Whitespace">    </span><span class="mi">159</span><span class="s2">             [], [],</span>
-<span class="g g-Whitespace">    </span><span class="mi">160</span><span class="s2">             color=color, linestyle=&quot;none&quot;, zorder=zorder, visible=tick2On,</span>
-
-<span class="nn">~/local/lib/python3.8/site-packages/matplotlib/lines.py</span> in <span class="ni">__init__</span><span class="nt">(self, xdata, ydata, linewidth, linestyle, color, marker, markersize, markeredgewidth, markeredgecolor, markerfacecolor, markerfacecoloralt, fillstyle, antialiased, dash_capstyle, solid_capstyle, dash_joinstyle, solid_joinstyle, pickradius, drawstyle, markevery, **kwargs)</span>
-<span class="g g-Whitespace">    </span><span class="mi">389</span><span class="s2"> </span>
-<span class="g g-Whitespace">    </span><span class="mi">390</span><span class="s2">         self.set_markerfacecolor(markerfacecolor)</span>
-<span class="ne">--&gt; </span><span class="mi">391</span><span class="s2">         self.set_markerfacecoloralt(markerfacecoloralt)</span>
-<span class="g g-Whitespace">    </span><span class="mi">392</span><span class="s2">         self.set_markeredgecolor(markeredgecolor)</span>
-<span class="g g-Whitespace">    </span><span class="mi">393</span><span class="s2">         self.set_markeredgewidth(markeredgewidth)</span>
-
-<span class="ne">KeyboardInterrupt</span>: 
-</pre></div>
-</div>
-<img alt="../_images/vsop2013_5_1.png" src="../_images/vsop2013_5_1.png" />
+<img alt="../_images/vsop2013_5_0.png" src="../_images/vsop2013_5_0.png" />
 </div>
 </div>
 <p>We can see how VSOP2013 matches up well with respect to HORIZONS, and how lower truncation levels indeed increase the precision of the VSOP2013 solution (up to an error of hundreds of meters for a threshold of <span class="math notranslate nohighlight">\(10^{-10}\)</span>).</p>
-</div>
-<div class="section" id="limitations-and-caveats">
+</section>
+<section id="limitations-and-caveats">
 <h2>Limitations and caveats<a class="headerlink" href="#limitations-and-caveats" title="Permalink to this headline">¶</a></h2>
 <p>A possible issue in astrodynamical applications is that VSOP2013 does not directly provide formulae for the state vector of the Sun. The barycentric position of the Sun can be estimated via the heliocentric planetary formulae after imposing that the system’s barycentre is fixed in the origin. It is not clear at this time if this approach is 100% accurate (as VSOP2013 includes perturbations on the planets by asteroids, whose state vectors are not provided in the solution), but it should be adequate for most practical purposes.</p>
-</div>
-</div>
+</section>
+</section>
 
 
               </div>
               
         
+        <div class='prev-next-bottom'>
             
+    <a class='left-prev' id="prev-link" href="ttv.html" title="previous page">Calculating transit timing variations</a>
+    <a class='right-next' id="next-link" href="tides_spokes.html" title="next page">Elastic tides</a>
 
-
-
-<div class='prev-next-bottom'>
-    
-    <div id="prev">
-        <a class="left-prev" href="ttv.html" title="previous page">
-            <i class="prevnext-label fas fa-angle-left"></i>
-            <div class="prevnext-info">
-                <p class="prevnext-label">previous</p>
-                <p class="prevnext-title">Calculating transit timing variations</p>
-            </div>
-        </a>
-    </div>
-     <div id="next">
-        <a class="right-next" href="tides_spokes.html" title="next page">
-            <div class="prevnext-info">
-                <p class="prevnext-label">next</p>
-                <p class="prevnext-title">Elastic tides</p>
-            </div>
-            <i class="prevnext-label fas fa-angle-right"></i>
-        </a>
-     </div>
-
-</div>
+        </div>
         
         </div>
     </div>
@@ -753,9 +629,11 @@ Mars&#39; semi-major axis solution, threshold = 6e-5, time rescaled by a factor 
 
       </div>
     </div>
-  
-  <script src="../_static/js/index.1c5a1a01449ed65a7b51.js"></script>
 
-  
+    
+  <script src="../_static/js/index.d3f166471bb80abb5163.js"></script>
+
+
+    
   </body>
 </html>

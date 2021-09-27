@@ -4,11 +4,11 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>Comparing coordinate systems &#8212; heyoka.py 0.15.0 documentation</title>
     
-  <link href="../_static/css/theme.css" rel="stylesheet" />
-  <link href="../_static/css/index.c5995385ac14fb8791e8eb36b4908be2.css" rel="stylesheet" />
+  <link rel="stylesheet" href="../_static/css/index.f658d18f9b420779cfdf24aa0a7e2d77.css">
 
     
   <link rel="stylesheet"
@@ -20,36 +20,40 @@
 
     
       
+  <link rel="stylesheet"
+    href="../_static/vendor/open-sans_all/1.44.1/index.css">
+  <link rel="stylesheet"
+    href="../_static/vendor/lato_latin-ext/1.44.1/index.css">
 
     
-    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="../_static/sphinx-book-theme.e8f53015daec13862f6db5e763c41738.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-book-theme.c441f2ba0852f4cabcb80105e3a46ae6.css" />
     <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css" />
     <link rel="stylesheet" type="text/css" href="../_static/mystnb.css" />
     
-  <link rel="preload" as="script" href="../_static/js/index.1c5a1a01449ed65a7b51.js">
+  <link rel="preload" as="script" href="../_static/js/index.d3f166471bb80abb5163.js">
 
-    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
     <script src="../_static/jquery.js"></script>
     <script src="../_static/underscore.js"></script>
     <script src="../_static/doctools.js"></script>
     <script src="../_static/togglebutton.js"></script>
-    <script >var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
-    <script src="../_static/sphinx-book-theme.12a9622fbb08dcb3a2a40b2c02b83a57.js"></script>
-    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    <script src="../_static/sphinx-book-theme.7d483ff0a819d6edff12ce0b1ead3928.js"></script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Inverting Kepler’s equation in ODEs" href="Inverting%20Kepler%27s%20equation%20in%20ODEs.html" />
     <link rel="prev" title="Box control in satellite Formation Flying" href="Box%20control%20for%20Formation%20Flying%20Satellites.html" />
+
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="docsearch:language" content="en" />
-    
+
+
+
   </head>
   <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
-    
-    <div class="container-fluid" id="banner"></div>
-
     
 
     <div class="container-xl">
@@ -58,40 +62,35 @@
 <div class="col-12 col-md-3 bd-sidebar site-navigation show" id="site-navigation">
     
         <div class="navbar-brand-box">
-    <a class="navbar-brand text-wrap" href="../index.html">
-      
-      <img src="../_static/white_logo.png" class="logo" alt="logo">
-      
-      
-      <h1 class="site-logo" id="site-title">heyoka.py 0.15.0 documentation</h1>
-      
-    </a>
+<a class="navbar-brand text-wrap" href="../index.html">
+  
+  <img src="../_static/white_logo.png" class="logo" alt="logo">
+  
+  
+  <h1 class="site-logo" id="site-title">heyoka.py 0.15.0 documentation</h1>
+  
+</a>
 </div><form class="bd-search d-flex align-items-center" action="../search.html" method="get">
   <i class="icon fas fa-search"></i>
   <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
-</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
-    <div class="bd-toc-item active">
-        <p class="caption">
+</form>
+<nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+    <p class="caption collapsible-parent" role="heading">
  <span class="caption-text">
   Contents
  </span>
 </p>
-<ul class="current nav bd-sidenav">
+<ul class="current nav sidenav_l1">
  <li class="toctree-l1">
   <a class="reference internal" href="../install.html">
    Installation
   </a>
  </li>
- <li class="toctree-l1 has-children">
+ <li class="toctree-l1 collapsible-parent">
   <a class="reference internal" href="../tutorials.html">
    Tutorials
   </a>
-  <input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/>
-  <label for="toctree-checkbox-1">
-   <i class="fas fa-chevron-down">
-   </i>
-  </label>
-  <ul>
+  <ul class="collapse-ul">
    <li class="toctree-l2">
     <a class="reference internal" href="../tut_taylor_method.html">
      Taylor’s method
@@ -178,17 +177,14 @@
     </a>
    </li>
   </ul>
+  <i class="fas fa-chevron-down">
+  </i>
  </li>
- <li class="toctree-l1 current active has-children">
+ <li class="toctree-l1 current active collapsible-parent">
   <a class="reference internal" href="../examples.html">
    Examples
   </a>
-  <input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/>
-  <label for="toctree-checkbox-2">
-   <i class="fas fa-chevron-down">
-   </i>
-  </label>
-  <ul class="current">
+  <ul class="current collapse-ul">
    <li class="toctree-l2">
     <a class="reference internal" href="The%20restricted%20three-body%20problem.html">
      The restricted three-body problem
@@ -270,6 +266,8 @@
     </a>
    </li>
   </ul>
+  <i class="fas fa-chevron-down">
+  </i>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="../changelog.html">
@@ -281,9 +279,13 @@
    Breaking changes
   </a>
  </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../acknowledgement.html">
+   Acknowledgement
+  </a>
+ </li>
 </ul>
 
-    </div>
 </nav> <!-- To handle the deprecated key -->
 
 <div class="navbar_extra_footer">
@@ -349,12 +351,12 @@
     </div>
 </div>
 
-            <!-- Full screen (wrap in <a> to have style consistency -->
 
-<a class="full-screen-button"><button type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip"
-        data-placement="bottom" onclick="toggleFullScreen()" aria-label="Fullscreen mode"
-        title="Fullscreen mode"><i
-            class="fas fa-expand"></i></button></a>
+            <!-- Full screen (wrap in <a> to have style consistency -->
+            <a class="full-screen-button"><button type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip"
+                    data-placement="bottom" onclick="toggleFullScreen()" aria-label="Fullscreen mode"
+                    title="Fullscreen mode"><i
+                        class="fas fa-expand"></i></button></a>
 
             <!-- Launch buttons -->
 
@@ -380,11 +382,12 @@
         <!-- Table of contents -->
         <div class="d-none d-md-block col-md-2 bd-toc show">
             
-            <div class="tocsection onthispage pt-5 pb-3">
-                <i class="fas fa-list"></i> Contents
-            </div>
-            <nav id="bd-toc-nav" aria-label="Page">
-                <ul class="visible nav section-nav flex-column">
+        <div class="tocsection onthispage pt-5 pb-3">
+            <i class="fas fa-list"></i>
+            Contents
+        </div>
+        <nav id="bd-toc-nav">
+            <ul class="nav section-nav flex-column">
  <li class="toc-h2 nav-item toc-entry">
   <a class="reference internal nav-link" href="#cartesian-coordinates">
    Cartesian coordinates
@@ -412,7 +415,8 @@
  </li>
 </ul>
 
-            </nav>
+        </nav>
+        
         </div>
     </div>
 </div>
@@ -421,7 +425,7 @@
         
               <div>
                 
-  <div class="tex2jax_ignore mathjax_ignore section" id="comparing-coordinate-systems">
+  <section class="tex2jax_ignore mathjax_ignore" id="comparing-coordinate-systems">
 <h1>Comparing coordinate systems<a class="headerlink" href="#comparing-coordinate-systems" title="Permalink to this headline">¶</a></h1>
 <p>In this example, we will study how the choice of coordinate system influences the behaviour of heyoka.py’s adaptive integrator. We will focus on a simple (but nontrivial) dynamical system, consisting of a central Keplerian force field coupled to a force field constant in direction and magnitude. This dynamical system is known as the <em>Stark problem</em> or <em>accelerated Kepler problem</em>, and it has numerous applications of practical interest (including spaceflight mechanics, the dynamics of dust grains in the outer Solar System, atomic physics, etc.). Note that the Stark problem can be solved analytically via <a class="reference external" href="https://arxiv.org/abs/1306.6442">elliptic functions</a>, but of course here we will consider a numerical approach.</p>
 <p>Without loss of generality, we can choose to orient the constant force field towards the positive <span class="math notranslate nohighlight">\(z\)</span> direction. The Hamiltonian of the Stark problem in Cartesian coordinates (and adimensional units) thus reads:</p>
@@ -449,7 +453,7 @@
 </div>
 </div>
 <p>We will now proceed to integrate this dynamical system using several coordinate systems.</p>
-<div class="section" id="cartesian-coordinates">
+<section id="cartesian-coordinates">
 <h2>Cartesian coordinates<a class="headerlink" href="#cartesian-coordinates" title="Permalink to this headline">¶</a></h2>
 <p>We begin, as usual, with the creation of the symbolic Cartesian variables:</p>
 <div class="cell docutils container">
@@ -562,8 +566,8 @@
 </div>
 </div>
 <p>Note that the oscillatory behaviour in these plots is a quasi-Keplerian motion driven by the central-force field. The additional constant acceleration has a longer-term secular effect which is however not immediately recognisable in these plots.</p>
-</div>
-<div class="section" id="spherical-coordinates">
+</section>
+<section id="spherical-coordinates">
 <h2>Spherical coordinates<a class="headerlink" href="#spherical-coordinates" title="Permalink to this headline">¶</a></h2>
 <p>Let us now switch to a <a class="reference external" href="https://en.wikipedia.org/wiki/Spherical_coordinate_system">spherical coordinate system</a>. Because we are operating in the Hamiltonian framework, we cannot use directly the time derivatives <span class="math notranslate nohighlight">\(\left( \dot{r}, \dot{\theta}, \dot{\phi} \right)\)</span> of the spherical coordinates as new momenta, and we have to use instead a set of canonical momenta <span class="math notranslate nohighlight">\(\left( p_r, p_\theta, p_\phi \right)\)</span>. The coordinate transformation <span class="math notranslate nohighlight">\(\left(v_x, v_y, v_z, x, y, z\right) \rightarrow \left( p_r, p_\theta, p_\phi, r, \theta, \phi \right)\)</span> reads:</p>
 <div class="math notranslate nohighlight">
@@ -705,8 +709,8 @@ Number of steps (spherical): 899
 </div>
 <p>The reduction is not dramatic, but nevertheless measurable.</p>
 <p>Spherical coordinates require fewer timesteps because the reduction in the amplitude of the oscillatory motions improves the convergence of the Taylor series that heyoka.py uses internally to propagate the motion at each timestep. In other words, when using spherical coordinates the Taylor series synthesised by heyoka.py at each timestep can describe accurately the solution of the system for longer intervals of time.</p>
-</div>
-<div class="section" id="delaunay-elements">
+</section>
+<section id="delaunay-elements">
 <h2>Delaunay elements<a class="headerlink" href="#delaunay-elements" title="Permalink to this headline">¶</a></h2>
 <p>The results of the previous section suggest that introducing another system of coordinates which further reduces the amplitude of periodic oscillations may further decrease the number of timesteps required by the integrator. Because we are dealing with a perturbed Keplerian system, an obvious choice is to use <a class="reference external" href="https://en.wikipedia.org/wiki/Orbital_elements">Keplerian orbital elements</a>.</p>
 <p>In the Hamiltonian formalism, we cannot use directly the Keplerian elements as coordinates as they are not canonical variables. Instead, we can use the <a class="reference external" href="https://en.wikipedia.org/wiki/Orbital_elements#Delaunay_variables">Delaunay elements</a>, which are closely-related to the Keplerian elements via the following relations (valid in adimensional units):</p>
@@ -938,8 +942,8 @@ Number of steps (Delaunay) : 764
 </div>
 </div>
 <p>In order to further reduce the number of timesteps, we will have to implement one final trick.</p>
-</div>
-<div class="section" id="delaunay-sundman">
+</section>
+<section id="delaunay-sundman">
 <h2>Delaunay + Sundman<a class="headerlink" href="#delaunay-sundman" title="Permalink to this headline">¶</a></h2>
 <p>The idea we will be exploring in this section is to replace the time <span class="math notranslate nohighlight">\(t\)</span> with a fictitious time <span class="math notranslate nohighlight">\(\tau\)</span> defined by the differential relation</p>
 <div class="math notranslate nohighlight">
@@ -1074,44 +1078,24 @@ Number of steps (D + S)    : 388
 <img alt="../_images/Comparing coordinate systems_56_0.png" src="../_images/Comparing coordinate systems_56_0.png" />
 </div>
 </div>
-</div>
-<div class="section" id="conclusions">
+</section>
+<section id="conclusions">
 <h2>Conclusions<a class="headerlink" href="#conclusions" title="Permalink to this headline">¶</a></h2>
 <p>In this example we have shown how the choice of coordinate system and time coordinate can influence the behaviour of a Taylor integrator. Intuitively, the closer the time evolution of a coordinate is to a polynomial, the longer the Taylor series can approximate the ODE solution, and the fewer number of steps is required.</p>
 <p>In these experiments we focused only on the number of steps as a performance metric. Clearly, the use of more sophisticated coordinate systems (such as the Delaunay elements) can lead to more complicated equations of motion, which in turn may lead to overall longer integration times. Nevertheless, the minimisation of the number of timestpes may be of interest in some cases (e.g., to reduce the accumulation of numerical errors in long-term integrations).</p>
-</div>
-</div>
+</section>
+</section>
 
 
               </div>
               
         
+        <div class='prev-next-bottom'>
             
+    <a class='left-prev' id="prev-link" href="Box%20control%20for%20Formation%20Flying%20Satellites.html" title="previous page">Box control in satellite Formation Flying</a>
+    <a class='right-next' id="next-link" href="Inverting%20Kepler%27s%20equation%20in%20ODEs.html" title="next page">Inverting Kepler’s equation in ODEs</a>
 
-
-
-<div class='prev-next-bottom'>
-    
-    <div id="prev">
-        <a class="left-prev" href="Box%20control%20for%20Formation%20Flying%20Satellites.html" title="previous page">
-            <i class="prevnext-label fas fa-angle-left"></i>
-            <div class="prevnext-info">
-                <p class="prevnext-label">previous</p>
-                <p class="prevnext-title">Box control in satellite Formation Flying</p>
-            </div>
-        </a>
-    </div>
-     <div id="next">
-        <a class="right-next" href="Inverting%20Kepler%27s%20equation%20in%20ODEs.html" title="next page">
-            <div class="prevnext-info">
-                <p class="prevnext-label">next</p>
-                <p class="prevnext-title">Inverting Kepler’s equation in ODEs</p>
-            </div>
-            <i class="prevnext-label fas fa-angle-right"></i>
-        </a>
-     </div>
-
-</div>
+        </div>
         
         </div>
     </div>
@@ -1130,9 +1114,11 @@ Number of steps (D + S)    : 388
 
       </div>
     </div>
-  
-  <script src="../_static/js/index.1c5a1a01449ed65a7b51.js"></script>
 
-  
+    
+  <script src="../_static/js/index.d3f166471bb80abb5163.js"></script>
+
+
+    
   </body>
 </html>

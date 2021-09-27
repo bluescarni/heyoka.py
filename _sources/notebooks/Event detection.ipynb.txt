@@ -823,7 +823,7 @@
     "to an integration without event detection.\n",
     "\n",
     "As another example, an event equation which requires small timesteps for accurate numerical propagation\n",
-    "will inevitably slow down also the propagation of the ODEs."
+    "(e.g., a highly-stiff equation) will inevitably slow down also the propagation of the ODEs."
    ]
   }
  ],
