@@ -11,6 +11,11 @@ New
 
 - Add a tutorial on the simulation of tides
   (`#70 <https://github.com/bluescarni/heyoka.py/pull/70>`__).
+- The conversion of expressions from/to SymPy now takes advantage
+  of reference semantics, which leads to large
+  performance improvements when dealing with expressions
+  with a high degree of internal repetition
+  (`#70 <https://github.com/bluescarni/heyoka.py/pull/70>`__).
 - Add the possibility to customise the behaviour of the
   ``from_sympy()`` function
   (`#70 <https://github.com/bluescarni/heyoka.py/pull/70>`__).
