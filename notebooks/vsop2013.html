@@ -4,11 +4,11 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Introduction to the VSOP2013 planetary theory &#8212; heyoka.py 0.15.0 documentation</title>
     
-  <link rel="stylesheet" href="../_static/css/index.f658d18f9b420779cfdf24aa0a7e2d77.css">
+  <link href="../_static/css/theme.css" rel="stylesheet" />
+  <link href="../_static/css/index.c5995385ac14fb8791e8eb36b4908be2.css" rel="stylesheet" />
 
     
   <link rel="stylesheet"
@@ -20,18 +20,14 @@
 
     
       
-  <link rel="stylesheet"
-    href="../_static/vendor/open-sans_all/1.44.1/index.css">
-  <link rel="stylesheet"
-    href="../_static/vendor/lato_latin-ext/1.44.1/index.css">
 
     
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/sphinx-book-theme.c441f2ba0852f4cabcb80105e3a46ae6.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-book-theme.css?digest=c3fdc42140077d1ad13ad2f1588a4309" />
     <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css" />
     <link rel="stylesheet" type="text/css" href="../_static/mystnb.css" />
     
-  <link rel="preload" as="script" href="../_static/js/index.d3f166471bb80abb5163.js">
+  <link rel="preload" as="script" href="../_static/js/index.1c5a1a01449ed65a7b51.js">
 
     <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
     <script src="../_static/jquery.js"></script>
@@ -39,21 +35,21 @@
     <script src="../_static/doctools.js"></script>
     <script src="../_static/togglebutton.js"></script>
     <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
-    <script src="../_static/sphinx-book-theme.7d483ff0a819d6edff12ce0b1ead3928.js"></script>
+    <script src="../_static/sphinx-book-theme.12a9622fbb08dcb3a2a40b2c02b83a57.js"></script>
     <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Elastic tides" href="tides_spokes.html" />
     <link rel="prev" title="Calculating transit timing variations" href="ttv.html" />
-
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="docsearch:language" content="en" />
-
-
-
+    
   </head>
   <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
+    
+    <div class="container-fluid" id="banner"></div>
+
     
 
     <div class="container-xl">
@@ -62,35 +58,44 @@
 <div class="col-12 col-md-3 bd-sidebar site-navigation show" id="site-navigation">
     
         <div class="navbar-brand-box">
-<a class="navbar-brand text-wrap" href="../index.html">
-  
-  <img src="../_static/white_logo.png" class="logo" alt="logo">
-  
-  
-  <h1 class="site-logo" id="site-title">heyoka.py 0.15.0 documentation</h1>
-  
-</a>
+    <a class="navbar-brand text-wrap" href="../index.html">
+      
+        <!-- `logo` is deprecated in Sphinx 4.0, so remove this when we stop supporting 3 -->
+        
+      
+      
+      <img src="../_static/white_logo.png" class="logo" alt="logo">
+      
+      
+      <h1 class="site-logo" id="site-title">heyoka.py 0.15.0 documentation</h1>
+      
+    </a>
 </div><form class="bd-search d-flex align-items-center" action="../search.html" method="get">
   <i class="icon fas fa-search"></i>
   <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
-</form>
-<nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
-    <p class="caption collapsible-parent" role="heading">
+</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item active">
+        <p class="caption" role="heading">
  <span class="caption-text">
   Contents
  </span>
 </p>
-<ul class="current nav sidenav_l1">
+<ul class="current nav bd-sidenav">
  <li class="toctree-l1">
   <a class="reference internal" href="../install.html">
    Installation
   </a>
  </li>
- <li class="toctree-l1 collapsible-parent">
+ <li class="toctree-l1 has-children">
   <a class="reference internal" href="../tutorials.html">
    Tutorials
   </a>
-  <ul class="collapse-ul">
+  <input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/>
+  <label for="toctree-checkbox-1">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
    <li class="toctree-l2">
     <a class="reference internal" href="../tut_taylor_method.html">
      Taylor’s method
@@ -177,14 +182,17 @@
     </a>
    </li>
   </ul>
-  <i class="fas fa-chevron-down">
-  </i>
  </li>
- <li class="toctree-l1 current active collapsible-parent">
+ <li class="toctree-l1 current active has-children">
   <a class="reference internal" href="../examples.html">
    Examples
   </a>
-  <ul class="current collapse-ul">
+  <input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/>
+  <label for="toctree-checkbox-2">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul class="current">
    <li class="toctree-l2">
     <a class="reference internal" href="The%20restricted%20three-body%20problem.html">
      The restricted three-body problem
@@ -266,8 +274,6 @@
     </a>
    </li>
   </ul>
-  <i class="fas fa-chevron-down">
-  </i>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="../changelog.html">
@@ -286,6 +292,7 @@
  </li>
 </ul>
 
+    </div>
 </nav> <!-- To handle the deprecated key -->
 
 <div class="navbar_extra_footer">
@@ -351,12 +358,12 @@
     </div>
 </div>
 
-
             <!-- Full screen (wrap in <a> to have style consistency -->
-            <a class="full-screen-button"><button type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip"
-                    data-placement="bottom" onclick="toggleFullScreen()" aria-label="Fullscreen mode"
-                    title="Fullscreen mode"><i
-                        class="fas fa-expand"></i></button></a>
+
+<a class="full-screen-button"><button type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip"
+        data-placement="bottom" onclick="toggleFullScreen()" aria-label="Fullscreen mode"
+        title="Fullscreen mode"><i
+            class="fas fa-expand"></i></button></a>
 
             <!-- Launch buttons -->
 
@@ -382,12 +389,11 @@
         <!-- Table of contents -->
         <div class="d-none d-md-block col-md-2 bd-toc show">
             
-        <div class="tocsection onthispage pt-5 pb-3">
-            <i class="fas fa-list"></i>
-            Contents
-        </div>
-        <nav id="bd-toc-nav">
-            <ul class="nav section-nav flex-column">
+            <div class="tocsection onthispage pt-5 pb-3">
+                <i class="fas fa-list"></i> Contents
+            </div>
+            <nav id="bd-toc-nav" aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
  <li class="toc-h2 nav-item toc-entry">
   <a class="reference internal nav-link" href="#api-overview">
    API overview
@@ -415,8 +421,7 @@
  </li>
 </ul>
 
-        </nav>
-        
+            </nav>
         </div>
     </div>
 </div>
@@ -425,10 +430,10 @@
         
               <div>
                 
-  <section class="tex2jax_ignore mathjax_ignore" id="introduction-to-the-vsop2013-planetary-theory">
+  <div class="tex2jax_ignore mathjax_ignore section" id="introduction-to-the-vsop2013-planetary-theory">
 <h1>Introduction to the VSOP2013 planetary theory<a class="headerlink" href="#introduction-to-the-vsop2013-planetary-theory" title="Permalink to this headline">¶</a></h1>
 <p>Starting from version 0.15, heyoka.py provides an implementation of the <a class="reference external" href="https://en.wikipedia.org/wiki/VSOP_%28planets%29">VSOP2013</a> planetary theory. VSOP2013 consists of a set of (large) analytical formulae which calculate the heliocentric orbital elements of the 8 planets of the Solar System (plus the dwarf planet Pluto) as a function of time. Because the VSOP2013 theory is expressed as a set of analytical, differentiable formulae, it can be implemented in heyoka.py’s expression system and it can thus be used in the formulation of differential equations.</p>
-<section id="api-overview">
+<div class="section" id="api-overview">
 <h2>API overview<a class="headerlink" href="#api-overview" title="Permalink to this headline">¶</a></h2>
 <p>heyoka.py provides three functions to generate the analytical formulae for the VSOP2013 theory.</p>
 <p>The first one, <code class="docutils literal notranslate"><span class="pre">vsop2013_elliptic()</span></code>, returns the formulae for the heliocentric elliptic orbital elements for a given planet. The 6 elliptic orbital elements are, in order:</p>
@@ -441,8 +446,8 @@
 <p>This function requires as input the planet index (from 1 to 9) and the orbital element index (from 1 to 6). The orbital elements are referred to the inertial frame defined by the dynamical equinox and ecliptic J2000. Note that the VSOP2013 solution for the Earth (planet index 3) actually refers to the Earth-Moon barycentre.</p>
 <p>The second function, <code class="docutils literal notranslate"><span class="pre">vsop2013_cartesian()</span></code>, returns the heliocentric Cartesian state vector <span class="math notranslate nohighlight">\(\left( x, y, z, v_x, v_y, v_z \right)\)</span> for a given planet. The Cartesian state is computed via a direct conversion of the orbital elements returned by <code class="docutils literal notranslate"><span class="pre">vsop2013_elliptic()</span></code>, and thus it also refers to the inertial frame defined by the dynamical equinox and ecliptic J2000.</p>
 <p>The third function, <code class="docutils literal notranslate"><span class="pre">vsop2013_cartesian_icrf()</span></code>, returns the heliocentric Cartesian state vector for a given planet in the <a class="reference external" href="https://en.wikipedia.org/wiki/International_Celestial_Reference_System_and_Frame">International Celestial Reference Frame (ICRF)</a>. The ICRF state vector is computed by applying a rotation to the output of <code class="docutils literal notranslate"><span class="pre">vsop2013_cartesian()</span></code>.</p>
-</section>
-<section id="precision-and-truncation-threshold">
+</div>
+<div class="section" id="precision-and-truncation-threshold">
 <h2>Precision and truncation threshold<a class="headerlink" href="#precision-and-truncation-threshold" title="Permalink to this headline">¶</a></h2>
 <p>The VSOP2013 solution is formulated as large Fourier/Poisson series whose numerical coefficients decay exponentially. When using the full VSOP2013 solution, the precision with respect to high-accuracy numerical integrations is roughly sub-meter for the inner planets (except Mars) and kilometers for the outer planets (except Pluto). By dropping the smaller terms from the series, the precision of the theory degrades but computational efficiency greatly increases. See the <a class="reference external" href="https://ftp.imcce.fr/pub/ephem/planets/vsop2013/solution/README.pdf">VSOP2013 readme</a> for more details and estimates of the precision at various truncation levels.</p>
 <p>By default, all <code class="docutils literal notranslate"><span class="pre">vsop2013_*()</span></code> functions filter out from the solution terms whose numerical coefficients have a magnitude smaller than <span class="math notranslate nohighlight">\(10^{-9}\)</span>. The truncation threshold can be changed via the <code class="docutils literal notranslate"><span class="pre">thresh</span></code> keyword argument:</p>
@@ -457,9 +462,7 @@
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>String length of Mars&#39; semi-major axis solution @ 1e-07: 48475
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>String length of Mars&#39; semi-major axis solution @ 1e-09: 484731
+String length of Mars&#39; semi-major axis solution @ 1e-09: 484731
 </pre></div>
 </div>
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>String length of Mars&#39; semi-major axis solution @ 1e-11: 4725718
@@ -467,8 +470,8 @@
 </div>
 </div>
 </div>
-</section>
-<section id="time-coordinate">
+</div>
+<div class="section" id="time-coordinate">
 <h2>Time coordinate<a class="headerlink" href="#time-coordinate" title="Permalink to this headline">¶</a></h2>
 <p>The precision of the VSOP2013 solution is highest betwen <span class="math notranslate nohighlight">\(1890\,\mathrm{CE}\)</span> and <span class="math notranslate nohighlight">\(2000\,\mathrm{CE}\)</span>, and it slowly degrades outside this time range. See the <a class="reference external" href="https://ftp.imcce.fr/pub/ephem/planets/vsop2013/solution/README.pdf">VSOP2013 readme</a> for estimates of the precision degradation up to a few thousand years in the past/future.</p>
 <p>VSOP2013 uses <a class="reference external" href="https://en.wikipedia.org/wiki/Barycentric_Dynamical_Time">barycentric dynamical time (TDB)</a>, expressed in thousands of Julian years from J2000 (JD2451545.0). Note than one Julian year = 365250 days.</p>
@@ -495,8 +498,8 @@ Mars&#39; semi-major axis solution, threshold = 6e-5, time rescaled by a factor 
 </div>
 </div>
 </div>
-</section>
-<section id="checking-the-implementation">
+</div>
+<div class="section" id="checking-the-implementation">
 <h2>Checking the implementation<a class="headerlink" href="#checking-the-implementation" title="Permalink to this headline">¶</a></h2>
 <p>In order to check the correctness of heyoka.py’s implementation of the VSOP2013 theory, we are going to use the <a class="reference external" href="https://ssd.jpl.nasa.gov/?horizons">NASA HORIZONS service</a> via the <a class="reference external" href="https://astroquery.readthedocs.io/en/latest/">Astroquery</a> package. Our objective is to compare the planetary positions computed by VSOP2013 at different threshold levels with those computed by HORIZONS.</p>
 <p>On the heyoka.py side, we will have to perform the computation of the planetary positions in a bit of a roundabout way. Specifically, given an explicit time-dependent formula <span class="math notranslate nohighlight">\(x_p\left( t \right)\)</span> produced by VSOP2013 for, say, the <span class="math notranslate nohighlight">\(x\)</span> coordinate of a planet, we will formulate an ODE of type</p>
@@ -596,27 +599,47 @@ Mars&#39; semi-major axis solution, threshold = 6e-5, time rescaled by a factor 
 </div>
 </div>
 <p>We can see how VSOP2013 matches up well with respect to HORIZONS, and how lower truncation levels indeed increase the precision of the VSOP2013 solution (up to an error of hundreds of meters for a threshold of <span class="math notranslate nohighlight">\(10^{-10}\)</span>).</p>
-</section>
-<section id="limitations-and-caveats">
+</div>
+<div class="section" id="limitations-and-caveats">
 <h2>Limitations and caveats<a class="headerlink" href="#limitations-and-caveats" title="Permalink to this headline">¶</a></h2>
 <p>A possible issue in astrodynamical applications is that VSOP2013 does not directly provide formulae for the state vector of the Sun. The barycentric position of the Sun can be estimated via the heliocentric planetary formulae after imposing that the system’s barycentre is fixed in the origin. It is not clear at this time if this approach is 100% accurate (as VSOP2013 includes perturbations on the planets by asteroids, whose state vectors are not provided in the solution), but it should be adequate for most practical purposes.</p>
-</section>
-</section>
+</div>
+</div>
 
 
               </div>
               
         
-        <div class='prev-next-bottom'>
             
-    <a class='left-prev' id="prev-link" href="ttv.html" title="previous page">Calculating transit timing variations</a>
-    <a class='right-next' id="next-link" href="tides_spokes.html" title="next page">Elastic tides</a>
 
-        </div>
+
+
+<div class='prev-next-bottom'>
+    
+    <div id="prev">
+        <a class="left-prev" href="ttv.html" title="previous page">
+            <i class="prevnext-label fas fa-angle-left"></i>
+            <div class="prevnext-info">
+                <p class="prevnext-label">previous</p>
+                <p class="prevnext-title">Calculating transit timing variations</p>
+            </div>
+        </a>
+    </div>
+     <div id="next">
+        <a class="right-next" href="tides_spokes.html" title="next page">
+            <div class="prevnext-info">
+                <p class="prevnext-label">next</p>
+                <p class="prevnext-title">Elastic tides</p>
+            </div>
+            <i class="prevnext-label fas fa-angle-right"></i>
+        </a>
+     </div>
+
+</div>
         
         </div>
     </div>
-    <footer class="footer mt-5 mt-md-0">
+    <footer class="footer">
     <div class="container">
       <p>
         
@@ -631,11 +654,9 @@ Mars&#39; semi-major axis solution, threshold = 6e-5, time rescaled by a factor 
 
       </div>
     </div>
+  
+  <script src="../_static/js/index.1c5a1a01449ed65a7b51.js"></script>
 
-    
-  <script src="../_static/js/index.d3f166471bb80abb5163.js"></script>
-
-
-    
+  
   </body>
 </html>

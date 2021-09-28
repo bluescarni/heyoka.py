@@ -4,11 +4,11 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>The second integral of motion &#8212; heyoka.py 0.15.0 documentation</title>
     
-  <link rel="stylesheet" href="../_static/css/index.f658d18f9b420779cfdf24aa0a7e2d77.css">
+  <link href="../_static/css/theme.css" rel="stylesheet" />
+  <link href="../_static/css/index.c5995385ac14fb8791e8eb36b4908be2.css" rel="stylesheet" />
 
     
   <link rel="stylesheet"
@@ -20,18 +20,14 @@
 
     
       
-  <link rel="stylesheet"
-    href="../_static/vendor/open-sans_all/1.44.1/index.css">
-  <link rel="stylesheet"
-    href="../_static/vendor/lato_latin-ext/1.44.1/index.css">
 
     
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/sphinx-book-theme.c441f2ba0852f4cabcb80105e3a46ae6.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-book-theme.css?digest=c3fdc42140077d1ad13ad2f1588a4309" />
     <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css" />
     <link rel="stylesheet" type="text/css" href="../_static/mystnb.css" />
     
-  <link rel="preload" as="script" href="../_static/js/index.d3f166471bb80abb5163.js">
+  <link rel="preload" as="script" href="../_static/js/index.1c5a1a01449ed65a7b51.js">
 
     <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
     <script src="../_static/jquery.js"></script>
@@ -39,21 +35,21 @@
     <script src="../_static/doctools.js"></script>
     <script src="../_static/togglebutton.js"></script>
     <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
-    <script src="../_static/sphinx-book-theme.7d483ff0a819d6edff12ce0b1ead3928.js"></script>
+    <script src="../_static/sphinx-book-theme.12a9622fbb08dcb3a2a40b2c02b83a57.js"></script>
     <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="The variational equations" href="The%20variational%20equations.html" />
     <link rel="prev" title="Elastic tides" href="tides_spokes.html" />
-
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="docsearch:language" content="en" />
-
-
-
+    
   </head>
   <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
+    
+    <div class="container-fluid" id="banner"></div>
+
     
 
     <div class="container-xl">
@@ -62,35 +58,44 @@
 <div class="col-12 col-md-3 bd-sidebar site-navigation show" id="site-navigation">
     
         <div class="navbar-brand-box">
-<a class="navbar-brand text-wrap" href="../index.html">
-  
-  <img src="../_static/white_logo.png" class="logo" alt="logo">
-  
-  
-  <h1 class="site-logo" id="site-title">heyoka.py 0.15.0 documentation</h1>
-  
-</a>
+    <a class="navbar-brand text-wrap" href="../index.html">
+      
+        <!-- `logo` is deprecated in Sphinx 4.0, so remove this when we stop supporting 3 -->
+        
+      
+      
+      <img src="../_static/white_logo.png" class="logo" alt="logo">
+      
+      
+      <h1 class="site-logo" id="site-title">heyoka.py 0.15.0 documentation</h1>
+      
+    </a>
 </div><form class="bd-search d-flex align-items-center" action="../search.html" method="get">
   <i class="icon fas fa-search"></i>
   <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
-</form>
-<nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
-    <p class="caption collapsible-parent" role="heading">
+</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item active">
+        <p class="caption" role="heading">
  <span class="caption-text">
   Contents
  </span>
 </p>
-<ul class="current nav sidenav_l1">
+<ul class="current nav bd-sidenav">
  <li class="toctree-l1">
   <a class="reference internal" href="../install.html">
    Installation
   </a>
  </li>
- <li class="toctree-l1 collapsible-parent">
+ <li class="toctree-l1 has-children">
   <a class="reference internal" href="../tutorials.html">
    Tutorials
   </a>
-  <ul class="collapse-ul">
+  <input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/>
+  <label for="toctree-checkbox-1">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
    <li class="toctree-l2">
     <a class="reference internal" href="../tut_taylor_method.html">
      Taylor’s method
@@ -177,14 +182,17 @@
     </a>
    </li>
   </ul>
-  <i class="fas fa-chevron-down">
-  </i>
  </li>
- <li class="toctree-l1 current active collapsible-parent">
+ <li class="toctree-l1 current active has-children">
   <a class="reference internal" href="../examples.html">
    Examples
   </a>
-  <ul class="current collapse-ul">
+  <input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/>
+  <label for="toctree-checkbox-2">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul class="current">
    <li class="toctree-l2">
     <a class="reference internal" href="The%20restricted%20three-body%20problem.html">
      The restricted three-body problem
@@ -266,8 +274,6 @@
     </a>
    </li>
   </ul>
-  <i class="fas fa-chevron-down">
-  </i>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="../changelog.html">
@@ -286,6 +292,7 @@
  </li>
 </ul>
 
+    </div>
 </nav> <!-- To handle the deprecated key -->
 
 <div class="navbar_extra_footer">
@@ -351,12 +358,12 @@
     </div>
 </div>
 
-
             <!-- Full screen (wrap in <a> to have style consistency -->
-            <a class="full-screen-button"><button type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip"
-                    data-placement="bottom" onclick="toggleFullScreen()" aria-label="Fullscreen mode"
-                    title="Fullscreen mode"><i
-                        class="fas fa-expand"></i></button></a>
+
+<a class="full-screen-button"><button type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip"
+        data-placement="bottom" onclick="toggleFullScreen()" aria-label="Fullscreen mode"
+        title="Fullscreen mode"><i
+            class="fas fa-expand"></i></button></a>
 
             <!-- Launch buttons -->
 
@@ -382,12 +389,11 @@
         <!-- Table of contents -->
         <div class="d-none d-md-block col-md-2 bd-toc show">
             
-        <div class="tocsection onthispage pt-5 pb-3">
-            <i class="fas fa-list"></i>
-            Contents
-        </div>
-        <nav id="bd-toc-nav">
-            <ul class="nav section-nav flex-column">
+            <div class="tocsection onthispage pt-5 pb-3">
+                <i class="fas fa-list"></i> Contents
+            </div>
+            <nav id="bd-toc-nav" aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
  <li class="toc-h2 nav-item toc-entry">
   <a class="reference internal nav-link" href="#procedure">
    Procedure
@@ -405,8 +411,7 @@
  </li>
 </ul>
 
-        </nav>
-        
+            </nav>
         </div>
     </div>
 </div>
@@ -415,7 +420,7 @@
         
               <div>
                 
-  <section class="tex2jax_ignore mathjax_ignore" id="the-second-integral-of-motion">
+  <div class="tex2jax_ignore mathjax_ignore section" id="the-second-integral-of-motion">
 <h1>The second integral of motion<a class="headerlink" href="#the-second-integral-of-motion" title="Permalink to this headline">¶</a></h1>
 <p>In this example we will reproduce a <a class="reference external" href="https://ui.adsabs.harvard.edu/abs/1964AJ.....69...73H/abstract">famous numerical experiment</a> investigating the existence of a second integral of motion in axisymmetric potentials. Specifically, we will focus on a two-dimensional dynamical system described by the Hamiltonian</p>
 <div class="math notranslate nohighlight">
@@ -430,7 +435,7 @@ U\left(x, y\right) = \frac{1}{2}\left( x^2 + y^2 + 2x^2y - \frac{2}{3}y^3 \right
 <p><span class="math notranslate nohighlight">\(x\)</span> and <span class="math notranslate nohighlight">\(y\)</span> are the cylindrical coordinates (<span class="math notranslate nohighlight">\(R\)</span> and <span class="math notranslate nohighlight">\(z\)</span>) of a point mass moving under the influence of the axially-symmetric potential <span class="math notranslate nohighlight">\(U\left(x, y\right)\)</span>.</p>
 <p>Because we are dealing with an autonomous dynamical system, the Hamiltonian <span class="math notranslate nohighlight">\(\mathcal{H}\)</span> is a constant of motion, corresponding to the total energy of the system.
 Our objective is to investigate the existence of <em>another</em> integral of motion independent of <span class="math notranslate nohighlight">\(\mathcal{H}\)</span>: if that were the case, we could solve analytically this dynamical system via the <a class="reference external" href="https://en.wikipedia.org/wiki/Liouville%E2%80%93Arnold_theorem">Liouville-Arnold theorem</a>.</p>
-<section id="procedure">
+<div class="section" id="procedure">
 <h2>Procedure<a class="headerlink" href="#procedure" title="Permalink to this headline">¶</a></h2>
 <p>Because <span class="math notranslate nohighlight">\(\mathcal{H}\)</span> is a constant of motion, we can invert the definition of the Hamiltonian to yield</p>
 <div class="math notranslate nohighlight">
@@ -450,8 +455,8 @@ f\left(x, y, \dot{y}, \mathcal{H}, \mathcal{C}\right) = 0
 \]</div>
 <p>which defines a <em>surface</em> embedded in the phase space <span class="math notranslate nohighlight">\(\left(x, y, \dot{y}\right)\)</span>, rather than a volume. In other words, the existence of another integral of motion <span class="math notranslate nohighlight">\(\mathcal{C}\)</span> further constraints the possible motion of the particle in the <span class="math notranslate nohighlight">\(\left(x, y, \dot{y}\right)\)</span> space. Thus, the strategy of our investigation revolves around detecting if the particle motion in phase space is constrained on a surface, rather than within a volume. How can we do that?</p>
 <p>A possible answer to this question is to consider the intersections of the particle’s trajectory in phase space with a fixed 2D plane (or, in other words, a <a class="reference external" href="https://en.wikipedia.org/wiki/Poincar%C3%A9_map">Poincare’ section</a>). If the particle’s trajectory is constrained by a surface (i.e., if the additional integral of motion <span class="math notranslate nohighlight">\(\mathcal{C}\)</span> <em>does</em> exist), the Poincare’ section will consist of a curve representing the intersection of the surface with the 2D plane. If, instead, the particle’s trajectory is constrained by a volume (i.e., if the additional integral of motion <span class="math notranslate nohighlight">\(\mathcal{C}\)</span> <em>does not</em> exist), the Poincare’ section will resemble a densely-filled surface, rather than a curve.</p>
-</section>
-<section id="running-the-experiments">
+</div>
+<div class="section" id="running-the-experiments">
 <h2>Running the experiments<a class="headerlink" href="#running-the-experiments" title="Permalink to this headline">¶</a></h2>
 <p>For the computation of Poincare’ sections, we use the plane defined by the condition <span class="math notranslate nohighlight">\(x = 0\)</span> (i.e., the <span class="math notranslate nohighlight">\(\left(y, \dot{y}\right)\)</span> plane), and, for the sake of consistency with the <a class="reference external" href="https://ui.adsabs.harvard.edu/abs/1964AJ.....69...73H/abstract">original paper</a>, we consider only intersections for which <span class="math notranslate nohighlight">\(\dot{x} &gt; 0\)</span> (i.e., the particle is moving from below to above the plane). We will compute different Poincare’ sections at different energy levels (i.e., values of the <span class="math notranslate nohighlight">\(\mathcal{H}\)</span> constant). The initial value of <span class="math notranslate nohighlight">\(x\)</span> is always <span class="math notranslate nohighlight">\(0\)</span> (so that the motion always starts on the plane of the Poincare’ section), and the initial values for <span class="math notranslate nohighlight">\(y\)</span> and <span class="math notranslate nohighlight">\(\dot{y}\)</span> are randomly selected. The initial value for <span class="math notranslate nohighlight">\(\dot{x}\)</span> is then implicitly defined by the value of the energy constant.</p>
 <p>Let us begin by defining a function for the generation of a set of initial conditions from an energy value:</p>
@@ -614,27 +619,47 @@ x = 0,
 </div>
 </div>
 <p>At higher energies, the densely-filling behaviour (which Henon and Heiles call <em>ergodic</em>) is even more prevalent than before.</p>
-</section>
-<section id="conclusions">
+</div>
+<div class="section" id="conclusions">
 <h2>Conclusions<a class="headerlink" href="#conclusions" title="Permalink to this headline">¶</a></h2>
 <p>These numerical experiments indicate that, in general, no additional integrals of motion (beside the energy) exist for axisymmetric potentials. Note that this result does not imply that no additional integrals exist for <em>some</em> axisymmetric potentials (e.g., see <a class="reference external" href="https://en.wikipedia.org/wiki/Euler%27s_three-body_problem">Euler’s three body problem</a>, which is solvable via elliptic functions), but that just an additional integral of motion cannot be defined generically for <em>all</em> axisymmetric potentials.</p>
-</section>
-</section>
+</div>
+</div>
 
 
               </div>
               
         
-        <div class='prev-next-bottom'>
             
-    <a class='left-prev' id="prev-link" href="tides_spokes.html" title="previous page">Elastic tides</a>
-    <a class='right-next' id="next-link" href="The%20variational%20equations.html" title="next page">The variational equations</a>
 
-        </div>
+
+
+<div class='prev-next-bottom'>
+    
+    <div id="prev">
+        <a class="left-prev" href="tides_spokes.html" title="previous page">
+            <i class="prevnext-label fas fa-angle-left"></i>
+            <div class="prevnext-info">
+                <p class="prevnext-label">previous</p>
+                <p class="prevnext-title">Elastic tides</p>
+            </div>
+        </a>
+    </div>
+     <div id="next">
+        <a class="right-next" href="The%20variational%20equations.html" title="next page">
+            <div class="prevnext-info">
+                <p class="prevnext-label">next</p>
+                <p class="prevnext-title">The variational equations</p>
+            </div>
+            <i class="prevnext-label fas fa-angle-right"></i>
+        </a>
+     </div>
+
+</div>
         
         </div>
     </div>
-    <footer class="footer mt-5 mt-md-0">
+    <footer class="footer">
     <div class="container">
       <p>
         
@@ -649,11 +674,9 @@ x = 0,
 
       </div>
     </div>
+  
+  <script src="../_static/js/index.1c5a1a01449ed65a7b51.js"></script>
 
-    
-  <script src="../_static/js/index.d3f166471bb80abb5163.js"></script>
-
-
-    
+  
   </body>
 </html>

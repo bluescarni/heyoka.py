@@ -4,11 +4,11 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Box control in satellite Formation Flying &#8212; heyoka.py 0.15.0 documentation</title>
     
-  <link rel="stylesheet" href="../_static/css/index.f658d18f9b420779cfdf24aa0a7e2d77.css">
+  <link href="../_static/css/theme.css" rel="stylesheet" />
+  <link href="../_static/css/index.c5995385ac14fb8791e8eb36b4908be2.css" rel="stylesheet" />
 
     
   <link rel="stylesheet"
@@ -20,18 +20,14 @@
 
     
       
-  <link rel="stylesheet"
-    href="../_static/vendor/open-sans_all/1.44.1/index.css">
-  <link rel="stylesheet"
-    href="../_static/vendor/lato_latin-ext/1.44.1/index.css">
 
     
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/sphinx-book-theme.c441f2ba0852f4cabcb80105e3a46ae6.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-book-theme.css?digest=c3fdc42140077d1ad13ad2f1588a4309" />
     <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css" />
     <link rel="stylesheet" type="text/css" href="../_static/mystnb.css" />
     
-  <link rel="preload" as="script" href="../_static/js/index.d3f166471bb80abb5163.js">
+  <link rel="preload" as="script" href="../_static/js/index.1c5a1a01449ed65a7b51.js">
 
     <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
     <script src="../_static/jquery.js"></script>
@@ -39,21 +35,21 @@
     <script src="../_static/doctools.js"></script>
     <script src="../_static/togglebutton.js"></script>
     <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
-    <script src="../_static/sphinx-book-theme.7d483ff0a819d6edff12ce0b1ead3928.js"></script>
+    <script src="../_static/sphinx-book-theme.12a9622fbb08dcb3a2a40b2c02b83a57.js"></script>
     <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Comparing coordinate systems" href="Comparing%20coordinate%20systems.html" />
     <link rel="prev" title="Brouwer’s law in the outer Solar System" href="Outer%20Solar%20System.html" />
-
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="docsearch:language" content="en" />
-
-
-
+    
   </head>
   <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
+    
+    <div class="container-fluid" id="banner"></div>
+
     
 
     <div class="container-xl">
@@ -62,35 +58,44 @@
 <div class="col-12 col-md-3 bd-sidebar site-navigation show" id="site-navigation">
     
         <div class="navbar-brand-box">
-<a class="navbar-brand text-wrap" href="../index.html">
-  
-  <img src="../_static/white_logo.png" class="logo" alt="logo">
-  
-  
-  <h1 class="site-logo" id="site-title">heyoka.py 0.15.0 documentation</h1>
-  
-</a>
+    <a class="navbar-brand text-wrap" href="../index.html">
+      
+        <!-- `logo` is deprecated in Sphinx 4.0, so remove this when we stop supporting 3 -->
+        
+      
+      
+      <img src="../_static/white_logo.png" class="logo" alt="logo">
+      
+      
+      <h1 class="site-logo" id="site-title">heyoka.py 0.15.0 documentation</h1>
+      
+    </a>
 </div><form class="bd-search d-flex align-items-center" action="../search.html" method="get">
   <i class="icon fas fa-search"></i>
   <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
-</form>
-<nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
-    <p class="caption collapsible-parent" role="heading">
+</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item active">
+        <p class="caption" role="heading">
  <span class="caption-text">
   Contents
  </span>
 </p>
-<ul class="current nav sidenav_l1">
+<ul class="current nav bd-sidenav">
  <li class="toctree-l1">
   <a class="reference internal" href="../install.html">
    Installation
   </a>
  </li>
- <li class="toctree-l1 collapsible-parent">
+ <li class="toctree-l1 has-children">
   <a class="reference internal" href="../tutorials.html">
    Tutorials
   </a>
-  <ul class="collapse-ul">
+  <input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/>
+  <label for="toctree-checkbox-1">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
    <li class="toctree-l2">
     <a class="reference internal" href="../tut_taylor_method.html">
      Taylor’s method
@@ -177,14 +182,17 @@
     </a>
    </li>
   </ul>
-  <i class="fas fa-chevron-down">
-  </i>
  </li>
- <li class="toctree-l1 current active collapsible-parent">
+ <li class="toctree-l1 current active has-children">
   <a class="reference internal" href="../examples.html">
    Examples
   </a>
-  <ul class="current collapse-ul">
+  <input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/>
+  <label for="toctree-checkbox-2">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul class="current">
    <li class="toctree-l2">
     <a class="reference internal" href="The%20restricted%20three-body%20problem.html">
      The restricted three-body problem
@@ -266,8 +274,6 @@
     </a>
    </li>
   </ul>
-  <i class="fas fa-chevron-down">
-  </i>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="../changelog.html">
@@ -286,6 +292,7 @@
  </li>
 </ul>
 
+    </div>
 </nav> <!-- To handle the deprecated key -->
 
 <div class="navbar_extra_footer">
@@ -351,12 +358,12 @@
     </div>
 </div>
 
-
             <!-- Full screen (wrap in <a> to have style consistency -->
-            <a class="full-screen-button"><button type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip"
-                    data-placement="bottom" onclick="toggleFullScreen()" aria-label="Fullscreen mode"
-                    title="Fullscreen mode"><i
-                        class="fas fa-expand"></i></button></a>
+
+<a class="full-screen-button"><button type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip"
+        data-placement="bottom" onclick="toggleFullScreen()" aria-label="Fullscreen mode"
+        title="Fullscreen mode"><i
+            class="fas fa-expand"></i></button></a>
 
             <!-- Launch buttons -->
 
@@ -382,12 +389,11 @@
         <!-- Table of contents -->
         <div class="d-none d-md-block col-md-2 bd-toc show">
             
-        <div class="tocsection onthispage pt-5 pb-3">
-            <i class="fas fa-list"></i>
-            Contents
-        </div>
-        <nav id="bd-toc-nav">
-            <ul class="nav section-nav flex-column">
+            <div class="tocsection onthispage pt-5 pb-3">
+                <i class="fas fa-list"></i> Contents
+            </div>
+            <nav id="bd-toc-nav" aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
  <li class="toc-h2 nav-item toc-entry">
   <a class="reference internal nav-link" href="#preliminaries">
    Preliminaries
@@ -415,8 +421,7 @@
  </li>
 </ul>
 
-        </nav>
-        
+            </nav>
         </div>
     </div>
 </div>
@@ -425,11 +430,11 @@
         
               <div>
                 
-  <section class="tex2jax_ignore mathjax_ignore" id="box-control-in-satellite-formation-flying">
+  <div class="tex2jax_ignore mathjax_ignore section" id="box-control-in-satellite-formation-flying">
 <h1>Box control in satellite Formation Flying<a class="headerlink" href="#box-control-in-satellite-formation-flying" title="Permalink to this headline">¶</a></h1>
 <p>We show how <em>heyoka.py</em>’s <a class="reference internal" href="Event%20detection.html"><span class="doc std std-doc">event detection</span></a> machinery can be used in an innovative formulation of the box-control problem for formation flying satellites. This is the problem of controlling a Deputy satellite to remain within a predefined control box defined in the Local Horizontal Local Vertical frame of the Chief satellite. Our solution is to apply impulsive DV when certain events trigger.</p>
 <p>To derive all equations we used and abused the <a class="reference external" href="https://vatankhahghadim.github.io/AER506/Notes/1%20-%20Fundamentals.pdf">Vectrix notation from Hugues</a>.</p>
-<section id="preliminaries">
+<div class="section" id="preliminaries">
 <h2>Preliminaries<a class="headerlink" href="#preliminaries" title="Permalink to this headline">¶</a></h2>
 <p>We consider the fundamental problem of satellite formation flying. A main satellite called Chief orbits some primary body (here the Earth). We consider two reference frames. <span class="math notranslate nohighlight">\(\mathcal F_i=\left[\hat{\mathbf e}_i, \hat{\mathbf e}_j, \hat{\mathbf e}_k \right]\)</span> is the inertial frame where the motion of both satellites will be described, while <span class="math notranslate nohighlight">\(\mathcal F_L=\left[\hat{\mathbf e}_r, \hat{\mathbf e}_\theta, \hat{\mathbf e}_h \right]\)</span> is the Local Horizontal Local Vertical frame referred to the Chief satellite. Its definition in terms of the Chief satellite position <span class="math notranslate nohighlight">\(\overrightarrow{\mathbf r}\)</span> and velocity <span class="math notranslate nohighlight">\(\overrightarrow{\mathbf v}\)</span> is:</p>
 <div class="math notranslate nohighlight">
@@ -476,8 +481,8 @@ r(Y\dot Z - Z\dot Y) &amp; r(Z\dot X - X\dot Z) &amp; r(X\dot Y - Y\dot X) \\
 \right]
 \end{split}\]</div>
 <p>where <span class="math notranslate nohighlight">\(f_h\)</span> is the perturbative acceleration acting on the satellite along the <span class="math notranslate nohighlight">\(\hat{\mathbf e}_h\)</span> direction.</p>
-</section>
-<section id="the-equations-of-motion">
+</div>
+<div class="section" id="the-equations-of-motion">
 <h2>The Equations of Motion<a class="headerlink" href="#the-equations-of-motion" title="Permalink to this headline">¶</a></h2>
 <p>We consider the dynamics of both the Chief and the Deputy expressed in terms of their position and velocity in <span class="math notranslate nohighlight">\(\mathcal F_i\)</span> and subject to the J2 term only (the expression of additional terms for the Earth gravitational potential can be found <a class="reference external" href="https://space.stackexchange.com/questions/22266/j2-long-period-perturbations-in-the-inclination">here</a>:</p>
 <div class="math notranslate nohighlight">
@@ -493,8 +498,8 @@ r(Y\dot Z - Z\dot Y) &amp; r(Z\dot X - X\dot Z) &amp; r(X\dot Y - Y\dot X) \\
 \end{array}
 \right.
 \end{split}\]</div>
-</section>
-<section id="the-initial-conditions">
+</div>
+<div class="section" id="the-initial-conditions">
 <h2>The Initial conditions<a class="headerlink" href="#the-initial-conditions" title="Permalink to this headline">¶</a></h2>
 <p>The initial conditions for the Chief satellite can be generic and are given in the <span class="math notranslate nohighlight">\(\mathcal F_i\)</span> frame. The initial conditions for the Deputy, instead, are given in the <span class="math notranslate nohighlight">\(\mathcal F_L\)</span> frame,. This simple fact couples the system breaking the symmetry of the equations of motion written above. Expressing the relative position and velocity as absolute and viceversa requires the use of <span class="math notranslate nohighlight">\(\mathbf C_{Li}\)</span>, and most importantly of <span class="math notranslate nohighlight">\(\omega_L\)</span> which is, in turn, affected by the perturbative accelerations acting on the Chief. The following transformations hold:</p>
 <div class="math notranslate nohighlight">
@@ -722,8 +727,8 @@ r(Y\dot Z - Z\dot Y) &amp; r(Z\dot X - X\dot Z) &amp; r(X\dot Y - Y\dot X) \\
 </div>
 </div>
 </div>
-</section>
-<section id="testing-the-adaptive-taylor-integration-and-plotting-the-trajectories">
+</div>
+<div class="section" id="testing-the-adaptive-taylor-integration-and-plotting-the-trajectories">
 <h2>Testing the Adaptive Taylor Integration and plotting the trajectories<a class="headerlink" href="#testing-the-adaptive-taylor-integration-and-plotting-the-trajectories" title="Permalink to this headline">¶</a></h2>
 <p>Lets visualize the solution of the numerical integration in the LHLV frame for the Deputy and in the inertial frame for the Chief.</p>
 <p>We use, as reference orbit for the Chief, a circular orbit at 750km of altitude and an inclination of 98.2 degrees. The deputy is set to follow behind in the LHLV frame at a distance of 100m. We also add 1m offset in the z direction to make the problem third dimension count.</p>
@@ -803,8 +808,8 @@ r(Y\dot Z - Z\dot Y) &amp; r(Z\dot X - X\dot Z) &amp; r(X\dot Y - Y\dot X) \\
 <img alt="../_images/Box control for Formation Flying Satellites_15_0.png" src="../_images/Box control for Formation Flying Satellites_15_0.png" />
 </div>
 </div>
-</section>
-<section id="controlling-the-formation-within-a-predefined-box">
+</div>
+<div class="section" id="controlling-the-formation-within-a-predefined-box">
 <h2>Controlling the formation within a predefined box<a class="headerlink" href="#controlling-the-formation-within-a-predefined-box" title="Permalink to this headline">¶</a></h2>
 <p>Now that we have established the equation of motion, we can simulate a box-control strategy.
 In essence, we want to keep the Deputy within a box centered around its initial trailing position and of a predefined size.</p>
@@ -969,23 +974,43 @@ In essence, we want to keep the Deputy within a box centered around its initial 
 </div>
 </div>
 <p>Thats all folks!</p>
-</section>
-</section>
+</div>
+</div>
 
 
               </div>
               
         
-        <div class='prev-next-bottom'>
             
-    <a class='left-prev' id="prev-link" href="Outer%20Solar%20System.html" title="previous page">Brouwer’s law in the outer Solar System</a>
-    <a class='right-next' id="next-link" href="Comparing%20coordinate%20systems.html" title="next page">Comparing coordinate systems</a>
 
-        </div>
+
+
+<div class='prev-next-bottom'>
+    
+    <div id="prev">
+        <a class="left-prev" href="Outer%20Solar%20System.html" title="previous page">
+            <i class="prevnext-label fas fa-angle-left"></i>
+            <div class="prevnext-info">
+                <p class="prevnext-label">previous</p>
+                <p class="prevnext-title">Brouwer’s law in the outer Solar System</p>
+            </div>
+        </a>
+    </div>
+     <div id="next">
+        <a class="right-next" href="Comparing%20coordinate%20systems.html" title="next page">
+            <div class="prevnext-info">
+                <p class="prevnext-label">next</p>
+                <p class="prevnext-title">Comparing coordinate systems</p>
+            </div>
+            <i class="prevnext-label fas fa-angle-right"></i>
+        </a>
+     </div>
+
+</div>
         
         </div>
     </div>
-    <footer class="footer mt-5 mt-md-0">
+    <footer class="footer">
     <div class="container">
       <p>
         
@@ -1000,11 +1025,9 @@ In essence, we want to keep the Deputy within a box centered around its initial 
 
       </div>
     </div>
+  
+  <script src="../_static/js/index.1c5a1a01449ed65a7b51.js"></script>
 
-    
-  <script src="../_static/js/index.d3f166471bb80abb5163.js"></script>
-
-
-    
+  
   </body>
 </html>
