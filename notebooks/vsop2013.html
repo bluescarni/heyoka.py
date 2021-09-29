@@ -372,7 +372,7 @@
         aria-label="Launch interactive content"><i class="fas fa-rocket"></i></button>
     <div class="dropdown-buttons">
         
-        <a class="binder-button" href="https://mybinder.org/v2/gh/bluescarni/heyoka.py/main?urlpath=tree/doc/notebooks/vsop2013.ipynb"><button type="button"
+        <a class="binder-button" href="https://mybinder.org/v2/gh/bluescarni/heyoka.py/main?urlpath=lab/tree/doc/notebooks/vsop2013.ipynb"><button type="button"
                 class="btn btn-secondary topbarbtn" title="Launch Binder" data-toggle="tooltip"
                 data-placement="left"><img class="binder-button-logo"
                     src="../_static/images/logo_binder.svg"
@@ -462,9 +462,7 @@
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>String length of Mars&#39; semi-major axis solution @ 1e-07: 48475
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>String length of Mars&#39; semi-major axis solution @ 1e-09: 484731
+String length of Mars&#39; semi-major axis solution @ 1e-09: 484731
 </pre></div>
 </div>
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>String length of Mars&#39; semi-major axis solution @ 1e-11: 4725718
@@ -597,7 +595,115 @@ Mars&#39; semi-major axis solution, threshold = 6e-5, time rescaled by a factor 
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/vsop2013_5_0.png" src="../_images/vsop2013_5_0.png" />
+<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span>---------------------------------------------------------------------------
+KeyboardInterrupt                         Traceback (most recent call last)
+/tmp/ipykernel_6509/1448808588.py in &lt;module&gt;
+     78 plt.xlabel(&quot;Threshold value&quot;)
+     79 plt.ylabel(&quot;Error wrt HORIZONS (km)&quot;)
+---&gt; 80 plt.tight_layout();
+
+~/local/lib/python3.8/site-packages/matplotlib/_api/deprecation.py in wrapper(*args, **kwargs)
+    469                 &quot;parameter will become keyword-only %(removal)s.&quot;,
+    470                 name=name, obj_type=f&quot;parameter of {func.__name__}()&quot;)
+--&gt; 471         return func(*args, **kwargs)
+    472 
+    473     return wrapper
+
+~/local/lib/python3.8/site-packages/matplotlib/pyplot.py in tight_layout(pad, h_pad, w_pad, rect)
+   1659         subplots area (including labels) will fit.
+   1660     &quot;&quot;&quot;
+-&gt; 1661     gcf().tight_layout(pad=pad, h_pad=h_pad, w_pad=w_pad, rect=rect)
+   1662 
+   1663 
+
+~/local/lib/python3.8/site-packages/matplotlib/figure.py in tight_layout(self, pad, h_pad, w_pad, rect)
+   3162                else suppress())
+   3163         with ctx:
+-&gt; 3164             kwargs = get_tight_layout_figure(
+   3165                 self, self.axes, subplotspec_list, renderer,
+   3166                 pad=pad, h_pad=h_pad, w_pad=w_pad, rect=rect)
+
+~/local/lib/python3.8/site-packages/matplotlib/tight_layout.py in get_tight_layout_figure(fig, axes_list, subplotspec_list, renderer, pad, h_pad, w_pad, rect)
+    310                               (colNum2 + 1) * div_col - 1))
+    311 
+--&gt; 312     kwargs = auto_adjust_subplotpars(fig, renderer,
+    313                                      nrows_ncols=(max_nrows, max_ncols),
+    314                                      num1num2_list=num1num2_list,
+
+~/local/lib/python3.8/site-packages/matplotlib/tight_layout.py in auto_adjust_subplotpars(fig, renderer, nrows_ncols, num1num2_list, subplot_list, ax_bbox_list, pad, h_pad, w_pad, rect)
+     82             if ax.get_visible():
+     83                 try:
+---&gt; 84                     bb += [ax.get_tightbbox(renderer, for_layout_only=True)]
+     85                 except TypeError:
+     86                     bb += [ax.get_tightbbox(renderer)]
+
+~/local/lib/python3.8/site-packages/matplotlib/axes/_base.py in get_tightbbox(self, renderer, call_axes_locator, bbox_extra_artists, for_layout_only)
+   4428             if self.xaxis.get_visible():
+   4429                 try:
+-&gt; 4430                     bb_xaxis = self.xaxis.get_tightbbox(
+   4431                         renderer, for_layout_only=for_layout_only)
+   4432                 except TypeError:
+
+~/local/lib/python3.8/site-packages/matplotlib/axis.py in get_tightbbox(self, renderer, for_layout_only)
+   1084             return
+   1085 
+-&gt; 1086         ticks_to_draw = self._update_ticks()
+   1087 
+   1088         self._update_label_position(renderer)
+
+~/local/lib/python3.8/site-packages/matplotlib/axis.py in _update_ticks(self)
+   1036         minor_locs = self.get_minorticklocs()
+   1037         minor_labels = self.minor.formatter.format_ticks(minor_locs)
+-&gt; 1038         minor_ticks = self.get_minor_ticks(len(minor_locs))
+   1039         self.minor.formatter.set_locs(minor_locs)
+   1040         for tick, loc, label in zip(minor_ticks, minor_locs, minor_labels):
+
+~/local/lib/python3.8/site-packages/matplotlib/axis.py in get_minor_ticks(self, numticks)
+   1370         while len(self.minorTicks) &lt; numticks:
+   1371             # Update the new tick label properties from the old.
+-&gt; 1372             tick = self._get_tick(major=False)
+   1373             self.minorTicks.append(tick)
+   1374             self._copy_tick_props(self.minorTicks[0], tick)
+
+~/local/lib/python3.8/site-packages/matplotlib/axis.py in _get_tick(self, major)
+   2057         else:
+   2058             tick_kw = self._minor_tick_kw
+-&gt; 2059         return XTick(self.axes, 0, major=major, **tick_kw)
+   2060 
+   2061     def set_label_position(self, position):
+
+~/local/lib/python3.8/site-packages/matplotlib/axis.py in __init__(self, *args, **kwargs)
+    420         super().__init__(*args, **kwargs)
+    421         # x in data coords, y in axes coords
+--&gt; 422         self.tick1line.set(
+    423             xdata=[0], ydata=[0],
+    424             transform=self.axes.get_xaxis_transform(which=&quot;tick1&quot;),
+
+~/local/lib/python3.8/site-packages/matplotlib/artist.py in set(self, **kwargs)
+   1152     def set(self, **kwargs):
+   1153         &quot;&quot;&quot;A property batch setter.  Pass *kwargs* to set properties.&quot;&quot;&quot;
+-&gt; 1154         kwargs = cbook.normalize_kwargs(kwargs, self)
+   1155         move_color_to_start = False
+   1156         if &quot;color&quot; in kwargs:
+
+~/local/lib/python3.8/site-packages/matplotlib/_api/deprecation.py in wrapper(*inner_args, **inner_kwargs)
+    404     @functools.wraps(func)
+    405     def wrapper(*inner_args, **inner_kwargs):
+--&gt; 406         arguments = signature.bind(*inner_args, **inner_kwargs).arguments
+    407         if is_varargs and arguments.get(name):
+    408             warn_deprecated(
+
+~/local/lib/python3.8/inspect.py in bind(self, *args, **kwargs)
+   3030         return self._bound_arguments_cls(self, arguments)
+   3031 
+-&gt; 3032     def bind(self, /, *args, **kwargs):
+   3033         &quot;&quot;&quot;Get a BoundArguments object, that maps the passed `args`
+   3034         and `kwargs` to the function&#39;s signature.  Raises `TypeError`
+
+KeyboardInterrupt: 
+</pre></div>
+</div>
+<img alt="../_images/vsop2013_5_1.png" src="../_images/vsop2013_5_1.png" />
 </div>
 </div>
 <p>We can see how VSOP2013 matches up well with respect to HORIZONS, and how lower truncation levels indeed increase the precision of the VSOP2013 solution (up to an error of hundreds of meters for a threshold of <span class="math notranslate nohighlight">\(10^{-10}\)</span>).</p>
