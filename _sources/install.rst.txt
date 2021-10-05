@@ -136,15 +136,13 @@ Verifying the installation
 --------------------------
 
 You can verify that heyoka.py was successfully compiled and
-installed by running the test suite. From a
-Python session, run the following commands:
+installed by running the test suite with the following command:
 
-.. code-block:: python
+.. code-block:: bash
 
-   >>> import heyoka
-   >>> heyoka.test.run_test_suite()
+   $ python -c "import heyoka; heyoka.test.run_test_suite();"
 
-If these commands execute without any error, then
+If this command executes without any error, then
 your heyoka.py installation is ready for use.
 
 Getting help
