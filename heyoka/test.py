@@ -1231,7 +1231,7 @@ class sympy_test_case(_ut.TestCase):
         self.test_sympar_conversion()
         self.test_func_conversion()
 
-        from . import from_sympy, make_vars
+        from . import from_sympy, make_vars, sum as hsum
 
         with self.assertRaises(TypeError) as cm:
             from_sympy(3.5)
@@ -1257,7 +1257,8 @@ class sympy_test_case(_ut.TestCase):
         x, y = sympy.symbols("x y", real=True)
         hx, hy, hz = make_vars("x", "y", "z")
 
-        self.assertEqual(from_sympy((x-y)*(x+y), s_dict={x-y: hz}), (hx+hy)*hz)
+        self.assertEqual(from_sympy(
+            (x-y)*(x+y), s_dict={x-y: hz}), hsum([hx, hy])*hz)
 
     def test_number_conversion(self):
         from . import to_sympy, from_sympy, expression, with_real128
@@ -1344,7 +1345,7 @@ class sympy_test_case(_ut.TestCase):
 
     def test_func_conversion(self):
         import sympy as spy
-        from . import core, make_vars, from_sympy, to_sympy, pi
+        from . import core, make_vars, from_sympy, to_sympy, pi, sum as hsum
 
         x, y, z, a, b, c = spy.symbols("x y z a b c", real=True)
         hx, hy, hz, ha, hb, hc = make_vars("x", "y", "z", "a", "b", "c")
@@ -1403,9 +1404,10 @@ class sympy_test_case(_ut.TestCase):
         self.assertEqual(hx**3.5, from_sympy(x**3.5))
         self.assertEqual(to_sympy(hx**3.5), x**3.5)
 
-        self.assertEqual(hx+hy+hz, from_sympy(x+y+z))
+        self.assertEqual(hsum([hx, hy, hz]), from_sympy(x+y+z))
         self.assertEqual(to_sympy(hx+hy+hz), x+y+z)
-        self.assertEqual((ha+hb)+(hc+hx)+(hy+hz), from_sympy(x+y+z+a+b+c))
+        self.assertEqual(hsum([ha, hb, hc, hx, hy, hz]),
+                         from_sympy(x+y+z+a+b+c))
         self.assertEqual(to_sympy(ha+hb+hc+hx+hy+hz), x+y+z+a+b+c)
 
         self.assertEqual(hx*hy*hz, from_sympy(x*y*z))
@@ -1413,7 +1415,7 @@ class sympy_test_case(_ut.TestCase):
         self.assertEqual((ha*hb)*(hc*hx)*(hy*hz), from_sympy(x*y*z*a*b*c))
         self.assertEqual(to_sympy(ha*hb*hc*hx*hy*hz), x*y*z*a*b*c)
 
-        self.assertEqual(hx + -1.*hy + -1.*hz, from_sympy(x-y-z))
+        self.assertEqual(hsum([hx, -1.*hy, -1.*hz]), from_sympy(x-y-z))
         self.assertEqual(to_sympy(hx - hy - hz), x-y-z)
 
         self.assertEqual(hx * hz**-1., from_sympy(x/z))

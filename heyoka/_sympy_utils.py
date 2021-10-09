@@ -135,7 +135,7 @@ def _build_fmap():
     retval[_spy.core.numbers.Pi] = lambda: pi
 
     def add_wrapper(*args):
-        return core.pairwise_sum(args)
+        return core.sum(args)
 
     retval[_spy.Add] = add_wrapper
 
