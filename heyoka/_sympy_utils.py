@@ -44,14 +44,14 @@ def _from_sympy_number(ex):
     if is_rational:
         # NOTE: for rationals we allow conversion only
         # if den is a power of 2.
-        den = int(ex.denominator())
+        den = ex.q
         if not (den & (den-1) == 0):
             raise ValueError(
                 "Cannot convert from sympy a rational number whose denominator is not a power of 2")
 
         # The needed precision is given by the bit size of the
         # numerator.
-        prec = int(ex.numerator()).bit_length()
+        prec = ex.p.bit_length()
     else:
         prec = ex.num.context.prec if isinstance(
             ex, _spy.Float) else int(ex).bit_length()
@@ -79,8 +79,8 @@ def _from_sympy_number(ex):
     if prec <= np.finfo(np.longdouble).nmant + 1:
         # Long double precision is sufficient to represent
         # exactly the number.
-        retval = np.longdouble(str(ex.numerator())) / np.longdouble(
-            str(ex.denominator())) if is_rational else np.longdouble(str(ex))
+        retval = np.longdouble(
+            ex.p) / np.longdouble(ex.q) if is_rational else np.longdouble(str(ex))
         if not np.isfinite(retval):
             raise ValueError(nf_err_msg)
 
@@ -95,8 +95,8 @@ def _from_sympy_number(ex):
         # from a quadmath number.
         from mpmath import mpf, workprec, isfinite
         with workprec(113):
-            retval = mpf(str(ex.numerator())) / \
-                mpf(str(ex.denominator())) if is_rational else mpf(str(ex))
+            retval = mpf(ex.p) / \
+                mpf(ex.q) if is_rational else mpf(str(ex))
             if not isfinite(retval):
                 raise ValueError(nf_err_msg)
 
