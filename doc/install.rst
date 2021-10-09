@@ -9,7 +9,7 @@ Dependencies
 heyoka.py has several Python and C++ dependencies. On the C++ side, heyoka.py depends on:
 
 * the `heyoka C++ library <https://github.com/bluescarni/heyoka>`__,
-  version 0.15.0 or later (**mandatory**),
+  version 0.16.0 or later (**mandatory**),
 * the `Boost <https://www.boost.org/>`__ C++ libraries (**mandatory**),
 * the `{fmt} <https://fmt.dev/latest/index.html>`__ library (**mandatory**),
 * the `spdlog <https://github.com/gabime/spdlog>`__ library (**mandatory**),
