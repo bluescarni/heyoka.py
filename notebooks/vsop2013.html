@@ -461,13 +461,13 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>String length of Mars&#39; semi-major axis solution @ 1e-07: 48475
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>String length of Mars&#39; semi-major axis solution @ 1e-07: 48205
 </pre></div>
 </div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>String length of Mars&#39; semi-major axis solution @ 1e-09: 484731
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>String length of Mars&#39; semi-major axis solution @ 1e-09: 480809
 </pre></div>
 </div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>String length of Mars&#39; semi-major axis solution @ 1e-11: 4725718
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>String length of Mars&#39; semi-major axis solution @ 1e-11: 4672786
 </pre></div>
 </div>
 </div>
@@ -490,12 +490,12 @@
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Mars&#39; semi-major axis solution, threshold = 6e-5, default time expression:
 (1.5236793402339999 + ((2.1017753733317330e-07 * sin(((2.0000000000000000 * (6.2035000141410004 + (3340.6124341454570 * t))) + (-2.0000000000000000 * (0.59954610703500000 + (529.69096156232501 * t)))))) + (6.6017042784613703e-05 * cos(((2.0000000000000000 * (6.2035000141410004 + (3340.6124341454570 * t))) + (-2.0000000000000000 * (0.59954610703500000 + (529.69096156232501 * t))))))))
+
+Mars&#39; semi-major axis solution, threshold = 6e-5, time represented by variable &#39;x&#39;:
+(1.5236793402339999 + ((2.1017753733317330e-07 * sin(((2.0000000000000000 * (6.2035000141410004 + (3340.6124341454570 * x))) + (-2.0000000000000000 * (0.59954610703500000 + (529.69096156232501 * x)))))) + (6.6017042784613703e-05 * cos(((2.0000000000000000 * (6.2035000141410004 + (3340.6124341454570 * x))) + (-2.0000000000000000 * (0.59954610703500000 + (529.69096156232501 * x))))))))
 </pre></div>
 </div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Mars&#39; semi-major axis solution, threshold = 6e-5, time represented by variable &#39;x&#39;:
-(1.5236793402339999 + ((2.1017753733317330e-07 * sin(((2.0000000000000000 * (6.2035000141410004 + (3340.6124341454570 * x))) + (-2.0000000000000000 * (0.59954610703500000 + (529.69096156232501 * x)))))) + (6.6017042784613703e-05 * cos(((2.0000000000000000 * (6.2035000141410004 + (3340.6124341454570 * x))) + (-2.0000000000000000 * (0.59954610703500000 + (529.69096156232501 * x))))))))
-
-Mars&#39; semi-major axis solution, threshold = 6e-5, time rescaled by a factor of 100:
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Mars&#39; semi-major axis solution, threshold = 6e-5, time rescaled by a factor of 100:
 (1.5236793402339999 + ((2.1017753733317330e-07 * sin(((2.0000000000000000 * (6.2035000141410004 + (3340.6124341454570 * (t / 100.00000000000000)))) + (-2.0000000000000000 * (0.59954610703500000 + (529.69096156232501 * (t / 100.00000000000000))))))) + (6.6017042784613703e-05 * cos(((2.0000000000000000 * (6.2035000141410004 + (3340.6124341454570 * (t / 100.00000000000000)))) + (-2.0000000000000000 * (0.59954610703500000 + (529.69096156232501 * (t / 100.00000000000000)))))))))
 </pre></div>
 </div>
@@ -596,6 +596,9 @@ Mars&#39; semi-major axis solution, threshold = 6e-5, time rescaled by a factor 
 <span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">();</span>
 </pre></div>
 </div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/vsop2013_5_0.png" src="../_images/vsop2013_5_0.png" />
 </div>
 </div>
 <p>We can see how VSOP2013 matches up well with respect to HORIZONS, and how lower truncation levels indeed increase the precision of the VSOP2013 solution (up to an error of hundreds of meters for a threshold of <span class="math notranslate nohighlight">\(10^{-10}\)</span>).</p>
