@@ -262,9 +262,14 @@ PYBIND11_MODULE(core, m)
                            const std::vector<mppp::real128> &pars) { return hey::eval<mppp::real128>(e, map, pars); });
 #endif
 
-    // Pairwise sum/prod.
-    m.def("pairwise_sum", [](std::vector<hey::expression> v_ex) { return hey::pairwise_sum(std::move(v_ex)); });
-    m.def("pairwise_prod", [](std::vector<hey::expression> v_ex) { return hey::pairwise_prod(std::move(v_ex)); });
+    // Sum.
+    m.def(
+        "sum",
+        [](std::vector<hey::expression> terms, std::uint32_t split) { return hey::sum(std::move(terms), split); },
+        "terms"_a, "split"_a = hey::detail::default_sum_split);
+
+    // Pairwise prod.
+    m.def("pairwise_prod", &hey::pairwise_prod, "terms"_a);
 
     // Subs.
     m.def("subs", [](const hey::expression &e, const std::unordered_map<std::string, hey::expression> &smap) {
