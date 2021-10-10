@@ -13,6 +13,14 @@ Changes
   heyoka C++ library
   (`#75 <https://github.com/bluescarni/heyoka.py/pull/75>`__).
 
+0.15.1 (2021-10-10)
+-------------------
+
+Fix
+~~~
+
+- Fix conversion from SymPy rationals.
+
 0.15.0 (2021-09-28)
 -------------------
 
