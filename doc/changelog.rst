@@ -6,6 +6,12 @@ Changelog
 0.16.0 (unreleased)
 -------------------
 
+New
+~~~
+
+- Attributes can now be dynamically added to the main heyoka.py
+  classes (`#78 <https://github.com/bluescarni/heyoka.py/pull/78>`__).
+
 Changes
 ~~~~~~~
 

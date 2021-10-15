@@ -6,11 +6,8 @@ set -x
 # Exit on error.
 set -e
 
-# Install wget.
-sudo yum -y install wget
-
 # Install conda+deps.
-wget https://github.com/conda-forge/miniforge/releases/latest/download/Mambaforge-Linux-ppc64le.sh -O miniconda.sh
+curl -L -o miniconda.sh https://github.com/conda-forge/miniforge/releases/latest/download/Mambaforge-Linux-ppc64le.sh
 export deps_dir=$HOME/local
 export PATH="$HOME/miniconda/bin:$PATH"
 bash miniconda.sh -b -p $HOME/miniconda
@@ -33,7 +30,7 @@ cd ../../
 mkdir build
 cd build
 
-cmake ../heyoka.py -DCMAKE_INSTALL_PREFIX=$deps_dir -DCMAKE_PREFIX_PATH=$deps_dir -DCMAKE_BUILD_TYPE=Release -DBoost_NO_BOOST_CMAKE=ON -DHEYOKA_PY_SETUP_DOCS=no
+cmake ../ -DCMAKE_INSTALL_PREFIX=$deps_dir -DCMAKE_PREFIX_PATH=$deps_dir -DCMAKE_BUILD_TYPE=Release -DBoost_NO_BOOST_CMAKE=ON -DHEYOKA_PY_SETUP_DOCS=no
 make -j2 VERBOSE=1 install
 
 cd /
