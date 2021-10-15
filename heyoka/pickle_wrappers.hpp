@@ -11,6 +11,7 @@
 
 #include <sstream>
 #include <string>
+#include <utility>
 
 #include <boost/archive/binary_iarchive.hpp>
 #include <boost/archive/binary_oarchive.hpp>
@@ -32,25 +33,27 @@ namespace heyoka_py
 namespace py = pybind11;
 
 template <typename T>
-inline py::tuple pickle_getstate_wrapper(const T &x)
+inline py::tuple pickle_getstate_wrapper(const py::object &self)
 {
+    auto &x = py::cast<const T &>(self);
+
     std::ostringstream oss;
     {
         boost::archive::binary_oarchive oa(oss);
         oa << x;
     }
 
-    return py::make_tuple(py::bytes(oss.str()));
+    return py::make_tuple(py::bytes(oss.str()), self.attr("__dict__"));
 }
 
 template <typename T>
-inline T pickle_setstate_wrapper(py::tuple state)
+inline std::pair<T, py::dict> pickle_setstate_wrapper(py::tuple state)
 {
     using fmt::literals::operator""_format;
 
-    if (py::len(state) != 1) {
+    if (py::len(state) != 2) {
         py_throw(PyExc_ValueError, ("The state tuple passed to the deserialization wrapper "
-                                    "must have 1 element, but instead it has {} element(s)"_format(py::len(state)))
+                                    "must have 2 elements, but instead it has {} element(s)"_format(py::len(state)))
                                        .c_str());
     }
 
@@ -67,7 +70,7 @@ inline T pickle_setstate_wrapper(py::tuple state)
         iarchive >> x;
     }
 
-    return x;
+    return std::make_pair(std::move(x), state[1].cast<py::dict>());
 }
 
 } // namespace heyoka_py

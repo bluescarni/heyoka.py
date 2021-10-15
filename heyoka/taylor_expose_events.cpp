@@ -167,7 +167,7 @@ void expose_taylor_nt_event_impl(py::module &m, const std::string &suffix)
 
     using ev_t = hey::nt_event<T>;
 
-    py::class_<ev_t>(m, ("_nt_event_{}"_format(suffix)).c_str())
+    py::class_<ev_t>(m, ("_nt_event_{}"_format(suffix)).c_str(), py::dynamic_attr{})
         .def(py::init([](const hey::expression &ex, py::object callback, hey::event_direction dir) {
                  if (!heypy::callable(callback)) {
                      heypy::py_throw(
@@ -230,7 +230,7 @@ void expose_taylor_t_event_impl(py::module &m, const std::string &suffix)
 
     using ev_t = hey::t_event<T>;
 
-    py::class_<ev_t>(m, ("_t_event_{}"_format(suffix)).c_str())
+    py::class_<ev_t>(m, ("_t_event_{}"_format(suffix)).c_str(), py::dynamic_attr{})
         .def(
             py::init([](const hey::expression &ex, py::object callback, hey::event_direction dir, T cooldown) {
                 if (callback.is_none()) {

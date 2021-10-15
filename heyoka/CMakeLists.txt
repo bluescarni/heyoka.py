@@ -16,10 +16,10 @@ endforeach()
 # Core module.
 Python3_add_library(core MODULE WITH_SOABI
     core.cpp
-    common_utils.cpp
-    taylor_add_jet.cpp
     taylor_expose_integrator.cpp
     taylor_expose_events.cpp
+    taylor_add_jet.cpp
+    common_utils.cpp
     logging.cpp
     setup_sympy.cpp
 )
