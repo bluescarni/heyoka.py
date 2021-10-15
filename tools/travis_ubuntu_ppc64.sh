@@ -6,9 +6,6 @@ set -x
 # Exit on error.
 set -e
 
-# Install curl.
-# sudo yum -y install curl
-
 # Install conda+deps.
 curl -L -o miniconda.sh https://github.com/conda-forge/miniforge/releases/latest/download/Mambaforge-Linux-ppc64le.sh
 export deps_dir=$HOME/local
