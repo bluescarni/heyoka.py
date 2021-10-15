@@ -7,7 +7,7 @@ set -x
 set -e
 
 # Install curl.
-sudo yum -y install curl
+# sudo yum -y install curl
 
 # Install conda+deps.
 curl -L -o miniconda.sh https://github.com/conda-forge/miniforge/releases/latest/download/Mambaforge-Linux-ppc64le.sh
