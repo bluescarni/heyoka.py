@@ -152,7 +152,7 @@ PYBIND11_MODULE(core, m)
     // exposition of the operators.
     using ld_t = long double;
 
-    py::class_<hey::expression>(m, "expression")
+    py::class_<hey::expression>(m, "expression", py::dynamic_attr{})
         .def(py::init<>())
         .def(py::init<double>())
         .def(py::init<long double>())
@@ -511,7 +511,7 @@ PYBIND11_MODULE(core, m)
 #endif
 
     // LLVM state.
-    py::class_<hey::llvm_state>(m, "llvm_state")
+    py::class_<hey::llvm_state>(m, "llvm_state", py::dynamic_attr{})
         .def("get_ir", &hey::llvm_state::get_ir)
         .def("get_object_code", [](hey::llvm_state &s) { return py::bytes(s.get_object_code()); })
         // Repr.
@@ -603,7 +603,7 @@ PYBIND11_MODULE(core, m)
                                                       kw::pars = std::move(pars)};
         }
     };
-    py::class_<hey::taylor_adaptive_batch<double>> tabd_c(m, "_taylor_adaptive_batch_dbl");
+    py::class_<hey::taylor_adaptive_batch<double>> tabd_c(m, "_taylor_adaptive_batch_dbl", py::dynamic_attr{});
     tabd_c
         .def(py::init([tabd_ctor_impl](const std::vector<std::pair<hey::expression, hey::expression>> &sys,
                                        py::array_t<double> state, std::optional<py::array_t<double>> time,

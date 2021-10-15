@@ -569,6 +569,11 @@ class event_classes_test_case(_ut.TestCase):
             self.assertTrue("(x + v)" in repr(ev))
             self.assertTrue("event_direction::negative" in repr(ev))
 
+            # Test dynamic attributes.
+            ev.foo = "hello world"
+            ev = pickle.loads(pickle.dumps(ev))
+            self.assertEqual(ev.foo, "hello world")
+
             # Test to ensure a callback extracted from the event
             # is kept alive and usable when the event is destroyed.
             ev = nt_event(ex=x + v, callback=local_cb(),
@@ -674,6 +679,11 @@ class event_classes_test_case(_ut.TestCase):
             self.assertTrue("event_direction::positive" in repr(ev))
             self.assertTrue(": yes" in repr(ev))
             self.assertTrue("3" in repr(ev))
+
+            # Test dynamic attributes.
+            ev.foo = "hello world"
+            ev = pickle.loads(pickle.dumps(ev))
+            self.assertEqual(ev.foo, "hello world")
 
             # Test also with empty callback.
             ev = t_event(x + v, fp_type=desc, direction=event_direction.positive,
@@ -1046,6 +1056,11 @@ class scalar_integrator_test_case(_ut.TestCase):
             self.assertEqual(len(ta.t_events), len(ta2.t_events))
             self.assertEqual(len(ta.nt_events), len(ta2.nt_events))
 
+            # Test dynamic attributes.
+            ta.foo = "hello world"
+            ta = pickle.loads(pickle.dumps(ta))
+            self.assertEqual(ta.foo, "hello world")
+
             if desc != "real128":
                 self.assertTrue(np.all(ta.state == ta2.state))
                 self.assertTrue(np.all(ta.time == ta2.time))
@@ -1085,6 +1100,11 @@ class scalar_integrator_test_case(_ut.TestCase):
 
             self.assertEqual(
                 ta.nt_events[0].callback.n, ta2.nt_events[0].callback.n)
+
+            # Test dynamic attributes.
+            ta.foo = "hello world"
+            ta = pickle.loads(pickle.dumps(ta))
+            self.assertEqual(ta.foo, "hello world")
 
             ta = taylor_adaptive(sys=sys, state=[fp_t(0), fp_t(0.25)], fp_type=desc,
                                  tol=fp_t(1e-6))
@@ -1137,6 +1157,11 @@ class batch_integrator_test_case(_ut.TestCase):
             sys=sys, state=[[0, .01], [0.25, 0.26]], tol=1e-6)
 
         self.assertEqual(ta.tol, 1e-6)
+
+        # Test dynamic attributes.
+        ta.foo = "hello world"
+        ta = pickle.loads(pickle.dumps(ta))
+        self.assertEqual(ta.foo, "hello world")
 
     def run_propagate_grid_tests(self):
         from . import make_vars, taylor_adaptive, taylor_adaptive_batch, sin
@@ -1476,6 +1501,16 @@ class expression_test_case(_ut.TestCase):
     def runTest(self):
         self.test_s11n()
         self.test_len()
+        self.test_diff()
+
+    def test_diff(self):
+        from . import make_vars, sin, cos, diff, par
+
+        x, y = make_vars("x", "y")
+        self.assertEqual(diff(cos(x*x-y), "x"), -sin(x*x-y) * (2.*x))
+        self.assertEqual(diff(cos(x*x-y), x), -sin(x*x-y) * (2.*x))
+        self.assertEqual(
+            diff(cos(par[0]*par[0]-y), par[0]), -sin(par[0]*par[0]-y) * (2.*par[0]))
 
     def test_s11n(self):
         from . import make_vars, expression, with_real128, sin, cos
@@ -1487,6 +1522,11 @@ class expression_test_case(_ut.TestCase):
 
         ex = x + 2.*y
         self.assertEqual(ex, pickle.loads(pickle.dumps(ex)))
+
+        # Test dynamic attributes.
+        ex.foo = "hello world"
+        ex = pickle.loads(pickle.dumps(ex))
+        self.assertEqual(ex.foo, "hello world")
 
         if not _ppc_arch:
             ex = sin(longdouble('1.1')*x) + 2.*y
@@ -1534,19 +1574,10 @@ class llvm_state_test_case(_ut.TestCase):
 
         self.assertEqual(ls.get_ir(), pickle.loads(pickle.dumps(ls)).get_ir())
 
-
-class expression_test_case(_ut.TestCase):
-    def runTest(self):
-        self.test_diff()
-
-    def test_diff(self):
-        from . import make_vars, sin, cos, diff, par
-
-        x, y = make_vars("x", "y")
-        self.assertEqual(diff(cos(x*x-y), "x"), -sin(x*x-y) * (2.*x))
-        self.assertEqual(diff(cos(x*x-y), x), -sin(x*x-y) * (2.*x))
-        self.assertEqual(
-            diff(cos(par[0]*par[0]-y), par[0]), -sin(par[0]*par[0]-y) * (2.*par[0]))
+        # Test dynamic attributes.
+        ls.foo = "hello world"
+        ls = pickle.loads(pickle.dumps(ls))
+        self.assertEqual(ls.foo, "hello world")
 
 
 def run_test_suite():
