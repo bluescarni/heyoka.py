@@ -6,6 +6,12 @@ Changelog
 0.16.0 (unreleased)
 -------------------
 
+New
+~~~
+
+- Add a tutorial on the computation of event sensitivity
+  (`#77 <https://github.com/bluescarni/heyoka.py/pull/77`__).
+
 Changes
 ~~~~~~~
 
