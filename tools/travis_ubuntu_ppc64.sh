@@ -6,11 +6,11 @@ set -x
 # Exit on error.
 set -e
 
-# Install wget.
-sudo yum -y install wget
+# Install curl.
+sudo yum -y install curl
 
 # Install conda+deps.
-wget https://github.com/conda-forge/miniforge/releases/latest/download/Mambaforge-Linux-ppc64le.sh -O miniconda.sh
+curl -o miniconda.sh https://github.com/conda-forge/miniforge/releases/latest/download/Mambaforge-Linux-ppc64le.sh
 export deps_dir=$HOME/local
 export PATH="$HOME/miniconda/bin:$PATH"
 bash miniconda.sh -b -p $HOME/miniconda
