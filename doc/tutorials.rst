@@ -53,10 +53,11 @@ Event detection
 .. toctree::
   :maxdepth: 1
 
-  notebooks/Event detection.ipynb
+  notebooks/Event detection
   notebooks/Sampling events
   notebooks/Poincaré sections
   notebooks/The Keplerian billiard
   notebooks/The two-fixed elliptic billiard
   notebooks/The wavy ramp
   notebooks/The Maxwell-Boltzmann distribution
+  notebooks/ev_sensitivity
