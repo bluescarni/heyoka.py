@@ -55,6 +55,7 @@ The authors are Francesco Biscani (Max Planck Institute for Astronomy) and Dario
 install
 tutorials
 examples
+benchmarks
 changelog
 breaking_changes
 acknowledgement
