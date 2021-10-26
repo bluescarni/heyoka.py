@@ -1370,7 +1370,9 @@ class sympy_test_case(_ut.TestCase):
 
     def test_func_conversion(self):
         import sympy as spy
-        from . import core, make_vars, from_sympy, to_sympy, pi, sum as hsum
+        # NOTE: if we ever change in heyoka addition to return a sum(),
+        # we can probably get rid of hsum.
+        from . import core, make_vars, from_sympy, to_sympy, pi, sum as hsum, sum_sq, make_nbody_sys
 
         x, y, z, a, b, c = spy.symbols("x y z a b c", real=True)
         hx, hy, hz, ha, hb, hc = make_vars("x", "y", "z", "a", "b", "c")
@@ -1431,9 +1433,17 @@ class sympy_test_case(_ut.TestCase):
 
         self.assertEqual(hsum([hx, hy, hz]), from_sympy(x+y+z))
         self.assertEqual(to_sympy(hx+hy+hz), x+y+z)
+        self.assertEqual(to_sympy(hsum([hx, hy, hz])), x+y+z)
+        self.assertEqual(to_sympy(hsum([hx])), x)
+        self.assertEqual(to_sympy(hsum([])), 0.)
         self.assertEqual(hsum([ha, hb, hc, hx, hy, hz]),
                          from_sympy(x+y+z+a+b+c))
         self.assertEqual(to_sympy(ha+hb+hc+hx+hy+hz), x+y+z+a+b+c)
+        self.assertEqual(to_sympy(hsum([ha, hb, hc, hx, hy, hz])), x+y+z+a+b+c)
+
+        self.assertEqual(to_sympy(sum_sq([hx, hy, hz])), x*x+y*y+z*z)
+        self.assertEqual(to_sympy(sum_sq([hx])), x*x)
+        self.assertEqual(to_sympy(sum_sq([])), 0.)
 
         self.assertEqual(hx*hy*hz, from_sympy(x*y*z))
         self.assertEqual(to_sympy(hx*hy*hz), x*y*z)
@@ -1483,6 +1493,11 @@ class sympy_test_case(_ut.TestCase):
         self.assertEqual(to_sympy(pi), spy.pi)
         self.assertEqual(from_sympy(spy.pi), pi)
         self.assertEqual(to_sympy(from_sympy(spy.pi)), spy.pi)
+
+        # nbody helper.
+        [to_sympy(_[1]) for _ in make_nbody_sys(2)]
+        [to_sympy(_[1]) for _ in make_nbody_sys(4)]
+        [to_sympy(_[1]) for _ in make_nbody_sys(10)]
 
 
 class zero_division_error_test_case(_ut.TestCase):

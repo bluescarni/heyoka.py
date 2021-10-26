@@ -204,6 +204,20 @@ void setup_sympy(py::module &m)
         detail::fmap[typeid(hy::detail::tan_impl)] = py::object(detail::spy->attr("tan"));
         detail::fmap[typeid(hy::detail::tanh_impl)] = py::object(detail::spy->attr("tanh"));
         detail::fmap[typeid(hy::detail::pow_impl)] = py::object(detail::spy->attr("Pow"));
+        detail::fmap[typeid(hy::detail::sum_impl)] = py::object(detail::spy->attr("Add"));
+
+        // sum_sq.
+        detail::fmap[typeid(hy::detail::sum_sq_impl)]
+            = [](std::unordered_map<const void *, py::object> &func_map, const hy::func &f) {
+                  // Convert all arguments to Python objects.
+                  py::list py_args;
+                  for (const auto &arg : f.args()) {
+                      auto tmp = detail::to_sympy_impl(func_map, arg);
+                      py_args.append(tmp * tmp);
+                  }
+
+                  return py::object(detail::spy->attr("Add"))(*py_args);
+              };
 
         // Binary op.
         detail::fmap[typeid(hy::detail::binary_op)]

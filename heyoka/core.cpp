@@ -268,6 +268,12 @@ PYBIND11_MODULE(core, m)
         [](std::vector<hey::expression> terms, std::uint32_t split) { return hey::sum(std::move(terms), split); },
         "terms"_a, "split"_a = hey::detail::default_sum_split);
 
+    // Sum of squares.
+    m.def(
+        "sum_sq",
+        [](std::vector<hey::expression> terms, std::uint32_t split) { return hey::sum_sq(std::move(terms), split); },
+        "terms"_a, "split"_a = hey::detail::default_sum_sq_split);
+
     // Pairwise prod.
     m.def("pairwise_prod", &hey::pairwise_prod, "terms"_a);
 
