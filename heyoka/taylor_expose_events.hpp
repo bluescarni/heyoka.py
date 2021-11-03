@@ -36,6 +36,10 @@ void expose_taylor_nt_event_f128(py::module &);
 
 #endif
 
+// Batch mode (only double).
+void expose_taylor_t_event_batch_dbl(py::module &);
+void expose_taylor_nt_event_batch_dbl(py::module &);
+
 } // namespace heyoka_py
 
 #endif

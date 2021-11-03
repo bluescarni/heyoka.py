@@ -129,10 +129,12 @@ void expose_taylor_integrator_common(py::class_<hey::taylor_adaptive<T>> &cl)
         .def_property_readonly("order", &hey::taylor_adaptive<T>::get_order)
         .def_property_readonly("tol", &hey::taylor_adaptive<T>::get_tol)
         .def_property_readonly("dim", &hey::taylor_adaptive<T>::get_dim)
+        // Event detection.
+        .def_property_readonly("with_events", &hey::taylor_adaptive<T>::with_events)
+        .def_property_readonly("te_cooldowns", &hey::taylor_adaptive<T>::get_te_cooldowns)
+        .def("reset_cooldowns", &hey::taylor_adaptive<T>::reset_cooldowns)
         .def_property_readonly("t_events", &hey::taylor_adaptive<T>::get_t_events)
-        .def_property_readonly("nt_events", &hey::taylor_adaptive<T>::get_nt_events)
-        // Cooldowns.
-        .def("reset_cooldowns", &hey::taylor_adaptive<T>::reset_cooldowns);
+        .def_property_readonly("nt_events", &hey::taylor_adaptive<T>::get_nt_events);
 
     // Expose the llvm state getter.
     expose_llvm_state_property(cl);
