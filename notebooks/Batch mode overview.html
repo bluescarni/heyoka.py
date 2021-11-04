@@ -424,6 +424,11 @@
    Dense output
   </a>
  </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#event-detection">
+   Event detection
+  </a>
+ </li>
 </ul>
 
             </nav>
@@ -645,6 +650,7 @@ functions are stored in internal vectors of tuples, with the tuple elements repr
 that were used in the propagation,</p></li>
 <li><p>the total number of steps that were taken.</p></li>
 </ul>
+<p>Note that, generally speaking, when using the <code class="docutils literal notranslate"><span class="pre">propagate_*()</span></code> functions each batch element will need a different number of integration steps to reach the final time. Thus, when a batch element reaches the final time, further steps for that batch element will be taken with a timestep of zero, until all batch elements reach the final time.</p>
 <p>Let’s see a couple of examples:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -701,10 +707,10 @@ Time:
 <span class="c1"># Plot the time evolution of x.</span>
 <span class="kn">from</span> <span class="nn">matplotlib.pylab</span> <span class="kn">import</span> <span class="n">plt</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s2">&quot;figure.figsize&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">12</span><span class="p">,</span><span class="mi">6</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">t_grid</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">out</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Batch element 0&quot;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">t_grid</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">out</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Batch element 1&quot;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">t_grid</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">],</span> <span class="n">out</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Batch element 2&quot;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">t_grid</span><span class="p">[:,</span> <span class="mi">3</span><span class="p">],</span> <span class="n">out</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Batch element 3&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">t_grid</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">out</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Batch element 0&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;red&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">t_grid</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">out</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Batch element 1&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;orange&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">t_grid</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">],</span> <span class="n">out</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Batch element 2&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;blue&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">t_grid</span><span class="p">[:,</span> <span class="mi">3</span><span class="p">],</span> <span class="n">out</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Batch element 3&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;green&#39;</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;Time&quot;</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;x&quot;</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">();</span>
@@ -745,6 +751,13 @@ Time:
 </div>
 </div>
 </div>
+<p>An important difference with respect to scalar mode is that the vector returned
+by <code class="docutils literal notranslate"><span class="pre">propagate_grid()</span></code> in batch mode always contains values for <em>all</em> grid points,
+event if the integration is terminated early (e.g., due to errors or to terminal
+events triggering). In scalar mode, by contrast, in case of early termination
+<code class="docutils literal notranslate"><span class="pre">propagate_grid()</span></code> returns only the output values for the grid points that
+could be computed before the early exit. In batch mode, the values for the grid
+points that could not be reached due to early exit are filled with NaNs.</p>
 </div>
 <div class="section" id="dense-output">
 <h2>Dense output<a class="headerlink" href="#dense-output" title="Permalink to this headline">¶</a></h2>
@@ -889,6 +902,230 @@ at different time coordinates:</p>
 </div>
 </div>
 </div>
+</div>
+<div class="section" id="event-detection">
+<h2>Event detection<a class="headerlink" href="#event-detection" title="Permalink to this headline">¶</a></h2>
+<p>Starting with heyoka.py 0.16, the batch integrator also supports <a class="reference internal" href="Event%20detection.html"><span class="doc std std-doc">event detection</span></a>. The batch mode event detection API is similar to the scalar mode API, with the following differences:</p>
+<ul class="simple">
+<li><p>the event classes in batch mode are called <code class="docutils literal notranslate"><span class="pre">nt_event_batch</span></code> and <code class="docutils literal notranslate"><span class="pre">t_event_batch</span></code>
+(for non-terminal and terminal events respectively), rather than <code class="docutils literal notranslate"><span class="pre">nt_event</span></code> and <code class="docutils literal notranslate"><span class="pre">t_event</span></code>;</p></li>
+<li><p>with respect to scalar mode, the callback signatures in batch mode feature an extra trailing argument
+of type <code class="docutils literal notranslate"><span class="pre">int</span></code> that indicates in which element of the batch the event was detected.</p></li>
+</ul>
+<p>In order to illustrate how event detection works in batch mode, we will be again integrating
+the <a class="reference internal" href="Non-autonomous%20systems.html"><span class="doc std std-doc">forced damped pendulum</span></a>. During the integration, we will
+use a non-terminal event to detect when the bob reaches a local amplitude maximum. In other
+words, the event equation is</p>
+<div class="math notranslate nohighlight">
+\[
+v = 0,
+\]</div>
+<p>subject to the constraint that the direction of the event must be <em>negative</em>.</p>
+<p>Let us begin with the definition of the callback for the event:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># List of lists in which we will store</span>
+<span class="c1"># the times at which the bob is at a local</span>
+<span class="c1"># amplitude maximum for each batch element.</span>
+<span class="n">max_list</span> <span class="o">=</span> <span class="nb">list</span><span class="p">([]</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">batch_size</span><span class="p">))</span>
+
+<span class="k">def</span> <span class="nf">cb</span><span class="p">(</span><span class="n">ta</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">d_sgn</span><span class="p">,</span> <span class="n">bidx</span><span class="p">):</span>
+    <span class="c1"># Append the local maximum time</span>
+    <span class="c1"># for the current batch index.</span>
+    <span class="n">max_list</span><span class="p">[</span><span class="n">bidx</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Next, we proceed to the definition of the integrator object:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Create the integrator object.</span>
+<span class="n">ta</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">taylor_adaptive_batch</span><span class="p">(</span>
+                        <span class="c1"># The dynamics.</span>
+                        <span class="n">eqns</span><span class="p">,</span>
+                        <span class="c1"># Initial conditions for x and v.</span>
+                        <span class="n">state</span> <span class="o">=</span> <span class="p">[[</span><span class="mf">0.00</span><span class="p">,</span> <span class="mf">0.01</span><span class="p">,</span> <span class="mf">0.02</span><span class="p">,</span> <span class="mf">0.03</span><span class="p">],</span> <span class="p">[</span><span class="mf">1.85</span><span class="p">,</span> <span class="mf">1.86</span><span class="p">,</span> <span class="mf">1.87</span><span class="p">,</span> <span class="mf">1.88</span><span class="p">]],</span>
+                        <span class="c1"># Values for alpha.</span>
+                        <span class="n">pars</span> <span class="o">=</span> <span class="p">[[</span><span class="mf">0.10</span><span class="p">,</span> <span class="mf">0.11</span><span class="p">,</span> <span class="mf">0.12</span><span class="p">,</span> <span class="mf">0.13</span><span class="p">]],</span>
+                        <span class="c1"># Non-terminal events.</span>
+                        <span class="n">nt_events</span> <span class="o">=</span> <span class="p">[</span><span class="n">hy</span><span class="o">.</span><span class="n">nt_event_batch</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">cb</span><span class="p">,</span> <span class="n">direction</span><span class="o">=</span><span class="n">hy</span><span class="o">.</span><span class="n">event_direction</span><span class="o">.</span><span class="n">negative</span><span class="p">)]</span>
+                        <span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>We can now propagate over a time grid…</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Create identical time grids.</span>
+<span class="n">t_grid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">1000</span><span class="p">),</span> <span class="n">batch_size</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">1000</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="c1"># Propagate over the time grids.</span>
+<span class="n">out</span> <span class="o">=</span> <span class="n">ta</span><span class="o">.</span><span class="n">propagate_grid</span><span class="p">(</span><span class="n">t_grid</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>… and visualise the result:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s2">&quot;figure.figsize&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">12</span><span class="p">,</span><span class="mi">6</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">t_grid</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">out</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Batch element 0&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;red&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">t_grid</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">out</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Batch element 1&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;orange&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">t_grid</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">],</span> <span class="n">out</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Batch element 2&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;blue&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">t_grid</span><span class="p">[:,</span> <span class="mi">3</span><span class="p">],</span> <span class="n">out</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Batch element 3&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;green&#39;</span><span class="p">)</span>
+
+<span class="n">ymin</span><span class="p">,</span><span class="n">ymax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">()</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">vlines</span><span class="p">(</span><span class="n">max_list</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">ymin</span><span class="p">,</span> <span class="n">ymax</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;red&#39;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;dashed&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">vlines</span><span class="p">(</span><span class="n">max_list</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">ymin</span><span class="p">,</span> <span class="n">ymax</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;orange&#39;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;dashed&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">vlines</span><span class="p">(</span><span class="n">max_list</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">ymin</span><span class="p">,</span> <span class="n">ymax</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;blue&#39;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;dashed&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">vlines</span><span class="p">(</span><span class="n">max_list</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span> <span class="n">ymin</span><span class="p">,</span> <span class="n">ymax</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;green&#39;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;dashed&#39;</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">((</span><span class="n">ymin</span><span class="p">,</span> <span class="n">ymax</span><span class="p">))</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;Time&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;x&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">();</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/Batch mode overview_35_0.png" src="../_images/Batch mode overview_35_0.png" />
+</div>
+</div>
+<p>Here we marked with vertical dashed lines the times of the detected local maxima, which, as we can see, were all correctly detected.</p>
+<p>As an another example, we will be re-formulating the <a class="reference internal" href="The%20wavy%20ramp.html"><span class="doc std std-doc">wavy ramp tutorial</span></a> in batch mode. The code adaptations for batch mode are small and mostly involve the callbacks and the auxiliary structures to store the coordinates of the bouncing points. Let us formulate and integrate the problem:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># The dynamical variables.</span>
+<span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">vx</span><span class="p">,</span> <span class="n">vy</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">make_vars</span><span class="p">(</span><span class="s2">&quot;x&quot;</span><span class="p">,</span> <span class="s2">&quot;y&quot;</span><span class="p">,</span> <span class="s2">&quot;vx&quot;</span><span class="p">,</span> <span class="s2">&quot;vy&quot;</span><span class="p">)</span>
+
+<span class="c1"># The dynamics.</span>
+<span class="n">eqns</span> <span class="o">=</span> <span class="p">[(</span><span class="n">x</span><span class="p">,</span> <span class="n">vx</span><span class="p">),</span>
+        <span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">vy</span><span class="p">),</span>
+        <span class="p">(</span><span class="n">vx</span><span class="p">,</span> <span class="n">hy</span><span class="o">.</span><span class="n">expression</span><span class="p">(</span><span class="mf">0.</span><span class="p">)),</span>
+        <span class="c1"># Downwards constant acceleration.</span>
+        <span class="p">(</span><span class="n">vy</span><span class="p">,</span> <span class="n">hy</span><span class="o">.</span><span class="n">expression</span><span class="p">(</span><span class="o">-</span><span class="mf">9.8</span><span class="p">))]</span>
+
+<span class="c1"># Event equation for the ramp.</span>
+<span class="n">eq_w_curve</span> <span class="o">=</span> <span class="n">y</span> <span class="o">-</span> <span class="p">(</span><span class="mf">1.</span> <span class="o">-</span> <span class="n">x</span> <span class="o">+</span> <span class="mf">0.05</span> <span class="o">*</span> <span class="n">hy</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="mi">11</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">x</span><span class="p">))</span>
+
+<span class="c1"># Event equation for the ground.</span>
+<span class="n">eq_bottom</span> <span class="o">=</span> <span class="n">y</span>
+
+<span class="c1"># The coefficient of restitution.</span>
+<span class="n">CR</span> <span class="o">=</span> <span class="mf">.8</span>
+
+<span class="c1"># Global variables to track</span>
+<span class="c1"># the time of the last collision</span>
+<span class="c1"># and the collision points.</span>
+<span class="n">last_t</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.</span><span class="p">]</span> <span class="o">*</span> <span class="n">batch_size</span>
+<span class="n">bounce_points</span> <span class="o">=</span> <span class="nb">list</span><span class="p">([]</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">batch_size</span><span class="p">))</span>
+
+<span class="c1"># Callback for bouncing against the curve.</span>
+<span class="k">def</span> <span class="nf">cb_w_curve</span><span class="p">(</span><span class="n">ta</span><span class="p">,</span> <span class="n">mr</span><span class="p">,</span> <span class="n">d_sgn</span><span class="p">,</span> <span class="n">bidx</span><span class="p">):</span>
+    <span class="k">global</span> <span class="n">last_t</span>
+
+    <span class="c1"># If the last collision happened</span>
+    <span class="c1"># too recently, return False to</span>
+    <span class="c1"># stop the simulation.</span>
+    <span class="k">if</span> <span class="n">ta</span><span class="o">.</span><span class="n">time</span><span class="p">[</span><span class="n">bidx</span><span class="p">]</span> <span class="o">-</span> <span class="n">last_t</span><span class="p">[</span><span class="n">bidx</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mf">1e-6</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">False</span>
+
+    <span class="c1"># Update last_t.</span>
+    <span class="n">last_t</span><span class="p">[</span><span class="n">bidx</span><span class="p">]</span> <span class="o">=</span> <span class="n">ta</span><span class="o">.</span><span class="n">time</span><span class="p">[</span><span class="n">bidx</span><span class="p">]</span>
+
+    <span class="c1"># Update bounce_points.</span>
+    <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">ta</span><span class="o">.</span><span class="n">state</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">2</span><span class="p">,</span> <span class="n">bidx</span><span class="p">]</span>
+    <span class="n">bounce_points</span><span class="p">[</span><span class="n">bidx</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">))</span>
+    
+    <span class="c1"># Compute the normal unit vector</span>
+    <span class="c1"># using the gradient of the event</span>
+    <span class="c1"># equation.</span>
+    <span class="n">grad</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="o">+</span><span class="mf">0.05</span><span class="o">*</span><span class="mi">11</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mi">11</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span><span class="n">x</span><span class="p">),</span> <span class="mi">1</span><span class="p">])</span>
+    <span class="n">grad_uvec</span> <span class="o">=</span> <span class="n">grad</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">grad</span><span class="p">)</span>
+    
+    <span class="c1"># Compute the component of the velocity</span>
+    <span class="c1"># across the normal vector.</span>
+    <span class="n">xy_vel</span> <span class="o">=</span> <span class="n">ta</span><span class="o">.</span><span class="n">state</span><span class="p">[</span><span class="mi">2</span><span class="p">:</span><span class="mi">4</span><span class="p">,</span> <span class="n">bidx</span><span class="p">]</span>
+    <span class="n">vproj</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">xy_vel</span><span class="p">,</span> <span class="n">grad_uvec</span><span class="p">)</span>
+    
+    <span class="c1"># Flip it and rescale it according</span>
+    <span class="c1"># to the coefficient of restitution.</span>
+    <span class="n">Dv</span> <span class="o">=</span> <span class="o">-</span><span class="n">vproj</span><span class="o">*</span><span class="n">grad_uvec</span>
+    <span class="n">xy_vel</span> <span class="o">+=</span> <span class="p">(</span><span class="mf">1.</span> <span class="o">+</span> <span class="n">CR</span><span class="p">)</span> <span class="o">*</span> <span class="n">Dv</span>
+
+    <span class="k">return</span> <span class="kc">True</span>
+
+<span class="c1"># Callback for bouncing off the ground.</span>
+<span class="k">def</span> <span class="nf">cb_bottom</span><span class="p">(</span><span class="n">ta</span><span class="p">,</span> <span class="n">mr</span><span class="p">,</span> <span class="n">d_sgn</span><span class="p">,</span> <span class="n">bidx</span><span class="p">):</span>
+    <span class="k">global</span> <span class="n">last_t</span>
+    
+    <span class="c1"># If the last collision happened</span>
+    <span class="c1"># too recently, return False to</span>
+    <span class="c1"># stop the simulation.</span>
+    <span class="k">if</span> <span class="n">ta</span><span class="o">.</span><span class="n">time</span><span class="p">[</span><span class="n">bidx</span><span class="p">]</span> <span class="o">-</span> <span class="n">last_t</span><span class="p">[</span><span class="n">bidx</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mf">1e-6</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">False</span>
+
+    <span class="c1"># Update last_t.</span>
+    <span class="n">last_t</span><span class="p">[</span><span class="n">bidx</span><span class="p">]</span> <span class="o">=</span> <span class="n">ta</span><span class="o">.</span><span class="n">time</span><span class="p">[</span><span class="n">bidx</span><span class="p">]</span>
+
+    <span class="c1"># Update bounce_points.</span>
+    <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">ta</span><span class="o">.</span><span class="n">state</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">2</span><span class="p">,</span> <span class="n">bidx</span><span class="p">]</span>
+    <span class="n">bounce_points</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">))</span>
+    
+    <span class="c1"># Flip the y component of the velocity,</span>
+    <span class="c1"># and rescale it according</span>
+    <span class="c1"># to the coefficient of restitution.</span>
+    <span class="n">ta</span><span class="o">.</span><span class="n">state</span><span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="n">bidx</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="n">CR</span><span class="o">*</span><span class="n">ta</span><span class="o">.</span><span class="n">state</span><span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="n">bidx</span><span class="p">]</span>
+    
+    <span class="k">return</span> <span class="kc">True</span>
+
+<span class="c1"># Create the batch integrator.</span>
+<span class="n">ta</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">taylor_adaptive_batch</span><span class="p">(</span><span class="n">eqns</span><span class="p">,</span>
+                              <span class="p">[[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">batch_size</span><span class="p">,</span>
+                               <span class="c1"># Set slightly different drop heights</span>
+                               <span class="c1"># for each batch element.</span>
+                               <span class="nb">list</span><span class="p">(</span><span class="mf">1.2</span> <span class="o">-</span> <span class="n">i</span><span class="o">/</span><span class="mi">50</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">batch_size</span><span class="p">)),</span>
+                               <span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">batch_size</span><span class="p">,</span>
+                               <span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">batch_size</span><span class="p">],</span>
+                              <span class="n">t_events</span> <span class="o">=</span> <span class="p">[</span><span class="n">hy</span><span class="o">.</span><span class="n">t_event_batch</span><span class="p">(</span><span class="n">eq_w_curve</span><span class="p">,</span> <span class="n">callback</span> <span class="o">=</span> <span class="n">cb_w_curve</span><span class="p">,</span> <span class="n">direction</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">event_direction</span><span class="o">.</span><span class="n">negative</span><span class="p">),</span>
+                                          <span class="n">hy</span><span class="o">.</span><span class="n">t_event_batch</span><span class="p">(</span><span class="n">eq_bottom</span><span class="p">,</span> <span class="n">callback</span> <span class="o">=</span> <span class="n">cb_bottom</span><span class="p">,</span> <span class="n">direction</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">event_direction</span><span class="o">.</span><span class="n">negative</span><span class="p">)])</span>
+
+<span class="c1"># Define the time grids and integrate.</span>
+<span class="n">t_grid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">10000</span><span class="p">),</span> <span class="n">batch_size</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">10000</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">res</span> <span class="o">=</span> <span class="n">ta</span><span class="o">.</span><span class="n">propagate_grid</span><span class="p">(</span><span class="n">t_grid</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Let us now take a look at the result:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s2">&quot;figure.figsize&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">12</span><span class="p">,</span><span class="mi">9</span><span class="p">)</span>
+<span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+
+<span class="n">colors</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="s1">&#39;g&#39;</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">,</span> <span class="s1">&#39;y&#39;</span><span class="p">]</span>
+
+<span class="k">for</span> <span class="n">bidx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">batch_size</span><span class="p">):</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">res</span><span class="p">[:,</span><span class="mi">0</span><span class="p">,</span><span class="n">bidx</span><span class="p">],</span><span class="n">res</span><span class="p">[:,</span><span class="mi">1</span><span class="p">,</span><span class="n">bidx</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="n">colors</span><span class="p">[</span><span class="n">bidx</span><span class="p">],</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">.75</span><span class="p">)</span>
+    <span class="n">x_grid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mi">1000</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x_grid</span><span class="p">,</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">x_grid</span> <span class="o">+</span> <span class="mf">0.05</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="mi">11</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">x_grid</span><span class="p">)),</span> <span class="s1">&#39;k-&#39;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">b_points</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">bounce_points</span><span class="p">[</span><span class="n">bidx</span><span class="p">])</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">b_points</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">b_points</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="s1">&#39;o&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">colors</span><span class="p">[</span><span class="n">bidx</span><span class="p">],</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">.75</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">fill_between</span><span class="p">(</span><span class="n">x_grid</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.</span><span class="p">,</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">x_grid</span> <span class="o">+</span> <span class="mf">0.05</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="mi">11</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">x_grid</span><span class="p">)),</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;gray&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">(</span><span class="o">-</span><span class="mf">.1</span><span class="p">,</span> <span class="mi">2</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/Batch mode overview_39_0.png" src="../_images/Batch mode overview_39_0.png" />
+</div>
+</div>
+<p>We can see how setting slightly different drop heights for each batch element soon leads to qualitatively-different trajectories.</p>
 </div>
 </div>
 
