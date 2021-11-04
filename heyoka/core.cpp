@@ -516,6 +516,10 @@ PYBIND11_MODULE(core, m)
 
 #endif
 
+    // Batch mode.
+    heypy::expose_taylor_nt_event_batch_dbl(m);
+    heypy::expose_taylor_t_event_batch_dbl(m);
+
     // LLVM state.
     py::class_<hey::llvm_state>(m, "llvm_state", py::dynamic_attr{})
         .def("get_ir", &hey::llvm_state::get_ir)
@@ -539,10 +543,14 @@ PYBIND11_MODULE(core, m)
     // the batch integrator.
     using prop_cb_t = std::function<bool(hey::taylor_adaptive_batch<double> &)>;
 
+    // Event types for the batch integrator.
+    using t_ev_t = hey::t_event_batch<double>;
+    using nt_ev_t = hey::nt_event_batch<double>;
+
     // Batch adaptive integrator for double.
     auto tabd_ctor_impl = [](const auto &sys, py::array_t<double> state_, std::optional<py::array_t<double>> time_,
                              std::optional<py::array_t<double>> pars_, double tol, bool high_accuracy,
-                             bool compact_mode) {
+                             bool compact_mode, std::vector<t_ev_t> tes, std::vector<nt_ev_t> ntes) {
         // Convert state and pars to std::vector, after checking
         // dimensions and shape.
         if (state_.ndim() != 2) {
@@ -586,6 +594,10 @@ PYBIND11_MODULE(core, m)
             }
             auto time = py::cast<std::vector<double>>(time_arr);
 
+            // NOTE: GIL release is fine here even if the events contain
+            // Python objects, as the event vectors are moved in
+            // upon construction and thus we should never end up calling
+            // into the interpreter.
             py::gil_scoped_release release;
 
             return hey::taylor_adaptive_batch<double>{sys,
@@ -595,9 +607,16 @@ PYBIND11_MODULE(core, m)
                                                       kw::tol = tol,
                                                       kw::high_accuracy = high_accuracy,
                                                       kw::compact_mode = compact_mode,
-                                                      kw::pars = std::move(pars)};
+                                                      kw::pars = std::move(pars),
+                                                      kw::t_events = std::move(tes),
+                                                      kw::nt_events = std::move(ntes)};
         } else {
             // Times not provided.
+
+            // NOTE: GIL release is fine here even if the events contain
+            // Python objects, as the event vectors are moved in
+            // upon construction and thus we should never end up calling
+            // into the interpreter.
             py::gil_scoped_release release;
 
             return hey::taylor_adaptive_batch<double>{sys,
@@ -606,7 +625,9 @@ PYBIND11_MODULE(core, m)
                                                       kw::tol = tol,
                                                       kw::high_accuracy = high_accuracy,
                                                       kw::compact_mode = compact_mode,
-                                                      kw::pars = std::move(pars)};
+                                                      kw::pars = std::move(pars),
+                                                      kw::t_events = std::move(tes),
+                                                      kw::nt_events = std::move(ntes)};
         }
     };
     py::class_<hey::taylor_adaptive_batch<double>> tabd_c(m, "_taylor_adaptive_batch_dbl", py::dynamic_attr{});
@@ -614,18 +635,21 @@ PYBIND11_MODULE(core, m)
         .def(py::init([tabd_ctor_impl](const std::vector<std::pair<hey::expression, hey::expression>> &sys,
                                        py::array_t<double> state, std::optional<py::array_t<double>> time,
                                        std::optional<py::array_t<double>> pars, double tol, bool high_accuracy,
-                                       bool compact_mode) {
-                 return tabd_ctor_impl(sys, state, std::move(time), std::move(pars), tol, high_accuracy, compact_mode);
+                                       bool compact_mode, std::vector<t_ev_t> tes, std::vector<nt_ev_t> ntes) {
+                 return tabd_ctor_impl(sys, state, std::move(time), std::move(pars), tol, high_accuracy, compact_mode,
+                                       std::move(tes), std::move(ntes));
              }),
              "sys"_a, "state"_a, "time"_a = py::none{}, "pars"_a = py::none{}, "tol"_a = 0., "high_accuracy"_a = false,
-             "compact_mode"_a = false)
+             "compact_mode"_a = false, "t_events"_a = py::list{}, "nt_events"_a = py::list{})
         .def(py::init([tabd_ctor_impl](const std::vector<hey::expression> &sys, py::array_t<double> state,
                                        std::optional<py::array_t<double>> time, std::optional<py::array_t<double>> pars,
-                                       double tol, bool high_accuracy, bool compact_mode) {
-                 return tabd_ctor_impl(sys, state, std::move(time), std::move(pars), tol, high_accuracy, compact_mode);
+                                       double tol, bool high_accuracy, bool compact_mode, std::vector<t_ev_t> tes,
+                                       std::vector<nt_ev_t> ntes) {
+                 return tabd_ctor_impl(sys, state, std::move(time), std::move(pars), tol, high_accuracy, compact_mode,
+                                       std::move(tes), std::move(ntes));
              }),
              "sys"_a, "state"_a, "time"_a = py::none{}, "pars"_a = py::none{}, "tol"_a = 0., "high_accuracy"_a = false,
-             "compact_mode"_a = false)
+             "compact_mode"_a = false, "t_events"_a = py::list{}, "nt_events"_a = py::list{})
         .def_property_readonly("decomposition", &hey::taylor_adaptive_batch<double>::get_decomposition)
         .def(
             "step", [](hey::taylor_adaptive_batch<double> &ta, bool wtc) { ta.step(wtc); }, "write_tc"_a = false)
@@ -820,6 +844,13 @@ PYBIND11_MODULE(core, m)
         .def_property_readonly("tol", &hey::taylor_adaptive_batch<double>::get_tol)
         .def_property_readonly("dim", &hey::taylor_adaptive_batch<double>::get_dim)
         .def_property_readonly("batch_size", &hey::taylor_adaptive_batch<double>::get_batch_size)
+        // Event detection.
+        .def_property_readonly("with_events", &hey::taylor_adaptive_batch<double>::with_events)
+        .def_property_readonly("te_cooldowns", &hey::taylor_adaptive_batch<double>::get_te_cooldowns)
+        .def("reset_cooldowns", [](hey::taylor_adaptive_batch<double> &ta) { ta.reset_cooldowns(); })
+        .def("reset_cooldowns", [](hey::taylor_adaptive_batch<double> &ta, std::uint32_t i) { ta.reset_cooldowns(i); })
+        .def_property_readonly("t_events", &hey::taylor_adaptive_batch<double>::get_t_events)
+        .def_property_readonly("nt_events", &hey::taylor_adaptive_batch<double>::get_nt_events)
         // Repr.
         .def("__repr__",
              [](const hey::taylor_adaptive_batch<double> &ta) {

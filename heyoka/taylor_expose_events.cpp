@@ -10,6 +10,7 @@
 
 #include <cassert>
 #include <cstddef>
+#include <cstdint>
 #include <sstream>
 #include <string>
 #include <type_traits>
@@ -158,16 +159,20 @@ private:
 };
 
 // Helper to expose non-terminal events.
-template <typename T>
+template <typename T, bool B>
 void expose_taylor_nt_event_impl(py::module &m, const std::string &suffix)
 {
     using namespace pybind11::literals;
     using fmt::literals::operator""_format;
     namespace kw = hey::kw;
 
-    using ev_t = hey::nt_event<T>;
+    using ev_t = std::conditional_t<B, hey::nt_event_batch<T>, hey::nt_event<T>>;
+    using callback_t = std::conditional_t<B, ev_callback<void, hey::taylor_adaptive_batch<T> &, T, int, std::uint32_t>,
+                                          ev_callback<void, hey::taylor_adaptive<T> &, T, int>>;
 
-    py::class_<ev_t>(m, ("_nt_event_{}"_format(suffix)).c_str(), py::dynamic_attr{})
+    const auto name = B ? "_nt_event_batch_{}"_format(suffix) : "_nt_event_{}"_format(suffix);
+
+    py::class_<ev_t>(m, name.c_str(), py::dynamic_attr{})
         .def(py::init([](const hey::expression &ex, py::object callback, hey::event_direction dir) {
                  if (!heypy::callable(callback)) {
                      heypy::py_throw(
@@ -177,8 +182,7 @@ void expose_taylor_nt_event_impl(py::module &m, const std::string &suffix)
                              .c_str());
                  }
 
-                 return ev_t(ex, ev_callback<void, hey::taylor_adaptive<T> &, T, int>{std::move(callback)},
-                             kw::direction = dir);
+                 return ev_t(ex, callback_t{std::move(callback)}, kw::direction = dir);
              }),
              "expression"_a, "callback"_a, "direction"_a = hey::event_direction::any)
         // Repr.
@@ -194,22 +198,20 @@ void expose_taylor_nt_event_impl(py::module &m, const std::string &suffix)
         // a const reference, which is UB.
         .def_property_readonly("expression", [](const ev_t &ev) { return ev.get_expression(); })
         // Callback.
-        .def_property_readonly(
-            "callback",
-            [](const ev_t &e) {
-                const auto ptr
-                    = e.get_callback().template extract<ev_callback<void, hey::taylor_adaptive<T> &, T, int>>();
+        .def_property_readonly("callback",
+                               [](const ev_t &e) {
+                                   const auto ptr = e.get_callback().template extract<callback_t>();
 
-                // NOTE: ptr should never be null, unless
-                // the event was unpickled from a broken archive.
-                assert(ptr);
+                                   // NOTE: ptr should never be null, unless
+                                   // the event was unpickled from a broken archive.
+                                   assert(ptr);
 
-                // NOTE: returning a copy of the py::object will increase
-                // the refcount of the underlying Python entity, which will
-                // thus remain safe to use even if the parent event
-                // is destroyed.
-                return ptr->m_obj;
-            })
+                                   // NOTE: returning a copy of the py::object will increase
+                                   // the refcount of the underlying Python entity, which will
+                                   // thus remain safe to use even if the parent event
+                                   // is destroyed.
+                                   return ptr->m_obj;
+                               })
         // Direction.
         .def_property_readonly("direction", &ev_t::get_direction)
         // Copy/deepcopy.
@@ -221,16 +223,21 @@ void expose_taylor_nt_event_impl(py::module &m, const std::string &suffix)
 }
 
 // Helper to expose terminal events.
-template <typename T>
+template <typename T, bool B>
 void expose_taylor_t_event_impl(py::module &m, const std::string &suffix)
 {
     using namespace pybind11::literals;
     using fmt::literals::operator""_format;
     namespace kw = hey::kw;
 
-    using ev_t = hey::t_event<T>;
+    using ev_t = std::conditional_t<B, hey::t_event_batch<T>, hey::t_event<T>>;
+    using callback_t
+        = std::conditional_t<B, ev_callback<bool, hey::taylor_adaptive_batch<T> &, bool, int, std::uint32_t>,
+                             ev_callback<bool, hey::taylor_adaptive<T> &, bool, int>>;
 
-    py::class_<ev_t>(m, ("_t_event_{}"_format(suffix)).c_str(), py::dynamic_attr{})
+    const auto name = B ? "_t_event_batch_{}"_format(suffix) : "_t_event_{}"_format(suffix);
+
+    py::class_<ev_t>(m, name.c_str(), py::dynamic_attr{})
         .def(
             py::init([](const hey::expression &ex, py::object callback, hey::event_direction dir, T cooldown) {
                 if (callback.is_none()) {
@@ -244,9 +251,8 @@ void expose_taylor_t_event_impl(py::module &m, const std::string &suffix)
                                 .c_str());
                     }
 
-                    return ev_t(
-                        ex, kw::callback = ev_callback<bool, hey::taylor_adaptive<T> &, bool, int>{std::move(callback)},
-                        kw::direction = dir, kw::cooldown = cooldown);
+                    return ev_t(ex, kw::callback = callback_t{std::move(callback)}, kw::direction = dir,
+                                kw::cooldown = cooldown);
                 }
             }),
             "expression"_a, "callback"_a = py::none{}, "direction"_a = hey::event_direction::any, "cooldown"_a = T(-1))
@@ -263,24 +269,22 @@ void expose_taylor_t_event_impl(py::module &m, const std::string &suffix)
         // a const reference, which is UB.
         .def_property_readonly("expression", [](const ev_t &ev) { return ev.get_expression(); })
         // Callback.
-        .def_property_readonly(
-            "callback",
-            [](const ev_t &e) -> py::object {
-                const auto ptr
-                    = e.get_callback().template extract<ev_callback<bool, hey::taylor_adaptive<T> &, bool, int>>();
+        .def_property_readonly("callback",
+                               [](const ev_t &e) -> py::object {
+                                   const auto ptr = e.get_callback().template extract<callback_t>();
 
-                // NOTE: the callback could be empty, in which case
-                // extraction returns a null pointer.
-                if (ptr) {
-                    // NOTE: returning a copy of the py::object will increase
-                    // the refcount of the underlying Python entity, which will
-                    // thus remain safe to use even if the parent event
-                    // is destroyed.
-                    return ptr->m_obj;
-                } else {
-                    return py::none{};
-                }
-            })
+                                   // NOTE: the callback could be empty, in which case
+                                   // extraction returns a null pointer.
+                                   if (ptr) {
+                                       // NOTE: returning a copy of the py::object will increase
+                                       // the refcount of the underlying Python entity, which will
+                                       // thus remain safe to use even if the parent event
+                                       // is destroyed.
+                                       return ptr->m_obj;
+                                   } else {
+                                       return py::none{};
+                                   }
+                               })
         // Direction.
         .def_property_readonly("direction", &ev_t::get_direction)
         // Cooldown.
@@ -299,12 +303,12 @@ void expose_taylor_t_event_impl(py::module &m, const std::string &suffix)
 
 void expose_taylor_t_event_dbl(py::module &m)
 {
-    detail::expose_taylor_t_event_impl<double>(m, "dbl");
+    detail::expose_taylor_t_event_impl<double, false>(m, "dbl");
 }
 
 void expose_taylor_t_event_ldbl(py::module &m)
 {
-    detail::expose_taylor_t_event_impl<long double>(m, "ldbl");
+    detail::expose_taylor_t_event_impl<long double, false>(m, "ldbl");
 }
 
 #if defined(HEYOKA_HAVE_REAL128)
@@ -317,19 +321,19 @@ void expose_taylor_t_event_f128(py::module &m)
     // for the constructor.
     scoped_quadprec_setter qs;
 
-    detail::expose_taylor_t_event_impl<mppp::real128>(m, "f128");
+    detail::expose_taylor_t_event_impl<mppp::real128, false>(m, "f128");
 }
 
 #endif
 
 void expose_taylor_nt_event_dbl(py::module &m)
 {
-    detail::expose_taylor_nt_event_impl<double>(m, "dbl");
+    detail::expose_taylor_nt_event_impl<double, false>(m, "dbl");
 }
 
 void expose_taylor_nt_event_ldbl(py::module &m)
 {
-    detail::expose_taylor_nt_event_impl<long double>(m, "ldbl");
+    detail::expose_taylor_nt_event_impl<long double, false>(m, "ldbl");
 }
 
 #if defined(HEYOKA_HAVE_REAL128)
@@ -342,10 +346,20 @@ void expose_taylor_nt_event_f128(py::module &m)
     // for the constructor.
     scoped_quadprec_setter qs;
 
-    detail::expose_taylor_nt_event_impl<mppp::real128>(m, "f128");
+    detail::expose_taylor_nt_event_impl<mppp::real128, false>(m, "f128");
 }
 
 #endif
+
+void expose_taylor_t_event_batch_dbl(py::module &m)
+{
+    detail::expose_taylor_t_event_impl<double, true>(m, "dbl");
+}
+
+void expose_taylor_nt_event_batch_dbl(py::module &m)
+{
+    detail::expose_taylor_nt_event_impl<double, true>(m, "dbl");
+}
 
 // NOTE: create shortcuts for the event callback wrappers,
 // because if we use their full name we ran into issues with the
@@ -368,6 +382,11 @@ using t_cb_f128 = detail::ev_callback<bool, heyoka::taylor_adaptive<mppp::real12
 
 #endif
 
+using tabd = heyoka::taylor_adaptive_batch<double>;
+
+using nt_batch_cb_dbl = detail::ev_callback<void, tabd &, double, int, std::uint32_t>;
+using t_batch_cb_dbl = detail::ev_callback<bool, tabd &, bool, int, std::uint32_t>;
+
 } // namespace heyoka_py
 
 // Register the callback wrappers in the serialisation system.
@@ -388,3 +407,7 @@ HEYOKA_S11N_CALLABLE_EXPORT(heyoka_py::t_cb_ldbl, bool, heyoka::taylor_adaptive<
 HEYOKA_S11N_CALLABLE_EXPORT(heyoka_py::t_cb_f128, bool, heyoka::taylor_adaptive<mppp::real128> &, bool, int)
 
 #endif
+
+HEYOKA_S11N_CALLABLE_EXPORT(heyoka_py::nt_batch_cb_dbl, void, heyoka_py::tabd &, double, int, std::uint32_t)
+
+HEYOKA_S11N_CALLABLE_EXPORT(heyoka_py::t_batch_cb_dbl, bool, heyoka_py::tabd &, bool, int, std::uint32_t)

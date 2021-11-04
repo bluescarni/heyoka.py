@@ -134,6 +134,9 @@ def nt_event(ex, callback, **kwargs):
         from .core import _nt_event_f128
         return _nt_event_f128(ex, callback, **kwargs)
 
+    raise TypeError(
+        "the floating-point type \"{}\" is not recognized/supported".format(fp_type))
+
 
 def t_event(ex, **kwargs):
     from .core import _t_event_dbl, _t_event_ldbl
@@ -149,6 +152,33 @@ def t_event(ex, **kwargs):
     if with_real128 and fp_type == "real128":
         from .core import _t_event_f128
         return _t_event_f128(ex, **kwargs)
+
+    raise TypeError(
+        "the floating-point type \"{}\" is not recognized/supported".format(fp_type))
+
+
+def nt_event_batch(ex, callback, **kwargs):
+    from .core import _nt_event_batch_dbl
+
+    fp_type = kwargs.pop("fp_type", "double")
+
+    if fp_type == "double":
+        return _nt_event_batch_dbl(ex, callback, **kwargs)
+
+    raise TypeError(
+        "the floating-point type \"{}\" is not recognized/supported".format(fp_type))
+
+
+def t_event_batch(ex, **kwargs):
+    from .core import _t_event_batch_dbl
+
+    fp_type = kwargs.pop("fp_type", "double")
+
+    if fp_type == "double":
+        return _t_event_batch_dbl(ex, **kwargs)
+
+    raise TypeError(
+        "the floating-point type \"{}\" is not recognized/supported".format(fp_type))
 
 
 def from_sympy(ex, s_dict={}):
