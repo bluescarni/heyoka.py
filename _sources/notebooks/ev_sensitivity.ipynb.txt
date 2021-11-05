@@ -253,7 +253,7 @@
     "\\frac{df}{dk} = -\\left(\\frac{1}{\\sqrt{k}} -A \\right)k^{-\\frac{3}{2}}.\n",
     "$$\n",
     "\n",
-    "If we assume that an analytical solution is not available (as it is generally the case), we can compute $df/dk$ numerically with the help of the variational equations. Specifically, we can write:\n",
+    "If we assume that an analytical solution is not available (as it is generally the case), we can compute $df/dk$ numerically with the help of the [variational equations](<./The variational equations.ipynb>). Specifically, we can write:\n",
     "\n",
     "$$\n",
     "\\frac{df}{dk} = 2 \\left[ x\\left(t_M\\left(k\\right), k\\right) - A\\right]\\left( \\frac{\\partial x}{\\partial t_M}\\frac{\\partial t_M}{\\partial k} + \\frac{\\partial x}{\\partial k} \\right),\n",

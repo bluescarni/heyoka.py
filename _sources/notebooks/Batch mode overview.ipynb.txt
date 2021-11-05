@@ -825,9 +825,11 @@
    "id": "b3a16c6a-7082-49f0-9653-c356f28f3c35",
    "metadata": {},
    "source": [
-    "Here we marked with vertical dashed lines the times of the detected local maxima, which, as we can see, were all correctly detected.\n",
+    "Here we marked with vertical dashed lines the times of the local maxima, which, as we can see, were all correctly detected.\n",
     "\n",
-    "As an another example, we will be re-formulating the [wavy ramp tutorial](<./The wavy ramp.ipynb>) in batch mode. The code adaptations for batch mode are small and mostly involve the callbacks and the auxiliary structures to store the coordinates of the bouncing points. Let us formulate and integrate the problem:"
+    "As an another example, we will be re-formulating the [wavy ramp tutorial](<./The wavy ramp.ipynb>) in batch mode. The code adaptations for batch mode are small and mostly involve the callbacks and the auxiliary structures to store the coordinates of the bouncing points. The batch elements will feature slightly different initial drop heights for the bouncing ball.\n",
+    "\n",
+    "Let us formulate and integrate the problem:"
    ]
   },
   {
