@@ -1543,7 +1543,7 @@ class scalar_integrator_test_case(_ut.TestCase):
         self.assertEqual(len(ta.t_events), 1)
         self.assertEqual(len(ta.nt_events), 1)
 
-        oc, _, _, _ = ta.propagate_until(1e9)
+        oc = ta.propagate_until(1e9)[0]
         self.assertEqual(int(oc), -1)
         self.assertFalse(ta.te_cooldowns[0] is None)
 
@@ -2192,6 +2192,242 @@ class llvm_state_test_case(_ut.TestCase):
         self.assertEqual(ls.foo, "hello world")
 
 
+class c_output_test_case(_ut.TestCase):
+    def runTest(self):
+        self.test_scalar()
+        self.test_batch()
+
+    def test_batch(self):
+        from copy import copy, deepcopy
+        from . import make_vars, with_real128, sin, taylor_adaptive_batch, continuous_output_batch_dbl
+
+        x, v = make_vars("x", "v")
+
+        fp_types = [("double", float, continuous_output_batch_dbl)]
+
+        # Use a pendulum for testing purposes.
+        sys = [(x, v), (v, -9.8 * sin(x))]
+
+        # Test the default cted object.
+        c_out_t = continuous_output_batch_dbl
+        c_out = c_out_t()
+
+        with self.assertRaises(ValueError) as cm:
+            c_out([])
+        self.assertTrue(
+            "Cannot use a default-constructed continuous_output_batch object" in str(cm.exception))
+
+    def test_scalar(self):
+        from copy import copy, deepcopy
+        from . import make_vars, with_real128, sin, taylor_adaptive, continuous_output_dbl
+        from .core import _ppc_arch
+        import numpy as np
+        from pickle import dumps, loads
+        from sys import getrefcount
+
+        x, v = make_vars("x", "v")
+
+        if _ppc_arch:
+            fp_types = [("double", float, continuous_output_dbl)]
+        else:
+            from . import continuous_output_ldbl
+            fp_types = [("double", float, continuous_output_dbl),
+                        ("long double", np.longdouble, continuous_output_ldbl)]
+
+        if with_real128:
+            from . import continuous_output_f128
+            from mpmath import mpf
+            fp_types.append(("real128", mpf, continuous_output_f128))
+
+        # Use a pendulum for testing purposes.
+        sys = [(x, v), (v, -9.8 * sin(x))]
+
+        for desc, fp_t, c_out_t in fp_types:
+            # Test the default cted object.
+            c_out = c_out_t()
+
+            with self.assertRaises(ValueError) as cm:
+                c_out(fp_t(0))
+            self.assertTrue(
+                "Cannot use a default-constructed continuous_output object" in str(cm.exception))
+
+            with self.assertRaises(ValueError) as cm:
+                c_out(time=[fp_t(0), fp_t(0)])
+            self.assertTrue(
+                "Cannot use a default-constructed continuous_output object" in str(cm.exception))
+
+            self.assertTrue(c_out(time=[]).shape == (0, 0))
+            self.assertTrue(c_out.output is None)
+            self.assertTrue(c_out.times is None)
+            self.assertTrue(c_out.tcs is None)
+
+            with self.assertRaises(ValueError) as cm:
+                c_out.bounds
+            self.assertTrue(
+                "Cannot use a default-constructed continuous_output object" in str(cm.exception))
+
+            with self.assertRaises(ValueError) as cm:
+                c_out.n_steps
+            self.assertTrue(
+                "Cannot use a default-constructed continuous_output object" in str(cm.exception))
+
+            self.assertFalse("forward" in repr(c_out))
+
+            self.assertFalse(c_out.llvm_state.get_ir() == "")
+
+            # Try copies as well.
+            c_out = copy(c_out)
+
+            with self.assertRaises(ValueError) as cm:
+                c_out.n_steps
+            self.assertTrue(
+                "Cannot use a default-constructed continuous_output object" in str(cm.exception))
+
+            self.assertFalse("forward" in repr(c_out))
+
+            self.assertFalse(c_out.llvm_state.get_ir() == "")
+
+            c_out = deepcopy(c_out)
+
+            with self.assertRaises(ValueError) as cm:
+                c_out.n_steps
+            self.assertTrue(
+                "Cannot use a default-constructed continuous_output object" in str(cm.exception))
+
+            self.assertFalse("forward" in repr(c_out))
+
+            self.assertFalse(c_out.llvm_state.get_ir() == "")
+
+            # Pickling.
+            c_out = loads(dumps(c_out))
+
+            with self.assertRaises(ValueError) as cm:
+                c_out.n_steps
+            self.assertTrue(
+                "Cannot use a default-constructed continuous_output object" in str(cm.exception))
+
+            self.assertFalse("forward" in repr(c_out))
+
+            self.assertFalse(c_out.llvm_state.get_ir() == "")
+
+            ic = [fp_t(0), fp_t(0.25)]
+
+            ta = taylor_adaptive(
+                sys=sys, state=ic, fp_type=desc)
+
+            # Helper to reset the state of ta.
+            def reset():
+                if desc == "real128":
+                    ta.set_state(ic)
+                else:
+                    ta.state[:] = ic
+
+                ta.time = fp_t(0)
+
+            c_out = ta.propagate_until(fp_t(10))[4]
+
+            self.assertTrue(c_out is None)
+
+            reset()
+
+            c_out = ta.propagate_until(fp_t(10), c_output=False)[4]
+
+            self.assertTrue(c_out is None)
+
+            reset()
+
+            _, _, _, nsteps, c_out = ta.propagate_until(
+                fp_t(10), c_output=True)
+
+            self.assertFalse(c_out is None)
+
+            self.assertTrue(c_out(fp_t(0.1)).shape == (2, ))
+
+            if desc != "real128":
+                with self.assertRaises(ValueError) as cm:
+                    c_out(fp_t(0.1))[0] = .5
+
+                rc = getrefcount(c_out)
+                tmp_out = c_out(fp_t(0.1))
+                new_rc = getrefcount(c_out)
+                self.assertEqual(new_rc, rc + 1)
+
+            self.assertTrue(c_out([]).shape == (0, 2))
+
+            tmp = c_out([fp_t(0), fp_t(1), fp_t(2)])
+            self.assertTrue(np.all(c_out(fp_t(0)) == tmp[0]))
+            self.assertTrue(np.all(c_out(fp_t(1)) == tmp[1]))
+            self.assertTrue(np.all(c_out(fp_t(2)) == tmp[2]))
+
+            self.assertTrue(np.all(c_out.output == tmp[2]))
+            if desc != "real128":
+                with self.assertRaises(ValueError) as cm:
+                    c_out.output[0] = .5
+
+                rc = getrefcount(c_out)
+                tmp_out2 = c_out.output
+                new_rc = getrefcount(c_out)
+                self.assertEqual(new_rc, rc + 1)
+
+            self.assertEqual(c_out.times.shape, (nsteps + 1,))
+            if desc != "real128":
+                with self.assertRaises(ValueError) as cm:
+                    c_out.times[0] = .5
+
+                rc = getrefcount(c_out)
+                tmp_out3 = c_out.times
+                new_rc = getrefcount(c_out)
+                self.assertEqual(new_rc, rc + 1)
+
+            self.assertEqual(c_out.tcs.shape, (nsteps, 2, ta.order + 1))
+            if desc != "real128":
+                self.assertTrue(np.all(np.isfinite(c_out.tcs)))
+                with self.assertRaises(ValueError) as cm:
+                    c_out.tcs[0, 0, 0] = .5
+
+                rc = getrefcount(c_out)
+                tmp_out4 = c_out.tcs
+                new_rc = getrefcount(c_out)
+                self.assertEqual(new_rc, rc + 1)
+
+            self.assertEqual(c_out.bounds, (0, 10))
+            self.assertTrue(c_out.n_steps > 0)
+
+            self.assertTrue("forward" in repr(c_out))
+
+            self.assertFalse(c_out.llvm_state.get_ir() == "")
+
+            # Try copies as well.
+            c_out = copy(c_out)
+
+            self.assertEqual(c_out.tcs.shape, (nsteps, 2, ta.order + 1))
+            if desc != "real128":
+                self.assertTrue(np.all(np.isfinite(c_out.tcs)))
+                with self.assertRaises(ValueError) as cm:
+                    c_out.tcs[0, 0, 0] = .5
+
+            self.assertFalse(c_out.llvm_state.get_ir() == "")
+
+            c_out = deepcopy(c_out)
+
+            self.assertEqual(c_out.tcs.shape, (nsteps, 2, ta.order + 1))
+            if desc != "real128":
+                self.assertTrue(np.all(np.isfinite(c_out.tcs)))
+                with self.assertRaises(ValueError) as cm:
+                    c_out.tcs[0, 0, 0] = .5
+
+            # Pickling.
+            c_out = loads(dumps(c_out))
+
+            self.assertFalse(c_out.llvm_state.get_ir() == "")
+
+            self.assertEqual(c_out.tcs.shape, (nsteps, 2, ta.order + 1))
+            if desc != "real128":
+                self.assertTrue(np.all(np.isfinite(c_out.tcs)))
+                with self.assertRaises(ValueError) as cm:
+                    c_out.tcs[0, 0, 0] = .5
+
+
 def run_test_suite():
     from . import make_nbody_sys, taylor_adaptive, with_real128
 
@@ -2206,6 +2442,7 @@ def run_test_suite():
     retval = 0
 
     suite = _ut.TestLoader().loadTestsFromTestCase(taylor_add_jet_test_case)
+    suite.addTest(c_output_test_case())
     suite.addTest(expression_test_case())
     suite.addTest(llvm_state_test_case())
     suite.addTest(expression_test_case())

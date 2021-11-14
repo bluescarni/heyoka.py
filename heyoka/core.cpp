@@ -56,6 +56,7 @@
 #include "pickle_wrappers.hpp"
 #include "setup_sympy.hpp"
 #include "taylor_add_jet.hpp"
+#include "taylor_expose_c_output.hpp"
 #include "taylor_expose_events.hpp"
 #include "taylor_expose_integrator.hpp"
 
@@ -665,7 +666,7 @@ PYBIND11_MODULE(core, m)
         .def(
             "propagate_for",
             [](hey::taylor_adaptive_batch<double> &ta, const std::vector<double> &delta_t, std::size_t max_steps,
-               const std::vector<double> &max_delta_t, prop_cb_t cb_, bool write_tc) {
+               const std::vector<double> &max_delta_t, prop_cb_t cb_, bool write_tc, bool c_output) {
                 // Create the callback wrapper.
                 auto cb = heypy::make_prop_cb(cb_);
 
@@ -675,24 +676,24 @@ PYBIND11_MODULE(core, m)
                 // Note that copying cb around or destroying it is harmless, as it contains only
                 // a reference to the original callback cb_, or it is an empty callback.
                 py::gil_scoped_release release;
-                ta.propagate_for(delta_t, kw::max_steps = max_steps, kw::max_delta_t = max_delta_t, kw::callback = cb,
-                                 kw::write_tc = write_tc);
+                return ta.propagate_for(delta_t, kw::max_steps = max_steps, kw::max_delta_t = max_delta_t,
+                                        kw::callback = cb, kw::write_tc = write_tc, kw::c_output = c_output);
             },
             "delta_t"_a, "max_steps"_a = 0, "max_delta_t"_a = std::vector<double>{}, "callback"_a = prop_cb_t{},
-            "write_tc"_a = false)
+            "write_tc"_a = false, "c_output"_a = false)
         .def(
             "propagate_until",
             [](hey::taylor_adaptive_batch<double> &ta, const std::vector<double> &t, std::size_t max_steps,
-               const std::vector<double> &max_delta_t, prop_cb_t cb_, bool write_tc) {
+               const std::vector<double> &max_delta_t, prop_cb_t cb_, bool write_tc, bool c_output) {
                 // Create the callback wrapper.
                 auto cb = heypy::make_prop_cb(cb_);
 
                 py::gil_scoped_release release;
-                ta.propagate_until(t, kw::max_steps = max_steps, kw::max_delta_t = max_delta_t, kw::callback = cb,
-                                   kw::write_tc = write_tc);
+                return ta.propagate_until(t, kw::max_steps = max_steps, kw::max_delta_t = max_delta_t,
+                                          kw::callback = cb, kw::write_tc = write_tc, kw::c_output = c_output);
             },
             "t"_a, "max_steps"_a = 0, "max_delta_t"_a = std::vector<double>{}, "callback"_a = prop_cb_t{},
-            "write_tc"_a = false)
+            "write_tc"_a = false, "c_output"_a = false)
         .def(
             "propagate_grid",
             [](hey::taylor_adaptive_batch<double> &ta, py::array_t<double> grid, std::size_t max_steps,
@@ -891,6 +892,9 @@ PYBIND11_MODULE(core, m)
             return hey::vsop2013_cartesian_icrf(pl_idx, kw::time = std::move(t_expr), kw::thresh = thresh);
         },
         "pl_idx"_a, "time"_a = hey::time, "thresh"_a = 1e-9);
+
+    // Expose the continuous output function objects.
+    heypy::taylor_expose_c_output(m);
 }
 
 #if defined(__clang__)
