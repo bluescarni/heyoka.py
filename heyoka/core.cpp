@@ -666,7 +666,7 @@ PYBIND11_MODULE(core, m)
         .def(
             "propagate_for",
             [](hey::taylor_adaptive_batch<double> &ta, const std::vector<double> &delta_t, std::size_t max_steps,
-               const std::vector<double> &max_delta_t, prop_cb_t cb_, bool write_tc, bool c_output) {
+               std::vector<double> max_delta_t, const prop_cb_t &cb_, bool write_tc, bool c_output) {
                 // Create the callback wrapper.
                 auto cb = heypy::make_prop_cb(cb_);
 
@@ -676,28 +676,29 @@ PYBIND11_MODULE(core, m)
                 // Note that copying cb around or destroying it is harmless, as it contains only
                 // a reference to the original callback cb_, or it is an empty callback.
                 py::gil_scoped_release release;
-                return ta.propagate_for(delta_t, kw::max_steps = max_steps, kw::max_delta_t = max_delta_t,
-                                        kw::callback = cb, kw::write_tc = write_tc, kw::c_output = c_output);
+                return ta.propagate_for(delta_t, kw::max_steps = max_steps, kw::max_delta_t = std::move(max_delta_t),
+                                        kw::callback = std::move(cb), kw::write_tc = write_tc, kw::c_output = c_output);
             },
             "delta_t"_a, "max_steps"_a = 0, "max_delta_t"_a = std::vector<double>{}, "callback"_a = prop_cb_t{},
             "write_tc"_a = false, "c_output"_a = false)
         .def(
             "propagate_until",
             [](hey::taylor_adaptive_batch<double> &ta, const std::vector<double> &t, std::size_t max_steps,
-               const std::vector<double> &max_delta_t, prop_cb_t cb_, bool write_tc, bool c_output) {
+               std::vector<double> max_delta_t, const prop_cb_t &cb_, bool write_tc, bool c_output) {
                 // Create the callback wrapper.
                 auto cb = heypy::make_prop_cb(cb_);
 
                 py::gil_scoped_release release;
-                return ta.propagate_until(t, kw::max_steps = max_steps, kw::max_delta_t = max_delta_t,
-                                          kw::callback = cb, kw::write_tc = write_tc, kw::c_output = c_output);
+                return ta.propagate_until(t, kw::max_steps = max_steps, kw::max_delta_t = std::move(max_delta_t),
+                                          kw::callback = std::move(cb), kw::write_tc = write_tc,
+                                          kw::c_output = c_output);
             },
             "t"_a, "max_steps"_a = 0, "max_delta_t"_a = std::vector<double>{}, "callback"_a = prop_cb_t{},
             "write_tc"_a = false, "c_output"_a = false)
         .def(
             "propagate_grid",
             [](hey::taylor_adaptive_batch<double> &ta, py::array_t<double> grid, std::size_t max_steps,
-               const std::vector<double> &max_delta_t, prop_cb_t cb_) {
+               std::vector<double> max_delta_t, const prop_cb_t &cb_) {
                 // Check the grid dimension/shape.
                 if (grid.ndim() != 2) {
                     heypy::py_throw(
@@ -718,6 +719,11 @@ PYBIND11_MODULE(core, m)
                 // Convert to a std::vector.
                 const auto grid_v = py::cast<std::vector<double>>(grid.attr("flatten")());
 
+#if !defined(NDEBUG)
+                // Store the grid size for debug.
+                const auto grid_v_size = grid_v.size();
+#endif
+
                 // Create the callback wrapper.
                 auto cb = heypy::make_prop_cb(cb_);
 
@@ -727,12 +733,12 @@ PYBIND11_MODULE(core, m)
                 decltype(ta.propagate_grid(grid_v, max_steps)) ret;
                 {
                     py::gil_scoped_release release;
-                    ret = ta.propagate_grid(grid_v, kw::max_steps = max_steps, kw::max_delta_t = max_delta_t,
-                                            kw::callback = cb);
+                    ret = ta.propagate_grid(std::move(grid_v), kw::max_steps = max_steps,
+                                            kw::max_delta_t = std::move(max_delta_t), kw::callback = std::move(cb));
                 }
 
                 // Create the output array.
-                assert(ret.size() == grid_v.size() * ta.get_dim());
+                assert(ret.size() == grid_v_size * ta.get_dim());
                 py::array_t<double> a_ret(py::array::ShapeContainer{grid.shape(0),
                                                                     boost::numeric_cast<py::ssize_t>(ta.get_dim()),
                                                                     grid.shape(1)},
