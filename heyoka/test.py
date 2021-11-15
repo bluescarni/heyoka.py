@@ -2509,6 +2509,17 @@ class c_output_test_case(_ut.TestCase):
             self.assertEqual(
                 c_out.tcs.shape, (c_out.n_steps, 2, ta.order + 1, 4))
 
+            # Pickling with dynattrs.
+            c_out.foo = []
+            c_out = loads(dumps(c_out))
+
+            self.assertFalse(c_out.llvm_state.get_ir() == "")
+
+            self.assertEqual(
+                c_out.tcs.shape, (c_out.n_steps, 2, ta.order + 1, 4))
+
+            self.assertEqual(c_out.foo, [])
+
     def test_scalar(self):
         from copy import copy, deepcopy
         from . import make_vars, with_real128, sin, taylor_adaptive, continuous_output_dbl
@@ -2728,6 +2739,20 @@ class c_output_test_case(_ut.TestCase):
                 self.assertTrue(np.all(np.isfinite(c_out.tcs)))
                 with self.assertRaises(ValueError) as cm:
                     c_out.tcs[0, 0, 0] = .5
+
+            # Pickling with dynattrs.
+            c_out.foo = []
+            c_out = loads(dumps(c_out))
+
+            self.assertFalse(c_out.llvm_state.get_ir() == "")
+
+            self.assertEqual(c_out.tcs.shape, (nsteps, 2, ta.order + 1))
+            if desc != "real128":
+                self.assertTrue(np.all(np.isfinite(c_out.tcs)))
+                with self.assertRaises(ValueError) as cm:
+                    c_out.tcs[0, 0, 0] = .5
+
+            self.assertEqual(c_out.foo, [])
 
 
 def run_test_suite():
