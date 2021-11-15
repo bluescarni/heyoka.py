@@ -8,6 +8,7 @@
 
 #include <heyoka/config.hpp>
 
+#include <algorithm>
 #include <cassert>
 #include <sstream>
 #include <string>
@@ -66,6 +67,7 @@ void expose_c_output_impl(py::module &m, const std::string &suffix)
     using fmt::literals::operator""_format;
 
     using c_output_t = hey::continuous_output<T>;
+    using array_arg_t = std::conditional_t<std::is_same_v<T, fp_128_t>, py::iterable, py::array_t<T>>;
 
     const auto name = "continuous_output_{}"_format(suffix);
 
@@ -95,38 +97,65 @@ void expose_c_output_impl(py::module &m, const std::string &suffix)
                 }
             },
             "time"_a)
-        // NOTE: for this overload:
-        // - should we release the GIL?
-        // - should we have a more efficient way
-        //   of passing in the times? I.e., 1D NumPy array?
         .def(
             "__call__",
-            [](py::object &o, const std::vector<T> &tm) {
+            [](py::object &o, const array_arg_t &tm) {
                 auto *c_out = py::cast<c_output_t *>(o);
 
-                // The output vector.
-                std::vector<T> out;
-
-                for (const auto &t : tm) {
-                    (*c_out)(t);
-
-                    out.insert(out.end(), c_out->get_output().begin(), c_out->get_output().end());
-                }
-
-                // Fetch the number of rows/cols for the return value.
-                const auto nrows = tm.size();
-                const auto ncols = c_out->get_output().size();
+                // Number of columns in the return value.
+                const auto ncols = boost::numeric_cast<py::ssize_t>(c_out->get_output().size());
 
                 if constexpr (std::is_same_v<T, fp_128_t>) {
+                    // Compute the number of rows.
+                    const auto nrows = py::len(tm);
+
+                    // The output vector.
+                    std::vector<T> out;
+
+                    // Do the computation.
+                    for (const auto &t : tm) {
+                        (*c_out)(t.template cast<fp_128_t>());
+
+                        out.insert(out.end(), c_out->get_output().begin(), c_out->get_output().end());
+                    }
+
                     auto ret = py::array(py::cast(out));
 
                     ret.attr("shape") = py::make_tuple(nrows, ncols);
 
                     return ret;
                 } else {
-                    return py::array_t<T>(py::array::ShapeContainer{boost::numeric_cast<py::ssize_t>(nrows),
-                                                                    boost::numeric_cast<py::ssize_t>(ncols)},
-                                          out.data());
+                    // NOTE: investigate about GIL release here. Can we use unchecked
+                    // access to tm without holding the GIL?
+
+                    // Check the shape of tm.
+                    if (tm.ndim() != 1) {
+                        py_throw(PyExc_ValueError, "Invalid time array passed to a continuous_output object: the "
+                                                   "number of dimensions must be 1, but it is "
+                                                   "{} instead"_format(tm.ndim())
+                                                       .c_str());
+                    }
+
+                    // Compute the number of rows.
+                    const auto nrows = tm.shape(0);
+
+                    // Unchecked accessor to tm.
+                    auto u_tm = tm.template unchecked<1>();
+
+                    // Prepare the output object.
+                    auto ret = py::array_t<T>(py::array::ShapeContainer{nrows, ncols});
+
+                    // Fetch a pointer for writing.
+                    auto ret_ptr = ret.mutable_data();
+
+                    // Do the computation.
+                    for (py::ssize_t i = 0; i < nrows; ++i) {
+                        (*c_out)(u_tm(i));
+
+                        std::copy(c_out->get_output().begin(), c_out->get_output().end(), ret_ptr + i * ncols);
+                    }
+
+                    return ret;
                 }
             },
             "time"_a)
@@ -185,10 +214,10 @@ void expose_c_output_impl(py::module &m, const std::string &suffix)
                                        const auto n_steps = c_out->get_n_steps();
                                        const auto nvars = c_out->get_output().size();
 
-                                       assert(tc_size % n_steps == 0u);
-                                       assert(tc_size % nvars == 0u);
                                        assert(tc_size % (n_steps * nvars) == 0u);
 
+                                       // NOTE: this is the number of coefficients per
+                                       // state variable, i.e., the Taylor order + 1.
                                        const auto ncoeffs = tc_size / (n_steps * nvars);
 
                                        if constexpr (std::is_same_v<T, fp_128_t>) {
@@ -247,7 +276,7 @@ void expose_c_output_batch_impl(py::module &m, const std::string &suffix)
     c_out_c.def(py::init<>())
         .def(
             "__call__",
-            [](py::object &o, const py::array_t<T> &tm) -> py::object {
+            [](py::object &o, const py::array_t<T> &tm) {
                 auto *c_out = py::cast<c_output_t *>(o);
 
                 if (c_out->get_output().empty()) {
@@ -269,14 +298,6 @@ void expose_c_output_batch_impl(py::module &m, const std::string &suffix)
                                                    .c_str());
                 }
 
-                // Check if tm is contiguous.
-                // NOTE: it looks like c_style does not necessarily imply well-aligned:
-                // https://numpy.org/devdocs/reference/c-api/array.html#c.PyArray_FromAny.NPY_ARRAY_CARRAY
-                // If this becomes a problem, we can tap into the NumPy C API and do additional
-                // flag checking:
-                // https://numpy.org/devdocs/reference/c-api/array.html#c.PyArray_CHKFLAGS
-                const auto tm_cont = static_cast<bool>(tm.flags() & py::array::c_style);
-
                 if (tm.ndim() == 1) {
                     // Single time batch.
                     if (tm.shape(0) != boost::numeric_cast<py::ssize_t>(batch_size)) {
@@ -285,6 +306,14 @@ void expose_c_output_batch_impl(py::module &m, const std::string &suffix)
                                  "length must be {} but it is {} instead"_format(batch_size, tm.shape(0))
                                      .c_str());
                     }
+
+                    // Check if tm is contiguous.
+                    // NOTE: it looks like c_style does not necessarily imply well-aligned:
+                    // https://numpy.org/devdocs/reference/c-api/array.html#c.PyArray_FromAny.NPY_ARRAY_CARRAY
+                    // If this becomes a problem, we can tap into the NumPy C API and do additional
+                    // flag checking:
+                    // https://numpy.org/devdocs/reference/c-api/array.html#c.PyArray_CHKFLAGS
+                    const auto tm_cont = static_cast<bool>(tm.flags() & py::array::c_style);
 
                     if (tm_cont) {
                         // tm is contiguous.
@@ -305,19 +334,165 @@ void expose_c_output_batch_impl(py::module &m, const std::string &suffix)
                     return ret;
                 } else {
                     // Multiple time batches.
-
-                    // Fetch the number of rows.
-                    const auto nrows = tm.shape(0);
-
                     if (tm.shape(1) != boost::numeric_cast<py::ssize_t>(batch_size)) {
                         py_throw(PyExc_ValueError,
                                  "Invalid time array passed to a continuous_output_batch object: the "
                                  "number of columns must be {} but it is {} instead"_format(batch_size, tm.shape(1))
                                      .c_str());
                     }
+
+                    // Fetch the number of rows.
+                    const auto nrows = tm.shape(0);
+
+                    // Setup the return value.
+                    auto ret = py::array_t<T>(py::array::ShapeContainer{nrows, boost::numeric_cast<py::ssize_t>(dim),
+                                                                        boost::numeric_cast<py::ssize_t>(batch_size)});
+
+                    // Fetch a pointer for writing.
+                    auto ret_ptr = ret.mutable_data();
+
+                    // Unchecked accessor to tm.
+                    auto u_tm = tm.template unchecked<2>();
+
+                    // A temporary buffer that we will use in the calls to c_out.
+                    std::vector<T> tmp_buffer;
+                    tmp_buffer.resize(boost::numeric_cast<decltype(tmp_buffer.size())>(batch_size));
+
+                    // NOTE: investigate about GIL release here. Can we use unchecked
+                    // access to tm without holding the GIL?
+
+                    // Run the computation.
+                    for (py::ssize_t i = 0; i < nrows; ++i) {
+                        // Copy the current time batch to tmp_buffer.
+                        for (py::ssize_t j = 0; j < boost::numeric_cast<py::ssize_t>(batch_size); ++j) {
+                            tmp_buffer.data()[j] = u_tm(i, j);
+                        }
+
+                        // Compute the continuous output.
+                        (*c_out)(tmp_buffer);
+
+                        // Copy over to ret.
+                        std::copy(c_out->get_output().begin(), c_out->get_output().end(),
+                                  ret_ptr
+                                      + i * boost::numeric_cast<py::ssize_t>(dim)
+                                            * boost::numeric_cast<py::ssize_t>(batch_size));
+                    }
+
+                    return ret;
                 }
             },
-            "time"_a);
+            "time"_a)
+        .def_property_readonly("output",
+                               [](const py::object &o) -> py::object {
+                                   auto *c_out = py::cast<const c_output_t *>(o);
+
+                                   if (c_out->get_output().empty()) {
+                                       return py::none{};
+                                   } else {
+                                       const auto batch_size = c_out->get_batch_size();
+                                       assert(batch_size > 0u);
+                                       assert(c_out->get_output().size() % batch_size == 0u);
+                                       const auto dim = c_out->get_output().size() / batch_size;
+
+                                       auto ret = py::array_t<T>(
+                                           py::array::ShapeContainer{boost::numeric_cast<py::ssize_t>(dim),
+                                                                     boost::numeric_cast<py::ssize_t>(batch_size)},
+                                           c_out->get_output().data(), o);
+
+                                       // Ensure the returned array is read-only.
+                                       ret.attr("flags").attr("writeable") = false;
+
+                                       return ret;
+                                   }
+                               })
+        .def_property_readonly("times",
+                               [](const py::object &o) -> py::object {
+                                   auto *c_out = py::cast<const c_output_t *>(o);
+
+                                   if (c_out->get_times().empty()) {
+                                       return py::none{};
+                                   } else {
+                                       const auto batch_size = c_out->get_batch_size();
+                                       assert(batch_size > 0u);
+                                       assert(c_out->get_times().size() % batch_size == 0u);
+                                       auto dim = c_out->get_times().size() / batch_size;
+                                       assert(dim > 0u);
+                                       // NOTE: the times vector contains padding, remove it
+                                       // in the return value.
+                                       --dim;
+
+                                       auto ret = py::array_t<T>(
+                                           py::array::ShapeContainer{boost::numeric_cast<py::ssize_t>(dim),
+                                                                     boost::numeric_cast<py::ssize_t>(batch_size)},
+                                           c_out->get_times().data(), o);
+
+                                       // Ensure the returned array is read-only.
+                                       ret.attr("flags").attr("writeable") = false;
+
+                                       return ret;
+                                   }
+                               })
+        .def_property_readonly("tcs",
+                               [](const py::object &o) -> py::object {
+                                   auto *c_out = py::cast<const c_output_t *>(o);
+
+                                   if (c_out->get_tcs().empty()) {
+                                       return py::none{};
+                                   } else {
+                                       const auto batch_size = c_out->get_batch_size();
+                                       assert(batch_size > 0u);
+
+                                       const auto tc_size = c_out->get_tcs().size();
+
+                                       // NOTE: get_n_steps() accounts for padding.
+                                       const auto n_steps = c_out->get_n_steps();
+                                       assert(c_out->get_output().size() % batch_size == 0u);
+
+                                       const auto nvars = c_out->get_output().size() / batch_size;
+
+                                       // NOTE: this is the number of coefficients per
+                                       // state variable, i.e., the Taylor order + 1.
+                                       assert(tc_size % (n_steps * nvars * batch_size) == 0u);
+                                       const auto ncoeffs = tc_size / (n_steps * nvars * batch_size);
+
+                                       auto ret = py::array_t<T>(
+                                           py::array::ShapeContainer{boost::numeric_cast<py::ssize_t>(n_steps),
+                                                                     boost::numeric_cast<py::ssize_t>(nvars),
+                                                                     boost::numeric_cast<py::ssize_t>(ncoeffs),
+                                                                     boost::numeric_cast<py::ssize_t>(batch_size)},
+                                           c_out->get_tcs().data(), o);
+
+                                       // Ensure the returned array is read-only.
+                                       ret.attr("flags").attr("writeable") = false;
+
+                                       return ret;
+                                   }
+                               })
+        .def_property_readonly("bounds",
+                               [](const c_output_t &c_out) {
+                                   auto ret = c_out.get_bounds();
+
+                                   return py::make_tuple(py::array_t<T>(py::cast(ret.first)),
+                                                         py::array_t<T>(py::cast(ret.second)));
+                               })
+        .def_property_readonly("n_steps", &c_output_t::get_n_steps)
+        .def_property_readonly("batch_size", &c_output_t::get_batch_size)
+        // Repr.
+        .def("__repr__",
+             [](const c_output_t &c) {
+                 std::ostringstream oss;
+                 oss << c;
+                 return oss.str();
+             })
+        // Copy/deepcopy.
+        .def("__copy__", [](const c_output_t &c) { return c; })
+        .def(
+            "__deepcopy__", [](const c_output_t &c, py::dict) { return c; }, "memo"_a)
+        // Pickle support.
+        .def(py::pickle(&pickle_getstate_wrapper<c_output_t>, &pickle_setstate_wrapper<c_output_t>));
+
+    // Expose the llvm state getter.
+    expose_llvm_state_property(c_out_c);
 }
 
 } // namespace
