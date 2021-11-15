@@ -7,8 +7,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>The adaptive integrator &#8212; heyoka.py 0.16.0 documentation</title>
     
-  <link href="../_static/css/theme.css" rel="stylesheet" />
-  <link href="../_static/css/index.c5995385ac14fb8791e8eb36b4908be2.css" rel="stylesheet" />
+  <link href="../_static/css/theme.css" rel="stylesheet">
+  <link href="../_static/css/index.ff1ffe594081f20da1ef19478df9384b.css" rel="stylesheet">
 
     
   <link rel="stylesheet"
@@ -27,7 +27,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css" />
     <link rel="stylesheet" type="text/css" href="../_static/mystnb.css" />
     
-  <link rel="preload" as="script" href="../_static/js/index.1c5a1a01449ed65a7b51.js">
+  <link rel="preload" as="script" href="../_static/js/index.be7d3bbb2ef33a8344ce.js">
 
     <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
     <script src="../_static/jquery.js"></script>
@@ -36,14 +36,17 @@
     <script src="../_static/togglebutton.js"></script>
     <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
     <script src="../_static/sphinx-book-theme.12a9622fbb08dcb3a2a40b2c02b83a57.js"></script>
-    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Customising the adaptive integrator" href="Customising%20the%20adaptive%20integrator.html" />
     <link rel="prev" title="The expression system" href="The%20expression%20system.html" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="docsearch:language" content="en" />
+    <meta name="docsearch:language" content="None">
+    
+
+    <!-- Google Analytics -->
     
   </head>
   <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
@@ -75,7 +78,7 @@
   <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
 </form><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
     <div class="bd-toc-item active">
-        <p class="caption" role="heading">
+        <p aria-level="2" class="caption" role="heading">
  <span class="caption-text">
   Contents
  </span>
@@ -128,7 +131,7 @@
    </li>
    <li class="toctree-l2">
     <a class="reference internal" href="Dense%20output.html">
-     Dense output
+     Dense &amp; continuous output
     </a>
    </li>
    <li class="toctree-l2">
@@ -490,6 +493,8 @@ v\left( 0 \right) = 0.025
 </div>
 <div class="cell_output docutils container">
 <div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Tolerance               : 2.2204460492503131e-16
+High accuracy           : false
+Compact mode            : false
 Taylor order            : 20
 Dimension               : 2
 Time                    : 0.0000000000000000
@@ -543,6 +548,8 @@ to respect the desired error tolerance.</p>
 </div>
 <div class="cell_output docutils container">
 <div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Tolerance               : 2.2204460492503131e-16
+High accuracy           : false
+Compact mode            : false
 Taylor order            : 20
 Dimension               : 2
 Time                    : 0.21605277478009474
@@ -678,7 +685,7 @@ propagates the state up to a specified epoch.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Propagate for 5 time units.</span>
-<span class="n">status</span><span class="p">,</span> <span class="n">min_h</span><span class="p">,</span> <span class="n">max_h</span><span class="p">,</span> <span class="n">nsteps</span> <span class="o">=</span> <span class="n">ta</span><span class="o">.</span><span class="n">propagate_for</span><span class="p">(</span><span class="n">delta_t</span> <span class="o">=</span> <span class="mf">5.</span><span class="p">)</span>
+<span class="n">status</span><span class="p">,</span> <span class="n">min_h</span><span class="p">,</span> <span class="n">max_h</span><span class="p">,</span> <span class="n">nsteps</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">ta</span><span class="o">.</span><span class="n">propagate_for</span><span class="p">(</span><span class="n">delta_t</span> <span class="o">=</span> <span class="mf">5.</span><span class="p">)</span>
 
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Outcome      : </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">status</span><span class="p">))</span>
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Min. timestep: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">min_h</span><span class="p">))</span>
@@ -687,7 +694,7 @@ propagates the state up to a specified epoch.</p>
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Current time : </span><span class="si">{}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ta</span><span class="o">.</span><span class="n">time</span><span class="p">))</span>
 
 <span class="c1"># Propagate until t = 20.</span>
-<span class="n">status</span><span class="p">,</span> <span class="n">min_h</span><span class="p">,</span> <span class="n">max_h</span><span class="p">,</span> <span class="n">nsteps</span> <span class="o">=</span> <span class="n">ta</span><span class="o">.</span><span class="n">propagate_until</span><span class="p">(</span><span class="n">t</span> <span class="o">=</span> <span class="mf">20.</span><span class="p">)</span>
+<span class="n">status</span><span class="p">,</span> <span class="n">min_h</span><span class="p">,</span> <span class="n">max_h</span><span class="p">,</span> <span class="n">nsteps</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">ta</span><span class="o">.</span><span class="n">propagate_until</span><span class="p">(</span><span class="n">t</span> <span class="o">=</span> <span class="mf">20.</span><span class="p">)</span>
 
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Outcome      : </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">status</span><span class="p">))</span>
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Min. timestep: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">min_h</span><span class="p">))</span>
@@ -714,20 +721,22 @@ Current time : 20.0
 </div>
 </div>
 <p>The time-limited propagation methods return
-a tuple of 4 values, which represent, respectively:</p>
+a tuple of 5 values, which represent, respectively:</p>
 <ul class="simple">
 <li><p>the outcome of the integration (which will always be
 <code class="docutils literal notranslate"><span class="pre">time_limit</span></code>, unless error conditions arise),</p></li>
 <li><p>the minimum and maximum integration timesteps
 that were used in the propagation,</p></li>
-<li><p>the total number of steps that were taken.</p></li>
+<li><p>the total number of steps that were taken,</p></li>
+<li><p>the <a class="reference internal" href="Dense%20output.html"><span class="doc std std-doc">continuous output</span></a> function object,
+if requested (off by default).</p></li>
 </ul>
 <p>The time-limited propagation methods can be used
 to propagate both forward and backward in time:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Propagate back to t = 0.</span>
-<span class="n">status</span><span class="p">,</span> <span class="n">min_h</span><span class="p">,</span> <span class="n">max_h</span><span class="p">,</span> <span class="n">nsteps</span> <span class="o">=</span> <span class="n">ta</span><span class="o">.</span><span class="n">propagate_until</span><span class="p">(</span><span class="n">t</span> <span class="o">=</span> <span class="mf">0.</span><span class="p">)</span>
+<span class="n">status</span><span class="p">,</span> <span class="n">min_h</span><span class="p">,</span> <span class="n">max_h</span><span class="p">,</span> <span class="n">nsteps</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">ta</span><span class="o">.</span><span class="n">propagate_until</span><span class="p">(</span><span class="n">t</span> <span class="o">=</span> <span class="mf">0.</span><span class="p">)</span>
 
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Outcome      : </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">status</span><span class="p">))</span>
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Min. timestep: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">min_h</span><span class="p">))</span>
@@ -747,6 +756,8 @@ Num. of steps: 97
 Current time : 0.0
 
 Tolerance               : 2.2204460492503131e-16
+High accuracy           : false
+Compact mode            : false
 Taylor order            : 20
 Dimension               : 2
 Time                    : 0.0000000000000000
@@ -911,31 +922,22 @@ Current time: 2.0
               </div>
               
         
-            
-
-
-
-<div class='prev-next-bottom'>
-    
-    <div id="prev">
-        <a class="left-prev" href="The%20expression%20system.html" title="previous page">
-            <i class="prevnext-label fas fa-angle-left"></i>
-            <div class="prevnext-info">
-                <p class="prevnext-label">previous</p>
-                <p class="prevnext-title">The expression system</p>
-            </div>
-        </a>
+            <!-- Previous / next buttons -->
+<div class='prev-next-area'> 
+    <a class='left-prev' id="prev-link" href="The%20expression%20system.html" title="previous page">
+        <i class="fas fa-angle-left"></i>
+        <div class="prev-next-info">
+            <p class="prev-next-subtitle">previous</p>
+            <p class="prev-next-title">The expression system</p>
+        </div>
+    </a>
+    <a class='right-next' id="next-link" href="Customising%20the%20adaptive%20integrator.html" title="next page">
+    <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Customising the adaptive integrator</p>
     </div>
-     <div id="next">
-        <a class="right-next" href="Customising%20the%20adaptive%20integrator.html" title="next page">
-            <div class="prevnext-info">
-                <p class="prevnext-label">next</p>
-                <p class="prevnext-title">Customising the adaptive integrator</p>
-            </div>
-            <i class="prevnext-label fas fa-angle-right"></i>
-        </a>
-     </div>
-
+    <i class="fas fa-angle-right"></i>
+    </a>
 </div>
         
         </div>
@@ -956,8 +958,7 @@ Current time: 2.0
       </div>
     </div>
   
-  <script src="../_static/js/index.1c5a1a01449ed65a7b51.js"></script>
+  <script src="../_static/js/index.be7d3bbb2ef33a8344ce.js"></script>
 
-  
   </body>
 </html>

@@ -9,6 +9,10 @@ Changelog
 New
 ~~~
 
+- **BREAKING**: add support for continuous output
+  to the ``propagate_for/until()`` methods
+  (`#81 <https://github.com/bluescarni/heyoka.py/pull/81>`__).
+  This is a :ref:`breaking change <bchanges_0_16_0>`.
 - Event detection is now available also in batch mode
   (`#80 <https://github.com/bluescarni/heyoka.py/pull/80>`__).
 - Attributes can now be dynamically added to the main heyoka.py

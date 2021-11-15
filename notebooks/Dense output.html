@@ -5,10 +5,10 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Dense output &#8212; heyoka.py 0.16.0 documentation</title>
+    <title>Dense &amp; continuous output &#8212; heyoka.py 0.16.0 documentation</title>
     
-  <link href="../_static/css/theme.css" rel="stylesheet" />
-  <link href="../_static/css/index.c5995385ac14fb8791e8eb36b4908be2.css" rel="stylesheet" />
+  <link href="../_static/css/theme.css" rel="stylesheet">
+  <link href="../_static/css/index.ff1ffe594081f20da1ef19478df9384b.css" rel="stylesheet">
 
     
   <link rel="stylesheet"
@@ -27,7 +27,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css" />
     <link rel="stylesheet" type="text/css" href="../_static/mystnb.css" />
     
-  <link rel="preload" as="script" href="../_static/js/index.1c5a1a01449ed65a7b51.js">
+  <link rel="preload" as="script" href="../_static/js/index.be7d3bbb2ef33a8344ce.js">
 
     <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
     <script src="../_static/jquery.js"></script>
@@ -36,14 +36,17 @@
     <script src="../_static/togglebutton.js"></script>
     <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
     <script src="../_static/sphinx-book-theme.12a9622fbb08dcb3a2a40b2c02b83a57.js"></script>
-    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Interoperability with SymPy" href="sympy_interop.html" />
     <link rel="prev" title="Non-autonomous systems" href="Non-autonomous%20systems.html" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="docsearch:language" content="en" />
+    <meta name="docsearch:language" content="None">
+    
+
+    <!-- Google Analytics -->
     
   </head>
   <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
@@ -75,7 +78,7 @@
   <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
 </form><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
     <div class="bd-toc-item active">
-        <p class="caption" role="heading">
+        <p aria-level="2" class="caption" role="heading">
  <span class="caption-text">
   Contents
  </span>
@@ -128,7 +131,7 @@
    </li>
    <li class="toctree-l2 current active">
     <a class="current reference internal" href="#">
-     Dense output
+     Dense &amp; continuous output
     </a>
    </li>
    <li class="toctree-l2">
@@ -426,6 +429,11 @@
    methods
   </a>
  </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#continuous-output">
+   Continuous output
+  </a>
+ </li>
 </ul>
 
             </nav>
@@ -437,8 +445,8 @@
         
               <div>
                 
-  <div class="tex2jax_ignore mathjax_ignore section" id="dense-output">
-<h1>Dense output<a class="headerlink" href="#dense-output" title="Permalink to this headline">¶</a></h1>
+  <div class="tex2jax_ignore mathjax_ignore section" id="dense-continuous-output">
+<h1>Dense &amp; continuous output<a class="headerlink" href="#dense-continuous-output" title="Permalink to this headline">¶</a></h1>
 <p>One of the peculiar features of Taylor’s method is that it directly provides,
 via Taylor series, <em>dense</em> (or <em>continuous</em>) output.
 That is, the Taylor series built by the integrator at each timestep can be used
@@ -658,7 +666,7 @@ error tolerance.</p>
 
 <span class="c1"># Compare it to the exact solution.</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">semilogy</span><span class="p">(</span><span class="n">t_grid</span><span class="p">,</span> <span class="nb">abs</span><span class="p">((</span><span class="n">x_d_out</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">t_grid</span><span class="p">))</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">t_grid</span><span class="p">)))</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;Time&quot;</span><span class="p">);</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;Time&quot;</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;Relative error&quot;</span><span class="p">);</span>
 </pre></div>
 </div>
@@ -682,37 +690,119 @@ optional callback that can be passed to the <code class="docutils literal notran
 <p>Note that <code class="docutils literal notranslate"><span class="pre">propagate_grid()</span></code> always unconditionally writes the Taylor coefficients
 at the end of each timestep, and thus using the <code class="docutils literal notranslate"><span class="pre">write_tc</span></code> argument is not necessary.</p>
 </div>
+<div class="section" id="continuous-output">
+<h2>Continuous output<a class="headerlink" href="#continuous-output" title="Permalink to this headline">¶</a></h2>
+<p>Starting with heyoka.py 0.16,
+the <code class="docutils literal notranslate"><span class="pre">propagate_for()</span></code> and <code class="docutils literal notranslate"><span class="pre">propagate_until()</span></code> methods can optionally return a function object
+providing continuous output in the integration interval. That is, this function object can be used
+to compute the solution at any time within the time interval covered by <code class="docutils literal notranslate"><span class="pre">propagate_for/until()</span></code>.</p>
+<p>Continuous output is activated by passing the <code class="docutils literal notranslate"><span class="pre">c_output</span> <span class="pre">=</span> <span class="pre">True</span></code> keyword option to the <code class="docutils literal notranslate"><span class="pre">propagate_for/until()</span></code> methods.
+Let us see an example:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Reset the integrator state.</span>
+<span class="n">ta</span><span class="o">.</span><span class="n">state</span><span class="p">[:]</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
+<span class="n">ta</span><span class="o">.</span><span class="n">time</span> <span class="o">=</span> <span class="mi">0</span>
+
+<span class="c1"># Propagate and return the continuous output.</span>
+<span class="n">c_out</span> <span class="o">=</span> <span class="n">ta</span><span class="o">.</span><span class="n">propagate_until</span><span class="p">(</span><span class="mf">10.</span><span class="p">,</span> <span class="n">c_output</span><span class="o">=</span><span class="kc">True</span><span class="p">)[</span><span class="mi">4</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>The continuous output function object is the fifth element of the tuple returned by <code class="docutils literal notranslate"><span class="pre">propagate_for/until()</span></code> (note that if <code class="docutils literal notranslate"><span class="pre">c_output</span></code> is set to <code class="docutils literal notranslate"><span class="pre">False</span></code> - the default - then the fifth element of the tuple is <code class="docutils literal notranslate"><span class="pre">None</span></code>).</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">c_out</span></code> object accepts in input either</p>
+<ul class="simple">
+<li><p>a single absolute time coordinate, or</p></li>
+<li><p>a 1D vector of absolute time coordinates.</p></li>
+</ul>
+<p>In the first case, the return value will be a 1D NumPy array containing the state vector at the desired time. In the second case, the return value will be a 2D NumPy array in which each row contains the state vector at the corresponding input time.</p>
+<p>Let us see a couple of examples:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Print the state vector at t = 5.</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;State vector at t=5: </span><span class="si">{}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">c_out</span><span class="p">(</span><span class="mf">5.</span><span class="p">)))</span>
+
+<span class="c1"># Print the state vectors at a few different times.</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;State vectors at t=[1,2,3,4,5]:</span><span class="se">\n</span><span class="si">{}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">c_out</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">])))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>State vector at t=5: [-0.95892427  0.28366219]
+
+State vectors at t=[1,2,3,4,5]:
+[[ 0.84147098  0.54030231]
+ [ 0.90929743 -0.41614684]
+ [ 0.14112001 -0.9899925 ]
+ [-0.7568025  -0.65364362]
+ [-0.95892427  0.28366219]]
+</pre></div>
+</div>
+</div>
+</div>
+<p>Let us test the precision of the continuous output over a fine time grid in the <span class="math notranslate nohighlight">\(\left[0, 10\right]\)</span> time interval:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Construct a time grid from t=0 to t=10.</span>
+<span class="n">t_grid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">1000</span><span class="p">)</span>
+
+<span class="c1"># Compute the continuous output for the x variable</span>
+<span class="c1"># over the time grid.</span>
+<span class="n">x_c_out</span> <span class="o">=</span> <span class="n">c_out</span><span class="p">(</span><span class="n">t_grid</span><span class="p">)</span>
+
+<span class="c1"># Compare it to the exact solution.</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">semilogy</span><span class="p">(</span><span class="n">t_grid</span><span class="p">,</span> <span class="nb">abs</span><span class="p">(</span><span class="n">x_c_out</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">t_grid</span><span class="p">)))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;Time&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;Absolute error&quot;</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/Dense output_25_0.png" src="../_images/Dense output_25_0.png" />
+</div>
+</div>
+<p>As we can see, the continuous output agrees with the analytical solution to machine precision.</p>
+<p>Continuous output is somewhat similar to <code class="docutils literal notranslate"><span class="pre">propagate_grid()</span></code>, in the sense that both allow to compute the value of the solution at arbitrary time points. <code class="docutils literal notranslate"><span class="pre">propagate_grid()</span></code> is computationally more efficient, but it requires to specify up-front the list of times at which the solution should be computed. Continuous output, on the other hand, is not bound to a predetermined time grid, and it can thus be helpful if time coordinates of interest can be identified only after the solution has been computed.</p>
+<p>Before concluding, we need to highlight a couple of caveats regarding the
+use of continuous output.</p>
+<blockquote>
+<div><p><strong>NOTE</strong>: the <code class="docutils literal notranslate"><span class="pre">continuous_output</span></code> function object stores internally the time
+coordinate and Taylor coefficients at the end of each step taken during the integration interval.
+This means that the memory usage of a <code class="docutils literal notranslate"><span class="pre">continuous_output</span></code> object scales linearly
+with the number of timesteps taken during the integration interval. Thus, for a sufficiently
+long integration interval, the <code class="docutils literal notranslate"><span class="pre">continuous_output</span></code> object might end up exhausting the available memory.</p>
+</div></blockquote>
+<blockquote>
+<div><p><strong>NOTE</strong>: like for dense output, the accuracy of <code class="docutils literal notranslate"><span class="pre">continuous_output</span></code> is guaranteed to
+match the integrator’s accuracy only if the time coordinate falls within the integration interval.
+Note that heyoka.py will not prevent the use of a <code class="docutils literal notranslate"><span class="pre">continuous_output</span></code> object outside the
+guaranteed accuracy range - it is the user’s responsibility to be aware that doing so will
+produce results whose accuracy does not match the integrator’s error tolerance..</p>
+</div></blockquote>
+</div>
 </div>
 
 
               </div>
               
         
-            
-
-
-
-<div class='prev-next-bottom'>
-    
-    <div id="prev">
-        <a class="left-prev" href="Non-autonomous%20systems.html" title="previous page">
-            <i class="prevnext-label fas fa-angle-left"></i>
-            <div class="prevnext-info">
-                <p class="prevnext-label">previous</p>
-                <p class="prevnext-title">Non-autonomous systems</p>
-            </div>
-        </a>
+            <!-- Previous / next buttons -->
+<div class='prev-next-area'> 
+    <a class='left-prev' id="prev-link" href="Non-autonomous%20systems.html" title="previous page">
+        <i class="fas fa-angle-left"></i>
+        <div class="prev-next-info">
+            <p class="prev-next-subtitle">previous</p>
+            <p class="prev-next-title">Non-autonomous systems</p>
+        </div>
+    </a>
+    <a class='right-next' id="next-link" href="sympy_interop.html" title="next page">
+    <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Interoperability with SymPy</p>
     </div>
-     <div id="next">
-        <a class="right-next" href="sympy_interop.html" title="next page">
-            <div class="prevnext-info">
-                <p class="prevnext-label">next</p>
-                <p class="prevnext-title">Interoperability with SymPy</p>
-            </div>
-            <i class="prevnext-label fas fa-angle-right"></i>
-        </a>
-     </div>
-
+    <i class="fas fa-angle-right"></i>
+    </a>
 </div>
         
         </div>
@@ -733,8 +823,7 @@ at the end of each timestep, and thus using the <code class="docutils literal no
       </div>
     </div>
   
-  <script src="../_static/js/index.1c5a1a01449ed65a7b51.js"></script>
+  <script src="../_static/js/index.be7d3bbb2ef33a8344ce.js"></script>
 
-  
   </body>
 </html>

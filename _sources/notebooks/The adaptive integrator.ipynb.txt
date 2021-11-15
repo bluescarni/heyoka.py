@@ -47,6 +47,9 @@
     {
      "data": {
       "text/plain": [
+       "Tolerance               : 2.2204460492503131e-16\n",
+       "High accuracy           : false\n",
+       "Compact mode            : false\n",
        "Taylor order            : 20\n",
        "Dimension               : 2\n",
        "Time                    : 0.0000000000000000\n",
@@ -146,6 +149,9 @@
     {
      "data": {
       "text/plain": [
+       "Tolerance               : 2.2204460492503131e-16\n",
+       "High accuracy           : false\n",
+       "Compact mode            : false\n",
        "Taylor order            : 20\n",
        "Dimension               : 2\n",
        "Time                    : 0.21605277478009474\n",
@@ -372,7 +378,7 @@
    ],
    "source": [
     "# Propagate for 5 time units.\n",
-    "status, min_h, max_h, nsteps = ta.propagate_for(delta_t = 5.)\n",
+    "status, min_h, max_h, nsteps, _ = ta.propagate_for(delta_t = 5.)\n",
     "\n",
     "print(\"Outcome      : {}\".format(status))\n",
     "print(\"Min. timestep: {}\".format(min_h))\n",
@@ -381,7 +387,7 @@
     "print(\"Current time : {}\\n\".format(ta.time))\n",
     "\n",
     "# Propagate until t = 20.\n",
-    "status, min_h, max_h, nsteps = ta.propagate_until(t = 20.)\n",
+    "status, min_h, max_h, nsteps, _ = ta.propagate_until(t = 20.)\n",
     "\n",
     "print(\"Outcome      : {}\".format(status))\n",
     "print(\"Min. timestep: {}\".format(min_h))\n",
@@ -396,13 +402,15 @@
    "metadata": {},
    "source": [
     "The time-limited propagation methods return\n",
-    "a tuple of 4 values, which represent, respectively:\n",
+    "a tuple of 5 values, which represent, respectively:\n",
     "\n",
     "* the outcome of the integration (which will always be\n",
     "  ``time_limit``, unless error conditions arise),\n",
     "* the minimum and maximum integration timesteps\n",
     "  that were used in the propagation,\n",
-    "* the total number of steps that were taken.\n",
+    "* the total number of steps that were taken,\n",
+    "* the [continuous output](<./Dense output.ipynb>) function object,\n",
+    "  if requested (off by default).\n",
     "\n",
     "The time-limited propagation methods can be used\n",
     "to propagate both forward and backward in time:"
@@ -424,6 +432,9 @@
       "Num. of steps: 97\n",
       "Current time : 0.0\n",
       "\n",
+      "Tolerance               : 2.2204460492503131e-16\n",
+      "High accuracy           : false\n",
+      "Compact mode            : false\n",
       "Taylor order            : 20\n",
       "Dimension               : 2\n",
       "Time                    : 0.0000000000000000\n",
@@ -434,7 +445,7 @@
    ],
    "source": [
     "# Propagate back to t = 0.\n",
-    "status, min_h, max_h, nsteps = ta.propagate_until(t = 0.)\n",
+    "status, min_h, max_h, nsteps, _ = ta.propagate_until(t = 0.)\n",
     "\n",
     "print(\"Outcome      : {}\".format(status))\n",
     "print(\"Min. timestep: {}\".format(min_h))\n",

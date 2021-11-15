@@ -7,8 +7,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Batch mode &#8212; heyoka.py 0.16.0 documentation</title>
     
-  <link href="../_static/css/theme.css" rel="stylesheet" />
-  <link href="../_static/css/index.c5995385ac14fb8791e8eb36b4908be2.css" rel="stylesheet" />
+  <link href="../_static/css/theme.css" rel="stylesheet">
+  <link href="../_static/css/index.ff1ffe594081f20da1ef19478df9384b.css" rel="stylesheet">
 
     
   <link rel="stylesheet"
@@ -27,7 +27,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css" />
     <link rel="stylesheet" type="text/css" href="../_static/mystnb.css" />
     
-  <link rel="preload" as="script" href="../_static/js/index.1c5a1a01449ed65a7b51.js">
+  <link rel="preload" as="script" href="../_static/js/index.be7d3bbb2ef33a8344ce.js">
 
     <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
     <script src="../_static/jquery.js"></script>
@@ -36,14 +36,17 @@
     <script src="../_static/togglebutton.js"></script>
     <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
     <script src="../_static/sphinx-book-theme.12a9622fbb08dcb3a2a40b2c02b83a57.js"></script>
-    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Event detection overview" href="Event%20detection.html" />
     <link rel="prev" title="Pickle support" href="pickling.html" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="docsearch:language" content="en" />
+    <meta name="docsearch:language" content="None">
+    
+
+    <!-- Google Analytics -->
     
   </head>
   <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
@@ -75,7 +78,7 @@
   <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
 </form><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
     <div class="bd-toc-item active">
-        <p class="caption" role="heading">
+        <p aria-level="2" class="caption" role="heading">
  <span class="caption-text">
   Contents
  </span>
@@ -128,7 +131,7 @@
    </li>
    <li class="toctree-l2">
     <a class="reference internal" href="Dense%20output.html">
-     Dense output
+     Dense &amp; continuous output
     </a>
    </li>
    <li class="toctree-l2">
@@ -425,6 +428,11 @@
   </a>
  </li>
  <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#continuous-output">
+   Continuous output
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
   <a class="reference internal nav-link" href="#event-detection">
    Event detection
   </a>
@@ -650,6 +658,10 @@ functions are stored in internal vectors of tuples, with the tuple elements repr
 that were used in the propagation,</p></li>
 <li><p>the total number of steps that were taken.</p></li>
 </ul>
+<p>The <code class="docutils literal notranslate"><span class="pre">propagate_for/until()</span></code> methods in batch mode return the
+<a class="reference internal" href="Dense%20output.html"><span class="doc std std-doc">continuous output</span></a> function object
+(if requested). The <code class="docutils literal notranslate"><span class="pre">propagate_grid()</span></code> function returns
+the result of the integration over a grid of time batches.</p>
 <p>Note that, generally speaking, when using the <code class="docutils literal notranslate"><span class="pre">propagate_*()</span></code> functions each batch element will need a different number of integration steps to reach the final time. Thus, when a batch element reaches the final time, further steps for that batch element will be taken with a timestep of zero, until all batch elements reach the final time.</p>
 <p>Let’s see a couple of examples:</p>
 <div class="cell docutils container">
@@ -903,6 +915,73 @@ at different time coordinates:</p>
 </div>
 </div>
 </div>
+<div class="section" id="continuous-output">
+<h2>Continuous output<a class="headerlink" href="#continuous-output" title="Permalink to this headline">¶</a></h2>
+<p>Starting with heyoka.py 0.16, the batch integrator also supports <a class="reference internal" href="Dense%20output.html"><span class="doc std std-doc">continuous output</span></a>. The batch mode continuous output API is similar to the scalar mode API. Specifically, if the <code class="docutils literal notranslate"><span class="pre">propagate_for/until()</span></code> methods of a batch integrator are invoked with the <code class="docutils literal notranslate"><span class="pre">c_output</span> <span class="pre">=</span> <span class="pre">True</span></code> keyword option, then they will return a function object which can be used to compute the result of the numerical integration at any point of the integration interval:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Reset time and state.</span>
+<span class="n">ta</span><span class="o">.</span><span class="n">set_time</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
+<span class="n">ta</span><span class="o">.</span><span class="n">state</span><span class="p">[:]</span> <span class="o">=</span> <span class="p">[[</span><span class="mf">0.00</span><span class="p">,</span> <span class="mf">0.01</span><span class="p">,</span> <span class="mf">0.02</span><span class="p">,</span> <span class="mf">0.03</span><span class="p">],</span> <span class="p">[</span><span class="mf">1.85</span><span class="p">,</span> <span class="mf">1.86</span><span class="p">,</span> <span class="mf">1.87</span><span class="p">,</span> <span class="mf">1.88</span><span class="p">]]</span>
+
+<span class="c1"># Propagate for a few time units, and request continuous output.</span>
+<span class="n">c_out</span> <span class="o">=</span> <span class="n">ta</span><span class="o">.</span><span class="n">propagate_until</span><span class="p">([</span><span class="mi">10</span><span class="p">,</span> <span class="mf">10.1</span><span class="p">,</span> <span class="mf">10.2</span><span class="p">,</span> <span class="mf">10.3</span><span class="p">],</span> <span class="n">c_output</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Like in the scalar case, the call operator of <code class="docutils literal notranslate"><span class="pre">c_out</span></code> in batch mode accepts two types of input:</p>
+<ul class="simple">
+<li><p>a 1D array of <span class="math notranslate nohighlight">\(n\)</span> times, with each element representing the time at which the continuous output should be computed for the corresponding batch index, or</p></li>
+<li><p>a 2D array of with <span class="math notranslate nohighlight">\(n\)</span> columns, with each row representing a batch of time coordinates.</p></li>
+</ul>
+<p>Let us see a couple of simple examples:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Compute the continuous output for</span>
+<span class="c1"># a single batch of times.</span>
+<span class="n">c_out</span><span class="p">([</span><span class="mf">.01</span><span class="p">,</span> <span class="mf">.02</span><span class="p">,</span> <span class="mf">.03</span><span class="p">,</span> <span class="mf">.04</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([[0.01854043, 0.04735447, 0.07643115, 0.1057593 ],
+       [1.85805316, 1.87531675, 1.89177968, 1.90743182]])
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Compute the continuous output for</span>
+<span class="c1"># three batches of times.</span>
+<span class="n">c_arr</span> <span class="o">=</span> <span class="n">c_out</span><span class="p">([[</span><span class="mf">.01</span><span class="p">,</span> <span class="mf">.02</span><span class="p">,</span> <span class="mf">.03</span><span class="p">,</span> <span class="mf">.04</span><span class="p">],</span>
+               <span class="p">[</span><span class="mf">1.01</span><span class="p">,</span> <span class="mf">1.02</span><span class="p">,</span> <span class="mf">1.03</span><span class="p">,</span> <span class="mf">1.04</span><span class="p">],</span>
+               <span class="p">[</span><span class="mf">2.01</span><span class="p">,</span> <span class="mf">2.02</span><span class="p">,</span> <span class="mf">2.03</span><span class="p">,</span> <span class="mf">2.04</span><span class="p">]])</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>The shape of <code class="docutils literal notranslate"><span class="pre">c_arr</span></code> is <span class="math notranslate nohighlight">\(\left( 3, 2, 4\right)\)</span>:</p>
+<ul class="simple">
+<li><p>3 batches of times,</p></li>
+<li><p>2 state variables,</p></li>
+<li><p>4 batch elements.</p></li>
+</ul>
+<p>For instance, the value of the <span class="math notranslate nohighlight">\(v\)</span> coordinate at batch index 2 for the first batch of times is:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">c_arr</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>1.8917796783928316
+</pre></div>
+</div>
+</div>
+</div>
+</div>
 <div class="section" id="event-detection">
 <h2>Event detection<a class="headerlink" href="#event-detection" title="Permalink to this headline">¶</a></h2>
 <p>Starting with heyoka.py 0.16, the batch integrator also supports <a class="reference internal" href="Event%20detection.html"><span class="doc std std-doc">event detection</span></a>. The batch mode event detection API is similar to the scalar mode API, with the following differences:</p>
@@ -992,7 +1071,7 @@ v = 0,
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/Batch mode overview_35_0.png" src="../_images/Batch mode overview_35_0.png" />
+<img alt="../_images/Batch mode overview_42_0.png" src="../_images/Batch mode overview_42_0.png" />
 </div>
 </div>
 <p>Here we marked with vertical dashed lines the times of the local maxima, which, as we can see, were all correctly detected.</p>
@@ -1123,7 +1202,7 @@ v = 0,
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/Batch mode overview_39_0.png" src="../_images/Batch mode overview_39_0.png" />
+<img alt="../_images/Batch mode overview_46_0.png" src="../_images/Batch mode overview_46_0.png" />
 </div>
 </div>
 <p>We can see how setting slightly different drop heights for each batch element soon leads to qualitatively-different trajectories.</p>
@@ -1134,31 +1213,22 @@ v = 0,
               </div>
               
         
-            
-
-
-
-<div class='prev-next-bottom'>
-    
-    <div id="prev">
-        <a class="left-prev" href="pickling.html" title="previous page">
-            <i class="prevnext-label fas fa-angle-left"></i>
-            <div class="prevnext-info">
-                <p class="prevnext-label">previous</p>
-                <p class="prevnext-title">Pickle support</p>
-            </div>
-        </a>
+            <!-- Previous / next buttons -->
+<div class='prev-next-area'> 
+    <a class='left-prev' id="prev-link" href="pickling.html" title="previous page">
+        <i class="fas fa-angle-left"></i>
+        <div class="prev-next-info">
+            <p class="prev-next-subtitle">previous</p>
+            <p class="prev-next-title">Pickle support</p>
+        </div>
+    </a>
+    <a class='right-next' id="next-link" href="Event%20detection.html" title="next page">
+    <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Event detection overview</p>
     </div>
-     <div id="next">
-        <a class="right-next" href="Event%20detection.html" title="next page">
-            <div class="prevnext-info">
-                <p class="prevnext-label">next</p>
-                <p class="prevnext-title">Event detection overview</p>
-            </div>
-            <i class="prevnext-label fas fa-angle-right"></i>
-        </a>
-     </div>
-
+    <i class="fas fa-angle-right"></i>
+    </a>
 </div>
         
         </div>
@@ -1179,8 +1249,7 @@ v = 0,
       </div>
     </div>
   
-  <script src="../_static/js/index.1c5a1a01449ed65a7b51.js"></script>
+  <script src="../_static/js/index.be7d3bbb2ef33a8344ce.js"></script>
 
-  
   </body>
 </html>
