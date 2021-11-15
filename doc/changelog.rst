@@ -15,8 +15,6 @@ New
   This is a :ref:`breaking change <bchanges_0_16_0>`.
 - Event detection is now available also in batch mode
   (`#80 <https://github.com/bluescarni/heyoka.py/pull/80>`__).
-- Event detection is now available also in batch mode
-  (`#80 <https://github.com/bluescarni/heyoka.py/pull/80>`__).
 - Attributes can now be dynamically added to the main heyoka.py
   classes (`#78 <https://github.com/bluescarni/heyoka.py/pull/78>`__).
 - Add a tutorial on the computation of event sensitivity

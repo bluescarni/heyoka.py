@@ -27,7 +27,7 @@ Breaking changes
 
   Similarly, the ``propagate_for/until()`` functions in a batch integrator,
   which previously returned nothing, now return the continuous output
-  function object.
+  function object (if requested).
 
 .. _bchanges_0_10_0:
 
