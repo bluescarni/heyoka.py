@@ -1521,8 +1521,30 @@ class expression_eval_test_case(_ut.TestCase):
 
 class scalar_integrator_test_case(_ut.TestCase):
     def runTest(self):
+        self.test_basic()
         self.test_s11n()
         self.test_events()
+
+    def test_basic(self):
+        from . import taylor_adaptive, make_vars, t_event, sin
+
+        x, v = make_vars("x", "v")
+
+        sys = [(x, v), (v, -9.8 * sin(x))]
+
+        ta = taylor_adaptive(sys=sys, state=[0., 0.25],
+                             t_events=[t_event(v)])
+
+        self.assertTrue(ta.with_events)
+        self.assertFalse(ta.compact_mode)
+        self.assertFalse(ta.high_accuracy)
+
+        ta = taylor_adaptive(sys=sys, state=[0., 0.25],
+                             compact_mode=True, high_accuracy=True)
+
+        self.assertFalse(ta.with_events)
+        self.assertTrue(ta.compact_mode)
+        self.assertTrue(ta.high_accuracy)
 
     def test_events(self):
         from . import nt_event, t_event, make_vars, sin, taylor_adaptive
@@ -1653,9 +1675,31 @@ class scalar_integrator_test_case(_ut.TestCase):
 
 class batch_integrator_test_case(_ut.TestCase):
     def runTest(self):
+        self.test_basic()
         self.run_propagate_grid_tests()
         self.test_s11n()
         self.test_events()
+
+    def test_basic(self):
+        from . import taylor_adaptive_batch, make_vars, t_event_batch, sin
+
+        x, v = make_vars("x", "v")
+
+        sys = [(x, v), (v, -9.8 * sin(x))]
+
+        ta = taylor_adaptive_batch(sys=sys, state=[[0., 0.1], [0.25, 0.26]],
+                                   t_events=[t_event_batch(v)])
+
+        self.assertTrue(ta.with_events)
+        self.assertFalse(ta.compact_mode)
+        self.assertFalse(ta.high_accuracy)
+
+        ta = taylor_adaptive_batch(sys=sys, state=[[0., 0.1], [0.25, 0.26]],
+                                   compact_mode=True, high_accuracy=True)
+
+        self.assertFalse(ta.with_events)
+        self.assertTrue(ta.compact_mode)
+        self.assertTrue(ta.high_accuracy)
 
     def test_events(self):
         from . import nt_event_batch, t_event_batch, make_vars, sin, taylor_adaptive_batch

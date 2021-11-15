@@ -177,7 +177,7 @@ void expose_c_output_impl(py::module &m, const std::string &suffix)
                         // Ensure the returned array is read-only.
                         ret.attr("flags").attr("writeable") = false;
 
-                        return ret;
+                        return std::move(ret);
                     }
                 }
             })
@@ -199,7 +199,7 @@ void expose_c_output_impl(py::module &m, const std::string &suffix)
                         // Ensure the returned array is read-only.
                         ret.attr("flags").attr("writeable") = false;
 
-                        return ret;
+                        return std::move(ret);
                     }
                 }
             })
@@ -225,7 +225,7 @@ void expose_c_output_impl(py::module &m, const std::string &suffix)
 
                                            ret.attr("shape") = py::make_tuple(n_steps, nvars, ncoeffs);
 
-                                           return ret;
+                                           return std::move(ret);
                                        } else {
                                            auto ret = py::array_t<T>(
                                                py::array::ShapeContainer{boost::numeric_cast<py::ssize_t>(n_steps),
@@ -236,7 +236,7 @@ void expose_c_output_impl(py::module &m, const std::string &suffix)
                                            // Ensure the returned array is read-only.
                                            ret.attr("flags").attr("writeable") = false;
 
-                                           return ret;
+                                           return std::move(ret);
                                        }
                                    }
                                })
@@ -402,7 +402,7 @@ void expose_c_output_batch_impl(py::module &m, const std::string &suffix)
                                        // Ensure the returned array is read-only.
                                        ret.attr("flags").attr("writeable") = false;
 
-                                       return ret;
+                                       return std::move(ret);
                                    }
                                })
         .def_property_readonly("times",
@@ -429,7 +429,7 @@ void expose_c_output_batch_impl(py::module &m, const std::string &suffix)
                                        // Ensure the returned array is read-only.
                                        ret.attr("flags").attr("writeable") = false;
 
-                                       return ret;
+                                       return std::move(ret);
                                    }
                                })
         .def_property_readonly("tcs",
@@ -465,7 +465,7 @@ void expose_c_output_batch_impl(py::module &m, const std::string &suffix)
                                        // Ensure the returned array is read-only.
                                        ret.attr("flags").attr("writeable") = false;
 
-                                       return ret;
+                                       return std::move(ret);
                                    }
                                })
         .def_property_readonly("bounds",
