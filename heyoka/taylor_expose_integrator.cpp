@@ -82,8 +82,8 @@ void expose_taylor_integrator_common(py::class_<hey::taylor_adaptive<T>> &cl)
         // propagate_*().
         .def(
             "propagate_for",
-            [](hey::taylor_adaptive<T> &ta, T delta_t, std::size_t max_steps, T max_delta_t, prop_cb_t cb_,
-               bool write_tc) {
+            [](hey::taylor_adaptive<T> &ta, T delta_t, std::size_t max_steps, T max_delta_t, const prop_cb_t &cb_,
+               bool write_tc, bool c_output) {
                 // Create the callback wrapper.
                 auto cb = make_prop_cb(cb_);
 
@@ -94,22 +94,24 @@ void expose_taylor_integrator_common(py::class_<hey::taylor_adaptive<T>> &cl)
                 // a reference to the original callback cb_, or it is an empty callback.
                 py::gil_scoped_release release;
                 return ta.propagate_for(delta_t, kw::max_steps = max_steps, kw::max_delta_t = max_delta_t,
-                                        kw::callback = cb, kw::write_tc = write_tc);
+                                        kw::callback = std::move(cb), kw::write_tc = write_tc, kw::c_output = c_output);
             },
             "delta_t"_a, "max_steps"_a = 0, "max_delta_t"_a = std::numeric_limits<T>::infinity(),
-            "callback"_a = prop_cb_t{}, "write_tc"_a = false)
+            "callback"_a = prop_cb_t{}, "write_tc"_a = false, "c_output"_a = false)
         .def(
             "propagate_until",
-            [](hey::taylor_adaptive<T> &ta, T t, std::size_t max_steps, T max_delta_t, prop_cb_t cb_, bool write_tc) {
+            [](hey::taylor_adaptive<T> &ta, T t, std::size_t max_steps, T max_delta_t, const prop_cb_t &cb_,
+               bool write_tc, bool c_output) {
                 // Create the callback wrapper.
                 auto cb = make_prop_cb(cb_);
 
                 py::gil_scoped_release release;
                 return ta.propagate_until(t, kw::max_steps = max_steps, kw::max_delta_t = max_delta_t,
-                                          kw::callback = cb, kw::write_tc = write_tc);
+                                          kw::callback = std::move(cb), kw::write_tc = write_tc,
+                                          kw::c_output = c_output);
             },
             "t"_a, "max_steps"_a = 0, "max_delta_t"_a = std::numeric_limits<T>::infinity(), "callback"_a = prop_cb_t{},
-            "write_tc"_a = false)
+            "write_tc"_a = false, "c_output"_a = false)
         // Repr.
         .def("__repr__",
              [](const hey::taylor_adaptive<T> &ta) {
@@ -129,6 +131,9 @@ void expose_taylor_integrator_common(py::class_<hey::taylor_adaptive<T>> &cl)
         .def_property_readonly("order", &hey::taylor_adaptive<T>::get_order)
         .def_property_readonly("tol", &hey::taylor_adaptive<T>::get_tol)
         .def_property_readonly("dim", &hey::taylor_adaptive<T>::get_dim)
+        .def_property_readonly("compact_mode", &hey::taylor_adaptive<T>::get_compact_mode)
+        .def_property_readonly("high_accuracy", &hey::taylor_adaptive<T>::get_high_accuracy)
+        .def_property_readonly("with_events", &hey::taylor_adaptive<T>::with_events)
         // Event detection.
         .def_property_readonly("with_events", &hey::taylor_adaptive<T>::with_events)
         .def_property_readonly("te_cooldowns", &hey::taylor_adaptive<T>::get_te_cooldowns)
@@ -251,8 +256,8 @@ void expose_taylor_integrator_impl(py::module &m, const std::string &suffix)
             "t"_a, "rel_time"_a = false)
         .def(
             "propagate_grid",
-            [](hey::taylor_adaptive<T> &ta, const std::vector<T> &grid, std::size_t max_steps, T max_delta_t,
-               prop_cb_t cb_) {
+            [](hey::taylor_adaptive<T> &ta, std::vector<T> grid, std::size_t max_steps, T max_delta_t,
+               const prop_cb_t &cb_) {
                 // Create the callback wrapper.
                 auto cb = make_prop_cb(cb_);
 
@@ -260,8 +265,8 @@ void expose_taylor_integrator_impl(py::module &m, const std::string &suffix)
 
                 {
                     py::gil_scoped_release release;
-                    ret = ta.propagate_grid(grid, kw::max_steps = max_steps, kw::max_delta_t = max_delta_t,
-                                            kw::callback = cb);
+                    ret = ta.propagate_grid(std::move(grid), kw::max_steps = max_steps, kw::max_delta_t = max_delta_t,
+                                            kw::callback = std::move(cb));
                 }
 
                 // Determine the number of state vectors returned
@@ -356,8 +361,8 @@ void expose_taylor_integrator_f128(py::module &m)
              "high_accuracy"_a = false, "compact_mode"_a = false, "t_events"_a = py::list{}, "nt_events"_a = py::list{})
         .def(
             "propagate_grid",
-            [](hey::taylor_adaptive<mppp::real128> &ta, const std::vector<mppp::real128> &grid, std::size_t max_steps,
-               mppp::real128 max_delta_t, prop_cb_t cb_) {
+            [](hey::taylor_adaptive<mppp::real128> &ta, std::vector<mppp::real128> grid, std::size_t max_steps,
+               mppp::real128 max_delta_t, const prop_cb_t &cb_) {
                 // Create the callback wrapper.
                 auto cb = make_prop_cb(cb_);
 
@@ -365,8 +370,8 @@ void expose_taylor_integrator_f128(py::module &m)
 
                 {
                     py::gil_scoped_release release;
-                    ret = ta.propagate_grid(grid, kw::max_steps = max_steps, kw::max_delta_t = max_delta_t,
-                                            kw::callback = cb);
+                    ret = ta.propagate_grid(std::move(grid), kw::max_steps = max_steps, kw::max_delta_t = max_delta_t,
+                                            kw::callback = std::move(cb));
                 }
 
                 // Determine the number of state vectors returned

@@ -18,6 +18,7 @@ Python3_add_library(core MODULE WITH_SOABI
     core.cpp
     taylor_expose_integrator.cpp
     taylor_expose_events.cpp
+    taylor_expose_c_output.cpp
     taylor_add_jet.cpp
     common_utils.cpp
     logging.cpp

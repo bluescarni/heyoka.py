@@ -45,7 +45,7 @@ struct scoped_quadprec_setter {
 };
 
 // Helper to expose the llvm_state getter
-// for an integrator object.
+// for a generic object.
 template <typename T>
 inline void expose_llvm_state_property(py::class_<T> &c)
 {
