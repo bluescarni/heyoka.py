@@ -49,7 +49,7 @@ inline py::tuple pickle_getstate_wrapper(const py::object &self)
 template <typename T>
 inline std::pair<T, py::dict> pickle_setstate_wrapper(py::tuple state)
 {
-    using fmt::literals::operator""_format;
+    using namespace fmt::literals;
 
     if (py::len(state) != 2) {
         py_throw(PyExc_ValueError, ("The state tuple passed to the deserialization wrapper "

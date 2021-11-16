@@ -79,7 +79,6 @@ PYBIND11_MODULE(core, m)
 #endif
 
     using namespace pybind11::literals;
-    using fmt::literals::operator""_format;
     namespace kw = hey::kw;
 
     m.doc() = "The core heyoka module";
@@ -555,11 +554,12 @@ PYBIND11_MODULE(core, m)
         // Convert state and pars to std::vector, after checking
         // dimensions and shape.
         if (state_.ndim() != 2) {
-            heypy::py_throw(PyExc_ValueError,
-                            "Invalid state vector passed to the constructor of a batch integrator: "
-                            "the expected number of dimensions is 2, but the input array has a dimension of {}"_format(
-                                state_.ndim())
-                                .c_str());
+            heypy::py_throw(
+                PyExc_ValueError,
+                fmt::format("Invalid state vector passed to the constructor of a batch integrator: "
+                            "the expected number of dimensions is 2, but the input array has a dimension of {}",
+                            state_.ndim())
+                    .c_str());
         }
 
         // Infer the batch size from the second dimension.
@@ -574,11 +574,13 @@ PYBIND11_MODULE(core, m)
             auto &pars_arr = *pars_;
 
             if (pars_arr.ndim() != 2 || boost::numeric_cast<std::uint32_t>(pars_arr.shape(1)) != batch_size) {
-                heypy::py_throw(PyExc_ValueError,
-                                "Invalid parameter vector passed to the constructor of a batch integrator: "
+                heypy::py_throw(
+                    PyExc_ValueError,
+                    fmt::format("Invalid parameter vector passed to the constructor of a batch integrator: "
                                 "the expected array shape is (n, {}), but the input array has either the wrong "
-                                "number of dimensions or the wrong shape"_format(batch_size)
-                                    .c_str());
+                                "number of dimensions or the wrong shape",
+                                batch_size)
+                        .c_str());
             }
             pars = py::cast<std::vector<double>>(pars_arr.attr("flatten")());
         }
@@ -587,11 +589,13 @@ PYBIND11_MODULE(core, m)
             // Times provided.
             auto &time_arr = *time_;
             if (time_arr.ndim() != 1 || boost::numeric_cast<std::uint32_t>(time_arr.shape(0)) != batch_size) {
-                heypy::py_throw(PyExc_ValueError,
-                                "Invalid time vector passed to the constructor of a batch integrator: "
+                heypy::py_throw(
+                    PyExc_ValueError,
+                    fmt::format("Invalid time vector passed to the constructor of a batch integrator: "
                                 "the expected array shape is ({}), but the input array has either the wrong "
-                                "number of dimensions or the wrong shape"_format(batch_size)
-                                    .c_str());
+                                "number of dimensions or the wrong shape",
+                                batch_size)
+                        .c_str());
             }
             auto time = py::cast<std::vector<double>>(time_arr);
 
@@ -703,17 +707,18 @@ PYBIND11_MODULE(core, m)
                 if (grid.ndim() != 2) {
                     heypy::py_throw(
                         PyExc_ValueError,
-                        "Invalid grid passed to the propagate_grid() method of a batch integrator: "
-                        "the expected number of dimensions is 2, but the input array has a dimension of {}"_format(
-                            grid.ndim())
+                        fmt::format("Invalid grid passed to the propagate_grid() method of a batch integrator: "
+                                    "the expected number of dimensions is 2, but the input array has a dimension of {}",
+                                    grid.ndim())
                             .c_str());
                 }
                 if (boost::numeric_cast<std::uint32_t>(grid.shape(1)) != ta.get_batch_size()) {
-                    heypy::py_throw(PyExc_ValueError,
-                                    "Invalid grid passed to the propagate_grid() method of a batch integrator: "
-                                    "the shape must be (n, {}) but the number of columns is {} instead"_format(
-                                        ta.get_batch_size(), grid.shape(1))
-                                        .c_str());
+                    heypy::py_throw(
+                        PyExc_ValueError,
+                        fmt::format("Invalid grid passed to the propagate_grid() method of a batch integrator: "
+                                    "the shape must be (n, {}) but the number of columns is {} instead",
+                                    ta.get_batch_size(), grid.shape(1))
+                            .c_str());
                 }
 
                 // Convert to a std::vector.

@@ -60,7 +60,7 @@ void taylor_add_jet_array_check(const Arr &state, const std::optional<Arr> &pars
                                 std::uint32_t n_params, bool has_time, std::uint32_t order, std::uint32_t tot_n_eq,
                                 std::uint32_t batch_size)
 {
-    using fmt::literals::operator""_format;
+    using namespace fmt::literals;
 
     // Distinguish the batch and scalar cases when checking
     // dimensions and shapes.
