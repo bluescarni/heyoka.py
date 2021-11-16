@@ -711,7 +711,24 @@ Let us see an example:</p>
 </div>
 </div>
 <p>The continuous output function object is the fifth element of the tuple returned by <code class="docutils literal notranslate"><span class="pre">propagate_for/until()</span></code> (note that if <code class="docutils literal notranslate"><span class="pre">c_output</span></code> is set to <code class="docutils literal notranslate"><span class="pre">False</span></code> - the default - then the fifth element of the tuple is <code class="docutils literal notranslate"><span class="pre">None</span></code>).</p>
-<p>The <code class="docutils literal notranslate"><span class="pre">c_out</span></code> object accepts in input either</p>
+<p>Let us print <code class="docutils literal notranslate"><span class="pre">c_out</span></code> to screen:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">c_out</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Direction : forward
+Time range: [0, 10)
+N of steps: 10
+</pre></div>
+</div>
+</div>
+</div>
+<p>The screen output informs us that the <code class="docutils literal notranslate"><span class="pre">c_out</span></code> object is capable of providing continuous output in
+the <span class="math notranslate nohighlight">\(\left[0, 10\right)\)</span> time interval, and that 10 steps were taken during the integration.</p>
+<p>The call operator of the <code class="docutils literal notranslate"><span class="pre">c_out</span></code> object accepts in input either</p>
 <ul class="simple">
 <li><p>a single absolute time coordinate, or</p></li>
 <li><p>a 1D vector of absolute time coordinates.</p></li>
@@ -759,7 +776,7 @@ State vectors at t=[1,2,3,4,5]:
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/Dense output_25_0.png" src="../_images/Dense output_25_0.png" />
+<img alt="../_images/Dense output_27_0.png" src="../_images/Dense output_27_0.png" />
 </div>
 </div>
 <p>As we can see, the continuous output agrees with the analytical solution to machine precision.</p>
@@ -778,8 +795,9 @@ long integration interval, the <code class="docutils literal notranslate"><span 
 match the integrator’s accuracy only if the time coordinate falls within the integration interval.
 Note that heyoka.py will not prevent the use of a <code class="docutils literal notranslate"><span class="pre">continuous_output</span></code> object outside the
 guaranteed accuracy range - it is the user’s responsibility to be aware that doing so will
-produce results whose accuracy does not match the integrator’s error tolerance..</p>
+produce results whose accuracy does not match the integrator’s error tolerance.</p>
 </div></blockquote>
+<p>Note that, like the other main classes in heyoka.py, <code class="docutils literal notranslate"><span class="pre">continuous_output</span></code> supports <a class="reference internal" href="pickling.html"><span class="doc std std-doc">serialisation</span></a>.</p>
 </div>
 </div>
 

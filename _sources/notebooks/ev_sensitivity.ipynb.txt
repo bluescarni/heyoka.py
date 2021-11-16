@@ -76,7 +76,7 @@
     "g\\left(t, k\\right) = 0.\n",
     "$$\n",
     "\n",
-    "We cannot write an explicit expression fo $t_M$ using this equation, but via the formula for the derivative of an [implicit function](https://en.wikipedia.org/wiki/Implicit_function#Implicit_differentiation), we can write the sensitivity $d t_M / d k$ as\n",
+    "We cannot write an explicit expression for $t_M$ using this equation, but via the formula for the derivative of an [implicit function](https://en.wikipedia.org/wiki/Implicit_function#Implicit_differentiation), we can write the sensitivity $d t_M / d k$ as\n",
     "\n",
     "$$\n",
     "\\frac{d t_M}{d k} = -\\frac{\\frac{\\partial g}{\\partial k}}{\\frac{\\partial g}{\\partial t_M}}.\n",

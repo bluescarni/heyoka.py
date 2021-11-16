@@ -451,7 +451,41 @@
    "source": [
     "The continuous output function object is the fifth element of the tuple returned by ``propagate_for/until()`` (note that if ``c_output`` is set to ``False`` - the default - then the fifth element of the tuple is ``None``).\n",
     "\n",
-    "The ``c_out`` object accepts in input either\n",
+    "Let us print ``c_out`` to screen:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 11,
+   "id": "876106e8-df1b-4730-a7c3-bad2420e8b3c",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "Direction : forward\n",
+       "Time range: [0, 10)\n",
+       "N of steps: 10"
+      ]
+     },
+     "execution_count": 11,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "c_out"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "c3d2c49e-cdf1-4503-825f-2b7a749c1557",
+   "metadata": {},
+   "source": [
+    "The screen output informs us that the ``c_out`` object is capable of providing continuous output in\n",
+    "the $\\left[0, 10\\right)$ time interval, and that 10 steps were taken during the integration.\n",
+    "\n",
+    "The call operator of the ``c_out`` object accepts in input either\n",
     "\n",
     "* a single absolute time coordinate, or\n",
     "* a 1D vector of absolute time coordinates.\n",
@@ -463,7 +497,7 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 11,
+   "execution_count": 12,
    "id": "53fe90c0-22bb-45e2-9310-672ee4ef6f1c",
    "metadata": {},
    "outputs": [
@@ -501,7 +535,7 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 12,
+   "execution_count": 13,
    "id": "529a2e50-bf7d-4369-b167-fd7d35c02462",
    "metadata": {},
    "outputs": [
@@ -554,7 +588,9 @@
     "> match the integrator’s accuracy only if the time coordinate falls within the integration interval.\n",
     "> Note that heyoka.py will not prevent the use of a ``continuous_output`` object outside the\n",
     "> guaranteed accuracy range - it is the user’s responsibility to be aware that doing so will\n",
-    "> produce results whose accuracy does not match the integrator’s error tolerance.."
+    "> produce results whose accuracy does not match the integrator’s error tolerance.\n",
+    "\n",
+    "Note that, like the other main classes in heyoka.py, ``continuous_output`` supports [serialisation](<./pickling.ipynb>)."
    ]
   }
  ],
