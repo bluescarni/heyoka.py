@@ -26,10 +26,11 @@ Python3_add_library(core MODULE WITH_SOABI
 )
 
 target_link_libraries(core PRIVATE heyoka::heyoka fmt::fmt spdlog::spdlog Boost::boost Boost::serialization)
+target_link_libraries(core PRIVATE "${pybind11_LIBRARIES}")
 if(heyoka_WITH_MPPP)
     target_link_libraries(core PRIVATE mp++::mp++)
 endif()
-target_include_directories(core SYSTEM PRIVATE "${pybind11_INCLUDE_DIR}")
+target_include_directories(core SYSTEM PRIVATE "${pybind11_INCLUDE_DIR}" "${Python3_INCLUDE_DIRS}")
 target_compile_definitions(core PRIVATE "${pybind11_DEFINITIONS}")
 target_compile_options(core PRIVATE
     "$<$<CONFIG:Debug>:${HEYOKA_PY_CXX_FLAGS_DEBUG}>"

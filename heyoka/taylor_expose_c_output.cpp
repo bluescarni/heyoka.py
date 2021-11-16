@@ -64,12 +64,11 @@ template <typename T>
 void expose_c_output_impl(py::module &m, const std::string &suffix)
 {
     using namespace pybind11::literals;
-    using fmt::literals::operator""_format;
 
     using c_output_t = hey::continuous_output<T>;
     using array_arg_t = std::conditional_t<std::is_same_v<T, fp_128_t>, py::iterable, py::array_t<T>>;
 
-    const auto name = "continuous_output_{}"_format(suffix);
+    const auto name = fmt::format("continuous_output_{}", suffix);
 
     py::class_<c_output_t> c_out_c(m, name.c_str(), py::dynamic_attr{});
 
@@ -130,10 +129,12 @@ void expose_c_output_impl(py::module &m, const std::string &suffix)
 
                     // Check the shape of tm.
                     if (tm.ndim() != 1) {
-                        py_throw(PyExc_ValueError, "Invalid time array passed to a continuous_output object: the "
-                                                   "number of dimensions must be 1, but it is "
-                                                   "{} instead"_format(tm.ndim())
-                                                       .c_str());
+                        py_throw(PyExc_ValueError,
+                                 fmt::format("Invalid time array passed to a continuous_output object: the "
+                                             "number of dimensions must be 1, but it is "
+                                             "{} instead",
+                                             tm.ndim())
+                                     .c_str());
                     }
 
                     // Compute the number of rows.
@@ -265,11 +266,10 @@ template <typename T>
 void expose_c_output_batch_impl(py::module &m, const std::string &suffix)
 {
     using namespace pybind11::literals;
-    using fmt::literals::operator""_format;
 
     using c_output_t = hey::continuous_output_batch<T>;
 
-    const auto name = "continuous_output_batch_{}"_format(suffix);
+    const auto name = fmt::format("continuous_output_batch_{}", suffix);
 
     py::class_<c_output_t> c_out_c(m, name.c_str(), py::dynamic_attr{});
 
@@ -292,18 +292,21 @@ void expose_c_output_batch_impl(py::module &m, const std::string &suffix)
                 // - (batch_size, ) (i.e., compute for a single time batch), or
                 // - (n, batch_size) (i.e., compute for a n time batches).
                 if (tm.ndim() != 1 && tm.ndim() != 2) {
-                    py_throw(PyExc_ValueError, "Invalid time array passed to a continuous_output_batch object: the "
-                                               "number of dimensions must be 1 or 2, but it is "
-                                               "{} instead"_format(tm.ndim())
-                                                   .c_str());
+                    py_throw(PyExc_ValueError,
+                             fmt::format("Invalid time array passed to a continuous_output_batch object: the "
+                                         "number of dimensions must be 1 or 2, but it is "
+                                         "{} instead",
+                                         tm.ndim())
+                                 .c_str());
                 }
 
                 if (tm.ndim() == 1) {
                     // Single time batch.
                     if (tm.shape(0) != boost::numeric_cast<py::ssize_t>(batch_size)) {
                         py_throw(PyExc_ValueError,
-                                 "Invalid time array passed to a continuous_output_batch object: the "
-                                 "length must be {} but it is {} instead"_format(batch_size, tm.shape(0))
+                                 fmt::format("Invalid time array passed to a continuous_output_batch object: the "
+                                             "length must be {} but it is {} instead",
+                                             batch_size, tm.shape(0))
                                      .c_str());
                     }
 
@@ -336,8 +339,9 @@ void expose_c_output_batch_impl(py::module &m, const std::string &suffix)
                     // Multiple time batches.
                     if (tm.shape(1) != boost::numeric_cast<py::ssize_t>(batch_size)) {
                         py_throw(PyExc_ValueError,
-                                 "Invalid time array passed to a continuous_output_batch object: the "
-                                 "number of columns must be {} but it is {} instead"_format(batch_size, tm.shape(1))
+                                 fmt::format("Invalid time array passed to a continuous_output_batch object: the "
+                                             "number of columns must be {} but it is {} instead",
+                                             batch_size, tm.shape(1))
                                      .c_str());
                     }
 

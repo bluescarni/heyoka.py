@@ -104,12 +104,11 @@ struct ev_callback {
             try {
                 return py::cast<Ret>(ret);
             } catch (const py::cast_error &) {
-                using fmt::literals::operator""_format;
-
-                py_throw(PyExc_TypeError, ("Unable to convert a Python object of type '{}' to the C++ type '{}' "
-                                           "in the construction of the return value of an event callback"_format(
-                                               heypy::str(heypy::type(ret)), boost::core::demangle(typeid(Ret).name())))
-                                              .c_str());
+                py_throw(PyExc_TypeError,
+                         (fmt::format("Unable to convert a Python object of type '{}' to the C++ type '{}' "
+                                      "in the construction of the return value of an event callback",
+                                      heypy::str(heypy::type(ret)), boost::core::demangle(typeid(Ret).name())))
+                             .c_str());
             }
         }
     }
@@ -163,21 +162,21 @@ template <typename T, bool B>
 void expose_taylor_nt_event_impl(py::module &m, const std::string &suffix)
 {
     using namespace pybind11::literals;
-    using fmt::literals::operator""_format;
     namespace kw = hey::kw;
 
     using ev_t = std::conditional_t<B, hey::nt_event_batch<T>, hey::nt_event<T>>;
     using callback_t = std::conditional_t<B, ev_callback<void, hey::taylor_adaptive_batch<T> &, T, int, std::uint32_t>,
                                           ev_callback<void, hey::taylor_adaptive<T> &, T, int>>;
 
-    const auto name = B ? "_nt_event_batch_{}"_format(suffix) : "_nt_event_{}"_format(suffix);
+    const auto name = B ? fmt::format("_nt_event_batch_{}", suffix) : fmt::format("_nt_event_{}", suffix);
 
     py::class_<ev_t>(m, name.c_str(), py::dynamic_attr{})
         .def(py::init([](const hey::expression &ex, py::object callback, hey::event_direction dir) {
                  if (!heypy::callable(callback)) {
                      heypy::py_throw(
                          PyExc_TypeError,
-                         "An object of type '{}' cannot be used as an event callback because it is not callable"_format(
+                         fmt::format(
+                             "An object of type '{}' cannot be used as an event callback because it is not callable",
                              heypy::str(heypy::type(callback)))
                              .c_str());
                  }
@@ -227,7 +226,6 @@ template <typename T, bool B>
 void expose_taylor_t_event_impl(py::module &m, const std::string &suffix)
 {
     using namespace pybind11::literals;
-    using fmt::literals::operator""_format;
     namespace kw = hey::kw;
 
     using ev_t = std::conditional_t<B, hey::t_event_batch<T>, hey::t_event<T>>;
@@ -235,7 +233,7 @@ void expose_taylor_t_event_impl(py::module &m, const std::string &suffix)
         = std::conditional_t<B, ev_callback<bool, hey::taylor_adaptive_batch<T> &, bool, int, std::uint32_t>,
                              ev_callback<bool, hey::taylor_adaptive<T> &, bool, int>>;
 
-    const auto name = B ? "_t_event_batch_{}"_format(suffix) : "_t_event_{}"_format(suffix);
+    const auto name = B ? fmt::format("_t_event_batch_{}", suffix) : fmt::format("_t_event_{}", suffix);
 
     py::class_<ev_t>(m, name.c_str(), py::dynamic_attr{})
         .def(
@@ -246,7 +244,8 @@ void expose_taylor_t_event_impl(py::module &m, const std::string &suffix)
                     if (!heypy::callable(callback)) {
                         heypy::py_throw(
                             PyExc_TypeError,
-                            "An object of type '{}' cannot be used as an event callback because it is not callable"_format(
+                            fmt::format(
+                                "An object of type '{}' cannot be used as an event callback because it is not callable",
                                 heypy::str(heypy::type(callback)))
                                 .c_str());
                     }

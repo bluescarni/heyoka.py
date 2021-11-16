@@ -151,7 +151,6 @@ template <typename T>
 void expose_taylor_integrator_impl(py::module &m, const std::string &suffix)
 {
     using namespace pybind11::literals;
-    using fmt::literals::operator""_format;
     namespace kw = heyoka::kw;
 
     using t_ev_t = hey::t_event<T>;
@@ -178,7 +177,7 @@ void expose_taylor_integrator_impl(py::module &m, const std::string &suffix)
                                        kw::nt_events = std::move(ntes)};
     };
 
-    py::class_<hey::taylor_adaptive<T>> cl(m, ("_taylor_adaptive_{}"_format(suffix)).c_str(), py::dynamic_attr{});
+    py::class_<hey::taylor_adaptive<T>> cl(m, (fmt::format("_taylor_adaptive_{}", suffix)).c_str(), py::dynamic_attr{});
     cl.def(py::init([ctor_impl](const std::vector<std::pair<hey::expression, hey::expression>> &sys,
                                 std::vector<T> state, T time, std::vector<T> pars, T tol, bool high_accuracy,
                                 bool compact_mode, std::vector<t_ev_t> tes, std::vector<nt_ev_t> ntes) {
@@ -306,7 +305,6 @@ void expose_taylor_integrator_ldbl(py::module &m)
 void expose_taylor_integrator_f128(py::module &m)
 {
     using namespace pybind11::literals;
-    using fmt::literals::operator""_format;
     namespace kw = heyoka::kw;
 
     using t_ev_t = hey::t_event<mppp::real128>;
@@ -396,11 +394,11 @@ void expose_taylor_integrator_f128(py::module &m)
         .def("set_state",
              [](hey::taylor_adaptive<mppp::real128> &ta, const std::vector<mppp::real128> &v) {
                  if (v.size() != ta.get_state().size()) {
-                     heypy::py_throw(PyExc_ValueError,
-                                     "Invalid state vector passed to set_state(): "
-                                     "the new state vector has a size of {}, "
-                                     "but the size should be {} instead"_format(v.size(), ta.get_state().size())
-                                         .c_str());
+                     heypy::py_throw(PyExc_ValueError, fmt::format("Invalid state vector passed to set_state(): "
+                                                                   "the new state vector has a size of {}, "
+                                                                   "but the size should be {} instead",
+                                                                   v.size(), ta.get_state().size())
+                                                           .c_str());
                  }
 
                  std::copy(v.begin(), v.end(), ta.get_state_data());
@@ -410,11 +408,12 @@ void expose_taylor_integrator_f128(py::module &m)
         .def("set_pars",
              [](hey::taylor_adaptive<mppp::real128> &ta, const std::vector<mppp::real128> &v) {
                  if (v.size() != ta.get_pars().size()) {
-                     heypy::py_throw(PyExc_ValueError,
-                                     "Invalid pars vector passed to set_pars(): "
-                                     "the new pars vector has a size of {}, but the size should be {} instead"_format(
-                                         v.size(), ta.get_pars().size())
-                                         .c_str());
+                     heypy::py_throw(
+                         PyExc_ValueError,
+                         fmt::format("Invalid pars vector passed to set_pars(): "
+                                     "the new pars vector has a size of {}, but the size should be {} instead",
+                                     v.size(), ta.get_pars().size())
+                             .c_str());
                  }
 
                  std::copy(v.begin(), v.end(), ta.get_state_data());

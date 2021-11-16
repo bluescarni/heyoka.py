@@ -46,13 +46,12 @@ struct type_caster<long double> {
         assert(PyBuffer_IsContiguous(buffer, 'C'));
 
         if (boost::numeric_cast<std::size_t>(buffer->len) != sizeof(long double)) {
-            using fmt::literals::operator""_format;
-
-            heypy::py_throw(PyExc_RuntimeError,
-                            ("error while converting a numpy.longdouble to a C++ long double: the size of the bytes "
-                             "array ({}) does not match the size of the long double type ({})"_format(
-                                 buffer->len, sizeof(long double)))
-                                .c_str());
+            heypy::py_throw(
+                PyExc_RuntimeError,
+                (fmt::format("error while converting a numpy.longdouble to a C++ long double: the size of the bytes "
+                             "array ({}) does not match the size of the long double type ({})",
+                             buffer->len, sizeof(long double)))
+                    .c_str());
         }
 
         auto start = static_cast<const unsigned char *>(buffer->buf);
