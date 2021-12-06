@@ -88,6 +88,16 @@ def eval(e, map, pars=[], **kwargs):
         "the floating-point type \"{}\" is not recognized/supported".format(fp_type))
 
 
+def recommended_simd_size(fp_type="double"):
+    from .core import _recommended_simd_size_dbl
+
+    if fp_type == "double":
+        return _recommended_simd_size_dbl()
+
+    raise TypeError(
+        "the floating-point type \"{}\" is not recognized/supported".format(fp_type))
+
+
 def taylor_adaptive_batch(sys, state, **kwargs):
     from .core import _taylor_adaptive_batch_dbl
 
