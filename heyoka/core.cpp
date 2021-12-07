@@ -539,6 +539,9 @@ PYBIND11_MODULE(core, m)
         .def(py::pickle(&heypy::pickle_getstate_wrapper<hey::llvm_state>,
                         &heypy::pickle_setstate_wrapper<hey::llvm_state>));
 
+    // Recommended simd size helper.
+    m.def("_recommended_simd_size_dbl", &hey::recommended_simd_size<double>);
+
     // The callback for the propagate_*() functions for
     // the batch integrator.
     using prop_cb_t = std::function<bool(hey::taylor_adaptive_batch<double> &)>;

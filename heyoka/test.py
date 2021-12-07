@@ -2755,6 +2755,20 @@ class c_output_test_case(_ut.TestCase):
             self.assertEqual(c_out.foo, [])
 
 
+class recommended_simd_size_test_case(_ut.TestCase):
+    def runTest(self):
+        from . import recommended_simd_size
+
+        self.assertTrue(recommended_simd_size() >= 1)
+        self.assertEqual(recommended_simd_size(),
+                         recommended_simd_size(fp_type="double"))
+
+        with self.assertRaises(TypeError) as cm:
+            recommended_simd_size(fp_type="long double")
+        self.assertTrue(
+            "the floating-point type \"long double\" is not recognized/supported" in str(cm.exception))
+
+
 def run_test_suite():
     from . import make_nbody_sys, taylor_adaptive, with_real128
 
@@ -2769,6 +2783,7 @@ def run_test_suite():
     retval = 0
 
     suite = _ut.TestLoader().loadTestsFromTestCase(taylor_add_jet_test_case)
+    suite.addTest(recommended_simd_size_test_case())
     suite.addTest(c_output_test_case())
     suite.addTest(expression_test_case())
     suite.addTest(llvm_state_test_case())

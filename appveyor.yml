@@ -6,8 +6,8 @@ branches:
 
 environment:
   matrix:
-    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
-      BUILD_TYPE: MSVC17_clang_64
+    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2019
+      BUILD_TYPE: MSVC2019
 
 install:
 - call "C:\\Miniconda37-x64\\Scripts\\activate.bat"
@@ -15,10 +15,8 @@ install:
 - conda update -n base conda
 - conda config --add channels conda-forge
 - conda config --set channel_priority strict
-- if [%BUILD_TYPE%]==[MSVC17_clang_64] conda create --name heyoka python=3.7 git pybind11 numpy cmake"<3.20" llvmdev tbb-devel tbb astroquery boost-cpp fmt spdlog ninja sleef clang clangxx sympy cloudpickle
+- conda create --name heyoka python=3.7 git pybind11 numpy cmake llvmdev tbb-devel tbb astroquery boost-cpp fmt spdlog sleef sympy cloudpickle
 - call activate heyoka
-- if [%BUILD_TYPE%]==[MSVC17_clang_64] clang-cl -v
-- if [%BUILD_TYPE%]==[MSVC17_clang_64] call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvars64.bat"
 
 build_script:
 - set CONDA_PREFIX_PATH=C:\Miniconda37-x64\envs\heyoka\Library
@@ -28,9 +26,8 @@ build_script:
 - cd heyoka_cpp
 - mkdir build
 - cd build
-- if [%BUILD_TYPE%]==[MSVC17_clang_64] cmake .. -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=clang-cl -DCMAKE_CXX_COMPILER=clang-cl -DCMAKE_PREFIX_PATH=%CONDA_PREFIX_PATH% -DCMAKE_INSTALL_PREFIX=%CONDA_PREFIX_PATH% -DBoost_NO_BOOST_CMAKE=ON -DHEYOKA_ENABLE_IPO=yes -DHEYOKA_WITH_SLEEF=yes
-- if [%BUILD_TYPE%]==[MSVC17_clang_64] cmake --build . -- -v
-- if [%BUILD_TYPE%]==[MSVC17_clang_64] cmake --build . --target install
+- cmake .. -G "Visual Studio 16 2019" -A x64 -DCMAKE_PREFIX_PATH=%CONDA_PREFIX_PATH% -DCMAKE_INSTALL_PREFIX=%CONDA_PREFIX_PATH% -DBoost_NO_BOOST_CMAKE=ON -DHEYOKA_ENABLE_IPO=yes -DHEYOKA_WITH_SLEEF=yes
+- cmake --build . --config Release --target install
 - cd ..
 - cd ..
 
@@ -38,13 +35,12 @@ build_script:
 - cd build
 
 # heyoka.py
-- if [%BUILD_TYPE%]==[MSVC17_clang_64] cmake .. -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=clang-cl -DCMAKE_CXX_COMPILER=clang-cl -DCMAKE_PREFIX_PATH=%CONDA_PREFIX_PATH% -DCMAKE_INSTALL_PREFIX=%CONDA_PREFIX_PATH% -DBoost_NO_BOOST_CMAKE=ON -DHEYOKA_PY_ENABLE_IPO=yes
-- if [%BUILD_TYPE%]==[MSVC17_clang_64] cmake --build . -- -v
-- if [%BUILD_TYPE%]==[MSVC17_clang_64] cmake --build . --target install
+- cmake .. -G "Visual Studio 16 2019" -A x64 -DCMAKE_PREFIX_PATH=%CONDA_PREFIX_PATH% -DCMAKE_INSTALL_PREFIX=%CONDA_PREFIX_PATH% -DBoost_NO_BOOST_CMAKE=ON -DHEYOKA_PY_ENABLE_IPO=yes
+- cmake --build . --config Release --target install
 - cd c:\
 
 test_script:
-- if [%BUILD_TYPE%]==[MSVC17_clang_64] python -c "from heyoka import test; test.run_test_suite()"
+- python -c "from heyoka import test; test.run_test_suite()"
 
 # Enable this to be able to login to the build worker. You can use the
 # `remmina` program in Ubuntu, use the login information that the line below
