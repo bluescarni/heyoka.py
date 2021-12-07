@@ -1,9 +1,6 @@
 channels:
   - conda-forge
 dependencies:
-  # NOTE: use llvm 11 as it is the
-  # one currently supported by numba.
-  - heyoka-llvm-11
   - heyoka.py=0.16.0
   - pykep
   - matplotlib
