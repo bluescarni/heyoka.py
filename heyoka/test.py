@@ -477,6 +477,7 @@ class event_classes_test_case(_ut.TestCase):
         import numpy as np
         import pickle
         import gc
+        from copy import copy, deepcopy
 
         x, v = make_vars("x", "v")
 
@@ -573,6 +574,15 @@ class event_classes_test_case(_ut.TestCase):
             ev.foo = "hello world"
             ev = pickle.loads(pickle.dumps(ev))
             self.assertEqual(ev.foo, "hello world")
+
+            # Test copy semantics.
+            class foo:
+                pass
+
+            ev.bar = foo()
+
+            self.assertEqual(id(ev.bar), id(copy(ev).bar))
+            self.assertNotEqual(id(ev.bar), id(deepcopy(ev).bar))
 
             # Test to ensure a callback extracted from the event
             # is kept alive and usable when the event is destroyed.
@@ -684,6 +694,15 @@ class event_classes_test_case(_ut.TestCase):
             ev.foo = "hello world"
             ev = pickle.loads(pickle.dumps(ev))
             self.assertEqual(ev.foo, "hello world")
+
+            # Test copy semantics.
+            class foo:
+                pass
+
+            ev.bar = foo()
+
+            self.assertEqual(id(ev.bar), id(copy(ev).bar))
+            self.assertNotEqual(id(ev.bar), id(deepcopy(ev).bar))
 
             # Test also with empty callback.
             ev = t_event(x + v, fp_type=desc, direction=event_direction.positive,
@@ -802,6 +821,15 @@ class event_classes_test_case(_ut.TestCase):
         ev = pickle.loads(pickle.dumps(ev))
         self.assertEqual(ev.foo, "hello world")
 
+        # Test copy semantics.
+        class foo:
+            pass
+
+        ev.bar = foo()
+
+        self.assertEqual(id(ev.bar), id(copy(ev).bar))
+        self.assertNotEqual(id(ev.bar), id(deepcopy(ev).bar))
+
         # Test to ensure a callback extracted from the event
         # is kept alive and usable when the event is destroyed.
         ev = nt_event_batch(ex=x + v, callback=local_cb(),
@@ -913,6 +941,15 @@ class event_classes_test_case(_ut.TestCase):
         ev.foo = "hello world"
         ev = pickle.loads(pickle.dumps(ev))
         self.assertEqual(ev.foo, "hello world")
+
+        # Test copy semantics.
+        class foo:
+            pass
+
+        ev.bar = foo()
+
+        self.assertEqual(id(ev.bar), id(copy(ev).bar))
+        self.assertNotEqual(id(ev.bar), id(deepcopy(ev).bar))
 
         # Test also with empty callback.
         ev = t_event_batch(x + v, direction=event_direction.positive,
@@ -1524,6 +1561,36 @@ class scalar_integrator_test_case(_ut.TestCase):
         self.test_basic()
         self.test_s11n()
         self.test_events()
+        self.test_copy()
+
+    def test_copy(self):
+        from . import taylor_adaptive, make_vars, t_event, sin
+        import numpy as np
+        from copy import copy, deepcopy
+
+        x, v = make_vars("x", "v")
+
+        sys = [(x, v), (v, -9.8 * sin(x))]
+
+        ta = taylor_adaptive(sys=sys, state=[0., 0.25],
+                             t_events=[t_event(v)])
+
+        ta.step()
+
+        class foo:
+            pass
+
+        ta.bar = foo()
+
+        self.assertEqual(id(ta.bar), id(copy(ta).bar))
+        self.assertNotEqual(id(ta.bar), id(deepcopy(ta).bar))
+        self.assertTrue(np.all(ta.state == copy(ta).state))
+        self.assertTrue(np.all(ta.state == deepcopy(ta).state))
+
+        ta_dc = deepcopy(ta)
+        self.assertEqual(ta_dc.state[0], ta.state[0])
+        ta.state[0] += 1
+        self.assertNotEqual(ta_dc.state[0], ta.state[0])
 
     def test_basic(self):
         from . import taylor_adaptive, make_vars, t_event, sin
@@ -1683,6 +1750,43 @@ class batch_integrator_test_case(_ut.TestCase):
         self.test_events()
         self.test_set_time()
         self.test_update_d_output()
+        self.test_copy()
+
+    def test_copy(self):
+        from . import nt_event_batch, make_vars, sin, taylor_adaptive_batch
+        from copy import copy, deepcopy
+        import numpy as np
+
+        x, v = make_vars("x", "v")
+
+        # Use a pendulum for testing purposes.
+        sys = [(x, v), (v, -9.8 * sin(x))]
+
+        def cb0(ta, t, d_sgn, bidx):
+            pass
+
+        ta = taylor_adaptive_batch(sys=sys, state=[[0, .01], [0.25, 0.26]],
+                                   nt_events=[nt_event_batch(v*v-1e-10, cb0)])
+
+        ta.step()
+        ta.step()
+        ta.step()
+        ta.step()
+
+        class foo:
+            pass
+
+        ta.bar = foo()
+
+        self.assertEqual(id(ta.bar), id(copy(ta).bar))
+        self.assertNotEqual(id(ta.bar), id(deepcopy(ta).bar))
+        self.assertTrue(np.all(ta.state == copy(ta).state))
+        self.assertTrue(np.all(ta.state == deepcopy(ta).state))
+
+        ta_dc = deepcopy(ta)
+        self.assertEqual(ta_dc.state[0, 0], ta.state[0, 0])
+        ta.state[0, 0] += 1
+        self.assertNotEqual(ta_dc.state[0, 0], ta.state[0, 0])
 
     def test_propagate_for(self):
         from . import taylor_adaptive_batch, make_vars, sin
@@ -2325,6 +2429,24 @@ class expression_test_case(_ut.TestCase):
         self.test_s11n()
         self.test_len()
         self.test_diff()
+        self.test_copy()
+
+    def test_copy(self):
+        from . import make_vars
+        from copy import copy, deepcopy
+
+        x, y = make_vars("x", "y")
+        ex = x+y
+
+        class foo:
+            pass
+
+        ex.bar = foo()
+
+        self.assertEqual(id(ex.bar), id(copy(ex).bar))
+        self.assertNotEqual(id(ex.bar), id(deepcopy(ex).bar))
+        self.assertEqual(ex, copy(ex))
+        self.assertEqual(ex, deepcopy(ex))
 
     def test_diff(self):
         from . import make_vars, sin, cos, diff, par
@@ -2377,6 +2499,29 @@ class expression_test_case(_ut.TestCase):
 class llvm_state_test_case(_ut.TestCase):
     def runTest(self):
         self.test_s11n()
+        self.test_copy()
+
+    def test_copy(self):
+        from . import make_vars, sin, taylor_adaptive
+        from copy import copy, deepcopy
+
+        x, v = make_vars("x", "v")
+
+        sys = [(x, v), (v, -9.8 * sin(x))]
+
+        ta = taylor_adaptive(sys=sys, state=[0., 0.25])
+
+        ls = ta.llvm_state
+
+        class foo:
+            pass
+
+        ls.bar = foo()
+
+        self.assertEqual(id(ls.bar), id(copy(ls).bar))
+        self.assertNotEqual(id(ls.bar), id(deepcopy(ls).bar))
+        self.assertEqual(ls.get_ir(), copy(ls).get_ir())
+        self.assertEqual(ls.get_ir(), deepcopy(ls).get_ir())
 
     def test_s11n(self):
         from . import make_vars, sin, taylor_adaptive
@@ -2685,6 +2830,21 @@ class c_output_test_case(_ut.TestCase):
             self.assertEqual(
                 c_out.tcs.shape, (c_out.n_steps, 2, ta.order + 1, 4))
 
+            class foo:
+                pass
+
+            c_out_copy = deepcopy(c_out)
+            orig_tmp = deepcopy(c_out_copy(fp_t(0.1)))
+            c_out_copy.bar = foo()
+
+            self.assertEqual(id(c_out_copy.bar), id(copy(c_out_copy).bar))
+            self.assertNotEqual(id(c_out_copy.bar),
+                                id(deepcopy(c_out_copy).bar))
+            self.assertTrue(np.all(c_out_copy(fp_t(0.1)) ==
+                            copy(c_out_copy)(fp_t(0.1))))
+            self.assertTrue(np.all(c_out_copy(fp_t(0.1)) ==
+                            deepcopy(c_out_copy)(fp_t(0.1))))
+
             # Pickling with dynattrs.
             c_out.foo = []
             c_out = loads(dumps(c_out))
@@ -2905,6 +3065,21 @@ class c_output_test_case(_ut.TestCase):
                 with self.assertRaises(ValueError) as cm:
                     c_out.tcs[0, 0, 0] = .5
 
+            class foo:
+                pass
+
+            c_out_copy = deepcopy(c_out)
+            orig_tmp = deepcopy(c_out_copy(fp_t(0.1)))
+            c_out_copy.bar = foo()
+
+            self.assertEqual(id(c_out_copy.bar), id(copy(c_out_copy).bar))
+            self.assertNotEqual(id(c_out_copy.bar),
+                                id(deepcopy(c_out_copy).bar))
+            self.assertTrue(np.all(c_out_copy(fp_t(0.1)) ==
+                            copy(c_out_copy)(fp_t(0.1))))
+            self.assertTrue(np.all(c_out_copy(fp_t(0.1)) ==
+                            deepcopy(c_out_copy)(fp_t(0.1))))
+
             # Pickling.
             c_out = loads(dumps(c_out))
 
@@ -2963,7 +3138,6 @@ def run_test_suite():
     suite.addTest(c_output_test_case())
     suite.addTest(expression_test_case())
     suite.addTest(llvm_state_test_case())
-    suite.addTest(expression_test_case())
     suite.addTest(event_classes_test_case())
     suite.addTest(event_detection_test_case())
     suite.addTest(expression_eval_test_case())

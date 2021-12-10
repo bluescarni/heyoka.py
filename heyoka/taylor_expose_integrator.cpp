@@ -120,9 +120,8 @@ void expose_taylor_integrator_common(py::class_<hey::taylor_adaptive<T>> &cl)
                  return oss.str();
              })
         // Copy/deepcopy.
-        .def("__copy__", [](const hey::taylor_adaptive<T> &ta) { return ta; })
-        .def(
-            "__deepcopy__", [](const hey::taylor_adaptive<T> &ta, py::dict) { return ta; }, "memo"_a)
+        .def("__copy__", copy_wrapper<hey::taylor_adaptive<T>>)
+        .def("__deepcopy__", deepcopy_wrapper<hey::taylor_adaptive<T>>, "memo"_a)
         // Pickle support.
         .def(py::pickle(&pickle_getstate_wrapper<hey::taylor_adaptive<T>>,
                         &pickle_setstate_wrapper<hey::taylor_adaptive<T>>))

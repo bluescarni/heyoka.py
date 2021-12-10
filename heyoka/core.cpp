@@ -153,6 +153,18 @@ PYBIND11_MODULE(core, m)
     // exposition of the operators.
     using ld_t = long double;
 
+    // NOTE: this is used in the implementation of
+    // copy/deepcopy for expression. We need this because
+    // in order to perform a true copy of an expression
+    // we need to use an external function, as the copy ctor
+    // performs a shallow copy.
+    struct ex_copy_func {
+        hey::expression operator()(const hey::expression &ex) const
+        {
+            return hey::copy(ex);
+        }
+    };
+
     py::class_<hey::expression>(m, "expression", py::dynamic_attr{})
         .def(py::init<>())
         .def(py::init<double>())
@@ -246,9 +258,8 @@ PYBIND11_MODULE(core, m)
                  return oss.str();
              })
         // Copy/deepcopy.
-        .def("__copy__", [](const hey::expression &e) { return hey::copy(e); })
-        .def(
-            "__deepcopy__", [](const hey::expression &e, py::dict) { return hey::copy(e); }, "memo"_a)
+        .def("__copy__", heypy::copy_wrapper<hey::expression, ex_copy_func>)
+        .def("__deepcopy__", heypy::deepcopy_wrapper<hey::expression, ex_copy_func>, "memo"_a)
         // Pickle support.
         .def(py::pickle(&heypy::pickle_getstate_wrapper<hey::expression>,
                         &heypy::pickle_setstate_wrapper<hey::expression>));
@@ -533,9 +544,8 @@ PYBIND11_MODULE(core, m)
                  return oss.str();
              })
         // Copy/deepcopy.
-        .def("__copy__", [](const hey::llvm_state &s) { return s; })
-        .def(
-            "__deepcopy__", [](const hey::llvm_state &s, py::dict) { return s; }, "memo"_a)
+        .def("__copy__", heypy::copy_wrapper<hey::llvm_state>)
+        .def("__deepcopy__", heypy::deepcopy_wrapper<hey::llvm_state>, "memo"_a)
         // Pickle support.
         .def(py::pickle(&heypy::pickle_getstate_wrapper<hey::llvm_state>,
                         &heypy::pickle_setstate_wrapper<hey::llvm_state>));
@@ -903,9 +913,8 @@ PYBIND11_MODULE(core, m)
                  return oss.str();
              })
         // Copy/deepcopy.
-        .def("__copy__", [](const hey::taylor_adaptive_batch<double> &ta) { return ta; })
-        .def(
-            "__deepcopy__", [](const hey::taylor_adaptive_batch<double> &ta, py::dict) { return ta; }, "memo"_a)
+        .def("__copy__", heypy::copy_wrapper<hey::taylor_adaptive_batch<double>>)
+        .def("__deepcopy__", heypy::deepcopy_wrapper<hey::taylor_adaptive_batch<double>>, "memo"_a)
         // Pickle support.
         .def(py::pickle(&heypy::pickle_getstate_wrapper<hey::taylor_adaptive_batch<double>>,
                         &heypy::pickle_setstate_wrapper<hey::taylor_adaptive_batch<double>>));

@@ -251,9 +251,8 @@ void expose_c_output_impl(py::module &m, const std::string &suffix)
                  return oss.str();
              })
         // Copy/deepcopy.
-        .def("__copy__", [](const c_output_t &c) { return c; })
-        .def(
-            "__deepcopy__", [](const c_output_t &c, py::dict) { return c; }, "memo"_a)
+        .def("__copy__", copy_wrapper<c_output_t>)
+        .def("__deepcopy__", deepcopy_wrapper<c_output_t>, "memo"_a)
         // Pickle support.
         .def(py::pickle(&pickle_getstate_wrapper<c_output_t>, &pickle_setstate_wrapper<c_output_t>));
 
@@ -513,9 +512,8 @@ void expose_c_output_batch_impl(py::module &m, const std::string &suffix)
                  return oss.str();
              })
         // Copy/deepcopy.
-        .def("__copy__", [](const c_output_t &c) { return c; })
-        .def(
-            "__deepcopy__", [](const c_output_t &c, py::dict) { return c; }, "memo"_a)
+        .def("__copy__", copy_wrapper<c_output_t>)
+        .def("__deepcopy__", deepcopy_wrapper<c_output_t>, "memo"_a)
         // Pickle support.
         .def(py::pickle(&pickle_getstate_wrapper<c_output_t>, &pickle_setstate_wrapper<c_output_t>));
 
