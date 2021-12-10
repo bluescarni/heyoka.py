@@ -19,6 +19,7 @@
 #include <string>
 #include <unordered_map>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include <boost/numeric/conversion/cast.hpp>
@@ -638,6 +639,7 @@ PYBIND11_MODULE(core, m)
                                                       kw::nt_events = std::move(ntes)};
         }
     };
+
     py::class_<hey::taylor_adaptive_batch<double>> tabd_c(m, "_taylor_adaptive_batch_dbl", py::dynamic_attr{});
     tabd_c
         .def(py::init([tabd_ctor_impl](const std::vector<std::pair<hey::expression, hey::expression>> &sys,
@@ -672,87 +674,103 @@ PYBIND11_MODULE(core, m)
                                [](const hey::taylor_adaptive_batch<double> &ta) { return ta.get_step_res(); })
         .def(
             "propagate_for",
-            [](hey::taylor_adaptive_batch<double> &ta, const std::vector<double> &delta_t, std::size_t max_steps,
-               std::vector<double> max_delta_t, const prop_cb_t &cb_, bool write_tc, bool c_output) {
-                // Create the callback wrapper.
-                auto cb = heypy::make_prop_cb(cb_);
+            [](hey::taylor_adaptive_batch<double> &ta, const std::variant<double, std::vector<double>> &delta_t,
+               std::size_t max_steps, std::variant<double, std::vector<double>> max_delta_t, const prop_cb_t &cb_,
+               bool write_tc, bool c_output) {
+                return std::visit(
+                    [&](const auto &dt, auto max_dts) {
+                        // Create the callback wrapper.
+                        auto cb = heypy::make_prop_cb(cb_);
 
-                // NOTE: after releasing the GIL here, the only potential
-                // calls into the Python interpreter are when invoking cb
-                // or the events' callbacks (which are all protected by GIL reacquire).
-                // Note that copying cb around or destroying it is harmless, as it contains only
-                // a reference to the original callback cb_, or it is an empty callback.
-                py::gil_scoped_release release;
-                return ta.propagate_for(delta_t, kw::max_steps = max_steps, kw::max_delta_t = std::move(max_delta_t),
-                                        kw::callback = std::move(cb), kw::write_tc = write_tc, kw::c_output = c_output);
+                        // NOTE: after releasing the GIL here, the only potential
+                        // calls into the Python interpreter are when invoking cb
+                        // or the events' callbacks (which are all protected by GIL reacquire).
+                        // Note that copying cb around or destroying it is harmless, as it contains only
+                        // a reference to the original callback cb_, or it is an empty callback.
+                        py::gil_scoped_release release;
+                        return ta.propagate_for(dt, kw::max_steps = max_steps, kw::max_delta_t = std::move(max_dts),
+                                                kw::callback = std::move(cb), kw::write_tc = write_tc,
+                                                kw::c_output = c_output);
+                    },
+                    delta_t, std::move(max_delta_t));
             },
             "delta_t"_a, "max_steps"_a = 0, "max_delta_t"_a = std::vector<double>{}, "callback"_a = prop_cb_t{},
             "write_tc"_a = false, "c_output"_a = false)
         .def(
             "propagate_until",
-            [](hey::taylor_adaptive_batch<double> &ta, const std::vector<double> &t, std::size_t max_steps,
-               std::vector<double> max_delta_t, const prop_cb_t &cb_, bool write_tc, bool c_output) {
-                // Create the callback wrapper.
-                auto cb = heypy::make_prop_cb(cb_);
+            [](hey::taylor_adaptive_batch<double> &ta, const std::variant<double, std::vector<double>> &tm,
+               std::size_t max_steps, std::variant<double, std::vector<double>> max_delta_t, const prop_cb_t &cb_,
+               bool write_tc, bool c_output) {
+                return std::visit(
+                    [&](const auto &t, auto max_dts) {
+                        // Create the callback wrapper.
+                        auto cb = heypy::make_prop_cb(cb_);
 
-                py::gil_scoped_release release;
-                return ta.propagate_until(t, kw::max_steps = max_steps, kw::max_delta_t = std::move(max_delta_t),
-                                          kw::callback = std::move(cb), kw::write_tc = write_tc,
-                                          kw::c_output = c_output);
+                        py::gil_scoped_release release;
+                        return ta.propagate_until(t, kw::max_steps = max_steps, kw::max_delta_t = std::move(max_dts),
+                                                  kw::callback = std::move(cb), kw::write_tc = write_tc,
+                                                  kw::c_output = c_output);
+                    },
+                    tm, std::move(max_delta_t));
             },
             "t"_a, "max_steps"_a = 0, "max_delta_t"_a = std::vector<double>{}, "callback"_a = prop_cb_t{},
             "write_tc"_a = false, "c_output"_a = false)
         .def(
             "propagate_grid",
             [](hey::taylor_adaptive_batch<double> &ta, py::array_t<double> grid, std::size_t max_steps,
-               std::vector<double> max_delta_t, const prop_cb_t &cb_) {
-                // Check the grid dimension/shape.
-                if (grid.ndim() != 2) {
-                    heypy::py_throw(
-                        PyExc_ValueError,
-                        fmt::format("Invalid grid passed to the propagate_grid() method of a batch integrator: "
+               std::variant<double, std::vector<double>> max_delta_t, const prop_cb_t &cb_) {
+                return std::visit(
+                    [&](auto max_dts) {
+                        // Check the grid dimension/shape.
+                        if (grid.ndim() != 2) {
+                            heypy::py_throw(
+                                PyExc_ValueError,
+                                fmt::format(
+                                    "Invalid grid passed to the propagate_grid() method of a batch integrator: "
                                     "the expected number of dimensions is 2, but the input array has a dimension of {}",
                                     grid.ndim())
-                            .c_str());
-                }
-                if (boost::numeric_cast<std::uint32_t>(grid.shape(1)) != ta.get_batch_size()) {
-                    heypy::py_throw(
-                        PyExc_ValueError,
-                        fmt::format("Invalid grid passed to the propagate_grid() method of a batch integrator: "
-                                    "the shape must be (n, {}) but the number of columns is {} instead",
-                                    ta.get_batch_size(), grid.shape(1))
-                            .c_str());
-                }
+                                    .c_str());
+                        }
+                        if (boost::numeric_cast<std::uint32_t>(grid.shape(1)) != ta.get_batch_size()) {
+                            heypy::py_throw(
+                                PyExc_ValueError,
+                                fmt::format("Invalid grid passed to the propagate_grid() method of a batch integrator: "
+                                            "the shape must be (n, {}) but the number of columns is {} instead",
+                                            ta.get_batch_size(), grid.shape(1))
+                                    .c_str());
+                        }
 
-                // Convert to a std::vector.
-                const auto grid_v = py::cast<std::vector<double>>(grid.attr("flatten")());
+                        // Convert to a std::vector.
+                        const auto grid_v = py::cast<std::vector<double>>(grid.attr("flatten")());
 
 #if !defined(NDEBUG)
-                // Store the grid size for debug.
-                const auto grid_v_size = grid_v.size();
+                        // Store the grid size for debug.
+                        const auto grid_v_size = grid_v.size();
 #endif
 
-                // Create the callback wrapper.
-                auto cb = heypy::make_prop_cb(cb_);
+                        // Create the callback wrapper.
+                        auto cb = heypy::make_prop_cb(cb_);
 
-                // Run the propagation.
-                // NOTE: for batch integrators, ret is guaranteed to always have
-                // the same size regardless of errors.
-                decltype(ta.propagate_grid(grid_v, max_steps)) ret;
-                {
-                    py::gil_scoped_release release;
-                    ret = ta.propagate_grid(std::move(grid_v), kw::max_steps = max_steps,
-                                            kw::max_delta_t = std::move(max_delta_t), kw::callback = std::move(cb));
-                }
+                        // Run the propagation.
+                        // NOTE: for batch integrators, ret is guaranteed to always have
+                        // the same size regardless of errors.
+                        decltype(ta.propagate_grid(grid_v, max_steps)) ret;
+                        {
+                            py::gil_scoped_release release;
+                            ret = ta.propagate_grid(std::move(grid_v), kw::max_steps = max_steps,
+                                                    kw::max_delta_t = std::move(max_dts), kw::callback = std::move(cb));
+                        }
 
-                // Create the output array.
-                assert(ret.size() == grid_v_size * ta.get_dim());
-                py::array_t<double> a_ret(py::array::ShapeContainer{grid.shape(0),
-                                                                    boost::numeric_cast<py::ssize_t>(ta.get_dim()),
-                                                                    grid.shape(1)},
-                                          ret.data());
+                        // Create the output array.
+                        assert(ret.size() == grid_v_size * ta.get_dim());
+                        py::array_t<double> a_ret(
+                            py::array::ShapeContainer{grid.shape(0), boost::numeric_cast<py::ssize_t>(ta.get_dim()),
+                                                      grid.shape(1)},
+                            ret.data());
 
-                return a_ret;
+                        return a_ret;
+                    },
+                    std::move(max_delta_t));
             },
             "grid"_a, "max_steps"_a = 0, "max_delta_t"_a = std::vector<double>{}, "callback"_a = prop_cb_t{})
         .def_property_readonly("propagate_res",
@@ -769,7 +787,10 @@ PYBIND11_MODULE(core, m)
 
                                    return ret;
                                })
-        .def("set_time", &hey::taylor_adaptive_batch<double>::set_time)
+        .def("set_time",
+             [](hey::taylor_adaptive_batch<double> &ta, const std::variant<double, std::vector<double>> &tm) {
+                 std::visit([&ta](const auto &t) { ta.set_time(t); }, tm);
+             })
         .def_property_readonly(
             "state",
             [](py::object &o) {
@@ -839,20 +860,25 @@ PYBIND11_MODULE(core, m)
             })
         .def(
             "update_d_output",
-            [](py::object &o, const std::vector<double> &t, bool rel_time) {
-                auto *ta = py::cast<hey::taylor_adaptive_batch<double> *>(o);
+            [](py::object &o, const std::variant<double, std::vector<double>> &tm, bool rel_time) {
+                return std::visit(
+                    [&o, rel_time](const auto &t) {
+                        auto *ta = py::cast<hey::taylor_adaptive_batch<double> *>(o);
 
-                ta->update_d_output(t, rel_time);
+                        ta->update_d_output(t, rel_time);
 
-                const auto nvars = boost::numeric_cast<py::ssize_t>(ta->get_dim());
-                const auto bs = boost::numeric_cast<py::ssize_t>(ta->get_batch_size());
+                        const auto nvars = boost::numeric_cast<py::ssize_t>(ta->get_dim());
+                        const auto bs = boost::numeric_cast<py::ssize_t>(ta->get_batch_size());
 
-                auto ret = py::array_t<double>(py::array::ShapeContainer{nvars, bs}, ta->get_d_output().data(), o);
+                        auto ret
+                            = py::array_t<double>(py::array::ShapeContainer{nvars, bs}, ta->get_d_output().data(), o);
 
-                // Ensure the returned array is read-only.
-                ret.attr("flags").attr("writeable") = false;
+                        // Ensure the returned array is read-only.
+                        ret.attr("flags").attr("writeable") = false;
 
-                return ret;
+                        return ret;
+                    },
+                    tm);
             },
             "t"_a, "rel_time"_a = false)
         .def_property_readonly("order", &hey::taylor_adaptive_batch<double>::get_order)

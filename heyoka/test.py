@@ -1676,9 +1676,160 @@ class scalar_integrator_test_case(_ut.TestCase):
 class batch_integrator_test_case(_ut.TestCase):
     def runTest(self):
         self.test_basic()
-        self.run_propagate_grid_tests()
+        self.test_propagate_for()
+        self.test_propagate_until()
+        self.test_propagate_grid()
         self.test_s11n()
         self.test_events()
+        self.test_set_time()
+        self.test_update_d_output()
+
+    def test_propagate_for(self):
+        from . import taylor_adaptive_batch, make_vars, sin
+        from copy import deepcopy
+        import numpy as np
+
+        ic = [[0., 0.1, 0.2, 0.3], [0.25, 0.26, 0.27, 0.28]]
+
+        x, v = make_vars("x", "v")
+
+        sys = [(x, v), (v, -9.8 * sin(x))]
+
+        ta = taylor_adaptive_batch(sys=sys, state=ic)
+
+        # Compare vector/scalar delta_t and max_delta_t.
+        ta.propagate_for([10.] * 4)
+        st = deepcopy(ta.state)
+        res = deepcopy(ta.propagate_res)
+
+        ta.set_time(0.)
+        ta.state[:] = ic
+
+        ta.propagate_for(10.)
+        self.assertTrue(np.all(ta.state == st))
+        self.assertEqual(res, ta.propagate_res)
+
+        ta.set_time(0.)
+        ta.state[:] = ic
+
+        ta.propagate_for([10.] * 4, max_delta_t=[1e-4] * 4)
+        st = deepcopy(ta.state)
+        res = deepcopy(ta.propagate_res)
+
+        ta.set_time(0.)
+        ta.state[:] = ic
+
+        ta.propagate_for(10., max_delta_t=1e-4)
+        self.assertTrue(np.all(ta.state == st))
+        self.assertEqual(res, ta.propagate_res)
+
+    def test_propagate_until(self):
+        from . import taylor_adaptive_batch, make_vars, sin
+        from copy import deepcopy
+        import numpy as np
+
+        ic = [[0., 0.1, 0.2, 0.3], [0.25, 0.26, 0.27, 0.28]]
+
+        x, v = make_vars("x", "v")
+
+        sys = [(x, v), (v, -9.8 * sin(x))]
+
+        ta = taylor_adaptive_batch(sys=sys, state=ic)
+
+        # Compare vector/scalar delta_t and max_delta_t.
+        ta.propagate_until([10.] * 4)
+        st = deepcopy(ta.state)
+        res = deepcopy(ta.propagate_res)
+
+        ta.set_time(0.)
+        ta.state[:] = ic
+
+        ta.propagate_until(10.)
+        self.assertTrue(np.all(ta.state == st))
+        self.assertEqual(res, ta.propagate_res)
+
+        ta.set_time(0.)
+        ta.state[:] = ic
+
+        ta.propagate_until([10.] * 4, max_delta_t=[1e-4] * 4)
+        st = deepcopy(ta.state)
+        res = deepcopy(ta.propagate_res)
+
+        ta.set_time(0.)
+        ta.state[:] = ic
+
+        ta.propagate_until(10., max_delta_t=1e-4)
+        self.assertTrue(np.all(ta.state == st))
+        self.assertEqual(res, ta.propagate_res)
+
+    def test_update_d_output(self):
+        from . import taylor_adaptive_batch, make_vars, sin
+        from sys import getrefcount
+        from copy import deepcopy
+        import numpy as np
+
+        x, v = make_vars("x", "v")
+
+        sys = [(x, v), (v, -9.8 * sin(x))]
+
+        ta = taylor_adaptive_batch(
+            sys=sys, state=[[0., 0.1, 0.2, 0.3], [0.25, 0.26, 0.27, 0.28]])
+
+        ta.step(write_tc=True)
+
+        # Scalar overload.
+        with self.assertRaises(ValueError) as cm:
+            ta.update_d_output(0.3)[0] = .5
+
+        d_out = ta.update_d_output(0.3)
+        self.assertEqual(d_out.shape, (2, 4))
+        rc = getrefcount(ta)
+        tmp_out = ta.update_d_output(0.2)
+        new_rc = getrefcount(ta)
+        self.assertEqual(new_rc, rc + 1)
+
+        # Vector overload.
+        with self.assertRaises(ValueError) as cm:
+            ta.update_d_output([0.3, 0.4, 0.45, 0.46])[0] = .5
+
+        d_out2 = ta.update_d_output([0.3, 0.4, 0.45, 0.46])
+        self.assertEqual(d_out2.shape, (2, 4))
+        rc = getrefcount(ta)
+        tmp_out2 = ta.update_d_output([0.31, 0.41, 0.66, 0.67])
+        new_rc = getrefcount(ta)
+        self.assertEqual(new_rc, rc + 1)
+
+        cp = deepcopy(ta.update_d_output(.3))
+        self.assertTrue(np.all(cp == ta.update_d_output([.3]*4)))
+
+        # Functional testing.
+        ta.set_time(0)
+        ta.state[:] = [[0., 0.01, 0.02, 0.03], [0.205, 0.206, 0.207, 0.208]]
+        ta.step(write_tc=True)
+        ta.update_d_output(ta.time)
+        self.assertTrue(np.allclose(
+            ta.d_output, ta.state, rtol=np.finfo(float).eps * 10, atol=np.finfo(float).eps * 10))
+        ta.update_d_output(0., rel_time=True)
+        self.assertTrue(np.allclose(
+            ta.d_output, ta.state, rtol=np.finfo(float).eps * 10, atol=np.finfo(float).eps * 10))
+
+    def test_set_time(self):
+        from . import taylor_adaptive_batch, make_vars, sin
+        import numpy as np
+
+        x, v = make_vars("x", "v")
+
+        sys = [(x, v), (v, -9.8 * sin(x))]
+
+        ta = taylor_adaptive_batch(sys=sys, state=[[0., 0.1], [0.25, 0.26]])
+
+        self.assertTrue(np.all(ta.time == [0, 0]))
+
+        ta.set_time([-1, 1])
+        self.assertTrue(np.all(ta.time == [-1, 1]))
+
+        ta.set_time(5.)
+        self.assertTrue(np.all(ta.time == [5, 5]))
 
     def test_basic(self):
         from . import taylor_adaptive_batch, make_vars, t_event_batch, sin
@@ -1804,9 +1955,10 @@ class batch_integrator_test_case(_ut.TestCase):
         self.assertEqual(
             ta.t_events[0].callback.n, ta2.t_events[0].callback.n)
 
-    def run_propagate_grid_tests(self):
+    def test_propagate_grid(self):
         from . import make_vars, taylor_adaptive, taylor_adaptive_batch, sin
         import numpy as np
+        from copy import deepcopy
 
         x, v = make_vars("x", "v")
         eqns = [(x, v),
@@ -1856,6 +2008,21 @@ class batch_integrator_test_case(_ut.TestCase):
             np.max(np.abs(sres[2][4] - bres[:, :, 2]).flatten()) < 1e-14)
         self.assertTrue(
             np.max(np.abs(sres[3][4] - bres[:, :, 3]).flatten()) < 1e-14)
+
+        # Test vector/scalar max_delta_t.
+        ta.set_time(0.)
+        ta.state[:] = [x_ic, v_ic]
+
+        bres = ta.propagate_grid(grid, max_delta_t=[1e-3] * 4)
+        res = deepcopy(ta.propagate_res)
+
+        ta.set_time(0.)
+        ta.state[:] = [x_ic, v_ic]
+
+        bres2 = ta.propagate_grid(grid, max_delta_t=1e-3)
+
+        self.assertTrue(np.all(bres == bres2))
+        self.assertEqual(ta.propagate_res, res)
 
 
 class kepE_test_case(_ut.TestCase):
@@ -2265,6 +2432,11 @@ class c_output_test_case(_ut.TestCase):
                 "Cannot use a default-constructed continuous_output_batch object" in str(cm.exception))
 
             with self.assertRaises(ValueError) as cm:
+                c_out(fp_t(1))
+            self.assertTrue(
+                "Cannot use a default-constructed continuous_output_batch object" in str(cm.exception))
+
+            with self.assertRaises(ValueError) as cm:
                 c_out(time=[fp_t(0), fp_t(0)])
             self.assertTrue(
                 "Cannot use a default-constructed continuous_output_batch object" in str(cm.exception))
@@ -2422,6 +2594,10 @@ class c_output_test_case(_ut.TestCase):
                 tmp_out2 = c_out(check_tm)
                 new_rc = getrefcount(c_out)
                 self.assertEqual(new_rc, rc + 1)
+
+            # Scalar time.
+            scal_res = deepcopy(c_out(fp_t(.42)))
+            self.assertTrue(np.all(scal_res == c_out([fp_t(.42)] * 4)))
 
             # Non-contiguous single batch.
             nc_check_tm = np.vstack(
