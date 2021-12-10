@@ -9,6 +9,9 @@ Changelog
 New
 ~~~
 
+- Copy operations on the main heyoka.py classes now preserve
+  dynamic attributes
+  (`#85 <https://github.com/bluescarni/heyoka.py/pull/85>`__).
 - Add a function to compute the suggested SIMD size for
   the CPU in use
   (`#84 <https://github.com/bluescarni/heyoka.py/pull/84>`__).
