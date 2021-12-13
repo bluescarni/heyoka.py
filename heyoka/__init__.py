@@ -13,6 +13,7 @@ from ._version import __version__
 
 import os as _os
 import cloudpickle as _cloudpickle
+from threading import Lock as _Lock
 
 if _os.name == 'posix':
     # NOTE: on some platforms Python by default opens extensions
@@ -220,30 +221,124 @@ def from_sympy(ex, s_dict={}):
 
 
 # Machinery for the setup of the serialization backend.
-_serialization_backend = _cloudpickle
+
+# Helper to create dicts mapping a name to a serialization backend
+# and vice-versa.
+def _make_s11n_backend_maps():
+    import pickle
+
+    ret = {"cloudpickle": _cloudpickle, "pickle": pickle}
+
+    try:
+        import dill
+        ret["dill"] = dill
+    except ImportError:
+        pass
+
+    inv = dict([(ret[_], _) for _ in ret])
+
+    return ret, inv
+
+
+_s11n_backend_map, _s11n_backend_inv_map = _make_s11n_backend_maps()
+
+# The currently active s11n backend.
+_s11n_backend = _cloudpickle
+
+# Lock to protect access to _s11n_backend.
+_s11n_backend_mutex = _Lock()
 
 
 def set_serialization_backend(name):
+    global _s11n_backend
+
     if not isinstance(name, str):
         raise TypeError(
             "The serialization backend must be specified as a string, but an object of type {} was provided instead".format(type(name)))
-    global _serialization_backend
-    if name == "pickle":
-        import pickle
-        _serialization_backend = pickle
-    elif name == "cloudpickle":
-        _serialization_backend = _cloudpickle
-    elif name == "dill":
-        try:
-            import dill
-            _serialization_backend = dill
-        except ImportError:
-            raise ImportError(
-                "The 'dill' serialization backend was specified, but the dill module is not installed.")
-    else:
+
+    if not name in _s11n_backend_map:
         raise ValueError(
-            "The serialization backend '{}' is not valid. The valid backends are: ['pickle', 'cloudpickle', 'dill']".format(name))
+            "The serialization backend '{}' is not valid. The valid backends are: {}".format(name, list(_s11n_backend_map.keys())))
+
+    new_backend = _s11n_backend_map[name]
+
+    with _s11n_backend_mutex:
+        _s11n_backend = new_backend
 
 
 def get_serialization_backend():
-    return _serialization_backend
+    with _s11n_backend_mutex:
+        return _s11n_backend
+
+
+# Ensemble propagations.
+def _ensemble_propagate_generic(tp, ta, arg, n_iter, gen, **kwargs):
+    import numpy as np
+
+    if not isinstance(n_iter, int):
+        raise TypeError(
+            "The n_iter parameter must be an integer, but an object of type {} was provided instead".format(type(n_iter)))
+
+    if n_iter < 0:
+        raise ValueError(
+            "The n_iter parameter must be non-negative, but it is {} instead".format(n_iter))
+
+    # Validate arg and max_delta_t, if present.
+    def is_iterable(x):
+        from collections.abc import Iterable
+
+        return isinstance(x, Iterable)
+
+    if tp == "until" or tp == "for":
+        if is_iterable(arg):
+            raise TypeError(
+                "Cannot perform an ensemble propagate_until/for(): the final epoch/time interval must be a scalar, not an iterable object")
+    else:
+        arg = np.array(arg)
+
+        if arg.ndim != 1:
+            raise ValueError(
+                "Cannot perform an ensemble propagate_grid(): the input time grid must be one-dimensional, but instead it has {} dimensions".format(arg.ndim))
+
+    if "max_delta_t" in kwargs and is_iterable(kwargs["max_delta_t"]):
+        raise TypeError(
+            "Cannot perform an ensemble propagate_until/for/grid(): the \"max_delta_t\" argument must be a scalar, not an iterable object")
+
+    # Parallelisation algorithm.
+    algo = kwargs.pop("algorithm", "thread")
+    allowed_algos = ["thread", "process"]
+
+    if algo == "thread":
+        from ._ensemble_impl import _ensemble_propagate_thread
+        return _ensemble_propagate_thread(tp, ta, arg, n_iter, gen, **kwargs)
+
+    if algo == "process":
+        from ._ensemble_impl import _ensemble_propagate_process
+        return _ensemble_propagate_process(tp, ta, arg, n_iter, gen, **kwargs)
+
+    raise ValueError("The parallelisation algorithm must be one of {}, but '{}' was provided instead".format(
+        allowed_algos, algo))
+
+
+def ensemble_propagate_until(ta, t, n_iter, gen, **kwargs):
+    return _ensemble_propagate_generic("until", ta, t, n_iter, gen, **kwargs)
+
+
+def ensemble_propagate_for(ta, delta_t, n_iter, gen, **kwargs):
+    return _ensemble_propagate_generic("for", ta, delta_t, n_iter, gen, **kwargs)
+
+
+def ensemble_propagate_grid(ta, grid, n_iter, gen, **kwargs):
+    return _ensemble_propagate_generic("grid", ta, grid, n_iter, gen, **kwargs)
+
+
+def ensemble_propagate_until_batch(ta, t, n_iter, gen, **kwargs):
+    return _ensemble_propagate_generic("until", ta, t, n_iter, gen, **kwargs)
+
+
+def ensemble_propagate_for_batch(ta, delta_t, n_iter, gen, **kwargs):
+    return _ensemble_propagate_generic("for", ta, delta_t, n_iter, gen, **kwargs)
+
+
+def ensemble_propagate_grid_batch(ta, grid, n_iter, gen, **kwargs):
+    return _ensemble_propagate_generic("grid", ta, grid, n_iter, gen, **kwargs)
