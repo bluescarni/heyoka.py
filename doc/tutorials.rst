@@ -47,6 +47,7 @@ Advanced features
 
   notebooks/Batch mode overview
   notebooks/ensemble_mode.ipynb
+  notebooks/ensemble_batch_perf.ipynb
 
 Event detection
 ---------------
