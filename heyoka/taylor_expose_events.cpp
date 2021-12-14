@@ -64,6 +64,9 @@ namespace
 //   performs a deep copy),
 // - ensure the GIL is acquired in the call operator,
 // - provide serialisation capabilities.
+// NOTE: the deep copy behaviour needs to be highlighted
+// in the docs, as it has consequences on how one writes
+// the callbacks.
 template <typename Ret, typename... Args>
 struct ev_callback {
     py::object m_obj;

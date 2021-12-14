@@ -699,8 +699,7 @@ PYBIND11_MODULE(core, m)
                         // a reference to the original callback cb_, or it is an empty callback.
                         py::gil_scoped_release release;
                         return ta.propagate_for(dt, kw::max_steps = max_steps, kw::max_delta_t = std::move(max_dts),
-                                                kw::callback = std::move(cb), kw::write_tc = write_tc,
-                                                kw::c_output = c_output);
+                                                kw::callback = cb, kw::write_tc = write_tc, kw::c_output = c_output);
                     },
                     delta_t, std::move(max_delta_t));
             },
@@ -718,8 +717,7 @@ PYBIND11_MODULE(core, m)
 
                         py::gil_scoped_release release;
                         return ta.propagate_until(t, kw::max_steps = max_steps, kw::max_delta_t = std::move(max_dts),
-                                                  kw::callback = std::move(cb), kw::write_tc = write_tc,
-                                                  kw::c_output = c_output);
+                                                  kw::callback = cb, kw::write_tc = write_tc, kw::c_output = c_output);
                     },
                     tm, std::move(max_delta_t));
             },
@@ -768,7 +766,7 @@ PYBIND11_MODULE(core, m)
                         {
                             py::gil_scoped_release release;
                             ret = ta.propagate_grid(std::move(grid_v), kw::max_steps = max_steps,
-                                                    kw::max_delta_t = std::move(max_dts), kw::callback = std::move(cb));
+                                                    kw::max_delta_t = std::move(max_dts), kw::callback = cb);
                         }
 
                         // Create the output array.
