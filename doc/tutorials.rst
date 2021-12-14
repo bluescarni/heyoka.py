@@ -46,6 +46,7 @@ Advanced features
   :maxdepth: 1
 
   notebooks/Batch mode overview
+  notebooks/ensemble_mode.ipynb
 
 Event detection
 ---------------
