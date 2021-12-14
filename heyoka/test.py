@@ -1613,6 +1613,47 @@ class scalar_integrator_test_case(_ut.TestCase):
         self.assertTrue(ta.compact_mode)
         self.assertTrue(ta.high_accuracy)
 
+        # Test that adding dynattrs to the integrator
+        # object via the propagate callback works.
+        def cb(ta):
+            if hasattr(ta, "counter"):
+                ta.counter += 1
+            else:
+                ta.counter = 0
+
+            return True
+
+        ta.propagate_until(10., callback=cb)
+
+        self.assertTrue(ta.counter > 0)
+        orig_ct = ta.counter
+
+        ta.propagate_for(10., callback=cb)
+
+        self.assertTrue(ta.counter > orig_ct)
+        orig_ct = ta.counter
+
+        ta.time = 0.
+        ta.propagate_grid([0., 1., 2.], callback=cb)
+
+        self.assertTrue(ta.counter > orig_ct)
+
+        # Test that no copies of the callback are performed.
+        class cb:
+            def __call__(_, ta):
+                self.assertEqual(id(_), _.orig_id)
+
+                return True
+
+        cb_inst = cb()
+        cb_inst.orig_id = id(cb_inst)
+
+        ta.time = 0.
+        ta.propagate_until(10., callback=cb_inst)
+        ta.propagate_for(10., callback=cb_inst)
+        ta.time = 0.
+        ta.propagate_grid([0., 1., 2.], callback=cb_inst)
+
     def test_events(self):
         from . import nt_event, t_event, make_vars, sin, taylor_adaptive
 
@@ -1827,6 +1868,32 @@ class batch_integrator_test_case(_ut.TestCase):
         self.assertTrue(np.all(ta.state == st))
         self.assertEqual(res, ta.propagate_res)
 
+        # Test that adding dynattrs to the integrator
+        # object via the propagate callback works.
+        def cb(ta):
+            if hasattr(ta, "counter"):
+                ta.counter += 1
+            else:
+                ta.counter = 0
+
+            return True
+
+        ta.propagate_for(10., callback=cb)
+
+        self.assertTrue(ta.counter > 0)
+
+        # Test that no copies of the callback are performed.
+        class cb:
+            def __call__(_, ta):
+                self.assertEqual(id(_), _.orig_id)
+
+                return True
+
+        cb_inst = cb()
+        cb_inst.orig_id = id(cb_inst)
+
+        ta.propagate_for(10., callback=cb_inst)
+
     def test_propagate_until(self):
         from . import taylor_adaptive_batch, make_vars, sin
         from copy import deepcopy
@@ -1865,6 +1932,32 @@ class batch_integrator_test_case(_ut.TestCase):
         ta.propagate_until(10., max_delta_t=1e-4)
         self.assertTrue(np.all(ta.state == st))
         self.assertEqual(res, ta.propagate_res)
+
+        # Test that adding dynattrs to the integrator
+        # object via the propagate callback works.
+        def cb(ta):
+            if hasattr(ta, "counter"):
+                ta.counter += 1
+            else:
+                ta.counter = 0
+
+            return True
+
+        ta.propagate_until(20., callback=cb)
+
+        self.assertTrue(ta.counter > 0)
+
+        # Test that no copies of the callback are performed.
+        class cb:
+            def __call__(_, ta):
+                self.assertEqual(id(_), _.orig_id)
+
+                return True
+
+        cb_inst = cb()
+        cb_inst.orig_id = id(cb_inst)
+
+        ta.propagate_until(30., callback=cb_inst)
 
     def test_update_d_output(self):
         from . import taylor_adaptive_batch, make_vars, sin
@@ -2127,6 +2220,34 @@ class batch_integrator_test_case(_ut.TestCase):
 
         self.assertTrue(np.all(bres == bres2))
         self.assertEqual(ta.propagate_res, res)
+
+        # Test that adding dynattrs to the integrator
+        # object via the propagate callback works.
+        def cb(ta):
+            if hasattr(ta, "counter"):
+                ta.counter += 1
+            else:
+                ta.counter = 0
+
+            return True
+
+        ta.set_time(0.)
+        ta.propagate_grid(grid, callback=cb)
+
+        self.assertTrue(ta.counter > 0)
+
+        # Test that no copies of the callback are performed.
+        class cb:
+            def __call__(_, ta):
+                self.assertEqual(id(_), _.orig_id)
+
+                return True
+
+        cb_inst = cb()
+        cb_inst.orig_id = id(cb_inst)
+
+        ta.set_time(0.)
+        ta.propagate_grid(grid, callback=cb_inst)
 
 
 class kepE_test_case(_ut.TestCase):
