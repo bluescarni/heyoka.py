@@ -150,6 +150,16 @@
     </a>
    </li>
    <li class="toctree-l2">
+    <a class="reference internal" href="notebooks/ensemble_mode.html">
+     Ensemble propagations
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="notebooks/ensemble_batch_perf.html">
+     Evaluating the performance of ensemble &amp; batch mode
+    </a>
+   </li>
+   <li class="toctree-l2">
     <a class="reference internal" href="notebooks/Event%20detection.html">
      Event detection overview
     </a>
@@ -668,6 +678,17 @@
 <div class="section" id="new">
 <h3>New<a class="headerlink" href="#new" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
+<li><p>Add support for ensemble propagations
+(<a class="reference external" href="https://github.com/bluescarni/heyoka.py/pull/85">#85</a>).</p></li>
+<li><p>Several functions in the batch integration API
+now also accept scalar time values in input,
+instead of just vectors. The scalar values
+are automatically splatted into vectors
+of the appropriate size
+(<a class="reference external" href="https://github.com/bluescarni/heyoka.py/pull/85">#85</a>).</p></li>
+<li><p>Copy operations on the main heyoka.py classes now preserve
+dynamic attributes
+(<a class="reference external" href="https://github.com/bluescarni/heyoka.py/pull/85">#85</a>).</p></li>
 <li><p>Add a function to compute the suggested SIMD size for
 the CPU in use
 (<a class="reference external" href="https://github.com/bluescarni/heyoka.py/pull/84">#84</a>).</p></li>

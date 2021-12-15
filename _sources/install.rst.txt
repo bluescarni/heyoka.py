@@ -17,7 +17,7 @@ heyoka.py has several Python and C++ dependencies. On the C++ side, heyoka.py de
   heyoka C++ library was compiled with the ``HEYOKA_WITH_MPPP`` option on - see the
   :ref:`heyoka C++ installation instructions <hy:installation>`).
 
-On the Python side, heyoka.py requires at least Python 3.4
+On the Python side, heyoka.py requires at least Python 3.5
 (Python 2.x is **not** supported) and depends on:
 
 * `NumPy <https://numpy.org/>`__ (**mandatory**),
@@ -74,7 +74,7 @@ a continuous integration pipeline which currently includes:
 
 * GCC 9 on Linux,
 * Clang 11 on OSX,
-* MSVC 2017 + ``clang-cl`` on Windows.
+* MSVC 2019 on Windows.
 
 In addition to the dependencies enumerated :ref:`earlier <installation_deps>`,
 installation from source requires also:
