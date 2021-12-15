@@ -9,6 +9,14 @@ Changelog
 New
 ~~~
 
+- Add support for ensemble propagations
+  (`#85 <https://github.com/bluescarni/heyoka.py/pull/85>`__).
+- Several functions in the batch integration API
+  now also accept scalar time values in input,
+  instead of just vectors. The scalar values
+  are automatically splatted into vectors
+  of the appropriate size
+  (`#85 <https://github.com/bluescarni/heyoka.py/pull/85>`__).
 - Copy operations on the main heyoka.py classes now preserve
   dynamic attributes
   (`#85 <https://github.com/bluescarni/heyoka.py/pull/85>`__).
