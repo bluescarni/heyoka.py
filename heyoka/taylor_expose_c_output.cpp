@@ -251,9 +251,8 @@ void expose_c_output_impl(py::module &m, const std::string &suffix)
                  return oss.str();
              })
         // Copy/deepcopy.
-        .def("__copy__", [](const c_output_t &c) { return c; })
-        .def(
-            "__deepcopy__", [](const c_output_t &c, py::dict) { return c; }, "memo"_a)
+        .def("__copy__", copy_wrapper<c_output_t>)
+        .def("__deepcopy__", deepcopy_wrapper<c_output_t>, "memo"_a)
         // Pickle support.
         .def(py::pickle(&pickle_getstate_wrapper<c_output_t>, &pickle_setstate_wrapper<c_output_t>));
 
@@ -274,6 +273,30 @@ void expose_c_output_batch_impl(py::module &m, const std::string &suffix)
     py::class_<c_output_t> c_out_c(m, name.c_str(), py::dynamic_attr{});
 
     c_out_c.def(py::init<>())
+        .def("__call__",
+             [](py::object &o, T tm) {
+                 auto *c_out = py::cast<c_output_t *>(o);
+
+                 if (c_out->get_output().empty()) {
+                     py_throw(PyExc_ValueError, "Cannot use a default-constructed continuous_output_batch object");
+                 }
+
+                 const auto batch_size = c_out->get_batch_size();
+                 assert(batch_size > 0u);
+                 assert(c_out->get_output().size() % batch_size == 0u);
+                 const auto dim = c_out->get_output().size() / batch_size;
+
+                 (*c_out)(tm);
+
+                 auto ret = py::array_t<T>(py::array::ShapeContainer{boost::numeric_cast<py::ssize_t>(dim),
+                                                                     boost::numeric_cast<py::ssize_t>(batch_size)},
+                                           c_out->get_output().data(), o);
+
+                 // Ensure the returned array is read-only.
+                 ret.attr("flags").attr("writeable") = false;
+
+                 return ret;
+             })
         .def(
             "__call__",
             [](py::object &o, const py::array_t<T> &tm) {
@@ -489,9 +512,8 @@ void expose_c_output_batch_impl(py::module &m, const std::string &suffix)
                  return oss.str();
              })
         // Copy/deepcopy.
-        .def("__copy__", [](const c_output_t &c) { return c; })
-        .def(
-            "__deepcopy__", [](const c_output_t &c, py::dict) { return c; }, "memo"_a)
+        .def("__copy__", copy_wrapper<c_output_t>)
+        .def("__deepcopy__", deepcopy_wrapper<c_output_t>, "memo"_a)
         // Pickle support.
         .def(py::pickle(&pickle_getstate_wrapper<c_output_t>, &pickle_setstate_wrapper<c_output_t>));
 

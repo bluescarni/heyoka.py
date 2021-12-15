@@ -477,6 +477,7 @@ class event_classes_test_case(_ut.TestCase):
         import numpy as np
         import pickle
         import gc
+        from copy import copy, deepcopy
 
         x, v = make_vars("x", "v")
 
@@ -573,6 +574,15 @@ class event_classes_test_case(_ut.TestCase):
             ev.foo = "hello world"
             ev = pickle.loads(pickle.dumps(ev))
             self.assertEqual(ev.foo, "hello world")
+
+            # Test copy semantics.
+            class foo:
+                pass
+
+            ev.bar = foo()
+
+            self.assertEqual(id(ev.bar), id(copy(ev).bar))
+            self.assertNotEqual(id(ev.bar), id(deepcopy(ev).bar))
 
             # Test to ensure a callback extracted from the event
             # is kept alive and usable when the event is destroyed.
@@ -684,6 +694,15 @@ class event_classes_test_case(_ut.TestCase):
             ev.foo = "hello world"
             ev = pickle.loads(pickle.dumps(ev))
             self.assertEqual(ev.foo, "hello world")
+
+            # Test copy semantics.
+            class foo:
+                pass
+
+            ev.bar = foo()
+
+            self.assertEqual(id(ev.bar), id(copy(ev).bar))
+            self.assertNotEqual(id(ev.bar), id(deepcopy(ev).bar))
 
             # Test also with empty callback.
             ev = t_event(x + v, fp_type=desc, direction=event_direction.positive,
@@ -802,6 +821,15 @@ class event_classes_test_case(_ut.TestCase):
         ev = pickle.loads(pickle.dumps(ev))
         self.assertEqual(ev.foo, "hello world")
 
+        # Test copy semantics.
+        class foo:
+            pass
+
+        ev.bar = foo()
+
+        self.assertEqual(id(ev.bar), id(copy(ev).bar))
+        self.assertNotEqual(id(ev.bar), id(deepcopy(ev).bar))
+
         # Test to ensure a callback extracted from the event
         # is kept alive and usable when the event is destroyed.
         ev = nt_event_batch(ex=x + v, callback=local_cb(),
@@ -913,6 +941,15 @@ class event_classes_test_case(_ut.TestCase):
         ev.foo = "hello world"
         ev = pickle.loads(pickle.dumps(ev))
         self.assertEqual(ev.foo, "hello world")
+
+        # Test copy semantics.
+        class foo:
+            pass
+
+        ev.bar = foo()
+
+        self.assertEqual(id(ev.bar), id(copy(ev).bar))
+        self.assertNotEqual(id(ev.bar), id(deepcopy(ev).bar))
 
         # Test also with empty callback.
         ev = t_event_batch(x + v, direction=event_direction.positive,
@@ -1524,6 +1561,36 @@ class scalar_integrator_test_case(_ut.TestCase):
         self.test_basic()
         self.test_s11n()
         self.test_events()
+        self.test_copy()
+
+    def test_copy(self):
+        from . import taylor_adaptive, make_vars, t_event, sin
+        import numpy as np
+        from copy import copy, deepcopy
+
+        x, v = make_vars("x", "v")
+
+        sys = [(x, v), (v, -9.8 * sin(x))]
+
+        ta = taylor_adaptive(sys=sys, state=[0., 0.25],
+                             t_events=[t_event(v)])
+
+        ta.step()
+
+        class foo:
+            pass
+
+        ta.bar = foo()
+
+        self.assertEqual(id(ta.bar), id(copy(ta).bar))
+        self.assertNotEqual(id(ta.bar), id(deepcopy(ta).bar))
+        self.assertTrue(np.all(ta.state == copy(ta).state))
+        self.assertTrue(np.all(ta.state == deepcopy(ta).state))
+
+        ta_dc = deepcopy(ta)
+        self.assertEqual(ta_dc.state[0], ta.state[0])
+        ta.state[0] += 1
+        self.assertNotEqual(ta_dc.state[0], ta.state[0])
 
     def test_basic(self):
         from . import taylor_adaptive, make_vars, t_event, sin
@@ -1545,6 +1612,47 @@ class scalar_integrator_test_case(_ut.TestCase):
         self.assertFalse(ta.with_events)
         self.assertTrue(ta.compact_mode)
         self.assertTrue(ta.high_accuracy)
+
+        # Test that adding dynattrs to the integrator
+        # object via the propagate callback works.
+        def cb(ta):
+            if hasattr(ta, "counter"):
+                ta.counter += 1
+            else:
+                ta.counter = 0
+
+            return True
+
+        ta.propagate_until(10., callback=cb)
+
+        self.assertTrue(ta.counter > 0)
+        orig_ct = ta.counter
+
+        ta.propagate_for(10., callback=cb)
+
+        self.assertTrue(ta.counter > orig_ct)
+        orig_ct = ta.counter
+
+        ta.time = 0.
+        ta.propagate_grid([0., 1., 2.], callback=cb)
+
+        self.assertTrue(ta.counter > orig_ct)
+
+        # Test that no copies of the callback are performed.
+        class cb:
+            def __call__(_, ta):
+                self.assertEqual(id(_), _.orig_id)
+
+                return True
+
+        cb_inst = cb()
+        cb_inst.orig_id = id(cb_inst)
+
+        ta.time = 0.
+        ta.propagate_until(10., callback=cb_inst)
+        ta.propagate_for(10., callback=cb_inst)
+        ta.time = 0.
+        ta.propagate_grid([0., 1., 2.], callback=cb_inst)
 
     def test_events(self):
         from . import nt_event, t_event, make_vars, sin, taylor_adaptive
@@ -1676,9 +1784,249 @@ class scalar_integrator_test_case(_ut.TestCase):
 class batch_integrator_test_case(_ut.TestCase):
     def runTest(self):
         self.test_basic()
-        self.run_propagate_grid_tests()
+        self.test_propagate_for()
+        self.test_propagate_until()
+        self.test_propagate_grid()
         self.test_s11n()
         self.test_events()
+        self.test_set_time()
+        self.test_update_d_output()
+        self.test_copy()
+
+    def test_copy(self):
+        from . import nt_event_batch, make_vars, sin, taylor_adaptive_batch
+        from copy import copy, deepcopy
+        import numpy as np
+
+        x, v = make_vars("x", "v")
+
+        # Use a pendulum for testing purposes.
+        sys = [(x, v), (v, -9.8 * sin(x))]
+
+        def cb0(ta, t, d_sgn, bidx):
+            pass
+
+        ta = taylor_adaptive_batch(sys=sys, state=[[0, .01], [0.25, 0.26]],
+                                   nt_events=[nt_event_batch(v*v-1e-10, cb0)])
+
+        ta.step()
+        ta.step()
+        ta.step()
+        ta.step()
+
+        class foo:
+            pass
+
+        ta.bar = foo()
+
+        self.assertEqual(id(ta.bar), id(copy(ta).bar))
+        self.assertNotEqual(id(ta.bar), id(deepcopy(ta).bar))
+        self.assertTrue(np.all(ta.state == copy(ta).state))
+        self.assertTrue(np.all(ta.state == deepcopy(ta).state))
+
+        ta_dc = deepcopy(ta)
+        self.assertEqual(ta_dc.state[0, 0], ta.state[0, 0])
+        ta.state[0, 0] += 1
+        self.assertNotEqual(ta_dc.state[0, 0], ta.state[0, 0])
+
+    def test_propagate_for(self):
+        from . import taylor_adaptive_batch, make_vars, sin
+        from copy import deepcopy
+        import numpy as np
+
+        ic = [[0., 0.1, 0.2, 0.3], [0.25, 0.26, 0.27, 0.28]]
+
+        x, v = make_vars("x", "v")
+
+        sys = [(x, v), (v, -9.8 * sin(x))]
+
+        ta = taylor_adaptive_batch(sys=sys, state=ic)
+
+        # Compare vector/scalar delta_t and max_delta_t.
+        ta.propagate_for([10.] * 4)
+        st = deepcopy(ta.state)
+        res = deepcopy(ta.propagate_res)
+
+        ta.set_time(0.)
+        ta.state[:] = ic
+
+        ta.propagate_for(10.)
+        self.assertTrue(np.all(ta.state == st))
+        self.assertEqual(res, ta.propagate_res)
+
+        ta.set_time(0.)
+        ta.state[:] = ic
+
+        ta.propagate_for([10.] * 4, max_delta_t=[1e-4] * 4)
+        st = deepcopy(ta.state)
+        res = deepcopy(ta.propagate_res)
+
+        ta.set_time(0.)
+        ta.state[:] = ic
+
+        ta.propagate_for(10., max_delta_t=1e-4)
+        self.assertTrue(np.all(ta.state == st))
+        self.assertEqual(res, ta.propagate_res)
+
+        # Test that adding dynattrs to the integrator
+        # object via the propagate callback works.
+        def cb(ta):
+            if hasattr(ta, "counter"):
+                ta.counter += 1
+            else:
+                ta.counter = 0
+
+            return True
+
+        ta.propagate_for(10., callback=cb)
+
+        self.assertTrue(ta.counter > 0)
+
+        # Test that no copies of the callback are performed.
+        class cb:
+            def __call__(_, ta):
+                self.assertEqual(id(_), _.orig_id)
+
+                return True
+
+        cb_inst = cb()
+        cb_inst.orig_id = id(cb_inst)
+
+        ta.propagate_for(10., callback=cb_inst)
+
+    def test_propagate_until(self):
+        from . import taylor_adaptive_batch, make_vars, sin
+        from copy import deepcopy
+        import numpy as np
+
+        ic = [[0., 0.1, 0.2, 0.3], [0.25, 0.26, 0.27, 0.28]]
+
+        x, v = make_vars("x", "v")
+
+        sys = [(x, v), (v, -9.8 * sin(x))]
+
+        ta = taylor_adaptive_batch(sys=sys, state=ic)
+
+        # Compare vector/scalar delta_t and max_delta_t.
+        ta.propagate_until([10.] * 4)
+        st = deepcopy(ta.state)
+        res = deepcopy(ta.propagate_res)
+
+        ta.set_time(0.)
+        ta.state[:] = ic
+
+        ta.propagate_until(10.)
+        self.assertTrue(np.all(ta.state == st))
+        self.assertEqual(res, ta.propagate_res)
+
+        ta.set_time(0.)
+        ta.state[:] = ic
+
+        ta.propagate_until([10.] * 4, max_delta_t=[1e-4] * 4)
+        st = deepcopy(ta.state)
+        res = deepcopy(ta.propagate_res)
+
+        ta.set_time(0.)
+        ta.state[:] = ic
+
+        ta.propagate_until(10., max_delta_t=1e-4)
+        self.assertTrue(np.all(ta.state == st))
+        self.assertEqual(res, ta.propagate_res)
+
+        # Test that adding dynattrs to the integrator
+        # object via the propagate callback works.
+        def cb(ta):
+            if hasattr(ta, "counter"):
+                ta.counter += 1
+            else:
+                ta.counter = 0
+
+            return True
+
+        ta.propagate_until(20., callback=cb)
+
+        self.assertTrue(ta.counter > 0)
+
+        # Test that no copies of the callback are performed.
+        class cb:
+            def __call__(_, ta):
+                self.assertEqual(id(_), _.orig_id)
+
+                return True
+
+        cb_inst = cb()
+        cb_inst.orig_id = id(cb_inst)
+
+        ta.propagate_until(30., callback=cb_inst)
+
+    def test_update_d_output(self):
+        from . import taylor_adaptive_batch, make_vars, sin
+        from sys import getrefcount
+        from copy import deepcopy
+        import numpy as np
+
+        x, v = make_vars("x", "v")
+
+        sys = [(x, v), (v, -9.8 * sin(x))]
+
+        ta = taylor_adaptive_batch(
+            sys=sys, state=[[0., 0.1, 0.2, 0.3], [0.25, 0.26, 0.27, 0.28]])
+
+        ta.step(write_tc=True)
+
+        # Scalar overload.
+        with self.assertRaises(ValueError) as cm:
+            ta.update_d_output(0.3)[0] = .5
+
+        d_out = ta.update_d_output(0.3)
+        self.assertEqual(d_out.shape, (2, 4))
+        rc = getrefcount(ta)
+        tmp_out = ta.update_d_output(0.2)
+        new_rc = getrefcount(ta)
+        self.assertEqual(new_rc, rc + 1)
+
+        # Vector overload.
+        with self.assertRaises(ValueError) as cm:
+            ta.update_d_output([0.3, 0.4, 0.45, 0.46])[0] = .5
+
+        d_out2 = ta.update_d_output([0.3, 0.4, 0.45, 0.46])
+        self.assertEqual(d_out2.shape, (2, 4))
+        rc = getrefcount(ta)
+        tmp_out2 = ta.update_d_output([0.31, 0.41, 0.66, 0.67])
+        new_rc = getrefcount(ta)
+        self.assertEqual(new_rc, rc + 1)
+
+        cp = deepcopy(ta.update_d_output(.3))
+        self.assertTrue(np.all(cp == ta.update_d_output([.3]*4)))
+
+        # Functional testing.
+        ta.set_time(0)
+        ta.state[:] = [[0., 0.01, 0.02, 0.03], [0.205, 0.206, 0.207, 0.208]]
+        ta.step(write_tc=True)
+        ta.update_d_output(ta.time)
+        self.assertTrue(np.allclose(
+            ta.d_output, ta.state, rtol=np.finfo(float).eps * 10, atol=np.finfo(float).eps * 10))
+        ta.update_d_output(0., rel_time=True)
+        self.assertTrue(np.allclose(
+            ta.d_output, ta.state, rtol=np.finfo(float).eps * 10, atol=np.finfo(float).eps * 10))
+
+    def test_set_time(self):
+        from . import taylor_adaptive_batch, make_vars, sin
+        import numpy as np
+
+        x, v = make_vars("x", "v")
+
+        sys = [(x, v), (v, -9.8 * sin(x))]
+
+        ta = taylor_adaptive_batch(sys=sys, state=[[0., 0.1], [0.25, 0.26]])
+
+        self.assertTrue(np.all(ta.time == [0, 0]))
+
+        ta.set_time([-1, 1])
+        self.assertTrue(np.all(ta.time == [-1, 1]))
+
+        ta.set_time(5.)
+        self.assertTrue(np.all(ta.time == [5, 5]))
 
     def test_basic(self):
         from . import taylor_adaptive_batch, make_vars, t_event_batch, sin
@@ -1804,9 +2152,10 @@ class batch_integrator_test_case(_ut.TestCase):
         self.assertEqual(
             ta.t_events[0].callback.n, ta2.t_events[0].callback.n)
 
-    def run_propagate_grid_tests(self):
+    def test_propagate_grid(self):
         from . import make_vars, taylor_adaptive, taylor_adaptive_batch, sin
         import numpy as np
+        from copy import deepcopy
 
         x, v = make_vars("x", "v")
         eqns = [(x, v),
@@ -1856,6 +2205,49 @@ class batch_integrator_test_case(_ut.TestCase):
             np.max(np.abs(sres[2][4] - bres[:, :, 2]).flatten()) < 1e-14)
         self.assertTrue(
             np.max(np.abs(sres[3][4] - bres[:, :, 3]).flatten()) < 1e-14)
+
+        # Test vector/scalar max_delta_t.
+        ta.set_time(0.)
+        ta.state[:] = [x_ic, v_ic]
+
+        bres = ta.propagate_grid(grid, max_delta_t=[1e-3] * 4)
+        res = deepcopy(ta.propagate_res)
+
+        ta.set_time(0.)
+        ta.state[:] = [x_ic, v_ic]
+
+        bres2 = ta.propagate_grid(grid, max_delta_t=1e-3)
+
+        self.assertTrue(np.all(bres == bres2))
+        self.assertEqual(ta.propagate_res, res)
+
+        # Test that adding dynattrs to the integrator
+        # object via the propagate callback works.
+        def cb(ta):
+            if hasattr(ta, "counter"):
+                ta.counter += 1
+            else:
+                ta.counter = 0
+
+            return True
+
+        ta.set_time(0.)
+        ta.propagate_grid(grid, callback=cb)
+
+        self.assertTrue(ta.counter > 0)
+
+        # Test that no copies of the callback are performed.
+        class cb:
+            def __call__(_, ta):
+                self.assertEqual(id(_), _.orig_id)
+
+                return True
+
+        cb_inst = cb()
+        cb_inst.orig_id = id(cb_inst)
+
+        ta.set_time(0.)
+        ta.propagate_grid(grid, callback=cb_inst)
 
 
 class kepE_test_case(_ut.TestCase):
@@ -2158,6 +2550,24 @@ class expression_test_case(_ut.TestCase):
         self.test_s11n()
         self.test_len()
         self.test_diff()
+        self.test_copy()
+
+    def test_copy(self):
+        from . import make_vars
+        from copy import copy, deepcopy
+
+        x, y = make_vars("x", "y")
+        ex = x+y
+
+        class foo:
+            pass
+
+        ex.bar = foo()
+
+        self.assertEqual(id(ex.bar), id(copy(ex).bar))
+        self.assertNotEqual(id(ex.bar), id(deepcopy(ex).bar))
+        self.assertEqual(ex, copy(ex))
+        self.assertEqual(ex, deepcopy(ex))
 
     def test_diff(self):
         from . import make_vars, sin, cos, diff, par
@@ -2210,6 +2620,29 @@ class expression_test_case(_ut.TestCase):
 class llvm_state_test_case(_ut.TestCase):
     def runTest(self):
         self.test_s11n()
+        self.test_copy()
+
+    def test_copy(self):
+        from . import make_vars, sin, taylor_adaptive
+        from copy import copy, deepcopy
+
+        x, v = make_vars("x", "v")
+
+        sys = [(x, v), (v, -9.8 * sin(x))]
+
+        ta = taylor_adaptive(sys=sys, state=[0., 0.25])
+
+        ls = ta.llvm_state
+
+        class foo:
+            pass
+
+        ls.bar = foo()
+
+        self.assertEqual(id(ls.bar), id(copy(ls).bar))
+        self.assertNotEqual(id(ls.bar), id(deepcopy(ls).bar))
+        self.assertEqual(ls.get_ir(), copy(ls).get_ir())
+        self.assertEqual(ls.get_ir(), deepcopy(ls).get_ir())
 
     def test_s11n(self):
         from . import make_vars, sin, taylor_adaptive
@@ -2261,6 +2694,11 @@ class c_output_test_case(_ut.TestCase):
 
             with self.assertRaises(ValueError) as cm:
                 c_out([])
+            self.assertTrue(
+                "Cannot use a default-constructed continuous_output_batch object" in str(cm.exception))
+
+            with self.assertRaises(ValueError) as cm:
+                c_out(fp_t(1))
             self.assertTrue(
                 "Cannot use a default-constructed continuous_output_batch object" in str(cm.exception))
 
@@ -2423,6 +2861,10 @@ class c_output_test_case(_ut.TestCase):
                 new_rc = getrefcount(c_out)
                 self.assertEqual(new_rc, rc + 1)
 
+            # Scalar time.
+            scal_res = deepcopy(c_out(fp_t(.42)))
+            self.assertTrue(np.all(scal_res == c_out([fp_t(.42)] * 4)))
+
             # Non-contiguous single batch.
             nc_check_tm = np.vstack(
                 [check_tm, np.zeros((4,))]).T.flatten()[::2]
@@ -2508,6 +2950,21 @@ class c_output_test_case(_ut.TestCase):
 
             self.assertEqual(
                 c_out.tcs.shape, (c_out.n_steps, 2, ta.order + 1, 4))
+
+            class foo:
+                pass
+
+            c_out_copy = deepcopy(c_out)
+            orig_tmp = deepcopy(c_out_copy(fp_t(0.1)))
+            c_out_copy.bar = foo()
+
+            self.assertEqual(id(c_out_copy.bar), id(copy(c_out_copy).bar))
+            self.assertNotEqual(id(c_out_copy.bar),
+                                id(deepcopy(c_out_copy).bar))
+            self.assertTrue(np.all(c_out_copy(fp_t(0.1)) ==
+                            copy(c_out_copy)(fp_t(0.1))))
+            self.assertTrue(np.all(c_out_copy(fp_t(0.1)) ==
+                            deepcopy(c_out_copy)(fp_t(0.1))))
 
             # Pickling with dynattrs.
             c_out.foo = []
@@ -2729,6 +3186,21 @@ class c_output_test_case(_ut.TestCase):
                 with self.assertRaises(ValueError) as cm:
                     c_out.tcs[0, 0, 0] = .5
 
+            class foo:
+                pass
+
+            c_out_copy = deepcopy(c_out)
+            orig_tmp = deepcopy(c_out_copy(fp_t(0.1)))
+            c_out_copy.bar = foo()
+
+            self.assertEqual(id(c_out_copy.bar), id(copy(c_out_copy).bar))
+            self.assertNotEqual(id(c_out_copy.bar),
+                                id(deepcopy(c_out_copy).bar))
+            self.assertTrue(np.all(c_out_copy(fp_t(0.1)) ==
+                            copy(c_out_copy)(fp_t(0.1))))
+            self.assertTrue(np.all(c_out_copy(fp_t(0.1)) ==
+                            deepcopy(c_out_copy)(fp_t(0.1))))
+
             # Pickling.
             c_out = loads(dumps(c_out))
 
@@ -2769,6 +3241,344 @@ class recommended_simd_size_test_case(_ut.TestCase):
             "the floating-point type \"long double\" is not recognized/supported" in str(cm.exception))
 
 
+class s11n_backend_test_case(_ut.TestCase):
+    def runTest(self):
+        from . import set_serialization_backend, get_serialization_backend
+        import cloudpickle as cp
+        import pickle as pk
+
+        self.assertEqual(get_serialization_backend(), cp)
+        set_serialization_backend("pickle")
+        self.assertEqual(get_serialization_backend(), pk)
+        set_serialization_backend("cloudpickle")
+        self.assertEqual(get_serialization_backend(), cp)
+
+        with self.assertRaises(TypeError) as cm:
+            set_serialization_backend(1)
+        self.assertTrue(
+            "The serialization backend must be specified as a string" in str(cm.exception))
+
+        with self.assertRaises(ValueError) as cm:
+            set_serialization_backend("pippo")
+        self.assertTrue(
+            "The serialization backend 'pippo' is not valid. The valid backends are:" in str(cm.exception))
+
+        self.assertEqual(get_serialization_backend(), cp)
+
+
+class ensemble_test_case(_ut.TestCase):
+    def runTest(self):
+        self.test_scalar()
+        self.test_batch()
+
+    def test_batch(self):
+        from . import ensemble_propagate_until_batch, ensemble_propagate_for_batch, ensemble_propagate_grid_batch, make_vars, sin, taylor_adaptive_batch, taylor_outcome
+        import numpy as np
+
+        x, v = make_vars("x", "v")
+
+        # Use a pendulum for testing purposes.
+        sys = [(x, v), (v, -9.8 * sin(x))]
+
+        algos = ["thread", "process"]
+
+        ta = taylor_adaptive_batch(sys=sys, state=[[0.]*4]*2)
+
+        ics = np.zeros((10, 2, 4))
+        for i in range(10):
+            ics[i, 0] = [0.05 + i / 100, 0.051 + i /
+                         100, 0.052 + i / 100, 0.053 + i / 100.]
+            ics[i, 0] = [0.025 + i / 100, 0.026 + i /
+                         100, 0.027 + i / 100, 0.028 + i / 100.]
+
+        # propagate_until().
+        def gen(ta, idx):
+            ta.set_time(0.)
+            ta.state[:] = ics[idx]
+
+            return ta
+
+        for algo in algos:
+            if algo == "thread":
+                ret = ensemble_propagate_until_batch(
+                    ta, 20., 10, gen, algorithm=algo, max_workers=8)
+            elif algo == "process":
+                ret = ensemble_propagate_until_batch(
+                    ta, 20., 10, gen, algorithm=algo, max_workers=8, chunksize=3)
+
+            self.assertEqual(len(ret), 10)
+
+            for i in range(10):
+                ta.set_time(0.)
+                ta.state[:] = ics[i]
+                loc_ret = ta.propagate_until(20.)
+
+                for j in range(4):
+                    self.assertAlmostEqual(ret[i][0].time[j], 20.)
+                self.assertTrue(np.all(ta.state == ret[i][0].state))
+                self.assertTrue(ret[i][1] is None)
+                self.assertTrue(np.all(ta.time == ret[i][0].time))
+                self.assertEqual(ta.propagate_res, ret[i][0].propagate_res)
+
+            # Run a test with c_output too.
+            if algo == "thread":
+                ret = ensemble_propagate_until_batch(
+                    ta, 20., 10, gen, algorithm=algo, max_workers=8, c_output=True)
+            elif algo == "process":
+                ret = ensemble_propagate_until_batch(
+                    ta, 20., 10, gen, algorithm=algo, max_workers=8, chunksize=3, c_output=True)
+
+            self.assertEqual(len(ret), 10)
+
+            for i in range(10):
+                ta.set_time(0.)
+                ta.state[:] = ics[i]
+                loc_ret = ta.propagate_until(20., c_output=True)
+
+                for j in range(4):
+                    self.assertAlmostEqual(ret[i][0].time[j], 20.)
+                self.assertTrue(np.all(ta.state == ret[i][0].state))
+                self.assertFalse(ret[i][1] is None)
+                self.assertTrue(np.all(ta.time == ret[i][0].time))
+                self.assertEqual(ta.propagate_res, ret[i][0].propagate_res)
+
+                self.assertTrue(np.all(loc_ret(5.) == ret[i][1](5.)))
+
+        # propagate_for().
+        def gen(ta, idx):
+            ta.set_time(10.)
+            ta.state[:] = ics[idx]
+
+            return ta
+
+        for algo in algos:
+            if algo == "thread":
+                ret = ensemble_propagate_for_batch(
+                    ta, 20., 10, gen, algorithm=algo, max_workers=8)
+            elif algo == "process":
+                ret = ensemble_propagate_for_batch(
+                    ta, 20., 10, gen, algorithm=algo, max_workers=8, chunksize=3)
+
+            self.assertEqual(len(ret), 10)
+
+            for i in range(10):
+                ta.set_time(10.)
+                ta.state[:] = ics[i]
+                loc_ret = ta.propagate_for(20.)
+
+                for j in range(4):
+                    self.assertAlmostEqual(ret[i][0].time[j], 30.)
+                self.assertTrue(np.all(ta.state == ret[i][0].state))
+                self.assertTrue(ret[i][1] is None)
+                self.assertTrue(np.all(ta.time == ret[i][0].time))
+                self.assertEqual(ta.propagate_res, ret[i][0].propagate_res)
+
+        # propagate_grid().
+        grid = np.linspace(0., 20., 80)
+
+        splat_grid = np.repeat(grid, 4).reshape(-1, 4)
+
+        def gen(ta, idx):
+            ta.set_time(0.)
+            ta.state[:] = ics[idx]
+
+            return ta
+
+        for algo in algos:
+            if algo == "thread":
+                ret = ensemble_propagate_grid_batch(
+                    ta, grid, 10, gen, algorithm=algo, max_workers=8)
+            elif algo == "process":
+                ret = ensemble_propagate_grid_batch(
+                    ta, grid, 10, gen, algorithm=algo, max_workers=8, chunksize=3)
+
+            self.assertEqual(len(ret), 10)
+
+            for i in range(10):
+                ta.set_time(0.)
+                ta.state[:] = ics[i]
+                loc_ret = ta.propagate_grid(splat_grid)
+
+                self.assertTrue(np.all(loc_ret == ret[i][1]))
+
+                for j in range(4):
+                    self.assertAlmostEqual(ret[i][0].time[j], 20.)
+                self.assertTrue(np.all(ta.state == ret[i][0].state))
+                self.assertTrue(np.all(ta.time == ret[i][0].time))
+                self.assertEqual(ta.propagate_res, ret[i][0].propagate_res)
+
+    def test_scalar(self):
+        from . import ensemble_propagate_until, ensemble_propagate_for, ensemble_propagate_grid, make_vars, sin, taylor_adaptive, taylor_outcome
+        import numpy as np
+
+        x, v = make_vars("x", "v")
+
+        # Use a pendulum for testing purposes.
+        sys = [(x, v), (v, -9.8 * sin(x))]
+
+        algos = ["thread", "process"]
+
+        ta = taylor_adaptive(sys=sys, state=[0.]*2)
+
+        ics = np.array([[0.05, 0.025]]*10)
+        for i in range(10):
+            ics[i] += i / 100.
+
+        # propagate_until().
+        def gen(ta, idx):
+            ta.time = 0.
+            ta.state[:] = ics[idx]
+
+            return ta
+
+        for algo in algos:
+            if algo == "thread":
+                ret = ensemble_propagate_until(
+                    ta, 20., 10, gen, algorithm=algo, max_workers=8)
+            elif algo == "process":
+                ret = ensemble_propagate_until(
+                    ta, 20., 10, gen, algorithm=algo, max_workers=8, chunksize=3)
+
+            self.assertEqual(len(ret), 10)
+
+            self.assertTrue(
+                all([_[1] == taylor_outcome.time_limit for _ in ret]))
+
+            for i in range(10):
+                ta.time = 0.
+                ta.state[:] = ics[i]
+                loc_ret = ta.propagate_until(20.)
+
+                self.assertAlmostEqual(ret[i][0].time, 20.)
+                self.assertTrue(np.all(ta.state == ret[i][0].state))
+                self.assertEqual(loc_ret, ret[i][1:])
+                self.assertEqual(ta.time, ret[i][0].time)
+
+            # Run a test with c_output too.
+            if algo == "thread":
+                ret = ensemble_propagate_until(
+                    ta, 20., 10, gen, algorithm=algo, max_workers=8, c_output=True)
+            elif algo == "process":
+                ret = ensemble_propagate_until(
+                    ta, 20., 10, gen, algorithm=algo, max_workers=8, chunksize=3, c_output=True)
+
+            self.assertEqual(len(ret), 10)
+
+            self.assertTrue(
+                all([_[1] == taylor_outcome.time_limit for _ in ret]))
+
+            for i in range(10):
+                ta.time = 0.
+                ta.state[:] = ics[i]
+                loc_ret = ta.propagate_until(20., c_output=True)
+
+                self.assertAlmostEqual(ret[i][0].time, 20.)
+                self.assertTrue(np.all(ta.state == ret[i][0].state))
+                self.assertEqual(loc_ret[:-1], ret[i][1:-1])
+                self.assertEqual(ta.time, ret[i][0].time)
+
+                self.assertTrue(np.all(loc_ret[-1](5.) == ret[i][-1](5.)))
+
+        # propagate_for().
+        def gen(ta, idx):
+            ta.time = 10.
+            ta.state[:] = ics[idx]
+
+            return ta
+
+        for algo in algos:
+            if algo == "thread":
+                ret = ensemble_propagate_for(
+                    ta, 20., 10, gen, algorithm=algo, max_workers=8)
+            elif algo == "process":
+                ret = ensemble_propagate_for(
+                    ta, 20., 10, gen, algorithm=algo, max_workers=8, chunksize=3)
+
+            self.assertEqual(len(ret), 10)
+
+            self.assertTrue(
+                all([_[1] == taylor_outcome.time_limit for _ in ret]))
+
+            for i in range(10):
+                ta.time = 10.
+                ta.state[:] = ics[i]
+                loc_ret = ta.propagate_for(20.)
+
+                self.assertAlmostEqual(ret[i][0].time, 30.)
+                self.assertTrue(np.all(ta.state == ret[i][0].state))
+                self.assertEqual(loc_ret, ret[i][1:])
+                self.assertEqual(ta.time, ret[i][0].time)
+
+        # propagate_grid().
+        grid = np.linspace(0., 20., 80)
+
+        def gen(ta, idx):
+            ta.time = 0.
+            ta.state[:] = ics[idx]
+
+            return ta
+
+        for algo in algos:
+            if algo == "thread":
+                ret = ensemble_propagate_grid(
+                    ta, grid, 10, gen, algorithm=algo, max_workers=8)
+            elif algo == "process":
+                ret = ensemble_propagate_grid(
+                    ta, grid, 10, gen, algorithm=algo, max_workers=8, chunksize=3)
+
+            self.assertEqual(len(ret), 10)
+
+            self.assertTrue(
+                all([_[1] == taylor_outcome.time_limit for _ in ret]))
+
+            for i in range(10):
+                ta.time = 0.
+                ta.state[:] = ics[i]
+                loc_ret = ta.propagate_grid(grid)
+
+                self.assertAlmostEqual(ret[i][0].time, 20.)
+                self.assertTrue(np.all(ta.state == ret[i][0].state))
+                self.assertEqual(loc_ret[:-1], ret[i][1:-1])
+                self.assertTrue(np.all(loc_ret[-1] == ret[i][-1]))
+                self.assertEqual(ta.time, ret[i][0].time)
+
+        # Error handling.
+        with self.assertRaises(TypeError) as cm:
+            ensemble_propagate_until(ta, 20., "a", gen)
+        self.assertTrue(
+            "The n_iter parameter must be an integer, but an object of type" in str(cm.exception))
+
+        with self.assertRaises(ValueError) as cm:
+            ensemble_propagate_until(ta, 20., -1, gen)
+        self.assertTrue(
+            "The n_iter parameter must be non-negative" in str(cm.exception))
+
+        with self.assertRaises(TypeError) as cm:
+            ensemble_propagate_until(ta, [20.], 10, gen)
+        self.assertTrue(
+            "Cannot perform an ensemble propagate_until/for(): the final epoch/time interval must be a scalar, not an iterable object" in str(cm.exception))
+
+        with self.assertRaises(TypeError) as cm:
+            ensemble_propagate_for(ta, [20.], 10, gen)
+        self.assertTrue(
+            "Cannot perform an ensemble propagate_until/for(): the final epoch/time interval must be a scalar, not an iterable object" in str(cm.exception))
+
+        with self.assertRaises(ValueError) as cm:
+            ensemble_propagate_grid(ta, [[20., 20.]], 10, gen)
+        self.assertTrue(
+            "Cannot perform an ensemble propagate_grid(): the input time grid must be one-dimensional, but instead it has 2 dimensions" in str(cm.exception))
+
+        with self.assertRaises(TypeError) as cm:
+            ensemble_propagate_until(ta, 20., 10, gen, max_delta_t=[10])
+        self.assertTrue(
+            "Cannot perform an ensemble propagate_until/for/grid(): the \"max_delta_t\" argument must be a scalar, not an iterable object" in str(cm.exception))
+
+        # NOTE: check that the chunksize option is not recognised
+        # in threaded mode.
+        with self.assertRaises(TypeError) as cm:
+            ensemble_propagate_until(ta, 20., 10, gen, chunksize=1)
+
+
 def run_test_suite():
     from . import make_nbody_sys, taylor_adaptive, with_real128
 
@@ -2783,11 +3593,12 @@ def run_test_suite():
     retval = 0
 
     suite = _ut.TestLoader().loadTestsFromTestCase(taylor_add_jet_test_case)
+    suite.addTest(ensemble_test_case())
+    suite.addTest(s11n_backend_test_case())
     suite.addTest(recommended_simd_size_test_case())
     suite.addTest(c_output_test_case())
     suite.addTest(expression_test_case())
     suite.addTest(llvm_state_test_case())
-    suite.addTest(expression_test_case())
     suite.addTest(event_classes_test_case())
     suite.addTest(event_detection_test_case())
     suite.addTest(expression_eval_test_case())

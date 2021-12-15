@@ -94,7 +94,7 @@ void expose_taylor_integrator_common(py::class_<hey::taylor_adaptive<T>> &cl)
                 // a reference to the original callback cb_, or it is an empty callback.
                 py::gil_scoped_release release;
                 return ta.propagate_for(delta_t, kw::max_steps = max_steps, kw::max_delta_t = max_delta_t,
-                                        kw::callback = std::move(cb), kw::write_tc = write_tc, kw::c_output = c_output);
+                                        kw::callback = cb, kw::write_tc = write_tc, kw::c_output = c_output);
             },
             "delta_t"_a, "max_steps"_a = 0, "max_delta_t"_a = std::numeric_limits<T>::infinity(),
             "callback"_a = prop_cb_t{}, "write_tc"_a = false, "c_output"_a = false)
@@ -107,8 +107,7 @@ void expose_taylor_integrator_common(py::class_<hey::taylor_adaptive<T>> &cl)
 
                 py::gil_scoped_release release;
                 return ta.propagate_until(t, kw::max_steps = max_steps, kw::max_delta_t = max_delta_t,
-                                          kw::callback = std::move(cb), kw::write_tc = write_tc,
-                                          kw::c_output = c_output);
+                                          kw::callback = cb, kw::write_tc = write_tc, kw::c_output = c_output);
             },
             "t"_a, "max_steps"_a = 0, "max_delta_t"_a = std::numeric_limits<T>::infinity(), "callback"_a = prop_cb_t{},
             "write_tc"_a = false, "c_output"_a = false)
@@ -120,9 +119,8 @@ void expose_taylor_integrator_common(py::class_<hey::taylor_adaptive<T>> &cl)
                  return oss.str();
              })
         // Copy/deepcopy.
-        .def("__copy__", [](const hey::taylor_adaptive<T> &ta) { return ta; })
-        .def(
-            "__deepcopy__", [](const hey::taylor_adaptive<T> &ta, py::dict) { return ta; }, "memo"_a)
+        .def("__copy__", copy_wrapper<hey::taylor_adaptive<T>>)
+        .def("__deepcopy__", deepcopy_wrapper<hey::taylor_adaptive<T>>, "memo"_a)
         // Pickle support.
         .def(py::pickle(&pickle_getstate_wrapper<hey::taylor_adaptive<T>>,
                         &pickle_setstate_wrapper<hey::taylor_adaptive<T>>))
@@ -265,7 +263,7 @@ void expose_taylor_integrator_impl(py::module &m, const std::string &suffix)
                 {
                     py::gil_scoped_release release;
                     ret = ta.propagate_grid(std::move(grid), kw::max_steps = max_steps, kw::max_delta_t = max_delta_t,
-                                            kw::callback = std::move(cb));
+                                            kw::callback = cb);
                 }
 
                 // Determine the number of state vectors returned
@@ -369,7 +367,7 @@ void expose_taylor_integrator_f128(py::module &m)
                 {
                     py::gil_scoped_release release;
                     ret = ta.propagate_grid(std::move(grid), kw::max_steps = max_steps, kw::max_delta_t = max_delta_t,
-                                            kw::callback = std::move(cb));
+                                            kw::callback = cb);
                 }
 
                 // Determine the number of state vectors returned

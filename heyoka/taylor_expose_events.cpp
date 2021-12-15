@@ -64,6 +64,9 @@ namespace
 //   performs a deep copy),
 // - ensure the GIL is acquired in the call operator,
 // - provide serialisation capabilities.
+// NOTE: the deep copy behaviour needs to be highlighted
+// in the docs, as it has consequences on how one writes
+// the callbacks.
 template <typename Ret, typename... Args>
 struct ev_callback {
     py::object m_obj;
@@ -170,6 +173,11 @@ void expose_taylor_nt_event_impl(py::module &m, const std::string &suffix)
 
     const auto name = B ? fmt::format("_nt_event_batch_{}", suffix) : fmt::format("_nt_event_{}", suffix);
 
+    // NOTE: for events, dynamic attributes do not make much sense
+    // because when they are copied inside an integrator object any
+    // dynamic attribute is lost. It does not really matter
+    // because any Python-specific bit can be encapsulated
+    // inside the callback, instead of the event object.
     py::class_<ev_t>(m, name.c_str(), py::dynamic_attr{})
         .def(py::init([](const hey::expression &ex, py::object callback, hey::event_direction dir) {
                  if (!heypy::callable(callback)) {
@@ -214,9 +222,8 @@ void expose_taylor_nt_event_impl(py::module &m, const std::string &suffix)
         // Direction.
         .def_property_readonly("direction", &ev_t::get_direction)
         // Copy/deepcopy.
-        .def("__copy__", [](const ev_t &e) { return e; })
-        .def(
-            "__deepcopy__", [](const ev_t &e, py::dict) { return e; }, "memo"_a)
+        .def("__copy__", copy_wrapper<ev_t>)
+        .def("__deepcopy__", deepcopy_wrapper<ev_t>, "memo"_a)
         // Pickle support.
         .def(py::pickle(&pickle_getstate_wrapper<ev_t>, &pickle_setstate_wrapper<ev_t>));
 }
@@ -235,6 +242,11 @@ void expose_taylor_t_event_impl(py::module &m, const std::string &suffix)
 
     const auto name = B ? fmt::format("_t_event_batch_{}", suffix) : fmt::format("_t_event_{}", suffix);
 
+    // NOTE: for events, dynamic attributes do not make much sense
+    // because when they are copied inside an integrator object any
+    // dynamic attribute is lost. It does not really matter
+    // because any Python-specific bit can be encapsulated
+    // inside the callback, instead of the event object.
     py::class_<ev_t>(m, name.c_str(), py::dynamic_attr{})
         .def(
             py::init([](const hey::expression &ex, py::object callback, hey::event_direction dir, T cooldown) {
@@ -289,9 +301,8 @@ void expose_taylor_t_event_impl(py::module &m, const std::string &suffix)
         // Cooldown.
         .def_property_readonly("cooldown", &ev_t::get_cooldown)
         // Copy/deepcopy.
-        .def("__copy__", [](const ev_t &e) { return e; })
-        .def(
-            "__deepcopy__", [](const ev_t &e, py::dict) { return e; }, "memo"_a)
+        .def("__copy__", copy_wrapper<ev_t>)
+        .def("__deepcopy__", deepcopy_wrapper<ev_t>, "memo"_a)
         // Pickle support.
         .def(py::pickle(&pickle_getstate_wrapper<ev_t>, &pickle_setstate_wrapper<ev_t>));
 }

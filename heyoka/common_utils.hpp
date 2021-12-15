@@ -52,6 +52,94 @@ inline void expose_llvm_state_property(py::class_<T> &c)
     c.def_property_readonly("llvm_state", &T::get_llvm_state);
 }
 
+// A functor to perform the copy of a C++
+// object via its copy ctor.
+struct default_cpp_copy {
+    template <typename T>
+    T operator()(const T &arg) const
+    {
+        return arg;
+    }
+};
+
+// NOTE: these are wrappers for the implementation of
+// copy/deepcopy semantics for exposed C++ classes.
+// Doing a simple C++ copy and casting it to Python
+// won't work because it ignores dynamic Python
+// attributes that might have been set on the input
+// object o. Thus, the strategy is to first make
+// a C++ copy of the original object and then attach
+// to it copies of the dynamic attributes that were
+// added to the original object from Python.
+template <typename T, typename CopyF = default_cpp_copy>
+py::object copy_wrapper(py::object o)
+{
+    // Fetch a pointer to the C++ copy.
+    auto *o_cpp = py::cast<const T *>(o);
+
+    // Copy the C++ object and transform it into
+    // a Python object.
+    // NOTE: no room for GIL unlock here, due
+    // to possible copy of Pythonic event callbacks.
+    py::object ret = py::cast(CopyF{}(*o_cpp));
+
+    // Fetch the list of attributes from the original
+    // object and turn it into a set.
+    auto orig_dir = py::set(builtins().attr("dir")(o));
+
+    // Fetch the list of attributes form the copy
+    // and turn it into a set.
+    auto new_dir = py::set(builtins().attr("dir")(ret));
+
+    // Compute the difference.
+    // NOTE: this will be the list of attributes that
+    // are in o but not in its copy.
+    auto set_diff = orig_dir.attr("difference")(new_dir);
+
+    // Iterate over the difference and assign the
+    // missing attributes.
+    for (auto attr_name : set_diff) {
+        py::setattr(ret, attr_name, o.attr(attr_name));
+    }
+
+    return ret;
+}
+
+template <typename T, typename CopyF = default_cpp_copy>
+py::object deepcopy_wrapper(py::object o, py::dict memo)
+{
+    // Fetch a pointer to the C++ copy.
+    auto *o_cpp = py::cast<const T *>(o);
+
+    // Copy the C++ object and transform it into
+    // a Python object.
+    // NOTE: no room for GIL unlock here, due
+    // to possible copy of Pythonic event callbacks.
+    py::object ret = py::cast(CopyF{}(*o_cpp));
+
+    // Fetch the list of attributes from the original
+    // object and turn it into a set.
+    auto orig_dir = py::set(builtins().attr("dir")(o));
+
+    // Fetch the list of attributes form the copy
+    // and turn it into a set.
+    auto new_dir = py::set(builtins().attr("dir")(ret));
+
+    // Compute the difference.
+    // NOTE: this will be the list of attributes that
+    // are in o but not in its copy.
+    auto set_diff = orig_dir.attr("difference")(new_dir);
+
+    // Iterate over the difference and deep copy the
+    // missing attributes.
+    auto copy_func = py::module_::import("copy").attr("deepcopy");
+    for (auto attr_name : set_diff) {
+        py::setattr(ret, attr_name, copy_func(o.attr(attr_name), memo));
+    }
+
+    return ret;
+}
+
 } // namespace heyoka_py
 
 #endif
