@@ -24,6 +24,13 @@ New
   the CPU in use
   (`#84 <https://github.com/bluescarni/heyoka.py/pull/84>`__).
 
+Changes
+~~~~~~~
+
+- heyoka.py now requires at least version 0.17.0 of the
+  heyoka C++ library
+  (`#84 <https://github.com/bluescarni/heyoka.py/pull/84>`__).
+
 0.16.0 (2021-11-20)
 -------------------
 
