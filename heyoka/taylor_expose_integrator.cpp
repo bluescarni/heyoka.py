@@ -70,6 +70,8 @@ void expose_taylor_integrator_common(py::class_<hey::taylor_adaptive<T>> &cl)
 
     cl.def_property_readonly("decomposition", &hey::taylor_adaptive<T>::get_decomposition)
         .def_property("time", &hey::taylor_adaptive<T>::get_time, &hey::taylor_adaptive<T>::set_time)
+        .def_property("dtime", &hey::taylor_adaptive<T>::get_dtime,
+                      [](hey::taylor_adaptive<T> &ta, std::pair<double, double> p) { ta.set_dtime(p.first, p.second); })
         // Step functions.
         .def(
             "step", [](hey::taylor_adaptive<T> &ta, bool wtc) { return ta.step(wtc); }, "write_tc"_a = false)
