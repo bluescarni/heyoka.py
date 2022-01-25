@@ -113,6 +113,17 @@ if(MINGW)
     list(APPEND HEYOKA_PY_CXX_FLAGS_RELEASE "-Wa,-mbig-obj")
 endif()
 
+# This is temporarily here in order to quench some fmt 8.1
+# warnings until we fix the code.
+find_package(fmt REQUIRED CONFIG)
+message(STATUS "fmt version: ${fmt_VERSION}")
+if(${fmt_VERSION} VERSION_GREATER_EQUAL "8.1")
+    if(YACMA_COMPILER_IS_GNUCXX OR YACMA_COMPILER_IS_CLANGXX)
+        list(APPEND HEYOKA_PY_CXX_FLAGS_DEBUG "-Wno-deprecated-declarations")
+        list(APPEND HEYOKA_PY_CXX_FLAGS_RELEASE "-Wno-deprecated-declarations")
+    endif()
+endif()
+
 # Find the dependencies.
 
 # heyoka.
@@ -142,9 +153,6 @@ endif()
 
 # Boost.
 find_package(Boost REQUIRED serialization)
-
-# fmt.
-find_package(fmt REQUIRED CONFIG)
 
 # spdlog.
 find_package(spdlog REQUIRED CONFIG)

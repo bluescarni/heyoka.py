@@ -11,10 +11,10 @@
 #include <mutex>
 #include <utility>
 
-#include <fmt/core.h>
-
 #include <spdlog/sinks/base_sink.h>
 #include <spdlog/spdlog.h>
+
+#include <fmt/core.h>
 
 #include <pybind11/pybind11.h>
 
