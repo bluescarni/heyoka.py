@@ -3,12 +3,15 @@
 Changelog
 =========
 
-0.17.0 (unreleased)
+0.17.0 (2022-01-25)
 -------------------
 
 New
 ~~~
 
+- It is now possible to access the adaptive integrators'
+  time values as double-length floats
+  (`#86 <https://github.com/bluescarni/heyoka.py/pull/86>`__).
 - Add support for ensemble propagations
   (`#85 <https://github.com/bluescarni/heyoka.py/pull/85>`__).
 - Several functions in the batch integration API
@@ -23,6 +26,19 @@ New
 - Add a function to compute the suggested SIMD size for
   the CPU in use
   (`#84 <https://github.com/bluescarni/heyoka.py/pull/84>`__).
+
+Changes
+~~~~~~~
+
+- heyoka.py now requires at least version 0.17.0 of the
+  heyoka C++ library
+  (`#84 <https://github.com/bluescarni/heyoka.py/pull/84>`__).
+
+Fix
+~~~
+
+- Fix build failures when using recent versions of ``fmt``
+  (`#86 <https://github.com/bluescarni/heyoka.py/pull/86>`__).
 
 0.16.0 (2021-11-20)
 -------------------
