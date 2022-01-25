@@ -1562,6 +1562,27 @@ class scalar_integrator_test_case(_ut.TestCase):
         self.test_s11n()
         self.test_events()
         self.test_copy()
+        self.test_dtime()
+
+    def test_dtime(self):
+        from . import taylor_adaptive, make_vars, sin
+
+        x, v = make_vars("x", "v")
+
+        sys = [(x, v), (v, -9.8 * sin(x))]
+
+        ta = taylor_adaptive(sys=sys, state=[0., 0.25])
+
+        self.assertEqual(ta.dtime, (0., 0.))
+
+        ta.step()
+        ta.propagate_for(1001.1)
+
+        self.assertTrue(ta.dtime[1] != 0)
+
+        ta.dtime = (1, .5)
+
+        self.assertEqual(ta.dtime, (1.5, 0.))
 
     def test_copy(self):
         from . import taylor_adaptive, make_vars, t_event, sin
@@ -1790,6 +1811,7 @@ class batch_integrator_test_case(_ut.TestCase):
         self.test_s11n()
         self.test_events()
         self.test_set_time()
+        self.test_dtime()
         self.test_update_d_output()
         self.test_copy()
 
@@ -2027,6 +2049,47 @@ class batch_integrator_test_case(_ut.TestCase):
 
         ta.set_time(5.)
         self.assertTrue(np.all(ta.time == [5, 5]))
+
+    def test_dtime(self):
+        from . import taylor_adaptive_batch, make_vars, sin
+        import numpy as np
+
+        x, v = make_vars("x", "v")
+
+        sys = [(x, v), (v, -9.8 * sin(x))]
+
+        ta = taylor_adaptive_batch(sys=sys, state=[[0., 0.1], [0.25, 0.26]])
+
+        self.assertTrue(np.all(ta.dtime[0] == [0, 0]))
+        self.assertTrue(np.all(ta.dtime[1] == [0, 0]))
+
+        # Check not writeable,
+        with self.assertRaises(ValueError) as cm:
+            ta.dtime[0][0] = .5
+
+        with self.assertRaises(ValueError) as cm:
+            ta.dtime[1][0] = .5
+
+        ta.step()
+        ta.propagate_for(1000.1)
+
+        self.assertFalse(np.all(ta.dtime[1] == [0, 0]))
+
+        ta.set_dtime(1., .5)
+
+        self.assertTrue(np.all(ta.dtime[0] == [1.5, 1.5]))
+        self.assertTrue(np.all(ta.dtime[1] == [0, 0]))
+
+        ta.set_dtime([1., 2.], [.5, 0.25])
+
+        self.assertTrue(np.all(ta.dtime[0] == [1.5, 2.25]))
+        self.assertTrue(np.all(ta.dtime[1] == [0, 0]))
+
+        # Failure modes.
+        with self.assertRaises(TypeError) as cm:
+            ta.set_dtime([1., 2.], .5)
+        self.assertTrue(
+            "The two arguments to the set_dtime() method must be of the same type" in str(cm.exception))
 
     def test_basic(self):
         from . import taylor_adaptive_batch, make_vars, t_event_batch, sin

@@ -17,6 +17,7 @@
 #include <optional>
 #include <sstream>
 #include <string>
+#include <type_traits>
 #include <unordered_map>
 #include <utility>
 #include <variant>
@@ -795,9 +796,41 @@ PYBIND11_MODULE(core, m)
 
                                    return ret;
                                })
+        .def_property_readonly(
+            "dtime",
+            [](py::object &o) {
+                auto *ta = py::cast<hey::taylor_adaptive_batch<double> *>(o);
+
+                py::array_t<double> hi_ret(
+                    py::array::ShapeContainer{boost::numeric_cast<py::ssize_t>(ta->get_dtime().first.size())},
+                    ta->get_dtime_data().first, o);
+                py::array_t<double> lo_ret(
+                    py::array::ShapeContainer{boost::numeric_cast<py::ssize_t>(ta->get_dtime().second.size())},
+                    ta->get_dtime_data().second, o);
+
+                // Ensure the returned arrays are read-only.
+                hi_ret.attr("flags").attr("writeable") = false;
+                lo_ret.attr("flags").attr("writeable") = false;
+
+                return py::make_tuple(hi_ret, lo_ret);
+            })
         .def("set_time",
              [](hey::taylor_adaptive_batch<double> &ta, const std::variant<double, std::vector<double>> &tm) {
                  std::visit([&ta](const auto &t) { ta.set_time(t); }, tm);
+             })
+        .def("set_dtime",
+             [](hey::taylor_adaptive_batch<double> &ta, const std::variant<double, std::vector<double>> &hi_tm,
+                const std::variant<double, std::vector<double>> &lo_tm) {
+                 std::visit(
+                     [&ta](const auto &t_hi, const auto &t_lo) {
+                         if constexpr (std::is_same_v<decltype(t_hi), decltype(t_lo)>) {
+                             ta.set_dtime(t_hi, t_lo);
+                         } else {
+                             heypy::py_throw(PyExc_TypeError,
+                                             "The two arguments to the set_dtime() method must be of the same type");
+                         }
+                     },
+                     hi_tm, lo_tm);
              })
         .def_property_readonly(
             "state",
