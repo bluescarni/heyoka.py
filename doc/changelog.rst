@@ -34,6 +34,12 @@ Changes
   heyoka C++ library
   (`#84 <https://github.com/bluescarni/heyoka.py/pull/84>`__).
 
+Fix
+~~~
+
+- Fix build failures when using recent versions of ``fmt``
+  (`#86 <https://github.com/bluescarni/heyoka.py/pull/86>`__).
+
 0.16.0 (2021-11-20)
 -------------------
 
