@@ -9,6 +9,9 @@ Changelog
 New
 ~~~
 
+- It is now possible to access the adaptive integrators'
+  time values as double-length floats
+  (`#86 <https://github.com/bluescarni/heyoka.py/pull/86>`__).
 - Add support for ensemble propagations
   (`#85 <https://github.com/bluescarni/heyoka.py/pull/85>`__).
 - Several functions in the batch integration API
