@@ -25,7 +25,7 @@ Python3_add_library(core MODULE WITH_SOABI
     setup_sympy.cpp
 )
 
-target_link_libraries(core PRIVATE heyoka::heyoka fmt::fmt spdlog::spdlog Boost::boost Boost::serialization TBB::tbb)
+target_link_libraries(core PRIVATE heyoka::heyoka fmt::fmt Boost::boost Boost::serialization TBB::tbb)
 target_link_libraries(core PRIVATE "${pybind11_LIBRARIES}")
 if(heyoka_WITH_MPPP)
     target_link_libraries(core PRIVATE mp++::mp++)

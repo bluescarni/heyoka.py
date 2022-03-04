@@ -117,18 +117,8 @@ PYBIND11_MODULE(core, m)
 #endif
         ;
 
-    // Connect heyoka's logging to Python's logging.
-    heypy::enable_logging();
-
     // Expose the logging setter functions.
     heypy::expose_logging_setters(m);
-
-    // Expose testing functions.
-    m.def("_test_debug_msg", &heypy::test_debug_msg);
-    m.def("_test_info_msg", &heypy::test_info_msg);
-    m.def("_test_warning_msg", &heypy::test_warning_msg);
-    m.def("_test_error_msg", &heypy::test_error_msg);
-    m.def("_test_critical_msg", &heypy::test_critical_msg);
 
 #if defined(HEYOKA_HAVE_REAL128)
     if (!heypy::mpmath_available()) {

@@ -16,14 +16,6 @@ namespace heyoka_py
 
 namespace py = pybind11;
 
-void enable_logging();
-
-void test_debug_msg();
-void test_info_msg();
-void test_warning_msg();
-void test_error_msg();
-void test_critical_msg();
-
 void expose_logging_setters(py::module_ &);
 
 } // namespace heyoka_py
