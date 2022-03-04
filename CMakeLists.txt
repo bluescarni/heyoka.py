@@ -154,9 +154,6 @@ endif()
 # Boost.
 find_package(Boost REQUIRED serialization)
 
-# spdlog.
-find_package(spdlog REQUIRED CONFIG)
-
 # Mandatory dependency on TBB.
 find_package(TBB REQUIRED CONFIG)
 
