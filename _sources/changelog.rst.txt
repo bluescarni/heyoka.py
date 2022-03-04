@@ -16,6 +16,10 @@ New
 Changes
 ~~~~~~~
 
+- heyoka.py does not depend on the spdlog library any more
+  (`#89 <https://github.com/bluescarni/heyoka.py/pull/89>`__).
+- heyoka.py now depends on the `TBB <https://github.com/oneapi-src/oneTBB>`__ library
+  (`#88 <https://github.com/bluescarni/heyoka.py/pull/88>`__).
 - heyoka.py now requires at least version 0.18.0 of the
   heyoka C++ library
   (`#88 <https://github.com/bluescarni/heyoka.py/pull/88>`__).
