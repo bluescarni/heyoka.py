@@ -1,4 +1,4 @@
-// Copyright 2020, 2021 Francesco Biscani (bluescarni@gmail.com), Dario Izzo (dario.izzo@gmail.com)
+// Copyright 2020, 2021, 2022 Francesco Biscani (bluescarni@gmail.com), Dario Izzo (dario.izzo@gmail.com)
 //
 // This file is part of the heyoka.py library.
 //
@@ -26,6 +26,8 @@
 #include <boost/numeric/conversion/cast.hpp>
 
 #include <fmt/format.h>
+
+#include <oneapi/tbb/global_control.h>
 
 #include <pybind11/functional.h>
 #include <pybind11/numpy.h>
@@ -61,6 +63,18 @@
 #include "taylor_expose_c_output.hpp"
 #include "taylor_expose_events.hpp"
 #include "taylor_expose_integrator.hpp"
+
+namespace heyoka_py::detail
+{
+
+namespace
+{
+
+std::optional<oneapi::tbb::global_control> tbb_gc;
+
+}
+
+} // namespace heyoka_py::detail
 
 namespace py = pybind11;
 namespace hey = heyoka;
@@ -563,114 +577,118 @@ PYBIND11_MODULE(core, m)
     using nt_ev_t = hey::nt_event_batch<double>;
 
     // Batch adaptive integrator for double.
-    auto tabd_ctor_impl = [](const auto &sys, py::array_t<double> state_, std::optional<py::array_t<double>> time_,
-                             std::optional<py::array_t<double>> pars_, double tol, bool high_accuracy,
-                             bool compact_mode, std::vector<t_ev_t> tes, std::vector<nt_ev_t> ntes) {
-        // Convert state and pars to std::vector, after checking
-        // dimensions and shape.
-        if (state_.ndim() != 2) {
-            heypy::py_throw(
-                PyExc_ValueError,
-                fmt::format("Invalid state vector passed to the constructor of a batch integrator: "
-                            "the expected number of dimensions is 2, but the input array has a dimension of {}",
-                            state_.ndim())
-                    .c_str());
-        }
+    auto tabd_ctor_impl
+        = [](const auto &sys, py::array_t<double> state_, std::optional<py::array_t<double>> time_,
+             std::optional<py::array_t<double>> pars_, double tol, bool high_accuracy, bool compact_mode,
+             std::vector<t_ev_t> tes, std::vector<nt_ev_t> ntes, bool parallel_mode) {
+              // Convert state and pars to std::vector, after checking
+              // dimensions and shape.
+              if (state_.ndim() != 2) {
+                  heypy::py_throw(
+                      PyExc_ValueError,
+                      fmt::format("Invalid state vector passed to the constructor of a batch integrator: "
+                                  "the expected number of dimensions is 2, but the input array has a dimension of {}",
+                                  state_.ndim())
+                          .c_str());
+              }
 
-        // Infer the batch size from the second dimension.
-        const auto batch_size = boost::numeric_cast<std::uint32_t>(state_.shape(1));
+              // Infer the batch size from the second dimension.
+              const auto batch_size = boost::numeric_cast<std::uint32_t>(state_.shape(1));
 
-        // Flatten out and convert to a C++ vector.
-        auto state = py::cast<std::vector<double>>(state_.attr("flatten")());
+              // Flatten out and convert to a C++ vector.
+              auto state = py::cast<std::vector<double>>(state_.attr("flatten")());
 
-        // If pars is none, an empty vector will be fine.
-        std::vector<double> pars;
-        if (pars_) {
-            auto &pars_arr = *pars_;
+              // If pars is none, an empty vector will be fine.
+              std::vector<double> pars;
+              if (pars_) {
+                  auto &pars_arr = *pars_;
 
-            if (pars_arr.ndim() != 2 || boost::numeric_cast<std::uint32_t>(pars_arr.shape(1)) != batch_size) {
-                heypy::py_throw(
-                    PyExc_ValueError,
-                    fmt::format("Invalid parameter vector passed to the constructor of a batch integrator: "
-                                "the expected array shape is (n, {}), but the input array has either the wrong "
-                                "number of dimensions or the wrong shape",
-                                batch_size)
-                        .c_str());
-            }
-            pars = py::cast<std::vector<double>>(pars_arr.attr("flatten")());
-        }
+                  if (pars_arr.ndim() != 2 || boost::numeric_cast<std::uint32_t>(pars_arr.shape(1)) != batch_size) {
+                      heypy::py_throw(
+                          PyExc_ValueError,
+                          fmt::format("Invalid parameter vector passed to the constructor of a batch integrator: "
+                                      "the expected array shape is (n, {}), but the input array has either the wrong "
+                                      "number of dimensions or the wrong shape",
+                                      batch_size)
+                              .c_str());
+                  }
+                  pars = py::cast<std::vector<double>>(pars_arr.attr("flatten")());
+              }
 
-        if (time_) {
-            // Times provided.
-            auto &time_arr = *time_;
-            if (time_arr.ndim() != 1 || boost::numeric_cast<std::uint32_t>(time_arr.shape(0)) != batch_size) {
-                heypy::py_throw(
-                    PyExc_ValueError,
-                    fmt::format("Invalid time vector passed to the constructor of a batch integrator: "
-                                "the expected array shape is ({}), but the input array has either the wrong "
-                                "number of dimensions or the wrong shape",
-                                batch_size)
-                        .c_str());
-            }
-            auto time = py::cast<std::vector<double>>(time_arr);
+              if (time_) {
+                  // Times provided.
+                  auto &time_arr = *time_;
+                  if (time_arr.ndim() != 1 || boost::numeric_cast<std::uint32_t>(time_arr.shape(0)) != batch_size) {
+                      heypy::py_throw(
+                          PyExc_ValueError,
+                          fmt::format("Invalid time vector passed to the constructor of a batch integrator: "
+                                      "the expected array shape is ({}), but the input array has either the wrong "
+                                      "number of dimensions or the wrong shape",
+                                      batch_size)
+                              .c_str());
+                  }
+                  auto time = py::cast<std::vector<double>>(time_arr);
 
-            // NOTE: GIL release is fine here even if the events contain
-            // Python objects, as the event vectors are moved in
-            // upon construction and thus we should never end up calling
-            // into the interpreter.
-            py::gil_scoped_release release;
+                  // NOTE: GIL release is fine here even if the events contain
+                  // Python objects, as the event vectors are moved in
+                  // upon construction and thus we should never end up calling
+                  // into the interpreter.
+                  py::gil_scoped_release release;
 
-            return hey::taylor_adaptive_batch<double>{sys,
-                                                      std::move(state),
-                                                      batch_size,
-                                                      kw::time = std::move(time),
-                                                      kw::tol = tol,
-                                                      kw::high_accuracy = high_accuracy,
-                                                      kw::compact_mode = compact_mode,
-                                                      kw::pars = std::move(pars),
-                                                      kw::t_events = std::move(tes),
-                                                      kw::nt_events = std::move(ntes)};
-        } else {
-            // Times not provided.
+                  return hey::taylor_adaptive_batch<double>{sys,
+                                                            std::move(state),
+                                                            batch_size,
+                                                            kw::time = std::move(time),
+                                                            kw::tol = tol,
+                                                            kw::high_accuracy = high_accuracy,
+                                                            kw::compact_mode = compact_mode,
+                                                            kw::pars = std::move(pars),
+                                                            kw::t_events = std::move(tes),
+                                                            kw::nt_events = std::move(ntes),
+                                                            kw::parallel_mode = parallel_mode};
+              } else {
+                  // Times not provided.
 
-            // NOTE: GIL release is fine here even if the events contain
-            // Python objects, as the event vectors are moved in
-            // upon construction and thus we should never end up calling
-            // into the interpreter.
-            py::gil_scoped_release release;
+                  // NOTE: GIL release is fine here even if the events contain
+                  // Python objects, as the event vectors are moved in
+                  // upon construction and thus we should never end up calling
+                  // into the interpreter.
+                  py::gil_scoped_release release;
 
-            return hey::taylor_adaptive_batch<double>{sys,
-                                                      std::move(state),
-                                                      batch_size,
-                                                      kw::tol = tol,
-                                                      kw::high_accuracy = high_accuracy,
-                                                      kw::compact_mode = compact_mode,
-                                                      kw::pars = std::move(pars),
-                                                      kw::t_events = std::move(tes),
-                                                      kw::nt_events = std::move(ntes)};
-        }
-    };
+                  return hey::taylor_adaptive_batch<double>{sys,
+                                                            std::move(state),
+                                                            batch_size,
+                                                            kw::tol = tol,
+                                                            kw::high_accuracy = high_accuracy,
+                                                            kw::compact_mode = compact_mode,
+                                                            kw::pars = std::move(pars),
+                                                            kw::t_events = std::move(tes),
+                                                            kw::nt_events = std::move(ntes),
+                                                            kw::parallel_mode = parallel_mode};
+              }
+          };
 
     py::class_<hey::taylor_adaptive_batch<double>> tabd_c(m, "_taylor_adaptive_batch_dbl", py::dynamic_attr{});
     tabd_c
         .def(py::init([tabd_ctor_impl](const std::vector<std::pair<hey::expression, hey::expression>> &sys,
                                        py::array_t<double> state, std::optional<py::array_t<double>> time,
                                        std::optional<py::array_t<double>> pars, double tol, bool high_accuracy,
-                                       bool compact_mode, std::vector<t_ev_t> tes, std::vector<nt_ev_t> ntes) {
+                                       bool compact_mode, std::vector<t_ev_t> tes, std::vector<nt_ev_t> ntes,
+                                       bool parallel_mode) {
                  return tabd_ctor_impl(sys, state, std::move(time), std::move(pars), tol, high_accuracy, compact_mode,
-                                       std::move(tes), std::move(ntes));
+                                       std::move(tes), std::move(ntes), parallel_mode);
              }),
              "sys"_a, "state"_a, "time"_a = py::none{}, "pars"_a = py::none{}, "tol"_a = 0., "high_accuracy"_a = false,
-             "compact_mode"_a = false, "t_events"_a = py::list{}, "nt_events"_a = py::list{})
+             "compact_mode"_a = false, "t_events"_a = py::list{}, "nt_events"_a = py::list{}, "parallel_mode"_a = false)
         .def(py::init([tabd_ctor_impl](const std::vector<hey::expression> &sys, py::array_t<double> state,
                                        std::optional<py::array_t<double>> time, std::optional<py::array_t<double>> pars,
                                        double tol, bool high_accuracy, bool compact_mode, std::vector<t_ev_t> tes,
-                                       std::vector<nt_ev_t> ntes) {
+                                       std::vector<nt_ev_t> ntes, bool parallel_mode) {
                  return tabd_ctor_impl(sys, state, std::move(time), std::move(pars), tol, high_accuracy, compact_mode,
-                                       std::move(tes), std::move(ntes));
+                                       std::move(tes), std::move(ntes), parallel_mode);
              }),
              "sys"_a, "state"_a, "time"_a = py::none{}, "pars"_a = py::none{}, "tol"_a = 0., "high_accuracy"_a = false,
-             "compact_mode"_a = false, "t_events"_a = py::list{}, "nt_events"_a = py::list{})
+             "compact_mode"_a = false, "t_events"_a = py::list{}, "nt_events"_a = py::list{}, "parallel_mode"_a = false)
         .def_property_readonly("decomposition", &hey::taylor_adaptive_batch<double>::get_decomposition)
         .def(
             "step", [](hey::taylor_adaptive_batch<double> &ta, bool wtc) { ta.step(wtc); }, "write_tc"_a = false)
@@ -978,6 +996,29 @@ PYBIND11_MODULE(core, m)
 
     // Expose the continuous output function objects.
     heypy::taylor_expose_c_output(m);
+
+    // Expose the helpers to get/set the number of threads in use by heyoka.py.
+    m.def("set_nthreads", [](std::size_t n) {
+        if (n == 0u) {
+            heypy::detail::tbb_gc.reset();
+        } else {
+            heypy::detail::tbb_gc.emplace(oneapi::tbb::global_control::max_allowed_parallelism, n);
+        }
+    });
+
+    m.def("get_nthreads", []() {
+        return oneapi::tbb::global_control::active_value(oneapi::tbb::global_control::max_allowed_parallelism);
+    });
+
+    // Make sure the TBB control structure is cleaned
+    // up before shutdown.
+    auto atexit = py::module_::import("atexit");
+    atexit.attr("register")(py::cpp_function([]() {
+#if !defined(NDEBUG)
+        std::cout << "Cleaning up the TBB control structure" << std::endl;
+#endif
+        heypy::detail::tbb_gc.reset();
+    }));
 }
 
 #if defined(__clang__)

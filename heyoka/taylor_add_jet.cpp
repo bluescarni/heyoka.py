@@ -1,4 +1,4 @@
-// Copyright 2020, 2021 Francesco Biscani (bluescarni@gmail.com), Dario Izzo (dario.izzo@gmail.com)
+// Copyright 2020, 2021, 2022 Francesco Biscani (bluescarni@gmail.com), Dario Izzo (dario.izzo@gmail.com)
 //
 // This file is part of the heyoka.py library.
 //
@@ -183,7 +183,7 @@ void expose_taylor_add_jet_impl(py::module &m, const char *name)
     m.def(
         name,
         [](const U &sys, std::uint32_t order, std::uint32_t batch_size, bool high_accuracy, bool compact_mode,
-           const std::vector<hey::expression> &sv_funcs) {
+           const std::vector<hey::expression> &sv_funcs, bool parallel_mode) {
             // Let's figure out if sys contains params and/or time.
             bool has_time = false;
             std::uint32_t n_params = 0;
@@ -213,7 +213,8 @@ void expose_taylor_add_jet_impl(py::module &m, const char *name)
                 // NOTE: release the GIL during compilation.
                 py::gil_scoped_release release;
 
-                hey::taylor_add_jet<T>(s, "jet", sys, order, batch_size, high_accuracy, compact_mode, sv_funcs);
+                hey::taylor_add_jet<T>(s, "jet", sys, order, batch_size, high_accuracy, compact_mode, sv_funcs,
+                                       parallel_mode);
 
                 s.compile();
 
@@ -352,7 +353,7 @@ void expose_taylor_add_jet_impl(py::module &m, const char *name)
 #endif
         },
         "sys"_a, "order"_a, "batch_size"_a = 1u, "high_accuracy"_a = false, "compact_mode"_a = false,
-        "sv_funcs"_a = py::list{});
+        "sv_funcs"_a = py::list{}, "parallel_mode"_a = false);
 }
 
 } // namespace

@@ -9,10 +9,11 @@ Dependencies
 heyoka.py has several Python and C++ dependencies. On the C++ side, heyoka.py depends on:
 
 * the `heyoka C++ library <https://github.com/bluescarni/heyoka>`__,
-  version 0.17.0 or later (**mandatory**),
+  version 0.18.0 or later (**mandatory**),
 * the `Boost <https://www.boost.org/>`__ C++ libraries (**mandatory**),
 * the `{fmt} <https://fmt.dev/latest/index.html>`__ library (**mandatory**),
 * the `spdlog <https://github.com/gabime/spdlog>`__ library (**mandatory**),
+* the `TBB <https://github.com/oneapi-src/oneTBB>`__ library (**mandatory**),
 * the `mp++ <https://github.com/bluescarni/mppp>`__ library (**mandatory** if the
   heyoka C++ library was compiled with the ``HEYOKA_WITH_MPPP`` option on - see the
   :ref:`heyoka C++ installation instructions <hy:installation>`).
@@ -76,7 +77,7 @@ a continuous integration pipeline which currently includes:
 * Clang 11 on OSX,
 * MSVC 2019 on Windows.
 
-In addition to the dependencies enumerated :ref:`earlier <installation_deps>`,
+In addition to the C++ dependencies enumerated :ref:`earlier <installation_deps>`,
 installation from source requires also:
 
 * `pybind11 <https://github.com/pybind/pybind11>`__ (version >= 2.6),
