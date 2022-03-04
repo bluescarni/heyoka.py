@@ -3,6 +3,33 @@
 Changelog
 =========
 
+0.18.0 (unreleased)
+-------------------
+
+New
+~~~
+
+- Implement parallel mode
+  for the automatic parallelisation of an individual integration step
+  (`#88 <https://github.com/bluescarni/heyoka.py/pull/88>`__).
+
+Changes
+~~~~~~~
+
+- In case of an early interruption, the ``propagate_grid()`` function will now
+  process all available grid points before the interruption time before exiting
+  (`#88 <https://github.com/bluescarni/heyoka.py/pull/88>`__).
+- The ``propagate_grid()`` callbacks are now invoked also if the integration
+  is interrupted by a stopping terminal event
+  (`#88 <https://github.com/bluescarni/heyoka.py/pull/88>`__).
+
+Fix
+~~~
+
+- Fix an issue in the ``propagate_grid()`` functions
+  that could lead to invalid results in certain corner cases
+  (`#88 <https://github.com/bluescarni/heyoka.py/pull/88>`__).
+
 0.17.0 (2022-01-25)
 -------------------
 

@@ -27,6 +27,8 @@
 
 #include <fmt/format.h>
 
+#include <oneapi/tbb/global_control.h>
+
 #include <pybind11/functional.h>
 #include <pybind11/numpy.h>
 #include <pybind11/operators.h>
@@ -61,6 +63,18 @@
 #include "taylor_expose_c_output.hpp"
 #include "taylor_expose_events.hpp"
 #include "taylor_expose_integrator.hpp"
+
+namespace heyoka_py::detail
+{
+
+namespace
+{
+
+std::optional<oneapi::tbb::global_control> tbb_gc;
+
+}
+
+} // namespace heyoka_py::detail
 
 namespace py = pybind11;
 namespace hey = heyoka;
@@ -982,6 +996,29 @@ PYBIND11_MODULE(core, m)
 
     // Expose the continuous output function objects.
     heypy::taylor_expose_c_output(m);
+
+    // Expose the helpers to get/set the number of threads in use by heyoka.py.
+    m.def("set_nthreads", [](std::size_t n) {
+        if (n == 0u) {
+            heypy::detail::tbb_gc.reset();
+        } else {
+            heypy::detail::tbb_gc.emplace(oneapi::tbb::global_control::max_allowed_parallelism, n);
+        }
+    });
+
+    m.def("get_nthreads", []() {
+        return oneapi::tbb::global_control::active_value(oneapi::tbb::global_control::max_allowed_parallelism);
+    });
+
+    // Make sure the TBB control structure is cleaned
+    // up before shutdown.
+    auto atexit = py::module_::import("atexit");
+    atexit.attr("register")(py::cpp_function([]() {
+#if !defined(NDEBUG)
+        std::cout << "Cleaning up the TBB control structure" << std::endl;
+#endif
+        heypy::detail::tbb_gc.reset();
+    }));
 }
 
 #if defined(__clang__)
