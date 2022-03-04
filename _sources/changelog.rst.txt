@@ -16,6 +16,9 @@ New
 Changes
 ~~~~~~~
 
+- heyoka.py now requires at least version 0.18.0 of the
+  heyoka C++ library
+  (`#88 <https://github.com/bluescarni/heyoka.py/pull/88>`__).
 - In case of an early interruption, the ``propagate_grid()`` function will now
   process all available grid points before the interruption time before exiting
   (`#88 <https://github.com/bluescarni/heyoka.py/pull/88>`__).
