@@ -14,7 +14,7 @@ wget https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge
 export deps_dir=$HOME/local
 export PATH="$HOME/miniconda/bin:$PATH"
 bash miniconda.sh -b -p $HOME/miniconda
-conda create -y -q -p $deps_dir cxx-compiler c-compiler cmake llvmdev tbb-devel tbb astroquery boost-cpp sleef fmt python=3.8 pybind11 numpy mpmath sympy scipy cloudpickle sphinx myst-nb matplotlib sphinx-book-theme
+conda create -y -q -p $deps_dir cxx-compiler c-compiler cmake llvmdev tbb-devel tbb astroquery boost-cpp sleef fmt spdlog python=3.8 pybind11 numpy mpmath sympy scipy cloudpickle sphinx myst-nb matplotlib sphinx-book-theme
 source activate $deps_dir
 
 export HEYOKA_PY_PROJECT_DIR=`pwd`

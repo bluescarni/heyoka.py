@@ -11,7 +11,7 @@ curl -L -o miniconda.sh https://github.com/conda-forge/miniforge/releases/latest
 export deps_dir=$HOME/local
 export PATH="$HOME/miniconda/bin:$PATH"
 bash miniconda.sh -b -p $HOME/miniconda
-conda create -y -q -p $deps_dir cxx-compiler c-compiler cmake llvmdev tbb-devel tbb astroquery boost-cpp sleef xtensor xtensor-blas blas blas-devel fmt python pybind11 numpy mpmath sympy cloudpickle mppp git make
+conda create -y -q -p $deps_dir cxx-compiler c-compiler cmake llvmdev tbb-devel tbb astroquery boost-cpp sleef xtensor xtensor-blas blas blas-devel fmt spdlog python pybind11 numpy mpmath sympy cloudpickle mppp git make
 source activate $deps_dir
 
 # Checkout, build and install heyoka's HEAD.
