@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Installation &#8212; heyoka.py 0.17.0 documentation</title>
+    <title>Installation &#8212; heyoka.py 0.18.0 documentation</title>
     
   <link href="_static/css/theme.css" rel="stylesheet">
   <link href="_static/css/index.ff1ffe594081f20da1ef19478df9384b.css" rel="stylesheet">
@@ -73,7 +73,7 @@
       <img src="_static/white_logo.png" class="logo" alt="logo">
       
       
-      <h1 class="site-logo" id="site-title">heyoka.py 0.17.0 documentation</h1>
+      <h1 class="site-logo" id="site-title">heyoka.py 0.18.0 documentation</h1>
       
     </a>
 </div><form class="bd-search d-flex align-items-center" action="search.html" method="get">
@@ -160,6 +160,11 @@
    <li class="toctree-l2">
     <a class="reference internal" href="notebooks/ensemble_batch_perf.html">
      Evaluating the performance of ensemble &amp; batch mode
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="notebooks/parallel_mode.html">
+     Parallel mode
     </a>
    </li>
    <li class="toctree-l2">
@@ -508,10 +513,11 @@
 <p>heyoka.py has several Python and C++ dependencies. On the C++ side, heyoka.py depends on:</p>
 <ul class="simple">
 <li><p>the <a class="reference external" href="https://github.com/bluescarni/heyoka">heyoka C++ library</a>,
-version 0.17.0 or later (<strong>mandatory</strong>),</p></li>
+version 0.18.0 or later (<strong>mandatory</strong>),</p></li>
 <li><p>the <a class="reference external" href="https://www.boost.org/">Boost</a> C++ libraries (<strong>mandatory</strong>),</p></li>
 <li><p>the <a class="reference external" href="https://fmt.dev/latest/index.html">{fmt}</a> library (<strong>mandatory</strong>),</p></li>
 <li><p>the <a class="reference external" href="https://github.com/gabime/spdlog">spdlog</a> library (<strong>mandatory</strong>),</p></li>
+<li><p>the <a class="reference external" href="https://github.com/oneapi-src/oneTBB">TBB</a> library (<strong>mandatory</strong>),</p></li>
 <li><p>the <a class="reference external" href="https://github.com/bluescarni/mppp">mp++</a> library (<strong>mandatory</strong> if the
 heyoka C++ library was compiled with the <code class="docutils literal notranslate"><span class="pre">HEYOKA_WITH_MPPP</span></code> option on - see the
 <a class="reference external" href="https://bluescarni.github.io/heyoka/install.html#installation" title="(in heyoka)"><span class="xref std std-ref">heyoka C++ installation instructions</span></a>).</p></li>
@@ -568,7 +574,7 @@ a continuous integration pipeline which currently includes:</p>
 <li><p>Clang 11 on OSX,</p></li>
 <li><p>MSVC 2019 on Windows.</p></li>
 </ul>
-<p>In addition to the dependencies enumerated <a class="reference internal" href="#installation-deps"><span class="std std-ref">earlier</span></a>,
+<p>In addition to the C++ dependencies enumerated <a class="reference internal" href="#installation-deps"><span class="std std-ref">earlier</span></a>,
 installation from source requires also:</p>
 <ul class="simple">
 <li><p><a class="reference external" href="https://github.com/pybind/pybind11">pybind11</a> (version &gt;= 2.6),</p></li>
@@ -670,7 +676,7 @@ to contact us by opening an issue report on <a class="reference external" href="
     
       By Francesco Biscani and Dario Izzo<br/>
     
-        &copy; Copyright 2020, 2021, Francesco Biscani and Dario Izzo.<br/>
+        &copy; Copyright 2020, 2021, 2022, Francesco Biscani and Dario Izzo.<br/>
   </p>
 </footer>
 </main>
