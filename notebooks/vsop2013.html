@@ -528,16 +528,16 @@
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">heyoka</span> <span class="k">as</span> <span class="nn">hy</span>
 
 <span class="k">for</span> <span class="n">thr</span> <span class="ow">in</span> <span class="p">[</span><span class="mf">1e-7</span><span class="p">,</span> <span class="mf">1e-9</span><span class="p">,</span> <span class="mf">1e-11</span><span class="p">]:</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;String length of Mars&#39; semi-major axis solution @ </span><span class="si">{}</span><span class="s2">: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">thr</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">hy</span><span class="o">.</span><span class="n">vsop2013_elliptic</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">thresh</span> <span class="o">=</span> <span class="n">thr</span><span class="p">)))))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Size of Mars&#39; semi-major axis solution @ </span><span class="si">{}</span><span class="s2">: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">thr</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">hy</span><span class="o">.</span><span class="n">vsop2013_elliptic</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">thresh</span> <span class="o">=</span> <span class="n">thr</span><span class="p">))))</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>String length of Mars&#39; semi-major axis solution @ 1e-07: 48205
-String length of Mars&#39; semi-major axis solution @ 1e-09: 480789
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Size of Mars&#39; semi-major axis solution @ 1e-07: 4916
+Size of Mars&#39; semi-major axis solution @ 1e-09: 48574
 </pre></div>
 </div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>String length of Mars&#39; semi-major axis solution @ 1e-11: 4672741
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Size of Mars&#39; semi-major axis solution @ 1e-11: 467781
 </pre></div>
 </div>
 </div>
@@ -642,8 +642,7 @@ Mars&#39; semi-major axis solution, threshold = 6e-5, time rescaled by a factor 
     <span class="c1"># - 299 is the ID of Venus,</span>
     <span class="c1"># - 500@10 is the observer&#39;s location,</span>
     <span class="c1">#   the centre of the Sun.</span>
-    <span class="n">q</span> <span class="o">=</span> <span class="n">Horizons</span><span class="p">(</span><span class="s1">&#39;299&#39;</span><span class="p">,</span> <span class="n">id_type</span><span class="o">=</span><span class="s1">&#39;majorbody&#39;</span><span class="p">,</span> <span class="n">location</span><span class="o">=</span><span class="s1">&#39;500@10&#39;</span><span class="p">,</span>
-                 <span class="n">epochs</span><span class="o">=</span><span class="n">dates</span><span class="p">)</span>
+    <span class="n">q</span> <span class="o">=</span> <span class="n">Horizons</span><span class="p">(</span><span class="s1">&#39;299&#39;</span><span class="p">,</span> <span class="n">location</span><span class="o">=</span><span class="s1">&#39;500@10&#39;</span><span class="p">,</span> <span class="n">epochs</span><span class="o">=</span><span class="n">dates</span><span class="p">)</span>
     <span class="c1"># Convert the HORIZONS query to the ICRF</span>
     <span class="c1"># and extract the cartesian position vector.</span>
     <span class="n">tab</span> <span class="o">=</span> <span class="n">q</span><span class="o">.</span><span class="n">vectors</span><span class="p">(</span><span class="n">refplane</span><span class="o">=</span><span class="s1">&#39;earth&#39;</span><span class="p">)</span>
@@ -667,10 +666,7 @@ Mars&#39; semi-major axis solution, threshold = 6e-5, time rescaled by a factor 
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>WARNING: AstropyDeprecationWarning: ``id_type``s &#39;majorbody&#39; and &#39;id&#39; are deprecated and replaced with ``None``, which has the same functionality. [astroquery.jplhorizons.core]
-</pre></div>
-</div>
-<img alt="../_images/vsop2013_5_1.png" src="../_images/vsop2013_5_1.png" />
+<img alt="../_images/vsop2013_5_0.png" src="../_images/vsop2013_5_0.png" />
 </div>
 </div>
 <p>We can see how VSOP2013 matches up well with respect to HORIZONS, and how lower truncation levels indeed increase the precision of the VSOP2013 solution (up to an error of hundreds of meters for a threshold of <span class="math notranslate nohighlight">\(10^{-10}\)</span>).</p>
