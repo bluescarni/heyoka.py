@@ -983,6 +983,7 @@ PYBIND11_MODULE(core, m)
             return hey::vsop2013_cartesian_icrf(pl_idx, kw::time = std::move(t_expr), kw::thresh = thresh);
         },
         "pl_idx"_a, "time"_a = hey::time, "thresh"_a = 1e-9);
+    m.def("get_vsop2013_mus", &hey::get_vsop2013_mus);
 
     // Expose the continuous output function objects.
     heypy::taylor_expose_c_output(m);
