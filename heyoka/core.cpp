@@ -45,6 +45,7 @@
 #endif
 
 #include <heyoka/celmec/vsop2013.hpp>
+#include <heyoka/detail/llvm_helpers.hpp>
 #include <heyoka/exceptions.hpp>
 #include <heyoka/expression.hpp>
 #include <heyoka/llvm_state.hpp>
@@ -64,6 +65,10 @@
 #include "taylor_expose_events.hpp"
 #include "taylor_expose_integrator.hpp"
 
+namespace py = pybind11;
+namespace hey = heyoka;
+namespace heypy = heyoka_py;
+
 namespace heyoka_py::detail
 {
 
@@ -72,13 +77,157 @@ namespace
 
 std::optional<oneapi::tbb::global_control> tbb_gc;
 
+// The function type for the C++ implementations of kepE().
+template <typename T>
+using kepE_func_t = void (*)(T *, const T *, const T *);
+
+// The pointers to the scalar C++ implementations.
+template <typename T>
+kepE_func_t<T> kepE_scal_f = nullptr;
+
+// The pointers to the batch C++ implementations.
+template <typename T>
+kepE_func_t<T> kepE_batch_f = nullptr;
+
+// Scalar implementation of Python's kepE().
+template <typename T>
+T kepE_scalar_wrapper(T e, T M)
+{
+    assert(kepE_scal_f<T> != nullptr);
+
+    T out;
+    kepE_scal_f<T>(&out, &e, &M);
+    return out;
 }
 
-} // namespace heyoka_py::detail
+// Vector implementation of Python's kepE() via the batch mode C++ kepE() primitive.
+template <typename T>
+py::array_t<T> kepE_batch_wrapper(py::array_t<T> e, py::array_t<T> M)
+{
+    assert(kepE_batch_f<T> != nullptr);
 
-namespace py = pybind11;
-namespace hey = heyoka;
-namespace heypy = heyoka_py;
+    if (e.ndim() != 1) {
+        heypy::py_throw(PyExc_ValueError,
+                        fmt::format("Invalid eccentricity array passed to kepE(): "
+                                    "a one-dimensional array is expected, but the input array has {} dimensions",
+                                    e.ndim())
+                            .c_str());
+    }
+
+    const auto arr_size = e.shape(0);
+
+    if (M.ndim() != 1) {
+        heypy::py_throw(PyExc_ValueError,
+                        fmt::format("Invalid mean anomaly array passed to kepE(): "
+                                    "a one-dimensional array is expected, but the input array has {} dimensions",
+                                    M.ndim())
+                            .c_str());
+    }
+
+    if (M.shape(0) != arr_size) {
+        heypy::py_throw(PyExc_ValueError, fmt::format("Invalid arrays passed to kepE(): "
+                                                      "the eccentricity array has a size of {}, but the mean anomaly "
+                                                      "array has a size of {} (the sizes must be equal)",
+                                                      arr_size, M.shape(0))
+                                              .c_str());
+    }
+
+    // Prepare the return value.
+    py::array_t<T> retval(py::array::ShapeContainer{arr_size});
+    auto *out_ptr = retval.mutable_data();
+
+    // Temporary buffers to store the input/output of the batch-mode
+    // kepE() C++ implementation.
+    const auto simd_size = hey::recommended_simd_size<T>();
+    std::vector<T> tmp_e, tmp_M, tmp_out;
+    tmp_e.resize(boost::numeric_cast<typename std::vector<T>::size_type>(simd_size));
+    tmp_M.resize(boost::numeric_cast<typename std::vector<T>::size_type>(simd_size));
+    tmp_out.resize(boost::numeric_cast<typename std::vector<T>::size_type>(simd_size));
+
+    auto tmp_e_ptr = tmp_e.data();
+    auto tmp_M_ptr = tmp_M.data();
+    auto tmp_out_ptr = tmp_out.data();
+
+    // Signed version of the recommended simd size.
+    const auto ss_size = boost::numeric_cast<py::ssize_t>(simd_size);
+
+    // Number of simd blocks in the input arrays.
+    const auto n_simd_blocks = arr_size / ss_size;
+
+    // Unchecked access to e and M.
+    auto e_acc = e.template unchecked<1>();
+    auto M_acc = M.template unchecked<1>();
+
+    // Iterate over the simd blocks, executing the
+    // batch-mode C++ implementation of kepE().
+    for (py::ssize_t i = 0; i < n_simd_blocks; ++i) {
+        for (py::ssize_t j = 0; j < ss_size; ++j) {
+            tmp_e_ptr[j] = e_acc(i * ss_size + j);
+            tmp_M_ptr[j] = M_acc(i * ss_size + j);
+        }
+
+        kepE_batch_f<T>(out_ptr + i * ss_size, tmp_e_ptr, tmp_M_ptr);
+    }
+
+    // Handle the remainder, if present.
+    if (n_simd_blocks * ss_size != arr_size) {
+        py::ssize_t j = 0;
+        for (py::ssize_t i = n_simd_blocks * ss_size; i < arr_size; ++i, ++j) {
+            tmp_e_ptr[j] = e_acc(i);
+            tmp_M_ptr[j] = M_acc(i);
+        }
+        // Pad with zeroes.
+        for (; j < ss_size; ++j) {
+            tmp_e_ptr[j] = 0;
+            tmp_M_ptr[j] = 0;
+        }
+
+        // NOTE: the result for the remainder is written
+        // to a temporary buffer and copied into out_ptr
+        // below.
+        kepE_batch_f<T>(tmp_out_ptr, tmp_e_ptr, tmp_M_ptr);
+
+        for (py::ssize_t i = n_simd_blocks * ss_size; i < arr_size; ++i) {
+            out_ptr[i] = tmp_out_ptr[i - n_simd_blocks * ss_size];
+        }
+    }
+
+    return retval;
+}
+
+#if defined(HEYOKA_HAVE_REAL128)
+
+// Vector implementation of kepE() for real128.
+std::vector<mppp::real128> kepE_vector_f128(std::vector<mppp::real128> e, std::vector<mppp::real128> M)
+{
+    const auto arr_size = e.size();
+
+    if (M.size() != arr_size) {
+        heypy::py_throw(PyExc_ValueError, fmt::format("Invalid arrays passed to kepE(): "
+                                                      "the eccentricity array has a size of {}, but the mean anomaly "
+                                                      "array has a size of {} (the sizes must be equal)",
+                                                      arr_size, M.size())
+                                              .c_str());
+    }
+
+    std::vector<mppp::real128> ret(arr_size);
+
+    for (std::vector<mppp::real128>::size_type i = 0; i < arr_size; ++i) {
+        kepE_scal_f<mppp::real128>(&ret[i], &e[i], &M[i]);
+    }
+
+    return ret;
+}
+
+#endif
+
+// The llvm_state containing the JIT-compiled C++ implementations
+// of kepE().
+std::optional<hey::llvm_state> kepE_state;
+
+} // namespace
+
+} // namespace heyoka_py::detail
 
 #if defined(__clang__)
 
@@ -342,6 +491,59 @@ PYBIND11_MODULE(core, m)
     m.def("kepE", [](hey::expression e, long double M) { return hey::kepE(std::move(e), M); });
 #if defined(HEYOKA_HAVE_REAL128)
     m.def("kepE", [](hey::expression e, mppp::real128 M) { return hey::kepE(std::move(e), M); });
+#endif
+
+    // Setup the JIT compiled C++ implementations of kepE().
+    heypy::detail::kepE_state.emplace();
+
+    // Scalar implementations.
+    hey::detail::llvm_add_inv_kep_E_wrapper<double>(*heypy::detail::kepE_state, 1, "kepE_scal_dbl");
+#if !defined(HEYOKA_ARCH_PPC)
+    hey::detail::llvm_add_inv_kep_E_wrapper<long double>(*heypy::detail::kepE_state, 1, "kepE_scal_ldbl");
+#endif
+#if defined(HEYOKA_HAVE_REAL128)
+    hey::detail::llvm_add_inv_kep_E_wrapper<mppp::real128>(*heypy::detail::kepE_state, 1, "kepE_scal_f128");
+#endif
+
+    // Batch implementation (only for double).
+    hey::detail::llvm_add_inv_kep_E_wrapper<double>(*heypy::detail::kepE_state, hey::recommended_simd_size<double>(),
+                                                    "kepE_batch_dbl");
+
+    heypy::detail::kepE_state->optimise();
+    heypy::detail::kepE_state->compile();
+
+    // Fetch and assign the scalar implementations.
+    heypy::detail::kepE_scal_f<double> = reinterpret_cast<heypy::detail::kepE_func_t<double>>(
+        heypy::detail::kepE_state->jit_lookup("kepE_scal_dbl"));
+#if !defined(HEYOKA_ARCH_PPC)
+    heypy::detail::kepE_scal_f<long double> = reinterpret_cast<heypy::detail::kepE_func_t<long double>>(
+        heypy::detail::kepE_state->jit_lookup("kepE_scal_ldbl"));
+#endif
+#if defined(HEYOKA_HAVE_REAL128)
+    heypy::detail::kepE_scal_f<mppp::real128> = reinterpret_cast<heypy::detail::kepE_func_t<mppp::real128>>(
+        heypy::detail::kepE_state->jit_lookup("kepE_scal_f128"));
+#endif
+
+    // Fetch and assign the batch implementations.
+    heypy::detail::kepE_batch_f<double> = reinterpret_cast<heypy::detail::kepE_func_t<double>>(
+        heypy::detail::kepE_state->jit_lookup("kepE_batch_dbl"));
+
+    // Expose the Python scalar implementations.
+    m.def("kepE", &heypy::detail::kepE_scalar_wrapper<double>);
+#if !defined(HEYOKA_ARCH_PPC)
+    m.def("kepE", &heypy::detail::kepE_scalar_wrapper<long double>);
+#endif
+#if defined(HEYOKA_HAVE_REAL128)
+    m.def("kepE", &heypy::detail::kepE_scalar_wrapper<mppp::real128>);
+#endif
+
+    // Expose the vector implementations.
+    m.def("kepE", &heypy::detail::kepE_batch_wrapper<double>);
+#if !defined(HEYOKA_ARCH_PPC)
+    m.def("kepE", py::vectorize(&heypy::detail::kepE_scalar_wrapper<long double>));
+#endif
+#if defined(HEYOKA_HAVE_REAL128)
+    m.def("kepE", &heypy::detail::kepE_vector_f128);
 #endif
 
     // atan2().
@@ -1009,6 +1211,11 @@ PYBIND11_MODULE(core, m)
         std::cout << "Cleaning up the TBB control structure" << std::endl;
 #endif
         heypy::detail::tbb_gc.reset();
+
+#if !defined(NDEBUG)
+        std::cout << "Cleaning up the kepE llvm state" << std::endl;
+#endif
+        heypy::detail::kepE_state.reset();
     }));
 }
 

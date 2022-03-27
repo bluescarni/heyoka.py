@@ -2315,6 +2315,10 @@ class batch_integrator_test_case(_ut.TestCase):
 
 class kepE_test_case(_ut.TestCase):
     def runTest(self):
+        self.test_expr()
+        self.test_num()
+
+    def test_expr(self):
         from . import kepE, with_real128, diff, make_vars, sin, cos
         from .core import _ppc_arch
         import numpy as np
@@ -2340,6 +2344,79 @@ class kepE_test_case(_ut.TestCase):
         self.assertEqual(diff(kepE(mpf("1.1"), y), y), 1. /
                          (1. - mpf("1.1") * cos(kepE(mpf("1.1"), y))))
 
+    def test_num(self):
+        from . import kepE, with_real128
+        from .core import _ppc_arch
+        import numpy as np
+
+        # Double.
+        fp_t = float
+
+        e = .123
+        M = 5.
+        E = kepE(e, M)
+
+        self.assertTrue(np.allclose(np.cos(M), np.cos(E - e*np.sin(E)), rtol=np.finfo(fp_t).eps * 10, atol=np.finfo(fp_t).eps * 10))
+        self.assertTrue(np.allclose(np.sin(M), np.sin(E - e*np.sin(E)), rtol=np.finfo(fp_t).eps * 10, atol=np.finfo(fp_t).eps * 10))
+
+        e = [.123, .124, .125, .126]
+        M = [5., 6., 7., 8.]
+        E = kepE(e, M)
+
+        self.assertTrue(np.allclose(np.cos(M), np.cos(E - e*np.sin(E)), rtol=np.finfo(fp_t).eps * 10, atol=np.finfo(fp_t).eps * 10))
+        self.assertTrue(np.allclose(np.sin(M), np.sin(E - e*np.sin(E)), rtol=np.finfo(fp_t).eps * 10, atol=np.finfo(fp_t).eps * 10))
+
+        e = [.123, .124, .125, .126, .127]
+        M = [5., 6., 7., 8., 9.]
+        E = kepE(e, M)
+
+        self.assertTrue(np.allclose(np.cos(M), np.cos(E - e*np.sin(E)), rtol=np.finfo(fp_t).eps * 10, atol=np.finfo(fp_t).eps * 10))
+        self.assertTrue(np.allclose(np.sin(M), np.sin(E - e*np.sin(E)), rtol=np.finfo(fp_t).eps * 10, atol=np.finfo(fp_t).eps * 10))
+
+        if not _ppc_arch:
+            fp_t = np.longdouble
+
+            e = fp_t(.123)
+            M = fp_t(5.)
+            E = kepE(e, M)
+
+            self.assertTrue(np.allclose(np.cos(M), np.cos(E - e*np.sin(E)), rtol=np.finfo(fp_t).eps * 10, atol=np.finfo(fp_t).eps * 10))
+            self.assertTrue(np.allclose(np.sin(M), np.sin(E - e*np.sin(E)), rtol=np.finfo(fp_t).eps * 10, atol=np.finfo(fp_t).eps * 10))
+
+            e = np.array([.123, .124, .125, .126], dtype=fp_t)
+            M = np.array([5., 6., 7., 8.], dtype=fp_t)
+            E = kepE(e, M)
+
+            self.assertTrue(np.allclose(np.cos(M), np.cos(E - e*np.sin(E)), rtol=np.finfo(fp_t).eps * 10, atol=np.finfo(fp_t).eps * 10))
+            self.assertTrue(np.allclose(np.sin(M), np.sin(E - e*np.sin(E)), rtol=np.finfo(fp_t).eps * 10, atol=np.finfo(fp_t).eps * 10))
+
+            e = np.array([.123, .124, .125, .126, .127], dtype=fp_t)
+            M = np.array([5., 6., 7., 8., 9.], dtype=fp_t)
+            E = kepE(e, M)
+
+            self.assertTrue(np.allclose(np.cos(M), np.cos(E - e*np.sin(E)), rtol=np.finfo(fp_t).eps * 10, atol=np.finfo(fp_t).eps * 10))
+            self.assertTrue(np.allclose(np.sin(M), np.sin(E - e*np.sin(E)), rtol=np.finfo(fp_t).eps * 10, atol=np.finfo(fp_t).eps * 10))
+
+        if not with_real128:
+            return
+
+        from mpmath import mpf, sin, cos
+
+        fp_t = mpf
+
+        e = fp_t(.123)
+        M = fp_t(5.)
+        E = kepE(e, M)
+
+        self.assertTrue(abs(cos(M) - cos(E-e*sin(E))) < 1e-32)
+        self.assertTrue(abs(sin(M) - sin(E-e*sin(E))) < 1e-32)
+
+        e = [.123, .124, .125, .126, .127]
+        M = [5., 6., 7., 8., 9.]
+        E = kepE([mpf(_) for _ in e], [mpf(_) for _ in M])
+
+        self.assertTrue(all(abs(cos(M) - cos(E-e*sin(E))) < 1e-32 for e,M,E in zip(e,M,E)))
+        self.assertTrue(all(abs(sin(M) - sin(E-e*sin(E))) < 1e-32 for e,M,E in zip(e,M,E)))
 
 class sympy_test_case(_ut.TestCase):
     def runTest(self):
