@@ -9,6 +9,8 @@ Changelog
 New
 ~~~
 
+- Expose numerical solvers for Kepler's elliptic equation
+  (`#91 <https://github.com/bluescarni/heyoka.py/pull/91>`__).
 - Implement parallel mode
   for the automatic parallelisation of an individual integration step
   (`#88 <https://github.com/bluescarni/heyoka.py/pull/88>`__).
