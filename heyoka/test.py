@@ -2373,6 +2373,21 @@ class kepE_test_case(_ut.TestCase):
         self.assertTrue(np.allclose(np.cos(M), np.cos(E - e*np.sin(E)), rtol=np.finfo(fp_t).eps * 10, atol=np.finfo(fp_t).eps * 10))
         self.assertTrue(np.allclose(np.sin(M), np.sin(E - e*np.sin(E)), rtol=np.finfo(fp_t).eps * 10, atol=np.finfo(fp_t).eps * 10))
 
+        with self.assertRaises(ValueError) as cm:
+            kepE([[1.]], [[2.]])
+        self.assertTrue(
+            "Invalid eccentricity array passed to kepE(): a one-dimensional array is expected, but the input array has 2 dimensions" in str(cm.exception))
+
+        with self.assertRaises(ValueError) as cm:
+            kepE([1.], [[2]])
+        self.assertTrue(
+            "Invalid mean anomaly array passed to kepE(): a one-dimensional array is expected, but the input array has 2 dimensions" in str(cm.exception))
+
+        with self.assertRaises(ValueError) as cm:
+            kepE([1.], [2., 3.])
+        self.assertTrue(
+            "Invalid arrays passed to kepE(): the eccentricity array has a size of 1, but the mean anomaly array has a size of 2 (the sizes must be equal)" in str(cm.exception))
+
         if not _ppc_arch:
             fp_t = np.longdouble
 
@@ -2417,6 +2432,11 @@ class kepE_test_case(_ut.TestCase):
 
         self.assertTrue(all(abs(cos(M) - cos(E-e*sin(E))) < 1e-32 for e,M,E in zip(e,M,E)))
         self.assertTrue(all(abs(sin(M) - sin(E-e*sin(E))) < 1e-32 for e,M,E in zip(e,M,E)))
+
+        with self.assertRaises(ValueError) as cm:
+            kepE([mpf(1.)], [mpf(2.), mpf(3.)])
+        self.assertTrue(
+            "Invalid arrays passed to kepE(): the eccentricity array has a size of 1, but the mean anomaly array has a size of 2 (the sizes must be equal)" in str(cm.exception))
 
 class sympy_test_case(_ut.TestCase):
     def runTest(self):
