@@ -599,6 +599,28 @@ PYBIND11_MODULE(core, m)
         "n"_a, "Gconst"_a = 1., "masses"_a = py::none{});
 
     m.def(
+        "make_np1body_sys",
+        [](std::uint32_t n, py::object Gconst, std::optional<py::iterable> masses) {
+            const auto G = heypy::to_number(Gconst);
+
+            std::vector<hey::number> m_vec;
+            if (masses) {
+                for (auto ms : *masses) {
+                    m_vec.push_back(heypy::to_number(ms));
+                }
+            } else {
+                // If masses are not provided, all masses are 1.
+                // NOTE: instead of computing n+1 here, do it in two
+                // steps to avoid potential overflow issues.
+                m_vec.resize(static_cast<decltype(m_vec.size())>(n), hey::number{1.});
+                m_vec.emplace_back(1.);
+            }
+
+            return hey::make_np1body_sys(n, kw::Gconst = G, kw::masses = m_vec);
+        },
+        "n"_a, "Gconst"_a = 1., "masses"_a = py::none{});
+
+    m.def(
         "make_nbody_par_sys",
         [](std::uint32_t n, py::object Gconst, std::optional<std::uint32_t> n_massive) {
             const auto G = heypy::to_number(Gconst);
