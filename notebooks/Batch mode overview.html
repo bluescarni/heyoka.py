@@ -4,11 +4,13 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>Batch mode &#8212; heyoka.py 0.18.0 documentation</title>
     
-  <link href="../_static/css/theme.css" rel="stylesheet">
-  <link href="../_static/css/index.ff1ffe594081f20da1ef19478df9384b.css" rel="stylesheet">
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
 
     
   <link rel="stylesheet"
@@ -18,24 +20,21 @@
   <link rel="preload" as="font" type="font/woff2" crossorigin
     href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
 
-    
-      
-
-    
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/sphinx-book-theme.css?digest=84ace793992934648b4de8eed757e5a2" />
+    <link rel="stylesheet" href="../_static/styles/sphinx-book-theme.css?digest=62ba249389abaaa9ffc34bf36a076bdc1d65ee18" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css" />
     <link rel="stylesheet" type="text/css" href="../_static/mystnb.css" />
     
-  <link rel="preload" as="script" href="../_static/js/index.be7d3bbb2ef33a8344ce.js">
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf">
 
     <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
     <script src="../_static/jquery.js"></script>
     <script src="../_static/underscore.js"></script>
     <script src="../_static/doctools.js"></script>
     <script src="../_static/togglebutton.js"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?digest=f31d14ad54b65d19161ba51d4ffff3a77ae00456"></script>
     <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
-    <script src="../_static/sphinx-book-theme.9d8b4a8b9bb19db25eeaddc40d639ba2.js"></script>
     <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -49,7 +48,21 @@
     <!-- Google Analytics -->
     
   </head>
-  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="60">
+<!-- Checkboxes to toggle the left sidebar -->
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation" aria-label="Toggle navigation sidebar">
+<label class="overlay overlay-navbar" for="__navigation">
+    <div class="visually-hidden">Toggle navigation sidebar</div>
+</label>
+<!-- Checkboxes to toggle the in-page toc -->
+<input type="checkbox" class="sidebar-toggle" name="__page-toc" id="__page-toc" aria-label="Toggle in-page Table of Contents">
+<label class="overlay overlay-pagetoc" for="__page-toc">
+    <div class="visually-hidden">Toggle in-page Table of Contents</div>
+</label>
+<!-- Headers at the top -->
+<div class="announcement header-item noprint"></div>
+<div class="header header-item noprint"></div>
+
     
     <div class="container-fluid" id="banner"></div>
 
@@ -58,14 +71,10 @@
     <div class="container-xl">
       <div class="row">
           
-<!-- Checkboxes to toggle the left sidebar -->
-<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation" aria-label="Toggle navigation sidebar">
-<label class="overlay" for="__navigation">
-    <div class="visually-hidden">Toggle navigation sidebar</div>
-</label>
-<div class="col-12 col-md-3 bd-sidebar site-navigation " id="site-navigation">
-    
-        <div class="navbar-brand-box">
+<!-- Sidebar -->
+<div class="bd-sidebar noprint" id="site-navigation">
+    <div class="bd-sidebar__content">
+        <div class="bd-sidebar__top"><div class="navbar-brand-box">
     <a class="navbar-brand text-wrap" href="../index.html">
       
         <!-- `logo` is deprecated in Sphinx 4.0, so remove this when we stop supporting 3 -->
@@ -321,108 +330,209 @@
 </ul>
 
     </div>
-</nav> <!-- To handle the deprecated key -->
-
-<div class="navbar_extra_footer">
-  Theme by the <a href="https://ebp.jupyterbook.org">Executable Book Project</a>
-</div>
-
-</div>
-
-
-          
-
-
-          
-<!-- This is an invisible pixel that we watch to see if we've scrolled. -->
-<div class="sbt-scroll-pixel-helper"></div>
-<main class="col py-md-3 pl-md-4 bd-content overflow-auto" role="main">
-    
-    <div class="topbar container-xl fixed-top">
-    <div class="topbar-contents row">
-        <div class="col-12 col-md-3 bd-topbar-whitespace site-navigation show"></div>
-        <div class="col pl-md-4 topbar-main">
-            <div class="topbar-left">
-                
-                <label class="nav-toggle-button" for="__navigation">
-                    <div class="visually-hidden">Toggle navigation</div>
-                    <i class="fas fa-bars"></i>
-                </label>
-                
+</nav></div>
+        <div class="bd-sidebar__bottom">
+             <!-- To handle the deprecated key -->
+            
+            <div class="navbar_extra_footer">
+            Theme by the <a href="https://ebp.jupyterbook.org">Executable Book Project</a>
             </div>
             
-<div class="dropdown-buttons-trigger">
-    <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn" aria-label="Download this page"><i
-            class="fas fa-download"></i></button>
-
-    <div class="dropdown-buttons">
-        <!-- ipynb file if we had a myst markdown file -->
-        
-        <!-- Download raw file -->
-        <a class="dropdown-buttons" href="../_sources/notebooks/Batch mode overview.ipynb.txt"><button type="button"
-                class="btn btn-secondary topbarbtn" title="Download source file" data-toggle="tooltip"
-                data-placement="left">.ipynb</button></a>
-        <!-- Download PDF via print -->
-        <button type="button" id="download-print" class="btn btn-secondary topbarbtn" title="Print to PDF"
-                onclick="printPdf(this)" data-toggle="tooltip" data-placement="left">.pdf</button>
-    </div>
-</div>
-
-            <!-- Source interaction buttons -->
-
-<div class="dropdown-buttons-trigger">
-    <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn"
-        aria-label="Connect with source repository"><i class="fab fa-github"></i></button>
-    <div class="dropdown-buttons sourcebuttons">
-        <a class="repository-button"
-            href="https://github.com/bluescarni/heyoka.py"><button type="button" class="btn btn-secondary topbarbtn"
-                data-toggle="tooltip" data-placement="left" title="Source repository"><i
-                    class="fab fa-github"></i>repository</button></a>
-        <a class="issues-button"
-            href="https://github.com/bluescarni/heyoka.py/issues/new?title=Issue%20on%20page%20%2Fnotebooks/Batch mode overview.html&body=Your%20issue%20content%20here."><button
-                type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip" data-placement="left"
-                title="Open an issue"><i class="fas fa-lightbulb"></i>open issue</button></a>
-        
-    </div>
-</div>
-
-            <!-- Full screen (wrap in <a> to have style consistency -->
-
-<a class="full-screen-button"><button type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip"
-        data-placement="bottom" onclick="toggleFullScreen()" aria-label="Fullscreen mode"
-        title="Fullscreen mode"><i
-            class="fas fa-expand"></i></button></a>
-
-            <!-- Launch buttons -->
-
-<div class="dropdown-buttons-trigger">
-    <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn"
-        aria-label="Launch interactive content"><i class="fas fa-rocket"></i></button>
-    <div class="dropdown-buttons">
-        
-        <a class="binder-button" href="https://mybinder.org/v2/gh/bluescarni/heyoka.py/main?urlpath=lab/tree/doc/notebooks/Batch mode overview.ipynb"><button type="button"
-                class="btn btn-secondary topbarbtn" title="Launch Binder" data-toggle="tooltip"
-                data-placement="left"><img class="binder-button-logo"
-                    src="../_static/images/logo_binder.svg"
-                    alt="Interact on binder">Binder</button></a>
-        
-        
-        
-        
-        
-    </div>
-</div>
-
         </div>
+    </div>
+    <div id="rtd-footer-container"></div>
+</div>
 
-        <!-- Table of contents -->
-        <div class="d-none d-md-block col-md-2 bd-toc show noprint">
-            
-            <div class="tocsection onthispage pt-5 pb-3">
-                <i class="fas fa-list"></i> Contents
-            </div>
-            <nav id="bd-toc-nav" aria-label="Page">
-                <ul class="visible nav section-nav flex-column">
+
+          
+
+
+          
+<!-- A tiny helper pixel to detect if we've scrolled -->
+<div class="sbt-scroll-pixel-helper"></div>
+<!-- Main content -->
+<div class="col py-0 content-container">
+    
+    <div class="header-article row sticky-top noprint">
+        
+
+
+
+<div class="col py-1 d-flex header-article-main">
+    <div class="header-article__left">
+        
+        <label for="__navigation"
+  class="headerbtn"
+  data-toggle="tooltip"
+data-placement="right"
+title="Toggle navigation"
+>
+  
+
+<span class="headerbtn__icon-container">
+  <i class="fas fa-bars"></i>
+  </span>
+
+</label>
+
+        
+    </div>
+    <div class="header-article__right">
+<div class="menu-dropdown menu-dropdown-launch-buttons">
+  <button class="headerbtn menu-dropdown__trigger"
+      aria-label="Launch interactive content">
+      <i class="fas fa-rocket"></i>
+  </button>
+  <div class="menu-dropdown__content">
+    <ul>
+      <li>
+        <a href="https://mybinder.org/v2/gh/bluescarni/heyoka.py/main?urlpath=lab/tree/doc/notebooks/Batch mode overview.ipynb"
+   class="headerbtn"
+   data-toggle="tooltip"
+data-placement="left"
+title="Launch on Binder"
+>
+  
+
+<span class="headerbtn__icon-container">
+  
+    <img src="../_static/images/logo_binder.svg">
+  </span>
+<span class="headerbtn__text-container">Binder</span>
+</a>
+
+      </li>
+      
+    </ul>
+  </div>
+</div>
+
+<button onclick="toggleFullScreen()"
+  class="headerbtn"
+  data-toggle="tooltip"
+data-placement="bottom"
+title="Fullscreen mode"
+>
+  
+
+<span class="headerbtn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+<div class="menu-dropdown menu-dropdown-repository-buttons">
+  <button class="headerbtn menu-dropdown__trigger"
+      aria-label="Source repositories">
+      <i class="fab fa-github"></i>
+  </button>
+  <div class="menu-dropdown__content">
+    <ul>
+      <li>
+        <a href="https://github.com/bluescarni/heyoka.py"
+   class="headerbtn"
+   data-toggle="tooltip"
+data-placement="left"
+title="Source repository"
+>
+  
+
+<span class="headerbtn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="headerbtn__text-container">repository</span>
+</a>
+
+      </li>
+      
+      <li>
+        <a href="https://github.com/bluescarni/heyoka.py/issues/new?title=Issue%20on%20page%20%2Fnotebooks/Batch mode overview.html&body=Your%20issue%20content%20here."
+   class="headerbtn"
+   data-toggle="tooltip"
+data-placement="left"
+title="Open an issue"
+>
+  
+
+<span class="headerbtn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="headerbtn__text-container">open issue</span>
+</a>
+
+      </li>
+      
+    </ul>
+  </div>
+</div>
+
+<div class="menu-dropdown menu-dropdown-download-buttons">
+  <button class="headerbtn menu-dropdown__trigger"
+      aria-label="Download this page">
+      <i class="fas fa-download"></i>
+  </button>
+  <div class="menu-dropdown__content">
+    <ul>
+      <li>
+        <a href="../_sources/notebooks/Batch mode overview.ipynb.txt"
+   class="headerbtn"
+   data-toggle="tooltip"
+data-placement="left"
+title="Download source file"
+>
+  
+
+<span class="headerbtn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="headerbtn__text-container">.ipynb</span>
+</a>
+
+      </li>
+      
+      <li>
+        
+<button onclick="printPdf(this)"
+  class="headerbtn"
+  data-toggle="tooltip"
+data-placement="left"
+title="Print to PDF"
+>
+  
+
+<span class="headerbtn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="headerbtn__text-container">.pdf</span>
+</button>
+
+      </li>
+      
+    </ul>
+  </div>
+</div>
+<label for="__page-toc"
+  class="headerbtn headerbtn-page-toc"
+  
+>
+  
+
+<span class="headerbtn__icon-container">
+  <i class="fas fa-list"></i>
+  </span>
+
+</label>
+
+    </div>
+</div>
+
+<!-- Table of contents -->
+<div class="col-md-3 bd-toc show noprint">
+    <div class="tocsection onthispage pt-5 pb-3">
+        <i class="fas fa-list"></i> Contents
+    </div>
+    <nav id="bd-toc-nav" aria-label="Page">
+        <ul class="visible nav section-nav flex-column">
  <li class="toc-h2 nav-item toc-entry">
   <a class="reference internal nav-link" href="#the-adaptive-batch-integrator">
    The adaptive batch integrator
@@ -460,12 +570,11 @@
  </li>
 </ul>
 
-            </nav>
-        </div>
-    </div>
+    </nav>
 </div>
-    <div id="main-content" class="row">
-        <div class="col-12 col-md-9 pl-md-3 pr-md-0">
+    </div>
+    <div class="article row">
+        <div class="col pl-md-3 pl-lg-5 content-container">
             <!-- Table of contents that is only displayed when printing the page -->
             <div id="jb-print-docs-body" class="onlyprint">
                 <h1>Batch mode</h1>
@@ -519,11 +628,12 @@
                     </div>
                 </div>
             </div>
-            
+            <main id="main-content" role="main">
+                
               <div>
                 
-  <div class="tex2jax_ignore mathjax_ignore section" id="batch-mode">
-<h1>Batch mode<a class="headerlink" href="#batch-mode" title="Permalink to this headline">¶</a></h1>
+  <section class="tex2jax_ignore mathjax_ignore" id="batch-mode">
+<h1>Batch mode<a class="headerlink" href="#batch-mode" title="Permalink to this headline">#</a></h1>
 <p>heyoka.py’s API supports a mode of operation called <em>batch mode</em>.
 In batch mode, all the scalar quantities appearing in a system of ODEs
 (i.e., state variables, time coordinate, parameters, etc.)
@@ -565,8 +675,8 @@ SIMD width for the CPU currently in use:</p>
 </div>
 </div>
 </div>
-<div class="section" id="the-adaptive-batch-integrator">
-<h2>The adaptive batch integrator<a class="headerlink" href="#the-adaptive-batch-integrator" title="Permalink to this headline">¶</a></h2>
+<section id="the-adaptive-batch-integrator">
+<h2>The adaptive batch integrator<a class="headerlink" href="#the-adaptive-batch-integrator" title="Permalink to this headline">#</a></h2>
 <p>The <code class="docutils literal notranslate"><span class="pre">taylor_adaptive_batch</span></code> class is the batch mode counterpart of the adaptive
 (scalar) integrator <a class="reference internal" href="The%20adaptive%20integrator.html"><span class="doc std std-doc">described earlier</span></a>. Although at a high-level
 the API of <code class="docutils literal notranslate"><span class="pre">taylor_adaptive_batch</span></code> is quite similar to the API of
@@ -654,9 +764,9 @@ all initialised to zero:</p>
 </div>
 </div>
 <p>Note that, contrary to the scalar integrator, in the batch integrator it is not possible to write directly into the array of time coordinates. The <code class="docutils literal notranslate"><span class="pre">set_time()</span></code> method must be used instead.</p>
-</div>
-<div class="section" id="step-by-step-integration">
-<h2>Step-by-step integration<a class="headerlink" href="#step-by-step-integration" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="step-by-step-integration">
+<h2>Step-by-step integration<a class="headerlink" href="#step-by-step-integration" title="Permalink to this headline">#</a></h2>
 <p>We are now ready to start integrating. Like <code class="docutils literal notranslate"><span class="pre">taylor_adaptive</span></code>, <code class="docutils literal notranslate"><span class="pre">taylor_adaptive_batch</span></code>
 provides <code class="docutils literal notranslate"><span class="pre">step()</span></code> functions for integrating forward or backward in time step-by-step.
 One important difference is that, in order to avoid costly memory allocations,
@@ -734,9 +844,9 @@ Time:
 </div>
 </div>
 </div>
-</div>
-<div class="section" id="time-limited-propagation">
-<h2>Time-limited propagation<a class="headerlink" href="#time-limited-propagation" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="time-limited-propagation">
+<h2>Time-limited propagation<a class="headerlink" href="#time-limited-propagation" title="Permalink to this headline">#</a></h2>
 <p>The <code class="docutils literal notranslate"><span class="pre">propagate_*()</span></code> functions are also available for the
 batch integrator. Similarly to the <code class="docutils literal notranslate"><span class="pre">step()</span></code> functions, the outcomes of the <code class="docutils literal notranslate"><span class="pre">propagate_*()</span></code>
 functions are stored in internal vectors of tuples, with the tuple elements representing:</p>
@@ -858,9 +968,9 @@ events triggering). In scalar mode, by contrast, in case of early termination
 <code class="docutils literal notranslate"><span class="pre">propagate_grid()</span></code> returns only the output values for the grid points that
 could be computed before the early exit. In batch mode, the values for the grid
 points that could not be reached due to early exit are filled with NaNs.</p>
-</div>
-<div class="section" id="dense-output">
-<h2>Dense output<a class="headerlink" href="#dense-output" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="dense-output">
+<h2>Dense output<a class="headerlink" href="#dense-output" title="Permalink to this headline">#</a></h2>
 <p>The batch integrator also supports <a class="reference internal" href="Dense%20output.html"><span class="doc std std-doc">dense output</span></a>. Like for <code class="docutils literal notranslate"><span class="pre">taylor_adaptive</span></code>,
 enabling dense output is a two-step process. First we invoke one of the <code class="docutils literal notranslate"><span class="pre">step()</span></code> (or <code class="docutils literal notranslate"><span class="pre">propagate_*()</span></code>) functions
 with the optional flag <code class="docutils literal notranslate"><span class="pre">write_tc</span></code> set to <code class="docutils literal notranslate"><span class="pre">True</span></code>. This will write the Taylor coefficients that were
@@ -1002,9 +1112,9 @@ at different time coordinates:</p>
 </div>
 </div>
 </div>
-</div>
-<div class="section" id="continuous-output">
-<h2>Continuous output<a class="headerlink" href="#continuous-output" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="continuous-output">
+<h2>Continuous output<a class="headerlink" href="#continuous-output" title="Permalink to this headline">#</a></h2>
 <p>Starting with heyoka.py 0.16, the batch integrator also supports <a class="reference internal" href="Dense%20output.html"><span class="doc std std-doc">continuous output</span></a>. The batch mode continuous output API is similar to the scalar mode API. Specifically, if the <code class="docutils literal notranslate"><span class="pre">propagate_for/until()</span></code> methods of a batch integrator are invoked with the <code class="docutils literal notranslate"><span class="pre">c_output</span> <span class="pre">=</span> <span class="pre">True</span></code> keyword option, then they will return a function object which can be used to compute the result of the numerical integration at any point of the integration interval:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -1069,9 +1179,9 @@ at different time coordinates:</p>
 </div>
 </div>
 </div>
-</div>
-<div class="section" id="event-detection">
-<h2>Event detection<a class="headerlink" href="#event-detection" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="event-detection">
+<h2>Event detection<a class="headerlink" href="#event-detection" title="Permalink to this headline">#</a></h2>
 <p>Starting with heyoka.py 0.16, the batch integrator also supports <a class="reference internal" href="Event%20detection.html"><span class="doc std std-doc">event detection</span></a>. The batch mode event detection API is similar to the scalar mode API, with the following differences:</p>
 <ul class="simple">
 <li><p>the event classes in batch mode are called <code class="docutils literal notranslate"><span class="pre">nt_event_batch</span></code> and <code class="docutils literal notranslate"><span class="pre">t_event_batch</span></code>
@@ -1294,9 +1404,9 @@ v = 0,
 </div>
 </div>
 <p>We can see how setting slightly different drop heights for each batch element soon leads to qualitatively-different trajectories.</p>
-</div>
-<div class="section" id="ensemble-propagations">
-<h2>Ensemble propagations<a class="headerlink" href="#ensemble-propagations" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="ensemble-propagations">
+<h2>Ensemble propagations<a class="headerlink" href="#ensemble-propagations" title="Permalink to this headline">#</a></h2>
 <p><a class="reference internal" href="ensemble_mode.html"><span class="doc std std-doc">Ensemble propagations</span></a> are also available in batch mode. The API is identical
 to scalar mode ensemble propagations. Specifically, the following functions are available:</p>
 <ul class="simple">
@@ -1401,15 +1511,17 @@ We begin with the definition of the dynamical equations and of the template inte
 <img alt="../_images/Batch mode overview_58_0.png" src="../_images/Batch mode overview_58_0.png" />
 </div>
 </div>
-</div>
-</div>
+</section>
+</section>
 
 
               </div>
               
-            
-                <!-- Previous / next buttons -->
-<div class='prev-next-area'> 
+            </main>
+            <footer class="footer-article noprint">
+                
+    <!-- Previous / next buttons -->
+<div class='prev-next-area'>
     <a class='left-prev' id="prev-link" href="pickling.html" title="previous page">
         <i class="fas fa-angle-left"></i>
         <div class="prev-next-info">
@@ -1425,24 +1537,28 @@ We begin with the definition of the dynamical equations and of the template inte
     <i class="fas fa-angle-right"></i>
     </a>
 </div>
-            
+            </footer>
         </div>
     </div>
-    <footer class="footer">
-  <p>
+    <div class="footer-content row">
+        <footer class="col footer"><p>
+  
+    By Francesco Biscani and Dario Izzo<br/>
+  
+      &copy; Copyright 2020, 2021, 2022, Francesco Biscani and Dario Izzo.<br/>
+</p>
+        </footer>
+    </div>
     
-      By Francesco Biscani and Dario Izzo<br/>
-    
-        &copy; Copyright 2020, 2021, 2022, Francesco Biscani and Dario Izzo.<br/>
-  </p>
-</footer>
-</main>
+</div>
 
 
       </div>
     </div>
   
-  <script src="../_static/js/index.be7d3bbb2ef33a8344ce.js"></script>
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf"></script>
+
 
   </body>
 </html>
