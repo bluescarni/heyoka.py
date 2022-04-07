@@ -479,18 +479,18 @@ PYBIND11_MODULE(core, m)
     m.def("powi", &hey::powi);
 
     // kepE().
-    m.def("kepE", [](hey::expression e, hey::expression M) { return hey::kepE(std::move(e), std::move(M)); });
+    m.def("kepE", [](hey::expression e, hey::expression M) { return hey::kepE(std::move(e), std::move(M)); }, "e"_a, "M"_a);
 
-    m.def("kepE", [](double e, hey::expression M) { return hey::kepE(e, std::move(M)); });
-    m.def("kepE", [](long double e, hey::expression M) { return hey::kepE(e, std::move(M)); });
+    m.def("kepE", [](double e, hey::expression M) { return hey::kepE(e, std::move(M)); }, "e"_a, "M"_a);
+    m.def("kepE", [](long double e, hey::expression M) { return hey::kepE(e, std::move(M)); }, "e"_a, "M"_a);
 #if defined(HEYOKA_HAVE_REAL128)
-    m.def("kepE", [](mppp::real128 e, hey::expression M) { return hey::kepE(e, std::move(M)); });
+    m.def("kepE", [](mppp::real128 e, hey::expression M) { return hey::kepE(e, std::move(M)); }, "e"_a, "M"_a);
 #endif
 
-    m.def("kepE", [](hey::expression e, double M) { return hey::kepE(std::move(e), M); });
-    m.def("kepE", [](hey::expression e, long double M) { return hey::kepE(std::move(e), M); });
+    m.def("kepE", [](hey::expression e, double M) { return hey::kepE(std::move(e), M); }, "e"_a, "M"_a);
+    m.def("kepE", [](hey::expression e, long double M) { return hey::kepE(std::move(e), M); }, "e"_a, "M"_a);
 #if defined(HEYOKA_HAVE_REAL128)
-    m.def("kepE", [](hey::expression e, mppp::real128 M) { return hey::kepE(std::move(e), M); });
+    m.def("kepE", [](hey::expression e, mppp::real128 M) { return hey::kepE(std::move(e), M); }, "e"_a, "M"_a);
 #endif
 
     // Setup the JIT compiled C++ implementations of kepE().
@@ -529,21 +529,21 @@ PYBIND11_MODULE(core, m)
         heypy::detail::kepE_state->jit_lookup("kepE_batch_dbl"));
 
     // Expose the Python scalar implementations.
-    m.def("kepE", &heypy::detail::kepE_scalar_wrapper<double>);
+    m.def("kepE", &heypy::detail::kepE_scalar_wrapper<double>, "e"_a, "M"_a);
 #if !defined(HEYOKA_ARCH_PPC)
-    m.def("kepE", &heypy::detail::kepE_scalar_wrapper<long double>);
+    m.def("kepE", &heypy::detail::kepE_scalar_wrapper<long double>, "e"_a, "M"_a);
 #endif
 #if defined(HEYOKA_HAVE_REAL128)
-    m.def("kepE", &heypy::detail::kepE_scalar_wrapper<mppp::real128>);
+    m.def("kepE", &heypy::detail::kepE_scalar_wrapper<mppp::real128>, "e"_a, "M"_a);
 #endif
 
     // Expose the vector implementations.
-    m.def("kepE", &heypy::detail::kepE_batch_wrapper<double>);
+    m.def("kepE", &heypy::detail::kepE_batch_wrapper<double>, "e"_a, "M"_a);
 #if !defined(HEYOKA_ARCH_PPC)
-    m.def("kepE", py::vectorize(&heypy::detail::kepE_scalar_wrapper<long double>));
+    m.def("kepE", py::vectorize(&heypy::detail::kepE_scalar_wrapper<long double>), "e"_a, "M"_a);
 #endif
 #if defined(HEYOKA_HAVE_REAL128)
-    m.def("kepE", &heypy::detail::kepE_vector_f128);
+    m.def("kepE", &heypy::detail::kepE_vector_f128, "e"_a, "M"_a);
 #endif
 
     // atan2().
