@@ -9,6 +9,8 @@ Changelog
 New
 ~~~
 
+- Add a function to build (N+1)-body problems
+  (`#92 <https://github.com/bluescarni/heyoka.py/pull/92>`__).
 - Expose numerical solvers for Kepler's elliptic equation
   (`#91 <https://github.com/bluescarni/heyoka.py/pull/91>`__).
 - Implement parallel mode
