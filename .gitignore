@@ -1,5 +1,6 @@
-# vscode.
+# Editor bits.
 .vscode/
+.cache/
 
 # Build dirs.
 build*
