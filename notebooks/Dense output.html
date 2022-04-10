@@ -628,6 +628,12 @@ support for dense output comes at essentially no extra
 cost. Additionally, because the dense output is computed via the
 Taylor series of the solution of the ODE system, its accuracy
 is guaranteed to respect the error tolerance set in the integrator.</p>
+<p>Dense output can be used either from a low-level API, which gives direct access to
+the coefficients of the Taylor polynomials of the solution within a timestep,
+or from a higher-level API, which facilitates the common use case of using the coefficients
+of the Taylor polynomials to compute the continuous extension of the solution.
+If you are interested only in the latter, you can skip the next sections and jump
+directly to the continuous output section.</p>
 <p>In order to illustrate how to use dense output in heyoka.py,
 we will keep things simple and consider a simple harmonic oscillator:</p>
 <div class="math notranslate nohighlight">
