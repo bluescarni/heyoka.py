@@ -30,6 +30,7 @@ Celestial mechanics and astrodynamics
   :maxdepth: 1
 
   notebooks/The restricted three-body problem
+  notebooks/Periodic orbits in the CR3BP
   notebooks/Long term stability of Trappist-1
   notebooks/Outer Solar System
   notebooks/Box control for Formation Flying Satellites
