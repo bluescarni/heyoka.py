@@ -31,6 +31,7 @@ Celestial mechanics and astrodynamics
 
   notebooks/The restricted three-body problem
   notebooks/Periodic orbits in the CR3BP
+  notebooks/Pseudo arc-length continuation in the CR3BP
   notebooks/Long term stability of Trappist-1
   notebooks/Outer Solar System
   notebooks/Box control for Formation Flying Satellites
