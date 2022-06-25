@@ -206,7 +206,7 @@ void expose_taylor_add_jet_impl(py::module &m, const char *name)
 
             // Add the jet function.
             using jptr_t = void (*)(T *, const T *, const T *);
-            jptr_t jptr;
+            jptr_t jptr = nullptr;
             hey::llvm_state s;
 
             {
