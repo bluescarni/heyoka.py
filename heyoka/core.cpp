@@ -55,6 +55,7 @@
 #include <heyoka/number.hpp>
 #include <heyoka/taylor.hpp>
 
+#include "cfunc.hpp"
 #include "common_utils.hpp"
 #include "logging.hpp"
 #include "long_double_caster.hpp"
@@ -726,6 +727,18 @@ PYBIND11_MODULE(core, m)
 
     if (heypy::mpmath_available()) {
         heypy::expose_taylor_add_jet_f128(m);
+    }
+
+#endif
+
+    // Compiled functions.
+    heypy::expose_add_cfunc_dbl(m);
+    heypy::expose_add_cfunc_ldbl(m);
+
+#if defined(HEYOKA_HAVE_REAL128)
+
+    if (heypy::mpmath_available()) {
+        heypy::expose_add_cfunc_f128(m);
     }
 
 #endif

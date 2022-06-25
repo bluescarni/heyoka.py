@@ -23,6 +23,7 @@ Python3_add_library(core MODULE WITH_SOABI
     common_utils.cpp
     logging.cpp
     setup_sympy.cpp
+    cfunc.cpp
 )
 
 target_link_libraries(core PRIVATE heyoka::heyoka fmt::fmt Boost::boost Boost::serialization TBB::tbb)
