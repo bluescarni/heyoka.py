@@ -144,9 +144,9 @@ py::array_t<T> kepE_batch_wrapper(py::array_t<T> e, py::array_t<T> M)
     tmp_M.resize(boost::numeric_cast<typename std::vector<T>::size_type>(simd_size));
     tmp_out.resize(boost::numeric_cast<typename std::vector<T>::size_type>(simd_size));
 
-    auto tmp_e_ptr = tmp_e.data();
-    auto tmp_M_ptr = tmp_M.data();
-    auto tmp_out_ptr = tmp_out.data();
+    const auto tmp_e_ptr = tmp_e.data();
+    const auto tmp_M_ptr = tmp_M.data();
+    const auto tmp_out_ptr = tmp_out.data();
 
     // Signed version of the recommended simd size.
     const auto ss_size = boost::numeric_cast<py::ssize_t>(simd_size);
@@ -479,18 +479,26 @@ PYBIND11_MODULE(core, m)
     m.def("powi", &hey::powi);
 
     // kepE().
-    m.def("kepE", [](hey::expression e, hey::expression M) { return hey::kepE(std::move(e), std::move(M)); }, "e"_a, "M"_a);
+    m.def(
+        "kepE", [](hey::expression e, hey::expression M) { return hey::kepE(std::move(e), std::move(M)); }, "e"_a,
+        "M"_a);
 
-    m.def("kepE", [](double e, hey::expression M) { return hey::kepE(e, std::move(M)); }, "e"_a, "M"_a);
-    m.def("kepE", [](long double e, hey::expression M) { return hey::kepE(e, std::move(M)); }, "e"_a, "M"_a);
+    m.def(
+        "kepE", [](double e, hey::expression M) { return hey::kepE(e, std::move(M)); }, "e"_a, "M"_a);
+    m.def(
+        "kepE", [](long double e, hey::expression M) { return hey::kepE(e, std::move(M)); }, "e"_a, "M"_a);
 #if defined(HEYOKA_HAVE_REAL128)
-    m.def("kepE", [](mppp::real128 e, hey::expression M) { return hey::kepE(e, std::move(M)); }, "e"_a, "M"_a);
+    m.def(
+        "kepE", [](mppp::real128 e, hey::expression M) { return hey::kepE(e, std::move(M)); }, "e"_a, "M"_a);
 #endif
 
-    m.def("kepE", [](hey::expression e, double M) { return hey::kepE(std::move(e), M); }, "e"_a, "M"_a);
-    m.def("kepE", [](hey::expression e, long double M) { return hey::kepE(std::move(e), M); }, "e"_a, "M"_a);
+    m.def(
+        "kepE", [](hey::expression e, double M) { return hey::kepE(std::move(e), M); }, "e"_a, "M"_a);
+    m.def(
+        "kepE", [](hey::expression e, long double M) { return hey::kepE(std::move(e), M); }, "e"_a, "M"_a);
 #if defined(HEYOKA_HAVE_REAL128)
-    m.def("kepE", [](hey::expression e, mppp::real128 M) { return hey::kepE(std::move(e), M); }, "e"_a, "M"_a);
+    m.def(
+        "kepE", [](hey::expression e, mppp::real128 M) { return hey::kepE(std::move(e), M); }, "e"_a, "M"_a);
 #endif
 
     // Setup the JIT compiled C++ implementations of kepE().
