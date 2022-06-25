@@ -348,9 +348,13 @@ void expose_add_cfunc_impl(py::module &m, const char *name)
                         }
                     }
 
+                    // Convert to numpy array.
                     auto ret = py::array(py::cast(outputs_vec));
 
+                    // Reshape if necessary.
                     if (multi_eval) {
+                        // NOTE: resize() operates in-place, and won't allocate
+                        // new memory because here it's just a reshape.
                         ret.resize(py::array::ShapeContainer{boost::numeric_cast<py::ssize_t>(nouts), inputs.shape(1)});
                     }
 

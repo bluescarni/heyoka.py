@@ -263,6 +263,8 @@ void expose_taylor_add_jet_impl(py::module &m, const char *name)
 
                         auto ret = py::array(py::cast(state_vec));
 
+                        // NOTE: resize() operates in-place, and won't allocate
+                        // new memory because here it's just a reshape.
                         if (batch_size == 1u) {
                             ret.resize(py::array::ShapeContainer{boost::numeric_cast<py::ssize_t>(order + 1u),
                                                                  boost::numeric_cast<py::ssize_t>(tot_n_eq)});

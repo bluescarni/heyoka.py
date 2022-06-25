@@ -129,6 +129,24 @@ def taylor_add_jet(sys, order, **kwargs):
     raise TypeError(
         "the floating-point type \"{}\" is not recognized/supported".format(fp_type))
 
+def add_cfunc(fn, **kwargs):
+    from .core import _add_cfunc_dbl, _add_cfunc_ldbl
+
+    fp_type = kwargs.pop("fp_type", "double")
+
+    if fp_type == "double":
+        return _add_cfunc_dbl(fn, **kwargs)
+
+    if fp_type == "long double":
+        return _add_cfunc_ldbl(fn, **kwargs)
+
+    if with_real128 and fp_type == "real128":
+        from .core import _add_cfunc_f128
+        return _add_cfunc_f128(fn, **kwargs)
+
+    raise TypeError(
+        "the floating-point type \"{}\" is not recognized/supported".format(fp_type))
+
 
 def nt_event(ex, callback, **kwargs):
     from .core import _nt_event_dbl, _nt_event_ldbl
