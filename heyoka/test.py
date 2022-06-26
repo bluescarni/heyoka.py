@@ -3748,14 +3748,13 @@ class cfunc_test_case(_ut.TestCase):
         import numpy as np
         from . import add_cfunc, make_vars, sin, par, with_real128
         from .core import _ppc_arch
-        from math import log10
 
         if _ppc_arch:
             fp_types = [
-                ("double", float, int(-log10(np.finfo(float).eps)) - 1)]
+                ("double", float)]
         else:
-            fp_types = [("double", float, int(-log10(np.finfo(float).eps)) - 1),
-                        ("long double", np.longdouble, int(-log10(np.finfo(np.longdouble).eps)) - 1)]
+            fp_types = [("double", float),
+                        ("long double", np.longdouble)]
 
         x, y = make_vars("x", "y")
         func = [sin(x + y), x - par[0], x + y]
@@ -3764,7 +3763,7 @@ class cfunc_test_case(_ut.TestCase):
         # some more testing for high_accuracy, compact_mode,
         # etc., once we figure out how to test for them. Perhaps
         # examine the llvm states?
-        for desc, fp_t, places in fp_types:
+        for desc, fp_t in fp_types:
             fn = add_cfunc(func, fp_type=desc)
 
             with self.assertRaises(ValueError) as cm:
