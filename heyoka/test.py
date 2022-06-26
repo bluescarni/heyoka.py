@@ -3739,6 +3739,85 @@ class ensemble_test_case(_ut.TestCase):
             ensemble_propagate_until(ta, 20., 10, gen, chunksize=1)
 
 
+class cfunc_test_case(_ut.TestCase):
+    def runTest(self):
+        self.test_single()
+        # self.test_multi()
+
+    def test_single(self):
+        import numpy as np
+        from . import add_cfunc, make_vars, sin, par
+        from .core import _ppc_arch
+        from math import log10
+
+        if _ppc_arch:
+            fp_types = [
+                ("double", float, int(-log10(np.finfo(float).eps)) - 1)]
+        else:
+            fp_types = [("double", float, int(-log10(np.finfo(float).eps)) - 1),
+                        ("long double", np.longdouble, int(-log10(np.finfo(np.longdouble).eps)) - 1)]
+
+        x, y = make_vars("x", "y")
+        func = [sin(x + y), x - par[0], x + y]
+
+        # NOTE: perhaps in the future we can add
+        # some more testing for high_accuracy, compact_mode,
+        # etc., once we figure out how to test for them. Perhaps
+        # examine the llvm states?
+        for desc, fp_t, places in fp_types:
+            fn = add_cfunc(func, fp_type=desc)
+
+            with self.assertRaises(ValueError) as cm:
+                fn([fp_t(1),fp_t(2)])
+            self.assertTrue(
+                "The compiled function contains 1 parameter(s), but no array of parameter values was provided for evaluation" in str(cm.exception))
+
+            with self.assertRaises(ValueError) as cm:
+                fn(np.zeros((), dtype=fp_t), pars=[fp_t(0)])
+            self.assertTrue(
+                "The array of inputs provided for the evaluation of a compiled function has 0 dimensions, but it must have either 1 or 2 dimensions instead" in str(cm.exception))
+
+            with self.assertRaises(ValueError) as cm:
+                fn(np.zeros((1,2,3), dtype=fp_t), pars=[fp_t(0)])
+            self.assertTrue(
+                "The array of inputs provided for the evaluation of a compiled function has 3 dimensions, but it must have either 1 or 2 dimensions instead" in str(cm.exception))
+
+            with self.assertRaises(ValueError) as cm:
+                fn([fp_t(0)], pars=[fp_t(0)])
+            self.assertTrue(
+                "The array of inputs provided for the evaluation of a compiled function has size 1 in the first dimension, but it must have a size of 2 instead (i.e., the size in the first dimension must be equal to the number of variables)" in str(cm.exception))
+
+            with self.assertRaises(ValueError) as cm:
+                fn(np.zeros((2,), dtype=fp_t), pars=[fp_t(0)], outputs=np.zeros((), dtype=fp_t))
+            self.assertTrue(
+                "The array of outputs provided for the evaluation of a compiled function has 0 dimension(s), but it must have 1 dimension(s) instead (i.e., the same number of dimensions as the array of inputs)" in str(cm.exception))
+
+            with self.assertRaises(ValueError) as cm:
+                fn(np.zeros((2,), dtype=fp_t), pars=[fp_t(0)], outputs=np.zeros((2,), dtype=fp_t))
+            self.assertTrue(
+                "The array of outputs provided for the evaluation of a compiled function has size 2 in the first dimension, but it must have a size of 3 instead (i.e., the size in the first dimension must be equal to the number of outputs)" in str(cm.exception))
+
+            with self.assertRaises(ValueError) as cm:
+                fn(np.zeros((2,), dtype=fp_t), pars=np.zeros((), dtype=fp_t))
+            self.assertTrue(
+                "The array of parameter values provided for the evaluation of a compiled function has 0 dimension(s), but it must have 1 dimension(s) instead (i.e., the same number of dimensions as the array of inputs)" in str(cm.exception))
+
+            with self.assertRaises(ValueError) as cm:
+                fn(np.zeros((2,), dtype=fp_t), pars=np.zeros((0,), dtype=fp_t))
+            self.assertTrue(
+                "The array of parameter values provided for the evaluation of a compiled function has size 0 in the first dimension, but it must have a size of 1 instead (i.e., the size in the first dimension must be equal to the number of parameters in the function)" in str(cm.exception))
+
+            eval_arr = fn([fp_t(1),fp_t(2)], pars=[fp_t(-5)])
+            self.assertAlmostEqual(eval_arr[0], np.sin(fp_t(1)+fp_t(2)), places=places)
+            self.assertAlmostEqual(eval_arr[1], fp_t(1) - fp_t(-5), places=places)
+            self.assertAlmostEqual(eval_arr[2], fp_t(1) + fp_t(2), places=places)
+
+            # Check that eval_arr actually uses the memory
+            # provided from the outputs argument.
+            out_arr = np.zeros((3,), dtype=fp_t)
+            eval_arr = fn([fp_t(1),fp_t(2)], pars=[fp_t(-5)], outputs=out_arr)
+            self.assertTrue(np.shares_memory(eval_arr, out_arr))
+
 def run_test_suite():
     from . import make_nbody_sys, taylor_adaptive, with_real128
 
@@ -3753,6 +3832,7 @@ def run_test_suite():
     retval = 0
 
     suite = _ut.TestLoader().loadTestsFromTestCase(taylor_add_jet_test_case)
+    suite.addTest(cfunc_test_case())
     suite.addTest(ensemble_test_case())
     suite.addTest(s11n_backend_test_case())
     suite.addTest(recommended_simd_size_test_case())

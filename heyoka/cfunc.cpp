@@ -172,7 +172,7 @@ void expose_add_cfunc_impl(py::module &m, const char *name)
                     // with an array of parameter values.
                     if (nparams > 0u && !pars) {
                         heypy::py_throw(PyExc_ValueError,
-                                        fmt::format("The compiled function contains {} parameters, but no array "
+                                        fmt::format("The compiled function contains {} parameter(s), but no array "
                                                     "of parameter values was provided for evaluation",
                                                     nparams)
                                             .c_str());
@@ -376,7 +376,7 @@ void expose_add_cfunc_impl(py::module &m, const char *name)
                         // with an array of parameter values.
                         if (nparams > 0u && !pars) {
                             heypy::py_throw(PyExc_ValueError,
-                                            fmt::format("The compiled function contains {} parameters, but no array "
+                                            fmt::format("The compiled function contains {} parameter(s), but no array "
                                                         "of parameter values was provided for evaluation",
                                                         nparams)
                                                 .c_str());
@@ -416,8 +416,8 @@ void expose_add_cfunc_impl(py::module &m, const char *name)
                                     heypy::py_throw(
                                         PyExc_ValueError,
                                         fmt::format("The array of outputs provided for the evaluation "
-                                                    "of a compiled function has {} dimensions, "
-                                                    "but it must have {} dimensions instead (i.e., the same "
+                                                    "of a compiled function has {} dimension(s), "
+                                                    "but it must have {} dimension(s) instead (i.e., the same "
                                                     "number of dimensions as the array of inputs)",
                                                     outputs_->ndim(), inputs.ndim())
                                             .c_str());
@@ -467,8 +467,8 @@ void expose_add_cfunc_impl(py::module &m, const char *name)
                             if (pars->ndim() != inputs.ndim()) {
                                 heypy::py_throw(PyExc_ValueError,
                                                 fmt::format("The array of parameter values provided for the evaluation "
-                                                            "of a compiled function has {} dimensions, "
-                                                            "but it must have {} dimensions instead (i.e., the same "
+                                                            "of a compiled function has {} dimension(s), "
+                                                            "but it must have {} dimension(s) instead (i.e., the same "
                                                             "number of dimensions as the array of inputs)",
                                                             pars->ndim(), inputs.ndim())
                                                     .c_str());
