@@ -3742,7 +3742,72 @@ class ensemble_test_case(_ut.TestCase):
 class cfunc_test_case(_ut.TestCase):
     def runTest(self):
         self.test_single()
-        # self.test_multi()
+        self.test_multi()
+
+    def test_multi(self):
+        import numpy as np
+        from . import add_cfunc, make_vars, sin, par, with_real128
+        from .core import _ppc_arch
+
+        if _ppc_arch:
+            fp_types = [
+                ("double", float)]
+        else:
+            fp_types = [("double", float),
+                        ("long double", np.longdouble)]
+
+        x, y = make_vars("x", "y")
+        func = [sin(x + y), x - par[0], x + y]
+
+        for desc, fp_t in fp_types:
+            fn = add_cfunc(func, vars=[y, x], fp_type=desc)
+
+            with self.assertRaises(ValueError) as cm:
+                fn(np.zeros((2,5), dtype=fp_t), pars=[fp_t(0)], outputs=np.zeros((), dtype=fp_t))
+            self.assertTrue(
+                "The array of outputs provided for the evaluation of a compiled function has 0 dimension(s), but it must have 2 dimension(s) instead (i.e., the same number of dimensions as the array of inputs)" in str(cm.exception))
+
+            with self.assertRaises(ValueError) as cm:
+                fn(np.zeros((2,5), dtype=fp_t), pars=[fp_t(0)], outputs=np.zeros((3,1), dtype=fp_t))
+            self.assertTrue(
+                "The size in the second dimension for the output array provided for the evaluation of a compiled function (1) must match the size in the second dimension for the array of inputs (5)" in str(cm.exception))
+
+            with self.assertRaises(ValueError) as cm:
+                fn(np.zeros((2,5), dtype=fp_t), pars=np.zeros((), dtype=fp_t))
+            self.assertTrue(
+                "The array of parameter values provided for the evaluation of a compiled function has 0 dimension(s), but it must have 2 dimension(s) instead (i.e., the same number of dimensions as the array of inputs)" in str(cm.exception))
+
+            with self.assertRaises(ValueError) as cm:
+                fn(np.zeros((2,5), dtype=fp_t), pars=np.zeros((1,4), dtype=fp_t))
+            self.assertTrue(
+                "The size in the second dimension for the array of parameter values provided for the evaluation of a compiled function (4) must match the size in the second dimension for the array of inputs (5)" in str(cm.exception))
+
+            for nevals in range(1,10):
+                # NOTE: deterministic seeding.
+                rng = np.random.default_rng(nevals)
+
+                # NOTE: long double rng not supported.
+                inputs = rng.random((2,nevals), dtype=float).astype(fp_t)
+                pars = rng.random((1,nevals), dtype=float).astype(fp_t)
+                eval_arr = fn(inputs=inputs, pars=pars)
+
+                self.assertTrue(np.allclose(eval_arr[0], np.sin(inputs[1,:] + inputs[0,:]),
+                                rtol=np.finfo(fp_t).eps * 10, atol=np.finfo(fp_t).eps * 10))
+                self.assertTrue(np.allclose(eval_arr[1], inputs[1,:] - pars[0,:],
+                                rtol=np.finfo(fp_t).eps * 10, atol=np.finfo(fp_t).eps * 10))
+                self.assertTrue(np.allclose(eval_arr[2], inputs[1,:] + inputs[0,:],
+                                rtol=np.finfo(fp_t).eps * 10, atol=np.finfo(fp_t).eps * 10))
+
+                # Check that eval_arr actually uses the memory
+                # provided from the outputs argument.
+                out_arr = np.zeros((3,nevals), dtype=fp_t)
+                eval_arr = fn(inputs=inputs, pars=pars, outputs=out_arr)
+                self.assertTrue(np.allclose(eval_arr[0], np.sin(inputs[1,:] + inputs[0,:]),
+                                rtol=np.finfo(fp_t).eps * 10, atol=np.finfo(fp_t).eps * 10))
+                self.assertTrue(np.allclose(eval_arr[1], inputs[1,:] - pars[0,:],
+                                rtol=np.finfo(fp_t).eps * 10, atol=np.finfo(fp_t).eps * 10))
+                self.assertTrue(np.allclose(eval_arr[2], inputs[1,:] + inputs[0,:],
+                                rtol=np.finfo(fp_t).eps * 10, atol=np.finfo(fp_t).eps * 10))
 
     def test_single(self):
         import numpy as np
