@@ -3809,6 +3809,29 @@ class cfunc_test_case(_ut.TestCase):
                 self.assertTrue(np.allclose(eval_arr[2], inputs[1,:] + inputs[0,:],
                                 rtol=np.finfo(fp_t).eps * 10, atol=np.finfo(fp_t).eps * 10))
 
+        if not with_real128:
+            return
+
+        from mpmath import mpf
+
+        fp_t = mpf
+
+        fn = add_cfunc(func, vars=[y, x], fp_type="real128")
+
+        with self.assertRaises(ValueError) as cm:
+            fn(np.full((2,5), mpf(0)), pars=np.full((), mpf(0)))
+        self.assertTrue(
+            "The array of parameter values provided for the evaluation of a compiled function has 0 dimension(s), but it must have 2 dimension(s) instead (i.e., the same number of dimensions as the array of inputs)" in str(cm.exception))
+
+        with self.assertRaises(ValueError) as cm:
+            fn(np.full((2,5), mpf(0)), pars=np.full((1,4), mpf(0)))
+        self.assertTrue(
+            "The size in the second dimension for the array of parameter values provided for the evaluation of a compiled function (4) must match the size in the second dimension for the array of inputs (5)" in str(cm.exception))
+
+        eval_arr = fn(np.array([[fp_t(1),fp_t(3)],[fp_t(2),fp_t(4)]]), pars=np.array([[fp_t(-5),fp_t(-6)]]))
+        self.assertEqual(eval_arr[2,0], fp_t(3))
+        self.assertEqual(eval_arr[2,1], fp_t(7))
+
     def test_single(self):
         import numpy as np
         from . import add_cfunc, make_vars, sin, par, with_real128
