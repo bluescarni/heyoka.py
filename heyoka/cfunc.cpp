@@ -152,214 +152,217 @@ void expose_add_cfunc_impl(py::module &m, const char *name)
 
 #if defined(HEYOKA_HAVE_REAL128)
             if constexpr (std::is_same_v<T, mppp::real128>) {
-                return py::cpp_function([s_scal = std::move(s_scal), s_batch = std::move(s_batch), simd_size, nparams,
-                                         nouts, nvars, fptr_scal, fptr_batch, buf_in = std::move(buf_in),
-                                         buf_out = std::move(buf_out), buf_pars = std::move(buf_pars)](
-                                            py::array inputs, std::optional<py::array_t<T>> outputs_,
-                                            std::optional<py::array> pars) mutable {
-                    if (outputs_) {
-                        heypy::py_throw(PyExc_ValueError,
-                                        "Specifying the output array for a compiled function is not supported in "
-                                        "quadruple precision");
-                    }
-
-                    // Fetch pointers to the buffers, to decrease typing.
-                    const auto in_ptr = buf_in.data();
-                    const auto out_ptr = buf_out.data();
-                    const auto par_ptr = buf_pars.data();
-
-                    // If we have params in the function, we must be provided
-                    // with an array of parameter values.
-                    if (nparams > 0u && !pars) {
-                        heypy::py_throw(PyExc_ValueError,
-                                        fmt::format("The compiled function contains {} parameter(s), but no array "
-                                                    "of parameter values was provided for evaluation",
-                                                    nparams)
-                                            .c_str());
-                    }
-
-                    // Validate the number of dimensions for the inputs.
-                    if (inputs.ndim() != 1 && inputs.ndim() != 2) {
-                        heypy::py_throw(PyExc_ValueError,
-                                        fmt::format("The array of inputs provided for the evaluation "
-                                                    "of a compiled function has {} dimensions, "
-                                                    "but it must have either 1 or 2 dimensions instead",
-                                                    inputs.ndim())
-                                            .c_str());
-                    }
-
-                    // Check the number of inputs.
-                    if (boost::numeric_cast<std::uint32_t>(inputs.shape(0)) != nvars) {
-                        heypy::py_throw(PyExc_ValueError,
-                                        fmt::format("The array of inputs provided for the evaluation "
-                                                    "of a compiled function has size {} in the first dimension, "
-                                                    "but it must have a size of {} instead (i.e., the size in the "
-                                                    "first dimension must be equal to the number of variables)",
-                                                    inputs.shape(0), nvars)
-                                            .c_str());
-                    }
-
-                    // Determine if we are running one or more evaluations.
-                    const auto multi_eval = inputs.ndim() == 2;
-
-                    // Convert the arrays into vectors.
-                    auto inputs_vec = py::cast<std::vector<mppp::real128>>(inputs.attr("flatten")());
-                    std::vector<mppp::real128> pars_vec;
-                    if (pars) {
-                        pars_vec = py::cast<std::vector<mppp::real128>>(pars->attr("flatten")());
-                    }
-
-                    // Prepare the outputs vector.
-                    std::vector<mppp::real128> outputs_vec;
-                    using vec_size_t = decltype(outputs_vec.size());
-                    if (multi_eval) {
-                        // Overflow checking.
-                        const auto nevals = boost::numeric_cast<vec_size_t>(inputs.shape(1));
-                        assert(nouts > 0u);
-                        if (nevals > std::numeric_limits<vec_size_t>::max() / nouts) {
-                            heypy::py_throw(PyExc_OverflowError, "An overflow condition was detected while trying to "
-                                                                 "evaluate a compiled function in quadruple precision");
+                return py::cpp_function(
+                    [s_scal = std::move(s_scal), s_batch = std::move(s_batch), simd_size, nparams, nouts, nvars,
+                     fptr_scal, fptr_batch, buf_in = std::move(buf_in), buf_out = std::move(buf_out),
+                     buf_pars = std::move(buf_pars)](py::array inputs, std::optional<py::array> outputs_,
+                                                     std::optional<py::array> pars) mutable {
+                        if (outputs_) {
+                            heypy::py_throw(PyExc_ValueError,
+                                            "Specifying the output array for a compiled function is not supported in "
+                                            "quadruple precision");
                         }
 
-                        outputs_vec.resize(nouts * nevals);
-                    } else {
-                        outputs_vec.resize(boost::numeric_cast<vec_size_t>(nouts));
-                    }
+                        // Fetch pointers to the buffers, to decrease typing.
+                        const auto in_ptr = buf_in.data();
+                        const auto out_ptr = buf_out.data();
+                        const auto par_ptr = buf_pars.data();
 
-                    // Check the pars array, if necessary.
-                    if (pars) {
-                        // Validate the number of dimensions.
-                        if (pars->ndim() != inputs.ndim()) {
+                        // If we have params in the function, we must be provided
+                        // with an array of parameter values.
+                        if (nparams > 0u && !pars) {
                             heypy::py_throw(PyExc_ValueError,
-                                            fmt::format("The array of parameter values provided for the evaluation "
-                                                        "of a compiled function has {} dimensions, "
-                                                        "but it must have {} dimensions instead (i.e., the same "
-                                                        "number of dimensions as the array of inputs)",
-                                                        pars->ndim(), inputs.ndim())
+                                            fmt::format("The compiled function contains {} parameter(s), but no array "
+                                                        "of parameter values was provided for evaluation",
+                                                        nparams)
                                                 .c_str());
                         }
 
-                        // Check the number of pars.
-                        if (boost::numeric_cast<std::uint32_t>(pars->shape(0)) != nparams) {
-                            heypy::py_throw(
-                                PyExc_ValueError,
-                                fmt::format(
-                                    "The array of parameter values provided for the evaluation "
-                                    "of a compiled function has size {} in the first dimension, "
-                                    "but it must have a size of {} instead (i.e., the size in the "
-                                    "first dimension must be equal to the number of parameters in the function)",
-                                    pars->shape(0), nparams)
-                                    .c_str());
+                        // Validate the number of dimensions for the inputs.
+                        if (inputs.ndim() != 1 && inputs.ndim() != 2) {
+                            heypy::py_throw(PyExc_ValueError,
+                                            fmt::format("The array of inputs provided for the evaluation "
+                                                        "of a compiled function has {} dimensions, "
+                                                        "but it must have either 1 or 2 dimensions instead",
+                                                        inputs.ndim())
+                                                .c_str());
                         }
 
-                        // If we are running multiple evaluations, the number must
-                        // be consistent between inputs and pars.
-                        if (multi_eval && pars->shape(1) != inputs.shape(1)) {
-                            heypy::py_throw(
-                                PyExc_ValueError,
-                                fmt::format("The size in the second dimension for the array of parameter values "
-                                            "provided for "
-                                            "the evaluation of a compiled function ({}) must match the size in the "
-                                            "second dimension for the array of inputs ({})",
-                                            pars->shape(1), inputs.shape(1))
-                                    .c_str());
+                        // Check the number of inputs.
+                        if (boost::numeric_cast<std::uint32_t>(inputs.shape(0)) != nvars) {
+                            heypy::py_throw(PyExc_ValueError,
+                                            fmt::format("The array of inputs provided for the evaluation "
+                                                        "of a compiled function has size {} in the first dimension, "
+                                                        "but it must have a size of {} instead (i.e., the size in the "
+                                                        "first dimension must be equal to the number of variables)",
+                                                        inputs.shape(0), nvars)
+                                                .c_str());
                         }
-                    }
 
-                    // Run the evaluation.
-                    if (multi_eval) {
-                        // vec_size_t version of the recommended simd size.
-                        const auto ss_size = boost::numeric_cast<vec_size_t>(simd_size);
+                        // Determine if we are running one or more evaluations.
+                        const auto multi_eval = inputs.ndim() == 2;
 
-                        // Cache the number of evals.
-                        // NOTE: static cast is fine because inputs was successfully
-                        // converted to std::vector.
-                        const auto nevals = static_cast<vec_size_t>(inputs.shape(1));
+                        // Convert the arrays into vectors.
+                        auto inputs_vec = py::cast<std::vector<mppp::real128>>(inputs.attr("flatten")());
+                        std::vector<mppp::real128> pars_vec;
+                        if (pars) {
+                            pars_vec = py::cast<std::vector<mppp::real128>>(pars->attr("flatten")());
+                        }
 
-                        // Number of simd blocks in the arrays.
-                        const auto n_simd_blocks = nevals / ss_size;
+                        // Prepare the outputs vector.
+                        std::vector<mppp::real128> outputs_vec;
+                        using vec_size_t = decltype(outputs_vec.size());
+                        if (multi_eval) {
+                            // Overflow checking.
+                            const auto nevals = boost::numeric_cast<vec_size_t>(inputs.shape(1));
+                            assert(nouts > 0u);
+                            if (nevals > std::numeric_limits<vec_size_t>::max() / nouts) {
+                                heypy::py_throw(PyExc_OverflowError,
+                                                "An overflow condition was detected while trying to "
+                                                "evaluate a compiled function in quadruple precision");
+                            }
 
-                        // Evaluate over the simd blocks.
-                        for (vec_size_t k = 0; k < n_simd_blocks; ++k) {
+                            outputs_vec.resize(nouts * nevals);
+                        } else {
+                            outputs_vec.resize(boost::numeric_cast<vec_size_t>(nouts));
+                        }
+
+                        // Check the pars array, if necessary.
+                        if (pars) {
+                            // Validate the number of dimensions.
+                            if (pars->ndim() != inputs.ndim()) {
+                                heypy::py_throw(PyExc_ValueError,
+                                                fmt::format("The array of parameter values provided for the evaluation "
+                                                            "of a compiled function has {} dimension(s), "
+                                                            "but it must have {} dimension(s) instead (i.e., the same "
+                                                            "number of dimensions as the array of inputs)",
+                                                            pars->ndim(), inputs.ndim())
+                                                    .c_str());
+                            }
+
+                            // Check the number of pars.
+                            if (boost::numeric_cast<std::uint32_t>(pars->shape(0)) != nparams) {
+                                heypy::py_throw(
+                                    PyExc_ValueError,
+                                    fmt::format(
+                                        "The array of parameter values provided for the evaluation "
+                                        "of a compiled function has size {} in the first dimension, "
+                                        "but it must have a size of {} instead (i.e., the size in the "
+                                        "first dimension must be equal to the number of parameters in the function)",
+                                        pars->shape(0), nparams)
+                                        .c_str());
+                            }
+
+                            // If we are running multiple evaluations, the number must
+                            // be consistent between inputs and pars.
+                            if (multi_eval && pars->shape(1) != inputs.shape(1)) {
+                                heypy::py_throw(
+                                    PyExc_ValueError,
+                                    fmt::format("The size in the second dimension for the array of parameter values "
+                                                "provided for "
+                                                "the evaluation of a compiled function ({}) must match the size in the "
+                                                "second dimension for the array of inputs ({})",
+                                                pars->shape(1), inputs.shape(1))
+                                        .c_str());
+                            }
+                        }
+
+                        // Run the evaluation.
+                        if (multi_eval) {
+                            // vec_size_t version of the recommended simd size.
+                            const auto ss_size = boost::numeric_cast<vec_size_t>(simd_size);
+
+                            // Cache the number of evals.
+                            // NOTE: static cast is fine because inputs was successfully
+                            // converted to std::vector.
+                            const auto nevals = static_cast<vec_size_t>(inputs.shape(1));
+
+                            // Number of simd blocks in the arrays.
+                            const auto n_simd_blocks = nevals / ss_size;
+
+                            // Evaluate over the simd blocks.
+                            for (vec_size_t k = 0; k < n_simd_blocks; ++k) {
+                                // Copy over the input data.
+                                for (vec_size_t i = 0; i < static_cast<vec_size_t>(nvars); ++i) {
+                                    for (vec_size_t j = 0; j < ss_size; ++j) {
+                                        in_ptr[i * ss_size + j] = inputs_vec[i * nevals + k * ss_size + j];
+                                    }
+                                }
+
+                                // Copy over the pars.
+                                if (pars) {
+                                    for (vec_size_t i = 0; i < static_cast<vec_size_t>(nparams); ++i) {
+                                        for (vec_size_t j = 0; j < ss_size; ++j) {
+                                            par_ptr[i * ss_size + j] = pars_vec[i * nevals + k * ss_size + j];
+                                        }
+                                    }
+                                }
+
+                                // Run the evaluation.
+                                fptr_batch(out_ptr, in_ptr, par_ptr);
+
+                                // Write the outputs.
+                                for (vec_size_t i = 0; i < static_cast<vec_size_t>(nouts); ++i) {
+                                    for (vec_size_t j = 0; j < ss_size; ++j) {
+                                        outputs_vec[i * nevals + k * ss_size + j] = out_ptr[i * ss_size + j];
+                                    }
+                                }
+                            }
+
+                            // Handle the remainder, if present.
+                            for (auto k = n_simd_blocks * ss_size; k < nevals; ++k) {
+                                for (vec_size_t i = 0; i < static_cast<vec_size_t>(nvars); ++i) {
+                                    in_ptr[i] = inputs_vec[i * nevals + k];
+                                }
+
+                                if (pars) {
+                                    for (vec_size_t i = 0; i < static_cast<vec_size_t>(nparams); ++i) {
+                                        par_ptr[i] = pars_vec[i * nevals + k];
+                                    }
+                                }
+
+                                fptr_scal(out_ptr, in_ptr, par_ptr);
+
+                                for (vec_size_t i = 0; i < static_cast<vec_size_t>(nouts); ++i) {
+                                    outputs_vec[i * nevals + k] = out_ptr[i];
+                                }
+                            }
+                        } else {
                             // Copy over the input data.
                             for (vec_size_t i = 0; i < static_cast<vec_size_t>(nvars); ++i) {
-                                for (vec_size_t j = 0; j < ss_size; ++j) {
-                                    in_ptr[i * ss_size + j] = inputs_vec[i * nevals + k * ss_size + j];
-                                }
+                                in_ptr[i] = inputs_vec[i];
                             }
 
                             // Copy over the pars.
                             if (pars) {
                                 for (vec_size_t i = 0; i < static_cast<vec_size_t>(nparams); ++i) {
-                                    for (vec_size_t j = 0; j < ss_size; ++j) {
-                                        par_ptr[i * ss_size + j] = pars_vec[i * nevals + k * ss_size + j];
-                                    }
+                                    par_ptr[i] = pars_vec[i];
                                 }
                             }
 
                             // Run the evaluation.
-                            fptr_batch(out_ptr, in_ptr, par_ptr);
+                            fptr_scal(out_ptr, in_ptr, par_ptr);
 
                             // Write the outputs.
                             for (vec_size_t i = 0; i < static_cast<vec_size_t>(nouts); ++i) {
-                                for (vec_size_t j = 0; j < ss_size; ++j) {
-                                    outputs_vec[i * nevals + k * ss_size + j] = out_ptr[i * ss_size + j];
-                                }
+                                outputs_vec[i] = out_ptr[i];
                             }
                         }
 
-                        // Handle the remainder, if present.
-                        for (auto k = n_simd_blocks * ss_size; k < nevals; ++k) {
-                            for (vec_size_t i = 0; i < static_cast<vec_size_t>(nvars); ++i) {
-                                in_ptr[i] = inputs_vec[i * nevals + k];
-                            }
+                        // Convert to numpy array.
+                        auto ret = py::array(py::cast(outputs_vec));
 
-                            if (pars) {
-                                for (vec_size_t i = 0; i < static_cast<vec_size_t>(nparams); ++i) {
-                                    par_ptr[i] = pars_vec[i * nevals + k];
-                                }
-                            }
-
-                            fptr_scal(out_ptr, in_ptr, par_ptr);
-
-                            for (vec_size_t i = 0; i < static_cast<vec_size_t>(nouts); ++i) {
-                                outputs_vec[i * nevals + k] = out_ptr[i];
-                            }
-                        }
-                    } else {
-                        // Copy over the input data.
-                        for (vec_size_t i = 0; i < static_cast<vec_size_t>(nvars); ++i) {
-                            in_ptr[i] = inputs_vec[i];
+                        // Reshape if necessary.
+                        if (multi_eval) {
+                            // NOTE: resize() operates in-place, and won't allocate
+                            // new memory because here it's just a reshape.
+                            ret.resize(
+                                py::array::ShapeContainer{boost::numeric_cast<py::ssize_t>(nouts), inputs.shape(1)});
                         }
 
-                        // Copy over the pars.
-                        if (pars) {
-                            for (vec_size_t i = 0; i < static_cast<vec_size_t>(nparams); ++i) {
-                                par_ptr[i] = pars_vec[i];
-                            }
-                        }
-
-                        // Run the evaluation.
-                        fptr_scal(out_ptr, in_ptr, par_ptr);
-
-                        // Write the outputs.
-                        for (vec_size_t i = 0; i < static_cast<vec_size_t>(nouts); ++i) {
-                            outputs_vec[i] = out_ptr[i];
-                        }
-                    }
-
-                    // Convert to numpy array.
-                    auto ret = py::array(py::cast(outputs_vec));
-
-                    // Reshape if necessary.
-                    if (multi_eval) {
-                        // NOTE: resize() operates in-place, and won't allocate
-                        // new memory because here it's just a reshape.
-                        ret.resize(py::array::ShapeContainer{boost::numeric_cast<py::ssize_t>(nouts), inputs.shape(1)});
-                    }
-
-                    return ret;
-                });
+                        return ret;
+                    },
+                    "inputs"_a, "outputs"_a = py::none{}, "pars"_a = py::none{});
             } else {
 #endif
                 return py::cpp_function(
