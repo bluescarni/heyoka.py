@@ -10,6 +10,7 @@
 
 #include <algorithm>
 #include <cassert>
+#include <cstddef>
 #include <cstdint>
 #include <initializer_list>
 #include <limits>
@@ -63,6 +64,7 @@ template <typename T>
 void expose_add_cfunc_impl(py::module &m, const char *name)
 {
     using namespace pybind11::literals;
+    namespace kw = hey::kw;
 
     m.def(
         name,
@@ -74,6 +76,9 @@ void expose_add_cfunc_impl(py::module &m, const char *name)
             // Add the compiled functions.
             using ptr_t = void (*)(T *, const T *, const T *) noexcept;
             ptr_t fptr_scal = nullptr, fptr_batch = nullptr;
+            using ptr_s_t = void (*)(T *, const T *, const T *, std::size_t) noexcept;
+            ptr_s_t fptr_scal_s = nullptr, fptr_batch_s = nullptr;
+
             hey::llvm_state s_scal, s_batch;
 
             {
@@ -84,29 +89,34 @@ void expose_add_cfunc_impl(py::module &m, const char *name)
                     [&]() {
                         // Scalar.
                         if (vars) {
-                            hey::add_cfunc<T>(s_scal, "cfunc", fn, *vars, 1, high_accuracy, compact_mode,
-                                              parallel_mode);
+                            hey::add_cfunc<T>(s_scal, "cfunc", fn, kw::vars = *vars, kw::high_accuracy = high_accuracy,
+                                              kw::compact_mode = compact_mode, kw::parallel_mode = parallel_mode);
                         } else {
-                            hey::add_cfunc<T>(s_scal, "cfunc", fn, 1, high_accuracy, compact_mode, parallel_mode);
+                            hey::add_cfunc<T>(s_scal, "cfunc", fn, kw::high_accuracy = high_accuracy,
+                                              kw::compact_mode = compact_mode, kw::parallel_mode = parallel_mode);
                         }
 
                         s_scal.compile();
 
                         fptr_scal = reinterpret_cast<ptr_t>(s_scal.jit_lookup("cfunc"));
+                        fptr_scal_s = reinterpret_cast<ptr_s_t>(s_scal.jit_lookup("cfunc.strided"));
                     },
                     [&]() {
                         // Batch.
                         if (vars) {
-                            hey::add_cfunc<T>(s_batch, "cfunc", fn, *vars, simd_size, high_accuracy, compact_mode,
-                                              parallel_mode);
+                            hey::add_cfunc<T>(s_batch, "cfunc", fn, kw::vars = *vars, kw::batch_size = simd_size,
+                                              kw::high_accuracy = high_accuracy, kw::compact_mode = compact_mode,
+                                              kw::parallel_mode = parallel_mode);
                         } else {
-                            hey::add_cfunc<T>(s_batch, "cfunc", fn, simd_size, high_accuracy, compact_mode,
-                                              parallel_mode);
+                            hey::add_cfunc<T>(s_batch, "cfunc", fn, kw::batch_size = simd_size,
+                                              kw::high_accuracy = high_accuracy, kw::compact_mode = compact_mode,
+                                              kw::parallel_mode = parallel_mode);
                         }
 
                         s_batch.compile();
 
                         fptr_batch = reinterpret_cast<ptr_t>(s_batch.jit_lookup("cfunc"));
+                        fptr_batch_s = reinterpret_cast<ptr_s_t>(s_batch.jit_lookup("cfunc.strided"));
                     });
             }
 
@@ -154,9 +164,9 @@ void expose_add_cfunc_impl(py::module &m, const char *name)
             if constexpr (std::is_same_v<T, mppp::real128>) {
                 return py::cpp_function(
                     [s_scal = std::move(s_scal), s_batch = std::move(s_batch), simd_size, nparams, nouts, nvars,
-                     fptr_scal, fptr_batch, buf_in = std::move(buf_in), buf_out = std::move(buf_out),
-                     buf_pars = std::move(buf_pars)](py::array inputs, std::optional<py::array> outputs_,
-                                                     std::optional<py::array> pars) mutable {
+                     fptr_scal, fptr_scal_s, fptr_batch, fptr_batch_s, buf_in = std::move(buf_in),
+                     buf_out = std::move(buf_out), buf_pars = std::move(buf_pars)](
+                        py::array inputs, std::optional<py::array> outputs_, std::optional<py::array> pars) mutable {
                         if (outputs_) {
                             heypy::py_throw(PyExc_ValueError,
                                             "Specifying the output array for a compiled function is not supported in "
@@ -367,7 +377,8 @@ void expose_add_cfunc_impl(py::module &m, const char *name)
 #endif
                 return py::cpp_function(
                     [s_scal = std::move(s_scal), s_batch = std::move(s_batch), simd_size, nparams, nouts, nvars,
-                     fptr_scal, fptr_batch, buf_in = std::move(buf_in), buf_out = std::move(buf_out),
+                     fptr_scal, fptr_scal_s, fptr_batch, fptr_batch_s, buf_in = std::move(buf_in),
+                     buf_out = std::move(buf_out),
                      buf_pars = std::move(buf_pars)](py::array_t<T> inputs, std::optional<py::array_t<T>> outputs_,
                                                      std::optional<py::array_t<T>> pars) mutable {
                         // Fetch pointers to the buffers, to decrease typing.
@@ -413,6 +424,13 @@ void expose_add_cfunc_impl(py::module &m, const char *name)
                         auto outputs = [&]() {
                             if (outputs_) {
                                 // The outputs array was provided, check it.
+
+                                // Check if we can write to the outputs.
+                                if (!outputs_->writeable()) {
+                                    heypy::py_throw(PyExc_ValueError,
+                                                    "The array of outputs provided for the evaluation "
+                                                    "of a compiled function is not writeable");
+                                }
 
                                 // Validate the number of dimensions for the outputs.
                                 if (outputs_->ndim() != inputs.ndim()) {
@@ -504,6 +522,30 @@ void expose_add_cfunc_impl(py::module &m, const char *name)
                             }
                         }
 
+                        // Check if we can use a zero-copy implementation. This is enabled
+                        // for distinct C style arrays who own their data.
+                        // All C style?
+                        bool zero_copy = (inputs.flags() & py::array::c_style) && (outputs.flags() & py::array::c_style)
+                                         && (!pars || (pars->flags() & py::array::c_style));
+                        // Do they all own their data?
+                        zero_copy = zero_copy && (inputs.owndata() && outputs.owndata() && (!pars || pars->owndata()));
+                        if (zero_copy) {
+                            auto *out_data = outputs.data();
+                            auto *in_data = inputs.data();
+                            auto *par_data = pars ? pars->data() : nullptr;
+
+                            // Are they all distinct from each other?
+                            // NOTE: while out_data can never be possibly null (as we are sure there's
+                            // always at least one output), I am not 100% sure what happens with empty
+                            // inputs and/or pars. Just to be on the safe side, we check in_data == par_data
+                            // only if both in_data and par_data are not null, so that both pointers
+                            // being null does not prevent the zero-copy implementation.
+                            if (out_data == in_data || out_data == par_data
+                                || (in_data && par_data && in_data == par_data)) {
+                                zero_copy = false;
+                            }
+                        }
+
                         // Run the evaluation.
                         if (multi_eval) {
                             // Signed version of the recommended simd size.
@@ -515,84 +557,117 @@ void expose_add_cfunc_impl(py::module &m, const char *name)
                             // Number of simd blocks in the arrays.
                             const auto n_simd_blocks = nevals / ss_size;
 
-                            // Unchecked access to inputs and outputs.
-                            auto u_inputs = inputs.template unchecked<2>();
-                            auto u_outputs = outputs.template mutable_unchecked<2>();
+                            if (zero_copy) {
+                                // Safely cast nevals to size_t to compute
+                                // the stride value.
+                                const auto stride = boost::numeric_cast<std::size_t>(nevals);
 
-                            // Evaluate over the simd blocks.
-                            for (py::ssize_t k = 0; k < n_simd_blocks; ++k) {
-                                // Copy over the input data.
-                                for (py::ssize_t i = 0; i < static_cast<py::ssize_t>(nvars); ++i) {
-                                    for (py::ssize_t j = 0; j < ss_size; ++j) {
-                                        in_ptr[i * ss_size + j] = u_inputs(i, k * ss_size + j);
-                                    }
+                                // Cache pointers.
+                                auto *out_data = outputs.mutable_data();
+                                auto *in_data = inputs.data();
+                                auto *par_data = pars ? pars->data() : nullptr;
+                                const auto with_inputs = in_data != nullptr;
+                                const auto with_pars = par_data != nullptr;
+
+                                // Evaluate over the simd blocks.
+                                for (py::ssize_t k = 0; k < n_simd_blocks; ++k) {
+                                    const auto start_offset = k * ss_size;
+
+                                    // Run the evaluation.
+                                    fptr_batch_s(out_data + start_offset,
+                                                 with_inputs ? in_data + start_offset : nullptr,
+                                                 with_pars ? par_data + start_offset : nullptr, stride);
                                 }
 
-                                // Copy over the pars.
-                                if (pars) {
-                                    auto u_pars = pars->template unchecked<2>();
+                                // Handle the remainder, if present.
+                                for (auto k = n_simd_blocks * ss_size; k < nevals; ++k) {
+                                    fptr_scal_s(out_data + k, with_inputs ? in_data + k : nullptr,
+                                                with_pars ? par_data + k : nullptr, stride);
+                                }
+                            } else {
+                                // Unchecked access to inputs and outputs.
+                                auto u_inputs = inputs.template unchecked<2>();
+                                auto u_outputs = outputs.template mutable_unchecked<2>();
 
-                                    for (py::ssize_t i = 0; i < static_cast<py::ssize_t>(nparams); ++i) {
+                                // Evaluate over the simd blocks.
+                                for (py::ssize_t k = 0; k < n_simd_blocks; ++k) {
+                                    // Copy over the input data.
+                                    for (py::ssize_t i = 0; i < static_cast<py::ssize_t>(nvars); ++i) {
                                         for (py::ssize_t j = 0; j < ss_size; ++j) {
-                                            par_ptr[i * ss_size + j] = u_pars(i, k * ss_size + j);
+                                            in_ptr[i * ss_size + j] = u_inputs(i, k * ss_size + j);
+                                        }
+                                    }
+
+                                    // Copy over the pars.
+                                    if (pars) {
+                                        auto u_pars = pars->template unchecked<2>();
+
+                                        for (py::ssize_t i = 0; i < static_cast<py::ssize_t>(nparams); ++i) {
+                                            for (py::ssize_t j = 0; j < ss_size; ++j) {
+                                                par_ptr[i * ss_size + j] = u_pars(i, k * ss_size + j);
+                                            }
+                                        }
+                                    }
+
+                                    // Run the evaluation.
+                                    fptr_batch(out_ptr, in_ptr, par_ptr);
+
+                                    // Write the outputs.
+                                    for (py::ssize_t i = 0; i < static_cast<py::ssize_t>(nouts); ++i) {
+                                        for (py::ssize_t j = 0; j < ss_size; ++j) {
+                                            u_outputs(i, k * ss_size + j) = out_ptr[i * ss_size + j];
                                         }
                                     }
                                 }
 
-                                // Run the evaluation.
-                                fptr_batch(out_ptr, in_ptr, par_ptr);
-
-                                // Write the outputs.
-                                for (py::ssize_t i = 0; i < static_cast<py::ssize_t>(nouts); ++i) {
-                                    for (py::ssize_t j = 0; j < ss_size; ++j) {
-                                        u_outputs(i, k * ss_size + j) = out_ptr[i * ss_size + j];
+                                // Handle the remainder, if present.
+                                for (auto k = n_simd_blocks * ss_size; k < nevals; ++k) {
+                                    for (py::ssize_t i = 0; i < static_cast<py::ssize_t>(nvars); ++i) {
+                                        in_ptr[i] = u_inputs(i, k);
                                     }
-                                }
-                            }
 
-                            // Handle the remainder, if present.
-                            for (auto k = n_simd_blocks * ss_size; k < nevals; ++k) {
-                                for (py::ssize_t i = 0; i < static_cast<py::ssize_t>(nvars); ++i) {
-                                    in_ptr[i] = u_inputs(i, k);
-                                }
+                                    if (pars) {
+                                        auto u_pars = pars->template unchecked<2>();
 
-                                if (pars) {
-                                    auto u_pars = pars->template unchecked<2>();
-
-                                    for (py::ssize_t i = 0; i < static_cast<py::ssize_t>(nparams); ++i) {
-                                        par_ptr[i] = u_pars(i, k);
+                                        for (py::ssize_t i = 0; i < static_cast<py::ssize_t>(nparams); ++i) {
+                                            par_ptr[i] = u_pars(i, k);
+                                        }
                                     }
-                                }
 
-                                fptr_scal(out_ptr, in_ptr, par_ptr);
+                                    fptr_scal(out_ptr, in_ptr, par_ptr);
 
-                                for (py::ssize_t i = 0; i < static_cast<py::ssize_t>(nouts); ++i) {
-                                    u_outputs(i, k) = out_ptr[i];
+                                    for (py::ssize_t i = 0; i < static_cast<py::ssize_t>(nouts); ++i) {
+                                        u_outputs(i, k) = out_ptr[i];
+                                    }
                                 }
                             }
                         } else {
-                            // Copy over the input data.
-                            auto u_inputs = inputs.template unchecked<1>();
-                            for (py::ssize_t i = 0; i < static_cast<py::ssize_t>(nvars); ++i) {
-                                in_ptr[i] = u_inputs(i);
-                            }
-
-                            // Copy over the pars.
-                            if (pars) {
-                                auto u_pars = pars->template unchecked<1>();
-
-                                for (py::ssize_t i = 0; i < static_cast<py::ssize_t>(nparams); ++i) {
-                                    par_ptr[i] = u_pars(i);
+                            if (zero_copy) {
+                                fptr_scal(outputs.mutable_data(), inputs.data(), pars ? pars->data() : nullptr);
+                            } else {
+                                // Copy over the input data.
+                                auto u_inputs = inputs.template unchecked<1>();
+                                for (py::ssize_t i = 0; i < static_cast<py::ssize_t>(nvars); ++i) {
+                                    in_ptr[i] = u_inputs(i);
                                 }
-                            }
 
-                            // Run the evaluation.
-                            fptr_scal(out_ptr, in_ptr, par_ptr);
+                                // Copy over the pars.
+                                if (pars) {
+                                    auto u_pars = pars->template unchecked<1>();
 
-                            // Write the outputs.
-                            auto u_outputs = outputs.template mutable_unchecked<1>();
-                            for (py::ssize_t i = 0; i < static_cast<py::ssize_t>(nouts); ++i) {
-                                u_outputs(i) = out_ptr[i];
+                                    for (py::ssize_t i = 0; i < static_cast<py::ssize_t>(nparams); ++i) {
+                                        par_ptr[i] = u_pars(i);
+                                    }
+                                }
+
+                                // Run the evaluation.
+                                fptr_scal(out_ptr, in_ptr, par_ptr);
+
+                                // Write the outputs.
+                                auto u_outputs = outputs.template mutable_unchecked<1>();
+                                for (py::ssize_t i = 0; i < static_cast<py::ssize_t>(nouts); ++i) {
+                                    u_outputs(i) = out_ptr[i];
+                                }
                             }
                         }
 
