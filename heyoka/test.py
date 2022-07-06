@@ -3917,6 +3917,15 @@ class cfunc_test_case(_ut.TestCase):
                 self.assertTrue(np.allclose(eval_arr[1], 4,
                                 rtol=np.finfo(fp_t).eps * 10, atol=np.finfo(fp_t).eps * 10))
 
+                # Test case in which there are no pars but a pars array is provided anyway,
+                # with the correct shape.
+                fn = add_cfunc([x+y], fp_type=desc)
+                inputs = rng.random((2, nevals), dtype=float).astype(fp_t)
+                eval_arr = fn(inputs=inputs, pars=np.zeros((0, nevals), dtype=fp_t))
+
+                self.assertTrue(np.allclose(eval_arr[0], inputs[0, :] + inputs[1, :],
+                                rtol=np.finfo(fp_t).eps * 10, atol=np.finfo(fp_t).eps * 10))
+
         if not with_real128:
             return
 
@@ -4070,6 +4079,13 @@ class cfunc_test_case(_ut.TestCase):
                           pars=np.zeros((0,), dtype=fp_t))
             self.assertTrue(np.allclose(eval_arr, [fp_t(3), fp_t(4)],
                             rtol=np.finfo(fp_t).eps * 10, atol=np.finfo(fp_t).eps * 10))
+
+            # Test case in which there are no pars but a pars array is provided anyway,
+            # with the correct shape.
+            fn = add_cfunc([x+y], fp_type=desc)
+            eval_arr = fn(inputs=[1, 2], pars=np.zeros((0, ), dtype=fp_t))
+
+            self.assertEqual(eval_arr[0], 3)
 
         if not with_real128:
             return
