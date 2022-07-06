@@ -152,6 +152,8 @@ void expose_add_cfunc_impl(py::module &m, const char *name)
 
             // Prepare local buffers to store inputs, outputs and pars
             // during the invocation of the compiled functions.
+            // These are used only if we cannot read from/write to
+            // the numpy arrays directly.
             std::vector<T> buf_in, buf_out, buf_pars;
             // NOTE: the multiplications are safe because
             // the overflow checks we run during the compilation
@@ -164,19 +166,13 @@ void expose_add_cfunc_impl(py::module &m, const char *name)
             if constexpr (std::is_same_v<T, mppp::real128>) {
                 return py::cpp_function(
                     [s_scal = std::move(s_scal), s_batch = std::move(s_batch), simd_size, nparams, nouts, nvars,
-                     fptr_scal, fptr_scal_s, fptr_batch, fptr_batch_s, buf_in = std::move(buf_in),
-                     buf_out = std::move(buf_out), buf_pars = std::move(buf_pars)](
-                        py::array inputs, std::optional<py::array> outputs_, std::optional<py::array> pars) mutable {
+                     fptr_scal, fptr_scal_s, fptr_batch_s](py::array inputs, std::optional<py::array> outputs_,
+                                                           std::optional<py::array> pars) mutable {
                         if (outputs_) {
                             heypy::py_throw(PyExc_ValueError,
                                             "Specifying the output array for a compiled function is not supported in "
                                             "quadruple precision");
                         }
-
-                        // Fetch pointers to the buffers, to decrease typing.
-                        const auto in_ptr = buf_in.data();
-                        const auto out_ptr = buf_out.data();
-                        const auto par_ptr = buf_pars.data();
 
                         // If we have params in the function, we must be provided
                         // with an array of parameter values.
@@ -290,73 +286,41 @@ void expose_add_cfunc_impl(py::module &m, const char *name)
                             // Number of simd blocks in the arrays.
                             const auto n_simd_blocks = nevals / ss_size;
 
+                            // Safely cast nevals to size_t to compute
+                            // the stride value.
+                            const auto stride = boost::numeric_cast<std::size_t>(nevals);
+
+                            // Cache pointers.
+                            auto *out_data = outputs_vec.data();
+                            auto *in_data = inputs_vec.data();
+                            auto *par_data = pars_vec.data();
+                            // NOTE: we define these two boolean variables in order
+                            // to avoid doing pointer arithmetic (when invoking fptr_batch_s)
+                            // on bogus pointers (such as nullptr). This could happen for instance
+                            // if the function has no inputs, or if an empty pars array was provided
+                            // (that is, in both cases we would be dealing with numpy arrays
+                            // with shape (0, nevals)). In other words, while
+                            // calling .data() on any std::vector is always safe, we must avoid
+                            // doing arithmetic on pointers to empty vectors.
+                            const auto with_inputs = nvars > 0u;
+                            const auto with_pars = nparams > 0u;
+
                             // Evaluate over the simd blocks.
                             for (vec_size_t k = 0; k < n_simd_blocks; ++k) {
-                                // Copy over the input data.
-                                for (vec_size_t i = 0; i < static_cast<vec_size_t>(nvars); ++i) {
-                                    for (vec_size_t j = 0; j < ss_size; ++j) {
-                                        in_ptr[i * ss_size + j] = inputs_vec[i * nevals + k * ss_size + j];
-                                    }
-                                }
-
-                                // Copy over the pars.
-                                if (pars) {
-                                    for (vec_size_t i = 0; i < static_cast<vec_size_t>(nparams); ++i) {
-                                        for (vec_size_t j = 0; j < ss_size; ++j) {
-                                            par_ptr[i * ss_size + j] = pars_vec[i * nevals + k * ss_size + j];
-                                        }
-                                    }
-                                }
+                                const auto start_offset = k * ss_size;
 
                                 // Run the evaluation.
-                                fptr_batch(out_ptr, in_ptr, par_ptr);
-
-                                // Write the outputs.
-                                for (vec_size_t i = 0; i < static_cast<vec_size_t>(nouts); ++i) {
-                                    for (vec_size_t j = 0; j < ss_size; ++j) {
-                                        outputs_vec[i * nevals + k * ss_size + j] = out_ptr[i * ss_size + j];
-                                    }
-                                }
+                                fptr_batch_s(out_data + start_offset, with_inputs ? in_data + start_offset : nullptr,
+                                             with_pars ? par_data + start_offset : nullptr, stride);
                             }
 
                             // Handle the remainder, if present.
                             for (auto k = n_simd_blocks * ss_size; k < nevals; ++k) {
-                                for (vec_size_t i = 0; i < static_cast<vec_size_t>(nvars); ++i) {
-                                    in_ptr[i] = inputs_vec[i * nevals + k];
-                                }
-
-                                if (pars) {
-                                    for (vec_size_t i = 0; i < static_cast<vec_size_t>(nparams); ++i) {
-                                        par_ptr[i] = pars_vec[i * nevals + k];
-                                    }
-                                }
-
-                                fptr_scal(out_ptr, in_ptr, par_ptr);
-
-                                for (vec_size_t i = 0; i < static_cast<vec_size_t>(nouts); ++i) {
-                                    outputs_vec[i * nevals + k] = out_ptr[i];
-                                }
+                                fptr_scal_s(out_data + k, with_inputs ? in_data + k : nullptr,
+                                            with_pars ? par_data + k : nullptr, stride);
                             }
                         } else {
-                            // Copy over the input data.
-                            for (vec_size_t i = 0; i < static_cast<vec_size_t>(nvars); ++i) {
-                                in_ptr[i] = inputs_vec[i];
-                            }
-
-                            // Copy over the pars.
-                            if (pars) {
-                                for (vec_size_t i = 0; i < static_cast<vec_size_t>(nparams); ++i) {
-                                    par_ptr[i] = pars_vec[i];
-                                }
-                            }
-
-                            // Run the evaluation.
-                            fptr_scal(out_ptr, in_ptr, par_ptr);
-
-                            // Write the outputs.
-                            for (vec_size_t i = 0; i < static_cast<vec_size_t>(nouts); ++i) {
-                                outputs_vec[i] = out_ptr[i];
-                            }
+                            fptr_scal(outputs_vec.data(), inputs_vec.data(), pars_vec.data());
                         }
 
                         // Convert to numpy array.
