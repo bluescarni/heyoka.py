@@ -524,6 +524,7 @@ void expose_add_cfunc_impl(py::module &m, const char *name)
 
                         // Check if we can use a zero-copy implementation. This is enabled
                         // for distinct C style arrays who own their data.
+
                         // All C style?
                         bool zero_copy = (inputs.flags() & py::array::c_style) && (outputs.flags() & py::array::c_style)
                                          && (!pars || (pars->flags() & py::array::c_style));
@@ -566,8 +567,16 @@ void expose_add_cfunc_impl(py::module &m, const char *name)
                                 auto *out_data = outputs.mutable_data();
                                 auto *in_data = inputs.data();
                                 auto *par_data = pars ? pars->data() : nullptr;
-                                const auto with_inputs = in_data != nullptr;
-                                const auto with_pars = par_data != nullptr;
+                                // NOTE: we define these two boolean variables in order
+                                // to avoid doing pointer arithmetic (when invoking fptr_batch_s)
+                                // on bogus pointers (such as nullptr). This could happen for instance
+                                // if the function has no inputs, or if an empty pars array was provided
+                                // (that is, in both cases we would be dealing with numpy arrays
+                                // with shape (0, nevals)). In other words, while we assume
+                                // calling .data() on any numpy array is always safe, we are taking
+                                // precautions when doing arithmetics on the pointer returned by .data().
+                                const auto with_inputs = nvars > 0u;
+                                const auto with_pars = nparams > 0u;
 
                                 // Evaluate over the simd blocks.
                                 for (py::ssize_t k = 0; k < n_simd_blocks; ++k) {
