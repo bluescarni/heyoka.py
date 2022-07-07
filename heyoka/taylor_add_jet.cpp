@@ -9,7 +9,6 @@
 #include <heyoka/config.hpp>
 
 #include <algorithm>
-#include <cassert>
 #include <cstdint>
 #include <optional>
 #include <type_traits>
@@ -85,8 +84,6 @@ void taylor_add_jet_array_check(const Arr &state, const std::optional<Arr> &pars
         }
 
         if (pars) {
-            assert(n_params > 0u);
-
             // The pars array must have shape (n_params).
             if (pars->ndim() != 1) {
                 py_throw(PyExc_ValueError,
@@ -151,8 +148,6 @@ void taylor_add_jet_array_check(const Arr &state, const std::optional<Arr> &pars
         }
 
         if (pars) {
-            assert(n_params > 0u);
-
             // The pars array must have shape (n_params, batch_size).
             if (pars->ndim() != 2) {
                 py_throw(PyExc_ValueError,
