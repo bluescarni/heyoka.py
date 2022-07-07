@@ -101,7 +101,7 @@ void taylor_add_jet_array_check(const Arr &state, const std::optional<Arr> &pars
             if (pars->shape(0) != boost::numeric_cast<py::ssize_t>(n_params)) {
                 py_throw(PyExc_ValueError, fmt::format("Invalid parameters vector passed to a function for the "
                                                        "computation of the jet of "
-                                                       "Taylor derivatives: the shape must be ({}), but it is "
+                                                       "Taylor derivatives: the shape must be ({}, ), but it is "
                                                        "({}) instead",
                                                        n_params, pars->shape(0))
                                                .c_str());
@@ -122,7 +122,7 @@ void taylor_add_jet_array_check(const Arr &state, const std::optional<Arr> &pars
             if (time->shape(0) != 1) {
                 py_throw(PyExc_ValueError,
                          fmt::format("Invalid time vector passed to a function for the computation of the jet of "
-                                     "Taylor derivatives: the shape must be (1), but it is "
+                                     "Taylor derivatives: the shape must be (1, ), but it is "
                                      "({}) instead",
                                      time->shape(0))
                              .c_str());
@@ -190,7 +190,7 @@ void taylor_add_jet_array_check(const Arr &state, const std::optional<Arr> &pars
             if (time->shape(0) != boost::numeric_cast<py::ssize_t>(batch_size)) {
                 py_throw(PyExc_ValueError,
                          fmt::format("Invalid time vector passed to a function for the computation of the jet of "
-                                     "Taylor derivatives: the shape must be ({}), but it is "
+                                     "Taylor derivatives: the shape must be ({}, ), but it is "
                                      "({}) instead",
                                      batch_size, time->shape(0))
                              .c_str());

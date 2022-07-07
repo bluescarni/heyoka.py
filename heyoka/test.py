@@ -195,7 +195,7 @@ class taylor_add_jet_test_case(_ut.TestCase):
                 jet_par(st, pars=par_arr)
             self.assertTrue("Invalid parameters vector passed to a function for the "
                             "computation of the jet of "
-                            "Taylor derivatives: the shape must be (1), but it is "
+                            "Taylor derivatives: the shape must be (1, ), but it is "
                             "(5) instead" in str(cm.exception))
 
             # Wrong time shape, scalar case.
@@ -211,7 +211,7 @@ class taylor_add_jet_test_case(_ut.TestCase):
             with self.assertRaises(ValueError) as cm:
                 jet_par_t(st, pars=par_arr, time=time_arr)
             self.assertTrue("Invalid time vector passed to a function for the computation of the jet of "
-                            "Taylor derivatives: the shape must be (1), but it is "
+                            "Taylor derivatives: the shape must be (1, ), but it is "
                             "(5) instead" in str(cm.exception))
 
             # No pars in the system, wrong par array provided, scalar case.
@@ -219,12 +219,12 @@ class taylor_add_jet_test_case(_ut.TestCase):
             st = np.full((6, 2), fp_t(0), dtype=fp_t)
             with self.assertRaises(ValueError) as cm:
                 jet(st, pars=np.zeros((1,), dtype=fp_t))
-            self.assertTrue("Invalid parameters vector passed to a function for the computation of the jet of Taylor derivatives: the shape must be (0), but it is (1) instead" in str(cm.exception))
+            self.assertTrue("Invalid parameters vector passed to a function for the computation of the jet of Taylor derivatives: the shape must be (0, ), but it is (1) instead" in str(cm.exception))
 
             # No time in the system, wrong time array provided, scalar case.
             with self.assertRaises(ValueError) as cm:
                 jet(st, time=np.zeros((0,), dtype=fp_t))
-            self.assertTrue("Invalid time vector passed to a function for the computation of the jet of Taylor derivatives: the shape must be (1), but it is (0) instead" in str(cm.exception))
+            self.assertTrue("Invalid time vector passed to a function for the computation of the jet of Taylor derivatives: the shape must be (1, ), but it is (0) instead" in str(cm.exception))
 
             # Non-owning arrays, scalar case.
             with self.assertRaises(ValueError) as cm:
@@ -367,7 +367,7 @@ class taylor_add_jet_test_case(_ut.TestCase):
             with self.assertRaises(ValueError) as cm:
                 jet_par_t(st, pars=par_arr, time=time_arr)
             self.assertTrue("Invalid time vector passed to a function for the computation of the jet of "
-                            "Taylor derivatives: the shape must be (4), but it is "
+                            "Taylor derivatives: the shape must be (4, ), but it is "
                             "(5) instead" in str(cm.exception))
 
             # No pars in the system, wrong par array provided, batch case.
@@ -380,7 +380,7 @@ class taylor_add_jet_test_case(_ut.TestCase):
             # No time in the system, wrong time array provided, batch case.
             with self.assertRaises(ValueError) as cm:
                 jet(st, time=np.zeros((0,), dtype=fp_t))
-            self.assertTrue("Invalid time vector passed to a function for the computation of the jet of Taylor derivatives: the shape must be (4), but it is (0) instead" in str(cm.exception))
+            self.assertTrue("Invalid time vector passed to a function for the computation of the jet of Taylor derivatives: the shape must be (4, ), but it is (0) instead" in str(cm.exception))
 
             # Non-owning arrays, batch case.
             with self.assertRaises(ValueError) as cm:
@@ -505,7 +505,7 @@ class taylor_add_jet_test_case(_ut.TestCase):
             jet_par(st, pars=par_arr)
         self.assertTrue("Invalid parameters vector passed to a function for the "
                         "computation of the jet of "
-                        "Taylor derivatives: the shape must be (1), but it is "
+                        "Taylor derivatives: the shape must be (1, ), but it is "
                         "(5) instead" in str(cm.exception))
 
         # Wrong time shape, scalar case.
@@ -521,7 +521,7 @@ class taylor_add_jet_test_case(_ut.TestCase):
         with self.assertRaises(ValueError) as cm:
             jet_par_t(st, pars=par_arr, time=time_arr)
         self.assertTrue("Invalid time vector passed to a function for the computation of the jet of "
-                        "Taylor derivatives: the shape must be (1), but it is "
+                        "Taylor derivatives: the shape must be (1, ), but it is "
                         "(5) instead" in str(cm.exception))
 
 
