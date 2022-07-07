@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>The two-fixed centres elliptic billiard &#8212; heyoka.py 0.18.0 documentation</title>
+    <title>The two-fixed centres elliptic billiard &#8212; heyoka.py 0.19.0 documentation</title>
     
   <!-- Loaded before other Sphinx assets -->
   <link href="../_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
@@ -22,8 +22,8 @@
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
     <link rel="stylesheet" href="../_static/styles/sphinx-book-theme.css?digest=62ba249389abaaa9ffc34bf36a076bdc1d65ee18" type="text/css" />
-    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css" />
     <link rel="stylesheet" type="text/css" href="../_static/mystnb.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css" />
     
   <!-- Pre-loaded scripts that we'll load fully later -->
   <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf">
@@ -38,8 +38,6 @@
     <script src="../_static/togglebutton.js"></script>
     <script src="../_static/scripts/sphinx-book-theme.js?digest=f31d14ad54b65d19161ba51d4ffff3a77ae00456"></script>
     <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
-    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
-    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="The wavy ramp" href="The%20wavy%20ramp.html" />
@@ -87,7 +85,7 @@
       <img src="../_static/white_logo.png" class="logo" alt="logo">
       
       
-      <h1 class="site-logo" id="site-title">heyoka.py 0.18.0 documentation</h1>
+      <h1 class="site-logo" id="site-title">heyoka.py 0.19.0 documentation</h1>
       
     </a>
 </div><form class="bd-search d-flex align-items-center" action="../search.html" method="get">
@@ -543,14 +541,13 @@ title="Print to PDF"
                 
               <div>
                 
-  <section class="tex2jax_ignore mathjax_ignore" id="the-two-fixed-centres-elliptic-billiard">
+  <section id="the-two-fixed-centres-elliptic-billiard">
 <h1>The two-fixed centres elliptic billiard<a class="headerlink" href="#the-two-fixed-centres-elliptic-billiard" title="Permalink to this headline">#</a></h1>
 <p>This example is a refinement of the <a class="reference internal" href="The%20Keplerian%20billiard.html"><span class="doc std std-doc">Keplerian billiard</span></a> described earlier in which we introduce <em>two</em> gravitational centres of attraction (rather than one) embedded in a non-rectangular billiard. Specifically, the billiard’s shape is defined by the <a class="reference external" href="https://en.wikipedia.org/wiki/Algebraic_curve">elliptic curve</a></p>
-<div class="math notranslate nohighlight">
-\[
+<p>$$
 y^2 = \left(a - x \right)\cdot\left(x - b\right)\cdot\left(x^2 + c\right),
-\]</div>
-<p>and the centres of gravity of radius <span class="math notranslate nohighlight">\(R\)</span> are placed on the <span class="math notranslate nohighlight">\(x\)</span> axis at coordinates <span class="math notranslate nohighlight">\(p_0\)</span> and <span class="math notranslate nohighlight">\(p_1\)</span>. Let us pick specific numerical values for the parameters <span class="math notranslate nohighlight">\(a\)</span>, <span class="math notranslate nohighlight">\(b\)</span>, <span class="math notranslate nohighlight">\(c\)</span>, <span class="math notranslate nohighlight">\(p_0\)</span>, <span class="math notranslate nohighlight">\(p_1\)</span> and <span class="math notranslate nohighlight">\(R\)</span>, and let us take a look at the geometry of the problem:</p>
+$$</p>
+<p>and the centres of gravity of radius $R$ are placed on the $x$ axis at coordinates $p_0$ and $p_1$. Let us pick specific numerical values for the parameters $a$, $b$, $c$, $p_0$, $p_1$ and $R$, and let us take a look at the geometry of the problem:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">matplotlib.pylab</span> <span class="kn">import</span> <span class="n">plt</span>
@@ -584,7 +581,7 @@ y^2 = \left(a - x \right)\cdot\left(x - b\right)\cdot\left(x^2 + c\right),
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/The two-fixed elliptic billiard_1_0.png" src="../_images/The two-fixed elliptic billiard_1_0.png" />
+<img alt="../_images/d941b6ef122e715902230eeee3a55dfd28ef475229abbef1fdcec93633e2ca5b.png" src="../_images/d941b6ef122e715902230eeee3a55dfd28ef475229abbef1fdcec93633e2ca5b.png" />
 </div>
 </div>
 <p>The elliptic curve generates on the plane a smooth, hourglass-like shape.</p>
@@ -610,14 +607,13 @@ y^2 = \left(a - x \right)\cdot\left(x - b\right)\cdot\left(x^2 + c\right),
 </div>
 </div>
 <p>In order to make the test particle bounce on the walls of the billiard and on the surface of the gravitational centres of attraction, we will need to define three event equations to detect when the particle hits the walls and the centres:</p>
-<div class="math notranslate nohighlight">
-\[\begin{split}
+<p>$$
 \begin{cases}
-y^2 - \left(a - x \right)\cdot\left(x - b\right)\cdot\left(x^2 + c\right) = 0 \\
-\left( x - p_0 \right)^2 + y^2 - R^2 = 0 \\
+y^2 - \left(a - x \right)\cdot\left(x - b\right)\cdot\left(x^2 + c\right) = 0 \
+\left( x - p_0 \right)^2 + y^2 - R^2 = 0 \
 \left( x - p_1 \right)^2 + y^2 - R^2 = 0
 \end{cases}.
-\end{split}\]</div>
+$$</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Walls.</span>
@@ -729,7 +725,7 @@ y^2 - \left(a - x \right)\cdot\left(x - b\right)\cdot\left(x^2 + c\right) = 0 \\
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/The two-fixed elliptic billiard_13_0.png" src="../_images/The two-fixed elliptic billiard_13_0.png" />
+<img alt="../_images/2f23b3826c84f522c7dc96c70b7a50fd12d6a23d507ed055fc24b718b42424f1.png" src="../_images/2f23b3826c84f522c7dc96c70b7a50fd12d6a23d507ed055fc24b718b42424f1.png" />
 </div>
 </div>
 <p>We can see how, indeed, the test particle bounces both against the walls of the billiard and the centres of gravitational attraction.</p>
@@ -763,7 +759,7 @@ y^2 - \left(a - x \right)\cdot\left(x - b\right)\cdot\left(x^2 + c\right) = 0 \\
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/The two-fixed elliptic billiard_15_0.png" src="../_images/The two-fixed elliptic billiard_15_0.png" />
+<img alt="../_images/b8b249f968beee0bb78b9a9b1dfad96b25c322336a01de52d4c375f667ad8a0f.png" src="../_images/b8b249f968beee0bb78b9a9b1dfad96b25c322336a01de52d4c375f667ad8a0f.png" />
 </div>
 </div>
 <p>Because we increased the initial velocity, the motion of the test particle is now almost rectilinear, and it fills up in a dense fashion the simulation domain.</p>

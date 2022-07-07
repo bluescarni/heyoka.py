@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>Mercury’s relativistic precession &#8212; heyoka.py 0.18.0 documentation</title>
+    <title>Mercury’s relativistic precession &#8212; heyoka.py 0.19.0 documentation</title>
     
   <!-- Loaded before other Sphinx assets -->
   <link href="../_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
@@ -22,8 +22,8 @@
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
     <link rel="stylesheet" href="../_static/styles/sphinx-book-theme.css?digest=62ba249389abaaa9ffc34bf36a076bdc1d65ee18" type="text/css" />
-    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css" />
     <link rel="stylesheet" type="text/css" href="../_static/mystnb.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css" />
     
   <!-- Pre-loaded scripts that we'll load fully later -->
   <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf">
@@ -38,8 +38,6 @@
     <script src="../_static/togglebutton.js"></script>
     <script src="../_static/scripts/sphinx-book-theme.js?digest=f31d14ad54b65d19161ba51d4ffff3a77ae00456"></script>
     <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
-    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
-    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Calculating transit timing variations" href="ttv.html" />
@@ -87,7 +85,7 @@
       <img src="../_static/white_logo.png" class="logo" alt="logo">
       
       
-      <h1 class="site-logo" id="site-title">heyoka.py 0.18.0 documentation</h1>
+      <h1 class="site-logo" id="site-title">heyoka.py 0.19.0 documentation</h1>
       
     </a>
 </div><form class="bd-search d-flex align-items-center" action="../search.html" method="get">
@@ -543,16 +541,15 @@ title="Print to PDF"
                 
               <div>
                 
-  <section class="tex2jax_ignore mathjax_ignore" id="mercury-s-relativistic-precession">
+  <section id="mercury-s-relativistic-precession">
 <h1>Mercury’s relativistic precession<a class="headerlink" href="#mercury-s-relativistic-precession" title="Permalink to this headline">#</a></h1>
 <p>One of the early successes of <a class="reference external" href="https://en.wikipedia.org/wiki/General_relativity">general relativity</a> (GR) was the explanation of an <a class="reference external" href="https://en.wikipedia.org/wiki/Mercury_(planet)#Advance_of_perihelion">excess in the precession of Mercury’s perihelion</a> that could not be accounted for via Newtonian gravity. In this tutorial
 we will show how we can reproduce this classical result with heyoka.py.</p>
 <p>In the weak gravitational field regime, the formulation of GR can be greatly simplified via the formalism of <a class="reference external" href="https://en.wikipedia.org/wiki/Post-Newtonian_expansion">post-Newtonian approximations</a> (PN). In the specific case of Mercury’s relativistic perihelion precession, a first-order post-Newtonian expansion of the full GR equations is sufficient. The 1PN Hamiltonian of a test particle orbiting a spherical mass reads, in Cartesian coordinates:</p>
-<div class="math notranslate nohighlight">
-\[
+<p>$$
 \mathcal{H}_\mathrm{1PN} \left(v_x, v_y, v_z, x, y, z \right) = \frac{1}{2}v^2-\frac{\mu}{r} + \varepsilon \left(\frac{\mu^2}{2r^2} -\frac{1}{8}v^4-\frac{3}{2}\frac{\mu v^2}{r} \right),
-\]</div>
-<p>where <span class="math notranslate nohighlight">\(\varepsilon = 1/c^2\)</span>, <span class="math notranslate nohighlight">\(v=\sqrt{v_x^2+v_y^2+v_z^2}\)</span>, <span class="math notranslate nohighlight">\(r=\sqrt{x^2+y^2+z^2}\)</span> and <span class="math notranslate nohighlight">\(\mu=GM\)</span> is the gravitational parameter of the system. In other words, <span class="math notranslate nohighlight">\(\mathcal{H}_\mathrm{1PN}\)</span> is a Keplerian one-body Hamiltonian augmented by a velocity-dependent perturbation of magnitude <span class="math notranslate nohighlight">\(\varepsilon\)</span>.</p>
+$$</p>
+<p>where $\varepsilon = 1/c^2$, $v=\sqrt{v_x^2+v_y^2+v_z^2}$, $r=\sqrt{x^2+y^2+z^2}$ and $\mu=GM$ is the gravitational parameter of the system. In other words, $\mathcal{H}_\mathrm{1PN}$ is a Keplerian one-body Hamiltonian augmented by a velocity-dependent perturbation of magnitude $\varepsilon$.</p>
 <p>Let us write down the Hamiltonian using heyoka.py’s expression system:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -577,7 +574,7 @@ we will show how we can reproduce this classical result with heyoka.py.</p>
 </div>
 </div>
 <p>As usual, we are using Solar masses, astronomical units and years as units of measure.</p>
-<p>Let us now define the initial conditions for Mercury’s orbit. Semi-major axis, eccentricity and inclination are those of Mercury’s current orbit. The initial argument of perihelion <span class="math notranslate nohighlight">\(\omega_0\)</span> is set to a value of 1:</p>
+<p>Let us now define the initial conditions for Mercury’s orbit. Semi-major axis, eccentricity and inclination are those of Mercury’s current orbit. The initial argument of perihelion $\omega_0$ is set to a value of 1:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pykep</span> <span class="k">as</span> <span class="nn">pk</span>
@@ -625,7 +622,7 @@ we will show how we can reproduce this classical result with heyoka.py.</p>
 </div>
 </div>
 </div>
-<p>We are now ready to visualise the results. GR predicts for Mercury a relativistic precession of <span class="math notranslate nohighlight">\(42.98^{\prime\prime}\)</span> per century, or roughly <span class="math notranslate nohighlight">\(2.08373\times 10^{-4}\,\mathrm{rad}\)</span> per century. Let us then plot the time evolution of the argument of perihelion and compare it to the theoretical prediction:</p>
+<p>We are now ready to visualise the results. GR predicts for Mercury a relativistic precession of $42.98^{\prime\prime}$ per century, or roughly $2.08373\times 10^{-4},\mathrm{rad}$ per century. Let us then plot the time evolution of the argument of perihelion and compare it to the theoretical prediction:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%</span><span class="k">matplotlib</span> inline
@@ -647,7 +644,7 @@ we will show how we can reproduce this classical result with heyoka.py.</p>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/mercury_precession_11_0.png" src="../_images/mercury_precession_11_0.png" />
+<img alt="../_images/8ee6c3ccbd5d5735465e42731b11aa167ab505a1a6dd2bbe210a3a5cd91e7e1b.png" src="../_images/8ee6c3ccbd5d5735465e42731b11aa167ab505a1a6dd2bbe210a3a5cd91e7e1b.png" />
 </div>
 </div>
 <p>Note that we added a slight offset to the theoretical prediction, because otherwise the two lines would have been overlapping, resulting in an unreadable graph.</p>

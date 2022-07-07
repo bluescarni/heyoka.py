@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>Inverting Kepler’s equation in ODEs &#8212; heyoka.py 0.18.0 documentation</title>
+    <title>Inverting Kepler’s equation in ODEs &#8212; heyoka.py 0.19.0 documentation</title>
     
   <!-- Loaded before other Sphinx assets -->
   <link href="../_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
@@ -22,8 +22,8 @@
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
     <link rel="stylesheet" href="../_static/styles/sphinx-book-theme.css?digest=62ba249389abaaa9ffc34bf36a076bdc1d65ee18" type="text/css" />
-    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css" />
     <link rel="stylesheet" type="text/css" href="../_static/mystnb.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css" />
     
   <!-- Pre-loaded scripts that we'll load fully later -->
   <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf">
@@ -38,8 +38,6 @@
     <script src="../_static/togglebutton.js"></script>
     <script src="../_static/scripts/sphinx-book-theme.js?digest=f31d14ad54b65d19161ba51d4ffff3a77ae00456"></script>
     <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
-    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
-    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Planetary embryos in the inner Solar System" href="Planetary%20embryos.html" />
@@ -87,7 +85,7 @@
       <img src="../_static/white_logo.png" class="logo" alt="logo">
       
       
-      <h1 class="site-logo" id="site-title">heyoka.py 0.18.0 documentation</h1>
+      <h1 class="site-logo" id="site-title">heyoka.py 0.19.0 documentation</h1>
       
     </a>
 </div><form class="bd-search d-flex align-items-center" action="../search.html" method="get">
@@ -543,38 +541,33 @@ title="Print to PDF"
                 
               <div>
                 
-  <section class="tex2jax_ignore mathjax_ignore" id="inverting-kepler-s-equation-in-odes">
+  <section id="inverting-kepler-s-equation-in-odes">
 <h1>Inverting Kepler’s equation in ODEs<a class="headerlink" href="#inverting-kepler-s-equation-in-odes" title="Permalink to this headline">#</a></h1>
 <p>In the <a class="reference internal" href="Comparing%20coordinate%20systems.html"><span class="doc std std-doc">previous tutorial</span></a> we considered the numerical solution of the Stark problem, whose Hamiltonian, in Cartesian coordinates, reads</p>
-<div class="math notranslate nohighlight">
-\[
+<p>$$
 \mathcal{H}_\mathrm{cart}\left(v_x, v_y, v_z, x, y, z \right) = \frac{1}{2}\left( v_x^2+v_y^2+v_z^2 \right) - \frac{1}{\sqrt{x^2+y^2+z^2}} - \varepsilon z.
-\]</div>
+$$</p>
 <p>We saw how a reformulation of the Stark problem using Delaunay elements, instead of Cartesian coordinates, can help reducing the total number of timesteps per unit of integration time. The Delaunay elements are the Hamiltonian version of the <a class="reference external" href="https://en.wikipedia.org/wiki/Orbital_elements">Keplerian orbital elements</a>, to which they are related via the following equations (valid in adimensional units):</p>
-<div class="math notranslate nohighlight">
-\[\begin{split}
+<p>$$
 \begin{aligned}
-L &amp; = \sqrt{a}, &amp; l &amp; =  M, \\
-G &amp; = \sqrt{a\left( 1 - e^2\right)}, &amp; g &amp; = \omega, \\
+L &amp; = \sqrt{a}, &amp; l &amp; =  M, \
+G &amp; = \sqrt{a\left( 1 - e^2\right)}, &amp; g &amp; = \omega, \
 H &amp; = \sqrt{a\left( 1 - e^2\right)} \cos i, &amp; h &amp; =  \Omega.
 \end{aligned}
-\end{split}\]</div>
+$$</p>
 <p>The Hamiltonian of the Stark problem in Delaunay elements reads:</p>
-<div class="math notranslate nohighlight">
-\[
+<p>$$
 \mathcal{H}_\mathrm{Del} \left( L, G, H, l, g, h \right) = -\frac{1}{2L^2}-\varepsilon L\sqrt{1-\frac{H^2}{G^2}}\left[ L\left( \cos E - \sqrt{1-\frac{G^2}{L^2}} \right)\sin g + G\sin E \cos g \right].
-\]</div>
-<p>In this Hamiltonian, <span class="math notranslate nohighlight">\(E\)</span> is the eccentric anomaly, which is a function of <span class="math notranslate nohighlight">\(L\)</span>, <span class="math notranslate nohighlight">\(G\)</span> and <span class="math notranslate nohighlight">\(l\)</span> implicitly defined by <a class="reference external" href="https://en.wikipedia.org/wiki/Kepler%27s_equation">Kepler’s equation</a>:</p>
-<div class="math notranslate nohighlight">
-\[
+$$</p>
+<p>In this Hamiltonian, $E$ is the eccentric anomaly, which is a function of $L$, $G$ and $l$ implicitly defined by <a class="reference external" href="https://en.wikipedia.org/wiki/Kepler%27s_equation">Kepler’s equation</a>:</p>
+<p>$$
 l = E - \sqrt{1-\frac{G^2}{L^2}} \sin E.
-\]</div>
-<p>Because Kepler’s equation is trascendental, it cannot be inverted to yield an explicit expression for <span class="math notranslate nohighlight">\(E\)</span> in terms of elementary functions. In the <a class="reference internal" href="Comparing%20coordinate%20systems.html"><span class="doc std std-doc">previous tutorial</span></a> we worked around this issue by leaving <span class="math notranslate nohighlight">\(E\)</span> as an unspecified function in the Hamiltonian; we then augmented Hamilton’s equations via the derivatives of <span class="math notranslate nohighlight">\(E\)</span> (which can be formulated explicitly) and numerically solved the augmented system of differential equations.</p>
-<p>Here we will employ a different approach, and we will use instead the function <code class="docutils literal notranslate"><span class="pre">kepE()</span></code> provided by heyoka.py’s expression system. As the name suggests, <code class="docutils literal notranslate"><span class="pre">kepE()</span></code> represents symbolically the inversion of Kepler’s elliptic equation. That is, <code class="docutils literal notranslate"><span class="pre">kepE(e,</span> <span class="pre">M)</span></code> is the bivariate function <span class="math notranslate nohighlight">\(E\left(e,M\right)\)</span> implicitly defined by Kepler’s elliptic equation:</p>
-<div class="math notranslate nohighlight">
-\[
+$$</p>
+<p>Because Kepler’s equation is trascendental, it cannot be inverted to yield an explicit expression for $E$ in terms of elementary functions. In the <a class="reference internal" href="Comparing%20coordinate%20systems.html"><span class="doc std std-doc">previous tutorial</span></a> we worked around this issue by leaving $E$ as an unspecified function in the Hamiltonian; we then augmented Hamilton’s equations via the derivatives of $E$ (which can be formulated explicitly) and numerically solved the augmented system of differential equations.</p>
+<p>Here we will employ a different approach, and we will use instead the function <code class="docutils literal notranslate"><span class="pre">kepE()</span></code> provided by heyoka.py’s expression system. As the name suggests, <code class="docutils literal notranslate"><span class="pre">kepE()</span></code> represents symbolically the inversion of Kepler’s elliptic equation. That is, <code class="docutils literal notranslate"><span class="pre">kepE(e,</span> <span class="pre">M)</span></code> is the bivariate function $E\left(e,M\right)$ implicitly defined by Kepler’s elliptic equation:</p>
+<p>$$
 M = E - e \sin E.
-\]</div>
+$$</p>
 <p>For the evaluation of <code class="docutils literal notranslate"><span class="pre">kepE(e,</span> <span class="pre">M)</span></code> heyoka.py uses an iterative numerical scheme. The high-order derivatives necessary to implement Taylor’s integration method are built using automatic-differentiation techniques starting from the evaluation of <code class="docutils literal notranslate"><span class="pre">kepE(e,</span> <span class="pre">M)</span></code>.</p>
 <p>Let us begin by writing down the Hamiltonian:</p>
 <div class="cell docutils container">
@@ -596,7 +589,7 @@ M = E - e \sin E.
 </div>
 </div>
 </div>
-<p>Note how, in terms of Delaunay arguments, <span class="math notranslate nohighlight">\(e=\sqrt{1-\frac{G^2}{L^2}}\)</span> and <span class="math notranslate nohighlight">\(M=l\)</span>.</p>
+<p>Note how, in terms of Delaunay arguments, $e=\sqrt{1-\frac{G^2}{L^2}}$ and $M=l$.</p>
 <p>Unlike in the <a class="reference internal" href="Comparing%20coordinate%20systems.html"><span class="doc std std-doc">previous tutorial</span></a>, and thanks to the fact that <code class="docutils literal notranslate"><span class="pre">kepE()</span></code> supports symbolic differentiation, we can now use the standard formulation of Hamilton’s equations:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -621,7 +614,7 @@ M = E - e \sin E.
 </div>
 </div>
 </div>
-<p>Let us now integrate up to <span class="math notranslate nohighlight">\(t=250\)</span> on a time grid. As usual, we will provide a callback to periodically reduce the <span class="math notranslate nohighlight">\(l\)</span> angle modulo <span class="math notranslate nohighlight">\(2\pi\)</span>:</p>
+<p>Let us now integrate up to $t=250$ on a time grid. As usual, we will provide a callback to periodically reduce the $l$ angle modulo $2\pi$:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
@@ -674,7 +667,7 @@ M = E - e \sin E.
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/Inverting Kepler's equation in ODEs_9_0.png" src="../_images/Inverting Kepler's equation in ODEs_9_0.png" />
+<img alt="../_images/9f57c0eda82b83e856f4ebe297e6a3ba36cf23924ca72796ec061ef808dcdd51.png" src="../_images/9f57c0eda82b83e856f4ebe297e6a3ba36cf23924ca72796ec061ef808dcdd51.png" />
 </div>
 </div>
 <p>It can be confirmed by direct numerical comparison that the integration of the Stark problem using <code class="docutils literal notranslate"><span class="pre">kepE()</span></code> produced results matching those from the <a class="reference internal" href="Comparing%20coordinate%20systems.html"><span class="doc std std-doc">previous tutorial</span></a> to machine precision.</p>

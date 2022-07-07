@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>Batch mode &#8212; heyoka.py 0.18.0 documentation</title>
+    <title>Batch mode &#8212; heyoka.py 0.19.0 documentation</title>
     
   <!-- Loaded before other Sphinx assets -->
   <link href="../_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
@@ -22,8 +22,8 @@
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
     <link rel="stylesheet" href="../_static/styles/sphinx-book-theme.css?digest=62ba249389abaaa9ffc34bf36a076bdc1d65ee18" type="text/css" />
-    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css" />
     <link rel="stylesheet" type="text/css" href="../_static/mystnb.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css" />
     
   <!-- Pre-loaded scripts that we'll load fully later -->
   <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf">
@@ -38,8 +38,6 @@
     <script src="../_static/togglebutton.js"></script>
     <script src="../_static/scripts/sphinx-book-theme.js?digest=f31d14ad54b65d19161ba51d4ffff3a77ae00456"></script>
     <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
-    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
-    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Ensemble propagations" href="ensemble_mode.html" />
@@ -87,7 +85,7 @@
       <img src="../_static/white_logo.png" class="logo" alt="logo">
       
       
-      <h1 class="site-logo" id="site-title">heyoka.py 0.18.0 documentation</h1>
+      <h1 class="site-logo" id="site-title">heyoka.py 0.19.0 documentation</h1>
       
     </a>
 </div><form class="bd-search d-flex align-items-center" action="../search.html" method="get">
@@ -640,18 +638,18 @@ title="Print to PDF"
                 
               <div>
                 
-  <section class="tex2jax_ignore mathjax_ignore" id="batch-mode">
+  <section id="batch-mode">
 <h1>Batch mode<a class="headerlink" href="#batch-mode" title="Permalink to this headline">#</a></h1>
 <p>heyoka.py’s API supports a mode of operation called <em>batch mode</em>.
 In batch mode, all the scalar quantities appearing in a system of ODEs
 (i.e., state variables, time coordinate, parameters, etc.)
-are formally replaced by small vectors of fixed size <span class="math notranslate nohighlight">\(n\)</span>, so that,
+are formally replaced by small vectors of fixed size $n$, so that,
 effectively, multiple ODE systems sharing the same mathematical formulation
 are being integrated simultaneously using different sets of numerical values.</p>
 <p>Because modern CPUs support <a class="reference external" href="https://en.wikipedia.org/wiki/SIMD">SIMD instructions</a>,
-the runtime cost of operating on a vector of <span class="math notranslate nohighlight">\(n\)</span> scalar values is roughly
+the runtime cost of operating on a vector of $n$ scalar values is roughly
 equivalent to the cost of operating on a single scalar value, and thus the use of
-batch mode can lead to an increase in floating-point throughput up to a factor of <span class="math notranslate nohighlight">\(n\)</span>.</p>
+batch mode can lead to an increase in floating-point throughput up to a factor of $n$.</p>
 <p>It is important to emphasise that batch mode does not reduce
 the CPU time required to integrate a system of ODEs. Rather, as a fine-grained
 form of data parallelism, batch mode allows to integrate multiple ODE systems in parallel
@@ -661,12 +659,12 @@ to integrate the same ODE system with different initial conditions and parameter
 by heyoka.py, in practice at this time no CPU provides SIMD instructions for extended-precision
 datatypes. Thus, here we will consider the application of batch mode only to
 standard <code class="docutils literal notranslate"><span class="pre">double</span></code> precision computations.</p>
-<p>The value of the batch size <span class="math notranslate nohighlight">\(n\)</span> can be freely chosen by the user. In order
-to achieve optimal performance, however, <span class="math notranslate nohighlight">\(n\)</span> should match the SIMD width of the
+<p>The value of the batch size $n$ can be freely chosen by the user. In order
+to achieve optimal performance, however, $n$ should match the SIMD width of the
 processor in use. Because at this time the most widespread SIMD instruction set is
 <a class="reference external" href="https://en.wikipedia.org/wiki/Advanced_Vector_Extensions">AVX</a> (available on
 most x86 processors sold since 2011), in this tutorial we will be using a
-batch size <span class="math notranslate nohighlight">\(n=4\)</span>.</p>
+batch size $n=4$.</p>
 <p>Starting from heyoka.py 0.17, a function is available to determine the recommended
 SIMD width for the CPU currently in use:</p>
 <div class="cell docutils container">
@@ -692,15 +690,14 @@ the API of <code class="docutils literal notranslate"><span class="pre">taylor_a
 pointed out.</p>
 <p>In order to present a comprehensive example, we will consider again the integration
 of the <a class="reference internal" href="Non-autonomous%20systems.html"><span class="doc std std-doc">forced damped pendulum</span></a>, with a small modification:</p>
-<div class="math notranslate nohighlight">
-\[\begin{split}
+<p>$$
 \begin{cases}
-x^\prime = v \\
+x^\prime = v \
 v^\prime = \cos t - \alpha v - \sin(x)
 \end{cases}.
-\end{split}\]</div>
-<p>Here <span class="math notranslate nohighlight">\(\alpha\)</span> is an air friction coefficient whose value is left undefined
-(i.e., <span class="math notranslate nohighlight">\(\alpha\)</span> is a <a class="reference internal" href="ODEs%20with%20parameters.html"><span class="doc std std-doc">runtime parameter</span></a>).</p>
+$$</p>
+<p>Here $\alpha$ is an air friction coefficient whose value is left undefined
+(i.e., $\alpha$ is a <a class="reference internal" href="ODEs%20with%20parameters.html"><span class="doc std std-doc">runtime parameter</span></a>).</p>
 <p>Let us begin:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -713,8 +710,8 @@ v^\prime = \cos t - \alpha v - \sin(x)
 </div>
 </div>
 </div>
-<p>As usual, we begin by creating the symbolic state variables <span class="math notranslate nohighlight">\(x\)</span> and <span class="math notranslate nohighlight">\(v\)</span>.
-We also store in a constant the value of the batch size <span class="math notranslate nohighlight">\(n = 4\)</span> for later use.</p>
+<p>As usual, we begin by creating the symbolic state variables $x$ and $v$.
+We also store in a constant the value of the batch size $n = 4$ for later use.</p>
 <p>Next, we define the equations of motion:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -725,16 +722,15 @@ We also store in a constant the value of the batch size <span class="math notran
 </div>
 </div>
 </div>
-<p>The friction coefficient <span class="math notranslate nohighlight">\(\alpha\)</span> is implemented as the runtime parameter at index 0 (<code class="docutils literal notranslate"><span class="pre">par[0]</span></code>).</p>
-<p>We can now proceed to the creation of the batch integrator. We will need to provide batches of initial conditions for <span class="math notranslate nohighlight">\(x\)</span> and <span class="math notranslate nohighlight">\(v\)</span>, and a batch of values for the runtime parameter <span class="math notranslate nohighlight">\(\alpha\)</span>. We will choose the following numerical values:</p>
-<div class="math notranslate nohighlight">
-\[\begin{split}
+<p>The friction coefficient $\alpha$ is implemented as the runtime parameter at index 0 (<code class="docutils literal notranslate"><span class="pre">par[0]</span></code>).</p>
+<p>We can now proceed to the creation of the batch integrator. We will need to provide batches of initial conditions for $x$ and $v$, and a batch of values for the runtime parameter $\alpha$. We will choose the following numerical values:</p>
+<p>$$
 \begin{cases}
-x_0 = \left( 0.00, 0.01, 0.02, 0.03 \right ) \\
-v_0 = \left( 1.85, 1.86, 1.87, 1.88 \right) \\
+x_0 = \left( 0.00, 0.01, 0.02, 0.03 \right ) \
+v_0 = \left( 1.85, 1.86, 1.87, 1.88 \right) \
 \alpha = \left( 0.10, 0.11, 0.12, 0.13 \right)
 \end{cases}.
-\end{split}\]</div>
+$$</p>
 <p>Let us see the code:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -755,8 +751,8 @@ v_0 = \left( 1.85, 1.86, 1.87, 1.88 \right) \\
 <code class="docutils literal notranslate"><span class="pre">taylor_adaptive</span></code>: it has the same mandatory and optional arguments, but the expected
 array format for the initial conditions and parameter values is different. Specifically, a batch integrator
 expects as initial conditions and parameter values 2D arrays in which the number of columns represents the batch size.
-Thus, because in this specific case the array of initial conditions has shape <span class="math notranslate nohighlight">\(\left( 2, 4 \right)\)</span>
-and the array of parameter values has shape <span class="math notranslate nohighlight">\(\left( 1, 4 \right)\)</span>, the integrator infers that the batch size is 4.</p>
+Thus, because in this specific case the array of initial conditions has shape $\left( 2, 4 \right)$
+and the array of parameter values has shape $\left( 1, 4 \right)$, the integrator infers that the batch size is 4.</p>
 <p>Because we didn’t provide values for the initial times, the time coordinates are
 all initialised to zero:</p>
 <div class="cell docutils container">
@@ -908,7 +904,7 @@ Time:
 </div>
 </div>
 </div>
-<p>Let us now reset the integrator to the original initial conditions, and use <code class="docutils literal notranslate"><span class="pre">propagate_grid()</span></code> to compute and then plot the time evolution of <span class="math notranslate nohighlight">\(x\)</span> for the different batch elements:</p>
+<p>Let us now reset the integrator to the original initial conditions, and use <code class="docutils literal notranslate"><span class="pre">propagate_grid()</span></code> to compute and then plot the time evolution of $x$ for the different batch elements:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Reset time and state.</span>
@@ -936,11 +932,11 @@ Time:
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/Batch mode overview_20_0.png" src="../_images/Batch mode overview_20_0.png" />
+<img alt="../_images/4b518e3c3aa46782f6c446738b692ceb91806d0690a87e5720069a630e11f631.png" src="../_images/4b518e3c3aa46782f6c446738b692ceb91806d0690a87e5720069a630e11f631.png" />
 </div>
 </div>
 <p>In this example, we chose to propagate all batch elements using the same time grid, but we could have chosen to propagate different batch elements using different time grids.</p>
-<p>The plot for the time evolution of <span class="math notranslate nohighlight">\(x\)</span> shows how this dynamical system is sensitive to the initial conditions: whereas batch elements 0 and 1 evolve together towards the same periodic behaviour, batch elements 2 and 3 exhibit a qualitatively-different evolution.</p>
+<p>The plot for the time evolution of $x$ shows how this dynamical system is sensitive to the initial conditions: whereas batch elements 0 and 1 evolve together towards the same periodic behaviour, batch elements 2 and 3 exhibit a qualitatively-different evolution.</p>
 <p>We can print to screen <code class="docutils literal notranslate"><span class="pre">propagate_res</span></code> to find out how many timesteps each batch required and what were the sizes of the smallest and largest integration timesteps:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -1089,7 +1085,7 @@ used to propagate the last timestep into an internal vector:</p>
 </div>
 </div>
 <p>Quite a mouthful! Let’s print to screen the order-0 Taylor coefficients
-of <span class="math notranslate nohighlight">\(x\)</span> and <span class="math notranslate nohighlight">\(v\)</span> for all batch elements:</p>
+of $x$ and $v$ for all batch elements:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ta</span><span class="o">.</span><span class="n">tc</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">,</span> <span class="p">:]</span>
@@ -1138,8 +1134,8 @@ at different time coordinates:</p>
 </div>
 <p>Like in the scalar case, the call operator of <code class="docutils literal notranslate"><span class="pre">c_out</span></code> in batch mode accepts two types of input:</p>
 <ul class="simple">
-<li><p>a 1D array of <span class="math notranslate nohighlight">\(n\)</span> times, with each element representing the time at which the continuous output should be computed for the corresponding batch index, or</p></li>
-<li><p>a 2D array of with <span class="math notranslate nohighlight">\(n\)</span> columns, with each row representing a batch of time coordinates.</p></li>
+<li><p>a 1D array of $n$ times, with each element representing the time at which the continuous output should be computed for the corresponding batch index, or</p></li>
+<li><p>a 2D array of with $n$ columns, with each row representing a batch of time coordinates.</p></li>
 </ul>
 <p>Let us see a couple of simple examples:</p>
 <div class="cell docutils container">
@@ -1168,13 +1164,13 @@ at different time coordinates:</p>
 </div>
 </div>
 </div>
-<p>The shape of <code class="docutils literal notranslate"><span class="pre">c_arr</span></code> is <span class="math notranslate nohighlight">\(\left( 3, 2, 4\right)\)</span>:</p>
+<p>The shape of <code class="docutils literal notranslate"><span class="pre">c_arr</span></code> is $\left( 3, 2, 4\right)$:</p>
 <ul class="simple">
 <li><p>3 batches of times,</p></li>
 <li><p>2 state variables,</p></li>
 <li><p>4 batch elements.</p></li>
 </ul>
-<p>For instance, the value of the <span class="math notranslate nohighlight">\(v\)</span> coordinate at batch index 2 for the first batch of times is:</p>
+<p>For instance, the value of the $v$ coordinate at batch index 2 for the first batch of times is:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">c_arr</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">]</span>
@@ -1201,10 +1197,9 @@ of type <code class="docutils literal notranslate"><span class="pre">int</span><
 the <a class="reference internal" href="Non-autonomous%20systems.html"><span class="doc std std-doc">forced damped pendulum</span></a>. During the integration, we will
 use a non-terminal event to detect when the bob reaches a local amplitude maximum. In other
 words, the event equation is</p>
-<div class="math notranslate nohighlight">
-\[
+<p>$$
 v = 0,
-\]</div>
+$$</p>
 <p>subject to the constraint that the direction of the event must be <em>negative</em>.</p>
 <p>Let us begin with the definition of the callback for the event:</p>
 <div class="cell docutils container">
@@ -1277,7 +1272,7 @@ v = 0,
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/Batch mode overview_44_0.png" src="../_images/Batch mode overview_44_0.png" />
+<img alt="../_images/4cf5d5fb71071f0c35085bac5d5821c2b4535dcc6f5985d374a34a09a29c759a.png" src="../_images/4cf5d5fb71071f0c35085bac5d5821c2b4535dcc6f5985d374a34a09a29c759a.png" />
 </div>
 </div>
 <p>Here we marked with vertical dashed lines the times of the local maxima, which, as we can see, were all correctly detected.</p>
@@ -1408,7 +1403,7 @@ v = 0,
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/Batch mode overview_48_0.png" src="../_images/Batch mode overview_48_0.png" />
+<img alt="../_images/e84017738b174f332b022dea7ae5501a1dfcd7a0d86aeebe9aa532a92ceefd8f.png" src="../_images/e84017738b174f332b022dea7ae5501a1dfcd7a0d86aeebe9aa532a92ceefd8f.png" />
 </div>
 </div>
 <p>We can see how setting slightly different drop heights for each batch element soon leads to qualitatively-different trajectories.</p>
@@ -1493,7 +1488,7 @@ We begin with the definition of the dynamical equations and of the template inte
 </div>
 </div>
 </div>
-<p>Let us summarise in a single plot the time evolution of the <span class="math notranslate nohighlight">\(x\)</span> coordinate for <em>all</em> batch elements in <em>all</em> the ensemble iterations:</p>
+<p>Let us summarise in a single plot the time evolution of the $x$ coordinate for <em>all</em> batch elements in <em>all</em> the ensemble iterations:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">matplotlib.pylab</span> <span class="kn">import</span> <span class="n">plt</span>
@@ -1516,7 +1511,7 @@ We begin with the definition of the dynamical equations and of the template inte
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/Batch mode overview_58_0.png" src="../_images/Batch mode overview_58_0.png" />
+<img alt="../_images/493b4e40b542a08b1fe2cfc7480c0e9b6fea788572762631493cd219d7e87c45.png" src="../_images/493b4e40b542a08b1fe2cfc7480c0e9b6fea788572762631493cd219d7e87c45.png" />
 </div>
 </div>
 </section>

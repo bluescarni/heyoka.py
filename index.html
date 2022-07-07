@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>heyoka.py &#8212; heyoka.py 0.18.0 documentation</title>
+    <title>heyoka.py &#8212; heyoka.py 0.19.0 documentation</title>
     
   <!-- Loaded before other Sphinx assets -->
   <link href="_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
@@ -22,8 +22,8 @@
 
     <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" href="_static/styles/sphinx-book-theme.css?digest=62ba249389abaaa9ffc34bf36a076bdc1d65ee18" type="text/css" />
-    <link rel="stylesheet" type="text/css" href="_static/togglebutton.css" />
     <link rel="stylesheet" type="text/css" href="_static/mystnb.css" />
+    <link rel="stylesheet" type="text/css" href="_static/togglebutton.css" />
     
   <!-- Pre-loaded scripts that we'll load fully later -->
   <link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf">
@@ -84,7 +84,7 @@
       <img src="_static/white_logo.png" class="logo" alt="logo">
       
       
-      <h1 class="site-logo" id="site-title">heyoka.py 0.18.0 documentation</h1>
+      <h1 class="site-logo" id="site-title">heyoka.py 0.19.0 documentation</h1>
       
     </a>
 </div><form class="bd-search d-flex align-items-center" action="search.html" method="get">
@@ -511,7 +511,7 @@ title="Print to PDF"
                 
               <div>
                 
-  <section class="tex2jax_ignore mathjax_ignore" id="heyoka-py">
+  <section id="heyoka-py">
 <h1>heyoka.py<a class="headerlink" href="#heyoka-py" title="Permalink to this headline">#</a></h1>
 <blockquote>
 <div><p>The <a class="reference external" href="https://en.wikipedia.org/wiki/Heyoka">heyókȟa</a> […] is a kind
@@ -520,8 +520,9 @@ of the Great Plains of North America. The heyoka is a contrarian,
 jester, and satirist, who speaks, moves and reacts in an opposite
 fashion to the people around them.</p>
 </div></blockquote>
-<p>heyoka.py is a Python library for the integration of ordinary differential
-equations (ODEs) via Taylor’s method. Notable features include:</p>
+<p>heyoka.py is a Python library for the integration of ordinary differential equations
+(ODEs) via Taylor’s method, based on automatic differentiation techniques and aggressive just-in-time
+compilation via <a class="reference external" href="https://llvm.org/">LLVM</a>. Notable features include:</p>
 <ul class="simple">
 <li><p>support for both double-precision and extended-precision
 floating-point types (80-bit and 128-bit),</p></li>
@@ -532,10 +533,7 @@ billions of timesteps,</p></li>
 <li><p>batch mode integration to harness the power of modern
 <a class="reference external" href="https://en.wikipedia.org/wiki/SIMD">SIMD</a> instruction sets,</p></li>
 <li><p>ensemble simulations and automatic parallelisation,</p></li>
-<li><p>interoperability with <a class="reference external" href="https://www.sympy.org/en/index.html">SymPy</a>,</p></li>
-<li><p>a high-performance implementation of Taylor’s method based on
-automatic differentiation techniques and aggressive just-in-time
-compilation via <a class="reference external" href="https://llvm.org/">LLVM</a>.</p></li>
+<li><p>interoperability with <a class="reference external" href="https://www.sympy.org/en/index.html">SymPy</a>.</p></li>
 </ul>
 <p>heyoka.py is based on the <a class="reference external" href="https://github.com/bluescarni/heyoka">heyoka C++ library</a>.</p>
 <p>If you are using heyoka.py as part of your research, teaching, or other activities, we would be grateful if you could star
@@ -554,6 +552,23 @@ to the heyoka.py paper (<a class="reference external" href="https://arxiv.org/ab
 <span class="w">    </span><span class="na">doi</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">{10.1093/mnras/stab1032}</span><span class="p">,</span><span class="w"></span>
 <span class="w">    </span><span class="na">url</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">{https://doi.org/10.1093/mnras/stab1032}</span><span class="p">,</span><span class="w"></span>
 <span class="w">    </span><span class="na">eprint</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">{https://academic.oup.com/mnras/article-pdf/504/2/2614/37750349/stab1032.pdf}</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+</pre></div>
+</div>
+<p>heyoka.py’s novel event detection system is described in the following paper (<a class="reference external" href="https://arxiv.org/abs/2204.09948">arXiv preprint</a>):</p>
+<div class="highlight-bibtex notranslate"><div class="highlight"><pre><span></span><span class="nc">@article</span><span class="p">{</span><span class="nl">10.1093/mnras/stac1092</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="na">author</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">{Biscani, Francesco and Izzo, Dario}</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="na">title</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">&quot;{Reliable event detection for Taylor methods in astrodynamics}&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="na">journal</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">{Monthly Notices of the Royal Astronomical Society}</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="na">volume</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">{513}</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="na">number</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">{4}</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="na">pages</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">{4833-4844}</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="na">year</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">{2022}</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="na">month</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">{04}</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="na">issn</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">{0035-8711}</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="na">doi</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">{10.1093/mnras/stac1092}</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="na">url</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">{https://doi.org/10.1093/mnras/stac1092}</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="na">eprint</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">{https://academic.oup.com/mnras/article-pdf/513/4/4833/43796551/stac1092.pdf}</span><span class="w"></span>
 <span class="p">}</span><span class="w"></span>
 </pre></div>
 </div>

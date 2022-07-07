@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>Computing definite integrals &#8212; heyoka.py 0.18.0 documentation</title>
+    <title>Computing definite integrals &#8212; heyoka.py 0.19.0 documentation</title>
     
   <!-- Loaded before other Sphinx assets -->
   <link href="../_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
@@ -22,8 +22,8 @@
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
     <link rel="stylesheet" href="../_static/styles/sphinx-book-theme.css?digest=62ba249389abaaa9ffc34bf36a076bdc1d65ee18" type="text/css" />
-    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css" />
     <link rel="stylesheet" type="text/css" href="../_static/mystnb.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css" />
     
   <!-- Pre-loaded scripts that we'll load fully later -->
   <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf">
@@ -38,8 +38,6 @@
     <script src="../_static/togglebutton.js"></script>
     <script src="../_static/scripts/sphinx-book-theme.js?digest=f31d14ad54b65d19161ba51d4ffff3a77ae00456"></script>
     <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
-    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
-    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Benchmarks" href="../benchmarks.html" />
@@ -87,7 +85,7 @@
       <img src="../_static/white_logo.png" class="logo" alt="logo">
       
       
-      <h1 class="site-logo" id="site-title">heyoka.py 0.18.0 documentation</h1>
+      <h1 class="site-logo" id="site-title">heyoka.py 0.19.0 documentation</h1>
       
     </a>
 </div><form class="bd-search d-flex align-items-center" action="../search.html" method="get">
@@ -590,30 +588,27 @@ title="Print to PDF"
                 
               <div>
                 
-  <section class="tex2jax_ignore mathjax_ignore" id="computing-definite-integrals">
+  <section id="computing-definite-integrals">
 <h1>Computing definite integrals<a class="headerlink" href="#computing-definite-integrals" title="Permalink to this headline">#</a></h1>
 <p>In this short tutorial, we will show how it is possible to use heyoka.py to compute definite integrals.</p>
 <p>Consider the integral</p>
-<div class="math notranslate nohighlight">
-\[
-\int_A^B f\left( t \right)\,dt, \tag{1}
-\]</div>
-<p>where <span class="math notranslate nohighlight">\(f\left( t \right)\)</span> is a differentiable function of <span class="math notranslate nohighlight">\(t\)</span> and <span class="math notranslate nohighlight">\(A, B\in\mathbb{R}\)</span>. This integral can be seen as as the solution of the time-dependent differential equation</p>
-<div class="math notranslate nohighlight">
-\[
+<p>$$
+\int_A^B f\left( t \right),dt, \tag{1}
+$$</p>
+<p>where $f\left( t \right)$ is a differentiable function of $t$ and $A, B\in\mathbb{R}$. This integral can be seen as as the solution of the time-dependent differential equation</p>
+<p>$$
 \frac{dx}{dt} = f\left( t \right), \tag{2}
-\]</div>
-<p>where <span class="math notranslate nohighlight">\(x\)</span> is a dummy state variable. Indeed, the integration of (2) by quadrature between <span class="math notranslate nohighlight">\(t=A\)</span> and <span class="math notranslate nohighlight">\(t=B\)</span> yields:</p>
-<div class="math notranslate nohighlight">
-\[
-x\left(B\right) - x\left(A\right) = \int_A^B f\left(t\right) \, dt.
-\]</div>
-<p>Note that we are always free to choose <span class="math notranslate nohighlight">\(x\left( A \right) = 0\)</span>, because the dynamics of <span class="math notranslate nohighlight">\(x\)</span> in (2) does not depend on the value of <span class="math notranslate nohighlight">\(x\)</span> itself. Thus, provided that we set up a numerical integration of (2) in which</p>
+$$</p>
+<p>where $x$ is a dummy state variable. Indeed, the integration of (2) by quadrature between $t=A$ and $t=B$ yields:</p>
+<p>$$
+x\left(B\right) - x\left(A\right) = \int_A^B f\left(t\right) , dt.
+$$</p>
+<p>Note that we are always free to choose $x\left( A \right) = 0$, because the dynamics of $x$ in (2) does not depend on the value of $x$ itself. Thus, provided that we set up a numerical integration of (2) in which</p>
 <ul class="simple">
-<li><p>we set <span class="math notranslate nohighlight">\(t=A\)</span> as initial time coordinate,</p></li>
-<li><p>we set <span class="math notranslate nohighlight">\(x\left( A \right) = 0\)</span> as initial condition,</p></li>
+<li><p>we set $t=A$ as initial time coordinate,</p></li>
+<li><p>we set $x\left( A \right) = 0$ as initial condition,</p></li>
 </ul>
-<p>then the definite integral (1) is the value of <span class="math notranslate nohighlight">\(x\)</span> at <span class="math notranslate nohighlight">\(t=B\)</span>.</p>
+<p>then the definite integral (1) is the value of $x$ at $t=B$.</p>
 <section id="examples">
 <h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">#</a></h2>
 <p>Let us start easy:</p>
@@ -637,7 +632,7 @@ x\left(B\right) - x\left(A\right) = \int_A^B f\left(t\right) \, dt.
 </div>
 </div>
 </div>
-<p>As expected, <span class="math notranslate nohighlight">\(\int_0^\pi \sin t\, dt = 2\)</span>. Let’s try to change the integration range:</p>
+<p>As expected, $\int_0^\pi \sin t, dt = 2$. Let’s try to change the integration range:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Reset the state.</span>
@@ -657,12 +652,11 @@ x\left(B\right) - x\left(A\right) = \int_A^B f\left(t\right) \, dt.
 </div>
 </div>
 </div>
-<p>Indeed, <span class="math notranslate nohighlight">\(\int_1^2 \sin t\, dt = \cos 1 - \cos 2 = 0.9564491424152821\ldots\)</span>.</p>
+<p>Indeed, $\int_1^2 \sin t, dt = \cos 1 - \cos 2 = 0.9564491424152821\ldots$.</p>
 <p>Let us try with a more complicated function:</p>
-<div class="math notranslate nohighlight">
-\[
-\int_\sqrt{2}^\sqrt{3} \frac{\sin \left( \cos t \right)\cdot \operatorname{erf}{t}}{\log\left(\sqrt{t}\right)}\,dt.
-\]</div>
+<p>$$
+\int_\sqrt{2}^\sqrt{3} \frac{\sin \left( \cos t \right)\cdot \operatorname{erf}{t}}{\log\left(\sqrt{t}\right)},dt.
+$$</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ta</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">taylor_adaptive</span><span class="p">([(</span><span class="n">x</span><span class="p">,</span> <span class="n">hy</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">hy</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">hy</span><span class="o">.</span><span class="n">time</span><span class="p">))</span><span class="o">*</span><span class="n">hy</span><span class="o">.</span><span class="n">erf</span><span class="p">(</span><span class="n">hy</span><span class="o">.</span><span class="n">time</span><span class="p">)</span><span class="o">/</span><span class="n">hy</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">hy</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">hy</span><span class="o">.</span><span class="n">time</span><span class="p">)))],</span>
@@ -714,7 +708,7 @@ x\left(B\right) - x\left(A\right) = \int_A^B f\left(t\right) \, dt.
 </section>
 <section id="limitations-and-caveats">
 <h2>Limitations and caveats<a class="headerlink" href="#limitations-and-caveats" title="Permalink to this headline">#</a></h2>
-<p>This method for the computation of definite integrals inherits all the peculiarities and caveats of heyoka.py. For instance, the computation will fail if the derivative of <span class="math notranslate nohighlight">\(f\left( t \right)\)</span> becomes infinite within the integration interval:</p>
+<p>This method for the computation of definite integrals inherits all the peculiarities and caveats of heyoka.py. For instance, the computation will fail if the derivative of $f\left( t \right)$ becomes infinite within the integration interval:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Cannot compute the area of a semi-circle!</span>

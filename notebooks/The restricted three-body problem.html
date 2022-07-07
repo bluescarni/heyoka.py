@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>The restricted three-body problem &#8212; heyoka.py 0.18.0 documentation</title>
+    <title>The restricted three-body problem &#8212; heyoka.py 0.19.0 documentation</title>
     
   <!-- Loaded before other Sphinx assets -->
   <link href="../_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
@@ -22,8 +22,8 @@
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
     <link rel="stylesheet" href="../_static/styles/sphinx-book-theme.css?digest=62ba249389abaaa9ffc34bf36a076bdc1d65ee18" type="text/css" />
-    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css" />
     <link rel="stylesheet" type="text/css" href="../_static/mystnb.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css" />
     
   <!-- Pre-loaded scripts that we'll load fully later -->
   <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf">
@@ -38,8 +38,6 @@
     <script src="../_static/togglebutton.js"></script>
     <script src="../_static/scripts/sphinx-book-theme.js?digest=f31d14ad54b65d19161ba51d4ffff3a77ae00456"></script>
     <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
-    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
-    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Continuation of Periodic Orbits in the CR3BP" href="Periodic%20orbits%20in%20the%20CR3BP.html" />
@@ -87,7 +85,7 @@
       <img src="../_static/white_logo.png" class="logo" alt="logo">
       
       
-      <h1 class="site-logo" id="site-title">heyoka.py 0.18.0 documentation</h1>
+      <h1 class="site-logo" id="site-title">heyoka.py 0.19.0 documentation</h1>
       
     </a>
 </div><form class="bd-search d-flex align-items-center" action="../search.html" method="get">
@@ -543,28 +541,26 @@ title="Print to PDF"
                 
               <div>
                 
-  <section class="tex2jax_ignore mathjax_ignore" id="the-restricted-three-body-problem">
+  <section id="the-restricted-three-body-problem">
 <h1>The restricted three-body problem<a class="headerlink" href="#the-restricted-three-body-problem" title="Permalink to this headline">#</a></h1>
 <p>In this example, we will consider the restricted three-body problem (RTBP). The RTBP is a well-known dynamical system consisting of two massive bodies orbiting each other on circular Keplerian orbits, and a massless particle which moves under the gravitational influence of the two massive bodies.</p>
-<p>The problem is usually formulated in a rotating reference frame in which the two massive bodies are at rest. In the rotating reference frame, the equations of motion for the massless particle’s cartesian coordinates <span class="math notranslate nohighlight">\(\left(x, y, z\right)\)</span> and conjugated momenta <span class="math notranslate nohighlight">\(\left(p_x, p_y, p_z\right)\)</span> read:</p>
-<div class="math notranslate nohighlight">
-\[\begin{split}
+<p>The problem is usually formulated in a rotating reference frame in which the two massive bodies are at rest. In the rotating reference frame, the equations of motion for the massless particle’s cartesian coordinates $\left(x, y, z\right)$ and conjugated momenta $\left(p_x, p_y, p_z\right)$ read:</p>
+<p>$$
 \begin{aligned}
-\dot{x} &amp; = p_x+y,\\
-\dot{y} &amp; = p_y-x, \\
-\dot{z} &amp; = p_z, \\
-\dot{p}_x &amp; = p_y - \frac{1-\mu}{r_{PS}^3}\left( x - \mu \right)-\frac{\mu}{r_{PJ}^3}\left( x - \mu + 1\right), \\
-\dot{p}_y &amp; = -p_x-\left( \frac{1-\mu}{r_{PS}^3} +  \frac{\mu}{r_{PJ}^3}\right)y, \\
-\dot{p}_z &amp; = -\left( \frac{1-\mu}{r_{PS}^3} +  \frac{\mu}{r_{PJ}^3}\right)z,
+\dot{x} &amp; = p_x+y,\
+\dot{y} &amp; = p_y-x, \
+\dot{z} &amp; = p_z, \
+\dot{p}<em>x &amp; = p_y - \frac{1-\mu}{r</em>{PS}^3}\left( x - \mu \right)-\frac{\mu}{r_{PJ}^3}\left( x - \mu + 1\right), \
+\dot{p}<em>y &amp; = -p_x-\left( \frac{1-\mu}{r</em>{PS}^3} +  \frac{\mu}{r_{PJ}^3}\right)y, \
+\dot{p}<em>z &amp; = -\left( \frac{1-\mu}{r</em>{PS}^3} +  \frac{\mu}{r_{PJ}^3}\right)z,
 \end{aligned}
-\end{split}\]</div>
-<p>where <span class="math notranslate nohighlight">\(\mu\)</span> is a mass parameter, <span class="math notranslate nohighlight">\(r_{PS}^2=\left( x-\mu \right)^2+y^2+z^2\)</span> and <span class="math notranslate nohighlight">\(r_{PJ}^2=\left( x -\mu + 1 \right)^2+y^2+z^2\)</span>. The Hamiltonian of the RTBP reads:</p>
-<div class="math notranslate nohighlight">
-\[
+$$</p>
+<p>where $\mu$ is a mass parameter, $r_{PS}^2=\left( x-\mu \right)^2+y^2+z^2$ and $r_{PJ}^2=\left( x -\mu + 1 \right)^2+y^2+z^2$. The Hamiltonian of the RTBP reads:</p>
+<p>$$
 \mathcal{H} = \frac{1}{2}\left( p_x^2+p_y^2+p_z^2 \right) +yp_x-xp_y-\frac{1-\mu}{r_{PS}}-\frac{\mu}{r_{PJ}}.
-\]</div>
-<p>Because <span class="math notranslate nohighlight">\(\mathcal{H}\)</span> is not time-dependent, it is a conserved quantity, usually known as <a class="reference external" href="https://en.wikipedia.org/wiki/Jacobi_integral">Jacobi’s integral</a>.</p>
-<p>We will begin by integrating a RTBP with <span class="math notranslate nohighlight">\(\mu=0.01\)</span> and a specific set of initial conditions which produces a stable quasi-periodic orbit. Let us define the equations of motion:</p>
+$$</p>
+<p>Because $\mathcal{H}$ is not time-dependent, it is a conserved quantity, usually known as <a class="reference external" href="https://en.wikipedia.org/wiki/Jacobi_integral">Jacobi’s integral</a>.</p>
+<p>We will begin by integrating a RTBP with $\mu=0.01$ and a specific set of initial conditions which produces a stable quasi-periodic orbit. Let us define the equations of motion:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">heyoka</span> <span class="k">as</span> <span class="nn">hy</span>
@@ -607,7 +603,7 @@ title="Print to PDF"
 </div>
 </div>
 </div>
-<p>Let us now integrate the RTBP up to <span class="math notranslate nohighlight">\(t=200\)</span> time units:</p>
+<p>Let us now integrate the RTBP up to $t=200$ time units:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">t_grid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">200</span><span class="p">,</span> <span class="mi">2500</span><span class="p">)</span>
@@ -657,10 +653,10 @@ title="Print to PDF"
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/The restricted three-body problem_7_0.png" src="../_images/The restricted three-body problem_7_0.png" />
+<img alt="../_images/496f0cc00e37d81e5b4ef6ad2c50a60ea5f92d82f1eb9c1b07d76e9bf49f6861.png" src="../_images/496f0cc00e37d81e5b4ef6ad2c50a60ea5f92d82f1eb9c1b07d76e9bf49f6861.png" />
 </div>
 </div>
-<p>The left panel displays a top-down view of the trajectory, while the right panel shows a side view. As anticipated earlier, the set of initial conditions we chose produces a regular, quasi-periodic trajectory which stays away from the two centres of force (which are located at <span class="math notranslate nohighlight">\(x=0.01\)</span> and <span class="math notranslate nohighlight">\(x=-0.99\)</span>).</p>
+<p>The left panel displays a top-down view of the trajectory, while the right panel shows a side view. As anticipated earlier, the set of initial conditions we chose produces a regular, quasi-periodic trajectory which stays away from the two centres of force (which are located at $x=0.01$ and $x=-0.99$).</p>
 <p>Let us now check how well Jacobi’s integral is conserved. First, we define a function for the computation of the value of the Hamiltonian for a given input state vector:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -685,7 +681,7 @@ title="Print to PDF"
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/The restricted three-body problem_11_0.png" src="../_images/The restricted three-body problem_11_0.png" />
+<img alt="../_images/85d00b188c3e3eca74bcd536ca1782101784d2b49ee29f94e799fd380cd756ab.png" src="../_images/85d00b188c3e3eca74bcd536ca1782101784d2b49ee29f94e799fd380cd756ab.png" />
 </div>
 </div>
 <p>We can see how, for this short-term integration, Jacobi’s integral is preserved roughly at machine precision.</p>
@@ -698,7 +694,7 @@ title="Print to PDF"
 </div>
 </div>
 </div>
-<p>This new set of initial conditions has been chosen to generate a planar orbit featuring close encounters with both massive bodies. Let us integrate this new orbit up to <span class="math notranslate nohighlight">\(t = 2000\)</span> time units:</p>
+<p>This new set of initial conditions has been chosen to generate a planar orbit featuring close encounters with both massive bodies. Let us integrate this new orbit up to $t = 2000$ time units:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">t_grid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2000</span><span class="p">,</span> <span class="mi">100000</span><span class="p">)</span>
@@ -752,7 +748,7 @@ title="Print to PDF"
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/The restricted three-body problem_17_0.png" src="../_images/The restricted three-body problem_17_0.png" />
+<img alt="../_images/5273d92915fdf163dad1afe7befa82b5511e6040bf728dd8e230a4fe49e1d107.png" src="../_images/5273d92915fdf163dad1afe7befa82b5511e6040bf728dd8e230a4fe49e1d107.png" />
 </div>
 </div>
 <p>We can see how the massless particle now explores regions surrounding both massive particles. The motion is bounded by the zero velocity curve, which is implicitly defined by Jacobi’s integral after imposing the constraint that the square of the velocity of the massless particle cannot be negative.</p>
@@ -767,10 +763,10 @@ title="Print to PDF"
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/The restricted three-body problem_19_0.png" src="../_images/The restricted three-body problem_19_0.png" />
+<img alt="../_images/28643592488e7ef25d82e033b97f55fe9e93490b8ee71f347c91bbc75ec2e40f.png" src="../_images/28643592488e7ef25d82e033b97f55fe9e93490b8ee71f347c91bbc75ec2e40f.png" />
 </div>
 </div>
-<p>The relative error on Jacobi’s integral remains bounded below <span class="math notranslate nohighlight">\(10^{-13}\)</span>.</p>
+<p>The relative error on Jacobi’s integral remains bounded below $10^{-13}$.</p>
 </section>
 
 

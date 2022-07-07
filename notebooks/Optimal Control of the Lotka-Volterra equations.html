@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>Optimal Control of the Lotka-Volterra equations &#8212; heyoka.py 0.18.0 documentation</title>
+    <title>Optimal Control of the Lotka-Volterra equations &#8212; heyoka.py 0.19.0 documentation</title>
     
   <!-- Loaded before other Sphinx assets -->
   <link href="../_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
@@ -22,8 +22,8 @@
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
     <link rel="stylesheet" href="../_static/styles/sphinx-book-theme.css?digest=62ba249389abaaa9ffc34bf36a076bdc1d65ee18" type="text/css" />
-    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css" />
     <link rel="stylesheet" type="text/css" href="../_static/mystnb.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css" />
     
   <!-- Pre-loaded scripts that we'll load fully later -->
   <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf">
@@ -38,8 +38,7 @@
     <script src="../_static/togglebutton.js"></script>
     <script src="../_static/scripts/sphinx-book-theme.js?digest=f31d14ad54b65d19161ba51d4ffff3a77ae00456"></script>
     <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
-    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
-    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Computing definite integrals" href="definite_integrals.html" />
@@ -87,7 +86,7 @@
       <img src="../_static/white_logo.png" class="logo" alt="logo">
       
       
-      <h1 class="site-logo" id="site-title">heyoka.py 0.18.0 documentation</h1>
+      <h1 class="site-logo" id="site-title">heyoka.py 0.19.0 documentation</h1>
       
     </a>
 </div><form class="bd-search d-flex align-items-center" action="../search.html" method="get">
@@ -610,37 +609,35 @@ title="Print to PDF"
                 
               <div>
                 
-  <section class="tex2jax_ignore mathjax_ignore" id="optimal-control-of-the-lotka-volterra-equations">
+  <section id="optimal-control-of-the-lotka-volterra-equations">
 <h1>Optimal Control of the Lotka-Volterra equations<a class="headerlink" href="#optimal-control-of-the-lotka-volterra-equations" title="Permalink to this headline">#</a></h1>
 <p>In this tutorial we study an optimal control problem for the <a class="reference external" href="https://en.wikipedia.org/wiki/Lotka%E2%80%93Volterra_equations">Lotka-Volterra equations</a>.These famous equations are frequently
-used to describe the dynamics of biological systems in which two species interact: a predator (<span class="math notranslate nohighlight">\(y\)</span>) and a prey (<span class="math notranslate nohighlight">\(x\)</span>).</p>
+used to describe the dynamics of biological systems in which two species interact: a predator ($y$) and a prey ($x$).</p>
 <p>The dynamics considered, taken from the work of <a class="reference external" href="https://www.tandfonline.com/doi/full/10.1080/17513758.2016.1226435">Aitziber Ibanez</a> is:</p>
-<div class="math notranslate nohighlight">
-\[\begin{split}
-(1) \quad \left\{
+<p>$$
+(1) \quad \left{
 \begin{array}{l}
-\dot x = p_0 x - p_1 xy - p_4 x u\\
-\dot y = p_2 xy - p_3 y - p_5 y u\\
+\dot x = p_0 x - p_1 xy - p_4 x u\
+\dot y = p_2 xy - p_3 y - p_5 y u\
 \end{array}
 \right.
-\end{split}\]</div>
-<p>where <span class="math notranslate nohighlight">\(p_i &gt; 0\)</span> and <span class="math notranslate nohighlight">\(0 &lt;= \vert u\vert &lt;= 1\)</span> is a control variable describing our hunting capabilities assumed to be proportional to the number of individuals in each of the two species.</p>
-<p><strong>NOTE</strong>: we used the symbols <span class="math notranslate nohighlight">\(p_i\)</span> for all parameters as <span class="math notranslate nohighlight">\(p\)</span> it is the default symbol used in <code class="docutils literal notranslate"><span class="pre">heyoka.py</span></code> streams, and thus it allows consistency in notation throughout the notebook.</p>
-<p>We are interested in finding <span class="math notranslate nohighlight">\(u(t)\)</span> in the functional space of piecewice continuous functions such that the system is steered into a terminal state <span class="math notranslate nohighlight">\(x_f, y_f\)</span> in minimal time when starting from some intial condition <span class="math notranslate nohighlight">\(x_0, y_0\)</span>.</p>
+$$</p>
+<p>where $p_i &gt; 0$ and $0 &lt;= \vert u\vert &lt;= 1$ is a control variable describing our hunting capabilities assumed to be proportional to the number of individuals in each of the two species.</p>
+<p><strong>NOTE</strong>: we used the symbols $p_i$ for all parameters as $p$ it is the default symbol used in <code class="docutils literal notranslate"><span class="pre">heyoka.py</span></code> streams, and thus it allows consistency in notation throughout the notebook.</p>
+<p>We are interested in finding $u(t)$ in the functional space of piecewice continuous functions such that the system is steered into a terminal state $x_f, y_f$ in minimal time when starting from some intial condition $x_0, y_0$.</p>
 <p>More formally, we consider the following optimal control problem (<strong>OCP</strong>):</p>
-<div class="math notranslate nohighlight">
-\[\begin{split}
+<p>$$
 \begin{array}{rl}
-\mbox{find:}  &amp; u(t), t_f \\
-\mbox{subject to (dynamics):}   &amp;  \dot x = p_0 x - p_1 xy - p_4 x u\\
-                     &amp;  \dot y = p_2 xy - p_3 y - p_5 y u\\
-\mbox{subject to (boundary conditions):}   &amp;  x(0) = x_0, \quad  x(t_f) = x_f\\
-    &amp;  y(0) = y_0, \quad  y(t_f) = y_f\\
-    &amp; 0 &lt;= \vert u\vert &lt;= 1 \\
-\mbox{to minimize:}   &amp;  t_f \\  
+\mbox{find:}  &amp; u(t), t_f \
+\mbox{subject to (dynamics):}   &amp;  \dot x = p_0 x - p_1 xy - p_4 x u\
+&amp;  \dot y = p_2 xy - p_3 y - p_5 y u\
+\mbox{subject to (boundary conditions):}   &amp;  x(0) = x_0, \quad  x(t_f) = x_f\
+&amp;  y(0) = y_0, \quad  y(t_f) = y_f\
+&amp; 0 &lt;= \vert u\vert &lt;= 1 \
+\mbox{to minimize:}   &amp;  t_f \<br />
 \end{array}
-\end{split}\]</div>
-<p>To solve the above <strong>OCP</strong> we will apply Pontryagin maximum principle (<a class="reference external" href="https://en.wikipedia.org/wiki/Pontryagin%27s_maximum_principle"><strong>PMP</strong></a>) maximizing <span class="math notranslate nohighlight">\(-t_f\)</span>.
+$$</p>
+<p>To solve the above <strong>OCP</strong> we will apply Pontryagin maximum principle (<a class="reference external" href="https://en.wikipedia.org/wiki/Pontryagin%27s_maximum_principle"><strong>PMP</strong></a>) maximizing $-t_f$.
 We will thus eventually transform the problem above into a two-point boudary value problem (<strong>TPBVP</strong>) for an augmented set of ordinary differential equation (<strong>ODE</strong>)
 which we will solve using <code class="docutils literal notranslate"><span class="pre">heyoka.py</span></code>.</p>
 <p>Let us start importing a few core tools:</p>
@@ -657,13 +654,12 @@ which we will solve using <code class="docutils literal notranslate"><span class
 </div>
 <section id="deriving-the-augmented-dynamics">
 <h2>Deriving the augmented dynamics<a class="headerlink" href="#deriving-the-augmented-dynamics" title="Permalink to this headline">#</a></h2>
-<p>The straightforward application of the <strong>PMP</strong> requires the introduction of auxiliary functions <span class="math notranslate nohighlight">\(\boldsymbol\lambda(t)\)</span> and of a Hamiltonian which, in the case of a minimum time problem is:</p>
-<div class="math notranslate nohighlight">
-\[
+<p>The straightforward application of the <strong>PMP</strong> requires the introduction of auxiliary functions $\boldsymbol\lambda(t)$ and of a Hamiltonian which, in the case of a minimum time problem is:</p>
+<p>$$
 \mathcal H(\mathbf x, \boldsymbol\lambda, u) = \mathbf f \cdot \boldsymbol\lambda - 1
-\]</div>
-<p>where we indicated with the symbol <span class="math notranslate nohighlight">\(\mathbf f\)</span> the r.h.s. of the dynamics.</p>
-<p>We define the system state, the co-states (or augmented states, essentially some form of continuous version of Lagrange multipliers) <span class="math notranslate nohighlight">\(\lambda_x, \lambda_y\)</span> and the dynamics:</p>
+$$
+where we indicated with the symbol $\mathbf f$ the r.h.s. of the dynamics.</p>
+<p>We define the system state, the co-states (or augmented states, essentially some form of continuous version of Lagrange multipliers) $\lambda_x, \lambda_y$ and the dynamics:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Define the symbolic variables x, y and th.</span>
@@ -700,24 +696,22 @@ which we will solve using <code class="docutils literal notranslate"><span class
 \[\displaystyle - \lambda_{x} x \left(- p_{0} + p_{1} y + p_{4} u\right) - \lambda_{y} y \left(- p_{2} x + p_{3} + p_{5} u\right) - 1.0\]</div>
 </div>
 </div>
-<p>Note how in <em>heyoka.py</em> expression system system parameters are indicated with the symbols <span class="math notranslate nohighlight">\(p_i\)</span> in the screen output.</p>
-<p>According to the <strong>PMP</strong> the value of the control <span class="math notranslate nohighlight">\(u\)</span>, along an optimal trajectory, is such that:</p>
-<div class="math notranslate nohighlight">
-\[
+<p>Note how in <em>heyoka.py</em> expression system system parameters are indicated with the symbols $p_i$ in the screen output.</p>
+<p>According to the <strong>PMP</strong> the value of the control $u$, along an optimal trajectory, is such that:</p>
+<p>$$
 u^* = \max_{u\in\mathcal U} \mathcal H(\mathbf x, \boldsymbol\lambda, u)
-\]</div>
-<p>where we have introduced the space of admissible controls as the closed interval <span class="math notranslate nohighlight">\(\mathcal U = [0,1]\)</span>. In our case we get, quite simply:</p>
-<div class="math notranslate nohighlight">
-\[\begin{split}
-u^*(\mathbf x, \boldsymbol\lambda) = 
-\left\{\begin{array}{ll}
-1 &amp; -(p_4 x\lambda_x+p_5 y \lambda_y) &gt; 0 \\
+$$
+where we have introduced the space of admissible controls as the closed interval $\mathcal U = [0,1]$. In our case we get, quite simply:</p>
+<p>$$
+u^*(\mathbf x, \boldsymbol\lambda) =
+\left{\begin{array}{ll}
+1 &amp; -(p_4 x\lambda_x+p_5 y \lambda_y) &gt; 0 \
 0 &amp; -(p_4 x\lambda_x+p_5 y \lambda_y) &lt; 0
 \end{array}
 \right.
-\end{split}\]</div>
-<p>The value of the control will then switch between the extreme values 0 and 1 whenever the switching function <span class="math notranslate nohighlight">\(S(\mathbf x, \boldsymbol \lambda) = -(p_4 x\lambda_x+p_5 y \lambda_y)\)</span> changes sign.</p>
-<p>We implement two python functions to compute the switching function and the hamiltonian <span class="math notranslate nohighlight">\(\mathcal H(\mathbf x, \boldsymbol\lambda, u^*)\)</span>:</p>
+$$</p>
+<p>The value of the control will then switch between the extreme values 0 and 1 whenever the switching function $S(\mathbf x, \boldsymbol \lambda) = -(p_4 x\lambda_x+p_5 y \lambda_y)$ changes sign.</p>
+<p>We implement two python functions to compute the switching function and the hamiltonian $\mathcal H(\mathbf x, \boldsymbol\lambda, u^*)$:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">_switching_function</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">lx</span><span class="p">,</span><span class="n">ly</span><span class="p">,</span><span class="n">p</span><span class="p">):</span>
@@ -752,14 +746,13 @@ u^*(\mathbf x, \boldsymbol\lambda) =
 </div>
 </div>
 </div>
-<p>The equations of motion in the augmented state (<span class="math notranslate nohighlight">\(\mathbf x, \boldsymbol \lambda\)</span>) are the Hamilton’s equations:</p>
-<div class="math notranslate nohighlight">
-\[\begin{split}
+<p>The equations of motion in the augmented state ($\mathbf x, \boldsymbol \lambda$) are the Hamilton’s equations:</p>
+<p>$$
 \begin{array}{l}
-\dot {\mathbf x} = \frac{\partial \mathcal H}{\partial \boldsymbol \lambda} \\
-\dot {\boldsymbol \lambda} = - \frac{\partial \mathcal H}{\partial \mathbf x} 
+\dot {\mathbf x} = \frac{\partial \mathcal H}{\partial \boldsymbol \lambda} \
+\dot {\boldsymbol \lambda} = - \frac{\partial \mathcal H}{\partial \mathbf x}
 \end{array}
-\end{split}\]</div>
+$$</p>
 <p>let us compute them:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -800,39 +793,37 @@ u^*(\mathbf x, \boldsymbol\lambda) =
 \[\displaystyle \lambda_{x} p_{1} x + \lambda_{y} \left(- p_{2} x + p_{3} + p_{5} u\right)\]</div>
 </div>
 </div>
-<p>Putting everything together (i.e. substituting the expression for the optimal <span class="math notranslate nohighlight">\(u^*\)</span> found via the <strong>PMP</strong> into the augmented equations) we get:</p>
-<div class="math notranslate nohighlight">
-\[\begin{split}
-(2) \quad \left\{
+<p>Putting everything together (i.e. substituting the expression for the optimal $u^*$ found via the <strong>PMP</strong> into the augmented equations) we get:</p>
+<p>$$
+(2) \quad \left{
 \begin{array}{l}
-\dot x = p_0 x - p_1 xy - p_4 x u^*\\
-\dot y = p_2 xy - p_3 y - p_5 y u^*\\
-\frac{d \lambda_x}{dt} = (-p_0 + p_1  y + p_4u^*)  \lambda_x - \lambda_y p_2  y   \\
-\frac{d \lambda_y}{dt}  = p_1  x  \lambda_x +(-p_2  x + p_3 + p_5 u^*)  \lambda_y \\
+\dot x = p_0 x - p_1 xy - p_4 x u^<em>\
+\dot y = p_2 xy - p_3 y - p_5 y u^</em>\
+\frac{d \lambda_x}{dt} = (-p_0 + p_1  y + p_4u^<em>)  \lambda_x - \lambda_y p_2  y   \
+\frac{d \lambda_y}{dt}  = p_1  x  \lambda_x +(-p_2  x + p_3 + p_5 u^</em>)  \lambda_y \
 \end{array}
 \right.
-\end{split}\]</div>
-<p>As dictated by Pontryagin’s Theorem, a necessary condition for a trajectory to be optimal is that intial values <span class="math notranslate nohighlight">\(\boldsymbol \lambda_0\)</span> exist such that the solution of the above ODE initial value problem (<strong>IVP</strong>) from <span class="math notranslate nohighlight">\([\mathbf x_0, \boldsymbol \lambda_0]\)</span> leads the system to the desired target state. Furthermore, if the final time <span class="math notranslate nohighlight">\(t_f\)</span> is left free <span class="math notranslate nohighlight">\(\mathcal H_f = \mathcal H(\mathcal x_f, \boldsymbol \lambda_f) = 0\)</span>.</p>
-<p>Formally, we seek a root of the system of (three) nonlinear equations in the (three) unknowns <span class="math notranslate nohighlight">\(\boldsymbol \lambda_0, t_f\)</span>:</p>
-<div class="math notranslate nohighlight">
-\[\begin{split}
+$$</p>
+<p>As dictated by Pontryagin’s Theorem, a necessary condition for a trajectory to be optimal is that intial values $\boldsymbol \lambda_0$ exist such that the solution of the above ODE initial value problem (<strong>IVP</strong>) from $[\mathbf x_0, \boldsymbol \lambda_0]$ leads the system to the desired target state. Furthermore, if the final time $t_f$ is left free $\mathcal H_f = \mathcal H(\mathcal x_f, \boldsymbol \lambda_f) = 0$.</p>
+<p>Formally, we seek a root of the system of (three) nonlinear equations in the (three) unknowns $\boldsymbol \lambda_0, t_f$:</p>
+<p>$$
 (3)\qquad
-\varphi(\boldsymbol \lambda_0, t_f) = 
+\varphi(\boldsymbol \lambda_0, t_f) =
 \left[
 \begin{array}{l}
-x(t_f) - x_f \\
-y(t_f) - y_f \\
+x(t_f) - x_f \
+y(t_f) - y_f \
 \mathcal H (t_f)
 \end{array}
 \right]
-\end{split}\]</div>
-<p>also called <em>shooting function</em> as finding its root requires solving multiple times an <strong>IVP</strong> in a “clever” trial and error iterative scheme.</p>
+$$
+also called <em>shooting function</em> as finding its root requires solving multiple times an <strong>IVP</strong> in a “clever” trial and error iterative scheme.</p>
 <p>In the following we will be using <code class="docutils literal notranslate"><span class="pre">heyoka.py</span></code> to first study the uncontrolled dynamics, then to study the augmented dynamics and, finally, to define a clever, reduced, shooting function that can be easily
 solved by a root finder.</p>
 </section>
 <section id="studying-the-uncontrolled-system">
 <h2>Studying the uncontrolled system<a class="headerlink" href="#studying-the-uncontrolled-system" title="Permalink to this headline">#</a></h2>
-<p>Let us see what happens in an uncontrolled case. We will consider an initial population of 10 preys with growth rates <span class="math notranslate nohighlight">\(p_0= 1.1\)</span>, <span class="math notranslate nohighlight">\(p_1 = 0.2\)</span> and 10 predators with growth rates <span class="math notranslate nohighlight">\(p_2 = 0.1\)</span>, <span class="math notranslate nohighlight">\(p_3 = 0.4\)</span>.</p>
+<p>Let us see what happens in an uncontrolled case. We will consider an initial population of 10 preys with growth rates $p_0= 1.1$, $p_1 = 0.2$ and 10 predators with growth rates $p_2 = 0.1$, $p_3 = 0.4$.</p>
 <p>We write the r.h.s. of Eq.(1). The parameters in the equations are indicated symbolically by the syntax <code class="docutils literal notranslate"><span class="pre">par[i]</span></code>. Their numerical value will be set later.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -911,7 +902,7 @@ Parameters              : [1.1000000000000001, 0.20000000000000001, 0.1000000000
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/Optimal Control of the Lotka-Volterra equations_22_0.png" src="../_images/Optimal Control of the Lotka-Volterra equations_22_0.png" />
+<img alt="../_images/d52cb06e4af0df0d8f13ccbe94448cd728f3c44ae7133ce8c45651823e75cd40.png" src="../_images/d52cb06e4af0df0d8f13ccbe94448cd728f3c44ae7133ce8c45651823e75cd40.png" />
 </div>
 </div>
 </section>
@@ -940,7 +931,7 @@ Parameters              : [1.1000000000000001, 0.20000000000000001, 0.1000000000
 </div>
 </div>
 </div>
-<p>We have added three parameters to the system. The first ones are <code class="docutils literal notranslate"><span class="pre">par[4]</span></code> and <code class="docutils literal notranslate"><span class="pre">par[5]</span></code> representing the values of <span class="math notranslate nohighlight">\(p_4, p_5\)</span>. Then, <code class="docutils literal notranslate"><span class="pre">par[6]</span></code> is the value of the optimal control <span class="math notranslate nohighlight">\(u^*\)</span> effectively determining which one of two different systems of ODEs gets propagated. Its value is decided, as seen  above, by the value of the switching function.</p>
+<p>We have added three parameters to the system. The first ones are <code class="docutils literal notranslate"><span class="pre">par[4]</span></code> and <code class="docutils literal notranslate"><span class="pre">par[5]</span></code> representing the values of $p_4, p_5$. Then, <code class="docutils literal notranslate"><span class="pre">par[6]</span></code> is the value of the optimal control $u^*$ effectively determining which one of two different systems of ODEs gets propagated. Its value is decided, as seen  above, by the value of the switching function.</p>
 <p>We now build the system of equations taking care to define in <code class="docutils literal notranslate"><span class="pre">heyoka.py</span></code> a terminal event detecting the change in sign of the switching function and thus changing the optimal control accordingly.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -986,7 +977,7 @@ N of terminal events    : 1
 </div>
 </div>
 </div>
-<p>We now integrate the system. The resulting trajectory will be optimal, but not respecting the requested boundary conditions, since the final time <span class="math notranslate nohighlight">\(t_f\)</span> and the initial values of the costates were randomly chosen.</p>
+<p>We now integrate the system. The resulting trajectory will be optimal, but not respecting the requested boundary conditions, since the final time $t_f$ and the initial values of the costates were randomly chosen.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">t_grid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">30</span><span class="p">,</span><span class="mi">1000</span><span class="p">)</span>
@@ -1037,20 +1028,20 @@ N of terminal events    : 1
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/Optimal Control of the Lotka-Volterra equations_30_0.png" src="../_images/Optimal Control of the Lotka-Volterra equations_30_0.png" />
+<img alt="../_images/7160d8f5d18870c2fb337fee6bbf40e294acb1a4292331b39f910248e6522771.png" src="../_images/7160d8f5d18870c2fb337fee6bbf40e294acb1a4292331b39f910248e6522771.png" />
 </div>
 </div>
 </section>
 <section id="implementing-a-single-shooting-method">
 <h2>Implementing a single shooting method<a class="headerlink" href="#implementing-a-single-shooting-method" title="Permalink to this headline">#</a></h2>
-<p>Above we have produced an optimal trajectory, only not the one we looked for since we want to achieve the terminal conditions <span class="math notranslate nohighlight">\(x_f = 10, y_f=4\)</span> and (free time) <span class="math notranslate nohighlight">\(H_f=0\)</span>.
-The choice we made for <span class="math notranslate nohighlight">\(\lambda_{x0}\)</span>, <span class="math notranslate nohighlight">\(\lambda_{y0}\)</span>, <span class="math notranslate nohighlight">\(t_f\)</span> was not a good one, we need to change it up to when Eq.(3) is actually satisfied.</p>
-<p>In this case, to showcase the possibilities offered by <em>heyoka.py</em>, we will vary <span class="math notranslate nohighlight">\(\lambda_x\)</span>, find <span class="math notranslate nohighlight">\(\lambda_y\)</span> from the condition <span class="math notranslate nohighlight">\(\mathcal H_f = \mathcal H_0 = 0\)</span> and find <span class="math notranslate nohighlight">\(t_f\)</span> as the time along the generated trajectory when the difference between the state and the target is minimal (a terminal event).</p>
-<p>This reduces the free <em>shooting parameters</em> in Eq.(3) from three to one only: <span class="math notranslate nohighlight">\(\lambda_x\)</span>.</p>
-<p>The following holds (from <span class="math notranslate nohighlight">\(\mathcal H_f = \mathcal H_0=0\)</span>):
-$<span class="math notranslate nohighlight">\(
-\lambda_{y0} = \frac{x\lambda_{x0}(p_0-p_1 y_0-p_4 u^*_0-1)}{y_0(-p_2x_0+p_3+p_5 u^*_0)}
-\)</span>$
+<p>Above we have produced an optimal trajectory, only not the one we looked for since we want to achieve the terminal conditions $x_f = 10, y_f=4$ and (free time) $H_f=0$.
+The choice we made for $\lambda_{x0}$, $\lambda_{y0}$, $t_f$ was not a good one, we need to change it up to when Eq.(3) is actually satisfied.</p>
+<p>In this case, to showcase the possibilities offered by <em>heyoka.py</em>, we will vary $\lambda_x$, find $\lambda_y$ from the condition $\mathcal H_f = \mathcal H_0 = 0$ and find $t_f$ as the time along the generated trajectory when the difference between the state and the target is minimal (a terminal event).</p>
+<p>This reduces the free <em>shooting parameters</em> in Eq.(3) from three to one only: $\lambda_x$.</p>
+<p>The following holds (from $\mathcal H_f = \mathcal H_0=0$):
+$$
+\lambda_{y0} = \frac{x\lambda_{x0}(p_0-p_1 y_0-p_4 u^<em>_0-1)}{y_0(-p_2x_0+p_3+p_5 u^</em>_0)}
+$$
 and it is implemented in the function below:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -1156,7 +1147,7 @@ N of terminal events    : 2
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/Optimal Control of the Lotka-Volterra equations_39_0.png" src="../_images/Optimal Control of the Lotka-Volterra equations_39_0.png" />
+<img alt="../_images/5dc4ff057a58c8c9ece0f61d7847eafcf51ceebd38057a99c642e6561faf6c6a.png" src="../_images/5dc4ff057a58c8c9ece0f61d7847eafcf51ceebd38057a99c642e6561faf6c6a.png" />
 </div>
 </div>
 <p>We are now ready to put everything together into a reduced shooting function that will be zero corresponding to the time optimal trajectory.</p>
@@ -1281,7 +1272,7 @@ N of terminal events    : 2
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/Optimal Control of the Lotka-Volterra equations_46_0.png" src="../_images/Optimal Control of the Lotka-Volterra equations_46_0.png" />
+<img alt="../_images/c449b0fdd8d483985419a00db1309a1ee3304f339da0754508f8c02fb2cd48a8.png" src="../_images/c449b0fdd8d483985419a00db1309a1ee3304f339da0754508f8c02fb2cd48a8.png" />
 </div>
 </div>
 <p>The time optimal trajectory is thus computed in the blink of an eye, showing us how to control the species dynamics in this example.</p>
