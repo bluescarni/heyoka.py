@@ -34,7 +34,8 @@ heyoka.py
 > people around them.
 
 heyoka.py is a Python library for the integration of ordinary differential equations
-(ODEs) via Taylor's method. Notable features include:
+(ODEs) via Taylor's method, based on automatic differentiation techniques and aggressive just-in-time
+compilation via [LLVM](https://llvm.org/). Notable features include:
 
 * support for both double-precision and extended-precision floating-point types
   (80-bit and 128-bit),
@@ -45,10 +46,7 @@ heyoka.py is a Python library for the integration of ordinary differential equat
 * batch mode integration to harness the power of modern
   [SIMD](https://en.wikipedia.org/wiki/SIMD) instruction sets,
 * ensemble simulations and automatic parallelisation,
-* interoperability with [SymPy](https://www.sympy.org/en/index.html),
-* a high-performance implementation of Taylor's method based
-  on automatic differentiation techniques and aggressive just-in-time
-  compilation via [LLVM](https://llvm.org/).
+* interoperability with [SymPy](https://www.sympy.org/en/index.html).
 
 heyoka.py is based on the [heyoka C++ library](https://github.com/bluescarni/heyoka).
 
@@ -70,6 +68,25 @@ to the heyoka.py paper ([arXiv preprint](https://arxiv.org/abs/2105.00800)):
     doi = {10.1093/mnras/stab1032},
     url = {https://doi.org/10.1093/mnras/stab1032},
     eprint = {https://academic.oup.com/mnras/article-pdf/504/2/2614/37750349/stab1032.pdf}
+}
+```
+
+heyoka.py's novel event detection system is described in the following paper ([arXiv preprint](https://arxiv.org/abs/2204.09948)):
+
+```bibtex
+@article{10.1093/mnras/stac1092,
+    author = {Biscani, Francesco and Izzo, Dario},
+    title = "{Reliable event detection for Taylor methods in astrodynamics}",
+    journal = {Monthly Notices of the Royal Astronomical Society},
+    volume = {513},
+    number = {4},
+    pages = {4833-4844},
+    year = {2022},
+    month = {04},
+    issn = {0035-8711},
+    doi = {10.1093/mnras/stac1092},
+    url = {https://doi.org/10.1093/mnras/stac1092},
+    eprint = {https://academic.oup.com/mnras/article-pdf/513/4/4833/43796551/stac1092.pdf}
 }
 ```
 
