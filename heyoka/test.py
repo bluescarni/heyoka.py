@@ -195,7 +195,7 @@ class taylor_add_jet_test_case(_ut.TestCase):
                 jet_par(st, pars=par_arr)
             self.assertTrue("Invalid parameters vector passed to a function for the "
                             "computation of the jet of "
-                            "Taylor derivatives: the shape must be (1), but it is "
+                            "Taylor derivatives: the shape must be (1, ), but it is "
                             "(5) instead" in str(cm.exception))
 
             # Wrong time shape, scalar case.
@@ -211,8 +211,36 @@ class taylor_add_jet_test_case(_ut.TestCase):
             with self.assertRaises(ValueError) as cm:
                 jet_par_t(st, pars=par_arr, time=time_arr)
             self.assertTrue("Invalid time vector passed to a function for the computation of the jet of "
-                            "Taylor derivatives: the shape must be (1), but it is "
+                            "Taylor derivatives: the shape must be (1, ), but it is "
                             "(5) instead" in str(cm.exception))
+
+            # No pars in the system, wrong par array provided, scalar case.
+            jet = taylor_add_jet(sys, 5, fp_type=desc)
+            st = np.full((6, 2), fp_t(0), dtype=fp_t)
+            with self.assertRaises(ValueError) as cm:
+                jet(st, pars=np.zeros((1,), dtype=fp_t))
+            self.assertTrue("Invalid parameters vector passed to a function for the computation of the jet of Taylor derivatives: the shape must be (0, ), but it is (1) instead" in str(cm.exception))
+
+            # No time in the system, wrong time array provided, scalar case.
+            with self.assertRaises(ValueError) as cm:
+                jet(st, time=np.zeros((0,), dtype=fp_t))
+            self.assertTrue("Invalid time vector passed to a function for the computation of the jet of Taylor derivatives: the shape must be (1, ), but it is (0) instead" in str(cm.exception))
+
+            # Non-owning arrays, scalar case.
+            with self.assertRaises(ValueError) as cm:
+                jet(st[:])
+            self.assertTrue("The arrays passed to a function for the computation of the jet of Taylor derivatives must all own their data" in str(cm.exception))
+
+            par_arr = np.zeros((0,), dtype=fp_t)
+            with self.assertRaises(ValueError) as cm:
+                jet(st, pars=par_arr[:])
+            self.assertTrue("The arrays passed to a function for the computation of the jet of Taylor derivatives must all own their data" in str(cm.exception))
+
+            time_arr = np.zeros((1,), dtype=fp_t)
+            with self.assertRaises(ValueError) as cm:
+                jet(st, time=time_arr[:])
+            self.assertTrue("The arrays passed to a function for the computation of the jet of Taylor derivatives must all own their data" in str(cm.exception))
+
 
         # Check throwing behaviour with long double on PPC.
         if _ppc_arch:
@@ -339,8 +367,35 @@ class taylor_add_jet_test_case(_ut.TestCase):
             with self.assertRaises(ValueError) as cm:
                 jet_par_t(st, pars=par_arr, time=time_arr)
             self.assertTrue("Invalid time vector passed to a function for the computation of the jet of "
-                            "Taylor derivatives: the shape must be (4), but it is "
+                            "Taylor derivatives: the shape must be (4, ), but it is "
                             "(5) instead" in str(cm.exception))
+
+            # No pars in the system, wrong par array provided, batch case.
+            jet = taylor_add_jet(sys, 5, fp_type=desc, batch_size=batch_size)
+            st = np.full((6, 2, batch_size), fp_t(0), dtype=fp_t)
+            with self.assertRaises(ValueError) as cm:
+                jet(st, pars=np.zeros((1,4), dtype=fp_t))
+            self.assertTrue( "Invalid parameters vector passed to a function for the computation of the jet of Taylor derivatives: the shape must be (0, 4), but it is (1, 4) instead" in str(cm.exception))
+
+            # No time in the system, wrong time array provided, batch case.
+            with self.assertRaises(ValueError) as cm:
+                jet(st, time=np.zeros((0,), dtype=fp_t))
+            self.assertTrue("Invalid time vector passed to a function for the computation of the jet of Taylor derivatives: the shape must be (4, ), but it is (0) instead" in str(cm.exception))
+
+            # Non-owning arrays, batch case.
+            with self.assertRaises(ValueError) as cm:
+                jet(st[:])
+            self.assertTrue("The arrays passed to a function for the computation of the jet of Taylor derivatives must all own their data" in str(cm.exception))
+
+            par_arr = np.zeros((0,), dtype=fp_t)
+            with self.assertRaises(ValueError) as cm:
+                jet(st, pars=par_arr[:])
+            self.assertTrue("The arrays passed to a function for the computation of the jet of Taylor derivatives must all own their data" in str(cm.exception))
+
+            time_arr = np.zeros((1,), dtype=fp_t)
+            with self.assertRaises(ValueError) as cm:
+                jet(st, time=time_arr[:])
+            self.assertTrue("The arrays passed to a function for the computation of the jet of Taylor derivatives must all own their data" in str(cm.exception))
 
         if not with_real128:
             return
@@ -450,7 +505,7 @@ class taylor_add_jet_test_case(_ut.TestCase):
             jet_par(st, pars=par_arr)
         self.assertTrue("Invalid parameters vector passed to a function for the "
                         "computation of the jet of "
-                        "Taylor derivatives: the shape must be (1), but it is "
+                        "Taylor derivatives: the shape must be (1, ), but it is "
                         "(5) instead" in str(cm.exception))
 
         # Wrong time shape, scalar case.
@@ -466,7 +521,7 @@ class taylor_add_jet_test_case(_ut.TestCase):
         with self.assertRaises(ValueError) as cm:
             jet_par_t(st, pars=par_arr, time=time_arr)
         self.assertTrue("Invalid time vector passed to a function for the computation of the jet of "
-                        "Taylor derivatives: the shape must be (1), but it is "
+                        "Taylor derivatives: the shape must be (1, ), but it is "
                         "(5) instead" in str(cm.exception))
 
 
@@ -2356,22 +2411,28 @@ class kepE_test_case(_ut.TestCase):
         M = 5.
         E = kepE(e, M)
 
-        self.assertTrue(np.allclose(np.cos(M), np.cos(E - e*np.sin(E)), rtol=np.finfo(fp_t).eps * 10, atol=np.finfo(fp_t).eps * 10))
-        self.assertTrue(np.allclose(np.sin(M), np.sin(E - e*np.sin(E)), rtol=np.finfo(fp_t).eps * 10, atol=np.finfo(fp_t).eps * 10))
+        self.assertTrue(np.allclose(np.cos(M), np.cos(
+            E - e*np.sin(E)), rtol=np.finfo(fp_t).eps * 10, atol=np.finfo(fp_t).eps * 10))
+        self.assertTrue(np.allclose(np.sin(M), np.sin(
+            E - e*np.sin(E)), rtol=np.finfo(fp_t).eps * 10, atol=np.finfo(fp_t).eps * 10))
 
         e = [.123, .124, .125, .126]
         M = [5., 6., 7., 8.]
         E = kepE(e, M)
 
-        self.assertTrue(np.allclose(np.cos(M), np.cos(E - e*np.sin(E)), rtol=np.finfo(fp_t).eps * 10, atol=np.finfo(fp_t).eps * 10))
-        self.assertTrue(np.allclose(np.sin(M), np.sin(E - e*np.sin(E)), rtol=np.finfo(fp_t).eps * 10, atol=np.finfo(fp_t).eps * 10))
+        self.assertTrue(np.allclose(np.cos(M), np.cos(
+            E - e*np.sin(E)), rtol=np.finfo(fp_t).eps * 10, atol=np.finfo(fp_t).eps * 10))
+        self.assertTrue(np.allclose(np.sin(M), np.sin(
+            E - e*np.sin(E)), rtol=np.finfo(fp_t).eps * 10, atol=np.finfo(fp_t).eps * 10))
 
         e = [.123, .124, .125, .126, .127]
         M = [5., 6., 7., 8., 9.]
         E = kepE(e, M)
 
-        self.assertTrue(np.allclose(np.cos(M), np.cos(E - e*np.sin(E)), rtol=np.finfo(fp_t).eps * 10, atol=np.finfo(fp_t).eps * 10))
-        self.assertTrue(np.allclose(np.sin(M), np.sin(E - e*np.sin(E)), rtol=np.finfo(fp_t).eps * 10, atol=np.finfo(fp_t).eps * 10))
+        self.assertTrue(np.allclose(np.cos(M), np.cos(
+            E - e*np.sin(E)), rtol=np.finfo(fp_t).eps * 10, atol=np.finfo(fp_t).eps * 10))
+        self.assertTrue(np.allclose(np.sin(M), np.sin(
+            E - e*np.sin(E)), rtol=np.finfo(fp_t).eps * 10, atol=np.finfo(fp_t).eps * 10))
 
         with self.assertRaises(ValueError) as cm:
             kepE([[1.]], [[2.]])
@@ -2395,22 +2456,28 @@ class kepE_test_case(_ut.TestCase):
             M = fp_t(5.)
             E = kepE(e, M)
 
-            self.assertTrue(np.allclose(np.cos(M), np.cos(E - e*np.sin(E)), rtol=np.finfo(fp_t).eps * 10, atol=np.finfo(fp_t).eps * 10))
-            self.assertTrue(np.allclose(np.sin(M), np.sin(E - e*np.sin(E)), rtol=np.finfo(fp_t).eps * 10, atol=np.finfo(fp_t).eps * 10))
+            self.assertTrue(np.allclose(np.cos(M), np.cos(
+                E - e*np.sin(E)), rtol=np.finfo(fp_t).eps * 10, atol=np.finfo(fp_t).eps * 10))
+            self.assertTrue(np.allclose(np.sin(M), np.sin(
+                E - e*np.sin(E)), rtol=np.finfo(fp_t).eps * 10, atol=np.finfo(fp_t).eps * 10))
 
             e = np.array([.123, .124, .125, .126], dtype=fp_t)
             M = np.array([5., 6., 7., 8.], dtype=fp_t)
             E = kepE(e, M)
 
-            self.assertTrue(np.allclose(np.cos(M), np.cos(E - e*np.sin(E)), rtol=np.finfo(fp_t).eps * 10, atol=np.finfo(fp_t).eps * 10))
-            self.assertTrue(np.allclose(np.sin(M), np.sin(E - e*np.sin(E)), rtol=np.finfo(fp_t).eps * 10, atol=np.finfo(fp_t).eps * 10))
+            self.assertTrue(np.allclose(np.cos(M), np.cos(
+                E - e*np.sin(E)), rtol=np.finfo(fp_t).eps * 10, atol=np.finfo(fp_t).eps * 10))
+            self.assertTrue(np.allclose(np.sin(M), np.sin(
+                E - e*np.sin(E)), rtol=np.finfo(fp_t).eps * 10, atol=np.finfo(fp_t).eps * 10))
 
             e = np.array([.123, .124, .125, .126, .127], dtype=fp_t)
             M = np.array([5., 6., 7., 8., 9.], dtype=fp_t)
             E = kepE(e, M)
 
-            self.assertTrue(np.allclose(np.cos(M), np.cos(E - e*np.sin(E)), rtol=np.finfo(fp_t).eps * 10, atol=np.finfo(fp_t).eps * 10))
-            self.assertTrue(np.allclose(np.sin(M), np.sin(E - e*np.sin(E)), rtol=np.finfo(fp_t).eps * 10, atol=np.finfo(fp_t).eps * 10))
+            self.assertTrue(np.allclose(np.cos(M), np.cos(
+                E - e*np.sin(E)), rtol=np.finfo(fp_t).eps * 10, atol=np.finfo(fp_t).eps * 10))
+            self.assertTrue(np.allclose(np.sin(M), np.sin(
+                E - e*np.sin(E)), rtol=np.finfo(fp_t).eps * 10, atol=np.finfo(fp_t).eps * 10))
 
         if not with_real128:
             return
@@ -2430,13 +2497,16 @@ class kepE_test_case(_ut.TestCase):
         M = [5., 6., 7., 8., 9.]
         E = kepE([mpf(_) for _ in e], [mpf(_) for _ in M])
 
-        self.assertTrue(all(abs(cos(M) - cos(E-e*sin(E))) < 1e-32 for e,M,E in zip(e,M,E)))
-        self.assertTrue(all(abs(sin(M) - sin(E-e*sin(E))) < 1e-32 for e,M,E in zip(e,M,E)))
+        self.assertTrue(all(abs(cos(M) - cos(E-e*sin(E))) <
+                        1e-32 for e, M, E in zip(e, M, E)))
+        self.assertTrue(all(abs(sin(M) - sin(E-e*sin(E))) <
+                        1e-32 for e, M, E in zip(e, M, E)))
 
         with self.assertRaises(ValueError) as cm:
             kepE([mpf(1.)], [mpf(2.), mpf(3.)])
         self.assertTrue(
             "Invalid arrays passed to kepE(): the eccentricity array has a size of 1, but the mean anomaly array has a size of 2 (the sizes must be equal)" in str(cm.exception))
+
 
 class sympy_test_case(_ut.TestCase):
     def runTest(self):
@@ -3739,6 +3809,394 @@ class ensemble_test_case(_ut.TestCase):
             ensemble_propagate_until(ta, 20., 10, gen, chunksize=1)
 
 
+class cfunc_test_case(_ut.TestCase):
+    def runTest(self):
+        self.test_single()
+        self.test_multi()
+
+    def test_multi(self):
+        import numpy as np
+        from . import add_cfunc, make_vars, sin, par, with_real128, expression
+        from .core import _ppc_arch
+
+        if _ppc_arch:
+            fp_types = [
+                ("double", float)]
+        else:
+            fp_types = [("double", float),
+                        ("long double", np.longdouble)]
+
+        x, y = make_vars("x", "y")
+        func = [sin(x + y), x - par[0], x + y + par[1]]
+
+        for desc, fp_t in fp_types:
+            fn = add_cfunc(func, vars=[y, x], fp_type=desc)
+
+            with self.assertRaises(ValueError) as cm:
+                fn(np.zeros((2, 5), dtype=fp_t), pars=[
+                   fp_t(0)], outputs=np.zeros((), dtype=fp_t))
+            self.assertTrue(
+                "The array of outputs provided for the evaluation of a compiled function has 0 dimension(s), but it must have 2 dimension(s) instead (i.e., the same number of dimensions as the array of inputs)" in str(cm.exception))
+
+            with self.assertRaises(ValueError) as cm:
+                fn(np.zeros((2, 5), dtype=fp_t), pars=[
+                   fp_t(0)], outputs=np.zeros((3, 1), dtype=fp_t))
+            self.assertTrue(
+                "The size in the second dimension for the output array provided for the evaluation of a compiled function (1) must match the size in the second dimension for the array of inputs (5)" in str(cm.exception))
+
+            with self.assertRaises(ValueError) as cm:
+                fn(np.zeros((2, 5), dtype=fp_t), pars=np.zeros((), dtype=fp_t))
+            self.assertTrue(
+                "The array of parameter values provided for the evaluation of a compiled function has 0 dimension(s), but it must have 2 dimension(s) instead (i.e., the same number of dimensions as the array of inputs)" in str(cm.exception))
+
+            with self.assertRaises(ValueError) as cm:
+                fn(np.zeros((2, 5), dtype=fp_t),
+                   pars=np.zeros((2, 4), dtype=fp_t))
+            self.assertTrue(
+                "The size in the second dimension for the array of parameter values provided for the evaluation of a compiled function (4) must match the size in the second dimension for the array of inputs (5)" in str(cm.exception))
+
+            nw_arr = np.zeros((3, 5), dtype=fp_t)
+            nw_arr.setflags(write=False)
+            with self.assertRaises(ValueError) as cm:
+                fn(np.zeros((2, 5), dtype=fp_t), outputs=nw_arr,
+                   pars=np.zeros((2, 5), dtype=fp_t))
+            self.assertTrue(
+                "The array of outputs provided for the evaluation of a compiled function is not writeable" in str(cm.exception))
+
+            for nevals in range(0, 10):
+                fn = add_cfunc(func, vars=[y, x], fp_type=desc)
+
+                # NOTE: deterministic seeding.
+                rng = np.random.default_rng(nevals)
+
+                # NOTE: long double rng not supported.
+                inputs = rng.random((2, nevals), dtype=float).astype(fp_t)
+                pars = rng.random((2, nevals), dtype=float).astype(fp_t)
+
+                eval_arr = fn(inputs=inputs, pars=pars)
+                self.assertTrue(np.allclose(eval_arr[0], np.sin(inputs[1, :] + inputs[0, :]),
+                                rtol=np.finfo(fp_t).eps * 10, atol=np.finfo(fp_t).eps * 10))
+                self.assertTrue(np.allclose(eval_arr[1], inputs[1, :] - pars[0, :],
+                                rtol=np.finfo(fp_t).eps * 10, atol=np.finfo(fp_t).eps * 10))
+                self.assertTrue(np.allclose(eval_arr[2], inputs[1, :] + inputs[0, :] + pars[1, :],
+                                rtol=np.finfo(fp_t).eps * 10, atol=np.finfo(fp_t).eps * 10))
+
+                # Check that eval_arr actually uses the memory
+                # provided from the outputs argument.
+                out_arr = np.zeros((3, nevals), dtype=fp_t)
+                eval_arr = fn(inputs=inputs, pars=pars, outputs=out_arr)
+                self.assertTrue(np.allclose(eval_arr[0], np.sin(inputs[1, :] + inputs[0, :]),
+                                rtol=np.finfo(fp_t).eps * 10, atol=np.finfo(fp_t).eps * 10))
+                self.assertTrue(np.allclose(eval_arr[1], inputs[1, :] - pars[0, :],
+                                rtol=np.finfo(fp_t).eps * 10, atol=np.finfo(fp_t).eps * 10))
+                self.assertTrue(np.allclose(eval_arr[2], inputs[1, :] + inputs[0, :] + pars[1, :],
+                                rtol=np.finfo(fp_t).eps * 10, atol=np.finfo(fp_t).eps * 10))
+
+                # Test with non-owning arrays.
+                eval_arr = fn(inputs=inputs[:], pars=pars)
+                self.assertTrue(np.allclose(eval_arr[0], np.sin(inputs[1, :] + inputs[0, :]),
+                                rtol=np.finfo(fp_t).eps * 10, atol=np.finfo(fp_t).eps * 10))
+                self.assertTrue(np.allclose(eval_arr[1], inputs[1, :] - pars[0, :],
+                                rtol=np.finfo(fp_t).eps * 10, atol=np.finfo(fp_t).eps * 10))
+                self.assertTrue(np.allclose(eval_arr[2], inputs[1, :] + inputs[0, :] + pars[1, :],
+                                rtol=np.finfo(fp_t).eps * 10, atol=np.finfo(fp_t).eps * 10))
+
+                eval_arr = fn(inputs=inputs, pars=pars[:])
+                self.assertTrue(np.allclose(eval_arr[0], np.sin(inputs[1, :] + inputs[0, :]),
+                                rtol=np.finfo(fp_t).eps * 10, atol=np.finfo(fp_t).eps * 10))
+                self.assertTrue(np.allclose(eval_arr[1], inputs[1, :] - pars[0, :],
+                                rtol=np.finfo(fp_t).eps * 10, atol=np.finfo(fp_t).eps * 10))
+                self.assertTrue(np.allclose(eval_arr[2], inputs[1, :] + inputs[0, :] + pars[1, :],
+                                rtol=np.finfo(fp_t).eps * 10, atol=np.finfo(fp_t).eps * 10))
+
+                # Test with non-distinct arrays.
+                eval_arr = fn(inputs=inputs, pars=inputs)
+                self.assertTrue(np.allclose(eval_arr[0], np.sin(inputs[1, :] + inputs[0, :]),
+                                rtol=np.finfo(fp_t).eps * 10, atol=np.finfo(fp_t).eps * 10))
+                self.assertTrue(np.allclose(eval_arr[1], inputs[1, :] - inputs[0, :],
+                                rtol=np.finfo(fp_t).eps * 10, atol=np.finfo(fp_t).eps * 10))
+                self.assertTrue(np.allclose(eval_arr[2], inputs[1, :] + inputs[0, :] + inputs[1, :],
+                                rtol=np.finfo(fp_t).eps * 10, atol=np.finfo(fp_t).eps * 10))
+
+                # Test with arrays which are not C style.
+                inputs = rng.random((4, nevals), dtype=float).astype(fp_t)
+                inputs = inputs[::2]
+                eval_arr = fn(inputs=inputs, pars=pars)
+                self.assertTrue(np.allclose(eval_arr[0], np.sin(inputs[1, :] + inputs[0, :]),
+                                rtol=np.finfo(fp_t).eps * 10, atol=np.finfo(fp_t).eps * 10))
+                self.assertTrue(np.allclose(eval_arr[1], inputs[1, :] - pars[0, :],
+                                rtol=np.finfo(fp_t).eps * 10, atol=np.finfo(fp_t).eps * 10))
+                self.assertTrue(np.allclose(eval_arr[2], inputs[1, :] + inputs[0, :] + pars[1, :],
+                                rtol=np.finfo(fp_t).eps * 10, atol=np.finfo(fp_t).eps * 10))
+
+                pars = rng.random((4, nevals), dtype=float).astype(fp_t)
+                pars = pars[::2]
+                eval_arr = fn(inputs=inputs, pars=pars)
+                self.assertTrue(np.allclose(eval_arr[0], np.sin(inputs[1, :] + inputs[0, :]),
+                                rtol=np.finfo(fp_t).eps * 10, atol=np.finfo(fp_t).eps * 10))
+                self.assertTrue(np.allclose(eval_arr[1], inputs[1, :] - pars[0, :],
+                                rtol=np.finfo(fp_t).eps * 10, atol=np.finfo(fp_t).eps * 10))
+                self.assertTrue(np.allclose(eval_arr[2], inputs[1, :] + inputs[0, :] + pars[1, :],
+                                rtol=np.finfo(fp_t).eps * 10, atol=np.finfo(fp_t).eps * 10))
+
+                # Tests with no inputs.
+                fn = add_cfunc([expression(3) + par[1], par[0]], fp_type=desc)
+
+                inputs = rng.random((0, nevals), dtype=float).astype(fp_t)
+                pars = rng.random((2, nevals), dtype=float).astype(fp_t)
+                eval_arr = fn(inputs=inputs, pars=pars)
+                self.assertTrue(np.allclose(eval_arr[0], 3+pars[1, :],
+                                rtol=np.finfo(fp_t).eps * 10, atol=np.finfo(fp_t).eps * 10))
+                self.assertTrue(np.allclose(eval_arr[1], pars[0, :],
+                                rtol=np.finfo(fp_t).eps * 10, atol=np.finfo(fp_t).eps * 10))
+
+                eval_arr = fn(inputs=inputs[:], pars=pars)
+                self.assertTrue(np.allclose(eval_arr[0], 3+pars[1, :],
+                                rtol=np.finfo(fp_t).eps * 10, atol=np.finfo(fp_t).eps * 10))
+                self.assertTrue(np.allclose(eval_arr[1], pars[0, :],
+                                rtol=np.finfo(fp_t).eps * 10, atol=np.finfo(fp_t).eps * 10))
+
+                eval_arr = fn(inputs=inputs, pars=pars[:])
+                self.assertTrue(np.allclose(eval_arr[0], 3+pars[1, :],
+                                rtol=np.finfo(fp_t).eps * 10, atol=np.finfo(fp_t).eps * 10))
+                self.assertTrue(np.allclose(eval_arr[1], pars[0, :],
+                                rtol=np.finfo(fp_t).eps * 10, atol=np.finfo(fp_t).eps * 10))
+
+                fn = add_cfunc([expression(3), expression(4)], fp_type=desc)
+
+                inputs = rng.random((0, nevals), dtype=float).astype(fp_t)
+                pars = rng.random((0, nevals), dtype=float).astype(fp_t)
+                eval_arr = fn(inputs=inputs, pars=pars)
+                self.assertTrue(np.allclose(eval_arr[0], 3,
+                                rtol=np.finfo(fp_t).eps * 10, atol=np.finfo(fp_t).eps * 10))
+                self.assertTrue(np.allclose(eval_arr[1], 4,
+                                rtol=np.finfo(fp_t).eps * 10, atol=np.finfo(fp_t).eps * 10))
+
+                # Test case in which there are no pars but a pars array is provided anyway,
+                # with the correct shape.
+                fn = add_cfunc([x+y], fp_type=desc)
+                inputs = rng.random((2, nevals), dtype=float).astype(fp_t)
+                eval_arr = fn(inputs=inputs, pars=np.zeros((0, nevals), dtype=fp_t))
+
+                self.assertTrue(np.allclose(eval_arr[0], inputs[0, :] + inputs[1, :],
+                                rtol=np.finfo(fp_t).eps * 10, atol=np.finfo(fp_t).eps * 10))
+
+        # Check throwing behaviour with long double on PPC.
+        if _ppc_arch:
+            with self.assertRaises(NotImplementedError):
+                add_cfunc(func, vars=[y, x], fp_type="long double")
+
+        if not with_real128:
+            return
+
+        from mpmath import mpf
+
+        fp_t = mpf
+
+        fn = add_cfunc(func, vars=[y, x], fp_type="real128")
+
+        with self.assertRaises(ValueError) as cm:
+            fn(np.full((2, 5), mpf(0)), pars=np.full((), mpf(0)))
+        self.assertTrue(
+            "The array of parameter values provided for the evaluation of a compiled function has 0 dimension(s), but it must have 2 dimension(s) instead (i.e., the same number of dimensions as the array of inputs)" in str(cm.exception))
+
+        with self.assertRaises(ValueError) as cm:
+            fn(np.full((2, 5), mpf(0)), pars=np.full((2, 4), mpf(0)))
+        self.assertTrue(
+            "The size in the second dimension for the array of parameter values provided for the evaluation of a compiled function (4) must match the size in the second dimension for the array of inputs (5)" in str(cm.exception))
+
+        eval_arr = fn(np.array([[fp_t(1), fp_t(3)], [fp_t(2), fp_t(4)]]), pars=np.array(
+            [[fp_t(-5), fp_t(-6)], [fp_t(5), fp_t(6)]]))
+        self.assertEqual(eval_arr[2, 0], fp_t(8))
+        self.assertEqual(eval_arr[2, 1], fp_t(13))
+
+    def test_single(self):
+        import numpy as np
+        from . import add_cfunc, make_vars, sin, par, with_real128, expression
+        from .core import _ppc_arch
+
+        if _ppc_arch:
+            fp_types = [
+                ("double", float)]
+        else:
+            fp_types = [("double", float),
+                        ("long double", np.longdouble)]
+
+        x, y = make_vars("x", "y")
+        func = [sin(x + y), x - par[0], x + y + par[1]]
+
+        # NOTE: perhaps in the future we can add
+        # some more testing for high_accuracy, compact_mode,
+        # etc., once we figure out how to test for them. Perhaps
+        # examine the llvm states?
+        for desc, fp_t in fp_types:
+            fn = add_cfunc(func, fp_type=desc)
+
+            with self.assertRaises(ValueError) as cm:
+                fn([fp_t(1), fp_t(2)])
+            self.assertTrue(
+                "The compiled function contains 2 parameter(s), but no array of parameter values was provided for evaluation" in str(cm.exception))
+
+            with self.assertRaises(ValueError) as cm:
+                fn(np.zeros((), dtype=fp_t), pars=[fp_t(0)])
+            self.assertTrue(
+                "The array of inputs provided for the evaluation of a compiled function has 0 dimensions, but it must have either 1 or 2 dimensions instead" in str(cm.exception))
+
+            with self.assertRaises(ValueError) as cm:
+                fn(np.zeros((1, 2, 3), dtype=fp_t), pars=[fp_t(0)])
+            self.assertTrue(
+                "The array of inputs provided for the evaluation of a compiled function has 3 dimensions, but it must have either 1 or 2 dimensions instead" in str(cm.exception))
+
+            with self.assertRaises(ValueError) as cm:
+                fn([fp_t(0)], pars=[fp_t(0)])
+            self.assertTrue(
+                "The array of inputs provided for the evaluation of a compiled function has size 1 in the first dimension, but it must have a size of 2 instead (i.e., the size in the first dimension must be equal to the number of variables)" in str(cm.exception))
+
+            with self.assertRaises(ValueError) as cm:
+                fn(np.zeros((2,), dtype=fp_t), pars=[
+                   fp_t(0)], outputs=np.zeros((), dtype=fp_t))
+            self.assertTrue(
+                "The array of outputs provided for the evaluation of a compiled function has 0 dimension(s), but it must have 1 dimension(s) instead (i.e., the same number of dimensions as the array of inputs)" in str(cm.exception))
+
+            with self.assertRaises(ValueError) as cm:
+                fn(np.zeros((2,), dtype=fp_t), pars=[
+                   fp_t(0)], outputs=np.zeros((2,), dtype=fp_t))
+            self.assertTrue(
+                "The array of outputs provided for the evaluation of a compiled function has size 2 in the first dimension, but it must have a size of 3 instead (i.e., the size in the first dimension must be equal to the number of outputs)" in str(cm.exception))
+
+            with self.assertRaises(ValueError) as cm:
+                fn(np.zeros((2,), dtype=fp_t), pars=np.zeros((), dtype=fp_t))
+            self.assertTrue(
+                "The array of parameter values provided for the evaluation of a compiled function has 0 dimension(s), but it must have 1 dimension(s) instead (i.e., the same number of dimensions as the array of inputs)" in str(cm.exception))
+
+            with self.assertRaises(ValueError) as cm:
+                fn(np.zeros((2,), dtype=fp_t), pars=np.zeros((0,), dtype=fp_t))
+            self.assertTrue(
+                "The array of parameter values provided for the evaluation of a compiled function has size 0 in the first dimension, but it must have a size of 2 instead (i.e., the size in the first dimension must be equal to the number of parameters in the function)" in str(cm.exception))
+
+            eval_arr = fn([fp_t(1), fp_t(2)], pars=[fp_t(-5), fp_t(1)])
+            self.assertTrue(np.allclose(eval_arr, [np.sin(fp_t(1)+fp_t(2)), fp_t(1) - fp_t(-5), fp_t(1) + fp_t(2) + fp_t(1)],
+                            rtol=np.finfo(fp_t).eps * 10, atol=np.finfo(fp_t).eps * 10))
+
+            # Check that eval_arr actually uses the memory
+            # provided from the outputs argument.
+            out_arr = np.zeros((3,), dtype=fp_t)
+            eval_arr = fn([fp_t(1), fp_t(2)], pars=[
+                          fp_t(-5), fp_t(1)], outputs=out_arr)
+            self.assertTrue(np.shares_memory(eval_arr, out_arr))
+            self.assertTrue(np.allclose(eval_arr, [np.sin(fp_t(1)+fp_t(2)), fp_t(1) - fp_t(-5), fp_t(1) + fp_t(2) + fp_t(1)],
+                            rtol=np.finfo(fp_t).eps * 10, atol=np.finfo(fp_t).eps * 10))
+
+            # Test with non-owning arrays.
+            inputs = np.array([fp_t(1), fp_t(2)])
+            eval_arr = fn(inputs=inputs[:], pars=[fp_t(-5), fp_t(1)])
+            self.assertTrue(np.allclose(eval_arr, [np.sin(fp_t(1)+fp_t(2)), fp_t(1) - fp_t(-5), fp_t(1) + fp_t(2) + fp_t(1)],
+                            rtol=np.finfo(fp_t).eps * 10, atol=np.finfo(fp_t).eps * 10))
+
+            pars = np.array([fp_t(-5), fp_t(1)])
+            eval_arr = fn(inputs=inputs, pars=pars[:])
+            self.assertTrue(np.allclose(eval_arr, [np.sin(fp_t(1)+fp_t(2)), fp_t(1) - fp_t(-5), fp_t(1) + fp_t(2) + fp_t(1)],
+                            rtol=np.finfo(fp_t).eps * 10, atol=np.finfo(fp_t).eps * 10))
+
+            # Test with non-distinct arrays.
+            eval_arr = fn(inputs=inputs, pars=inputs)
+            self.assertTrue(np.allclose(eval_arr, [np.sin(fp_t(1)+fp_t(2)), fp_t(1) - fp_t(1), fp_t(1) + fp_t(2) + fp_t(2)],
+                            rtol=np.finfo(fp_t).eps * 10, atol=np.finfo(fp_t).eps * 10))
+
+            # Test with arrays which are not C style.
+            inputs = np.zeros((4,), dtype=fp_t)
+            inputs[::2] = [fp_t(1), fp_t(2)]
+            eval_arr = fn(inputs=inputs[::2], pars=pars)
+            self.assertTrue(np.allclose(eval_arr, [np.sin(fp_t(1)+fp_t(2)), fp_t(1) - fp_t(-5), fp_t(1) + fp_t(2) + fp_t(1)],
+                            rtol=np.finfo(fp_t).eps * 10, atol=np.finfo(fp_t).eps * 10))
+
+            inputs = np.array([fp_t(1), fp_t(2)])
+            pars = np.zeros((4,), dtype=fp_t)
+            pars[::2] = [fp_t(-5), fp_t(1)]
+            eval_arr = fn(inputs=inputs, pars=pars[::2])
+            self.assertTrue(np.allclose(eval_arr, [np.sin(fp_t(1)+fp_t(2)), fp_t(1) - fp_t(-5), fp_t(1) + fp_t(2) + fp_t(1)],
+                            rtol=np.finfo(fp_t).eps * 10, atol=np.finfo(fp_t).eps * 10))
+
+            # Tests with no inputs.
+            fn = add_cfunc([expression(3) + par[1], par[0]], fp_type=desc)
+
+            eval_arr = fn(inputs=np.zeros((0,), dtype=fp_t), pars=[1, 2])
+            self.assertTrue(np.allclose(eval_arr, [fp_t(3) + 2, fp_t(1)],
+                            rtol=np.finfo(fp_t).eps * 10, atol=np.finfo(fp_t).eps * 10))
+
+            inputs = np.zeros((0,), dtype=fp_t)
+            eval_arr = fn(inputs=inputs[:], pars=[1, 2])
+            self.assertTrue(np.allclose(eval_arr, [fp_t(3) + 2, fp_t(1)],
+                            rtol=np.finfo(fp_t).eps * 10, atol=np.finfo(fp_t).eps * 10))
+
+            fn = add_cfunc([expression(3), expression(4)], fp_type=desc)
+
+            eval_arr = fn(inputs=np.zeros((0,), dtype=fp_t), pars=[])
+            self.assertTrue(np.allclose(eval_arr, [fp_t(3), fp_t(4)],
+                            rtol=np.finfo(fp_t).eps * 10, atol=np.finfo(fp_t).eps * 10))
+
+            eval_arr = fn(inputs=np.zeros((0,), dtype=fp_t),
+                          pars=np.zeros((0,), dtype=fp_t))
+            self.assertTrue(np.allclose(eval_arr, [fp_t(3), fp_t(4)],
+                            rtol=np.finfo(fp_t).eps * 10, atol=np.finfo(fp_t).eps * 10))
+
+            # Test case in which there are no pars but a pars array is provided anyway,
+            # with the correct shape.
+            fn = add_cfunc([x+y], fp_type=desc)
+            eval_arr = fn(inputs=[1, 2], pars=np.zeros((0, ), dtype=fp_t))
+
+            self.assertEqual(eval_arr[0], 3)
+
+        if not with_real128:
+            return
+
+        from mpmath import mpf
+
+        fp_t = mpf
+
+        fn = add_cfunc(func, fp_type="real128")
+
+        with self.assertRaises(ValueError) as cm:
+            fn(np.array([fp_t(1), fp_t(2)]),
+               pars=np.array([]), outputs=np.array([]))
+        self.assertTrue(
+            "Specifying the output array for a compiled function is not supported in quadruple precision" in str(cm.exception))
+
+        with self.assertRaises(ValueError) as cm:
+            fn(np.array([fp_t(1), fp_t(2)]))
+        self.assertTrue(
+            "The compiled function contains 2 parameter(s), but no array of parameter values was provided for evaluation" in str(cm.exception))
+
+        with self.assertRaises(ValueError) as cm:
+            fn(np.zeros((), dtype=fp_t), pars=np.array([fp_t(0)]))
+        self.assertTrue(
+            "The array of inputs provided for the evaluation of a compiled function has 0 dimensions, but it must have either 1 or 2 dimensions instead" in str(cm.exception))
+
+        with self.assertRaises(ValueError) as cm:
+            fn(np.zeros((1, 2, 3), dtype=fp_t), pars=np.array([fp_t(0)]))
+        self.assertTrue(
+            "The array of inputs provided for the evaluation of a compiled function has 3 dimensions, but it must have either 1 or 2 dimensions instead" in str(cm.exception))
+
+        with self.assertRaises(ValueError) as cm:
+            fn(np.array([fp_t(0)]), pars=np.array([fp_t(0)]))
+        self.assertTrue(
+            "The array of inputs provided for the evaluation of a compiled function has size 1 in the first dimension, but it must have a size of 2 instead (i.e., the size in the first dimension must be equal to the number of variables)" in str(cm.exception))
+
+        with self.assertRaises(ValueError) as cm:
+            fn(np.full((2,), mpf(0)), pars=np.full((), mpf(0)))
+        self.assertTrue(
+            "The array of parameter values provided for the evaluation of a compiled function has 0 dimension(s), but it must have 1 dimension(s) instead (i.e., the same number of dimensions as the array of inputs)" in str(cm.exception))
+
+        with self.assertRaises(ValueError) as cm:
+            fn(np.full((2,), mpf(0)), pars=np.full((0,), mpf(0)))
+        self.assertTrue(
+            "The array of parameter values provided for the evaluation of a compiled function has size 0 in the first dimension, but it must have a size of 2 instead (i.e., the size in the first dimension must be equal to the number of parameters in the function)" in str(cm.exception))
+
+        eval_arr = fn(np.array([fp_t(1), fp_t(2)]),
+                      pars=np.array([fp_t(-5), fp_t(1)]))
+        self.assertEqual(eval_arr[2], fp_t(4))
+
+
 def run_test_suite():
     from . import make_nbody_sys, taylor_adaptive, with_real128
 
@@ -3753,6 +4211,7 @@ def run_test_suite():
     retval = 0
 
     suite = _ut.TestLoader().loadTestsFromTestCase(taylor_add_jet_test_case)
+    suite.addTest(cfunc_test_case())
     suite.addTest(ensemble_test_case())
     suite.addTest(s11n_backend_test_case())
     suite.addTest(recommended_simd_size_test_case())

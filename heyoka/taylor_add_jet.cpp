@@ -57,119 +57,138 @@ namespace
 // computing the jet of derivatives.
 template <typename Arr>
 void taylor_add_jet_array_check(const Arr &state, const std::optional<Arr> &pars, const std::optional<Arr> &time,
-                                std::uint32_t n_params, bool has_time, std::uint32_t order, std::uint32_t tot_n_eq,
+                                std::uint32_t n_params, std::uint32_t order, std::uint32_t tot_n_eq,
                                 std::uint32_t batch_size)
 {
-    using namespace fmt::literals;
-
     // Distinguish the batch and scalar cases when checking
     // dimensions and shapes.
     if (batch_size == 1u) {
         // We need a state array with shape (order + 1, tot_n_eq).
         if (state.ndim() != 2) {
-            py_throw(PyExc_ValueError, "Invalid state vector passed to a function for the computation of the jet of "
-                                       "Taylor derivatives: the number of dimensions must be 2, but it is "
-                                       "{} instead"_format(state.ndim())
-                                           .c_str());
+            py_throw(PyExc_ValueError,
+                     fmt::format("Invalid state vector passed to a function for the computation of the jet of "
+                                 "Taylor derivatives: the number of dimensions must be 2, but it is "
+                                 "{} instead",
+                                 state.ndim())
+                         .c_str());
         }
 
         if (state.shape(0) != boost::numeric_cast<py::ssize_t>(order + 1u)
             || state.shape(1) != boost::numeric_cast<py::ssize_t>(tot_n_eq)) {
-            py_throw(PyExc_ValueError, "Invalid state vector passed to a function for the computation of the jet of "
-                                       "Taylor derivatives: the shape must be ({}, {}), but it is "
-                                       "({}, {}) instead"_format(order + 1u, tot_n_eq, state.shape(0), state.shape(1))
-                                           .c_str());
+            py_throw(PyExc_ValueError,
+                     fmt::format("Invalid state vector passed to a function for the computation of the jet of "
+                                 "Taylor derivatives: the shape must be ({}, {}), but it is "
+                                 "({}, {}) instead",
+                                 order + 1u, tot_n_eq, state.shape(0), state.shape(1))
+                         .c_str());
         }
 
-        if (n_params > 0u) {
+        if (pars) {
             // The pars array must have shape (n_params).
             if (pars->ndim() != 1) {
-                py_throw(PyExc_ValueError, "Invalid parameters vector passed to a function for the computation of "
-                                           "the jet of "
-                                           "Taylor derivatives: the number of dimensions must be 1, but it is "
-                                           "{} instead"_format(pars->ndim())
-                                               .c_str());
+                py_throw(PyExc_ValueError,
+                         fmt::format("Invalid parameters vector passed to a function for the computation of "
+                                     "the jet of "
+                                     "Taylor derivatives: the number of dimensions must be 1, but it is "
+                                     "{} instead",
+                                     pars->ndim())
+                             .c_str());
             }
 
             if (pars->shape(0) != boost::numeric_cast<py::ssize_t>(n_params)) {
-                py_throw(PyExc_ValueError, "Invalid parameters vector passed to a function for the "
-                                           "computation of the jet of "
-                                           "Taylor derivatives: the shape must be ({}), but it is "
-                                           "({}) instead"_format(n_params, pars->shape(0))
+                py_throw(PyExc_ValueError, fmt::format("Invalid parameters vector passed to a function for the "
+                                                       "computation of the jet of "
+                                                       "Taylor derivatives: the shape must be ({}, ), but it is "
+                                                       "({}) instead",
+                                                       n_params, pars->shape(0))
                                                .c_str());
             }
         }
 
-        if (has_time) {
+        if (time) {
             // The time vector must have shape (1).
             if (time->ndim() != 1) {
-                py_throw(PyExc_ValueError, "Invalid time vector passed to a function for the computation of the jet of "
-                                           "Taylor derivatives: the number of dimensions must be 1, but it is "
-                                           "{} instead"_format(time->ndim())
-                                               .c_str());
+                py_throw(PyExc_ValueError,
+                         fmt::format("Invalid time vector passed to a function for the computation of the jet of "
+                                     "Taylor derivatives: the number of dimensions must be 1, but it is "
+                                     "{} instead",
+                                     time->ndim())
+                             .c_str());
             }
 
             if (time->shape(0) != 1) {
-                py_throw(PyExc_ValueError, "Invalid time vector passed to a function for the computation of the jet of "
-                                           "Taylor derivatives: the shape must be (1), but it is "
-                                           "({}) instead"_format(time->shape(0))
-                                               .c_str());
+                py_throw(PyExc_ValueError,
+                         fmt::format("Invalid time vector passed to a function for the computation of the jet of "
+                                     "Taylor derivatives: the shape must be (1, ), but it is "
+                                     "({}) instead",
+                                     time->shape(0))
+                             .c_str());
             }
         }
     } else {
         // We need a state array with shape (order + 1, tot_n_eq, batch_size).
         if (state.ndim() != 3) {
-            py_throw(PyExc_ValueError, "Invalid state vector passed to a function for the computation of the jet of "
-                                       "Taylor derivatives: the number of dimensions must be 3, but it is "
-                                       "{} instead"_format(state.ndim())
-                                           .c_str());
+            py_throw(PyExc_ValueError,
+                     fmt::format("Invalid state vector passed to a function for the computation of the jet of "
+                                 "Taylor derivatives: the number of dimensions must be 3, but it is "
+                                 "{} instead",
+                                 state.ndim())
+                         .c_str());
         }
 
         if (state.shape(0) != boost::numeric_cast<py::ssize_t>(order + 1u)
             || state.shape(1) != boost::numeric_cast<py::ssize_t>(tot_n_eq)
             || state.shape(2) != boost::numeric_cast<py::ssize_t>(batch_size)) {
-            py_throw(PyExc_ValueError, "Invalid state vector passed to a function for the computation of the jet of "
-                                       "Taylor derivatives: the shape must be ({}, {}, {}), but it is "
-                                       "({}, {}, {}) instead"_format(order + 1u, tot_n_eq, batch_size, state.shape(0),
-                                                                     state.shape(1), state.shape(2))
-                                           .c_str());
+            py_throw(PyExc_ValueError,
+                     fmt::format("Invalid state vector passed to a function for the computation of the jet of "
+                                 "Taylor derivatives: the shape must be ({}, {}, {}), but it is "
+                                 "({}, {}, {}) instead",
+                                 order + 1u, tot_n_eq, batch_size, state.shape(0), state.shape(1), state.shape(2))
+                         .c_str());
         }
 
-        if (n_params > 0u) {
+        if (pars) {
             // The pars array must have shape (n_params, batch_size).
             if (pars->ndim() != 2) {
-                py_throw(PyExc_ValueError, "Invalid parameters vector passed to a function for the computation of "
-                                           "the jet of "
-                                           "Taylor derivatives: the number of dimensions must be 2, but it is "
-                                           "{} instead"_format(pars->ndim())
-                                               .c_str());
+                py_throw(PyExc_ValueError,
+                         fmt::format("Invalid parameters vector passed to a function for the computation of "
+                                     "the jet of "
+                                     "Taylor derivatives: the number of dimensions must be 2, but it is "
+                                     "{} instead",
+                                     pars->ndim())
+                             .c_str());
             }
 
             if (pars->shape(0) != boost::numeric_cast<py::ssize_t>(n_params)
                 || pars->shape(1) != boost::numeric_cast<py::ssize_t>(batch_size)) {
                 py_throw(PyExc_ValueError,
-                         "Invalid parameters vector passed to a function for the computation of the jet "
-                         "of "
-                         "Taylor derivatives: the shape must be ({}, {}), but it is "
-                         "({}, {}) instead"_format(n_params, batch_size, pars->shape(0), pars->shape(1))
+                         fmt::format("Invalid parameters vector passed to a function for the computation of the jet "
+                                     "of "
+                                     "Taylor derivatives: the shape must be ({}, {}), but it is "
+                                     "({}, {}) instead",
+                                     n_params, batch_size, pars->shape(0), pars->shape(1))
                              .c_str());
             }
         }
 
-        if (has_time) {
+        if (time) {
             // The time vector must have shape (batch_size).
             if (time->ndim() != 1) {
-                py_throw(PyExc_ValueError, "Invalid time vector passed to a function for the computation of the jet of "
-                                           "Taylor derivatives: the number of dimensions must be 1, but it is "
-                                           "{} instead"_format(time->ndim())
-                                               .c_str());
+                py_throw(PyExc_ValueError,
+                         fmt::format("Invalid time vector passed to a function for the computation of the jet of "
+                                     "Taylor derivatives: the number of dimensions must be 1, but it is "
+                                     "{} instead",
+                                     time->ndim())
+                             .c_str());
             }
 
             if (time->shape(0) != boost::numeric_cast<py::ssize_t>(batch_size)) {
-                py_throw(PyExc_ValueError, "Invalid time vector passed to a function for the computation of the jet of "
-                                           "Taylor derivatives: the shape must be ({}), but it is "
-                                           "({}) instead"_format(batch_size, time->shape(0))
-                                               .c_str());
+                py_throw(PyExc_ValueError,
+                         fmt::format("Invalid time vector passed to a function for the computation of the jet of "
+                                     "Taylor derivatives: the shape must be ({}, ), but it is "
+                                     "({}) instead",
+                                     batch_size, time->shape(0))
+                             .c_str());
             }
         }
     }
@@ -206,7 +225,7 @@ void expose_taylor_add_jet_impl(py::module &m, const char *name)
 
             // Add the jet function.
             using jptr_t = void (*)(T *, const T *, const T *);
-            jptr_t jptr;
+            jptr_t jptr = nullptr;
             hey::llvm_state s;
 
             {
@@ -246,7 +265,7 @@ void expose_taylor_add_jet_impl(py::module &m, const char *name)
                         }
 
                         // Check the shapes/dims of the input arrays.
-                        taylor_add_jet_array_check(state, pars, time, n_params, has_time, order, tot_n_eq, batch_size);
+                        taylor_add_jet_array_check(state, pars, time, n_params, order, tot_n_eq, batch_size);
 
                         // Convert the arrays into vectors.
                         auto state_vec = py::cast<std::vector<mppp::real128>>(state.attr("flatten")());
@@ -263,6 +282,8 @@ void expose_taylor_add_jet_impl(py::module &m, const char *name)
 
                         auto ret = py::array(py::cast(state_vec));
 
+                        // NOTE: resize() operates in-place, and won't allocate
+                        // new memory because here it's just a reshape.
                         if (batch_size == 1u) {
                             ret.resize(py::array::ShapeContainer{boost::numeric_cast<py::ssize_t>(order + 1u),
                                                                  boost::numeric_cast<py::ssize_t>(tot_n_eq)});
@@ -309,6 +330,12 @@ void expose_taylor_add_jet_impl(py::module &m, const char *name)
                                      "Taylor derivatives: the NumPy array is not C contiguous");
                         }
 
+                        // Require that all arrays own their data.
+                        if (!state.owndata() || (pars && !pars->owndata()) || (time && !time->owndata())) {
+                            py_throw(PyExc_ValueError, "The arrays passed to a function for the computation of the jet "
+                                                       "of Taylor derivatives must all own their data");
+                        }
+
                         // Get out the raw pointers and make sure they are distinct.
                         auto s_ptr = state.mutable_data();
                         auto p_ptr = pars ? pars->data() : nullptr;
@@ -338,7 +365,7 @@ void expose_taylor_add_jet_impl(py::module &m, const char *name)
                         }
 
                         // Check the shapes/dims of the input arrays.
-                        taylor_add_jet_array_check(state, pars, time, n_params, has_time, order, tot_n_eq, batch_size);
+                        taylor_add_jet_array_check(state, pars, time, n_params, order, tot_n_eq, batch_size);
 
                         // NOTE: here it may be that p_ptr and/or t_ptr are provided
                         // but the system has not time/params. In that case, the pointers

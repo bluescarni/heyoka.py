@@ -87,14 +87,13 @@ py::object to_sympy_impl(std::unordered_map<const void *, py::object> &, const h
 {
     // NOTE: params are converted to symbolic variables
     // following a naming convention.
-    using namespace fmt::literals;
 
     // NOTE: heyoka params can assume only
     // real values.
     py::kwargs kwa;
     kwa["real"] = true;
 
-    return spy->attr("Symbol")("par[{}]"_format(par.idx()), **kwa);
+    return spy->attr("Symbol")(fmt::format("par[{}]", par.idx()), **kwa);
 }
 
 // Number conversion corresponds to casting to python
@@ -107,8 +106,7 @@ py::object to_sympy_impl(std::unordered_map<const void *, py::object> &, const h
 
             // NOTE: forbid conversion if the value is not finite.
             if (!isfinite(x)) {
-                using namespace fmt::literals;
-                py_throw(PyExc_ValueError, ("Cannot convert to sympy the nonfinite number {}"_format(x)).c_str());
+                py_throw(PyExc_ValueError, (fmt::format("Cannot convert to sympy the nonfinite number {}", x)).c_str());
             }
 
             return py::cast(x);
@@ -129,8 +127,7 @@ py::object to_sympy_impl(std::unordered_map<const void *, py::object> &func_map,
     auto it = fmap.find(f.get_type_index());
 
     if (it == fmap.end()) {
-        using namespace fmt::literals;
-        py_throw(PyExc_TypeError, ("Cannot convert to sympy the heyoka function {}"_format(f)).c_str());
+        py_throw(PyExc_TypeError, (fmt::format("Cannot convert to sympy the heyoka function {}", f)).c_str());
     }
 
     py::object retval;
