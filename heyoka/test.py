@@ -214,6 +214,34 @@ class taylor_add_jet_test_case(_ut.TestCase):
                             "Taylor derivatives: the shape must be (1), but it is "
                             "(5) instead" in str(cm.exception))
 
+            # No pars in the system, wrong par array provided, scalar case.
+            jet = taylor_add_jet(sys, 5, fp_type=desc)
+            st = np.full((6, 2), fp_t(0), dtype=fp_t)
+            with self.assertRaises(ValueError) as cm:
+                jet(st, pars=np.zeros((1,), dtype=fp_t))
+            self.assertTrue("Invalid parameters vector passed to a function for the computation of the jet of Taylor derivatives: the shape must be (0), but it is (1) instead" in str(cm.exception))
+
+            # No time in the system, wrong time array provided, scalar case.
+            with self.assertRaises(ValueError) as cm:
+                jet(st, time=np.zeros((0,), dtype=fp_t))
+            self.assertTrue("Invalid time vector passed to a function for the computation of the jet of Taylor derivatives: the shape must be (1), but it is (0) instead" in str(cm.exception))
+
+            # Non-owning arrays, scalar case.
+            with self.assertRaises(ValueError) as cm:
+                jet(st[:])
+            self.assertTrue("The arrays passed to a function for the computation of the jet of Taylor derivatives must all own their data" in str(cm.exception))
+
+            par_arr = np.zeros((0,), dtype=fp_t)
+            with self.assertRaises(ValueError) as cm:
+                jet(st, pars=par_arr[:])
+            self.assertTrue("The arrays passed to a function for the computation of the jet of Taylor derivatives must all own their data" in str(cm.exception))
+
+            time_arr = np.zeros((1,), dtype=fp_t)
+            with self.assertRaises(ValueError) as cm:
+                jet(st, time=time_arr[:])
+            self.assertTrue("The arrays passed to a function for the computation of the jet of Taylor derivatives must all own their data" in str(cm.exception))
+
+
         # Check throwing behaviour with long double on PPC.
         if _ppc_arch:
             with self.assertRaises(NotImplementedError):
@@ -341,6 +369,33 @@ class taylor_add_jet_test_case(_ut.TestCase):
             self.assertTrue("Invalid time vector passed to a function for the computation of the jet of "
                             "Taylor derivatives: the shape must be (4), but it is "
                             "(5) instead" in str(cm.exception))
+
+            # No pars in the system, wrong par array provided, batch case.
+            jet = taylor_add_jet(sys, 5, fp_type=desc, batch_size=batch_size)
+            st = np.full((6, 2, batch_size), fp_t(0), dtype=fp_t)
+            with self.assertRaises(ValueError) as cm:
+                jet(st, pars=np.zeros((1,4), dtype=fp_t))
+            self.assertTrue( "Invalid parameters vector passed to a function for the computation of the jet of Taylor derivatives: the shape must be (0, 4), but it is (1, 4) instead" in str(cm.exception))
+
+            # No time in the system, wrong time array provided, batch case.
+            with self.assertRaises(ValueError) as cm:
+                jet(st, time=np.zeros((0,), dtype=fp_t))
+            self.assertTrue("Invalid time vector passed to a function for the computation of the jet of Taylor derivatives: the shape must be (4), but it is (0) instead" in str(cm.exception))
+
+            # Non-owning arrays, batch case.
+            with self.assertRaises(ValueError) as cm:
+                jet(st[:])
+            self.assertTrue("The arrays passed to a function for the computation of the jet of Taylor derivatives must all own their data" in str(cm.exception))
+
+            par_arr = np.zeros((0,), dtype=fp_t)
+            with self.assertRaises(ValueError) as cm:
+                jet(st, pars=par_arr[:])
+            self.assertTrue("The arrays passed to a function for the computation of the jet of Taylor derivatives must all own their data" in str(cm.exception))
+
+            time_arr = np.zeros((1,), dtype=fp_t)
+            with self.assertRaises(ValueError) as cm:
+                jet(st, time=time_arr[:])
+            self.assertTrue("The arrays passed to a function for the computation of the jet of Taylor derivatives must all own their data" in str(cm.exception))
 
         if not with_real128:
             return
@@ -3925,6 +3980,11 @@ class cfunc_test_case(_ut.TestCase):
 
                 self.assertTrue(np.allclose(eval_arr[0], inputs[0, :] + inputs[1, :],
                                 rtol=np.finfo(fp_t).eps * 10, atol=np.finfo(fp_t).eps * 10))
+
+        # Check throwing behaviour with long double on PPC.
+        if _ppc_arch:
+            with self.assertRaises(NotImplementedError):
+                add_cfunc(func, vars=[y, x], fp_type="long double")
 
         if not with_real128:
             return
