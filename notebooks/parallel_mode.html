@@ -22,8 +22,8 @@
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
     <link rel="stylesheet" href="../_static/styles/sphinx-book-theme.css?digest=62ba249389abaaa9ffc34bf36a076bdc1d65ee18" type="text/css" />
-    <link rel="stylesheet" type="text/css" href="../_static/mystnb.css" />
     <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.css" />
     
   <!-- Pre-loaded scripts that we'll load fully later -->
   <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf">
@@ -38,6 +38,8 @@
     <script src="../_static/togglebutton.js"></script>
     <script src="../_static/scripts/sphinx-book-theme.js?digest=f31d14ad54b65d19161ba51d4ffff3a77ae00456"></script>
     <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Event detection overview" href="Event%20detection.html" />
@@ -578,7 +580,7 @@ title="Print to PDF"
                 
               <div>
                 
-  <section id="parallel-mode">
+  <section class="tex2jax_ignore mathjax_ignore" id="parallel-mode">
 <h1>Parallel mode<a class="headerlink" href="#parallel-mode" title="Permalink to this headline">#</a></h1>
 <p>Starting from version 0.18.0, heyoka.py can automatically parallelise
 the integration of a single ODE system using multiple threads
@@ -602,7 +604,7 @@ are computationally heavier than on double-precision operands.</p>
 <section id="parallel-planetary-embryos">
 <h2>Parallel planetary embryos<a class="headerlink" href="#parallel-planetary-embryos" title="Permalink to this headline">#</a></h2>
 <p>In order to illustrate the effectiveness of parallel mode, we will setup
-an N-body system consisting of a large number ($N=400$) of
+an N-body system consisting of a large number (<span class="math notranslate nohighlight">\(N=400\)</span>) of
 <a class="reference external" href="https://en.wikipedia.org/wiki/Protoplanet">protoplanets</a> in orbit around
 a Sun-like star. The protoplanets interact with the star and with each other according to
 Newtonian gravity, and they are initially placed on circular orbits.</p>
@@ -696,8 +698,8 @@ Parallel time (double): 0.48682415
 </div>
 </div>
 </div>
-<p>We can see how parallel mode resulted in a $\times 3.5$ speedup with respect to the serial integration.
-While this speedup is suboptimal with respect to the maximum theoretically achievable speedup of $\times 8$,
+<p>We can see how parallel mode resulted in a <span class="math notranslate nohighlight">\(\times 3.5\)</span> speedup with respect to the serial integration.
+While this speedup is suboptimal with respect to the maximum theoretically achievable speedup of <span class="math notranslate nohighlight">\(\times 8\)</span>,
 these timings show that parallel mode can still provide an easy way of boosting the integrator’s performance
 for large ODE systems.</p>
 <p>Let us now repeat the same test in extended (<code class="docutils literal notranslate"><span class="pre">long</span> <span class="pre">double</span></code>) precision:</p>
@@ -715,7 +717,7 @@ Parallel time (long double): 1.626414795
 </div>
 </div>
 </div>
-<p>In extended precision, the speedup is now $\times 3.7$. In quadruple precision, the speedup would be close to optimal (see the <a class="reference external" href="https://bluescarni.github.io/heyoka/tut_parallel_mode.html">C++ tutorial</a>, where a speedup of $\times 7.2$ is achieved).</p>
+<p>In extended precision, the speedup is now <span class="math notranslate nohighlight">\(\times 3.7\)</span>. In quadruple precision, the speedup would be close to optimal (see the <a class="reference external" href="https://bluescarni.github.io/heyoka/tut_parallel_mode.html">C++ tutorial</a>, where a speedup of <span class="math notranslate nohighlight">\(\times 7.2\)</span> is achieved).</p>
 <p>These results show that parallel mode can provide an easy way of boosting the performance of heyoka’s integrators
 for large ODE systems, and that the speedup of parallel mode is most efficient when operating in extended precision.</p>
 </section>

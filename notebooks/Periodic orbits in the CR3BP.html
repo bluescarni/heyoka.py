@@ -22,8 +22,8 @@
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
     <link rel="stylesheet" href="../_static/styles/sphinx-book-theme.css?digest=62ba249389abaaa9ffc34bf36a076bdc1d65ee18" type="text/css" />
-    <link rel="stylesheet" type="text/css" href="../_static/mystnb.css" />
     <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.css" />
     
   <!-- Pre-loaded scripts that we'll load fully later -->
   <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf">
@@ -38,6 +38,8 @@
     <script src="../_static/togglebutton.js"></script>
     <script src="../_static/scripts/sphinx-book-theme.js?digest=f31d14ad54b65d19161ba51d4ffff3a77ae00456"></script>
     <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Long term stability of N-body simulations: the case of Trappist-1" href="Long%20term%20stability%20of%20Trappist-1.html" />
@@ -618,7 +620,7 @@ title="Print to PDF"
                 
               <div>
                 
-  <section id="continuation-of-periodic-orbits-in-the-cr3bp">
+  <section class="tex2jax_ignore mathjax_ignore" id="continuation-of-periodic-orbits-in-the-cr3bp">
 <h1>Continuation of Periodic Orbits in the CR3BP<a class="headerlink" href="#continuation-of-periodic-orbits-in-the-cr3bp" title="Permalink to this headline">#</a></h1>
 <p>In this example, we will show how it is possible to use heyoka.py’s <a class="reference internal" href="The%20expression%20system.html"><span class="doc std std-doc">expression system</span></a>, to compute the state transition matrix of the <a class="reference internal" href="The%20restricted%20three-body%20problem.html"><span class="doc std std-doc">circular restricted three-body problem</span></a> via <a class="reference internal" href="The%20variational%20equations.html"><span class="doc std std-doc">variational equations</span></a> and outline its use to find periodic orbits via a simple continuation scheme.</p>
 <p><strong>NOTE</strong>: There is quite some literature on finding periodic orbits in the CR3BP, a plethora of very clever techniques have been developed in the past. This notebook implements only a basic approach as it only aims to show the use of heyoka in this field.</p>
@@ -707,20 +709,21 @@ title="Print to PDF"
 <section id="the-circular-restricted-3-body-problem-dynamics">
 <h2>The Circular Restricted 3 Body Problem dynamics<a class="headerlink" href="#the-circular-restricted-3-body-problem-dynamics" title="Permalink to this headline">#</a></h2>
 <p>Let us start defining the equations of motion for the Circular Restricted 3 Body Problem (CR3BP from now on).</p>
-<p>The problem is usually formulated in a rotating reference frame in which the two massive bodies are at rest. In the rotating reference frame, the equations of motion for the massless particle’s cartesian coordinates $\left(x, y, z\right)$ and conjugated momenta $\left(p_x, p_y, p_z\right)$ read:</p>
-<p>$$
+<p>The problem is usually formulated in a rotating reference frame in which the two massive bodies are at rest. In the rotating reference frame, the equations of motion for the massless particle’s cartesian coordinates <span class="math notranslate nohighlight">\(\left(x, y, z\right)\)</span> and conjugated momenta <span class="math notranslate nohighlight">\(\left(p_x, p_y, p_z\right)\)</span> read:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
 \begin{aligned}
-\dot{x} &amp; = p_x+y,\
-\dot{y} &amp; = p_y-x, \
-\dot{z} &amp; = p_z, \
-\dot{p}<em>x &amp; = p_y - \frac{1-\mu}{r</em>{PS}^3}\left( x - \mu \right)-\frac{\mu}{r_{PJ}^3}\left( x - \mu + 1\right), \
-\dot{p}<em>y &amp; = -p_x-\left( \frac{1-\mu}{r</em>{PS}^3} +  \frac{\mu}{r_{PJ}^3}\right)y, \
-\dot{p}<em>z &amp; = -\left( \frac{1-\mu}{r</em>{PS}^3} +  \frac{\mu}{r_{PJ}^3}\right)z,
+\dot{x} &amp; = p_x+y,\\
+\dot{y} &amp; = p_y-x, \\
+\dot{z} &amp; = p_z, \\
+\dot{p}_x &amp; = p_y - \frac{1-\mu}{r_{PS}^3}\left( x - \mu \right)-\frac{\mu}{r_{PJ}^3}\left( x - \mu + 1\right), \\
+\dot{p}_y &amp; = -p_x-\left( \frac{1-\mu}{r_{PS}^3} +  \frac{\mu}{r_{PJ}^3}\right)y, \\
+\dot{p}_z &amp; = -\left( \frac{1-\mu}{r_{PS}^3} +  \frac{\mu}{r_{PJ}^3}\right)z,
 \end{aligned}
-$$</p>
-<p>where $\mu$ is a mass parameter, $r_{PS}^2=\left( x-\mu \right)^2+y^2+z^2$ and $r_{PJ}^2=\left( x -\mu + 1 \right)^2+y^2+z^2$.</p>
-<p>NOTE: In these equations it is assumed that $M_1 + M_2 = 1$ and the Cavendish constant $G=1$. The biggest mass is then indicated with $1-\mu$, while the smallest with $\mu$. The biggest mass is placed in $x = \mu$ and the smallest in $x = \mu-1$ so that the distance between primaries is also 1. All remaining units are induced by these choices.</p>
-<p>We also refer to the whole state with the symbol $\mathbf x = [x,y,z,p_x, p_y, p_z]$ and the right hand side of the dynamic equations with the symbol $\mathbf f$ so that $\dot{\mathbf x} = \mathbf f(\mathbf x)$. In general we use bold for vectors matrices and normal fonts for their components, hence $\mathbf M$ will, as an example, have components $M_{ij}$.</p>
+\end{split}\]</div>
+<p>where <span class="math notranslate nohighlight">\(\mu\)</span> is a mass parameter, <span class="math notranslate nohighlight">\(r_{PS}^2=\left( x-\mu \right)^2+y^2+z^2\)</span> and <span class="math notranslate nohighlight">\(r_{PJ}^2=\left( x -\mu + 1 \right)^2+y^2+z^2\)</span>.</p>
+<p>NOTE: In these equations it is assumed that <span class="math notranslate nohighlight">\(M_1 + M_2 = 1\)</span> and the Cavendish constant <span class="math notranslate nohighlight">\(G=1\)</span>. The biggest mass is then indicated with <span class="math notranslate nohighlight">\(1-\mu\)</span>, while the smallest with <span class="math notranslate nohighlight">\(\mu\)</span>. The biggest mass is placed in <span class="math notranslate nohighlight">\(x = \mu\)</span> and the smallest in <span class="math notranslate nohighlight">\(x = \mu-1\)</span> so that the distance between primaries is also 1. All remaining units are induced by these choices.</p>
+<p>We also refer to the whole state with the symbol <span class="math notranslate nohighlight">\(\mathbf x = [x,y,z,p_x, p_y, p_z]\)</span> and the right hand side of the dynamic equations with the symbol <span class="math notranslate nohighlight">\(\mathbf f\)</span> so that <span class="math notranslate nohighlight">\(\dot{\mathbf x} = \mathbf f(\mathbf x)\)</span>. In general we use bold for vectors matrices and normal fonts for their components, hence <span class="math notranslate nohighlight">\(\mathbf M\)</span> will, as an example, have components <span class="math notranslate nohighlight">\(M_{ij}\)</span>.</p>
 <p>With respect to the heyoka.py notebook on <a class="reference internal" href="The%20restricted%20three-body%20problem.html"><span class="doc std std-doc">circular restricted three-body problem</span></a>, we will be here making use of numpy arrays of heyoka expressions as to simplify the notation later on when we need to compute the variational equations.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -748,23 +751,27 @@ $$</p>
 </section>
 <section id="the-variational-equations">
 <h2>The variational equations<a class="headerlink" href="#the-variational-equations" title="Permalink to this headline">#</a></h2>
-<p>We now compute the variational equations expressing the state transition matrix defined as $\delta \mathbf x(t) = \mathbf \Phi(t)\delta \mathbf x(0)$. We define its $ij$ component as:</p>
-<p>$$
+<p>We now compute the variational equations expressing the state transition matrix defined as <span class="math notranslate nohighlight">\(\delta \mathbf x(t) = \mathbf \Phi(t)\delta \mathbf x(0)\)</span>. We define its <span class="math notranslate nohighlight">\(ij\)</span> component as:</p>
+<div class="math notranslate nohighlight">
+\[
 \Phi_{ij}(t) = \frac{d x_i(t)}{dx_j(0)}
-$$</p>
+\]</div>
 <p>hence the variational equations:</p>
-<p>$$
+<div class="math notranslate nohighlight">
+\[
 \frac{d }{dt} \Phi_{ij}(t) = \frac{d}{dt}\left(\frac{d x_i(t)}{dx_j(0)}\right) = \frac{d}{dx_j(0)}\left(\frac{d x_i(t)}{dt}\right) = \frac{d f_i(x(t))}{dx_j(0)}
-$$</p>
+\]</div>
 <p>expanding the total derivative in the last term we get:</p>
-<p>$$
+<div class="math notranslate nohighlight">
+\[
 \frac{d}{dt}\Phi_{ij}(t) = \sum_k \frac{\partial f_i}{\partial x_k}\frac{dx_k(t)}{dx_j(0)}=\sum_k \frac{\partial f_i}{\partial x_k} \Phi_{kj}(t)
-$$</p>
+\]</div>
 <p>which can be written in compact matrix form as:</p>
-<p>$$
+<div class="math notranslate nohighlight">
+\[
 \frac{d}{dt}\mathbf \Phi(t) = \left[\frac{\partial f_i}{\partial x_k}\right] \mathbf \Phi(t)
-$$</p>
-<p>Note that the initial conditions are, trivially: $\mathbf \Phi(0) = \mathbf I$</p>
+\]</div>
+<p>Note that the initial conditions are, trivially: <span class="math notranslate nohighlight">\(\mathbf \Phi(0) = \mathbf I\)</span></p>
 <p>Let us then introduce these variational equations using heyoka.</p>
 <p>First, we define the various symbols for the components of the state transition matrix</p>
 <div class="cell docutils container">
@@ -779,7 +786,7 @@ $$</p>
 </div>
 </div>
 </div>
-<p>Then we find the various $\left[\frac{\partial f_i}{\partial x_k}\right]$:</p>
+<p>Then we find the various <span class="math notranslate nohighlight">\(\left[\frac{\partial f_i}{\partial x_k}\right]\)</span>:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">dfdx</span> <span class="o">=</span> <span class="p">[]</span>
@@ -838,7 +845,7 @@ $$</p>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>--- 8.699535131454468 seconds --- to build the Taylor integrator
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>--- 6.894198894500732 seconds --- to build the Taylor integrator
 </pre></div>
 </div>
 </div>
@@ -869,7 +876,7 @@ $$</p>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>--- 0.037138938903808594 seconds --- to propagate
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>--- 0.03572559356689453 seconds --- to propagate
 </pre></div>
 </div>
 </div>
@@ -927,10 +934,10 @@ $$</p>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;matplotlib.collections.PathCollection at 0x7f9ff8b8ad30&gt;
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;matplotlib.collections.PathCollection at 0x7f1db4fbfd30&gt;
 </pre></div>
 </div>
-<img alt="../_images/841bb8669930176f2c2b61aa1599cd18e95296dcae119527d79e2efe39b3b7d1.png" src="../_images/841bb8669930176f2c2b61aa1599cd18e95296dcae119527d79e2efe39b3b7d1.png" />
+<img alt="../_images/Periodic orbits in the CR3BP_23_1.png" src="../_images/Periodic orbits in the CR3BP_23_1.png" />
 </div>
 </div>
 <p>All fine ….. at least visually! So far we have not made use of the variational equations at all, but this is about to change!</p>
@@ -943,28 +950,32 @@ $$</p>
 </ul>
 <p>Richardson, D. L. (1980). Analytic construction of periodic orbits about the collinear points. Celestial mechanics, 22(3), 241-253.</p>
 <ul class="simple">
-<li><p>Once some initial guess $\mathbf x_0$ is available for the initial state and $T$ for the period, we write the Taylor first order expansion of the system solution as:</p></li>
+<li><p>Once some initial guess <span class="math notranslate nohighlight">\(\mathbf x_0\)</span> is available for the initial state and <span class="math notranslate nohighlight">\(T\)</span> for the period, we write the Taylor first order expansion of the system solution as:</p></li>
 </ul>
-<p>$$
+<div class="math notranslate nohighlight">
+\[
 \mathbf x = \overline {\mathbf x} + \mathbf \Phi \delta \mathbf x_0 + \mathbf \Phi_T \delta T
-$$</p>
-<p>where $\mathbf \Phi = \left[\frac{\partial x_i}{\partial x_{0_k}}\right] $ is computed via the variational equations, $\mathbf \Phi_T = \left[\frac{\partial x_i}{\partial t}\right] = \dot{\mathbf x} = \mathbf f$ and $\overline {\mathbf x}$ is the final state reached starting from $\mathbf x_0$ and integrating for $T$. Such an expansion tells us how much the state evaluated in $T$ would change if we move the initial conditions by $\delta\mathbf x_0$ and the integration time by $\delta T$.</p>
+\]</div>
+<p>where <span class="math notranslate nohighlight">\(\mathbf \Phi = \left[\frac{\partial x_i}{\partial x_{0_k}}\right] \)</span> is computed via the variational equations, <span class="math notranslate nohighlight">\(\mathbf \Phi_T = \left[\frac{\partial x_i}{\partial t}\right] = \dot{\mathbf x} = \mathbf f\)</span> and <span class="math notranslate nohighlight">\(\overline {\mathbf x}\)</span> is the final state reached starting from <span class="math notranslate nohighlight">\(\mathbf x_0\)</span> and integrating for <span class="math notranslate nohighlight">\(T\)</span>. Such an expansion tells us how much the state evaluated in <span class="math notranslate nohighlight">\(T\)</span> would change if we move the initial conditions by <span class="math notranslate nohighlight">\(\delta\mathbf x_0\)</span> and the integration time by <span class="math notranslate nohighlight">\(\delta T\)</span>.</p>
 <ul class="simple">
-<li><p>Now (<strong>pay attention, as here is the whole trick</strong>), we write the periodicity condition enforcing that after $T+\delta T$ the state goes back to $\mathbf x_0 + \delta \mathbf x_0$:</p></li>
+<li><p>Now (<strong>pay attention, as here is the whole trick</strong>), we write the periodicity condition enforcing that after <span class="math notranslate nohighlight">\(T+\delta T\)</span> the state goes back to <span class="math notranslate nohighlight">\(\mathbf x_0 + \delta \mathbf x_0\)</span>:</p></li>
 </ul>
-<p>$$
+<div class="math notranslate nohighlight">
+\[
 \overline {\mathbf x} + \mathbf \Phi \delta \mathbf x_0 + \mathbf f \delta T = \mathbf x_0 + \delta \mathbf x_0
-$$</p>
+\]</div>
 <p>which is rearranged in the form:</p>
-<p>$$
+<div class="math notranslate nohighlight">
+\[
 \left(\mathbf \Phi -\mathbf I\right) \delta \mathbf x_0 + \mathbf f \delta T = \mathbf x_0 -\overline {\mathbf x}
-$$</p>
-<p>This fundamental relation is at the basis of any numerical algorithm that wants to find a closed periodic orbit. It is a system of 6 equation in the 7 unknowns $\delta \mathbf x, \delta T$: as a consequence, it is overdetermined. We then must choose among the infinitely many solutions one. We do so adding the Poincare’ phasing condition, which requests that:</p>
-<p>$$
+\]</div>
+<p>This fundamental relation is at the basis of any numerical algorithm that wants to find a closed periodic orbit. It is a system of 6 equation in the 7 unknowns <span class="math notranslate nohighlight">\(\delta \mathbf x, \delta T\)</span>: as a consequence, it is overdetermined. We then must choose among the infinitely many solutions one. We do so adding the Poincare’ phasing condition, which requests that:</p>
+<div class="math notranslate nohighlight">
+\[
 \mathbf f \cdot \delta \mathbf x_0 =  \mathbf 0
-$$
-in other word we will restrict our $\delta x$ to the hyperplane plane perpendicular to the dynamics.</p>
-<p>We now have seven equations and seven unknowns. Seems like we are done (as far as $\mathbf \Phi -\mathbf I$ has full rank).</p>
+\]</div>
+<p>in other word we will restrict our <span class="math notranslate nohighlight">\(\delta x\)</span> to the hyperplane plane perpendicular to the dynamics.</p>
+<p>We now have seven equations and seven unknowns. Seems like we are done (as far as <span class="math notranslate nohighlight">\(\mathbf \Phi -\mathbf I\)</span> has full rank).</p>
 <p>Let us implement a naive iterative scheme and close some orbit.</p>
 <p>First we play to find a decent initial condition ….</p>
 <div class="cell docutils container">
@@ -1032,10 +1043,10 @@ in other word we will restrict our $\delta x$ to the hyperplane plane perpendicu
 <div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(-0.005, 0.005)
 </pre></div>
 </div>
-<img alt="../_images/6d5528fa784a58dbd2e0ca64408c84ffb1e298bc19d3af42b6b9932fff9002e0.png" src="../_images/6d5528fa784a58dbd2e0ca64408c84ffb1e298bc19d3af42b6b9932fff9002e0.png" />
+<img alt="../_images/Periodic orbits in the CR3BP_28_1.png" src="../_images/Periodic orbits in the CR3BP_28_1.png" />
 </div>
 </div>
-<p>The orbit is good but does not close! Let us build an iteration that corrects $x_0,y_0, z_0, p_{x_0}, p_{y_0}, p_{z_0}, T$ as to close the orbit.</p>
+<p>The orbit is good but does not close! Let us build an iteration that corrects <span class="math notranslate nohighlight">\(x_0,y_0, z_0, p_{x_0}, p_{y_0}, p_{z_0}, T\)</span> as to close the orbit.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">corrector</span><span class="p">(</span><span class="n">ta</span><span class="p">,</span> <span class="n">x0</span><span class="p">):</span>
@@ -1116,7 +1127,7 @@ new error is: 1.6076850544650005e-12
 </div>
 </div>
 </div>
-<p>…. et voila’!! As expected the iterations converge to a periodic orbit, while the matrix condition number increases to infinite as $\mathbf \Phi$ becomes a monodromy matrix.</p>
+<p>…. et voila’!! As expected the iterations converge to a periodic orbit, while the matrix condition number increases to infinite as <span class="math notranslate nohighlight">\(\mathbf \Phi\)</span> becomes a monodromy matrix.</p>
 <p>Of course, we now visualize the orbit as to make sure its closed!</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -1182,39 +1193,44 @@ Initial condition: [-8.3660628426926820e-01, 6.8716727253894175e-05, 0.000000000
 Period: 2.6915996001677027e+00
 </pre></div>
 </div>
-<img alt="../_images/f74f2a66b63912bc488c4dffedea54e899b1facb231a6fe8c7a3165e429318f0.png" src="../_images/f74f2a66b63912bc488c4dffedea54e899b1facb231a6fe8c7a3165e429318f0.png" />
+<img alt="../_images/Periodic orbits in the CR3BP_35_1.png" src="../_images/Periodic orbits in the CR3BP_35_1.png" />
 </div>
 </div>
 </section>
 <section id="continuing-into-a-family-of-periodic-orbits">
 <h2>Continuing into a family of periodic orbits.<a class="headerlink" href="#continuing-into-a-family-of-periodic-orbits" title="Permalink to this headline">#</a></h2>
-<p>Since we now have initial conditions $\mathbf x_0$ that result in a periodic orbit, necessarily $\mathbf x_0 =\overline {\mathbf x}$, hence the periodicity condition becomes:</p>
-<p>$$
+<p>Since we now have initial conditions <span class="math notranslate nohighlight">\(\mathbf x_0\)</span> that result in a periodic orbit, necessarily <span class="math notranslate nohighlight">\(\mathbf x_0 =\overline {\mathbf x}\)</span>, hence the periodicity condition becomes:</p>
+<div class="math notranslate nohighlight">
+\[
 \left(\mathbf \Phi -\mathbf I\right) \delta \mathbf x_0 + \mathbf f \delta T = \mathbf 0
-$$</p>
-<p>which is a system of 6 equations in seven unknowns. Futhermore, the monodromy matrix $\mathbf \Phi$ has now the eigenvalue 1, and thus $\left(\mathbf \Phi -\mathbf I\right)$ is not invertible!</p>
-<p>This corresponds, physically, to the fact that there are infinite possibilities to choose  $\delta \mathbf x_0$ so that $\mathbf x_0 + \delta \mathbf x_0$ results in a new periodic orbit having period $T + \delta T$.</p>
+\]</div>
+<p>which is a system of 6 equations in seven unknowns. Futhermore, the monodromy matrix <span class="math notranslate nohighlight">\(\mathbf \Phi\)</span> has now the eigenvalue 1, and thus <span class="math notranslate nohighlight">\(\left(\mathbf \Phi -\mathbf I\right)\)</span> is not invertible!</p>
+<p>This corresponds, physically, to the fact that there are infinite possibilities to choose  <span class="math notranslate nohighlight">\(\delta \mathbf x_0\)</span> so that <span class="math notranslate nohighlight">\(\mathbf x_0 + \delta \mathbf x_0\)</span> results in a new periodic orbit having period <span class="math notranslate nohighlight">\(T + \delta T\)</span>.</p>
 <p>We still make use of the Poincare’ phasing condition so that the overall system we actually consider is:</p>
-<p>$$
-\left{
+<div class="math notranslate nohighlight">
+\[\begin{split}
+\left\{
 \begin{array}{c}
-\left(\mathbf \Phi -\mathbf I\right) \delta \mathbf x_0 + \mathbf f \delta T = \mathbf 0\
+\left(\mathbf \Phi -\mathbf I\right) \delta \mathbf x_0 + \mathbf f \delta T = \mathbf 0\\
 \mathbf f \cdot \delta \mathbf x_0 =  0
 \end{array}
 \right.
-$$</p>
+\end{split}\]</div>
 <p>which we write as:</p>
-<p>$$
+<div class="math notranslate nohighlight">
+\[
 \mathbf A_f \delta {\mathbf x_f} = \mathbf 0
-$$</p>
-<p>where we considered the full state $\delta {\mathbf x_f}$ including both $\delta \mathbf x_0$ and $\delta T$. The rank of the square 7x7 full matrix ${\mathbf A_f}$ is only 6, thus the linear system admits non trivial solutions. To find them we fix the value of one component of $\delta {\mathbf x_f}$ and thus obtain a new system with a reduced state and matrix:</p>
-<p>$$
+\]</div>
+<p>where we considered the full state <span class="math notranslate nohighlight">\(\delta {\mathbf x_f}\)</span> including both <span class="math notranslate nohighlight">\(\delta \mathbf x_0\)</span> and <span class="math notranslate nohighlight">\(\delta T\)</span>. The rank of the square 7x7 full matrix <span class="math notranslate nohighlight">\({\mathbf A_f}\)</span> is only 6, thus the linear system admits non trivial solutions. To find them we fix the value of one component of <span class="math notranslate nohighlight">\(\delta {\mathbf x_f}\)</span> and thus obtain a new system with a reduced state and matrix:</p>
+<div class="math notranslate nohighlight">
+\[
 \mathbf A_r\delta {\mathbf x_r} = \mathbf b
-$$</p>
+\]</div>
 <p>This is an overdetermined system of seven equations in six variables, but having only one only solution which we find as:</p>
-<p>$$
+<div class="math notranslate nohighlight">
+\[
 \delta \mathbf x_r = (\mathbf A^T \mathbf A)^{-1}\mathbf A^T\mathbf b
-$$</p>
+\]</div>
 <p>We have thus found a new initial guess to start with to find the next closed orbit in the family.</p>
 <p>To start with, as validation and test of what we got so far, we get the monodromy matrix (from the last numerical integrated periodic orbit) …</p>
 <div class="cell docutils container">
@@ -1240,9 +1256,9 @@ $$</p>
 </div>
 </div>
 </div>
-<p>As expecetd we have two eigenvalues $\lambda_{3,4}$ equal to one, two real ones so that $\lambda_{1}\cdot \lambda_2=1$ (stable and unstable manifold) and two complex conjugated ones $\lambda_{5}\cdot \lambda_6=1$.</p>
-<p>We write a simple function that takes as argument the result of some numerical integration over periodic conditions and creates new tentative initial guess continuing on the state parameter indexed by <em>idx</em>, (defaults to $x$).</p>
-<p>Note that in the following function we assemble the full matrix $\mathbf A_f$ completed with the Poincare phase condition and having we consider as state ${\mathbf x_f} = [\delta x,\delta y,\delta z,\delta p_x,\delta p_y,\delta p_z,\delta T]$.  We then select a column, fix the corresponding value for the state variable, bring it to the right side and solve the resulting system which is overdetermined, but admits a unique solution since $\mathbf \Phi - \mathbf I$ is singular.</p>
+<p>As expecetd we have two eigenvalues <span class="math notranslate nohighlight">\(\lambda_{3,4}\)</span> equal to one, two real ones so that <span class="math notranslate nohighlight">\(\lambda_{1}\cdot \lambda_2=1\)</span> (stable and unstable manifold) and two complex conjugated ones <span class="math notranslate nohighlight">\(\lambda_{5}\cdot \lambda_6=1\)</span>.</p>
+<p>We write a simple function that takes as argument the result of some numerical integration over periodic conditions and creates new tentative initial guess continuing on the state parameter indexed by <em>idx</em>, (defaults to <span class="math notranslate nohighlight">\(x\)</span>).</p>
+<p>Note that in the following function we assemble the full matrix <span class="math notranslate nohighlight">\(\mathbf A_f\)</span> completed with the Poincare phase condition and having we consider as state <span class="math notranslate nohighlight">\({\mathbf x_f} = [\delta x,\delta y,\delta z,\delta p_x,\delta p_y,\delta p_z,\delta T]\)</span>.  We then select a column, fix the corresponding value for the state variable, bring it to the right side and solve the resulting system which is overdetermined, but admits a unique solution since <span class="math notranslate nohighlight">\(\mathbf \Phi - \mathbf I\)</span> is singular.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">predictor</span><span class="p">(</span><span class="n">ta</span><span class="p">,</span> <span class="n">idx</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">variation</span><span class="o">=</span><span class="mf">1e-4</span><span class="p">):</span>
@@ -1333,7 +1349,7 @@ $$</p>
 <div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(-0.005, 0.005)
 </pre></div>
 </div>
-<img alt="../_images/5732f4405b9daa1e8579c1e5d7f4ef4385e672401ea0389fcc8080dfcda64523.png" src="../_images/5732f4405b9daa1e8579c1e5d7f4ef4385e672401ea0389fcc8080dfcda64523.png" />
+<img alt="../_images/Periodic orbits in the CR3BP_47_1.png" src="../_images/Periodic orbits in the CR3BP_47_1.png" />
 </div>
 </div>
 <p>It’s nearly closed, but not that well …. it will need a correction … but we can call the same iterations we made previously when we closed the first initial guess, remember?</p>
@@ -1420,7 +1436,7 @@ new error is: 2.555896284591028e-13
 <div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(-0.005, 0.005)
 </pre></div>
 </div>
-<img alt="../_images/9b659e95c92a318a7b56814238d38dc7c11372856a709701ef05afb7769c6cc0.png" src="../_images/9b659e95c92a318a7b56814238d38dc7c11372856a709701ef05afb7769c6cc0.png" />
+<img alt="../_images/Periodic orbits in the CR3BP_52_1.png" src="../_images/Periodic orbits in the CR3BP_52_1.png" />
 </div>
 </div>
 </section>

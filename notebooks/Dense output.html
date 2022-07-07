@@ -22,8 +22,8 @@
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
     <link rel="stylesheet" href="../_static/styles/sphinx-book-theme.css?digest=62ba249389abaaa9ffc34bf36a076bdc1d65ee18" type="text/css" />
-    <link rel="stylesheet" type="text/css" href="../_static/mystnb.css" />
     <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.css" />
     
   <!-- Pre-loaded scripts that we'll load fully later -->
   <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf">
@@ -38,6 +38,8 @@
     <script src="../_static/togglebutton.js"></script>
     <script src="../_static/scripts/sphinx-book-theme.js?digest=f31d14ad54b65d19161ba51d4ffff3a77ae00456"></script>
     <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Interoperability with SymPy" href="sympy_interop.html" />
@@ -622,7 +624,7 @@ title="Print to PDF"
                 
               <div>
                 
-  <section id="dense-continuous-output">
+  <section class="tex2jax_ignore mathjax_ignore" id="dense-continuous-output">
 <h1>Dense &amp; continuous output<a class="headerlink" href="#dense-continuous-output" title="Permalink to this headline">#</a></h1>
 <p>One of the peculiar features of Taylor’s method is that it directly provides,
 via Taylor series, <em>dense</em> (or <em>continuous</em>) output.
@@ -642,26 +644,29 @@ If you are interested only in the latter, you can skip the next sections and jum
 directly to the continuous output section.</p>
 <p>In order to illustrate how to use dense output in heyoka.py,
 we will keep things simple and consider a simple harmonic oscillator:</p>
-<p>$$
-\begin{cases}
-x^\prime = v \
-v^\prime = -x
-\end{cases},
-$$</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+   \begin{cases}
+   x^\prime = v \\
+   v^\prime = -x
+   \end{cases},
+\end{split}\]</div>
 <p>with initial conditions</p>
-<p>$$
-\begin{cases}
-x\left( 0 \right) = 0 \
-v\left( 0 \right) = 1
-\end{cases}.
-$$</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+   \begin{cases}
+   x\left( 0 \right) = 0 \\
+   v\left( 0 \right) = 1
+   \end{cases}.
+\end{split}\]</div>
 <p>The analytical solution for this simple ODE system is, of course,</p>
-<p>$$
-\begin{cases}
-x\left( t \right) = \sin\left(t\right) \
-v\left( t \right) = \cos\left(t\right)
-\end{cases}.
-$$</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+   \begin{cases}
+   x\left( t \right) = \sin\left(t\right) \\
+   v\left( t \right) = \cos\left(t\right)
+   \end{cases}.
+\end{split}\]</div>
 <section id="dense-output-for-the-step-methods">
 <h2>Dense output for the <code class="docutils literal notranslate"><span class="pre">step()</span></code> methods<a class="headerlink" href="#dense-output-for-the-step-methods" title="Permalink to this headline">#</a></h2>
 <p>Let’s start by setting up the integrator:</p>
@@ -724,7 +729,7 @@ via the <code class="docutils literal notranslate"><span class="pre">tc</span></
 </div>
 </div>
 </div>
-<p>The Taylor coefficients are stored in a 2D array, where each row refers to a different state variable and the number of columns is the Taylor order of the integrator plus one. Thus, the zero-order coefficients for the $x$ and $v$ variables are, respectively:</p>
+<p>The Taylor coefficients are stored in a 2D array, where each row refers to a different state variable and the number of columns is the Taylor order of the integrator plus one. Thus, the zero-order coefficients for the <span class="math notranslate nohighlight">\(x\)</span> and <span class="math notranslate nohighlight">\(v\)</span> variables are, respectively:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ta</span><span class="o">.</span><span class="n">tc</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span>
@@ -745,7 +750,7 @@ coefficients always refer to the <strong>last</strong> step taken and <strong>no
 step that the integrator might take.</p>
 </div></blockquote>
 <p>We are now ready to ask the integrator to compute the value of the solution at some
-arbitrary time. Let’s pick $t = 0.5$,
+arbitrary time. Let’s pick <span class="math notranslate nohighlight">\(t = 0.5\)</span>,
 which is about halfway through the timestep that was just taken:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -777,7 +782,7 @@ by passing <code class="docutils literal notranslate"><span class="pre">rel_time
 </div>
 </div>
 </div>
-<p>Let’s now compare the dense output for the $x$ variable to the exact analytical solution for $t \in \left[ 0, 1 \right]$:</p>
+<p>Let’s now compare the dense output for the <span class="math notranslate nohighlight">\(x\)</span> variable to the exact analytical solution for <span class="math notranslate nohighlight">\(t \in \left[ 0, 1 \right]\)</span>:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">matplotlib.pylab</span> <span class="kn">import</span> <span class="n">plt</span>
@@ -798,7 +803,7 @@ by passing <code class="docutils literal notranslate"><span class="pre">rel_time
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/796d003284919e9de2ca46389df164009244fcac60ed6d044627aef33aad75ed.png" src="../_images/796d003284919e9de2ca46389df164009244fcac60ed6d044627aef33aad75ed.png" />
+<img alt="../_images/Dense output_14_0.png" src="../_images/Dense output_14_0.png" />
 </div>
 </div>
 <p>As you can see, the dense output matches the exact solution to machine precision.</p>
@@ -852,10 +857,10 @@ error tolerance.</p>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/18f227955f8cdaaabe51d64be0459baf547a70f8a43357841af4d2e63d4c114b.png" src="../_images/18f227955f8cdaaabe51d64be0459baf547a70f8a43357841af4d2e63d4c114b.png" />
+<img alt="../_images/Dense output_18_0.png" src="../_images/Dense output_18_0.png" />
 </div>
 </div>
-<p>As you can see, past $t \sim 1$ the dense output is still accurate for another $\sim 0.5$ time units, but eventually the error with respect to the exact solution begins to increase steadily.</p>
+<p>As you can see, past <span class="math notranslate nohighlight">\(t \sim 1\)</span> the dense output is still accurate for another <span class="math notranslate nohighlight">\(\sim 0.5\)</span> time units, but eventually the error with respect to the exact solution begins to increase steadily.</p>
 </section>
 <section id="dense-output-for-the-propagate-methods">
 <h2>Dense output for the <code class="docutils literal notranslate"><span class="pre">propagate_*()</span></code> methods<a class="headerlink" href="#dense-output-for-the-propagate-methods" title="Permalink to this headline">#</a></h2>
@@ -907,7 +912,7 @@ N of steps: 10
 </div>
 </div>
 <p>The screen output informs us that the <code class="docutils literal notranslate"><span class="pre">c_out</span></code> object is capable of providing continuous output in
-the $\left[0, 10\right)$ time interval, and that 10 steps were taken during the integration.</p>
+the <span class="math notranslate nohighlight">\(\left[0, 10\right)\)</span> time interval, and that 10 steps were taken during the integration.</p>
 <p>The call operator of the <code class="docutils literal notranslate"><span class="pre">c_out</span></code> object accepts in input either</p>
 <ul class="simple">
 <li><p>a single absolute time coordinate, or</p></li>
@@ -938,7 +943,7 @@ State vectors at t=[1,2,3,4,5]:
 </div>
 </div>
 </div>
-<p>Let us test the precision of the continuous output over a fine time grid in the $\left[0, 10\right]$ time interval:</p>
+<p>Let us test the precision of the continuous output over a fine time grid in the <span class="math notranslate nohighlight">\(\left[0, 10\right]\)</span> time interval:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Construct a time grid from t=0 to t=10.</span>
@@ -956,7 +961,7 @@ State vectors at t=[1,2,3,4,5]:
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/bede25e845306383703ca86564623d922171519e0cf57ae2c20639e6fd8a68a2.png" src="../_images/bede25e845306383703ca86564623d922171519e0cf57ae2c20639e6fd8a68a2.png" />
+<img alt="../_images/Dense output_27_0.png" src="../_images/Dense output_27_0.png" />
 </div>
 </div>
 <p>As we can see, the continuous output agrees with the analytical solution to machine precision.</p>

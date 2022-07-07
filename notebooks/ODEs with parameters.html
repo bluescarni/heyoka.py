@@ -22,8 +22,8 @@
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
     <link rel="stylesheet" href="../_static/styles/sphinx-book-theme.css?digest=62ba249389abaaa9ffc34bf36a076bdc1d65ee18" type="text/css" />
-    <link rel="stylesheet" type="text/css" href="../_static/mystnb.css" />
     <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.css" />
     
   <!-- Pre-loaded scripts that we'll load fully later -->
   <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf">
@@ -38,6 +38,8 @@
     <script src="../_static/togglebutton.js"></script>
     <script src="../_static/scripts/sphinx-book-theme.js?digest=f31d14ad54b65d19161ba51d4ffff3a77ae00456"></script>
     <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Non-autonomous systems" href="Non-autonomous%20systems.html" />
@@ -541,7 +543,7 @@ title="Print to PDF"
                 
               <div>
                 
-  <section id="odes-with-parameters">
+  <section class="tex2jax_ignore mathjax_ignore" id="odes-with-parameters">
 <h1>ODEs with parameters<a class="headerlink" href="#odes-with-parameters" title="Permalink to this headline">#</a></h1>
 <p>The values of numerical constants in heyoka.py can either be specified when constructing an ODE system, or they can be loaded at a later stage when the ODE system is being integrated. The latter type of numerical constant is known as a <em>parameter</em>.</p>
 <p>Let’s start by importing heyoka.py and NumPy:</p>
@@ -554,13 +556,14 @@ title="Print to PDF"
 </div>
 </div>
 <p>For this example, we will be integrating the pendulum ODE:</p>
-<p>$$
-\begin{cases}
-x^\prime = v \
-v^\prime = -g \sin x
-\end{cases},
-$$</p>
-<p>where $g$ is the value of the gravitational acceleration ($9.8,\mathrm{m}/\mathrm{s}^2$ on Earth). Let’s first create the symbolic state variables $x$ and $v$, which represent respectively the pendulum’s angle and its time derivative:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+   \begin{cases}
+   x^\prime = v \\
+   v^\prime = -g \sin x
+   \end{cases},
+\end{split}\]</div>
+<p>where <span class="math notranslate nohighlight">\(g\)</span> is the value of the gravitational acceleration (<span class="math notranslate nohighlight">\(9.8\,\mathrm{m}/\mathrm{s}^2\)</span> on Earth). Let’s first create the symbolic state variables <span class="math notranslate nohighlight">\(x\)</span> and <span class="math notranslate nohighlight">\(v\)</span>, which represent respectively the pendulum’s angle and its time derivative:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">x</span><span class="p">,</span> <span class="n">v</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">make_vars</span><span class="p">(</span><span class="s2">&quot;x&quot;</span><span class="p">,</span> <span class="s2">&quot;v&quot;</span><span class="p">)</span>
@@ -568,7 +571,7 @@ $$</p>
 </div>
 </div>
 </div>
-<p>Because we don’t want to fix $g$ to a specific numerical value, when writing down the ODE system we will be implementing $g$ as a parameter:</p>
+<p>Because we don’t want to fix <span class="math notranslate nohighlight">\(g\)</span> to a specific numerical value, when writing down the ODE system we will be implementing <span class="math notranslate nohighlight">\(g\)</span> as a parameter:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ode_sys</span> <span class="o">=</span> <span class="p">[(</span><span class="n">x</span><span class="p">,</span> <span class="n">v</span><span class="p">),</span>
@@ -577,8 +580,8 @@ $$</p>
 </div>
 </div>
 </div>
-<p>The syntax <code class="docutils literal notranslate"><span class="pre">par[0]</span></code> means that the actual value of $g$ will be the first value (index 0) loaded from the parameter array when integrating the ODE system.</p>
-<p>Let’s now create the integrator object, using as initial conditions $\left( \pi/2, 0\right)$:</p>
+<p>The syntax <code class="docutils literal notranslate"><span class="pre">par[0]</span></code> means that the actual value of <span class="math notranslate nohighlight">\(g\)</span> will be the first value (index 0) loaded from the parameter array when integrating the ODE system.</p>
+<p>Let’s now create the integrator object, using as initial conditions <span class="math notranslate nohighlight">\(\left( \pi/2, 0\right)\)</span>:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ta</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">taylor_adaptive</span><span class="p">(</span><span class="n">ode_sys</span><span class="p">,</span>
@@ -656,7 +659,7 @@ Parameters              : [9.8000000000000007]
 </div>
 </div>
 </div>
-<p>Let’s now move to Mars, where the gravitational acceleration on the surface is $3.71,\mathrm{m}/\mathrm{s}^2$ (instead of good ole Earth’s $9.8,\mathrm{m}/\mathrm{s}^2$):</p>
+<p>Let’s now move to Mars, where the gravitational acceleration on the surface is <span class="math notranslate nohighlight">\(3.71\,\mathrm{m}/\mathrm{s}^2\)</span> (instead of good ole Earth’s <span class="math notranslate nohighlight">\(9.8\,\mathrm{m}/\mathrm{s}^2\)</span>):</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Reset time and state.</span>
@@ -672,7 +675,7 @@ Parameters              : [9.8000000000000007]
 </div>
 </div>
 </div>
-<p>Finally, let’s plot the evolution of $x$ in time to show how a pendulum swings more slowly on Mars:</p>
+<p>Finally, let’s plot the evolution of <span class="math notranslate nohighlight">\(x\)</span> in time to show how a pendulum swings more slowly on Mars:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">matplotlib.pylab</span> <span class="kn">import</span> <span class="n">plt</span>
@@ -687,7 +690,7 @@ Parameters              : [9.8000000000000007]
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/eae3d00566a232d9d4ad57a68e343080fda55aaaa8ca3d207009d52765fc2244.png" src="../_images/eae3d00566a232d9d4ad57a68e343080fda55aaaa8ca3d207009d52765fc2244.png" />
+<img alt="../_images/ODEs with parameters_17_0.png" src="../_images/ODEs with parameters_17_0.png" />
 </div>
 </div>
 </section>

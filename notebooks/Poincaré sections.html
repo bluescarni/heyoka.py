@@ -22,8 +22,8 @@
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
     <link rel="stylesheet" href="../_static/styles/sphinx-book-theme.css?digest=62ba249389abaaa9ffc34bf36a076bdc1d65ee18" type="text/css" />
-    <link rel="stylesheet" type="text/css" href="../_static/mystnb.css" />
     <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.css" />
     
   <!-- Pre-loaded scripts that we'll load fully later -->
   <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf">
@@ -38,6 +38,8 @@
     <script src="../_static/togglebutton.js"></script>
     <script src="../_static/scripts/sphinx-book-theme.js?digest=f31d14ad54b65d19161ba51d4ffff3a77ae00456"></script>
     <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="The Keplerian billiard" href="The%20Keplerian%20billiard.html" />
@@ -541,19 +543,20 @@ title="Print to PDF"
                 
               <div>
                 
-  <section id="poincare-sections">
+  <section class="tex2jax_ignore mathjax_ignore" id="poincare-sections">
 <h1>Poincaré sections<a class="headerlink" href="#poincare-sections" title="Permalink to this headline">#</a></h1>
 <p>In this example, we will be using heyoka.py’s <a class="reference internal" href="Event%20detection.html"><span class="doc std std-doc">event detection</span></a> feature to compute a <a class="reference external" href="https://en.wikipedia.org/wiki/Poincar%C3%A9_map">Poincaré section</a> for a particular case of the <a class="reference external" href="https://en.wikipedia.org/wiki/Arnold%E2%80%93Beltrami%E2%80%93Childress_flow">Arnold-Beltrami-Childress (ABC) flow</a>.
 The system of ODEs reads:</p>
-<p>$$
+<div class="math notranslate nohighlight">
+\[\begin{split}
 \begin{cases}
-\dot{x} = \sin z + \frac{3}{4} \cos y\
-\dot{y} = \sin x + \cos z\
+\dot{x} = \sin z + \frac{3}{4} \cos y\\
+\dot{y} = \sin x + \cos z\\
 \dot{z} = \frac{3}{4} \sin y + \cos x
 \end{cases},
-$$</p>
-<p>and we will consider the intersection of the flow with the plane defined by $y = 0$.</p>
-<p>We begin as usual with the definition of the symbolic state variables $x$, $y$ and $z$:</p>
+\end{split}\]</div>
+<p>and we will consider the intersection of the flow with the plane defined by <span class="math notranslate nohighlight">\(y = 0\)</span>.</p>
+<p>We begin as usual with the definition of the symbolic state variables <span class="math notranslate nohighlight">\(x\)</span>, <span class="math notranslate nohighlight">\(y\)</span> and <span class="math notranslate nohighlight">\(z\)</span>:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">heyoka</span> <span class="k">as</span> <span class="nn">hy</span>
@@ -572,7 +575,7 @@ $$</p>
 </div>
 </div>
 </div>
-<p>In order to detect when the solution crosses the $y=0$ plane, we will be using a <em>non-terminal</em> event. The event’s callback will compute and store in a list the value of the $x$ and $z$ coordinates when the solution crosses the $y=0$ plane.</p>
+<p>In order to detect when the solution crosses the <span class="math notranslate nohighlight">\(y=0\)</span> plane, we will be using a <em>non-terminal</em> event. The event’s callback will compute and store in a list the value of the <span class="math notranslate nohighlight">\(x\)</span> and <span class="math notranslate nohighlight">\(z\)</span> coordinates when the solution crosses the <span class="math notranslate nohighlight">\(y=0\)</span> plane.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># The list of (x, z) values when the solution</span>
@@ -598,7 +601,7 @@ $$</p>
 </div>
 </div>
 </div>
-<p>We can now proceed to create the integrator. We set the initial conditions to $x=y=z=0$ (to be changed later) and we pass to the constructor the non-terminal event that we just created:</p>
+<p>We can now proceed to create the integrator. We set the initial conditions to <span class="math notranslate nohighlight">\(x=y=z=0\)</span> (to be changed later) and we pass to the constructor the non-terminal event that we just created:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ta</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">taylor_adaptive</span><span class="p">(</span><span class="n">sys</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">nt_events</span> <span class="o">=</span> <span class="p">[</span><span class="n">ev</span><span class="p">])</span>
@@ -606,7 +609,7 @@ $$</p>
 </div>
 </div>
 </div>
-<p>We will now generate a grid of initial conditions in $\left[0, 2\pi \right]$ for $x$ and $z$, and, for each set of initial conditions, we will integrate the system up to $t=1000$. At the end of each integration, we will append to <code class="docutils literal notranslate"><span class="pre">map_list</span></code> the list of $\left( x, z \right)$ coordinates at which the trajectory intersected the $y=0$ plane:</p>
+<p>We will now generate a grid of initial conditions in <span class="math notranslate nohighlight">\(\left[0, 2\pi \right]\)</span> for <span class="math notranslate nohighlight">\(x\)</span> and <span class="math notranslate nohighlight">\(z\)</span>, and, for each set of initial conditions, we will integrate the system up to <span class="math notranslate nohighlight">\(t=1000\)</span>. At the end of each integration, we will append to <code class="docutils literal notranslate"><span class="pre">map_list</span></code> the list of <span class="math notranslate nohighlight">\(\left( x, z \right)\)</span> coordinates at which the trajectory intersected the <span class="math notranslate nohighlight">\(y=0\)</span> plane:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
@@ -654,7 +657,7 @@ $$</p>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/30b89c60b6595c08d85e98bf71a4a39771ee42e014de462480b7d653db852323.png" src="../_images/30b89c60b6595c08d85e98bf71a4a39771ee42e014de462480b7d653db852323.png" />
+<img alt="../_images/Poincaré sections_11_0.png" src="../_images/Poincaré sections_11_0.png" />
 </div>
 </div>
 </section>

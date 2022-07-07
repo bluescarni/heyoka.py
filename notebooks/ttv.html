@@ -22,8 +22,8 @@
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
     <link rel="stylesheet" href="../_static/styles/sphinx-book-theme.css?digest=62ba249389abaaa9ffc34bf36a076bdc1d65ee18" type="text/css" />
-    <link rel="stylesheet" type="text/css" href="../_static/mystnb.css" />
     <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.css" />
     
   <!-- Pre-loaded scripts that we'll load fully later -->
   <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf">
@@ -38,6 +38,8 @@
     <script src="../_static/togglebutton.js"></script>
     <script src="../_static/scripts/sphinx-book-theme.js?digest=f31d14ad54b65d19161ba51d4ffff3a77ae00456"></script>
     <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Introduction to the VSOP2013 planetary theory" href="vsop2013.html" />
@@ -541,7 +543,7 @@ title="Print to PDF"
                 
               <div>
                 
-  <section id="calculating-transit-timing-variations">
+  <section class="tex2jax_ignore mathjax_ignore" id="calculating-transit-timing-variations">
 <h1>Calculating transit timing variations<a class="headerlink" href="#calculating-transit-timing-variations" title="Permalink to this headline">#</a></h1>
 <p>In this example we will be using heyoka.py’s <a class="reference internal" href="Event%20detection.html"><span class="doc std std-doc">event detection</span></a> system to find the transit times in a two-planet system. This example is directly inspired by a <a class="reference external" href="https://rebound.readthedocs.io/en/latest/ipython_examples/TransitTimingVariations/">notebook</a> in the documentation of the <a class="reference external" href="https://rebound.readthedocs.io">REBOUND</a> software package.</p>
 <p>We begin as usual with importing heyoka.py and a couple of extra useful modules:</p>
@@ -554,7 +556,7 @@ title="Print to PDF"
 </div>
 </div>
 </div>
-<p>Next, we define the initial conditions for the two planets in the system. The inner planet is on a low-eccentricity orbit, while the outer planet is on a circular orbit. Both orbits have zero inclination, so that the motion is constrained to the $xy$ plane. We use adimensional units ($G=1$), the mass of the central star is $1$ and both planets have a mass of $10^{-5}$:</p>
+<p>Next, we define the initial conditions for the two planets in the system. The inner planet is on a low-eccentricity orbit, while the outer planet is on a circular orbit. Both orbits have zero inclination, so that the motion is constrained to the <span class="math notranslate nohighlight">\(xy\)</span> plane. We use adimensional units (<span class="math notranslate nohighlight">\(G=1\)</span>), the mass of the central star is <span class="math notranslate nohighlight">\(1\)</span> and both planets have a mass of <span class="math notranslate nohighlight">\(10^{-5}\)</span>:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Initial cartesian conditions for the two planets.</span>
@@ -576,11 +578,12 @@ title="Print to PDF"
 </div>
 </div>
 </div>
-<p>The next step is the definition of the event for the detection of the planetary transit. In this setup, we assume that the observer of the system is in the direction of the positive $x$ axis, so that a planetary transit happens when the $y$ coordinate of the planet is zero. Thus, in order to detect the transit of the inner planet, we will use the trivial event equation</p>
-<p>$$
+<p>The next step is the definition of the event for the detection of the planetary transit. In this setup, we assume that the observer of the system is in the direction of the positive <span class="math notranslate nohighlight">\(x\)</span> axis, so that a planetary transit happens when the <span class="math notranslate nohighlight">\(y\)</span> coordinate of the planet is zero. Thus, in order to detect the transit of the inner planet, we will use the trivial event equation</p>
+<div class="math notranslate nohighlight">
+\[
 y_1 = 0.
-$$</p>
-<p>Because $y_1$ is zero also when the planet transits <em>behind</em> the star, we will further constrain the event by imposing a <em>positive</em> direction for the event. That is, the event will trigger only if $y_1 = 0$ and the value of $y_1$ is switching from negative to positive. Alternatively (and more robustly), we could compute the value of $x_1$ when the event triggers via dense output and ignore the event if $x_1&lt;0$, however for this simple example specifying the event direction will suffice.</p>
+\]</div>
+<p>Because <span class="math notranslate nohighlight">\(y_1\)</span> is zero also when the planet transits <em>behind</em> the star, we will further constrain the event by imposing a <em>positive</em> direction for the event. That is, the event will trigger only if <span class="math notranslate nohighlight">\(y_1 = 0\)</span> and the value of <span class="math notranslate nohighlight">\(y_1\)</span> is switching from negative to positive. Alternatively (and more robustly), we could compute the value of <span class="math notranslate nohighlight">\(x_1\)</span> when the event triggers via dense output and ignore the event if <span class="math notranslate nohighlight">\(x_1&lt;0\)</span>, however for this simple example specifying the event direction will suffice.</p>
 <p>Finally, we will log the trigger time of each event in a global list for further analysis.</p>
 <p>Let us see the definition of the event:</p>
 <div class="cell docutils container">
@@ -673,7 +676,7 @@ $$</p>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/012c00fd40a059122862a33064fd228ba39fd5d69610c5393cf28c8a810e7c82.png" src="../_images/012c00fd40a059122862a33064fd228ba39fd5d69610c5393cf28c8a810e7c82.png" />
+<img alt="../_images/ttv_15_0.png" src="../_images/ttv_15_0.png" />
 </div>
 </div>
 <p>The transit times deviate from a purely linear behaviour because of the perturbations induced onto the inner planet by the outer planet.</p>

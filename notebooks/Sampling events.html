@@ -22,8 +22,8 @@
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
     <link rel="stylesheet" href="../_static/styles/sphinx-book-theme.css?digest=62ba249389abaaa9ffc34bf36a076bdc1d65ee18" type="text/css" />
-    <link rel="stylesheet" type="text/css" href="../_static/mystnb.css" />
     <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.css" />
     
   <!-- Pre-loaded scripts that we'll load fully later -->
   <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf">
@@ -38,6 +38,8 @@
     <script src="../_static/togglebutton.js"></script>
     <script src="../_static/scripts/sphinx-book-theme.js?digest=f31d14ad54b65d19161ba51d4ffff3a77ae00456"></script>
     <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Poincaré sections" href="Poincar%C3%A9%20sections.html" />
@@ -541,23 +543,25 @@ title="Print to PDF"
                 
               <div>
                 
-  <section id="sampling-events">
+  <section class="tex2jax_ignore mathjax_ignore" id="sampling-events">
 <h1>Sampling events<a class="headerlink" href="#sampling-events" title="Permalink to this headline">#</a></h1>
 <p>In this example, we will show how to use heyoka.py’s <a class="reference internal" href="Event%20detection.html"><span class="doc std std-doc">event detection</span></a> system to detect when the solution of a system of ODEs satisfies certain constraints.</p>
 <p>We will be considering the system of polynomial ODEs</p>
-<p>$$
+<div class="math notranslate nohighlight">
+\[\begin{split}
 \begin{cases}
-\frac{dx}{dt} = -y-x^2\
+\frac{dx}{dt} = -y-x^2\\
 \frac{dy}{dt} = 2x-y^3
 \end{cases}
-$$</p>
+\end{split}\]</div>
 <p>with initial conditions</p>
-<p>$$
+<div class="math notranslate nohighlight">
+\[\begin{split}
 \begin{cases}
-x\left( 0 \right ) = 1\
+x\left( 0 \right ) = 1\\
 y\left( 0 \right ) = 1
 \end{cases}.
-$$</p>
+\end{split}\]</div>
 <p>Let us begin by creating the symbolic variables and defining the system of ODEs:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -569,11 +573,12 @@ $$</p>
 </div>
 </div>
 </div>
-<p>As a first step, we want to detect when the solution crosses the $x$ axis. The equation for this event is simply</p>
-<p>$$
+<p>As a first step, we want to detect when the solution crosses the <span class="math notranslate nohighlight">\(x\)</span> axis. The equation for this event is simply</p>
+<div class="math notranslate nohighlight">
+\[
 y = 0.
-$$</p>
-<p>Each time the solution crosses the $x$ axis, we want to record in a list the $x$ coordinate at the time of crossing. Thus, we define the following callback for the event:</p>
+\]</div>
+<p>Each time the solution crosses the <span class="math notranslate nohighlight">\(x\)</span> axis, we want to record in a list the <span class="math notranslate nohighlight">\(x\)</span> coordinate at the time of crossing. Thus, we define the following callback for the event:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># The list of values of the x coordinate</span>
@@ -616,7 +621,7 @@ $$</p>
 </div>
 </div>
 </div>
-<p>Let us plot the solution and mark the $x$ axis crossing positions:</p>
+<p>Let us plot the solution and mark the <span class="math notranslate nohighlight">\(x\)</span> axis crossing positions:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">matplotlib.pylab</span> <span class="kn">import</span> <span class="n">plt</span>
@@ -637,19 +642,21 @@ $$</p>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/f2319deca41ffbbf0686ec62e51ddde25609b5b7fe2b53c5ad1510b9ff22c1d3.png" src="../_images/f2319deca41ffbbf0686ec62e51ddde25609b5b7fe2b53c5ad1510b9ff22c1d3.png" />
+<img alt="../_images/Sampling events_9_0.png" src="../_images/Sampling events_9_0.png" />
 </div>
 </div>
-<p>The plot shows how the event detection system indeed fired each time the solution crossed the $x$ axis.</p>
-<p>Let us now complicate things a bit: instead of detecting when the solution crosses the $x$ axis, we want to detect when the solution intersects the non-linear curve</p>
-<p>$$
+<p>The plot shows how the event detection system indeed fired each time the solution crossed the <span class="math notranslate nohighlight">\(x\)</span> axis.</p>
+<p>Let us now complicate things a bit: instead of detecting when the solution crosses the <span class="math notranslate nohighlight">\(x\)</span> axis, we want to detect when the solution intersects the non-linear curve</p>
+<div class="math notranslate nohighlight">
+\[
 y = 1.1 \sin\left( 5x \right).
-$$</p>
+\]</div>
 <p>The only thing we need to change in our setup is the event equation, which will now read</p>
-<p>$$
+<div class="math notranslate nohighlight">
+\[
 y - 1.1 \sin\left( 5x \right) = 0
-$$</p>
-<p>rather than simply $y=0$. Additionally, we will also need to store explicitly the $y$ coordinate of the crossing points. Let us take a look at the code:</p>
+\]</div>
+<p>rather than simply <span class="math notranslate nohighlight">\(y=0\)</span>. Additionally, we will also need to store explicitly the <span class="math notranslate nohighlight">\(y\)</span> coordinate of the crossing points. Let us take a look at the code:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">9</span><span class="p">,</span> <span class="mi">9</span><span class="p">))</span>
@@ -690,7 +697,7 @@ $$</p>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/0f0cc84dd9f3099a77ae4900858ee7e3e9337a78967dd68cb39dc1f448ec00d0.png" src="../_images/0f0cc84dd9f3099a77ae4900858ee7e3e9337a78967dd68cb39dc1f448ec00d0.png" />
+<img alt="../_images/Sampling events_11_0.png" src="../_images/Sampling events_11_0.png" />
 </div>
 </div>
 <p>The plot shows again how the event detection system was able to correctly detect the intersections of the solution with the curve.</p>
