@@ -136,7 +136,9 @@ if(${heyoka_VERSION} VERSION_LESS ${_HEYOKA_PY_MIN_HEYOKA_VERSION})
 endif()
 
 # Python.
-find_package(Python3 REQUIRED COMPONENTS Interpreter Development)
+# TODO numpy req. should be conditional on heyoka_WITH_MPPP + mp++_WITH_QUADMATH.
+# TODO need to rethink the general logic here.
+find_package(Python3 REQUIRED COMPONENTS Interpreter Development NumPy)
 message(STATUS "Python3 interpreter: ${Python3_EXECUTABLE}")
 message(STATUS "Python3 installation directory: ${Python3_SITEARCH}")
 if(${Python3_VERSION_MINOR} LESS 5)
