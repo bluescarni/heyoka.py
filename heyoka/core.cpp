@@ -57,6 +57,7 @@
 
 #include "cfunc.hpp"
 #include "common_utils.hpp"
+#include "expose_real128.hpp"
 #include "logging.hpp"
 #include "long_double_caster.hpp"
 #include "pickle_wrappers.hpp"
@@ -266,6 +267,9 @@ PYBIND11_MODULE(core, m)
         false
 #endif
         ;
+
+    // Expose the real128 type.
+    heypy::expose_real128(m);
 
     // Expose the logging setter functions.
     heypy::expose_logging_setters(m);

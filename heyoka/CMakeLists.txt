@@ -24,9 +24,10 @@ Python3_add_library(core MODULE WITH_SOABI
     logging.cpp
     setup_sympy.cpp
     cfunc.cpp
+    expose_real128.cpp
 )
 
-target_link_libraries(core PRIVATE heyoka::heyoka fmt::fmt Boost::boost Boost::serialization TBB::tbb)
+target_link_libraries(core PRIVATE heyoka::heyoka fmt::fmt Boost::boost Boost::serialization TBB::tbb Python3::NumPy)
 target_link_libraries(core PRIVATE "${pybind11_LIBRARIES}")
 if(heyoka_WITH_MPPP)
     target_link_libraries(core PRIVATE mp++::mp++)
@@ -75,12 +76,5 @@ install(TARGETS core
 # Add the Python files.
 install(FILES ${HEYOKA_PY_PYTHON_FILES} "${CMAKE_CURRENT_BINARY_DIR}/_version.py"
     DESTINATION ${_HEYOKA_PY_INSTALL_DIR})
-
-Python3_add_library(quad_float MODULE WITH_SOABI
-    quad_float.cpp
-)
-
-target_link_libraries(quad_float PRIVATE mp++::mp++ Python3::NumPy)
-target_include_directories(quad_float SYSTEM PRIVATE "${Python3_INCLUDE_DIRS}")
 
 unset(_HEYOKA_PY_INSTALL_DIR)
