@@ -533,6 +533,7 @@ void expose_real128(py::module_ &m)
         py_throw(PyExc_TypeError, "Cannot add the 'dtype' field to the real128 class");
     }
 
+    // TODO casting support.
     // if (register_cast_functions(npy_registered_quadnum) < 0) {
     //     return;
     // }

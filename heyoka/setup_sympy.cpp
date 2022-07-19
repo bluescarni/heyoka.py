@@ -26,7 +26,6 @@
 #include <Python.h>
 
 #include <fmt/format.h>
-#include <fmt/ostream.h>
 
 #if defined(HEYOKA_HAVE_REAL128)
 
@@ -35,6 +34,7 @@
 
 #endif
 
+#include <heyoka/detail/string_conv.hpp>
 #include <heyoka/expression.hpp>
 #include <heyoka/func.hpp>
 #include <heyoka/math.hpp>
@@ -106,7 +106,9 @@ py::object to_sympy_impl(std::unordered_map<const void *, py::object> &, const h
 
             // NOTE: forbid conversion if the value is not finite.
             if (!isfinite(x)) {
-                py_throw(PyExc_ValueError, (fmt::format("Cannot convert to sympy the nonfinite number {}", x)).c_str());
+                py_throw(PyExc_ValueError,
+                         (fmt::format("Cannot convert to sympy the nonfinite number {}", hy::detail::fp_to_string(x)))
+                             .c_str());
             }
 
             return py::cast(x);
