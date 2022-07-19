@@ -1,6 +1,4 @@
-# NOTE: FindPython3 supported since CMake 3.12.0, but we use
-# options that appear in 3.17.
-cmake_minimum_required(VERSION 3.17.0)
+cmake_minimum_required(VERSION 3.16.0)
 
 # Set default build type to "Release".
 # NOTE: this should be done before the project command since the latter can set
@@ -113,18 +111,11 @@ if(MINGW)
     list(APPEND HEYOKA_PY_CXX_FLAGS_RELEASE "-Wa,-mbig-obj")
 endif()
 
-# This is temporarily here in order to quench some fmt 8.1
-# warnings until we fix the code.
+# Find the dependencies.
+
+# fmt.
 find_package(fmt REQUIRED CONFIG)
 message(STATUS "fmt version: ${fmt_VERSION}")
-if(${fmt_VERSION} VERSION_GREATER_EQUAL "8.1")
-    if(YACMA_COMPILER_IS_GNUCXX OR YACMA_COMPILER_IS_CLANGXX)
-        list(APPEND HEYOKA_PY_CXX_FLAGS_DEBUG "-Wno-deprecated-declarations")
-        list(APPEND HEYOKA_PY_CXX_FLAGS_RELEASE "-Wno-deprecated-declarations")
-    endif()
-endif()
-
-# Find the dependencies.
 
 # heyoka.
 # NOTE: put the minimum version in a variable
@@ -134,11 +125,42 @@ find_package(heyoka REQUIRED CONFIG)
 if(${heyoka_VERSION} VERSION_LESS ${_HEYOKA_PY_MIN_HEYOKA_VERSION})
     message(FATAL_ERROR "The minimum heyoka version required by heyoka.py is ${_HEYOKA_PY_MIN_HEYOKA_VERSION}, but version ${heyoka_VERSION} was found instead.")
 endif()
+unset(_HEYOKA_PY_MIN_HEYOKA_VERSION)
 
 # Python.
-# TODO numpy req. should be conditional on heyoka_WITH_MPPP + mp++_WITH_QUADMATH.
-# TODO need to rethink the general logic here.
-find_package(Python3 REQUIRED COMPONENTS Interpreter Development NumPy)
+
+# Setup the list of Python components we need to locate.
+set(_HEYOKA_PY_PYTHON3_COMPONENTS Interpreter)
+
+# We need to use the NumPy API to implement array
+# support for real128.
+if(heyoka_WITH_REAL128)
+    list(APPEND _HEYOKA_PY_PYTHON3_COMPONENTS NumPy)
+endif()
+
+if(${CMAKE_VERSION} VERSION_LESS "3.18.0")
+    # NOTE: before CMake 3.18, there are no separate Development.*
+    # subcomponents.
+    list(APPEND _HEYOKA_PY_PYTHON3_COMPONENTS Development)
+else()
+    list(APPEND _HEYOKA_PY_PYTHON3_COMPONENTS Development.Module)
+    # NOTE: strictly speaking, we should need only the Interpreter and Development.Module
+    # components to build heyoka.py. However, in certain setups (e.g., skbuild), it looks
+    # like if we specify only Development.Module CMake is unable to correctly locate
+    # the Python installation. Hence, as a workaround, if the following line fails
+    # and Python3 is *not* found, we try again, this time with the full Development
+    # component (rather than only Development.Module). This seems to work around the
+    # issue, for now at least.
+    find_package(Python3 QUIET COMPONENTS ${_HEYOKA_PY_PYTHON3_COMPONENTS})
+
+    if(NOT Python3_FOUND)
+        list(POP_BACK _HEYOKA_PY_PYTHON3_COMPONENTS)
+        list(APPEND _HEYOKA_PY_PYTHON3_COMPONENTS Development)
+    endif()
+endif()
+
+find_package(Python3 QUIET REQUIRED COMPONENTS ${_HEYOKA_PY_PYTHON3_COMPONENTS})
+
 message(STATUS "Python3 interpreter: ${Python3_EXECUTABLE}")
 message(STATUS "Python3 installation directory: ${Python3_SITEARCH}")
 if(${Python3_VERSION_MINOR} LESS 5)
@@ -146,6 +168,7 @@ if(${Python3_VERSION_MINOR} LESS 5)
 endif()
 set(HEYOKA_PY_INSTALL_PATH "" CACHE STRING "heyoka module installation path")
 mark_as_advanced(HEYOKA_PY_INSTALL_PATH)
+unset(_HEYOKA_PY_PYTHON3_COMPONENTS)
 
 # pybind11.
 find_package(pybind11 REQUIRED CONFIG)
@@ -159,14 +182,9 @@ find_package(Boost REQUIRED serialization)
 # Mandatory dependency on TBB.
 find_package(TBB REQUIRED CONFIG)
 
-if(heyoka_WITH_MPPP)
-    # heyoka was compiled with mp++ support,
-    # add the mp++ dependency on heyoka.py as well.
-    # Note that mp++ is needed in heyoka.py only
-    # for real128 support currently, so in theory
-    # we could have an mppp-enabled heyoka which
-    # however does not support real128, thus rendering
-    # this dependency unnecessary (strictly speaking).
+# NOTE: we make direct use of the mp++ headers
+# in the heyoka.py source code if real128 support is enabled.
+if(heyoka_WITH_REAL128)
     find_package(mp++ REQUIRED CONFIG)
 endif()
 
