@@ -4197,6 +4197,47 @@ class cfunc_test_case(_ut.TestCase):
         self.assertEqual(eval_arr[2], fp_t(4))
 
 
+class real128_test_case(_ut.TestCase):
+    def runTest(self):
+        from . import core
+
+        if not hasattr(core, "real128"):
+            return
+
+        self.test_scalar()
+        self.test_numpy()
+
+    def test_scalar(self):
+        import random
+        from . import real128
+
+        # Constructors.
+        self.assertEqual(str(real128()), "0")
+
+        # Small ints.
+        self.assertEqual(str(real128(1)), "1")
+        self.assertEqual(str(real128(-1)), "-1")
+        self.assertEqual(str(real128(42)), "42")
+        self.assertEqual(str(real128(-42)), "-42")
+
+        # Large ints, still exactly representable.
+        random.seed(42)
+        for _ in range(100):
+            n = random.randint(-2**101, 2**101)
+            self.assertEqual(str(real128(n)), str(n))
+
+        # Largest/smallest exactly representable ints.
+        self.assertEqual(str(real128(2**113)), str(2**113))
+        self.assertEqual(str(real128(-2**113)), str(-2**113))
+        self.assertEqual(str(real128(2**113+1)), str(2**113))
+        self.assertEqual(str(real128(-2**113-1)), str(-2**113))
+        self.assertEqual(str(real128(2**113-1)), str(2**113-1))
+        self.assertEqual(str(real128(-2**113+1)), str(-2**113+1))
+
+    def test_numpy(self):
+        pass
+
+
 def run_test_suite():
     from . import make_nbody_sys, taylor_adaptive, with_real128
 
@@ -4211,6 +4252,7 @@ def run_test_suite():
     retval = 0
 
     suite = _ut.TestLoader().loadTestsFromTestCase(taylor_add_jet_test_case)
+    suite.addTest(real128_test_case())
     suite.addTest(cfunc_test_case())
     suite.addTest(ensemble_test_case())
     suite.addTest(s11n_backend_test_case())

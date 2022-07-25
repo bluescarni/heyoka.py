@@ -270,9 +270,6 @@ void py_real128_dealloc(PyObject *self)
 
 // __repr__().
 // TODO exception throwing?
-// TODO repr vs str: repr should alway print all significant digits,
-// what should str do? Use the G format to autodetect best representation,
-// always using 34 digits?
 PyObject *py_real128_repr(PyObject *self)
 {
     // TODO handle potential runtime_error (return null on failure, test it).
