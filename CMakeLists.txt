@@ -130,13 +130,8 @@ unset(_HEYOKA_PY_MIN_HEYOKA_VERSION)
 # Python.
 
 # Setup the list of Python components we need to locate.
-set(_HEYOKA_PY_PYTHON3_COMPONENTS Interpreter)
-
-# We need to use the NumPy API to implement array
-# support for real128.
-if(heyoka_WITH_REAL128)
-    list(APPEND _HEYOKA_PY_PYTHON3_COMPONENTS NumPy)
-endif()
+# NOTE: NumPy is used for both long double and real128 support.
+set(_HEYOKA_PY_PYTHON3_COMPONENTS Interpreter NumPy)
 
 if(${CMAKE_VERSION} VERSION_LESS "3.18.0")
     # NOTE: before CMake 3.18, there are no separate Development.*
