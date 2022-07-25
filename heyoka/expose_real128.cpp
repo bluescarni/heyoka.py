@@ -19,6 +19,7 @@
 #include <functional>
 #include <limits>
 #include <new>
+#include <optional>
 #include <stdexcept>
 #include <type_traits>
 #include <utility>
@@ -31,6 +32,7 @@
 
 #include <Python.h>
 #include <numpy/arrayobject.h>
+#include <numpy/arrayscalars.h>
 #include <numpy/ufuncobject.h>
 
 #include <mp++/real128.hpp>
@@ -131,7 +133,7 @@ PyObject *py_real128_new([[maybe_unused]] PyTypeObject *type, PyObject *, PyObje
 }
 
 // Helper to convert a Python integer to real128.
-mppp::real128 py_int_to_real128(PyObject *arg)
+std::optional<mppp::real128> py_int_to_real128(PyObject *arg)
 {
     assert(PyObject_IsInstance(arg, reinterpret_cast<PyObject *>(&PyLong_Type)));
 
@@ -157,23 +159,43 @@ mppp::real128 py_int_to_real128(PyObject *arg)
     const auto neg = ob_size < 0;
 
     // Compute the unsigned size.
-    // TODO static assert on abs via neg.
     using size_type = std::make_unsigned_t<std::remove_const_t<decltype(ob_size)>>;
+    static_assert(std::is_same_v<size_type, decltype(static_cast<size_type>(0) + static_cast<size_type>(0))>);
     auto abs_ob_size = neg ? -static_cast<size_type>(ob_size) : static_cast<size_type>(ob_size);
 
-    // Init the retval with the first (most significant) digit. The Python integer is nonzero, so this is safe.
+    // Init the retval with the first (most significant) limb. The Python integer is nonzero, so this is safe.
     mppp::real128 retval = ob_digit[--abs_ob_size];
 
-    // Init the number of digits consumed so far.
-    auto ncdigits = PyLong_SHIFT;
+    // Init the number of binary digits consumed so far.
+    // NOTE: this is of course not zero, as we read *some* bits from
+    // the most significant limb. However we don't know exactly how
+    // many bits we read from the top limb, so we err on the safe
+    // side in order to ensure that, when ncdigits reaches the bit width
+    // of real128, we have indeed consumed *at least* that many bits.
+    auto ncdigits = 0;
 
+    // Keep on reading limbs until either:
+    // - we run out of limbs, or
+    // - we have read as many bits as the bit width of real128.
+    static_assert(std::numeric_limits<mppp::real128>::digits < std::numeric_limits<int>::max() - PyLong_SHIFT);
     while (ncdigits < std::numeric_limits<mppp::real128>::digits && abs_ob_size != 0u) {
         retval = scalbn(retval, PyLong_SHIFT);
         retval += ob_digit[--abs_ob_size];
+        ncdigits += PyLong_SHIFT;
     }
 
     if (abs_ob_size != 0u) {
-        // TODO finish, overflow check - how? std::optional perhaps?
+        // We have filled up the mantissa, we just need to adjust the exponent.
+        // We still have abs_ob_size * PyLong_SHIFT bits remaining, and we
+        // need to shift that much.
+        if (abs_ob_size
+            > static_cast<unsigned long>(std::numeric_limits<long>::max()) / static_cast<unsigned>(PyLong_SHIFT)) {
+            PyErr_Format(PyExc_OverflowError,
+                         "An overflow condition was detected while converting a Python integer to a real128");
+
+            return {};
+        }
+        retval = scalbln(retval, static_cast<long>(abs_ob_size * static_cast<unsigned>(PyLong_SHIFT)));
     }
 
     if (neg) {
@@ -205,7 +227,13 @@ int py_real128_init(PyObject *self, PyObject *args, PyObject *)
             return -1;
         }
     } else if (PyLong_Check(arg)) {
-        *get_val(self) = py_int_to_real128(arg);
+        if (auto opt = py_int_to_real128(arg)) {
+            *get_val(self) = *opt;
+        } else {
+            return -1;
+        }
+    } else if (PyObject_IsInstance(arg, reinterpret_cast<PyObject *>(&PyLongDoubleArrType_Type)) != 0) {
+        *get_val(self) = reinterpret_cast<PyLongDoubleScalarObject *>(arg)->obval;
     } else if (py_real128_check(arg)) {
         *get_val(self) = *get_val(arg);
     } else if (PyUnicode_Check(arg)) {
