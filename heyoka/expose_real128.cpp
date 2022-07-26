@@ -16,6 +16,7 @@
 #include <cmath>
 #include <cstddef>
 #include <cstdlib>
+#include <exception>
 #include <functional>
 #include <limits>
 #include <new>
@@ -114,12 +115,17 @@ template <typename... Args>
 PyObject *py_real128_from_args(Args &&...args)
 {
     // Acquire the storage for a py_real128.
-    auto *p = reinterpret_cast<py_real128 *>(py_real128_type.tp_alloc(&py_real128_type, 0));
+    void *pv = py_real128_type.tp_alloc(&py_real128_type, 0);
+    if (pv == nullptr) {
+        return nullptr;
+    }
+
+    // Construct the py_real128 instance.
+    // NOLINTNEXTLINE(cppcoreguidelines-owning-memory)
+    auto *p = ::new (pv) py_real128;
 
     // Setup its internal data.
-    if (p != nullptr) {
-        ::new (p->m_storage) mppp::real128(std::forward<Args>(args)...);
-    }
+    ::new (p->m_storage) mppp::real128(std::forward<Args>(args)...);
 
     return reinterpret_cast<PyObject *>(p);
 }
@@ -190,19 +196,15 @@ std::optional<mppp::real128> py_int_to_real128(PyObject *arg)
         // need to shift that much.
         if (abs_ob_size
             > static_cast<unsigned long>(std::numeric_limits<long>::max()) / static_cast<unsigned>(PyLong_SHIFT)) {
-            PyErr_Format(PyExc_OverflowError,
-                         "An overflow condition was detected while converting a Python integer to a real128");
+            PyErr_SetString(PyExc_OverflowError,
+                            "An overflow condition was detected while converting a Python integer to a real128");
 
             return {};
         }
         retval = scalbln(retval, static_cast<long>(abs_ob_size * static_cast<unsigned>(PyLong_SHIFT)));
     }
 
-    if (neg) {
-        return -retval;
-    } else {
-        return retval;
-    }
+    return neg ? -retval : retval;
 }
 
 // __init__() implementation.
@@ -243,16 +245,26 @@ int py_real128_init(PyObject *self, PyObject *args, PyObject *)
             return -1;
         }
 
-        // TODO handle other exceptions.
         try {
             *get_val(self) = mppp::real128(str);
         } catch (const std::invalid_argument &ia) {
             PyErr_SetString(PyExc_ValueError, ia.what());
 
             return -1;
+        } catch (const std::exception &ex) {
+            PyErr_SetString(PyExc_RuntimeError, ex.what());
+
+            return -1;
+        } catch (...) {
+            PyErr_SetString(PyExc_RuntimeError, "Unknown exception caught while trying to build a real128 from string");
+
+            return -1;
         }
     } else {
-        // TODO raise error if construction argument type is not supported.
+        PyErr_Format(PyExc_TypeError, "Cannot construct a real128 from an object of type \"%s\"",
+                     Py_TYPE(arg)->tp_name);
+
+        return -1;
     }
 
     return 0;
@@ -336,7 +348,9 @@ int npy_py_real128_setitem(PyObject *item, void *data, void *)
         std::memcpy(data, q, sizeof(mppp::real128));
         return 0;
     } else {
-        PyErr_Format(PyExc_TypeError, "%s: expected real128, got %s", __func__, item->ob_type->tp_name);
+        PyErr_Format(PyExc_TypeError,
+                     "Cannot invoke __setitem__() on a real128 array with an input value of type \"%s\"",
+                     Py_TYPE(item)->tp_name);
         return -1;
     }
 }

@@ -4210,6 +4210,10 @@ class real128_test_case(_ut.TestCase):
     def test_scalar(self):
         import random
         from . import real128
+        from numpy import longdouble as ld
+
+        # Make random testing deterministic.
+        random.seed(42)
 
         # Constructors.
         self.assertEqual(str(real128()), "0")
@@ -4221,18 +4225,51 @@ class real128_test_case(_ut.TestCase):
         self.assertEqual(str(real128(-42)), "-42")
 
         # Large ints, still exactly representable.
-        random.seed(42)
         for _ in range(100):
             n = random.randint(-2**101, 2**101)
             self.assertEqual(str(real128(n)), str(n))
 
-        # Largest/smallest exactly representable ints.
+        # Ints with bit width around the mantissa bit width.
         self.assertEqual(str(real128(2**113)), str(2**113))
         self.assertEqual(str(real128(-2**113)), str(-2**113))
         self.assertEqual(str(real128(2**113+1)), str(2**113))
         self.assertEqual(str(real128(-2**113-1)), str(-2**113))
         self.assertEqual(str(real128(2**113-1)), str(2**113-1))
         self.assertEqual(str(real128(-2**113+1)), str(-2**113+1))
+
+        # Very large ints.
+        for _ in range(100):
+            n = random.randint(-2**1001, 2**1001)
+            self.assertEqual(str(real128(n)), str(real128(str(n))))
+
+        # Construction from floats.
+        self.assertEqual(str(real128(-0.)), "-0")
+        self.assertEqual(str(real128(42.)), "42")
+        self.assertEqual(str(real128(-float("inf"))), "-inf")
+        self.assertEqual(str(real128(float("nan"))), "nan")
+
+        # Construction from long double.
+        self.assertEqual(str(real128(ld(-0.))), "-0")
+        self.assertEqual(str(real128(ld(42.))), "42")
+        self.assertEqual(str(real128(ld(-float("inf")))), "-inf")
+        self.assertEqual(str(real128(ld(float("nan")))), "nan")
+
+        # Construction from string.
+        self.assertEqual(str(real128("-0")), "-0")
+        self.assertEqual(str(real128("-inf")), "-inf")
+        self.assertEqual(str(real128("-nan")), "nan")
+        self.assertEqual(str(real128("42")), "42")
+        self.assertEqual(str(real128("-123")), "-123")
+
+        with self.assertRaises(ValueError) as cm:
+            real128("hello world")
+        self.assertTrue(
+            "The string 'hello world' does not represent a valid quadruple-precision floating-point value" in str(cm.exception))
+
+        with self.assertRaises(TypeError) as cm:
+            real128([])
+        self.assertTrue(
+            "Cannot construct a real128 from an object of type \"list\"" in str(cm.exception))
 
     def test_numpy(self):
         pass
