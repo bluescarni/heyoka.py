@@ -550,6 +550,83 @@ npy_bool npy_py_real128_nonzero(void *data, void *)
     return q != 0 ? NPY_TRUE : NPY_FALSE;
 }
 
+// NOTE: this is an integer used to represent the
+// real128 type *after* it has been registered in the
+// NumPy dtype system. This is needed to expose
+// ufuncs and it will be set up during module
+// initialisation.
+// NOLINTNEXTLINE(cppcoreguidelines-avoid-non-const-global-variables)
+int npy_registered_py_real128 = 0;
+
+// Generic NumPy conversion function to real128.
+template <typename From>
+void npy_cast_to_real128(void *from, void *to, npy_intp n, void *, void *)
+{
+    const auto *typed_from = static_cast<const From *>(from);
+    auto *typed_to = static_cast<mppp::real128 *>(to);
+
+    for (npy_intp i = 0; i < n; ++i) {
+        typed_to[i] = typed_from[i];
+    }
+}
+
+// Generic NumPy conversion function from real128.
+template <typename To>
+void npy_cast_from_real128(void *from, void *to, npy_intp n, void *, void *)
+{
+    const auto *typed_from = static_cast<const mppp::real128 *>(from);
+    auto *typed_to = static_cast<To *>(to);
+
+    for (npy_intp i = 0; i < n; ++i) {
+        typed_to[i] = static_cast<To>(typed_from[i]);
+    }
+}
+
+// Machinery to associate a C++ type to a NumPy type.
+template <typename>
+struct cpp_to_numpy_t {
+};
+
+#define HEYOKA_PY_ASSOC_TY(cpp_tp, npy_tp)                                                                             \
+    template <>                                                                                                        \
+    struct cpp_to_numpy_t<cpp_tp> {                                                                                    \
+        static constexpr int value = npy_tp;                                                                           \
+    }
+
+HEYOKA_PY_ASSOC_TY(float, NPY_FLOAT);
+HEYOKA_PY_ASSOC_TY(double, NPY_DOUBLE);
+HEYOKA_PY_ASSOC_TY(long double, NPY_LONGDOUBLE);
+
+HEYOKA_PY_ASSOC_TY(npy_int8, NPY_INT8);
+HEYOKA_PY_ASSOC_TY(npy_int16, NPY_INT16);
+HEYOKA_PY_ASSOC_TY(npy_int32, NPY_INT32);
+HEYOKA_PY_ASSOC_TY(npy_int64, NPY_INT64);
+
+#undef HEYOKA_PY_ASSOC_TY
+
+// Shortcut.
+template <typename T>
+constexpr auto npy_type = cpp_to_numpy_t<T>::value;
+
+// Helper to register NumPy casting functions to/from T.
+template <typename T>
+void npy_register_cast_functions()
+{
+    if (PyArray_RegisterCastFunc(PyArray_DescrFromType(npy_type<T>), npy_registered_py_real128, &npy_cast_to_real128<T>)
+        < 0) {
+        py_throw(PyExc_TypeError, "The registration of a NumPy casting function failed");
+    }
+
+    // NOTE: this is to signal that conversion of any scalar type to real128 is safe.
+    if (PyArray_RegisterCanCast(PyArray_DescrFromType(npy_type<T>), npy_registered_py_real128, NPY_NOSCALAR) < 0) {
+        py_throw(PyExc_TypeError, "The registration of a NumPy casting function failed");
+    }
+
+    if (PyArray_RegisterCastFunc(&npy_py_real128_descr, npy_type<T>, &npy_cast_from_real128<T>) < 0) {
+        py_throw(PyExc_TypeError, "The registration of a NumPy casting function failed");
+    }
+}
+
 // Generic NumPy unary operation.
 template <typename F>
 void py_real128_ufunc_unary(char **args, const npy_intp *dimensions, const npy_intp *steps, void *, const F &f)
@@ -580,50 +657,15 @@ void py_real128_ufunc_binary(char **args, const npy_intp *dimensions, const npy_
     }
 }
 
-// Generic NumPy conversion function to real128.
-template <typename From>
-void npy_cast_to_real128(void *from, void *to, npy_intp n, void *, void *)
-{
-    const auto *typed_from = static_cast<const From *>(from);
-    auto *typed_to = static_cast<mppp::real128 *>(to);
-
-    for (npy_intp i = 0; i < n; ++i) {
-        typed_to[i] = typed_from[i];
-    }
-}
-
-// Generic NumPy conversion function from real128.
-template <typename To>
-void npy_cast_from_real128(void *from, void *to, npy_intp n, void *, void *)
-{
-    const auto *typed_from = static_cast<const mppp::real128 *>(from);
-    auto *typed_to = static_cast<To *>(to);
-
-    for (npy_intp i = 0; i < n; ++i) {
-        typed_to[i] = static_cast<To>(typed_from[i]);
-    }
-}
-
-// NOTE: this is an integer used to represent
-// real128 *after* it has been registered in the
-// NumPy dtype system. This is needed to expose
-// ufuncs and it will be set up during module
-// initialisation.
-// NOLINTNEXTLINE(cppcoreguidelines-avoid-non-const-global-variables)
-int npy_registered_py_real128 = 0;
-
 // Helper to register a NumPy ufunc.
 template <typename... Types>
-void register_ufunc(PyObject *numpy, const char *name, PyUFuncGenericFunction func, Types... types_)
+void npy_register_ufunc(py::module_ &numpy, const char *name, PyUFuncGenericFunction func, Types... types_)
 {
-    auto *ufunc_ = PyObject_GetAttrString(numpy, name);
-    if (ufunc_ == nullptr) {
-        py_throw(PyExc_TypeError, fmt::format("Could not locate the ufunc '{}' in the NumPy module", name).c_str());
-    }
+    py::object ufunc_ob = numpy.attr(name);
+    auto *ufunc_ = ufunc_ob.ptr();
     if (PyObject_IsInstance(ufunc_, reinterpret_cast<PyObject *>(&PyUFunc_Type)) == 0) {
         py_throw(PyExc_TypeError, fmt::format("The name '{}' in the NumPy module is not a ufunc", name).c_str());
     }
-
     auto *ufunc = reinterpret_cast<PyUFuncObject *>(ufunc_);
 
     int types[] = {types_...};
@@ -634,8 +676,7 @@ void register_ufunc(PyObject *numpy, const char *name, PyUFuncGenericFunction fu
                                       .c_str());
     }
 
-    const auto ret = PyUFunc_RegisterLoopForType(ufunc, npy_registered_py_real128, func, types, nullptr);
-    if (ret < 0) {
+    if (PyUFunc_RegisterLoopForType(ufunc, npy_registered_py_real128, func, types, nullptr) < 0) {
         py_throw(PyExc_TypeError, fmt::format("The registration of the ufunc '{}' failed", name).c_str());
     }
 }
@@ -754,72 +795,75 @@ void expose_real128(py::module_ &m)
     // NOTE: need access to the numpy module to register ufuncs.
     auto numpy_mod = py::module_::import("numpy");
 
-    detail::register_ufunc(
-        numpy_mod.ptr(), "add",
+    detail::npy_register_ufunc(
+        numpy_mod, "add",
         [](char **args, const npy_intp *dimensions, const npy_intp *steps, void *data) {
             detail::py_real128_ufunc_binary(args, dimensions, steps, data, std::plus<>{});
         },
         detail::npy_registered_py_real128, detail::npy_registered_py_real128, detail::npy_registered_py_real128);
-    detail::register_ufunc(
-        numpy_mod.ptr(), "subtract",
+    detail::npy_register_ufunc(
+        numpy_mod, "subtract",
         [](char **args, const npy_intp *dimensions, const npy_intp *steps, void *data) {
             detail::py_real128_ufunc_binary(args, dimensions, steps, data, std::minus<>{});
         },
         detail::npy_registered_py_real128, detail::npy_registered_py_real128, detail::npy_registered_py_real128);
-    detail::register_ufunc(
-        numpy_mod.ptr(), "multiply",
+    detail::npy_register_ufunc(
+        numpy_mod, "multiply",
         [](char **args, const npy_intp *dimensions, const npy_intp *steps, void *data) {
             detail::py_real128_ufunc_binary(args, dimensions, steps, data, std::multiplies<>{});
         },
         detail::npy_registered_py_real128, detail::npy_registered_py_real128, detail::npy_registered_py_real128);
-    detail::register_ufunc(
-        numpy_mod.ptr(), "divide",
+    detail::npy_register_ufunc(
+        numpy_mod, "divide",
         [](char **args, const npy_intp *dimensions, const npy_intp *steps, void *data) {
             detail::py_real128_ufunc_binary(args, dimensions, steps, data, std::divides<>{});
         },
         detail::npy_registered_py_real128, detail::npy_registered_py_real128, detail::npy_registered_py_real128);
-    detail::register_ufunc(
-        numpy_mod.ptr(), "floor_divide",
+    detail::npy_register_ufunc(
+        numpy_mod, "floor_divide",
         [](char **args, const npy_intp *dimensions, const npy_intp *steps, void *data) {
             detail::py_real128_ufunc_binary(args, dimensions, steps, data, detail::floor_divide_func);
         },
         detail::npy_registered_py_real128, detail::npy_registered_py_real128, detail::npy_registered_py_real128);
-    detail::register_ufunc(
-        numpy_mod.ptr(), "power",
+    detail::npy_register_ufunc(
+        numpy_mod, "power",
         [](char **args, const npy_intp *dimensions, const npy_intp *steps, void *data) {
             detail::py_real128_ufunc_binary(args, dimensions, steps, data, detail::pow_func);
         },
         detail::npy_registered_py_real128, detail::npy_registered_py_real128, detail::npy_registered_py_real128);
-    detail::register_ufunc(
-        numpy_mod.ptr(), "absolute",
+    detail::npy_register_ufunc(
+        numpy_mod, "absolute",
         [](char **args, const npy_intp *dimensions, const npy_intp *steps, void *data) {
             detail::py_real128_ufunc_unary(args, dimensions, steps, data, detail::abs_func);
         },
         detail::npy_registered_py_real128, detail::npy_registered_py_real128);
-    detail::register_ufunc(
-        numpy_mod.ptr(), "positive",
+    detail::npy_register_ufunc(
+        numpy_mod, "positive",
         [](char **args, const npy_intp *dimensions, const npy_intp *steps, void *data) {
             detail::py_real128_ufunc_unary(args, dimensions, steps, data, detail::identity_func);
         },
         detail::npy_registered_py_real128, detail::npy_registered_py_real128);
-    detail::register_ufunc(
-        numpy_mod.ptr(), "negative",
+    detail::npy_register_ufunc(
+        numpy_mod, "negative",
         [](char **args, const npy_intp *dimensions, const npy_intp *steps, void *data) {
             detail::py_real128_ufunc_unary(args, dimensions, steps, data, detail::negation_func);
         },
         detail::npy_registered_py_real128, detail::npy_registered_py_real128);
-    detail::register_ufunc(
-        numpy_mod.ptr(), "sqrt",
+    detail::npy_register_ufunc(
+        numpy_mod, "sqrt",
         [](char **args, const npy_intp *dimensions, const npy_intp *steps, void *data) {
             detail::py_real128_ufunc_unary(args, dimensions, steps, data, detail::sqrt_func);
         },
         detail::npy_registered_py_real128, detail::npy_registered_py_real128);
 
     // Casting.
-    PyArray_RegisterCastFunc(PyArray_DescrFromType(NPY_DOUBLE), detail::npy_registered_py_real128,
-                             &detail::npy_cast_to_real128<double>);
-    PyArray_RegisterCanCast(PyArray_DescrFromType(NPY_DOUBLE), detail::npy_registered_py_real128, NPY_NOSCALAR);
-    PyArray_RegisterCastFunc(&detail::npy_py_real128_descr, NPY_DOUBLE, &detail::npy_cast_from_real128<double>);
+    detail::npy_register_cast_functions<float>();
+    detail::npy_register_cast_functions<double>();
+    detail::npy_register_cast_functions<long double>();
+    detail::npy_register_cast_functions<npy_int8>();
+    detail::npy_register_cast_functions<npy_int16>();
+    detail::npy_register_cast_functions<npy_int32>();
+    detail::npy_register_cast_functions<npy_int64>();
 
     // Add py_real128_type to the module.
     Py_INCREF(&py_real128_type);
