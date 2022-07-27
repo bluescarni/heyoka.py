@@ -4271,6 +4271,119 @@ class real128_test_case(_ut.TestCase):
         self.assertTrue(
             "Cannot construct a real128 from an object of type \"list\"" in str(cm.exception))
 
+        # Conversion to bool.
+        self.assertTrue(bool(real128(1)))
+        self.assertTrue(bool(real128(-1)))
+        self.assertFalse(bool(real128(0)))
+        self.assertTrue(bool(real128("inf")))
+        self.assertTrue(bool(real128("nan")))
+        self.assertTrue(bool(real128("-inf")))
+
+        # Unary math operations.
+        self.assertEqual(repr(+real128(1)), "1")
+        self.assertEqual(repr(+real128(-1)), "-1")
+        self.assertEqual(repr(-real128(42)), "-42")
+        self.assertEqual(repr(-real128(-42)), "42")
+        self.assertEqual(repr(abs(real128(-42))), "42")
+
+        # Binary math ops.
+        self.assertEqual(repr(real128(42) + real128(1)), "43")
+        self.assertEqual(repr(real128(42) + 1), "43")
+        self.assertEqual(repr(real128(42) + 1.), "43")
+        self.assertEqual(repr(real128(42) + ld(1)), "43")
+        self.assertEqual(repr(1 + real128(42)), "43")
+        self.assertEqual(repr(1. + real128(42)), "43")
+        self.assertEqual(repr(ld(1) + real128(42)), "43")
+        with self.assertRaises(TypeError) as cm:
+            real128(1) + []
+        with self.assertRaises(TypeError) as cm:
+            [] + real128(1)
+
+        self.assertEqual(repr(real128(42) - real128(1)), "41")
+        self.assertEqual(repr(real128(42) - 1), "41")
+        self.assertEqual(repr(real128(42) - 1.), "41")
+        self.assertEqual(repr(real128(42) - ld(1)), "41")
+        self.assertEqual(repr(1 - real128(42)), "-41")
+        self.assertEqual(repr(1. - real128(42)), "-41")
+        self.assertEqual(repr(ld(1) - real128(42)), "-41")
+        with self.assertRaises(TypeError) as cm:
+            real128(1) - []
+        with self.assertRaises(TypeError) as cm:
+            [] - real128(1)
+
+        self.assertEqual(repr(real128(42) * real128(2)), "84")
+        self.assertEqual(repr(real128(42) * 2), "84")
+        self.assertEqual(repr(real128(42) * 2.), "84")
+        self.assertEqual(repr(real128(42) * ld(2)), "84")
+        self.assertEqual(repr(2 * real128(42)), "84")
+        self.assertEqual(repr(2. * real128(42)), "84")
+        self.assertEqual(repr(ld(2) * real128(42)), "84")
+        with self.assertRaises(TypeError) as cm:
+            real128(1) * []
+        with self.assertRaises(TypeError) as cm:
+            [] * real128(1)
+
+        self.assertEqual(repr(real128(42) // real128(9)), "4")
+        self.assertEqual(repr(real128(42) // 9), "4")
+        self.assertEqual(repr(real128(42) // 9.), "4")
+        self.assertEqual(repr(real128(42) // ld(9)), "4")
+        self.assertEqual(repr(-42 // real128(9)), "-5")
+        self.assertEqual(repr(-42. // real128(9)), "-5")
+        self.assertEqual(repr(ld(-42) // real128(9)), "-5")
+        with self.assertRaises(TypeError) as cm:
+            real128(1) // []
+        with self.assertRaises(TypeError) as cm:
+            [] // real128(1)
+
+        self.assertEqual(repr(real128(42) ** real128(2)), "1764")
+        self.assertEqual(repr(real128(42) ** 2), "1764")
+        self.assertEqual(repr(real128(42) ** 2.), "1764")
+        self.assertEqual(repr(real128(42) ** ld(2)), "1764")
+        self.assertEqual(repr(42 ** real128(2)), "1764")
+        self.assertEqual(repr(42. ** real128(2)), "1764")
+        self.assertEqual(repr(ld(42) ** real128(2)), "1764")
+        with self.assertRaises(TypeError) as cm:
+            real128(1) ** []
+        with self.assertRaises(TypeError) as cm:
+            [] ** real128(1)
+        with self.assertRaises(ValueError) as cm:
+            pow(real128(1), 3, mod = 4)
+        self.assertTrue(
+            "Modular exponentiation is not supported for real128" in str(cm.exception))
+
+        # Comparisons.
+        self.assertTrue(real128(1) < real128(2))
+        self.assertTrue(real128(1) < 2)
+        self.assertTrue(real128(1) < 2.)
+        self.assertTrue(real128(1) < ld(2))
+        self.assertTrue(1 < real128(2))
+        self.assertTrue(1. < real128(2))
+        self.assertTrue(ld(1) < real128(2))
+        self.assertFalse(real128("nan") < 2)
+        self.assertFalse(2 < real128("nan"))
+        self.assertFalse(real128("nan") < real128("nan"))
+        with self.assertRaises(TypeError) as cm:
+            real128(1) < []
+        with self.assertRaises(TypeError) as cm:
+            [] < real128(1)
+
+        # The codepath for the other comparisons is identical,
+        # let's limit to some light testing.
+        self.assertTrue(real128(1) <= real128(2))
+        self.assertTrue(real128(2) <= real128(2))
+        self.assertFalse(real128(3) <= real128(2))
+        self.assertTrue(real128(2) == real128(2))
+        self.assertFalse(real128(3) == real128(2))
+        self.assertFalse(real128(3) == real128("NaN"))
+        self.assertFalse(real128(2) != real128(2))
+        self.assertTrue(real128(3) != real128(2))
+        self.assertTrue(real128(3) != real128("NaN"))
+        self.assertTrue(real128(3) > real128(2))
+        self.assertFalse(real128(2) > real128(3))
+        self.assertFalse(real128(1) >= real128(2))
+        self.assertTrue(real128(2) >= real128(2))
+        self.assertTrue(real128(3) >= real128(2))
+
     def test_numpy(self):
         pass
 

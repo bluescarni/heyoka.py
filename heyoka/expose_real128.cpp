@@ -280,6 +280,37 @@ void py_real128_dealloc(PyObject *self)
     Py_TYPE(self)->tp_free(reinterpret_cast<PyObject *>(self));
 }
 
+// Helper to construct a real128 from one of the
+// supported Pythonic numerical types:
+// - int,
+// - float,
+// - long double.
+// If the conversion is successful, returns {x, true}. If some error
+// is encountered, returns {<empty>, false}. If the type of arg is not
+// supported, returns {<empty>, true}.
+std::pair<std::optional<mppp::real128>, bool> real128_from_ob(PyObject *arg)
+{
+    if (PyFloat_Check(arg)) {
+        auto fp_arg = PyFloat_AsDouble(arg);
+
+        if (PyErr_Occurred() == nullptr) {
+            return {fp_arg, true};
+        } else {
+            return {{}, false};
+        }
+    } else if (PyLong_Check(arg)) {
+        if (auto opt = py_int_to_real128(arg)) {
+            return {*opt, true};
+        } else {
+            return {{}, false};
+        }
+    } else if (PyObject_IsInstance(arg, reinterpret_cast<PyObject *>(&PyLongDoubleArrType_Type)) != 0) {
+        return {reinterpret_cast<PyLongDoubleScalarObject *>(arg)->obval, true};
+    } else {
+        return {{}, true};
+    }
+}
+
 // __repr__().
 // TODO exception throwing?
 PyObject *py_real128_repr(PyObject *self)
@@ -304,13 +335,134 @@ PyObject *py_real128_unop(PyObject *a, const F &op)
 template <typename F>
 PyObject *py_real128_binop(PyObject *a, PyObject *b, const F &op)
 {
-    if (py_real128_check(a) && py_real128_check(b)) {
+    const auto a_is_real128 = py_real128_check(a);
+    const auto b_is_real128 = py_real128_check(b);
+
+    if (a_is_real128 && b_is_real128) {
+        // Both operands are real128.
         const auto *x = get_val(a);
         const auto *y = get_val(b);
 
         return py_real128_from_args(op(*x, *y));
-    } else {
+    }
+
+    if (a_is_real128) {
+        // a is a real128, b is not. Try to convert
+        // b to a real128.
+        auto [r, flag] = real128_from_ob(b);
+
+        if (r) {
+            // The conversion was successful, do the op.
+            return py_real128_from_args(op(*get_val(a), *r));
+        }
+
+        if (flag) {
+            // b's type is not supported.
+            Py_RETURN_NOTIMPLEMENTED;
+        }
+
+        // Attempting to convert b to a real128 generated an error.
+        return nullptr;
+    }
+
+    if (b_is_real128) {
+        // The mirror of the previous case.
+        auto [r, flag] = real128_from_ob(a);
+
+        if (r) {
+            return py_real128_from_args(op(*r, *get_val(b)));
+        }
+
+        if (flag) {
+            Py_RETURN_NOTIMPLEMENTED;
+        }
+
+        return nullptr;
+    }
+
+    // Neither a nor b are real128.
+    Py_RETURN_NOTIMPLEMENTED;
+}
+
+// Rich comparison operator.
+// NOLINTNEXTLINE(readability-function-cognitive-complexity)
+PyObject *py_real128_rcmp(PyObject *a, PyObject *b, int op)
+{
+    auto impl = [a, b](const auto &func) -> PyObject * {
+        const auto a_is_real128 = py_real128_check(a);
+        const auto b_is_real128 = py_real128_check(b);
+
+        if (a_is_real128 && b_is_real128) {
+            // Both operands are real128.
+            const auto *x = get_val(a);
+            const auto *y = get_val(b);
+
+            if (func(*x, *y)) {
+                Py_RETURN_TRUE;
+            } else {
+                Py_RETURN_FALSE;
+            }
+        }
+
+        if (a_is_real128) {
+            // a is a real128, b is not. Try to convert
+            // b to a real128.
+            auto [r, flag] = real128_from_ob(b);
+
+            if (r) {
+                // The conversion was successful, do the op.
+                if (func(*get_val(a), *r)) {
+                    Py_RETURN_TRUE;
+                } else {
+                    Py_RETURN_FALSE;
+                }
+            }
+
+            if (flag) {
+                // b's type is not supported.
+                Py_RETURN_NOTIMPLEMENTED;
+            }
+
+            // Attempting to convert b to a real128 generated an error.
+            return nullptr;
+        }
+
+        if (b_is_real128) {
+            // The mirror of the previous case.
+            auto [r, flag] = real128_from_ob(a);
+
+            if (r) {
+                if (func(*r, *get_val(b))) {
+                    Py_RETURN_TRUE;
+                } else {
+                    Py_RETURN_FALSE;
+                }
+            }
+
+            if (flag) {
+                Py_RETURN_NOTIMPLEMENTED;
+            }
+
+            return nullptr;
+        }
+
         Py_RETURN_NOTIMPLEMENTED;
+    };
+
+    switch (op) {
+        case Py_LT:
+            return impl(std::less<>{});
+        case Py_LE:
+            return impl(std::less_equal<>{});
+        case Py_EQ:
+            return impl(std::equal_to<>{});
+        case Py_NE:
+            return impl(std::not_equal_to<>{});
+        case Py_GT:
+            return impl(std::greater<>{});
+        default:
+            assert(op == Py_GE);
+            return impl(std::greater_equal<>{});
     }
 }
 
@@ -507,6 +659,7 @@ void expose_real128(py::module_ &m)
     py_real128_type.tp_dealloc = detail::py_real128_dealloc;
     py_real128_type.tp_repr = detail::py_real128_repr;
     py_real128_type.tp_as_number = &detail::py_real128_as_number;
+    py_real128_type.tp_richcompare = &detail::py_real128_rcmp;
 
     // Fill out the functions for the number protocol. See:
     // https://docs.python.org/3/c-api/number.html
@@ -534,6 +687,8 @@ void expose_real128(py::module_ &m)
 
         return detail::py_real128_binop(a, b, detail::pow_func);
     };
+    detail::py_real128_as_number.nb_bool
+        = [](PyObject *arg) { return static_cast<int>(static_cast<bool>(*get_val(arg))); };
 
     // Finalize py_real128_type.
     if (PyType_Ready(&py_real128_type) < 0) {
