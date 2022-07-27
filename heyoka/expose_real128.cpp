@@ -580,6 +580,30 @@ void py_real128_ufunc_binary(char **args, const npy_intp *dimensions, const npy_
     }
 }
 
+// Generic NumPy conversion function to real128.
+template <typename From>
+void npy_cast_to_real128(void *from, void *to, npy_intp n, void *, void *)
+{
+    const auto *typed_from = static_cast<const From *>(from);
+    auto *typed_to = static_cast<mppp::real128 *>(to);
+
+    for (npy_intp i = 0; i < n; ++i) {
+        typed_to[i] = typed_from[i];
+    }
+}
+
+// Generic NumPy conversion function from real128.
+template <typename To>
+void npy_cast_from_real128(void *from, void *to, npy_intp n, void *, void *)
+{
+    const auto *typed_from = static_cast<const mppp::real128 *>(from);
+    auto *typed_to = static_cast<To *>(to);
+
+    for (npy_intp i = 0; i < n; ++i) {
+        typed_to[i] = static_cast<To>(typed_from[i]);
+    }
+}
+
 // NOTE: this is an integer used to represent
 // real128 *after* it has been registered in the
 // NumPy dtype system. This is needed to expose
@@ -727,11 +751,6 @@ void expose_real128(py::module_ &m)
         py_throw(PyExc_TypeError, "Cannot add the 'dtype' field to the real128 class");
     }
 
-    // TODO casting support.
-    // if (register_cast_functions(npy_registered_quadnum) < 0) {
-    //     return;
-    // }
-
     // NOTE: need access to the numpy module to register ufuncs.
     auto numpy_mod = py::module_::import("numpy");
 
@@ -795,6 +814,12 @@ void expose_real128(py::module_ &m)
             detail::py_real128_ufunc_unary(args, dimensions, steps, data, detail::sqrt_func);
         },
         detail::npy_registered_py_real128, detail::npy_registered_py_real128);
+
+    // Casting.
+    PyArray_RegisterCastFunc(PyArray_DescrFromType(NPY_DOUBLE), detail::npy_registered_py_real128,
+                             &detail::npy_cast_to_real128<double>);
+    PyArray_RegisterCanCast(PyArray_DescrFromType(NPY_DOUBLE), detail::npy_registered_py_real128, NPY_NOSCALAR);
+    PyArray_RegisterCastFunc(&detail::npy_py_real128_descr, NPY_DOUBLE, &detail::npy_cast_from_real128<double>);
 
     // Add py_real128_type to the module.
     Py_INCREF(&py_real128_type);
