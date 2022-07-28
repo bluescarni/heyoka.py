@@ -312,11 +312,18 @@ std::pair<std::optional<mppp::real128>, bool> real128_from_ob(PyObject *arg)
 }
 
 // __repr__().
-// TODO exception throwing?
 PyObject *py_real128_repr(PyObject *self)
 {
-    // TODO handle potential runtime_error (return null on failure, test it).
-    return PyUnicode_FromString(get_val(self)->to_string().c_str());
+    try {
+        return PyUnicode_FromString(get_val(self)->to_string().c_str());
+    } catch (const std::exception &ex) {
+        PyErr_SetString(PyExc_RuntimeError, ex.what());
+    } catch (...) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        "An unknown exception was caught while trying to obtain the representation of a real128");
+    }
+
+    return nullptr;
 }
 
 // Generic implementation of unary operations.
