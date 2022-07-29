@@ -37,6 +37,7 @@
 #include <numpy/arrayscalars.h>
 #include <numpy/ufuncobject.h>
 
+#include <mp++/config.hpp>
 #include <mp++/real128.hpp>
 
 #include "common_utils.hpp"
@@ -261,8 +262,10 @@ int py_real128_init(PyObject *self, PyObject *args, PyObject *)
         } else {
             return -1;
         }
+#if defined(MPPP_FLOAT128_WITH_LONG_DOUBLE)
     } else if (PyObject_IsInstance(arg, reinterpret_cast<PyObject *>(&PyLongDoubleArrType_Type)) != 0) {
         *get_val(self) = reinterpret_cast<PyLongDoubleScalarObject *>(arg)->obval;
+#endif
     } else if (py_real128_check(arg)) {
         *get_val(self) = *get_val(arg);
     } else if (PyUnicode_Check(arg)) {
@@ -331,8 +334,10 @@ std::pair<std::optional<mppp::real128>, bool> real128_from_ob(PyObject *arg)
         } else {
             return {{}, false};
         }
+#if defined(MPPP_FLOAT128_WITH_LONG_DOUBLE)
     } else if (PyObject_IsInstance(arg, reinterpret_cast<PyObject *>(&PyLongDoubleArrType_Type)) != 0) {
         return {reinterpret_cast<PyLongDoubleScalarObject *>(arg)->obval, true};
+#endif
     } else {
         return {{}, true};
     }
@@ -621,7 +626,12 @@ struct cpp_to_numpy_t {
 
 HEYOKA_PY_ASSOC_TY(float, NPY_FLOAT);
 HEYOKA_PY_ASSOC_TY(double, NPY_DOUBLE);
+
+#if defined(MPPP_FLOAT128_WITH_LONG_DOUBLE)
+
 HEYOKA_PY_ASSOC_TY(long double, NPY_LONGDOUBLE);
+
+#endif
 
 HEYOKA_PY_ASSOC_TY(npy_int8, NPY_INT8);
 HEYOKA_PY_ASSOC_TY(npy_int16, NPY_INT16);
@@ -951,7 +961,13 @@ void expose_real128(py::module_ &m)
     // Casting.
     detail::npy_register_cast_functions<float>();
     detail::npy_register_cast_functions<double>();
+
+#if defined(MPPP_FLOAT128_WITH_LONG_DOUBLE)
+
     detail::npy_register_cast_functions<long double>();
+
+#endif
+
     detail::npy_register_cast_functions<npy_int8>();
     detail::npy_register_cast_functions<npy_int16>();
     detail::npy_register_cast_functions<npy_int32>();
