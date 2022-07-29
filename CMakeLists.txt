@@ -167,8 +167,8 @@ unset(_HEYOKA_PY_PYTHON3_COMPONENTS)
 
 # pybind11.
 find_package(pybind11 REQUIRED CONFIG)
-if(${pybind11_VERSION} VERSION_LESS "2.6")
-    message(FATAL_ERROR "pybind11 >= 2.6 is required, but version ${pybind11_VERSION} was found instead.")
+if(${pybind11_VERSION} VERSION_LESS "2.10")
+    message(FATAL_ERROR "pybind11 >= 2.10 is required, but version ${pybind11_VERSION} was found instead.")
 endif()
 
 # Boost.
