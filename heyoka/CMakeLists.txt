@@ -25,6 +25,7 @@ set(_HEYOKA_PY_CORE_SOURCES
     setup_sympy.cpp
     cfunc.cpp
     expose_real128.cpp
+    dtypes.cpp
 )
 
 if(${CMAKE_VERSION} VERSION_LESS "3.17.0")

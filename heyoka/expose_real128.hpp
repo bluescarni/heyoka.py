@@ -35,6 +35,8 @@ struct py_real128 {
 // NOLINTNEXTLINE(cppcoreguidelines-avoid-non-const-global-variables)
 extern PyTypeObject py_real128_type;
 
+extern int npy_registered_py_real128;
+
 bool py_real128_check(PyObject *);
 mppp::real128 *get_val(py_real128 *);
 mppp::real128 *get_val(PyObject *);
