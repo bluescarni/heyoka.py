@@ -36,7 +36,13 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 
+#define PY_ARRAY_UNIQUE_SYMBOL heyoka_py_ARRAY_API
+#define PY_UFUNC_UNIQUE_SYMBOL heyoka_py_UFUNC_API
+#define NPY_NO_DEPRECATED_API NPY_1_7_API_VERSION
+
 #include <Python.h>
+#include <numpy/arrayobject.h>
+#include <numpy/ufuncobject.h>
 
 #if defined(HEYOKA_HAVE_REAL128)
 
@@ -228,6 +234,16 @@ std::vector<mppp::real128> kepE_vector_f128(std::vector<mppp::real128> e, std::v
 // of kepE().
 std::optional<hey::llvm_state> kepE_state;
 
+// Helper to import the NumPy API bits.
+PyObject *import_numpy(PyObject *m)
+{
+    import_array();
+
+    import_umath();
+
+    return m;
+}
+
 } // namespace
 
 } // namespace heyoka_py::detail
@@ -241,6 +257,13 @@ std::optional<hey::llvm_state> kepE_state;
 
 PYBIND11_MODULE(core, m)
 {
+    if (heypy::detail::import_numpy(m.ptr()) == nullptr) {
+        // NOTE: on failure, the NumPy macros already set
+        // the error indicator. Thus, all it is left to do
+        // is to throw the pybind11 exception.
+        throw py::error_already_set();
+    }
+
 #if defined(HEYOKA_HAVE_REAL128)
     // Init the pybind11 integration for this module.
     mppp_pybind11::init();

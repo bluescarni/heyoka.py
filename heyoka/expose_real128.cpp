@@ -29,7 +29,10 @@
 
 #include <fmt/format.h>
 
+#define NO_IMPORT_ARRAY
+#define NO_IMPORT_UFUNC
 #define PY_ARRAY_UNIQUE_SYMBOL heyoka_py_ARRAY_API
+#define PY_UFUNC_UNIQUE_SYMBOL heyoka_py_UFUNC_API
 #define NPY_NO_DEPRECATED_API NPY_1_7_API_VERSION
 
 #include <Python.h>
@@ -505,16 +508,6 @@ PyObject *py_real128_rcmp(PyObject *a, PyObject *b, int op)
     }
 }
 
-// Helper to import the NumPy API bits.
-PyObject *import_numpy(PyObject *m)
-{
-    import_array();
-
-    import_umath();
-
-    return m;
-}
-
 // NumPy array function.
 // NOLINTNEXTLINE(cppcoreguidelines-avoid-non-const-global-variables)
 PyArray_ArrFuncs npy_py_real128_arr_funcs = {};
@@ -754,13 +747,6 @@ mppp::real128 *get_val(PyObject *self)
 
 void expose_real128(py::module_ &m)
 {
-    if (detail::import_numpy(m.ptr()) == nullptr) {
-        // NOTE: on failure, the NumPy macros already set
-        // the error indicator. Thus, all it is left to do
-        // is to throw the pybind11 exception.
-        throw py::error_already_set();
-    }
-
     // Fill out the entries of py_real128_type.
     py_real128_type.tp_base = &PyGenericArrType_Type;
     py_real128_type.tp_name = "heyoka.core.real128";
