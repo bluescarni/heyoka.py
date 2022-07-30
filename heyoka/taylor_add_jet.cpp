@@ -37,7 +37,7 @@
 #endif
 
 #include "common_utils.hpp"
-#include "long_double_caster.hpp"
+#include "custom_casters.hpp"
 #include "taylor_add_jet.hpp"
 
 namespace heyoka_py

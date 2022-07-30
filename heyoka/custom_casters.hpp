@@ -6,8 +6,8 @@
 // Public License v. 2.0. If a copy of the MPL was not distributed
 // with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-#ifndef HEYOKA_PY_LONG_DOUBLE_CASTER_HPP
-#define HEYOKA_PY_LONG_DOUBLE_CASTER_HPP
+#ifndef HEYOKA_PY_CUSTOM_CASTERS_HPP
+#define HEYOKA_PY_CUSTOM_CASTERS_HPP
 
 #include <algorithm>
 #include <cassert>

@@ -42,7 +42,7 @@
 #include <heyoka/variable.hpp>
 
 #include "common_utils.hpp"
-#include "long_double_caster.hpp"
+#include "custom_casters.hpp"
 #include "setup_sympy.hpp"
 
 namespace heyoka_py

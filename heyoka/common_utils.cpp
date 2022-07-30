@@ -26,7 +26,7 @@
 #include <heyoka/number.hpp>
 
 #include "common_utils.hpp"
-#include "long_double_caster.hpp"
+#include "custom_casters.hpp"
 
 namespace heyoka_py
 {
