@@ -50,6 +50,12 @@ else:
 
 del _os
 
+# Small helper to check if real128 is available.
+def _with_real128():
+    from . import core
+
+    return hasattr(core, "real128")
+
 
 def taylor_adaptive(sys, state, **kwargs):
     from .core import _taylor_adaptive_dbl, _taylor_adaptive_ldbl
@@ -62,7 +68,7 @@ def taylor_adaptive(sys, state, **kwargs):
     if fp_type == "long double":
         return _taylor_adaptive_ldbl(sys, state, **kwargs)
 
-    if with_real128 and fp_type == "real128":
+    if _with_real128() and fp_type == "real128":
         from .core import _taylor_adaptive_f128
         return _taylor_adaptive_f128(sys, state, **kwargs)
 
@@ -81,7 +87,7 @@ def eval(e, map, pars=[], **kwargs):
     if fp_type == "long double":
         return _eval_ldbl(e, map, pars, **kwargs)
 
-    if with_real128 and fp_type == "real128":
+    if _with_real128() and fp_type == "real128":
         from .core import _eval_f128
         return _eval_f128(e, map, pars, **kwargs)
 
@@ -122,7 +128,7 @@ def taylor_add_jet(sys, order, **kwargs):
     if fp_type == "long double":
         return _taylor_add_jet_ldbl(sys, order, **kwargs)
 
-    if with_real128 and fp_type == "real128":
+    if _with_real128() and fp_type == "real128":
         from .core import _taylor_add_jet_f128
         return _taylor_add_jet_f128(sys, order, **kwargs)
 
@@ -140,7 +146,7 @@ def add_cfunc(fn, **kwargs):
     if fp_type == "long double":
         return _add_cfunc_ldbl(fn, **kwargs)
 
-    if with_real128 and fp_type == "real128":
+    if _with_real128() and fp_type == "real128":
         from .core import _add_cfunc_f128
         return _add_cfunc_f128(fn, **kwargs)
 
@@ -159,7 +165,7 @@ def nt_event(ex, callback, **kwargs):
     if fp_type == "long double":
         return _nt_event_ldbl(ex, callback, **kwargs)
 
-    if with_real128 and fp_type == "real128":
+    if _with_real128() and fp_type == "real128":
         from .core import _nt_event_f128
         return _nt_event_f128(ex, callback, **kwargs)
 
@@ -178,7 +184,7 @@ def t_event(ex, **kwargs):
     if fp_type == "long double":
         return _t_event_ldbl(ex, **kwargs)
 
-    if with_real128 and fp_type == "real128":
+    if _with_real128() and fp_type == "real128":
         from .core import _t_event_f128
         return _t_event_f128(ex, **kwargs)
 

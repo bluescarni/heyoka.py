@@ -1245,7 +1245,7 @@ class event_detection_test_case(_ut.TestCase):
             "in the construction of the return value of an event callback" in str(cm.exception))
 
     def test_scalar(self):
-        from . import t_event, nt_event, make_vars, event_direction, with_real128, sin, taylor_adaptive, taylor_outcome, core
+        from . import t_event, nt_event, make_vars, event_direction, sin, taylor_adaptive, taylor_outcome, core
         from .core import _ppc_arch
         from sys import getrefcount
         import numpy as np
@@ -1693,7 +1693,7 @@ class scalar_integrator_test_case(_ut.TestCase):
         self.assertTrue(ta.te_cooldowns[0] is None)
 
     def test_s11n(self):
-        from . import nt_event, make_vars, with_real128, sin, taylor_adaptive, core
+        from . import nt_event, make_vars, sin, taylor_adaptive, core
         from .core import _ppc_arch
         import numpy as np
         import pickle
@@ -2749,7 +2749,7 @@ class expression_test_case(_ut.TestCase):
             diff(cos(par[0]*par[0]-y), par[0]), -sin(par[0]*par[0]-y) * (2.*par[0]))
 
     def test_s11n(self):
-        from . import make_vars, with_real128, sin, cos, core
+        from . import make_vars, sin, cos, core
         from .core import _ppc_arch
         from numpy import longdouble
         import pickle
@@ -2846,7 +2846,7 @@ class c_output_test_case(_ut.TestCase):
 
     def test_batch(self):
         from copy import copy, deepcopy
-        from . import make_vars, with_real128, sin, taylor_adaptive_batch, continuous_output_batch_dbl, taylor_adaptive
+        from . import make_vars, sin, taylor_adaptive_batch, continuous_output_batch_dbl, taylor_adaptive
         from pickle import dumps, loads
         from sys import getrefcount
         import numpy as np

@@ -281,15 +281,6 @@ PYBIND11_MODULE(core, m)
 
     m.doc() = "The core heyoka module";
 
-    // Flag the presence of real128.
-    m.attr("with_real128") =
-#if defined(HEYOKA_HAVE_REAL128)
-        true
-#else
-        false
-#endif
-        ;
-
     // Flag PPC arch.
     m.attr("_ppc_arch") =
 #if defined(HEYOKA_ARCH_PPC)
