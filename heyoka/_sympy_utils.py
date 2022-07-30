@@ -94,7 +94,7 @@ def _from_sympy_number(ex):
         real128 = core.real128
 
         retval = real128(ex.p) / \
-                real128(ex.q) if is_rational else real128(str(ex))
+            real128(ex.q) if is_rational else real128(str(ex))
 
         if not np.isfinite(retval):
             raise ValueError(nf_err_msg)

@@ -51,6 +51,8 @@ else:
 del _os
 
 # Small helper to check if real128 is available.
+
+
 def _with_real128():
     from . import core
 
@@ -134,6 +136,7 @@ def taylor_add_jet(sys, order, **kwargs):
 
     raise TypeError(
         "the floating-point type \"{}\" is not recognized/supported".format(fp_type))
+
 
 def add_cfunc(fn, **kwargs):
     from .core import _add_cfunc_dbl, _add_cfunc_ldbl
