@@ -531,12 +531,29 @@ int npy_py_real128_setitem(PyObject *item, void *data, void *)
         const auto *q = get_val(item);
         std::memcpy(data, q, sizeof(mppp::real128));
         return 0;
-    } else {
+    }
+
+    // item is not a real128, but it might be convertible to a real128.
+    auto [r, flag] = real128_from_ob(item);
+
+    if (r) {
+        // Conversion successful.
+        std::memcpy(data, &*r, sizeof(mppp::real128));
+        return 0;
+    }
+
+    if (flag) {
+        // Cannot convert item to a real128 because the type of item is not supported.
         PyErr_Format(PyExc_TypeError,
                      "Cannot invoke __setitem__() on a real128 array with an input value of type \"%s\"",
                      Py_TYPE(item)->tp_name);
         return -1;
     }
+
+    // Attempting a conversion to real128 generated an error.
+    // The error flag has already been set by real128_from_ob(),
+    // just return -1.
+    return -1;
 }
 
 // Byteswap a real128 in place.
