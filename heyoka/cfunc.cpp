@@ -38,7 +38,6 @@
 
 #if defined(HEYOKA_HAVE_REAL128)
 
-#include <mp++/extra/pybind11.hpp>
 #include <mp++/real128.hpp>
 
 #endif
@@ -166,8 +165,8 @@ void expose_add_cfunc_impl(py::module &m, const char *name)
             return py::cpp_function(
                 [s_scal = std::move(s_scal), s_batch = std::move(s_batch), simd_size, nparams, nouts, nvars, fptr_scal,
                  fptr_scal_s, fptr_batch, fptr_batch_s, buf_in = std::move(buf_in), buf_out = std::move(buf_out),
-                 buf_pars = std::move(buf_pars)](py::object inputs_ob, std::optional<py::object> outputs_ob,
-                                                 std::optional<py::object> pars_ob) mutable {
+                 buf_pars = std::move(buf_pars)](py::iterable inputs_ob, std::optional<py::iterable> outputs_ob,
+                                                 std::optional<py::iterable> pars_ob) mutable {
                     // Attempt to convert the input arguments into arrays.
                     py::array inputs = inputs_ob;
                     std::optional<py::array> outputs_ = outputs_ob ? *outputs_ob : std::optional<py::array>{};

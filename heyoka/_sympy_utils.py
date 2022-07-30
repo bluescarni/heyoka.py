@@ -86,21 +86,20 @@ def _from_sympy_number(ex):
 
         return expression(retval)
 
-    from . import with_real128
+    from . import core
 
-    if with_real128 and prec <= 113:
-        # We have mpmath and real128, and quadmath precision
-        # is enough to represent exactly the number. Temporarily
-        # set the working precision to 113 and create an expression
-        # from a quadmath number.
-        from mpmath import mpf, workprec, isfinite
-        with workprec(113):
-            retval = mpf(ex.p) / \
-                mpf(ex.q) if is_rational else mpf(str(ex))
-            if not isfinite(retval):
-                raise ValueError(nf_err_msg)
+    if hasattr(core, "real128") and prec <= 113:
+        # We have real128, and quadmath precision
+        # is enough to represent exactly the number.
+        real128 = core.real128
 
-            return expression(retval)
+        retval = real128(ex.p) / \
+                real128(ex.q) if is_rational else real128(str(ex))
+
+        if not np.isfinite(retval):
+            raise ValueError(nf_err_msg)
+
+        return expression(retval)
     else:
         raise ValueError(
             "Cannot convert the number {} from sympy exactly: the required precision ({}) is too high".format(ex, prec))

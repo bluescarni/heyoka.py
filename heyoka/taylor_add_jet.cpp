@@ -31,13 +31,13 @@
 
 #if defined(HEYOKA_HAVE_REAL128)
 
-#include <mp++/extra/pybind11.hpp>
 #include <mp++/real128.hpp>
 
 #endif
 
 #include "common_utils.hpp"
 #include "custom_casters.hpp"
+#include "dtypes.hpp"
 #include "taylor_add_jet.hpp"
 
 namespace heyoka_py
@@ -240,144 +240,99 @@ void expose_taylor_add_jet_impl(py::module &m, const char *name)
                 jptr = reinterpret_cast<jptr_t>(s.jit_lookup("jet"));
             }
 
-#if defined(HEYOKA_HAVE_REAL128)
-            if constexpr (std::is_same_v<T, mppp::real128>) {
-                // Build and return the Python wrapper for jptr.
-                return py::cpp_function(
-                    [s = std::move(s), batch_size, order, has_time, n_params,
-                     tot_n_eq = static_cast<std::uint32_t>(n_eq) + static_cast<std::uint32_t>(n_sv_funcs),
-                     jptr](py::array state, std::optional<py::array> pars, std::optional<py::array> time) {
-                        // Check that, if there are params or time, the corresponding
-                        // arrays have been provided.
-                        if (n_params > 0u && !pars) {
-                            py_throw(
-                                PyExc_ValueError,
-                                "Invalid vectors passed to a function for the computation of the jet of "
-                                "Taylor derivatives: the ODE system contains parameters, but no parameter array was "
-                                "passed as input argument");
-                        }
+            // Build and return the Python wrapper for jptr.
+            return py::cpp_function(
+                [s = std::move(s), batch_size, order, has_time, n_params,
+                 tot_n_eq = static_cast<std::uint32_t>(n_eq) + static_cast<std::uint32_t>(n_sv_funcs), jptr](
+                    py::iterable state_ob, std::optional<py::iterable> pars_ob, std::optional<py::iterable> time_ob) {
+                    // Attempt to turn the input objects into arrays.
+                    py::array state = state_ob;
+                    std::optional<py::array> pars = pars_ob ? *pars_ob : std::optional<py::array>{};
+                    std::optional<py::array> time = time_ob ? *time_ob : std::optional<py::array>{};
 
-                        if (has_time && !time) {
-                            py_throw(PyExc_ValueError,
-                                     "Invalid vectors passed to a function for the computation of the jet of "
-                                     "Taylor derivatives: the ODE system is non-autonomous, but no time array was "
-                                     "passed as input argument");
-                        }
+                    // Enforce the correct dtype for all arrays.
+                    const auto dt = get_dtype<T>();
+                    if (state.dtype().num() != dt) {
+                        state = state.attr("astype")(py::dtype(dt));
+                    }
+                    if (pars && pars->dtype().num() != dt) {
+                        *pars = pars->attr("astype")(py::dtype(dt));
+                    }
+                    if (time && time->dtype().num() != dt) {
+                        *time = time->attr("astype")(py::dtype(dt));
+                    }
 
-                        // Check the shapes/dims of the input arrays.
-                        taylor_add_jet_array_check(state, pars, time, n_params, order, tot_n_eq, batch_size);
+                    // Check the input arrays.
+                    // NOTE: it looks like c_style does not necessarily imply well-aligned:
+                    // https://numpy.org/devdocs/reference/c-api/array.html#c.PyArray_FromAny.NPY_ARRAY_CARRAY
+                    // If this becomes a problem, we can tap into the NumPy C API and do additional
+                    // flag checking:
+                    // https://numpy.org/devdocs/reference/c-api/array.html#c.PyArray_CHKFLAGS
+                    if (!(state.flags() & py::array::c_style)) {
+                        py_throw(PyExc_ValueError,
+                                 "Invalid state vector passed to a function for the computation of the jet of "
+                                 "Taylor derivatives: the NumPy array is not C contiguous");
+                    }
+                    if (!state.writeable()) {
+                        py_throw(PyExc_ValueError,
+                                 "Invalid state vector passed to a function for the computation of the jet of "
+                                 "Taylor derivatives: the NumPy array is not writeable");
+                    }
+                    if (pars && !(pars->flags() & py::array::c_style)) {
+                        py_throw(PyExc_ValueError,
+                                 "Invalid parameters vector passed to a function for the computation of the jet of "
+                                 "Taylor derivatives: the NumPy array is not C contiguous");
+                    }
+                    if (time && !(time->flags() & py::array::c_style)) {
+                        py_throw(PyExc_ValueError,
+                                 "Invalid time vector passed to a function for the computation of the jet of "
+                                 "Taylor derivatives: the NumPy array is not C contiguous");
+                    }
 
-                        // Convert the arrays into vectors.
-                        auto state_vec = py::cast<std::vector<mppp::real128>>(state.attr("flatten")());
+                    // Require that all arrays own their data.
+                    if (!state.owndata() || (pars && !pars->owndata()) || (time && !time->owndata())) {
+                        py_throw(PyExc_ValueError, "The arrays passed to a function for the computation of the jet "
+                                                   "of Taylor derivatives must all own their data");
+                    }
 
-                        std::vector<mppp::real128> pars_vec, time_vec;
-                        if (n_params > 0u) {
-                            pars_vec = py::cast<std::vector<mppp::real128>>(pars->attr("flatten")());
-                        }
-                        if (has_time) {
-                            time_vec = py::cast<std::vector<mppp::real128>>(time->attr("flatten")());
-                        }
+                    // Get out the raw pointers and make sure they are distinct.
+                    auto *s_ptr = static_cast<T *>(state.mutable_data());
+                    const auto *p_ptr = pars ? static_cast<const T *>(pars->data()) : nullptr;
+                    const auto *t_ptr = time ? static_cast<const T *>(time->data()) : nullptr;
 
-                        jptr(state_vec.data(), pars_vec.data(), time_vec.data());
+                    if (s_ptr == p_ptr || s_ptr == t_ptr || (p_ptr && t_ptr && p_ptr == t_ptr)) {
+                        py_throw(PyExc_ValueError,
+                                 "Invalid vectors passed to a function for the computation of the jet of "
+                                 "Taylor derivatives: the NumPy arrays must all be distinct");
+                    }
 
-                        auto ret = py::array(py::cast(state_vec));
+                    // Check that, if there are params or time, the corresponding
+                    // arrays have been provided.
+                    if (n_params > 0u && p_ptr == nullptr) {
+                        py_throw(PyExc_ValueError,
+                                 "Invalid vectors passed to a function for the computation of the jet of "
+                                 "Taylor derivatives: the ODE system contains parameters, but no parameter array was "
+                                 "passed as input argument");
+                    }
 
-                        // NOTE: resize() operates in-place, and won't allocate
-                        // new memory because here it's just a reshape.
-                        if (batch_size == 1u) {
-                            ret.resize(py::array::ShapeContainer{boost::numeric_cast<py::ssize_t>(order + 1u),
-                                                                 boost::numeric_cast<py::ssize_t>(tot_n_eq)});
-                        } else {
-                            ret.resize(py::array::ShapeContainer{boost::numeric_cast<py::ssize_t>(order + 1u),
-                                                                 boost::numeric_cast<py::ssize_t>(tot_n_eq),
-                                                                 boost::numeric_cast<py::ssize_t>(batch_size)});
-                        }
+                    if (has_time && t_ptr == nullptr) {
+                        py_throw(PyExc_ValueError,
+                                 "Invalid vectors passed to a function for the computation of the jet of "
+                                 "Taylor derivatives: the ODE system is non-autonomous, but no time array was "
+                                 "passed as input argument");
+                    }
 
-                        return ret;
-                    },
-                    "state"_a, "pars"_a = py::none{}, "time"_a = py::none{});
-            } else {
-#endif
-                // Build and return the Python wrapper for jptr.
-                return py::cpp_function(
-                    [s = std::move(s), batch_size, order, has_time, n_params,
-                     tot_n_eq = static_cast<std::uint32_t>(n_eq) + static_cast<std::uint32_t>(n_sv_funcs), jptr](
-                        py::array_t<T> state, std::optional<py::array_t<T>> pars, std::optional<py::array_t<T>> time) {
-                        // Check the input arrays.
-                        // NOTE: it looks like c_style does not necessarily imply well-aligned:
-                        // https://numpy.org/devdocs/reference/c-api/array.html#c.PyArray_FromAny.NPY_ARRAY_CARRAY
-                        // If this becomes a problem, we can tap into the NumPy C API and do additional
-                        // flag checking:
-                        // https://numpy.org/devdocs/reference/c-api/array.html#c.PyArray_CHKFLAGS
-                        if (!(state.flags() & py::array::c_style)) {
-                            py_throw(PyExc_ValueError,
-                                     "Invalid state vector passed to a function for the computation of the jet of "
-                                     "Taylor derivatives: the NumPy array is not C contiguous");
-                        }
-                        if (!state.writeable()) {
-                            py_throw(PyExc_ValueError,
-                                     "Invalid state vector passed to a function for the computation of the jet of "
-                                     "Taylor derivatives: the NumPy array is not writeable");
-                        }
-                        if (pars && !(pars->flags() & py::array::c_style)) {
-                            py_throw(PyExc_ValueError,
-                                     "Invalid parameters vector passed to a function for the computation of the jet of "
-                                     "Taylor derivatives: the NumPy array is not C contiguous");
-                        }
-                        if (time && !(time->flags() & py::array::c_style)) {
-                            py_throw(PyExc_ValueError,
-                                     "Invalid time vector passed to a function for the computation of the jet of "
-                                     "Taylor derivatives: the NumPy array is not C contiguous");
-                        }
+                    // Check the shapes/dims of the input arrays.
+                    taylor_add_jet_array_check(state, pars, time, n_params, order, tot_n_eq, batch_size);
 
-                        // Require that all arrays own their data.
-                        if (!state.owndata() || (pars && !pars->owndata()) || (time && !time->owndata())) {
-                            py_throw(PyExc_ValueError, "The arrays passed to a function for the computation of the jet "
-                                                       "of Taylor derivatives must all own their data");
-                        }
+                    // NOTE: here it may be that p_ptr and/or t_ptr are provided
+                    // but the system has not time/params. In that case, the pointers
+                    // will never be used in jptr.
+                    jptr(s_ptr, p_ptr, t_ptr);
 
-                        // Get out the raw pointers and make sure they are distinct.
-                        auto s_ptr = state.mutable_data();
-                        auto p_ptr = pars ? pars->data() : nullptr;
-                        auto t_ptr = time ? time->data() : nullptr;
-
-                        if (s_ptr == p_ptr || s_ptr == t_ptr || (p_ptr && t_ptr && p_ptr == t_ptr)) {
-                            py_throw(PyExc_ValueError,
-                                     "Invalid vectors passed to a function for the computation of the jet of "
-                                     "Taylor derivatives: the NumPy arrays must all be distinct");
-                        }
-
-                        // Check that, if there are params or time, the corresponding
-                        // arrays have been provided.
-                        if (n_params > 0u && p_ptr == nullptr) {
-                            py_throw(
-                                PyExc_ValueError,
-                                "Invalid vectors passed to a function for the computation of the jet of "
-                                "Taylor derivatives: the ODE system contains parameters, but no parameter array was "
-                                "passed as input argument");
-                        }
-
-                        if (has_time && t_ptr == nullptr) {
-                            py_throw(PyExc_ValueError,
-                                     "Invalid vectors passed to a function for the computation of the jet of "
-                                     "Taylor derivatives: the ODE system is non-autonomous, but no time array was "
-                                     "passed as input argument");
-                        }
-
-                        // Check the shapes/dims of the input arrays.
-                        taylor_add_jet_array_check(state, pars, time, n_params, order, tot_n_eq, batch_size);
-
-                        // NOTE: here it may be that p_ptr and/or t_ptr are provided
-                        // but the system has not time/params. In that case, the pointers
-                        // will never be used in jptr.
-                        jptr(s_ptr, p_ptr, t_ptr);
-
-                        return state;
-                    },
-                    "state"_a, "pars"_a = py::none{}, "time"_a = py::none{});
-#if defined(HEYOKA_HAVE_REAL128)
-            }
-#endif
+                    return state;
+                },
+                "state"_a, "pars"_a = py::none{}, "time"_a = py::none{});
         },
         "sys"_a, "order"_a, "batch_size"_a = 1u, "high_accuracy"_a = false, "compact_mode"_a = false,
         "sv_funcs"_a = py::list{}, "parallel_mode"_a = false);

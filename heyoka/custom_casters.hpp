@@ -9,17 +9,36 @@
 #ifndef HEYOKA_PY_CUSTOM_CASTERS_HPP
 #define HEYOKA_PY_CUSTOM_CASTERS_HPP
 
+#include <heyoka/config.hpp>
+
 #include <pybind11/pybind11.h>
+
+#if defined(HEYOKA_HAVE_REAL128)
+
+#include <mp++/real128.hpp>
+
+#endif
 
 namespace pybind11::detail
 {
 
 template <>
 struct type_caster<long double> {
-    PYBIND11_TYPE_CASTER(long double, _("long double"));
+    PYBIND11_TYPE_CASTER(long double, _("numpy.longdouble"));
     bool load(handle, bool);
     static handle cast(const long double &, return_value_policy, handle);
 };
+
+#if defined(HEYOKA_HAVE_REAL128)
+
+template <>
+struct type_caster<mppp::real128> {
+    PYBIND11_TYPE_CASTER(mppp::real128, _("heyoka.core.real128"));
+    bool load(handle, bool);
+    static handle cast(const mppp::real128 &, return_value_policy, handle);
+};
+
+#endif
 
 } // namespace pybind11::detail
 

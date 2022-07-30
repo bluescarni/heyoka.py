@@ -65,7 +65,7 @@ def _allclose(a, b, rtol, atol):
 
 class taylor_add_jet_test_case(_ut.TestCase):
     def runTest(self):
-        from . import taylor_add_jet, make_vars, sin, taylor_adaptive, par, time, taylor_adaptive_batch, with_real128, tpoly
+        from . import taylor_add_jet, make_vars, sin, taylor_adaptive, par, time, taylor_adaptive_batch, tpoly, core
         from .core import _ppc_arch
         import numpy as np
 
@@ -80,6 +80,9 @@ class taylor_add_jet_test_case(_ut.TestCase):
             fp_types = [("double", float)]
         else:
             fp_types = [("double", float), ("long double", np.longdouble)]
+
+        if hasattr(core, "real128"):
+            fp_types.append(("real128", core.real128))
 
         for desc, fp_t in fp_types:
             # Check that the jet is consistent
@@ -460,137 +463,10 @@ class taylor_add_jet_test_case(_ut.TestCase):
             self.assertTrue(
                 "The arrays passed to a function for the computation of the jet of Taylor derivatives must all own their data" in str(cm.exception))
 
-        if not with_real128:
-            return
-
-        from mpmath import mpf
-
-        # Check that the jet is consistent
-        # with the Taylor coefficients.
-        init_state = [mpf(0.05), mpf(0.025)]
-        pars = [mpf(-9.8)]
-
-        ta = taylor_adaptive(sys, init_state, tol=mpf(1e-9), fp_type="real128")
-
-        jet = taylor_add_jet(sys, 5, fp_type="real128")
-        st = np.full((6, 2), mpf(0))
-        st[0] = init_state
-
-        ta.step(write_tc=True)
-        st = jet(st)
-
-        self.assertTrue(np.all(ta.tc[:, :6].transpose() == st))
-
-        # Try adding an sv_func.
-        jet = taylor_add_jet(sys, 5, fp_type="real128", sv_funcs=[x + v])
-        st = np.full((6, 3), mpf(0))
-        st[0, :2] = init_state
-
-        st = jet(st)
-
-        self.assertTrue(np.all(ta.tc[:, :6].transpose() == st[:, :2]))
-        self.assertTrue(
-            np.all((ta.tc[0, :6] + ta.tc[1, :6]).transpose() == st[:, 2]))
-
-        # An example with params.
-        ta_par = taylor_adaptive(sys_par, init_state, tol=mpf(
-            1e-9), fp_type="real128", pars=pars)
-
-        jet_par = taylor_add_jet(sys_par, 5, fp_type="real128")
-        st = np.full((6, 2), mpf(0))
-        st[0] = init_state
-        par_arr = np.full((1,), mpf(-9.8))
-
-        ta_par.step(write_tc=True)
-        st = jet_par(st, pars=par_arr)
-
-        self.assertTrue(np.all(ta_par.tc[:, :6].transpose() == st))
-
-        # Params + time.
-        ta_par_t = taylor_adaptive(sys_par_t, init_state, tol=mpf(
-            1e-9), fp_type="real128", pars=pars)
-        ta_par_t.time = mpf(0.01)
-
-        jet_par_t = taylor_add_jet(sys_par_t, 5, fp_type="real128")
-        st = np.full((6, 2), mpf(0))
-        st[0] = init_state
-        par_arr = np.full((1,), mpf(-9.8))
-        time_arr = np.full((1,), mpf(0.01))
-
-        ta_par_t.step(write_tc=True)
-        st = jet_par_t(st, pars=par_arr, time=time_arr)
-
-        self.assertTrue(np.all(ta_par_t.tc[:, :6].transpose() == st))
-
-        # Failure modes.
-
-        # Params needed but not provided.
-        with self.assertRaises(ValueError) as cm:
-            jet_par(st)
-        self.assertTrue("Invalid vectors passed to a function for the computation of the jet of "
-                        "Taylor derivatives: the ODE system contains parameters, but no parameter array was "
-                        "passed as input argument" in str(cm.exception))
-
-        # Time needed but not provided.
-        with self.assertRaises(ValueError) as cm:
-            jet_par_t(st, pars=par_arr)
-        self.assertTrue("Invalid vectors passed to a function for the computation of the jet of "
-                        "Taylor derivatives: the ODE system is non-autonomous, but no time array was "
-                        "passed as input argument" in str(cm.exception))
-
-        # Wrong st shape, scalar case.
-        st = np.full((6, 2, 1), mpf(0))
-        with self.assertRaises(ValueError) as cm:
-            jet(st)
-        self.assertTrue("Invalid state vector passed to a function for the computation of the jet of "
-                        "Taylor derivatives: the number of dimensions must be 2, but it is "
-                        "3 instead" in str(cm.exception))
-
-        st = np.full((6, 4), mpf(0))
-        with self.assertRaises(ValueError) as cm:
-            jet(st)
-        self.assertTrue("Invalid state vector passed to a function for the computation of the jet of "
-                        "Taylor derivatives: the shape must be (6, 3), but it is "
-                        "(6, 4) instead" in str(cm.exception))
-
-        # Wrong param shape, scalar case.
-        st = np.full((6, 2), mpf(0))
-        par_arr = np.full((5, 2), mpf(-9.8))
-        with self.assertRaises(ValueError) as cm:
-            jet_par(st, pars=par_arr)
-        self.assertTrue("Invalid parameters vector passed to a function for the computation of "
-                        "the jet of "
-                        "Taylor derivatives: the number of dimensions must be 1, but it is "
-                        "2 instead" in str(cm.exception))
-
-        par_arr = np.full((5,), mpf(-9.8))
-        with self.assertRaises(ValueError) as cm:
-            jet_par(st, pars=par_arr)
-        self.assertTrue("Invalid parameters vector passed to a function for the "
-                        "computation of the jet of "
-                        "Taylor derivatives: the shape must be (1, ), but it is "
-                        "(5) instead" in str(cm.exception))
-
-        # Wrong time shape, scalar case.
-        par_arr = np.full((1,), mpf(-9.8))
-        time_arr = np.full((2, 1), mpf(0.01))
-        with self.assertRaises(ValueError) as cm:
-            jet_par_t(st, pars=par_arr, time=time_arr)
-        self.assertTrue("Invalid time vector passed to a function for the computation of the jet of "
-                        "Taylor derivatives: the number of dimensions must be 1, but it is "
-                        "2 instead" in str(cm.exception))
-
-        time_arr = np.full((5,), mpf(0.01))
-        with self.assertRaises(ValueError) as cm:
-            jet_par_t(st, pars=par_arr, time=time_arr)
-        self.assertTrue("Invalid time vector passed to a function for the computation of the jet of "
-                        "Taylor derivatives: the shape must be (1, ), but it is "
-                        "(5) instead" in str(cm.exception))
-
 
 class event_classes_test_case(_ut.TestCase):
     def runTest(self):
-        from . import t_event, nt_event, t_event_batch, nt_event_batch, make_vars, event_direction, with_real128
+        from . import t_event, nt_event, t_event_batch, nt_event_batch, make_vars, event_direction, core
         from .core import _ppc_arch
         import numpy as np
         import pickle
@@ -604,9 +480,8 @@ class event_classes_test_case(_ut.TestCase):
         else:
             fp_types = [("double", float), ("long double", np.longdouble)]
 
-        if with_real128:
-            from mpmath import mpf
-            fp_types.append(("real128", mpf))
+        if hasattr(core, "real128"):
+            fp_types.append(("real128", core.real128))
 
         for desc, fp_t in fp_types:
             # Non-terminal event.
@@ -1370,7 +1245,7 @@ class event_detection_test_case(_ut.TestCase):
             "in the construction of the return value of an event callback" in str(cm.exception))
 
     def test_scalar(self):
-        from . import t_event, nt_event, make_vars, event_direction, with_real128, sin, taylor_adaptive, taylor_outcome
+        from . import t_event, nt_event, make_vars, event_direction, with_real128, sin, taylor_adaptive, taylor_outcome, core
         from .core import _ppc_arch
         from sys import getrefcount
         import numpy as np
@@ -1383,9 +1258,8 @@ class event_detection_test_case(_ut.TestCase):
         else:
             fp_types = [("double", float), ("long double", np.longdouble)]
 
-        if with_real128:
-            from mpmath import mpf
-            fp_types.append(("real128", mpf))
+        if hasattr(core, "real128"):
+            fp_types.append(("real128", core.real128))
 
         # Use a pendulum for testing purposes.
         sys = [(x, v), (v, -9.8 * sin(x))]
@@ -1648,7 +1522,7 @@ class event_detection_test_case(_ut.TestCase):
 
 class expression_eval_test_case(_ut.TestCase):
     def runTest(self):
-        from . import sin, make_vars, with_real128, eval
+        from . import sin, make_vars, eval, core
         from .core import _ppc_arch
         import numpy as np
         from math import log10
@@ -1662,9 +1536,8 @@ class expression_eval_test_case(_ut.TestCase):
             fp_types = [("double", float, int(-log10(np.finfo(float).eps)) - 1),
                         ("long double", np.longdouble, int(-log10(np.finfo(np.longdouble).eps)) - 1)]
 
-        if with_real128:
-            from mpmath import mpf
-            fp_types.append(("real128", mpf, 32))
+        if hasattr(core, "real128"):
+            fp_types.append(("real128", core.real128, 32))
 
         for desc, fp_t, places in fp_types:
             target = fp_t("0.123456789012345678901234567890")
@@ -1820,7 +1693,7 @@ class scalar_integrator_test_case(_ut.TestCase):
         self.assertTrue(ta.te_cooldowns[0] is None)
 
     def test_s11n(self):
-        from . import nt_event, make_vars, with_real128, sin, taylor_adaptive
+        from . import nt_event, make_vars, with_real128, sin, taylor_adaptive, core
         from .core import _ppc_arch
         import numpy as np
         import pickle
@@ -1832,9 +1705,8 @@ class scalar_integrator_test_case(_ut.TestCase):
         else:
             fp_types = [("double", float), ("long double", np.longdouble)]
 
-        if with_real128:
-            from mpmath import mpf
-            fp_types.append(("real128", mpf))
+        if hasattr(core, "real128"):
+            fp_types.append(("real128", core.real128))
 
         # Use a pendulum for testing purposes.
         sys = [(x, v), (v, -9.8 * sin(x))]
@@ -1861,22 +1733,14 @@ class scalar_integrator_test_case(_ut.TestCase):
             ta = pickle.loads(pickle.dumps(ta))
             self.assertEqual(ta.foo, "hello world")
 
-            if desc != "real128":
-                self.assertTrue(np.all(ta.state == ta2.state))
-                self.assertTrue(np.all(ta.time == ta2.time))
-            else:
-                self.assertTrue(np.all(ta.get_state() == ta2.get_state()))
-                self.assertTrue(np.all(ta.time == ta2.time))
+            self.assertTrue(np.all(ta.state == ta2.state))
+            self.assertTrue(np.all(ta.time == ta2.time))
 
             ta.step()
             ta2.step()
 
-            if desc != "real128":
-                self.assertTrue(np.all(ta.state == ta2.state))
-                self.assertTrue(np.all(ta.time == ta2.time))
-            else:
-                self.assertTrue(np.all(ta.get_state() == ta2.get_state()))
-                self.assertTrue(np.all(ta.time == ta2.time))
+            self.assertTrue(np.all(ta.state == ta2.state))
+            self.assertTrue(np.all(ta.time == ta2.time))
 
             # Try also an integrator with stateful event callback.
             class cb1:
@@ -2437,7 +2301,7 @@ class kepE_test_case(_ut.TestCase):
         self.test_num()
 
     def test_expr(self):
-        from . import kepE, with_real128, diff, make_vars, sin, cos
+        from . import kepE, diff, make_vars, sin, cos, core
         from .core import _ppc_arch
         import numpy as np
 
@@ -2452,18 +2316,18 @@ class kepE_test_case(_ut.TestCase):
             self.assertEqual(diff(kepE(np.longdouble("1.1"), y), y), 1. /
                              (1. - np.longdouble("1.1") * cos(kepE(np.longdouble("1.1"), y))))
 
-        if not with_real128:
+        if not hasattr(core, "real128"):
             return
 
-        from mpmath import mpf
+        from .core import real128
 
-        self.assertEqual(diff(kepE(x, mpf("1.1")), x), sin(
-            kepE(x, mpf("1.1"))) / (1. - x * cos(kepE(x, mpf("1.1")))))
-        self.assertEqual(diff(kepE(mpf("1.1"), y), y), 1. /
-                         (1. - mpf("1.1") * cos(kepE(mpf("1.1"), y))))
+        self.assertEqual(diff(kepE(x, real128("1.1")), x), sin(
+            kepE(x, real128("1.1"))) / (1. - x * cos(kepE(x, real128("1.1")))))
+        self.assertEqual(diff(kepE(real128("1.1"), y), y), 1. /
+                         (1. - real128("1.1") * cos(kepE(real128("1.1"), y))))
 
     def test_num(self):
-        from . import kepE, with_real128
+        from . import kepE, core
         from .core import _ppc_arch
         import numpy as np
 
@@ -2503,7 +2367,7 @@ class kepE_test_case(_ut.TestCase):
             "Invalid eccentricity array passed to kepE(): a one-dimensional array is expected, but the input array has 2 dimensions" in str(cm.exception))
 
         with self.assertRaises(ValueError) as cm:
-            kepE([1.], [[2]])
+            kepE([1.], [[2.]])
         self.assertTrue(
             "Invalid mean anomaly array passed to kepE(): a one-dimensional array is expected, but the input array has 2 dimensions" in str(cm.exception))
 
@@ -2511,6 +2375,16 @@ class kepE_test_case(_ut.TestCase):
             kepE([1.], [2., 3.])
         self.assertTrue(
             "Invalid arrays passed to kepE(): the eccentricity array has a size of 1, but the mean anomaly array has a size of 2 (the sizes must be equal)" in str(cm.exception))
+
+        with self.assertRaises(TypeError) as cm:
+            kepE([1.], [2])
+        self.assertTrue(
+            "Inconsistent dtypes detected in the vectorised kepE() implementation: the eccentricity array has dtype" in str(cm.exception))
+
+        with self.assertRaises(TypeError) as cm:
+            kepE(["a"], ["b"])
+        self.assertTrue(
+            "Unsupported dtype \"" in str(cm.exception))
 
         if not _ppc_arch:
             fp_t = np.longdouble
@@ -2542,31 +2416,31 @@ class kepE_test_case(_ut.TestCase):
             self.assertTrue(np.allclose(np.sin(M), np.sin(
                 E - e*np.sin(E)), rtol=np.finfo(fp_t).eps * 10, atol=np.finfo(fp_t).eps * 10))
 
-        if not with_real128:
+        if not hasattr(core, "real128"):
             return
 
-        from mpmath import mpf, sin, cos
+        from .core import real128
 
-        fp_t = mpf
+        fp_t = real128
 
         e = fp_t(.123)
         M = fp_t(5.)
         E = kepE(e, M)
 
-        self.assertTrue(abs(cos(M) - cos(E-e*sin(E))) < 1e-32)
-        self.assertTrue(abs(sin(M) - sin(E-e*sin(E))) < 1e-32)
+        self.assertTrue(abs(np.cos(M) - np.cos(E-e*np.sin(E))) < 1e-32)
+        self.assertTrue(abs(np.sin(M) - np.sin(E-e*np.sin(E))) < 1e-32)
 
-        e = [.123, .124, .125, .126, .127]
-        M = [5., 6., 7., 8., 9.]
-        E = kepE([mpf(_) for _ in e], [mpf(_) for _ in M])
+        e = np.array([.123, .124, .125, .126, .127], dtype=fp_t)
+        M = np.array([5., 6., 7., 8., 9.], dtype=fp_t)
+        E = kepE(e, M)
 
-        self.assertTrue(all(abs(cos(M) - cos(E-e*sin(E))) <
+        self.assertTrue(all(abs(np.cos(M) - np.cos(E-e*np.sin(E))) <
                         1e-32 for e, M, E in zip(e, M, E)))
-        self.assertTrue(all(abs(sin(M) - sin(E-e*sin(E))) <
+        self.assertTrue(all(abs(np.sin(M) - np.sin(E-e*np.sin(E))) <
                         1e-32 for e, M, E in zip(e, M, E)))
 
         with self.assertRaises(ValueError) as cm:
-            kepE([mpf(1.)], [mpf(2.), mpf(3.)])
+            kepE([real128(1.)], [real128(2.), real128(3.)])
         self.assertTrue(
             "Invalid arrays passed to kepE(): the eccentricity array has a size of 1, but the mean anomaly array has a size of 2 (the sizes must be equal)" in str(cm.exception))
 
@@ -2612,10 +2486,10 @@ class sympy_test_case(_ut.TestCase):
             (x-y)*(x+y), s_dict={x-y: hz}), hsum([hx, hy])*hz)
 
     def test_number_conversion(self):
-        from . import to_sympy, from_sympy, expression, with_real128
+        from . import to_sympy, from_sympy, expression, core
         from .core import _ppc_arch
         from sympy import Float, Rational, Integer
-        from mpmath import workprec, mpf
+        from mpmath import workprec
         import numpy as np
 
         with self.assertRaises(ValueError) as cm:
@@ -2658,20 +2532,23 @@ class sympy_test_case(_ut.TestCase):
             from_sympy(Integer(2**500 + 1))
         self.assertTrue("the required precision" in str(cm.exception))
 
-        if not with_real128 or _ppc_arch:
+        if not hasattr(core, "real128") or _ppc_arch:
             return
+
+        from .core import real128
 
         # Quad precision.
         with workprec(113):
-            self.assertEqual(to_sympy(expression(mpf("1.1"))),
+            self.assertEqual(to_sympy(expression(real128("1.1"))),
                              Float("1.1", precision=113))
-            self.assertEqual(from_sympy(Float("1.1")), expression(mpf("1.1")))
+            self.assertEqual(from_sympy(Float("1.1")),
+                             expression(real128("1.1")))
 
             expo = 100
             self.assertEqual(
-                to_sympy(expression(mpf(2**expo+1)/mpf(2**128))), Rational(2**expo+1, 2**128))
+                to_sympy(expression(real128(2**expo+1)/real128(2**128))), Rational(2**expo+1, 2**128))
             self.assertEqual(from_sympy(Rational(2**expo+1, 2**128)),
-                             expression(mpf(2**expo+1)/mpf(2**128)))
+                             expression(real128(2**expo+1)/real128(2**128)))
 
     def test_sympar_conversion(self):
         from . import to_sympy, from_sympy, expression, par
@@ -2810,7 +2687,7 @@ class sympy_test_case(_ut.TestCase):
 
         # Test caching behaviour.
         foo = hx + hy
-        bar = foo / (foo * hz + 1)
+        bar = foo / (foo * hz + 1.)
         bar_spy = to_sympy(bar)
         self.assertEqual(id(bar_spy.args[1]), id(
             bar_spy.args[0].args[0].args[1].args[1]))
@@ -2872,7 +2749,7 @@ class expression_test_case(_ut.TestCase):
             diff(cos(par[0]*par[0]-y), par[0]), -sin(par[0]*par[0]-y) * (2.*par[0]))
 
     def test_s11n(self):
-        from . import make_vars, expression, with_real128, sin, cos
+        from . import make_vars, with_real128, sin, cos, core
         from .core import _ppc_arch
         from numpy import longdouble
         import pickle
@@ -2891,14 +2768,14 @@ class expression_test_case(_ut.TestCase):
             ex = sin(longdouble('1.1')*x) + 2.*y
             self.assertEqual(ex, pickle.loads(pickle.dumps(ex)))
 
-        if not with_real128:
+        if not hasattr(core, "real128"):
             return
 
-        from mpmath import mpf
+        from .core import real128
 
         # Quad precision.
         if not _ppc_arch:
-            ex = sin(longdouble('1.1')*x) + mpf('1.3')*cos(2.*y)
+            ex = sin(longdouble('1.1')*x) + real128('1.3')*cos(2.*y)
             self.assertEqual(ex, pickle.loads(pickle.dumps(ex)))
 
     def test_len(self):
@@ -3115,11 +2992,6 @@ class c_output_test_case(_ut.TestCase):
                 self.assertEqual(new_rc, rc + 1)
 
             with self.assertRaises(ValueError) as cm:
-                c_out(np.zeros(()))
-            self.assertTrue(
-                "Invalid time array passed to a continuous_output_batch object: the number of dimensions must be 1 or 2, but it is 0 instead" in str(cm.exception))
-
-            with self.assertRaises(ValueError) as cm:
                 c_out(np.zeros((1, 1, 1)))
             self.assertTrue(
                 "Invalid time array passed to a continuous_output_batch object: the number of dimensions must be 1 or 2, but it is 3 instead" in str(cm.exception))
@@ -3272,7 +3144,7 @@ class c_output_test_case(_ut.TestCase):
 
     def test_scalar(self):
         from copy import copy, deepcopy
-        from . import make_vars, with_real128, sin, taylor_adaptive, continuous_output_dbl
+        from . import make_vars, sin, taylor_adaptive, continuous_output_dbl, core
         from .core import _ppc_arch
         import numpy as np
         from pickle import dumps, loads
@@ -3287,10 +3159,9 @@ class c_output_test_case(_ut.TestCase):
             fp_types = [("double", float, continuous_output_dbl),
                         ("long double", np.longdouble, continuous_output_ldbl)]
 
-        if with_real128:
+        if hasattr(core, "real128"):
             from . import continuous_output_f128
-            from mpmath import mpf
-            fp_types.append(("real128", mpf, continuous_output_f128))
+            fp_types.append(("real128", core.real128, continuous_output_f128))
 
         # Use a pendulum for testing purposes.
         sys = [(x, v), (v, -9.8 * sin(x))]
@@ -3370,11 +3241,7 @@ class c_output_test_case(_ut.TestCase):
 
             # Helper to reset the state of ta.
             def reset():
-                if desc == "real128":
-                    ta.set_state(ic)
-                else:
-                    ta.state[:] = ic
-
+                ta.state[:] = ic
                 ta.time = fp_t(0)
 
             c_out = ta.propagate_until(fp_t(10))[4]
@@ -3396,14 +3263,13 @@ class c_output_test_case(_ut.TestCase):
 
             self.assertTrue(c_out(fp_t(0.1)).shape == (2, ))
 
-            if desc != "real128":
-                with self.assertRaises(ValueError) as cm:
-                    c_out(fp_t(0.1))[0] = .5
+            with self.assertRaises(ValueError) as cm:
+                c_out(fp_t(0.1))[0] = .5
 
-                rc = getrefcount(c_out)
-                tmp_out = c_out(fp_t(0.1))
-                new_rc = getrefcount(c_out)
-                self.assertEqual(new_rc, rc + 1)
+            rc = getrefcount(c_out)
+            tmp_out = c_out(fp_t(0.1))
+            new_rc = getrefcount(c_out)
+            self.assertEqual(new_rc, rc + 1)
 
             self.assertTrue(c_out([]).shape == (0, 2))
 
@@ -3413,45 +3279,38 @@ class c_output_test_case(_ut.TestCase):
             self.assertTrue(np.all(c_out(fp_t(2)) == tmp[2]))
 
             # Check wrong shape for the input array.
-            if desc == "real128":
-                with self.assertRaises(RuntimeError) as cm:
-                    c_out([[fp_t(0)], [fp_t(1)], [fp_t(2)]])
-            else:
-                with self.assertRaises(ValueError) as cm:
-                    c_out([[fp_t(0)], [fp_t(1)], [fp_t(2)]])
-                self.assertTrue(
-                    "Invalid time array passed to a continuous_output object: the number of dimensions must be 1, but it is 2 instead" in str(cm.exception))
+            with self.assertRaises(ValueError) as cm:
+                c_out([[fp_t(0)], [fp_t(1)], [fp_t(2)]])
+            self.assertTrue(
+                "Invalid time array passed to a continuous_output object: the number of dimensions must be 1, but it is 2 instead" in str(cm.exception))
 
             self.assertTrue(np.all(c_out.output == tmp[2]))
-            if desc != "real128":
-                with self.assertRaises(ValueError) as cm:
-                    c_out.output[0] = .5
+            with self.assertRaises(ValueError) as cm:
+                c_out.output[0] = .5
 
-                rc = getrefcount(c_out)
-                tmp_out2 = c_out.output
-                new_rc = getrefcount(c_out)
-                self.assertEqual(new_rc, rc + 1)
+            rc = getrefcount(c_out)
+            tmp_out2 = c_out.output
+            new_rc = getrefcount(c_out)
+            self.assertEqual(new_rc, rc + 1)
 
             self.assertEqual(c_out.times.shape, (nsteps + 1,))
-            if desc != "real128":
-                with self.assertRaises(ValueError) as cm:
-                    c_out.times[0] = .5
+            with self.assertRaises(ValueError) as cm:
+                c_out.times[0] = .5
 
-                rc = getrefcount(c_out)
-                tmp_out3 = c_out.times
-                new_rc = getrefcount(c_out)
-                self.assertEqual(new_rc, rc + 1)
+            rc = getrefcount(c_out)
+            tmp_out3 = c_out.times
+            new_rc = getrefcount(c_out)
+            self.assertEqual(new_rc, rc + 1)
 
             self.assertEqual(c_out.tcs.shape, (nsteps, 2, ta.order + 1))
-            if desc != "real128":
-                self.assertTrue(np.all(np.isfinite(c_out.tcs)))
-                with self.assertRaises(ValueError) as cm:
-                    c_out.tcs[0, 0, 0] = .5
+            self.assertTrue(np.all(np.isfinite(c_out.tcs)))
+            with self.assertRaises(ValueError) as cm:
+                c_out.tcs[0, 0, 0] = .5
 
-                rc = getrefcount(c_out)
-                tmp_out4 = c_out.tcs
-                new_rc = getrefcount(c_out)
-                self.assertEqual(new_rc, rc + 1)
+            rc = getrefcount(c_out)
+            tmp_out4 = c_out.tcs
+            new_rc = getrefcount(c_out)
+            self.assertEqual(new_rc, rc + 1)
 
             self.assertEqual(c_out.bounds, (0, 10))
             self.assertTrue(c_out.n_steps > 0)
@@ -3464,20 +3323,18 @@ class c_output_test_case(_ut.TestCase):
             c_out = copy(c_out)
 
             self.assertEqual(c_out.tcs.shape, (nsteps, 2, ta.order + 1))
-            if desc != "real128":
-                self.assertTrue(np.all(np.isfinite(c_out.tcs)))
-                with self.assertRaises(ValueError) as cm:
-                    c_out.tcs[0, 0, 0] = .5
+            self.assertTrue(np.all(np.isfinite(c_out.tcs)))
+            with self.assertRaises(ValueError) as cm:
+                c_out.tcs[0, 0, 0] = .5
 
             self.assertFalse(c_out.llvm_state.get_ir() == "")
 
             c_out = deepcopy(c_out)
 
             self.assertEqual(c_out.tcs.shape, (nsteps, 2, ta.order + 1))
-            if desc != "real128":
-                self.assertTrue(np.all(np.isfinite(c_out.tcs)))
-                with self.assertRaises(ValueError) as cm:
-                    c_out.tcs[0, 0, 0] = .5
+            self.assertTrue(np.all(np.isfinite(c_out.tcs)))
+            with self.assertRaises(ValueError) as cm:
+                c_out.tcs[0, 0, 0] = .5
 
             class foo:
                 pass
@@ -3500,10 +3357,9 @@ class c_output_test_case(_ut.TestCase):
             self.assertFalse(c_out.llvm_state.get_ir() == "")
 
             self.assertEqual(c_out.tcs.shape, (nsteps, 2, ta.order + 1))
-            if desc != "real128":
-                self.assertTrue(np.all(np.isfinite(c_out.tcs)))
-                with self.assertRaises(ValueError) as cm:
-                    c_out.tcs[0, 0, 0] = .5
+            self.assertTrue(np.all(np.isfinite(c_out.tcs)))
+            with self.assertRaises(ValueError) as cm:
+                c_out.tcs[0, 0, 0] = .5
 
             # Pickling with dynattrs.
             c_out.foo = []
@@ -3512,10 +3368,9 @@ class c_output_test_case(_ut.TestCase):
             self.assertFalse(c_out.llvm_state.get_ir() == "")
 
             self.assertEqual(c_out.tcs.shape, (nsteps, 2, ta.order + 1))
-            if desc != "real128":
-                self.assertTrue(np.all(np.isfinite(c_out.tcs)))
-                with self.assertRaises(ValueError) as cm:
-                    c_out.tcs[0, 0, 0] = .5
+            self.assertTrue(np.all(np.isfinite(c_out.tcs)))
+            with self.assertRaises(ValueError) as cm:
+                c_out.tcs[0, 0, 0] = .5
 
             self.assertEqual(c_out.foo, [])
 
@@ -3900,20 +3755,9 @@ class cfunc_test_case(_ut.TestCase):
 
             with self.assertRaises(ValueError) as cm:
                 fn(np.zeros((2, 5), dtype=fp_t), pars=[
-                   fp_t(0)], outputs=np.zeros((), dtype=fp_t))
-            self.assertTrue(
-                "The array of outputs provided for the evaluation of a compiled function has 0 dimension(s), but it must have 2 dimension(s) instead (i.e., the same number of dimensions as the array of inputs)" in str(cm.exception))
-
-            with self.assertRaises(ValueError) as cm:
-                fn(np.zeros((2, 5), dtype=fp_t), pars=[
                    fp_t(0)], outputs=np.zeros((3, 1), dtype=fp_t))
             self.assertTrue(
                 "The size in the second dimension for the output array provided for the evaluation of a compiled function (1) must match the size in the second dimension for the array of inputs (5)" in str(cm.exception))
-
-            with self.assertRaises(ValueError) as cm:
-                fn(np.zeros((2, 5), dtype=fp_t), pars=np.zeros((), dtype=fp_t))
-            self.assertTrue(
-                "The array of parameter values provided for the evaluation of a compiled function has 0 dimension(s), but it must have 2 dimension(s) instead (i.e., the same number of dimensions as the array of inputs)" in str(cm.exception))
 
             with self.assertRaises(ValueError) as cm:
                 fn(np.zeros((2, 5), dtype=fp_t),
@@ -4006,7 +3850,8 @@ class cfunc_test_case(_ut.TestCase):
                                 rtol=_get_eps(fp_t) * 10, atol=_get_eps(fp_t) * 10))
 
                 # Tests with no inputs.
-                fn = add_cfunc([expression(3) + par[1], par[0]], fp_type=desc)
+                fn = add_cfunc(
+                    [expression(fp_t(3)) + par[1], par[0]], fp_type=desc)
 
                 inputs = rng.random((0, nevals), dtype=float).astype(fp_t)
                 pars = rng.random((2, nevals), dtype=float).astype(fp_t)
@@ -4028,7 +3873,8 @@ class cfunc_test_case(_ut.TestCase):
                 self.assertTrue(_allclose(eval_arr[1], pars[0, :],
                                 rtol=_get_eps(fp_t) * 10, atol=_get_eps(fp_t) * 10))
 
-                fn = add_cfunc([expression(3), expression(4)], fp_type=desc)
+                fn = add_cfunc(
+                    [expression(fp_t(3)), expression(fp_t(4))], fp_type=desc)
 
                 inputs = rng.random((0, nevals), dtype=float).astype(fp_t)
                 pars = rng.random((0, nevals), dtype=float).astype(fp_t)
@@ -4084,11 +3930,6 @@ class cfunc_test_case(_ut.TestCase):
                 "The compiled function contains 2 parameter(s), but no array of parameter values was provided for evaluation" in str(cm.exception))
 
             with self.assertRaises(ValueError) as cm:
-                fn(np.zeros((), dtype=fp_t), pars=[fp_t(0)])
-            self.assertTrue(
-                "The array of inputs provided for the evaluation of a compiled function has 0 dimensions, but it must have either 1 or 2 dimensions instead" in str(cm.exception))
-
-            with self.assertRaises(ValueError) as cm:
                 fn(np.zeros((1, 2, 3), dtype=fp_t), pars=[fp_t(0)])
             self.assertTrue(
                 "The array of inputs provided for the evaluation of a compiled function has 3 dimensions, but it must have either 1 or 2 dimensions instead" in str(cm.exception))
@@ -4100,20 +3941,9 @@ class cfunc_test_case(_ut.TestCase):
 
             with self.assertRaises(ValueError) as cm:
                 fn(np.zeros((2,), dtype=fp_t), pars=[
-                   fp_t(0)], outputs=np.zeros((), dtype=fp_t))
-            self.assertTrue(
-                "The array of outputs provided for the evaluation of a compiled function has 0 dimension(s), but it must have 1 dimension(s) instead (i.e., the same number of dimensions as the array of inputs)" in str(cm.exception))
-
-            with self.assertRaises(ValueError) as cm:
-                fn(np.zeros((2,), dtype=fp_t), pars=[
                    fp_t(0)], outputs=np.zeros((2,), dtype=fp_t))
             self.assertTrue(
                 "The array of outputs provided for the evaluation of a compiled function has size 2 in the first dimension, but it must have a size of 3 instead (i.e., the size in the first dimension must be equal to the number of outputs)" in str(cm.exception))
-
-            with self.assertRaises(ValueError) as cm:
-                fn(np.zeros((2,), dtype=fp_t), pars=np.zeros((), dtype=fp_t))
-            self.assertTrue(
-                "The array of parameter values provided for the evaluation of a compiled function has 0 dimension(s), but it must have 1 dimension(s) instead (i.e., the same number of dimensions as the array of inputs)" in str(cm.exception))
 
             with self.assertRaises(ValueError) as cm:
                 fn(np.zeros((2,), dtype=fp_t), pars=np.zeros((0,), dtype=fp_t))
@@ -4164,7 +3994,8 @@ class cfunc_test_case(_ut.TestCase):
                             rtol=_get_eps(fp_t) * 10, atol=_get_eps(fp_t) * 10))
 
             # Tests with no inputs.
-            fn = add_cfunc([expression(3) + par[1], par[0]], fp_type=desc)
+            fn = add_cfunc(
+                [expression(fp_t(3)) + par[1], par[0]], fp_type=desc)
 
             eval_arr = fn(inputs=np.zeros((0,), dtype=fp_t), pars=[1, 2])
             self.assertTrue(_allclose(eval_arr, [fp_t(3) + 2, fp_t(1)],
@@ -4175,7 +4006,8 @@ class cfunc_test_case(_ut.TestCase):
             self.assertTrue(_allclose(eval_arr, [fp_t(3) + 2, fp_t(1)],
                             rtol=_get_eps(fp_t) * 10, atol=_get_eps(fp_t) * 10))
 
-            fn = add_cfunc([expression(3), expression(4)], fp_type=desc)
+            fn = add_cfunc(
+                [expression(fp_t(3)), expression(fp_t(4))], fp_type=desc)
 
             eval_arr = fn(inputs=np.zeros((0,), dtype=fp_t), pars=[])
             self.assertTrue(_allclose(eval_arr, [fp_t(3), fp_t(4)],
@@ -4391,12 +4223,7 @@ class real128_test_case(_ut.TestCase):
 
 
 def run_test_suite():
-    from . import make_nbody_sys, taylor_adaptive, with_real128
-
-    if with_real128:
-        from mpmath import mp
-        orig_mpmath_prec = mp.prec
-        mp.prec = 113
+    from . import make_nbody_sys, taylor_adaptive
 
     sys = make_nbody_sys(2, masses=[1.1, 2.1], Gconst=1)
     ta = taylor_adaptive(sys, [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12])
@@ -4422,9 +4249,6 @@ def run_test_suite():
     suite.addTest(zero_division_error_test_case())
 
     test_result = _ut.TextTestRunner(verbosity=2).run(suite)
-
-    if with_real128:
-        mp.prec = orig_mpmath_prec
 
     if len(test_result.failures) > 0 or len(test_result.errors) > 0:
         retval = 1

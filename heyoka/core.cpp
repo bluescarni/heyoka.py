@@ -46,7 +46,6 @@
 
 #if defined(HEYOKA_HAVE_REAL128)
 
-#include <mp++/extra/pybind11.hpp>
 #include <mp++/real128.hpp>
 
 #endif
@@ -65,6 +64,7 @@
 #include "cfunc.hpp"
 #include "common_utils.hpp"
 #include "custom_casters.hpp"
+#include "dtypes.hpp"
 #include "expose_real128.hpp"
 #include "logging.hpp"
 #include "pickle_wrappers.hpp"
@@ -109,11 +109,13 @@ T kepE_scalar_wrapper(T e, T M)
     return out;
 }
 
-// Vector implementation of Python's kepE() via the batch mode C++ kepE() primitive.
+// Helper for the vector implementation of kepE().
 template <typename T>
-py::array_t<T> kepE_batch_wrapper(py::array_t<T> e, py::array_t<T> M)
+py::array kepE_vector_impl(py::array e, py::array M)
 {
     assert(kepE_batch_f<T> != nullptr);
+    assert(e.dtype().num() == get_dtype<T>());
+    assert(M.dtype().num() == get_dtype<T>());
 
     if (e.ndim() != 1) {
         heypy::py_throw(PyExc_ValueError,
@@ -142,8 +144,8 @@ py::array_t<T> kepE_batch_wrapper(py::array_t<T> e, py::array_t<T> M)
     }
 
     // Prepare the return value.
-    py::array_t<T> retval(py::array::ShapeContainer{arr_size});
-    auto *out_ptr = retval.mutable_data();
+    py::array retval(e.dtype(), py::array::ShapeContainer{arr_size});
+    auto *out_ptr = static_cast<T *>(retval.mutable_data());
 
     // Temporary buffers to store the input/output of the batch-mode
     // kepE() C++ implementation.
@@ -164,8 +166,8 @@ py::array_t<T> kepE_batch_wrapper(py::array_t<T> e, py::array_t<T> M)
     const auto n_simd_blocks = arr_size / ss_size;
 
     // Unchecked access to e and M.
-    auto e_acc = e.template unchecked<1>();
-    auto M_acc = M.template unchecked<1>();
+    auto e_acc = e.template unchecked<T, 1>();
+    auto M_acc = M.template unchecked<T, 1>();
 
     // Iterate over the simd blocks, executing the
     // batch-mode C++ implementation of kepE().
@@ -204,31 +206,40 @@ py::array_t<T> kepE_batch_wrapper(py::array_t<T> e, py::array_t<T> M)
     return retval;
 }
 
-#if defined(HEYOKA_HAVE_REAL128)
-
-// Vector implementation of kepE() for real128.
-std::vector<mppp::real128> kepE_vector_f128(std::vector<mppp::real128> e, std::vector<mppp::real128> M)
+// Vector implementation of Python's kepE() via the batch mode C++ kepE() primitive.
+// NOTE: this can probably be optimised in case "e" and "M" have contiguous C-like storage.
+py::array kepE_vector_wrapper(py::iterable e_ob, py::iterable M_ob)
 {
-    const auto arr_size = e.size();
+    // Attempt to convert the input arguments into arrays.
+    py::array e = e_ob, M = M_ob;
 
-    if (M.size() != arr_size) {
-        heypy::py_throw(PyExc_ValueError, fmt::format("Invalid arrays passed to kepE(): "
-                                                      "the eccentricity array has a size of {}, but the mean anomaly "
-                                                      "array has a size of {} (the sizes must be equal)",
-                                                      arr_size, M.size())
-                                              .c_str());
+    // Check the two arrays have the same dtype.
+    if (e.dtype().num() != M.dtype().num()) {
+        heypy::py_throw(
+            PyExc_TypeError,
+            fmt::format(
+                R"(Inconsistent dtypes detected in the vectorised kepE() implementation: the eccentricity array has dtype "{}", while the mean anomaly array has dtype "{}")",
+                heypy::str(e.dtype()), heypy::str(M.dtype()))
+                .c_str());
     }
 
-    std::vector<mppp::real128> ret(arr_size);
-
-    for (std::vector<mppp::real128>::size_type i = 0; i < arr_size; ++i) {
-        kepE_scal_f<mppp::real128>(&ret[i], &e[i], &M[i]);
-    }
-
-    return ret;
-}
-
+    if (e.dtype().num() == get_dtype<double>()) {
+        return kepE_vector_impl<double>(e, M);
+#if !defined(HEYOKA_ARCH_PPC)
+    } else if (e.dtype().num() == get_dtype<long double>()) {
+        return kepE_vector_impl<long double>(e, M);
 #endif
+#if defined(HEYOKA_HAVE_REAL128)
+    } else if (e.dtype().num() == get_dtype<mppp::real128>()) {
+        return kepE_vector_impl<mppp::real128>(e, M);
+#endif
+    } else {
+        heypy::py_throw(
+            PyExc_TypeError,
+            fmt::format(R"(Unsupported dtype "{}" for the vectorised kepE() implementation)", heypy::str(e.dtype()))
+                .c_str());
+    }
+}
 
 // The llvm_state containing the JIT-compiled C++ implementations
 // of kepE().
@@ -265,11 +276,6 @@ PYBIND11_MODULE(core, m)
         throw py::error_already_set();
     }
 
-#if defined(HEYOKA_HAVE_REAL128)
-    // Init the pybind11 integration for this module.
-    mppp_pybind11::init();
-#endif
-
     using namespace pybind11::literals;
     namespace kw = hey::kw;
 
@@ -298,14 +304,6 @@ PYBIND11_MODULE(core, m)
 
     // Expose the logging setter functions.
     heypy::expose_logging_setters(m);
-
-#if defined(HEYOKA_HAVE_REAL128)
-    if (!heypy::mpmath_available()) {
-        py::module_::import("warnings")
-            .attr("warn")("The heyoka C++ library was compiled with quadruple-precision support, but the 'mpmath' "
-                          "Python module is not installed");
-    }
-#endif
 
     // Export the heyoka version.
     m.attr("_heyoka_cpp_version_major") = HEYOKA_VERSION_MAJOR;
@@ -351,86 +349,91 @@ PYBIND11_MODULE(core, m)
 
     py::class_<hey::expression>(m, "expression", py::dynamic_attr{})
         .def(py::init<>())
-        .def(py::init<double>())
-        .def(py::init<long double>())
+        .def(py::init<double>(), "x"_a.noconvert())
+        .def(py::init<long double>(), "x"_a.noconvert())
 #if defined(HEYOKA_HAVE_REAL128)
-        .def(py::init<mppp::real128>())
+        .def(py::init<mppp::real128>(), "x"_a.noconvert())
 #endif
-        .def(py::init<std::string>())
+        .def(py::init<std::string>(), "x"_a.noconvert())
         // Unary operators.
         .def(-py::self)
         .def(+py::self)
         // Binary operators.
         .def(py::self + py::self)
-        .def(py::self + double())
-        .def(double() + py::self)
-        .def(py::self + ld_t())
-        .def(ld_t() + py::self)
+        .def(py::self + double(), "x"_a.noconvert())
+        .def(double() + py::self, "x"_a.noconvert())
+        .def(py::self + ld_t(), "x"_a.noconvert())
+        .def(ld_t() + py::self, "x"_a.noconvert())
 #if defined(HEYOKA_HAVE_REAL128)
-        .def(py::self + mppp::real128())
-        .def(mppp::real128() + py::self)
+        .def(py::self + mppp::real128(), "x"_a.noconvert())
+        .def(mppp::real128() + py::self, "x"_a.noconvert())
 #endif
-        .def(py::self - py::self)
-        .def(py::self - double())
-        .def(double() - py::self)
-        .def(py::self - ld_t())
-        .def(ld_t() - py::self)
+        .def(py::self - py::self, "x"_a.noconvert())
+        .def(py::self - double(), "x"_a.noconvert())
+        .def(double() - py::self, "x"_a.noconvert())
+        .def(py::self - ld_t(), "x"_a.noconvert())
+        .def(ld_t() - py::self, "x"_a.noconvert())
 #if defined(HEYOKA_HAVE_REAL128)
-        .def(py::self - mppp::real128())
-        .def(mppp::real128() - py::self)
+        .def(py::self - mppp::real128(), "x"_a.noconvert())
+        .def(mppp::real128() - py::self, "x"_a.noconvert())
 #endif
-        .def(py::self * py::self)
-        .def(py::self * double())
-        .def(double() * py::self)
-        .def(py::self * ld_t())
-        .def(ld_t() * py::self)
+        .def(py::self * py::self, "x"_a.noconvert())
+        .def(py::self * double(), "x"_a.noconvert())
+        .def(double() * py::self, "x"_a.noconvert())
+        .def(py::self * ld_t(), "x"_a.noconvert())
+        .def(ld_t() * py::self, "x"_a.noconvert())
 #if defined(HEYOKA_HAVE_REAL128)
-        .def(py::self * mppp::real128())
-        .def(mppp::real128() * py::self)
+        .def(py::self * mppp::real128(), "x"_a.noconvert())
+        .def(mppp::real128() * py::self, "x"_a.noconvert())
 #endif
-        .def(py::self / py::self)
-        .def(py::self / double())
-        .def(double() / py::self)
-        .def(py::self / ld_t())
-        .def(ld_t() / py::self)
+        .def(py::self / py::self, "x"_a.noconvert())
+        .def(py::self / double(), "x"_a.noconvert())
+        .def(double() / py::self, "x"_a.noconvert())
+        .def(py::self / ld_t(), "x"_a.noconvert())
+        .def(ld_t() / py::self, "x"_a.noconvert())
 #if defined(HEYOKA_HAVE_REAL128)
-        .def(py::self / mppp::real128())
-        .def(mppp::real128() / py::self)
+        .def(py::self / mppp::real128(), "x"_a.noconvert())
+        .def(mppp::real128() / py::self, "x"_a.noconvert())
 #endif
         // In-place operators.
-        .def(py::self += py::self)
-        .def(py::self += double())
-        .def(py::self += ld_t())
+        .def(py::self += py::self, "x"_a.noconvert())
+        .def(py::self += double(), "x"_a.noconvert())
+        .def(py::self += ld_t(), "x"_a.noconvert())
 #if defined(HEYOKA_HAVE_REAL128)
-        .def(py::self += mppp::real128())
+        .def(py::self += mppp::real128(), "x"_a.noconvert())
 #endif
-        .def(py::self -= py::self)
-        .def(py::self -= double())
-        .def(py::self -= ld_t())
+        .def(py::self -= py::self, "x"_a.noconvert())
+        .def(py::self -= double(), "x"_a.noconvert())
+        .def(py::self -= ld_t(), "x"_a.noconvert())
 #if defined(HEYOKA_HAVE_REAL128)
-        .def(py::self -= mppp::real128())
+        .def(py::self -= mppp::real128(), "x"_a.noconvert())
 #endif
-        .def(py::self *= py::self)
-        .def(py::self *= double())
-        .def(py::self *= ld_t())
+        .def(py::self *= py::self, "x"_a.noconvert())
+        .def(py::self *= double(), "x"_a.noconvert())
+        .def(py::self *= ld_t(), "x"_a.noconvert())
 #if defined(HEYOKA_HAVE_REAL128)
-        .def(py::self *= mppp::real128())
+        .def(py::self *= mppp::real128(), "x"_a.noconvert())
 #endif
-        .def(py::self /= py::self)
-        .def(py::self /= double())
-        .def(py::self /= ld_t())
+        .def(py::self /= py::self, "x"_a.noconvert())
+        .def(py::self /= double(), "x"_a.noconvert())
+        .def(py::self /= ld_t(), "x"_a.noconvert())
 #if defined(HEYOKA_HAVE_REAL128)
-        .def(py::self /= mppp::real128())
+        .def(py::self /= mppp::real128(), "x"_a.noconvert())
 #endif
         // Comparisons.
-        .def(py::self == py::self)
-        .def(py::self != py::self)
+        .def(py::self == py::self, "x"_a.noconvert())
+        .def(py::self != py::self, "x"_a.noconvert())
         // pow().
-        .def("__pow__", [](const hey::expression &b, const hey::expression &e) { return hey::pow(b, e); })
-        .def("__pow__", [](const hey::expression &b, double e) { return hey::pow(b, e); })
-        .def("__pow__", [](const hey::expression &b, long double e) { return hey::pow(b, e); })
+        .def(
+            "__pow__", [](const hey::expression &b, const hey::expression &e) { return hey::pow(b, e); },
+            "e"_a.noconvert())
+        .def(
+            "__pow__", [](const hey::expression &b, double e) { return hey::pow(b, e); }, "e"_a.noconvert())
+        .def(
+            "__pow__", [](const hey::expression &b, long double e) { return hey::pow(b, e); }, "e"_a.noconvert())
 #if defined(HEYOKA_HAVE_REAL128)
-        .def("__pow__", [](const hey::expression &b, mppp::real128 e) { return hey::pow(b, e); })
+        .def(
+            "__pow__", [](const hey::expression &b, mppp::real128 e) { return hey::pow(b, e); }, "e"_a.noconvert())
 #endif
         // Expression size.
         .def("__len__", [](const hey::expression &e) { return hey::get_n_nodes(e); })
@@ -510,25 +513,31 @@ PYBIND11_MODULE(core, m)
 
     // kepE().
     m.def(
-        "kepE", [](hey::expression e, hey::expression M) { return hey::kepE(std::move(e), std::move(M)); }, "e"_a,
-        "M"_a);
+        "kepE", [](hey::expression e, hey::expression M) { return hey::kepE(std::move(e), std::move(M)); },
+        "e"_a.noconvert(), "M"_a.noconvert());
 
     m.def(
-        "kepE", [](double e, hey::expression M) { return hey::kepE(e, std::move(M)); }, "e"_a, "M"_a);
+        "kepE", [](double e, hey::expression M) { return hey::kepE(e, std::move(M)); }, "e"_a.noconvert(),
+        "M"_a.noconvert());
     m.def(
-        "kepE", [](long double e, hey::expression M) { return hey::kepE(e, std::move(M)); }, "e"_a, "M"_a);
+        "kepE", [](long double e, hey::expression M) { return hey::kepE(e, std::move(M)); }, "e"_a.noconvert(),
+        "M"_a.noconvert());
 #if defined(HEYOKA_HAVE_REAL128)
     m.def(
-        "kepE", [](mppp::real128 e, hey::expression M) { return hey::kepE(e, std::move(M)); }, "e"_a, "M"_a);
+        "kepE", [](mppp::real128 e, hey::expression M) { return hey::kepE(e, std::move(M)); }, "e"_a.noconvert(),
+        "M"_a.noconvert());
 #endif
 
     m.def(
-        "kepE", [](hey::expression e, double M) { return hey::kepE(std::move(e), M); }, "e"_a, "M"_a);
+        "kepE", [](hey::expression e, double M) { return hey::kepE(std::move(e), M); }, "e"_a.noconvert(),
+        "M"_a.noconvert());
     m.def(
-        "kepE", [](hey::expression e, long double M) { return hey::kepE(std::move(e), M); }, "e"_a, "M"_a);
+        "kepE", [](hey::expression e, long double M) { return hey::kepE(std::move(e), M); }, "e"_a.noconvert(),
+        "M"_a.noconvert());
 #if defined(HEYOKA_HAVE_REAL128)
     m.def(
-        "kepE", [](hey::expression e, mppp::real128 M) { return hey::kepE(std::move(e), M); }, "e"_a, "M"_a);
+        "kepE", [](hey::expression e, mppp::real128 M) { return hey::kepE(std::move(e), M); }, "e"_a.noconvert(),
+        "M"_a.noconvert());
 #endif
 
     // Setup the JIT compiled C++ implementations of kepE().
@@ -543,9 +552,17 @@ PYBIND11_MODULE(core, m)
     hey::detail::llvm_add_inv_kep_E_wrapper<mppp::real128>(*heypy::detail::kepE_state, 1, "kepE_scal_f128");
 #endif
 
-    // Batch implementation (only for double).
+    // Batch implementations.
     hey::detail::llvm_add_inv_kep_E_wrapper<double>(*heypy::detail::kepE_state, hey::recommended_simd_size<double>(),
                                                     "kepE_batch_dbl");
+#if !defined(HEYOKA_ARCH_PPC)
+    hey::detail::llvm_add_inv_kep_E_wrapper<long double>(*heypy::detail::kepE_state,
+                                                         hey::recommended_simd_size<long double>(), "kepE_batch_ldbl");
+#endif
+#if defined(HEYOKA_HAVE_REAL128)
+    hey::detail::llvm_add_inv_kep_E_wrapper<mppp::real128>(
+        *heypy::detail::kepE_state, hey::recommended_simd_size<mppp::real128>(), "kepE_batch_f128");
+#endif
 
     heypy::detail::kepE_state->optimise();
     heypy::detail::kepE_state->compile();
@@ -565,38 +582,55 @@ PYBIND11_MODULE(core, m)
     // Fetch and assign the batch implementations.
     heypy::detail::kepE_batch_f<double> = reinterpret_cast<heypy::detail::kepE_func_t<double>>(
         heypy::detail::kepE_state->jit_lookup("kepE_batch_dbl"));
+#if !defined(HEYOKA_ARCH_PPC)
+    heypy::detail::kepE_batch_f<long double> = reinterpret_cast<heypy::detail::kepE_func_t<long double>>(
+        heypy::detail::kepE_state->jit_lookup("kepE_batch_ldbl"));
+#endif
+#if defined(HEYOKA_HAVE_REAL128)
+    heypy::detail::kepE_batch_f<mppp::real128> = reinterpret_cast<heypy::detail::kepE_func_t<mppp::real128>>(
+        heypy::detail::kepE_state->jit_lookup("kepE_batch_f128"));
+#endif
 
     // Expose the Python scalar implementations.
-    m.def("kepE", &heypy::detail::kepE_scalar_wrapper<double>, "e"_a, "M"_a);
+    m.def("kepE", &heypy::detail::kepE_scalar_wrapper<double>, "e"_a.noconvert(), "M"_a.noconvert());
 #if !defined(HEYOKA_ARCH_PPC)
-    m.def("kepE", &heypy::detail::kepE_scalar_wrapper<long double>, "e"_a, "M"_a);
+    m.def("kepE", &heypy::detail::kepE_scalar_wrapper<long double>, "e"_a.noconvert(), "M"_a.noconvert());
 #endif
 #if defined(HEYOKA_HAVE_REAL128)
-    m.def("kepE", &heypy::detail::kepE_scalar_wrapper<mppp::real128>, "e"_a, "M"_a);
+    m.def("kepE", &heypy::detail::kepE_scalar_wrapper<mppp::real128>, "e"_a.noconvert(), "M"_a.noconvert());
 #endif
 
-    // Expose the vector implementations.
-    m.def("kepE", &heypy::detail::kepE_batch_wrapper<double>, "e"_a, "M"_a);
-#if !defined(HEYOKA_ARCH_PPC)
-    m.def("kepE", py::vectorize(&heypy::detail::kepE_scalar_wrapper<long double>), "e"_a, "M"_a);
-#endif
-#if defined(HEYOKA_HAVE_REAL128)
-    m.def("kepE", &heypy::detail::kepE_vector_f128, "e"_a, "M"_a);
-#endif
+    // Expose the vector implementation.
+    // NOTE: type dispatching is done internally.
+    m.def("kepE", &heypy::detail::kepE_vector_wrapper, "e"_a.noconvert(), "M"_a.noconvert());
 
     // atan2().
-    m.def("atan2", [](hey::expression y, hey::expression x) { return hey::atan2(std::move(y), std::move(x)); });
+    m.def(
+        "atan2", [](hey::expression y, hey::expression x) { return hey::atan2(std::move(y), std::move(x)); },
+        "y"_a.noconvert(), "x"_a.noconvert());
 
-    m.def("atan2", [](double y, hey::expression x) { return hey::atan2(y, std::move(x)); });
-    m.def("atan2", [](long double y, hey::expression x) { return hey::atan2(y, std::move(x)); });
+    m.def(
+        "atan2", [](double y, hey::expression x) { return hey::atan2(y, std::move(x)); }, "y"_a.noconvert(),
+        "x"_a.noconvert());
+    m.def(
+        "atan2", [](long double y, hey::expression x) { return hey::atan2(y, std::move(x)); }, "y"_a.noconvert(),
+        "x"_a.noconvert());
 #if defined(HEYOKA_HAVE_REAL128)
-    m.def("atan2", [](mppp::real128 y, hey::expression x) { return hey::atan2(y, std::move(x)); });
+    m.def(
+        "atan2", [](mppp::real128 y, hey::expression x) { return hey::atan2(y, std::move(x)); }, "y"_a.noconvert(),
+        "x"_a.noconvert());
 #endif
 
-    m.def("atan2", [](hey::expression y, double x) { return hey::atan2(std::move(y), x); });
-    m.def("atan2", [](hey::expression y, long double x) { return hey::atan2(std::move(y), x); });
+    m.def(
+        "atan2", [](hey::expression y, double x) { return hey::atan2(std::move(y), x); }, "y"_a.noconvert(),
+        "x"_a.noconvert());
+    m.def(
+        "atan2", [](hey::expression y, long double x) { return hey::atan2(std::move(y), x); }, "y"_a.noconvert(),
+        "x"_a.noconvert());
 #if defined(HEYOKA_HAVE_REAL128)
-    m.def("atan2", [](hey::expression y, mppp::real128 x) { return hey::atan2(std::move(y), x); });
+    m.def(
+        "atan2", [](hey::expression y, mppp::real128 x) { return hey::atan2(std::move(y), x); }, "y"_a.noconvert(),
+        "x"_a.noconvert());
 #endif
 
     // Time.
@@ -609,8 +643,12 @@ PYBIND11_MODULE(core, m)
     m.def("tpoly", &hey::tpoly);
 
     // Diff.
-    m.def("diff", [](const hey::expression &ex, const std::string &s) { return hey::diff(ex, s); });
-    m.def("diff", [](const hey::expression &ex, const hey::expression &var) { return hey::diff(ex, var); });
+    m.def(
+        "diff", [](const hey::expression &ex, const std::string &s) { return hey::diff(ex, s); }, "ex"_a.noconvert(),
+        "var"_a.noconvert());
+    m.def(
+        "diff", [](const hey::expression &ex, const hey::expression &var) { return hey::diff(ex, var); },
+        "ex"_a.noconvert(), "var"_a.noconvert());
 
     // Syntax sugar for creating parameters.
     py::class_<hey::detail::par_impl>(m, "_par_generator").def("__getitem__", &hey::detail::par_impl::operator[]);
@@ -754,9 +792,7 @@ PYBIND11_MODULE(core, m)
 
 #if defined(HEYOKA_HAVE_REAL128)
 
-    if (heypy::mpmath_available()) {
-        heypy::expose_taylor_add_jet_f128(m);
-    }
+    heypy::expose_taylor_add_jet_f128(m);
 
 #endif
 
@@ -766,9 +802,7 @@ PYBIND11_MODULE(core, m)
 
 #if defined(HEYOKA_HAVE_REAL128)
 
-    if (heypy::mpmath_available()) {
-        heypy::expose_add_cfunc_f128(m);
-    }
+    heypy::expose_add_cfunc_f128(m);
 
 #endif
 
@@ -778,9 +812,7 @@ PYBIND11_MODULE(core, m)
 
 #if defined(HEYOKA_HAVE_REAL128)
 
-    if (heypy::mpmath_available()) {
-        heypy::expose_taylor_integrator_f128(m);
-    }
+    heypy::expose_taylor_integrator_f128(m);
 
 #endif
 
@@ -790,9 +822,7 @@ PYBIND11_MODULE(core, m)
 
 #if defined(HEYOKA_HAVE_REAL128)
 
-    if (heypy::mpmath_available()) {
-        heypy::expose_taylor_t_event_f128(m);
-    }
+    heypy::expose_taylor_t_event_f128(m);
 
 #endif
 
@@ -801,9 +831,7 @@ PYBIND11_MODULE(core, m)
 
 #if defined(HEYOKA_HAVE_REAL128)
 
-    if (heypy::mpmath_available()) {
-        heypy::expose_taylor_nt_event_f128(m);
-    }
+    heypy::expose_taylor_nt_event_f128(m);
 
 #endif
 

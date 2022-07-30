@@ -6,6 +6,8 @@
 // Public License v. 2.0. If a copy of the MPL was not distributed
 // with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+#include <heyoka/config.hpp>
+
 #include <cassert>
 
 #include <pybind11/pybind11.h>
@@ -20,8 +22,20 @@
 #include <numpy/arrayobject.h>
 #include <numpy/arrayscalars.h>
 
+#if defined(HEYOKA_HAVE_REAL128)
+
+#include <mp++/real128.hpp>
+
+#endif
+
 #include "common_utils.hpp"
 #include "custom_casters.hpp"
+
+#if defined(HEYOKA_HAVE_REAL128)
+
+#include "expose_real128.hpp"
+
+#endif
 
 #if defined(__GNUC__)
 
@@ -57,6 +71,35 @@ handle type_caster<long double>::cast(const long double &src, return_value_polic
 
     return ret_ob;
 }
+
+#if defined(HEYOKA_HAVE_REAL128)
+
+bool type_caster<mppp::real128>::load(handle src, bool)
+{
+    namespace heypy = heyoka_py;
+
+    if (!heypy::py_real128_check(src.ptr())) {
+        return false;
+    }
+
+    value = *heypy::get_val(src.ptr());
+
+    return true;
+}
+
+handle type_caster<mppp::real128>::cast(const mppp::real128 &src, return_value_policy, handle)
+{
+    namespace heypy = heyoka_py;
+
+    auto *ret_ob = heypy::pyreal128_from_real128(src);
+    if (ret_ob == nullptr) {
+        heyoka_py::py_throw(PyExc_RuntimeError, "Unable to obtain storage for a real128 object");
+    }
+
+    return ret_ob;
+}
+
+#endif
 
 } // namespace pybind11::detail
 

@@ -47,6 +47,7 @@
 
 #endif
 
+#include "custom_casters.hpp"
 #include "expose_real128.hpp"
 
 namespace heyoka_py
@@ -762,6 +763,12 @@ mppp::real128 *get_val(PyObject *self)
     return get_val(reinterpret_cast<py_real128 *>(self));
 }
 
+// Helper to create a pyreal128 from a real128.
+PyObject *pyreal128_from_real128(const mppp::real128 &src)
+{
+    return detail::py_real128_from_args(src);
+}
+
 void expose_real128(py::module_ &m)
 {
     // Fill out the entries of py_real128_type.
@@ -984,11 +991,7 @@ void expose_real128(py::module_ &m)
     }
 
     // Helper to return the epsilon of real128.
-    // TODO fix with automatic conversion.
-    m.def("_get_real128_eps", []() {
-        return py::reinterpret_steal<py::object>(
-            detail::py_real128_from_args(std::numeric_limits<mppp::real128>::epsilon()));
-    });
+    m.def("_get_real128_eps", []() { return std::numeric_limits<mppp::real128>::epsilon(); });
 }
 
 #if defined(__GNUC__)

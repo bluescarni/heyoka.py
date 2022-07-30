@@ -12,8 +12,11 @@
 #include <cmath>
 #include <functional>
 #include <iostream>
+#include <limits>
 #include <optional>
+#include <pybind11/pytypes.h>
 #include <stdexcept>
+#include <type_traits>
 #include <typeindex>
 #include <typeinfo>
 #include <unordered_map>
@@ -29,7 +32,6 @@
 
 #if defined(HEYOKA_HAVE_REAL128)
 
-#include <mp++/extra/pybind11.hpp>
 #include <mp++/real128.hpp>
 
 #endif
@@ -100,7 +102,7 @@ py::object to_sympy_impl(std::unordered_map<const void *, py::object> &, const h
 py::object to_sympy_impl(std::unordered_map<const void *, py::object> &, const hy::number &num)
 {
     return std::visit(
-        [&num](const auto &x) {
+        [&num](const auto &x) -> py::object {
             using std::isfinite;
 
             // NOTE: forbid conversion if the value is not finite.
@@ -109,7 +111,15 @@ py::object to_sympy_impl(std::unordered_map<const void *, py::object> &, const h
                          (fmt::format("Cannot convert to sympy the nonfinite number {}", num)).c_str());
             }
 
-            return py::cast(x);
+#if defined(HEYOKA_HAVE_REAL128)
+            if constexpr (std::is_same_v<std::remove_cv_t<std::remove_reference_t<decltype(x)>>, mppp::real128>) {
+                return spy->attr("Float")(x.to_string(), py::none{}, std::numeric_limits<mppp::real128>::digits);
+            } else {
+#endif
+                return py::cast(x);
+#if defined(HEYOKA_HAVE_REAL128)
+            }
+#endif
         },
         num.value());
 }

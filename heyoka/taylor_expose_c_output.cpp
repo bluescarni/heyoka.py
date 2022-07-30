@@ -26,7 +26,6 @@
 
 #if defined(HEYOKA_HAVE_REAL128)
 
-#include <mp++/extra/pybind11.hpp>
 #include <mp++/real128.hpp>
 
 #endif
@@ -35,6 +34,7 @@
 
 #include "common_utils.hpp"
 #include "custom_casters.hpp"
+#include "dtypes.hpp"
 #include "pickle_wrappers.hpp"
 #include "taylor_expose_c_output.hpp"
 
@@ -50,16 +50,6 @@ namespace detail
 namespace
 {
 
-// Small helper to refer to mppp::real128,
-// if it exists.
-using fp_128_t =
-#if defined(HEYOKA_HAVE_REAL128)
-    mppp::real128
-#else
-    void
-#endif
-    ;
-
 // Exposition for the scalar continuous output.
 template <typename T>
 void expose_c_output_impl(py::module &m, const std::string &suffix)
@@ -67,7 +57,6 @@ void expose_c_output_impl(py::module &m, const std::string &suffix)
     using namespace pybind11::literals;
 
     using c_output_t = hey::continuous_output<T>;
-    using array_arg_t = std::conditional_t<std::is_same_v<T, fp_128_t>, py::iterable, py::array_t<T>>;
 
     const auto name = fmt::format("continuous_output_{}", suffix);
 
@@ -83,128 +72,103 @@ void expose_c_output_impl(py::module &m, const std::string &suffix)
                 // is def-cted an exception will be thrown.
                 (*c_out)(tm);
 
-                if constexpr (std::is_same_v<T, fp_128_t>) {
-                    return py::array(py::cast(c_out->get_output()));
-                } else {
-                    auto ret = py::array_t<T>(
-                        py::array::ShapeContainer{boost::numeric_cast<py::ssize_t>(c_out->get_output().size())},
-                        c_out->get_output().data(), o);
+                auto ret
+                    = py::array(py::dtype(get_dtype<T>()),
+                                py::array::ShapeContainer{boost::numeric_cast<py::ssize_t>(c_out->get_output().size())},
+                                c_out->get_output().data(), o);
 
-                    // Ensure the returned array is read-only.
-                    ret.attr("flags").attr("writeable") = false;
+                // Ensure the returned array is read-only.
+                ret.attr("flags").attr("writeable") = false;
 
-                    return ret;
-                }
+                return ret;
             },
             "time"_a)
         .def(
             "__call__",
-            [](py::object &o, const array_arg_t &tm) {
+            [](py::object &o, py::iterable tm_ob) {
+                // Convert the input iterable into an array of the correct type.
+                py::array tm = tm_ob;
+                const auto dt = get_dtype<T>();
+                if (tm.dtype().num() != dt) {
+                    tm = tm.attr("astype")(py::dtype(dt));
+                }
+
                 auto *c_out = py::cast<c_output_t *>(o);
 
                 // Number of columns in the return value.
                 const auto ncols = boost::numeric_cast<py::ssize_t>(c_out->get_output().size());
 
-                if constexpr (std::is_same_v<T, fp_128_t>) {
-                    // Compute the number of rows.
-                    const auto nrows = py::len(tm);
+                // NOTE: investigate about GIL release here. Can we use unchecked
+                // access to tm without holding the GIL?
 
-                    // The output vector.
-                    std::vector<T> out;
-
-                    // Do the computation.
-                    for (const auto &t : tm) {
-                        (*c_out)(t.template cast<fp_128_t>());
-
-                        out.insert(out.end(), c_out->get_output().begin(), c_out->get_output().end());
-                    }
-
-                    auto ret = py::array(py::cast(out));
-
-                    ret.attr("shape") = py::make_tuple(nrows, ncols);
-
-                    return ret;
-                } else {
-                    // NOTE: investigate about GIL release here. Can we use unchecked
-                    // access to tm without holding the GIL?
-
-                    // Check the shape of tm.
-                    if (tm.ndim() != 1) {
-                        py_throw(PyExc_ValueError,
-                                 fmt::format("Invalid time array passed to a continuous_output object: the "
-                                             "number of dimensions must be 1, but it is "
-                                             "{} instead",
-                                             tm.ndim())
-                                     .c_str());
-                    }
-
-                    // Compute the number of rows.
-                    const auto nrows = tm.shape(0);
-
-                    // Unchecked accessor to tm.
-                    auto u_tm = tm.template unchecked<1>();
-
-                    // Prepare the output object.
-                    auto ret = py::array_t<T>(py::array::ShapeContainer{nrows, ncols});
-
-                    // Fetch a pointer for writing.
-                    auto ret_ptr = ret.mutable_data();
-
-                    // Do the computation.
-                    for (py::ssize_t i = 0; i < nrows; ++i) {
-                        (*c_out)(u_tm(i));
-
-                        std::copy(c_out->get_output().begin(), c_out->get_output().end(), ret_ptr + i * ncols);
-                    }
-
-                    return ret;
+                // Check the shape of tm.
+                if (tm.ndim() != 1) {
+                    py_throw(PyExc_ValueError,
+                             fmt::format("Invalid time array passed to a continuous_output object: the "
+                                         "number of dimensions must be 1, but it is "
+                                         "{} instead",
+                                         tm.ndim())
+                                 .c_str());
                 }
+
+                // Compute the number of rows.
+                const auto nrows = tm.shape(0);
+
+                // Unchecked accessor to tm.
+                auto u_tm = tm.template unchecked<T, 1>();
+
+                // Prepare the output object.
+                auto ret = py::array(tm.dtype(), py::array::ShapeContainer{nrows, ncols});
+
+                // Fetch a pointer for writing.
+                auto *ret_ptr = static_cast<T *>(ret.mutable_data());
+
+                // Do the computation.
+                for (py::ssize_t i = 0; i < nrows; ++i) {
+                    (*c_out)(u_tm(i));
+
+                    std::copy(c_out->get_output().begin(), c_out->get_output().end(), ret_ptr + i * ncols);
+                }
+
+                return ret;
             },
             "time"_a)
-        .def_property_readonly(
-            "output",
-            [](const py::object &o) -> py::object {
-                auto *c_out = py::cast<const c_output_t *>(o);
+        .def_property_readonly("output",
+                               [](const py::object &o) -> py::object {
+                                   auto *c_out = py::cast<const c_output_t *>(o);
 
-                if (c_out->get_output().empty()) {
-                    return py::none{};
-                } else {
-                    if constexpr (std::is_same_v<T, fp_128_t>) {
-                        return py::array(py::cast(c_out->get_output()));
-                    } else {
-                        auto ret = py::array_t<T>(
-                            py::array::ShapeContainer{boost::numeric_cast<py::ssize_t>(c_out->get_output().size())},
-                            c_out->get_output().data(), o);
+                                   if (c_out->get_output().empty()) {
+                                       return py::none{};
+                                   } else {
+                                       auto ret = py::array(py::dtype(get_dtype<T>()),
+                                                            py::array::ShapeContainer{boost::numeric_cast<py::ssize_t>(
+                                                                c_out->get_output().size())},
+                                                            c_out->get_output().data(), o);
 
-                        // Ensure the returned array is read-only.
-                        ret.attr("flags").attr("writeable") = false;
+                                       // Ensure the returned array is read-only.
+                                       ret.attr("flags").attr("writeable") = false;
 
-                        return std::move(ret);
-                    }
-                }
-            })
-        .def_property_readonly(
-            "times",
-            [](const py::object &o) -> py::object {
-                auto *c_out = py::cast<const c_output_t *>(o);
+                                       return std::move(ret);
+                                   }
+                               })
+        .def_property_readonly("times",
+                               [](const py::object &o) -> py::object {
+                                   auto *c_out = py::cast<const c_output_t *>(o);
 
-                if (c_out->get_times().empty()) {
-                    return py::none{};
-                } else {
-                    if constexpr (std::is_same_v<T, fp_128_t>) {
-                        return py::array(py::cast(c_out->get_times()));
-                    } else {
-                        auto ret = py::array_t<T>(
-                            py::array::ShapeContainer{boost::numeric_cast<py::ssize_t>(c_out->get_times().size())},
-                            c_out->get_times().data(), o);
+                                   if (c_out->get_times().empty()) {
+                                       return py::none{};
+                                   } else {
+                                       auto ret = py::array(py::dtype(get_dtype<T>()),
+                                                            py::array::ShapeContainer{boost::numeric_cast<py::ssize_t>(
+                                                                c_out->get_times().size())},
+                                                            c_out->get_times().data(), o);
 
-                        // Ensure the returned array is read-only.
-                        ret.attr("flags").attr("writeable") = false;
+                                       // Ensure the returned array is read-only.
+                                       ret.attr("flags").attr("writeable") = false;
 
-                        return std::move(ret);
-                    }
-                }
-            })
+                                       return std::move(ret);
+                                   }
+                               })
         .def_property_readonly("tcs",
                                [](const py::object &o) -> py::object {
                                    auto *c_out = py::cast<const c_output_t *>(o);
@@ -222,24 +186,17 @@ void expose_c_output_impl(py::module &m, const std::string &suffix)
                                        // state variable, i.e., the Taylor order + 1.
                                        const auto ncoeffs = tc_size / (n_steps * nvars);
 
-                                       if constexpr (std::is_same_v<T, fp_128_t>) {
-                                           auto ret = py::array(py::cast(c_out->get_tcs()));
+                                       auto ret = py::array(
+                                           py::dtype(get_dtype<T>()),
+                                           py::array::ShapeContainer{boost::numeric_cast<py::ssize_t>(n_steps),
+                                                                     boost::numeric_cast<py::ssize_t>(nvars),
+                                                                     boost::numeric_cast<py::ssize_t>(ncoeffs)},
+                                           c_out->get_tcs().data(), o);
 
-                                           ret.attr("shape") = py::make_tuple(n_steps, nvars, ncoeffs);
+                                       // Ensure the returned array is read-only.
+                                       ret.attr("flags").attr("writeable") = false;
 
-                                           return std::move(ret);
-                                       } else {
-                                           auto ret = py::array_t<T>(
-                                               py::array::ShapeContainer{boost::numeric_cast<py::ssize_t>(n_steps),
-                                                                         boost::numeric_cast<py::ssize_t>(nvars),
-                                                                         boost::numeric_cast<py::ssize_t>(ncoeffs)},
-                                               c_out->get_tcs().data(), o);
-
-                                           // Ensure the returned array is read-only.
-                                           ret.attr("flags").attr("writeable") = false;
-
-                                           return std::move(ret);
-                                       }
+                                       return std::move(ret);
                                    }
                                })
         .def_property_readonly("bounds", &c_output_t::get_bounds)
@@ -289,9 +246,10 @@ void expose_c_output_batch_impl(py::module &m, const std::string &suffix)
 
                  (*c_out)(tm);
 
-                 auto ret = py::array_t<T>(py::array::ShapeContainer{boost::numeric_cast<py::ssize_t>(dim),
-                                                                     boost::numeric_cast<py::ssize_t>(batch_size)},
-                                           c_out->get_output().data(), o);
+                 auto ret = py::array(py::dtype(get_dtype<T>()),
+                                      py::array::ShapeContainer{boost::numeric_cast<py::ssize_t>(dim),
+                                                                boost::numeric_cast<py::ssize_t>(batch_size)},
+                                      c_out->get_output().data(), o);
 
                  // Ensure the returned array is read-only.
                  ret.attr("flags").attr("writeable") = false;
@@ -300,7 +258,14 @@ void expose_c_output_batch_impl(py::module &m, const std::string &suffix)
              })
         .def(
             "__call__",
-            [](py::object &o, const py::array_t<T> &tm) {
+            [](py::object &o, py::iterable tm_ob) {
+                // Convert the input iterable into an array of the correct type.
+                py::array tm = tm_ob;
+                const auto dt = get_dtype<T>();
+                if (tm.dtype().num() != dt) {
+                    tm = tm.attr("astype")(py::dtype(dt));
+                }
+
                 auto *c_out = py::cast<c_output_t *>(o);
 
                 if (c_out->get_output().empty()) {
@@ -344,16 +309,17 @@ void expose_c_output_batch_impl(py::module &m, const std::string &suffix)
 
                     if (tm_cont) {
                         // tm is contiguous.
-                        (*c_out)(tm.data());
+                        (*c_out)(static_cast<const T *>(tm.data()));
                     } else {
                         // tm is not contiguous.
                         auto tm_copy = py::cast<std::vector<T>>(tm);
                         (*c_out)(tm_copy);
                     }
 
-                    auto ret = py::array_t<T>(py::array::ShapeContainer{boost::numeric_cast<py::ssize_t>(dim),
-                                                                        boost::numeric_cast<py::ssize_t>(batch_size)},
-                                              c_out->get_output().data(), o);
+                    auto ret = py::array(tm.dtype(),
+                                         py::array::ShapeContainer{boost::numeric_cast<py::ssize_t>(dim),
+                                                                   boost::numeric_cast<py::ssize_t>(batch_size)},
+                                         c_out->get_output().data(), o);
 
                     // Ensure the returned array is read-only.
                     ret.attr("flags").attr("writeable") = false;
@@ -373,14 +339,15 @@ void expose_c_output_batch_impl(py::module &m, const std::string &suffix)
                     const auto nrows = tm.shape(0);
 
                     // Setup the return value.
-                    auto ret = py::array_t<T>(py::array::ShapeContainer{nrows, boost::numeric_cast<py::ssize_t>(dim),
-                                                                        boost::numeric_cast<py::ssize_t>(batch_size)});
+                    auto ret = py::array(tm.dtype(),
+                                         py::array::ShapeContainer{nrows, boost::numeric_cast<py::ssize_t>(dim),
+                                                                   boost::numeric_cast<py::ssize_t>(batch_size)});
 
                     // Fetch a pointer for writing.
-                    auto ret_ptr = ret.mutable_data();
+                    auto *ret_ptr = static_cast<T *>(ret.mutable_data());
 
                     // Unchecked accessor to tm.
-                    auto u_tm = tm.template unchecked<2>();
+                    auto u_tm = tm.template unchecked<T, 2>();
 
                     // A temporary buffer that we will use in the calls to c_out.
                     std::vector<T> tmp_buffer;
@@ -422,7 +389,8 @@ void expose_c_output_batch_impl(py::module &m, const std::string &suffix)
                                        assert(c_out->get_output().size() % batch_size == 0u);
                                        const auto dim = c_out->get_output().size() / batch_size;
 
-                                       auto ret = py::array_t<T>(
+                                       auto ret = py::array(
+                                           py::dtype(get_dtype<T>()),
                                            py::array::ShapeContainer{boost::numeric_cast<py::ssize_t>(dim),
                                                                      boost::numeric_cast<py::ssize_t>(batch_size)},
                                            c_out->get_output().data(), o);
@@ -449,7 +417,8 @@ void expose_c_output_batch_impl(py::module &m, const std::string &suffix)
                                        // in the return value.
                                        --dim;
 
-                                       auto ret = py::array_t<T>(
+                                       auto ret = py::array(
+                                           py::dtype(get_dtype<T>()),
                                            py::array::ShapeContainer{boost::numeric_cast<py::ssize_t>(dim),
                                                                      boost::numeric_cast<py::ssize_t>(batch_size)},
                                            c_out->get_times().data(), o);
@@ -483,7 +452,8 @@ void expose_c_output_batch_impl(py::module &m, const std::string &suffix)
                                        assert(tc_size % (n_steps * nvars * batch_size) == 0u);
                                        const auto ncoeffs = tc_size / (n_steps * nvars * batch_size);
 
-                                       auto ret = py::array_t<T>(
+                                       auto ret = py::array(
+                                           py::dtype(get_dtype<T>()),
                                            py::array::ShapeContainer{boost::numeric_cast<py::ssize_t>(n_steps),
                                                                      boost::numeric_cast<py::ssize_t>(nvars),
                                                                      boost::numeric_cast<py::ssize_t>(ncoeffs),
@@ -500,8 +470,8 @@ void expose_c_output_batch_impl(py::module &m, const std::string &suffix)
                                [](const c_output_t &c_out) {
                                    auto ret = c_out.get_bounds();
 
-                                   return py::make_tuple(py::array_t<T>(py::cast(ret.first)),
-                                                         py::array_t<T>(py::cast(ret.second)));
+                                   return py::make_tuple(py::array(py::cast(ret.first)),
+                                                         py::array(py::cast(ret.second)));
                                })
         .def_property_readonly("n_steps", &c_output_t::get_n_steps)
         .def_property_readonly("batch_size", &c_output_t::get_batch_size)

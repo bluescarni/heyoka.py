@@ -30,7 +30,6 @@
 
 #if defined(HEYOKA_HAVE_REAL128)
 
-#include <mp++/extra/pybind11.hpp>
 #include <mp++/real128.hpp>
 
 #endif
@@ -325,12 +324,6 @@ void expose_taylor_t_event_ldbl(py::module &m)
 
 void expose_taylor_t_event_f128(py::module &m)
 {
-    // NOTE: we need to temporarily alter
-    // the precision in mpmath to successfully
-    // construct the default values of the parameters
-    // for the constructor.
-    scoped_quadprec_setter qs;
-
     detail::expose_taylor_t_event_impl<mppp::real128, false>(m, "f128");
 }
 
@@ -350,12 +343,6 @@ void expose_taylor_nt_event_ldbl(py::module &m)
 
 void expose_taylor_nt_event_f128(py::module &m)
 {
-    // NOTE: we need to temporarily alter
-    // the precision in mpmath to successfully
-    // construct the default values of the parameters
-    // for the constructor.
-    scoped_quadprec_setter qs;
-
     detail::expose_taylor_nt_event_impl<mppp::real128, false>(m, "f128");
 }
 
