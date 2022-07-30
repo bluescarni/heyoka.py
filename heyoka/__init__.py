@@ -50,10 +50,9 @@ else:
 
 del _os
 
-# Small helper to check if real128 is available.
-
 
 def _with_real128():
+    # Small helper to check if real128 is available.
     from . import core
 
     return hasattr(core, "real128")
