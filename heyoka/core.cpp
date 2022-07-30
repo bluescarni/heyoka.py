@@ -257,6 +257,7 @@ PyObject *import_numpy(PyObject *m)
 
 PYBIND11_MODULE(core, m)
 {
+    // Import the NumPy API bits.
     if (heypy::detail::import_numpy(m.ptr()) == nullptr) {
         // NOTE: on failure, the NumPy macros already set
         // the error indicator. Thus, all it is left to do
