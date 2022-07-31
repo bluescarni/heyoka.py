@@ -36,7 +36,8 @@ extensions = [
     'sphinx.ext.intersphinx'
 ]
 
-intersphinx_mapping = {'hy': ('https://bluescarni.github.io/heyoka', None)}
+intersphinx_mapping = {'hy': ('https://bluescarni.github.io/heyoka', None),
+                       'mppp': ('https://bluescarni.github.io/mppp', None)}
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']

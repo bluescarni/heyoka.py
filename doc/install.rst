@@ -14,7 +14,8 @@ heyoka.py has several Python and C++ dependencies. On the C++ side, heyoka.py de
 * the `{fmt} <https://fmt.dev/latest/index.html>`__ library (**mandatory**),
 * the `TBB <https://github.com/oneapi-src/oneTBB>`__ library (**mandatory**),
 * the `mp++ <https://github.com/bluescarni/mppp>`__ library (**mandatory** if the
-  heyoka C++ library was compiled with the ``HEYOKA_WITH_MPPP`` option on - see the
+  heyoka C++ library was compiled with the ``HEYOKA_WITH_MPPP`` option on to enable
+  support for quadruple-precision computations via the :cpp:class:`mppp::real128` type - see the
   :ref:`heyoka C++ installation instructions <hy:installation>`).
 
 On the Python side, heyoka.py requires at least Python 3.5
@@ -22,11 +23,8 @@ On the Python side, heyoka.py requires at least Python 3.5
 
 * `NumPy <https://numpy.org/>`__ (**mandatory**),
 * `cloudpickle <https://github.com/cloudpipe/cloudpickle>`__ (**mandatory**),
-* `mpmath <https://mpmath.org/>`__ (**mandatory** if the
-  heyoka C++ library was compiled with the ``HEYOKA_WITH_MPPP`` option on - see the
-  :ref:`heyoka C++ installation instructions <hy:installation>`),
-* `SymPy <https://www.sympy.org/en/index.html>`__ (*optional*, for converting heyoka.py
-  expressions to/from SymPy expressions).
+* `SymPy <https://www.sympy.org/en/index.html>`__ and `mpmath <https://mpmath.org/>`__
+  (*optional*, for converting heyoka.py expressions to/from SymPy expressions).
 
 The tested and supported CPU architectures at this time are x86-64, 64-bit ARM and 64-bit PowerPC.
 
