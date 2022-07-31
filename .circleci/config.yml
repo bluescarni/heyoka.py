@@ -1,24 +1,24 @@
 version: 2.1
 
 jobs:
-  focal_gcc9_heyoka_head_38:
+  conda_heyoka_head_310:
     docker:
     - image: cimg/base:current
     steps:
     - checkout
     - run:
         name: Build and test
-        command: bash ./tools/circleci_focal_gcc9_heyoka_head_38.sh
+        command: bash ./tools/circleci_conda_heyoka_head_310.sh
     - store_artifacts:
         path: doc/_build/html
-  focal_gcc9_heyoka_head_release_38:
+  conda_heyoka_head_release_310:
     docker:
     - image: cimg/base:current
     steps:
     - checkout
     - run:
         name: Build and test
-        command: bash ./tools/circleci_focal_gcc9_heyoka_head_release_38.sh
+        command: bash ./tools/circleci_conda_heyoka_head_release_310.sh
     - store_artifacts:
         path: doc/_build/html
   ubuntu_arm64:
@@ -35,6 +35,6 @@ workflows:
   version: 2.1
   all_builds:
     jobs:
-    - focal_gcc9_heyoka_head_38
-    - focal_gcc9_heyoka_head_release_38
+    - conda_heyoka_head_310
+    - conda_heyoka_head_release_310
     - ubuntu_arm64
