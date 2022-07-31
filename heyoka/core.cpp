@@ -382,6 +382,12 @@ PYBIND11_MODULE(core, m)
         .def(mppp::real128() - py::self, "x"_a.noconvert())
 #endif
         .def(py::self * py::self, "x"_a.noconvert())
+        .def(
+            "__mul__", [](const hey::expression &ex, std::int32_t x) { return ex * static_cast<double>(x); },
+            "x"_a.noconvert())
+        .def(
+            "__rmul__", [](const hey::expression &ex, std::int32_t x) { return ex * static_cast<double>(x); },
+            "x"_a.noconvert())
         .def(py::self * double(), "x"_a.noconvert())
         .def(double() * py::self, "x"_a.noconvert())
         .def(py::self * ld_t(), "x"_a.noconvert())
@@ -391,6 +397,12 @@ PYBIND11_MODULE(core, m)
         .def(mppp::real128() * py::self, "x"_a.noconvert())
 #endif
         .def(py::self / py::self, "x"_a.noconvert())
+        .def(
+            "__div__", [](const hey::expression &ex, std::int32_t x) { return ex / static_cast<double>(x); },
+            "x"_a.noconvert())
+        .def(
+            "__rdiv__", [](const hey::expression &ex, std::int32_t x) { return static_cast<double>(x) / ex; },
+            "x"_a.noconvert())
         .def(py::self / double(), "x"_a.noconvert())
         .def(double() / py::self, "x"_a.noconvert())
         .def(py::self / ld_t(), "x"_a.noconvert())
@@ -398,31 +410,6 @@ PYBIND11_MODULE(core, m)
 #if defined(HEYOKA_HAVE_REAL128)
         .def(py::self / mppp::real128(), "x"_a.noconvert())
         .def(mppp::real128() / py::self, "x"_a.noconvert())
-#endif
-        // In-place operators.
-        .def(py::self += py::self, "x"_a.noconvert())
-        .def(py::self += double(), "x"_a.noconvert())
-        .def(py::self += ld_t(), "x"_a.noconvert())
-#if defined(HEYOKA_HAVE_REAL128)
-        .def(py::self += mppp::real128(), "x"_a.noconvert())
-#endif
-        .def(py::self -= py::self, "x"_a.noconvert())
-        .def(py::self -= double(), "x"_a.noconvert())
-        .def(py::self -= ld_t(), "x"_a.noconvert())
-#if defined(HEYOKA_HAVE_REAL128)
-        .def(py::self -= mppp::real128(), "x"_a.noconvert())
-#endif
-        .def(py::self *= py::self, "x"_a.noconvert())
-        .def(py::self *= double(), "x"_a.noconvert())
-        .def(py::self *= ld_t(), "x"_a.noconvert())
-#if defined(HEYOKA_HAVE_REAL128)
-        .def(py::self *= mppp::real128(), "x"_a.noconvert())
-#endif
-        .def(py::self /= py::self, "x"_a.noconvert())
-        .def(py::self /= double(), "x"_a.noconvert())
-        .def(py::self /= ld_t(), "x"_a.noconvert())
-#if defined(HEYOKA_HAVE_REAL128)
-        .def(py::self /= mppp::real128(), "x"_a.noconvert())
 #endif
         // Comparisons.
         .def(py::self == py::self, "x"_a.noconvert())
@@ -522,7 +509,6 @@ PYBIND11_MODULE(core, m)
     m.def(
         "kepE", [](hey::expression e, hey::expression M) { return hey::kepE(std::move(e), std::move(M)); },
         "e"_a.noconvert(), "M"_a.noconvert());
-
     m.def(
         "kepE", [](double e, hey::expression M) { return hey::kepE(e, std::move(M)); }, "e"_a.noconvert(),
         "M"_a.noconvert());
