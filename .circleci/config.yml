@@ -3,7 +3,7 @@ version: 2.1
 jobs:
   focal_gcc9_heyoka_head_38:
     docker:
-    - image: cimg/buildpack-deps:focal
+    - image: cimg/base:focal
     steps:
     - checkout
     - run:
@@ -13,7 +13,7 @@ jobs:
         path: doc/_build/html
   focal_gcc9_heyoka_head_release_38:
     docker:
-    - image: cimg/buildpack-deps:focal
+    - image: cimg/base:focal
     steps:
     - checkout
     - run:
