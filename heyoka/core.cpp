@@ -340,6 +340,7 @@ PYBIND11_MODULE(core, m)
 
     py::class_<hey::expression>(m, "expression", py::dynamic_attr{})
         .def(py::init<>())
+        .def(py::init([](std::int32_t x) { return hey::expression{static_cast<double>(x)}; }), "x"_a.noconvert())
         .def(py::init<double>(), "x"_a.noconvert())
         .def(py::init<long double>(), "x"_a.noconvert())
 #if defined(HEYOKA_HAVE_REAL128)
@@ -351,6 +352,12 @@ PYBIND11_MODULE(core, m)
         .def(+py::self)
         // Binary operators.
         .def(py::self + py::self)
+        .def(
+            "__add__", [](const hey::expression &ex, std::int32_t x) { return ex + static_cast<double>(x); },
+            "x"_a.noconvert())
+        .def(
+            "__radd__", [](const hey::expression &ex, std::int32_t x) { return ex + static_cast<double>(x); },
+            "x"_a.noconvert())
         .def(py::self + double(), "x"_a.noconvert())
         .def(double() + py::self, "x"_a.noconvert())
         .def(py::self + ld_t(), "x"_a.noconvert())
@@ -360,6 +367,12 @@ PYBIND11_MODULE(core, m)
         .def(mppp::real128() + py::self, "x"_a.noconvert())
 #endif
         .def(py::self - py::self, "x"_a.noconvert())
+        .def(
+            "__sub__", [](const hey::expression &ex, std::int32_t x) { return ex - static_cast<double>(x); },
+            "x"_a.noconvert())
+        .def(
+            "__rsub__", [](const hey::expression &ex, std::int32_t x) { return static_cast<double>(x) - ex; },
+            "x"_a.noconvert())
         .def(py::self - double(), "x"_a.noconvert())
         .def(double() - py::self, "x"_a.noconvert())
         .def(py::self - ld_t(), "x"_a.noconvert())
@@ -417,6 +430,9 @@ PYBIND11_MODULE(core, m)
         // pow().
         .def(
             "__pow__", [](const hey::expression &b, const hey::expression &e) { return hey::pow(b, e); },
+            "e"_a.noconvert())
+        .def(
+            "__pow__", [](const hey::expression &b, std::int32_t e) { return hey::pow(b, static_cast<double>(e)); },
             "e"_a.noconvert())
         .def(
             "__pow__", [](const hey::expression &b, double e) { return hey::pow(b, e); }, "e"_a.noconvert())
