@@ -17,14 +17,6 @@ jobs:
     - run:
         name: Build and test
         command: bash ./tools/circleci_focal_gcc9_heyoka_head_release_38.sh
-  # focal_gcc9_heyoka_stable_38:
-  #   docker:
-  #   - image: circleci/buildpack-deps:focal
-  #   steps:
-  #   - checkout
-  #   - run:
-  #       name: Build and test
-  #       command: bash ./tools/circleci_focal_gcc9_heyoka_stable_38.sh
   ubuntu_arm64:
     machine:
       image: ubuntu-2004:202101-01
@@ -34,6 +26,8 @@ jobs:
     - run:
         name: Build and test
         command: bash ./tools/circleci_ubuntu_arm64.sh
+    - store_artifacts:
+        path: /home/circleci/project/doc/_build/html
 
 workflows:
   version: 2.1
@@ -42,4 +36,3 @@ workflows:
     - focal_gcc9_heyoka_head_38
     - focal_gcc9_heyoka_head_release_38
     - ubuntu_arm64
-    # - focal_gcc9_heyoka_stable_38
