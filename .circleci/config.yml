@@ -9,6 +9,8 @@ jobs:
     - run:
         name: Build and test
         command: bash ./tools/circleci_focal_gcc9_heyoka_head_38.sh
+    - store_artifacts:
+        path: $CIRCLE_WORKING_DIRECTORY/doc/_build/html
   focal_gcc9_heyoka_head_release_38:
     docker:
     - image: circleci/buildpack-deps:focal
@@ -17,6 +19,8 @@ jobs:
     - run:
         name: Build and test
         command: bash ./tools/circleci_focal_gcc9_heyoka_head_release_38.sh
+    - store_artifacts:
+        path: $CIRCLE_WORKING_DIRECTORY/doc/_build/html
   ubuntu_arm64:
     machine:
       image: ubuntu-2004:202101-01
