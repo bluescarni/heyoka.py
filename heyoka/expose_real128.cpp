@@ -41,6 +41,7 @@
 #include <numpy/ufuncobject.h>
 
 #include <mp++/config.hpp>
+#include <mp++/integer.hpp>
 #include <mp++/real128.hpp>
 
 #include "common_utils.hpp"
@@ -812,6 +813,41 @@ void expose_real128(py::module_ &m)
     };
     detail::py_real128_as_number.nb_bool
         = [](PyObject *arg) { return static_cast<int>(static_cast<bool>(*get_val(arg))); };
+    detail::py_real128_as_number.nb_float
+        = [](PyObject *arg) { return PyFloat_FromDouble(static_cast<double>(*get_val(arg))); };
+    detail::py_real128_as_number.nb_int = [](PyObject *arg) -> PyObject * {
+        using std::isfinite;
+        using std::isnan;
+
+        const auto val = *get_val(arg);
+
+        if (isnan(val)) {
+            PyErr_SetString(PyExc_ValueError, "Cannot convert real128 NaN to integer");
+            return nullptr;
+        }
+
+        if (!isfinite(val)) {
+            PyErr_SetString(PyExc_OverflowError, "Cannot convert real128 infinity to integer");
+            return nullptr;
+        }
+
+        try {
+            const auto val_int = mppp::integer<1>{val};
+            long long candidate = 0;
+            if (val_int.get(candidate)) {
+                return PyLong_FromLongLong(candidate);
+            }
+
+            return PyLong_FromString(val_int.to_string().c_str(), nullptr, 10);
+        } catch (const std::exception &ex) {
+            PyErr_SetString(PyExc_RuntimeError, ex.what());
+            return nullptr;
+        } catch (...) {
+            PyErr_SetString(PyExc_RuntimeError,
+                            "An unknown exception was caught while attempting to convert a real128 to int");
+            return nullptr;
+        }
+    };
 
     // Finalize py_real128_type.
     if (PyType_Ready(&py_real128_type) < 0) {

@@ -4218,6 +4218,18 @@ class real128_test_case(_ut.TestCase):
         self.assertTrue(real128(2) >= real128(2))
         self.assertTrue(real128(3) >= real128(2))
 
+        # Try to invoke all methods of real128.
+        # We run this check to make sure that we have
+        # implemented all mandatory methods (e.g., failing
+        # to implement the __int__() method would result
+        # in a segmentation fault).
+        for s in dir(real128):
+            try:
+                x = real128()
+                getattr(x, s)()
+            except:
+                pass
+
     def test_numpy(self):
         pass
 
