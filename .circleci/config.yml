@@ -26,8 +26,6 @@ jobs:
     - run:
         name: Build and test
         command: bash ./tools/circleci_ubuntu_arm64.sh
-    - store_artifacts:
-        path: /home/circleci/project/doc/_build/html
 
 workflows:
   version: 2.1
