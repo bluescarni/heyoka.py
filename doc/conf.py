@@ -22,7 +22,8 @@ copyright = '2020, 2021, 2022, Francesco Biscani and Dario Izzo'
 author = 'Francesco Biscani and Dario Izzo'
 
 # The full version, including alpha/beta/rc tags
-release = '@heyoka.py_VERSION@'
+import heyoka as hy
+release = hy.__version__
 
 
 # -- General configuration ---------------------------------------------------
