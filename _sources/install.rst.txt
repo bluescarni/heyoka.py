@@ -14,19 +14,19 @@ heyoka.py has several Python and C++ dependencies. On the C++ side, heyoka.py de
 * the `{fmt} <https://fmt.dev/latest/index.html>`__ library (**mandatory**),
 * the `TBB <https://github.com/oneapi-src/oneTBB>`__ library (**mandatory**),
 * the `mp++ <https://github.com/bluescarni/mppp>`__ library (**mandatory** if the
-  heyoka C++ library was compiled with the ``HEYOKA_WITH_MPPP`` option on - see the
-  :ref:`heyoka C++ installation instructions <hy:installation>`).
+  heyoka C++ library was compiled with the ``HEYOKA_WITH_MPPP`` option enabled
+  and the mp++ installation supports quadruple-precision computations via
+  the :cpp:class:`mppp::real128` type - see the
+  :ref:`heyoka <hy:installation>` and :ref:`mp++ <mppp:installation>` installation
+  instructions).
 
 On the Python side, heyoka.py requires at least Python 3.5
 (Python 2.x is **not** supported) and depends on:
 
 * `NumPy <https://numpy.org/>`__ (**mandatory**),
 * `cloudpickle <https://github.com/cloudpipe/cloudpickle>`__ (**mandatory**),
-* `mpmath <https://mpmath.org/>`__ (**mandatory** if the
-  heyoka C++ library was compiled with the ``HEYOKA_WITH_MPPP`` option on - see the
-  :ref:`heyoka C++ installation instructions <hy:installation>`),
-* `SymPy <https://www.sympy.org/en/index.html>`__ (*optional*, for converting heyoka.py
-  expressions to/from SymPy expressions).
+* `SymPy <https://www.sympy.org/en/index.html>`__ and `mpmath <https://mpmath.org/>`__
+  (*optional*, for converting heyoka.py expressions to/from SymPy expressions).
 
 The tested and supported CPU architectures at this time are x86-64, 64-bit ARM and 64-bit PowerPC.
 
@@ -79,8 +79,8 @@ a continuous integration pipeline which currently includes:
 In addition to the C++ dependencies enumerated :ref:`earlier <installation_deps>`,
 installation from source requires also:
 
-* `pybind11 <https://github.com/pybind/pybind11>`__ (version >= 2.6),
-* `CMake <https://cmake.org/>`__, version 3.17 or later.
+* `pybind11 <https://github.com/pybind/pybind11>`__ (version >= 2.10),
+* `CMake <https://cmake.org/>`__, version 3.16 or later.
 
 After making sure the dependencies are installed on your system, you can
 download the heyoka.py source code from the

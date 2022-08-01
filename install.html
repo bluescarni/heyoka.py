@@ -21,7 +21,7 @@
     href="_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
 
     <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
-    <link rel="stylesheet" href="_static/styles/sphinx-book-theme.css?digest=62ba249389abaaa9ffc34bf36a076bdc1d65ee18" type="text/css" />
+    <link rel="stylesheet" href="_static/styles/sphinx-book-theme.css?digest=5115cc725059bd94278eecd172e13a965bf8f5a9" type="text/css" />
     <link rel="stylesheet" type="text/css" href="_static/togglebutton.css" />
     <link rel="stylesheet" type="text/css" href="_static/mystnb.css" />
     
@@ -36,7 +36,7 @@
     <script>let toggleHintHide = 'Click to hide';</script>
     <script>let toggleOpenOnPrint = 'true';</script>
     <script src="_static/togglebutton.js"></script>
-    <script src="_static/scripts/sphinx-book-theme.js?digest=f31d14ad54b65d19161ba51d4ffff3a77ae00456"></script>
+    <script src="_static/scripts/sphinx-book-theme.js?digest=9c920249402e914e316237a7dbc6769907cce411"></script>
     <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -625,19 +625,19 @@ version 0.19.0 or later (<strong>mandatory</strong>),</p></li>
 <li><p>the <a class="reference external" href="https://fmt.dev/latest/index.html">{fmt}</a> library (<strong>mandatory</strong>),</p></li>
 <li><p>the <a class="reference external" href="https://github.com/oneapi-src/oneTBB">TBB</a> library (<strong>mandatory</strong>),</p></li>
 <li><p>the <a class="reference external" href="https://github.com/bluescarni/mppp">mp++</a> library (<strong>mandatory</strong> if the
-heyoka C++ library was compiled with the <code class="docutils literal notranslate"><span class="pre">HEYOKA_WITH_MPPP</span></code> option on - see the
-<a class="reference external" href="https://bluescarni.github.io/heyoka/install.html#installation" title="(in heyoka)"><span class="xref std std-ref">heyoka C++ installation instructions</span></a>).</p></li>
+heyoka C++ library was compiled with the <code class="docutils literal notranslate"><span class="pre">HEYOKA_WITH_MPPP</span></code> option enabled
+and the mp++ installation supports quadruple-precision computations via
+the <a class="reference external" href="https://bluescarni.github.io/mppp/real128.html#_CPPv4N4mppp7real128E" title="(in mp++ v0.27)"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">mppp::real128</span></code></a> type - see the
+<a class="reference external" href="https://bluescarni.github.io/heyoka/install.html#installation" title="(in heyoka)"><span class="xref std std-ref">heyoka</span></a> and <a class="reference external" href="https://bluescarni.github.io/mppp/installation.html#installation" title="(in mp++ v0.27)"><span class="xref std std-ref">mp++</span></a> installation
+instructions).</p></li>
 </ul>
 <p>On the Python side, heyoka.py requires at least Python 3.5
 (Python 2.x is <strong>not</strong> supported) and depends on:</p>
 <ul class="simple">
 <li><p><a class="reference external" href="https://numpy.org/">NumPy</a> (<strong>mandatory</strong>),</p></li>
 <li><p><a class="reference external" href="https://github.com/cloudpipe/cloudpickle">cloudpickle</a> (<strong>mandatory</strong>),</p></li>
-<li><p><a class="reference external" href="https://mpmath.org/">mpmath</a> (<strong>mandatory</strong> if the
-heyoka C++ library was compiled with the <code class="docutils literal notranslate"><span class="pre">HEYOKA_WITH_MPPP</span></code> option on - see the
-<a class="reference external" href="https://bluescarni.github.io/heyoka/install.html#installation" title="(in heyoka)"><span class="xref std std-ref">heyoka C++ installation instructions</span></a>),</p></li>
-<li><p><a class="reference external" href="https://www.sympy.org/en/index.html">SymPy</a> (<em>optional</em>, for converting heyoka.py
-expressions to/from SymPy expressions).</p></li>
+<li><p><a class="reference external" href="https://www.sympy.org/en/index.html">SymPy</a> and <a class="reference external" href="https://mpmath.org/">mpmath</a>
+(<em>optional</em>, for converting heyoka.py expressions to/from SymPy expressions).</p></li>
 </ul>
 <p>The tested and supported CPU architectures at this time are x86-64, 64-bit ARM and 64-bit PowerPC.</p>
 </section>
@@ -683,8 +683,8 @@ a continuous integration pipeline which currently includes:</p>
 <p>In addition to the C++ dependencies enumerated <a class="reference internal" href="#installation-deps"><span class="std std-ref">earlier</span></a>,
 installation from source requires also:</p>
 <ul class="simple">
-<li><p><a class="reference external" href="https://github.com/pybind/pybind11">pybind11</a> (version &gt;= 2.6),</p></li>
-<li><p><a class="reference external" href="https://cmake.org/">CMake</a>, version 3.17 or later.</p></li>
+<li><p><a class="reference external" href="https://github.com/pybind/pybind11">pybind11</a> (version &gt;= 2.10),</p></li>
+<li><p><a class="reference external" href="https://cmake.org/">CMake</a>, version 3.16 or later.</p></li>
 </ul>
 <p>After making sure the dependencies are installed on your system, you can
 download the heyoka.py source code from the
