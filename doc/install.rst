@@ -14,9 +14,11 @@ heyoka.py has several Python and C++ dependencies. On the C++ side, heyoka.py de
 * the `{fmt} <https://fmt.dev/latest/index.html>`__ library (**mandatory**),
 * the `TBB <https://github.com/oneapi-src/oneTBB>`__ library (**mandatory**),
 * the `mp++ <https://github.com/bluescarni/mppp>`__ library (**mandatory** if the
-  heyoka C++ library was compiled against an mp++ installation
-  with support for quadruple-precision computations via the :cpp:class:`mppp::real128` type - see the
-  :ref:`heyoka C++ installation instructions <hy:installation>`).
+  heyoka C++ library was compiled with the ``HEYOKA_WITH_MPPP`` option enabled
+  and the mp++ installation supports quadruple-precision computations via
+  the :cpp:class:`mppp::real128` type - see the
+  :ref:`heyoka <hy:installation>` and :ref:`mp++ <mppp:installation>` installation
+  instructions).
 
 On the Python side, heyoka.py requires at least Python 3.5
 (Python 2.x is **not** supported) and depends on:
