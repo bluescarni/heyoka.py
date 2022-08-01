@@ -3,6 +3,19 @@
 Changelog
 =========
 
+0.19.0 (unreleased)
+-------------------
+
+Changes
+~~~~~~~
+
+- heyoka.py now compiles without deprecation warnings against
+  the latest fmt versions
+  (`#98 <https://github.com/bluescarni/heyoka.py/pull/98>`__).
+- New version requirements: heyoka>=0.19, CMake>=3.16, pybind11>=2.10
+  (`#98 <https://github.com/bluescarni/heyoka.py/pull/98>`__,
+  `#96 <https://github.com/bluescarni/heyoka.py/pull/96>`__).
+
 0.18.0 (2022-05-11)
 -------------------
 

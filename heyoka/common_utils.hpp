@@ -34,16 +34,6 @@ heyoka::number to_number(const py::handle &);
 
 bool callable(const py::handle &);
 
-bool mpmath_available();
-
-struct scoped_quadprec_setter {
-    scoped_quadprec_setter();
-    ~scoped_quadprec_setter();
-
-    bool has_mpmath;
-    int orig_prec = 0;
-};
-
 // Helper to expose the llvm_state getter
 // for a generic object.
 template <typename T>

@@ -18,7 +18,6 @@
 
 #if defined(HEYOKA_HAVE_REAL128)
 
-#include <mp++/extra/pybind11.hpp>
 #include <mp++/real128.hpp>
 
 #endif
@@ -26,7 +25,7 @@
 #include <heyoka/number.hpp>
 
 #include "common_utils.hpp"
-#include "long_double_caster.hpp"
+#include "custom_casters.hpp"
 
 namespace heyoka_py
 {
@@ -80,39 +79,6 @@ heyoka::number to_number(const py::handle &o)
 bool callable(const py::handle &o)
 {
     return py::cast<bool>(builtins().attr("callable")(o));
-}
-
-// Detect if mpmath is available.
-bool mpmath_available()
-{
-    try {
-        py::module_::import("mpmath");
-    } catch (...) {
-        return false;
-    }
-
-    return true;
-}
-
-// RAII helper to temporarily change the mpmath precision
-// to 113 bits. The original precision will be restored upon
-// destruction.
-scoped_quadprec_setter::scoped_quadprec_setter() : has_mpmath(mpmath_available())
-{
-    if (has_mpmath) {
-        auto mpmod = py::module_::import("mpmath");
-
-        orig_prec = py::cast<int>(mpmod.attr("mp").attr("prec"));
-        mpmod.attr("mp").attr("prec") = 113;
-    }
-}
-
-scoped_quadprec_setter::~scoped_quadprec_setter()
-{
-    if (has_mpmath) {
-        // Restore the original precision.
-        py::module_::import("mpmath").attr("mp").attr("prec") = orig_prec;
-    }
 }
 
 } // namespace heyoka_py

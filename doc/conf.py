@@ -22,7 +22,8 @@ copyright = '2020, 2021, 2022, Francesco Biscani and Dario Izzo'
 author = 'Francesco Biscani and Dario Izzo'
 
 # The full version, including alpha/beta/rc tags
-release = '@heyoka.py_VERSION@'
+import heyoka as hy
+release = hy.__version__
 
 
 # -- General configuration ---------------------------------------------------
@@ -36,7 +37,8 @@ extensions = [
     'sphinx.ext.intersphinx'
 ]
 
-intersphinx_mapping = {'hy': ('https://bluescarni.github.io/heyoka', None)}
+intersphinx_mapping = {'hy': ('https://bluescarni.github.io/heyoka', None),
+                       'mppp': ('https://bluescarni.github.io/mppp', None)}
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -76,6 +78,6 @@ html_theme_options = {
 jupyter_execute_notebooks = "force"
 execution_excludepatterns = ['*Trappist-1*', '*Outer*', '*Maxwell*', '*Keplerian billiard*',
                              '*embryos*', 'tides_spokes*', 'ensemble_batch_perf*', 'The restricted three-body problem*',
-                             'parallel_mode.ipynb']
+                             'parallel_mode.ipynb', 'vsop2013.ipynb']
 
 latex_engine = 'xelatex'

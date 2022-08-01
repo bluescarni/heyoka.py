@@ -14,7 +14,7 @@ foreach(HEYOKA_PY_PYTHON_FILE ${HEYOKA_PY_PYTHON_FILES})
 endforeach()
 
 # Core module.
-Python3_add_library(core MODULE WITH_SOABI
+set(_HEYOKA_PY_CORE_SOURCES
     core.cpp
     taylor_expose_integrator.cpp
     taylor_expose_events.cpp
@@ -24,11 +24,22 @@ Python3_add_library(core MODULE WITH_SOABI
     logging.cpp
     setup_sympy.cpp
     cfunc.cpp
+    expose_real128.cpp
+    dtypes.cpp
+    custom_casters.cpp
 )
 
-target_link_libraries(core PRIVATE heyoka::heyoka fmt::fmt Boost::boost Boost::serialization TBB::tbb)
+if(${CMAKE_VERSION} VERSION_LESS "3.17.0")
+    Python3_add_library(core MODULE ${_HEYOKA_PY_CORE_SOURCES})
+else()
+    Python3_add_library(core MODULE WITH_SOABI ${_HEYOKA_PY_CORE_SOURCES})
+endif()
+
+unset(_HEYOKA_PY_CORE_SOURCES)
+
+target_link_libraries(core PRIVATE heyoka::heyoka fmt::fmt Boost::boost Boost::serialization TBB::tbb Python3::NumPy)
 target_link_libraries(core PRIVATE "${pybind11_LIBRARIES}")
-if(heyoka_WITH_MPPP)
+if(heyoka_WITH_REAL128)
     target_link_libraries(core PRIVATE mp++::mp++)
 endif()
 target_include_directories(core SYSTEM PRIVATE "${pybind11_INCLUDE_DIR}" "${Python3_INCLUDE_DIRS}")

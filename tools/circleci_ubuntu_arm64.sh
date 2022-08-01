@@ -14,10 +14,8 @@ wget https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge
 export deps_dir=$HOME/local
 export PATH="$HOME/miniconda/bin:$PATH"
 bash miniconda.sh -b -p $HOME/miniconda
-conda create -y -q -p $deps_dir cxx-compiler c-compiler cmake llvmdev tbb-devel tbb astroquery boost-cpp sleef 'fmt=8.0.*' 'spdlog=1.9.2' python=3.8 pybind11 numpy mpmath sympy scipy cloudpickle sphinx 'myst-nb<0.14' matplotlib sphinx-book-theme
+conda create -y -q -p $deps_dir cxx-compiler c-compiler cmake llvmdev tbb-devel tbb astroquery boost-cpp sleef 'fmt=8.1.*' 'spdlog=1.10.*' python=3.8 pybind11 numpy mpmath sympy scipy cloudpickle sphinx 'myst-nb<0.14' matplotlib sphinx-book-theme
 source activate $deps_dir
-
-export HEYOKA_PY_PROJECT_DIR=`pwd`
 
 # Checkout, build and install heyoka's HEAD.
 git clone https://github.com/bluescarni/heyoka.git heyoka_cpp
@@ -41,12 +39,6 @@ make -j2 VERBOSE=1 install
 cd
 
 python -c "from heyoka import test; test.run_test_suite()"
-
-cd $HEYOKA_PY_PROJECT_DIR
-
-cd doc
-
-make html
 
 set +e
 set +x

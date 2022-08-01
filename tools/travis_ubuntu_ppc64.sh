@@ -11,7 +11,7 @@ curl -L -o miniconda.sh https://github.com/conda-forge/miniforge/releases/latest
 export deps_dir=$HOME/local
 export PATH="$HOME/miniconda/bin:$PATH"
 bash miniconda.sh -b -p $HOME/miniconda
-conda create -y -q -p $deps_dir cxx-compiler c-compiler cmake llvmdev tbb-devel tbb astroquery boost-cpp sleef xtensor xtensor-blas blas blas-devel 'fmt=8.0.*' 'spdlog=1.9.2' python pybind11 numpy mpmath sympy cloudpickle mppp git make
+conda create -y -q -p $deps_dir cxx-compiler c-compiler cmake llvmdev tbb-devel tbb astroquery boost-cpp sleef xtensor xtensor-blas blas blas-devel 'fmt=8.1.*' 'spdlog=1.10.*' python pybind11 numpy mpmath sympy cloudpickle mppp git make
 source activate $deps_dir
 
 # Checkout, build and install heyoka's HEAD.
@@ -30,7 +30,7 @@ cd ../../
 mkdir build
 cd build
 
-cmake ../ -DCMAKE_INSTALL_PREFIX=$deps_dir -DCMAKE_PREFIX_PATH=$deps_dir -DCMAKE_BUILD_TYPE=Release -DBoost_NO_BOOST_CMAKE=ON -DHEYOKA_PY_SETUP_DOCS=no
+cmake ../ -DCMAKE_INSTALL_PREFIX=$deps_dir -DCMAKE_PREFIX_PATH=$deps_dir -DCMAKE_BUILD_TYPE=Release -DBoost_NO_BOOST_CMAKE=ON
 make -j2 VERBOSE=1 install
 
 cd /
