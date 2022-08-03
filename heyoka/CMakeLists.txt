@@ -27,6 +27,7 @@ set(_HEYOKA_PY_CORE_SOURCES
     expose_real128.cpp
     dtypes.cpp
     custom_casters.cpp
+    expose_expression.cpp
 )
 
 if(${CMAKE_VERSION} VERSION_LESS "3.17.0")

@@ -51,7 +51,6 @@ namespace heyoka_py
 
 namespace py = pybind11;
 namespace hey = heyoka;
-namespace heypy = heyoka_py;
 
 namespace detail
 {
