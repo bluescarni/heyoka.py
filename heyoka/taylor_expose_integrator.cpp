@@ -64,7 +64,7 @@ namespace
 template <typename T>
 void expose_taylor_integrator_common(py::class_<hey::taylor_adaptive<T>> &cl)
 {
-    using namespace pybind11::literals;
+    using namespace py::literals;
     using prop_cb_t = std::function<bool(hey::taylor_adaptive<T> &)>;
     namespace kw = heyoka::kw;
 
@@ -150,7 +150,7 @@ void expose_taylor_integrator_common(py::class_<hey::taylor_adaptive<T>> &cl)
 template <typename T>
 void expose_taylor_integrator_impl(py::module &m, const std::string &suffix)
 {
-    using namespace pybind11::literals;
+    using namespace py::literals;
     namespace kw = heyoka::kw;
 
     using t_ev_t = hey::t_event<T>;
