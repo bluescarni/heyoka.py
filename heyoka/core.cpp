@@ -217,7 +217,8 @@ py::array kepE_vector_wrapper(const py::iterable &e_ob, const py::iterable &M_ob
         heypy::py_throw(
             PyExc_TypeError,
             fmt::format(
-                R"(Inconsistent dtypes detected in the vectorised kepE() implementation: the eccentricity array has dtype "{}", while the mean anomaly array has dtype "{}")",
+                "Inconsistent dtypes detected in the vectorised kepE() implementation: the eccentricity array has "
+                "dtype \"{}\", while the mean anomaly array has dtype \"{}\" (the arrays must have the same dtype)",
                 heypy::str(e.dtype()), heypy::str(M.dtype()))
                 .c_str());
     }
