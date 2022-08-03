@@ -38,7 +38,8 @@ extensions = [
 ]
 
 intersphinx_mapping = {'hy': ('https://bluescarni.github.io/heyoka', None),
-                       'mppp': ('https://bluescarni.github.io/mppp', None)}
+                       'mppp': ('https://bluescarni.github.io/mppp', None),
+                       'numpy': ('https://numpy.org/doc/stable/', None)}
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
