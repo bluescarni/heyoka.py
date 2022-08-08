@@ -57,165 +57,110 @@ def _with_real128():
 
     return hasattr(core, "real128")
 
+from numpy import longdouble as _ld
+
+_fp_to_suffix_dict = {float: "_dbl",
+                      _ld: "_ldbl"}
+
+del _ld
+
+if _with_real128():
+    _fp_to_suffix_dict[real128] = "_f128"
+
+def _fp_to_suffix(fp_t):
+    if not isinstance(fp_t, type):
+        raise TypeError("A Python type was expected in input, but an object of type \"{}\" was provided instead".format(type(fp_t)))
+
+    if fp_t in _fp_to_suffix_dict:
+        return _fp_to_suffix_dict[fp_t]
+
+    raise TypeError("The floating-point type \"{}\" is not recognized/supported".format(fp_t))
+
 
 def taylor_adaptive(sys, state, **kwargs):
-    from .core import _taylor_adaptive_dbl, _taylor_adaptive_ldbl
+    from . import core
 
-    fp_type = kwargs.pop("fp_type", "double")
+    fp_type = kwargs.pop("fp_type", float)
+    fp_suffix = _fp_to_suffix(fp_type)
 
-    if fp_type == "double":
-        return _taylor_adaptive_dbl(sys, state, **kwargs)
-
-    if fp_type == "long double":
-        return _taylor_adaptive_ldbl(sys, state, **kwargs)
-
-    if _with_real128() and fp_type == "real128":
-        from .core import _taylor_adaptive_f128
-        return _taylor_adaptive_f128(sys, state, **kwargs)
-
-    raise TypeError(
-        "the floating-point type \"{}\" is not recognized/supported".format(fp_type))
-
-
-def eval(e, map, pars=[], **kwargs):
-    from .core import _eval_dbl, _eval_ldbl
-
-    fp_type = kwargs.pop("fp_type", "double")
-
-    if fp_type == "double":
-        return _eval_dbl(e, map, pars, **kwargs)
-
-    if fp_type == "long double":
-        return _eval_ldbl(e, map, pars, **kwargs)
-
-    if _with_real128() and fp_type == "real128":
-        from .core import _eval_f128
-        return _eval_f128(e, map, pars, **kwargs)
-
-    raise TypeError(
-        "the floating-point type \"{}\" is not recognized/supported".format(fp_type))
-
-
-def recommended_simd_size(fp_type="double"):
-    from .core import _recommended_simd_size_dbl
-
-    if fp_type == "double":
-        return _recommended_simd_size_dbl()
-
-    raise TypeError(
-        "the floating-point type \"{}\" is not recognized/supported".format(fp_type))
-
+    return getattr(core, "_taylor_adaptive{}".format(fp_suffix))(sys, state, **kwargs)
 
 def taylor_adaptive_batch(sys, state, **kwargs):
-    from .core import _taylor_adaptive_batch_dbl
+    from . import core
 
-    fp_type = kwargs.pop("fp_type", "double")
+    fp_type = kwargs.pop("fp_type", float)
+    fp_suffix = _fp_to_suffix(fp_type)
 
-    if fp_type == "double":
-        return _taylor_adaptive_batch_dbl(sys, state, **kwargs)
+    return getattr(core, "_taylor_adaptive_batch{}".format(fp_suffix))(sys, state, **kwargs)
 
-    raise TypeError(
-        "the floating-point type \"{}\" is not recognized/supported".format(fp_type))
+def eval(e, map, pars=[], **kwargs):
+    from . import core
+
+    fp_type = kwargs.pop("fp_type", float)
+    fp_suffix = _fp_to_suffix(fp_type)
+
+    return getattr(core, "_eval{}".format(fp_suffix))(e, map, pars, **kwargs)
+
+def recommended_simd_size(fp_type=float):
+    from . import core
+
+    fp_suffix = _fp_to_suffix(fp_type)
+
+    return getattr(core, "_recommended_simd_size{}".format(fp_suffix))()
 
 
 def taylor_add_jet(sys, order, **kwargs):
-    from .core import _taylor_add_jet_dbl, _taylor_add_jet_ldbl
+    from . import core
 
-    fp_type = kwargs.pop("fp_type", "double")
+    fp_type = kwargs.pop("fp_type", float)
+    fp_suffix = _fp_to_suffix(fp_type)
 
-    if fp_type == "double":
-        return _taylor_add_jet_dbl(sys, order, **kwargs)
-
-    if fp_type == "long double":
-        return _taylor_add_jet_ldbl(sys, order, **kwargs)
-
-    if _with_real128() and fp_type == "real128":
-        from .core import _taylor_add_jet_f128
-        return _taylor_add_jet_f128(sys, order, **kwargs)
-
-    raise TypeError(
-        "the floating-point type \"{}\" is not recognized/supported".format(fp_type))
+    return getattr(core, "_taylor_add_jet{}".format(fp_suffix))(sys, order, **kwargs)
 
 
 def add_cfunc(fn, **kwargs):
-    from .core import _add_cfunc_dbl, _add_cfunc_ldbl
+    from . import core
 
-    fp_type = kwargs.pop("fp_type", "double")
+    fp_type = kwargs.pop("fp_type", float)
+    fp_suffix = _fp_to_suffix(fp_type)
 
-    if fp_type == "double":
-        return _add_cfunc_dbl(fn, **kwargs)
-
-    if fp_type == "long double":
-        return _add_cfunc_ldbl(fn, **kwargs)
-
-    if _with_real128() and fp_type == "real128":
-        from .core import _add_cfunc_f128
-        return _add_cfunc_f128(fn, **kwargs)
-
-    raise TypeError(
-        "the floating-point type \"{}\" is not recognized/supported".format(fp_type))
+    return getattr(core, "_add_cfunc{}".format(fp_suffix))(fn, **kwargs)
 
 
 def nt_event(ex, callback, **kwargs):
-    from .core import _nt_event_dbl, _nt_event_ldbl
+    from . import core
 
-    fp_type = kwargs.pop("fp_type", "double")
+    fp_type = kwargs.pop("fp_type", float)
+    fp_suffix = _fp_to_suffix(fp_type)
 
-    if fp_type == "double":
-        return _nt_event_dbl(ex, callback, **kwargs)
-
-    if fp_type == "long double":
-        return _nt_event_ldbl(ex, callback, **kwargs)
-
-    if _with_real128() and fp_type == "real128":
-        from .core import _nt_event_f128
-        return _nt_event_f128(ex, callback, **kwargs)
-
-    raise TypeError(
-        "the floating-point type \"{}\" is not recognized/supported".format(fp_type))
+    return getattr(core, "_nt_event{}".format(fp_suffix))(ex, callback, **kwargs)
 
 
 def t_event(ex, **kwargs):
-    from .core import _t_event_dbl, _t_event_ldbl
+    from . import core
 
-    fp_type = kwargs.pop("fp_type", "double")
+    fp_type = kwargs.pop("fp_type", float)
+    fp_suffix = _fp_to_suffix(fp_type)
 
-    if fp_type == "double":
-        return _t_event_dbl(ex, **kwargs)
-
-    if fp_type == "long double":
-        return _t_event_ldbl(ex, **kwargs)
-
-    if _with_real128() and fp_type == "real128":
-        from .core import _t_event_f128
-        return _t_event_f128(ex, **kwargs)
-
-    raise TypeError(
-        "the floating-point type \"{}\" is not recognized/supported".format(fp_type))
+    return getattr(core, "_t_event{}".format(fp_suffix))(ex, **kwargs)
 
 
 def nt_event_batch(ex, callback, **kwargs):
-    from .core import _nt_event_batch_dbl
+    from . import core
 
-    fp_type = kwargs.pop("fp_type", "double")
+    fp_type = kwargs.pop("fp_type", float)
+    fp_suffix = _fp_to_suffix(fp_type)
 
-    if fp_type == "double":
-        return _nt_event_batch_dbl(ex, callback, **kwargs)
-
-    raise TypeError(
-        "the floating-point type \"{}\" is not recognized/supported".format(fp_type))
+    return getattr(core, "_nt_event_batch{}".format(fp_suffix))(ex, callback, **kwargs)
 
 
 def t_event_batch(ex, **kwargs):
-    from .core import _t_event_batch_dbl
+    from . import core
 
-    fp_type = kwargs.pop("fp_type", "double")
+    fp_type = kwargs.pop("fp_type", float)
+    fp_suffix = _fp_to_suffix(fp_type)
 
-    if fp_type == "double":
-        return _t_event_batch_dbl(ex, **kwargs)
-
-    raise TypeError(
-        "the floating-point type \"{}\" is not recognized/supported".format(fp_type))
+    return getattr(core, "_t_event_batch{}".format(fp_suffix))(ex, **kwargs)
 
 
 def from_sympy(ex, s_dict={}):

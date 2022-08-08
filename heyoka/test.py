@@ -77,14 +77,14 @@ class taylor_add_jet_test_case(_ut.TestCase):
         sys_par_t2 = [(x, v), (v, -par[0] * sin(x) + tpoly(par[1], par[6]))]
 
         if _ppc_arch:
-            fp_types = [("double", float)]
+            fp_types = [float]
         else:
-            fp_types = [("double", float), ("long double", np.longdouble)]
+            fp_types = [float, np.longdouble]
 
         if hasattr(core, "real128"):
-            fp_types.append(("real128", core.real128))
+            fp_types.append(core.real128)
 
-        for desc, fp_t in fp_types:
+        for fp_t in fp_types:
             # Check that the jet is consistent
             # with the Taylor coefficients.
             init_state = [fp_t(0.05), fp_t(0.025)]
@@ -92,9 +92,9 @@ class taylor_add_jet_test_case(_ut.TestCase):
             pars2 = [fp_t(-9.8), fp_t(.01), fp_t(.02), fp_t(.03),
                      fp_t(.04), fp_t(.05), fp_t(.06)]
 
-            ta = taylor_adaptive(sys, init_state, tol=fp_t(1e-9), fp_type=desc)
+            ta = taylor_adaptive(sys, init_state, tol=fp_t(1e-9), fp_type=fp_t)
 
-            jet = taylor_add_jet(sys, 5, fp_type=desc)
+            jet = taylor_add_jet(sys, 5, fp_type=fp_t)
             st = np.full((6, 2), fp_t(0), dtype=fp_t)
             st[0] = init_state
 
@@ -104,7 +104,7 @@ class taylor_add_jet_test_case(_ut.TestCase):
             self.assertTrue(np.all(ta.tc[:, :6].transpose() == st))
 
             # Try adding an sv_func.
-            jet = taylor_add_jet(sys, 5, fp_type=desc, sv_funcs=[x + v])
+            jet = taylor_add_jet(sys, 5, fp_type=fp_t, sv_funcs=[x + v])
             st = np.full((6, 3), fp_t(0), dtype=fp_t)
             st[0, :2] = init_state
 
@@ -116,9 +116,9 @@ class taylor_add_jet_test_case(_ut.TestCase):
 
             # An example with params.
             ta_par = taylor_adaptive(
-                sys_par, init_state, tol=fp_t(1e-9), fp_type=desc, pars=pars)
+                sys_par, init_state, tol=fp_t(1e-9), fp_type=fp_t, pars=pars)
 
-            jet_par = taylor_add_jet(sys_par, 5, fp_type=desc)
+            jet_par = taylor_add_jet(sys_par, 5, fp_type=fp_t)
             st = np.full((6, 2), fp_t(0), dtype=fp_t)
             st[0] = init_state
             par_arr = np.full((1,), fp_t(-9.8), dtype=fp_t)
@@ -130,10 +130,10 @@ class taylor_add_jet_test_case(_ut.TestCase):
 
             # Params + time.
             ta_par_t = taylor_adaptive(
-                sys_par_t, init_state, tol=fp_t(1e-9), fp_type=desc, pars=pars)
+                sys_par_t, init_state, tol=fp_t(1e-9), fp_type=fp_t, pars=pars)
             ta_par_t.time = fp_t(0.01)
 
-            jet_par_t = taylor_add_jet(sys_par_t, 5, fp_type=desc)
+            jet_par_t = taylor_add_jet(sys_par_t, 5, fp_type=fp_t)
             st = np.full((6, 2), fp_t(0), dtype=fp_t)
             st[0] = init_state
             par_arr = np.full((1,), fp_t(-9.8), dtype=fp_t)
@@ -145,10 +145,10 @@ class taylor_add_jet_test_case(_ut.TestCase):
             self.assertTrue(np.all(ta_par_t.tc[:, :6].transpose() == st))
 
             ta_par_t2 = taylor_adaptive(
-                sys_par_t2, init_state, tol=fp_t(1e-9), fp_type=desc, pars=pars2)
+                sys_par_t2, init_state, tol=fp_t(1e-9), fp_type=fp_t, pars=pars2)
             ta_par_t2.time = fp_t(0.01)
 
-            jet_par_t2 = taylor_add_jet(sys_par_t2, 5, fp_type=desc)
+            jet_par_t2 = taylor_add_jet(sys_par_t2, 5, fp_type=fp_t)
             st = np.full((6, 2), fp_t(0), dtype=fp_t)
             st[0] = init_state
             par_arr2 = np.array(pars2, dtype=fp_t)
@@ -272,7 +272,7 @@ class taylor_add_jet_test_case(_ut.TestCase):
                             "(5) instead" in str(cm.exception))
 
             # No pars in the system, wrong par array provided, scalar case.
-            jet = taylor_add_jet(sys, 5, fp_type=desc)
+            jet = taylor_add_jet(sys, 5, fp_type=fp_t)
             st = np.full((6, 2), fp_t(0), dtype=fp_t)
             with self.assertRaises(ValueError) as cm:
                 jet(st, pars=np.zeros((1,), dtype=fp_t))
@@ -306,12 +306,12 @@ class taylor_add_jet_test_case(_ut.TestCase):
         # Check throwing behaviour with long double on PPC.
         if _ppc_arch:
             with self.assertRaises(NotImplementedError):
-                taylor_add_jet(sys, 5, fp_type="long double")
+                taylor_add_jet(sys, 5, fp_type=np.longdouble)
 
         # Batch mode testing.
-        fp_types = [("double", float)]
+        fp_types = [float]
 
-        for desc, fp_t in fp_types:
+        for fp_t in fp_types:
             batch_size = 4
 
             # Check that the jet is consistent
@@ -321,9 +321,9 @@ class taylor_add_jet_test_case(_ut.TestCase):
             pars = [[fp_t(-9.8), fp_t(-9.7), fp_t(-9.6), fp_t(-9.5)]]
 
             ta = taylor_adaptive_batch(
-                sys, init_state, tol=fp_t(1e-9), fp_type=desc)
+                sys, init_state, tol=fp_t(1e-9), fp_type=fp_t)
 
-            jet = taylor_add_jet(sys, 5, fp_type=desc, batch_size=batch_size)
+            jet = taylor_add_jet(sys, 5, fp_type=fp_t, batch_size=batch_size)
             st = np.full((6, 2, batch_size), fp_t(0), dtype=fp_t)
             st[0] = init_state
 
@@ -333,7 +333,7 @@ class taylor_add_jet_test_case(_ut.TestCase):
             self.assertTrue(np.all(ta.tc[:, :6, :].transpose((1, 0, 2)) == st))
 
             # Try adding an sv_func.
-            jet = taylor_add_jet(sys, 5, fp_type=desc, sv_funcs=[
+            jet = taylor_add_jet(sys, 5, fp_type=fp_t, sv_funcs=[
                                  x + v], batch_size=batch_size)
             st = np.full((6, 3, batch_size), fp_t(0), dtype=fp_t)
             st[0, :2] = init_state
@@ -347,10 +347,10 @@ class taylor_add_jet_test_case(_ut.TestCase):
 
             # An example with params.
             ta_par = taylor_adaptive_batch(
-                sys_par, init_state, tol=fp_t(1e-9), fp_type=desc, pars=pars)
+                sys_par, init_state, tol=fp_t(1e-9), fp_type=fp_t, pars=pars)
 
             jet_par = taylor_add_jet(
-                sys_par, 5, fp_type=desc, batch_size=batch_size)
+                sys_par, 5, fp_type=fp_t, batch_size=batch_size)
             st = np.full((6, 2, batch_size), fp_t(0), dtype=fp_t)
             st[0] = init_state
             par_arr = np.array(pars)
@@ -363,11 +363,11 @@ class taylor_add_jet_test_case(_ut.TestCase):
 
             # Params + time.
             ta_par_t = taylor_adaptive_batch(
-                sys_par_t, init_state, tol=fp_t(1e-9), fp_type=desc, pars=pars)
+                sys_par_t, init_state, tol=fp_t(1e-9), fp_type=fp_t, pars=pars)
             ta_par_t.set_time([fp_t(0.01), fp_t(0.02), fp_t(0.03), fp_t(0.04)])
 
             jet_par_t = taylor_add_jet(
-                sys_par_t, 5, fp_type=desc, batch_size=batch_size)
+                sys_par_t, 5, fp_type=fp_t, batch_size=batch_size)
             st = np.full((6, 2, batch_size), fp_t(0), dtype=fp_t)
             st[0] = init_state
             par_arr = np.array(pars)
@@ -432,7 +432,7 @@ class taylor_add_jet_test_case(_ut.TestCase):
                             "(5) instead" in str(cm.exception))
 
             # No pars in the system, wrong par array provided, batch case.
-            jet = taylor_add_jet(sys, 5, fp_type=desc, batch_size=batch_size)
+            jet = taylor_add_jet(sys, 5, fp_type=fp_t, batch_size=batch_size)
             st = np.full((6, 2, batch_size), fp_t(0), dtype=fp_t)
             with self.assertRaises(ValueError) as cm:
                 jet(st, pars=np.zeros((1, 4), dtype=fp_t))
@@ -476,16 +476,16 @@ class event_classes_test_case(_ut.TestCase):
         x, v = make_vars("x", "v")
 
         if _ppc_arch:
-            fp_types = [("double", float)]
+            fp_types = [float]
         else:
-            fp_types = [("double", float), ("long double", np.longdouble)]
+            fp_types = [float, np.longdouble]
 
         if hasattr(core, "real128"):
-            fp_types.append(("real128", core.real128))
+            fp_types.append(core.real128)
 
-        for desc, fp_t in fp_types:
+        for fp_t in fp_types:
             # Non-terminal event.
-            ev = nt_event(x + v, lambda _: _, fp_type=desc)
+            ev = nt_event(x + v, lambda _: _, fp_type=fp_t)
 
             self.assertTrue(" non-terminal" in repr(ev))
             self.assertTrue("(x + v)" in repr(ev))
@@ -494,7 +494,7 @@ class event_classes_test_case(_ut.TestCase):
             self.assertEqual(ev.direction, event_direction.any)
             self.assertFalse(ev.callback is None)
 
-            ev = nt_event(ex=x + v, callback=lambda _: _, fp_type=desc)
+            ev = nt_event(ex=x + v, callback=lambda _: _, fp_type=fp_t)
             self.assertTrue(" non-terminal" in repr(ev))
             self.assertTrue("(x + v)" in repr(ev))
             self.assertTrue("event_direction::any" in repr(ev))
@@ -503,7 +503,7 @@ class event_classes_test_case(_ut.TestCase):
             self.assertFalse(ev.callback is None)
 
             ev = nt_event(ex=x + v, callback=lambda _: _,
-                          direction=event_direction.positive, fp_type=desc)
+                          direction=event_direction.positive, fp_type=fp_t)
             self.assertTrue(" non-terminal" in repr(ev))
             self.assertTrue("(x + v)" in repr(ev))
             self.assertTrue("event_direction::positive" in repr(ev))
@@ -512,7 +512,7 @@ class event_classes_test_case(_ut.TestCase):
             self.assertFalse(ev.callback is None)
 
             ev = nt_event(ex=x + v, callback=lambda _: _,
-                          direction=event_direction.negative, fp_type=desc)
+                          direction=event_direction.negative, fp_type=fp_t)
             self.assertTrue(" non-terminal" in repr(ev))
             self.assertTrue("(x + v)" in repr(ev))
             self.assertTrue("event_direction::negative" in repr(ev))
@@ -529,7 +529,7 @@ class event_classes_test_case(_ut.TestCase):
 
             lcb = local_cb()
             ev = nt_event(ex=x + v, callback=lcb,
-                          direction=event_direction.negative, fp_type=desc)
+                          direction=event_direction.negative, fp_type=fp_t)
             self.assertEqual(ev.callback.n, 0)
             cb = ev.callback
             cb(1, 2, 3)
@@ -542,22 +542,22 @@ class event_classes_test_case(_ut.TestCase):
 
             with self.assertRaises(ValueError) as cm:
                 nt_event(ex=x + v, callback=lambda _: _,
-                         direction=event_direction(10), fp_type=desc)
+                         direction=event_direction(10), fp_type=fp_t)
             self.assertTrue(
                 "Invalid value selected for the direction of a non-terminal event" in str(cm.exception))
 
             with self.assertRaises(TypeError) as cm:
-                nt_event(ex=x + v, callback=3, fp_type=desc)
+                nt_event(ex=x + v, callback=3, fp_type=fp_t)
             self.assertTrue(
                 "An object of type '{}' cannot be used as an event callback because it is not callable".format(str(type(3))) in str(cm.exception))
 
             with self.assertRaises(TypeError) as cm:
-                nt_event(ex=x + v, callback=None, fp_type=desc)
+                nt_event(ex=x + v, callback=None, fp_type=fp_t)
             self.assertTrue(
                 "An object of type '{}' cannot be used as an event callback because it is not callable".format(str(type(None))) in str(cm.exception))
 
             ev = nt_event(ex=x + v, callback=lambda _: _,
-                          direction=event_direction.negative, fp_type=desc)
+                          direction=event_direction.negative, fp_type=fp_t)
             ev = pickle.loads(pickle.dumps(ev))
             self.assertTrue(" non-terminal" in repr(ev))
             self.assertTrue("(x + v)" in repr(ev))
@@ -580,7 +580,7 @@ class event_classes_test_case(_ut.TestCase):
             # Test to ensure a callback extracted from the event
             # is kept alive and usable when the event is destroyed.
             ev = nt_event(ex=x + v, callback=local_cb(),
-                          direction=event_direction.negative, fp_type=desc)
+                          direction=event_direction.negative, fp_type=fp_t)
             out_cb = ev.callback
             del(ev)
             gc.collect()
@@ -590,7 +590,7 @@ class event_classes_test_case(_ut.TestCase):
             self.assertEqual(out_cb.n, 3)
 
             # Terminal event.
-            ev = t_event(x + v, fp_type=desc)
+            ev = t_event(x + v, fp_type=fp_t)
 
             self.assertTrue(" terminal" in repr(ev))
             self.assertTrue("(x + v)" in repr(ev))
@@ -602,7 +602,7 @@ class event_classes_test_case(_ut.TestCase):
             self.assertEqual(ev.cooldown, fp_t(-1))
             self.assertTrue(ev.callback is None)
 
-            ev = t_event(x + v, fp_type=desc,
+            ev = t_event(x + v, fp_type=fp_t,
                          direction=event_direction.negative, cooldown=fp_t(3))
 
             self.assertTrue(" terminal" in repr(ev))
@@ -615,7 +615,7 @@ class event_classes_test_case(_ut.TestCase):
             self.assertEqual(ev.cooldown, fp_t(3))
             self.assertTrue(ev.callback is None)
 
-            ev = t_event(x + v, fp_type=desc, direction=event_direction.positive,
+            ev = t_event(x + v, fp_type=fp_t, direction=event_direction.positive,
                          cooldown=fp_t(3), callback=lambda _: _)
 
             self.assertTrue(" terminal" in repr(ev))
@@ -636,7 +636,7 @@ class event_classes_test_case(_ut.TestCase):
                     self.n = self.n + 1
 
             lcb = local_cb()
-            ev = t_event(x + v, fp_type=desc, direction=event_direction.positive,
+            ev = t_event(x + v, fp_type=fp_t, direction=event_direction.positive,
                          cooldown=fp_t(3), callback=lcb)
 
             self.assertTrue(" terminal" in repr(ev))
@@ -658,22 +658,22 @@ class event_classes_test_case(_ut.TestCase):
             self.assertEqual(ev.callback.n, 0)
             self.assertEqual(id(lcb), id(ev.callback))
 
-            ev = t_event(x + v, fp_type=desc, direction=event_direction.positive,
+            ev = t_event(x + v, fp_type=fp_t, direction=event_direction.positive,
                          cooldown=fp_t(3), callback=None)
             self.assertTrue(ev.callback is None)
 
             with self.assertRaises(ValueError) as cm:
-                t_event(x + v, fp_type=desc, direction=event_direction(45),
+                t_event(x + v, fp_type=fp_t, direction=event_direction(45),
                         cooldown=fp_t(3), callback=lambda _: _)
             self.assertTrue(
                 "Invalid value selected for the direction of a terminal event" in str(cm.exception))
 
             with self.assertRaises(TypeError) as cm:
-                t_event(x + v, callback=3, fp_type=desc)
+                t_event(x + v, callback=3, fp_type=fp_t)
             self.assertTrue(
                 "An object of type '{}' cannot be used as an event callback because it is not callable".format(str(type(3))) in str(cm.exception))
 
-            ev = t_event(x + v, fp_type=desc, direction=event_direction.positive,
+            ev = t_event(x + v, fp_type=fp_t, direction=event_direction.positive,
                          cooldown=fp_t(3), callback=lambda _: _)
 
             ev = pickle.loads(pickle.dumps(ev))
@@ -698,7 +698,7 @@ class event_classes_test_case(_ut.TestCase):
             self.assertNotEqual(id(ev.bar), id(deepcopy(ev).bar))
 
             # Test also with empty callback.
-            ev = t_event(x + v, fp_type=desc, direction=event_direction.positive,
+            ev = t_event(x + v, fp_type=fp_t, direction=event_direction.positive,
                          cooldown=fp_t(3))
 
             ev = pickle.loads(pickle.dumps(ev))
@@ -711,7 +711,7 @@ class event_classes_test_case(_ut.TestCase):
             # Test to ensure a callback extracted from the event
             # is kept alive and usable when the event is destroyed.
             ev = t_event(ex=x + v, callback=local_cb(),
-                         direction=event_direction.negative, fp_type=desc)
+                         direction=event_direction.negative, fp_type=fp_t)
             out_cb = ev.callback
             del(ev)
             gc.collect()
@@ -722,14 +722,14 @@ class event_classes_test_case(_ut.TestCase):
 
         # Unsupported fp_type.
         with self.assertRaises(TypeError) as cm:
-            nt_event(x + v, lambda _: _, fp_type="pippo")
+            nt_event(x + v, lambda _: _, fp_type=str)
         self.assertTrue(
-            "the floating-point type \"pippo\" is not recognized/supported" in str(cm.exception))
+            "The floating-point type \"{}\" is not recognized/supported".format(str) in str(cm.exception))
 
         with self.assertRaises(TypeError) as cm:
-            t_event(x + v, fp_type="pippo")
+            t_event(x + v, fp_type=list)
         self.assertTrue(
-            "the floating-point type \"pippo\" is not recognized/supported" in str(cm.exception))
+            "The floating-point type \"{}\" is not recognized/supported".format(list) in str(cm.exception))
 
         # Batch events.
         ev = nt_event_batch(x + v, lambda _: _)
@@ -740,7 +740,7 @@ class event_classes_test_case(_ut.TestCase):
         self.assertEqual(ev.direction, event_direction.any)
         self.assertFalse(ev.callback is None)
 
-        ev = nt_event_batch(ex=x + v, callback=lambda _: _, fp_type="double")
+        ev = nt_event_batch(ex=x + v, callback=lambda _: _, fp_type=float)
         self.assertTrue(" non-terminal" in repr(ev))
         self.assertTrue("(x + v)" in repr(ev))
         self.assertTrue("event_direction::any" in repr(ev))
@@ -968,14 +968,14 @@ class event_classes_test_case(_ut.TestCase):
         self.assertEqual(out_cb.n, 3)
 
         with self.assertRaises(TypeError) as cm:
-            nt_event_batch(x + v, lambda _: _, fp_type="pippo")
+            nt_event_batch(x + v, lambda _: _, fp_type=str)
         self.assertTrue(
-            "the floating-point type \"pippo\" is not recognized/supported" in str(cm.exception))
+            "The floating-point type \"{}\" is not recognized/supported".format(str) in str(cm.exception))
 
         with self.assertRaises(TypeError) as cm:
-            t_event_batch(x + v, fp_type="pippo")
+            t_event_batch(x + v, fp_type=list)
         self.assertTrue(
-            "the floating-point type \"pippo\" is not recognized/supported" in str(cm.exception))
+            "The floating-point type \"{}\" is not recognized/supported".format(list) in str(cm.exception))
 
 
 class event_detection_test_case(_ut.TestCase):
@@ -1254,17 +1254,17 @@ class event_detection_test_case(_ut.TestCase):
         x, v = make_vars("x", "v")
 
         if _ppc_arch:
-            fp_types = [("double", float)]
+            fp_types = [float]
         else:
-            fp_types = [("double", float), ("long double", np.longdouble)]
+            fp_types = [float, np.longdouble]
 
         if hasattr(core, "real128"):
-            fp_types.append(("real128", core.real128))
+            fp_types.append(core.real128)
 
         # Use a pendulum for testing purposes.
         sys = [(x, v), (v, -9.8 * sin(x))]
 
-        for desc, fp_t in fp_types:
+        for fp_t in fp_types:
             # Non-terminal events.
             counter = 0
             cur_time = fp_t(0)
@@ -1298,9 +1298,9 @@ class event_detection_test_case(_ut.TestCase):
                 counter = counter + 1
                 cur_time = t
 
-            ta = taylor_adaptive(sys=sys, state=[fp_t(0), fp_t(0.25)], fp_type=desc,
-                                 nt_events=[nt_event(v*v-1e-10, cb0, fp_type=desc),
-                                            nt_event(v, cb1, fp_type=desc)])
+            ta = taylor_adaptive(sys=sys, state=[fp_t(0), fp_t(0.25)], fp_type=fp_t,
+                                 nt_events=[nt_event(v*v-1e-10, cb0, fp_type=fp_t),
+                                            nt_event(v, cb1, fp_type=fp_t)])
 
             ta_id = id(ta)
 
@@ -1326,10 +1326,10 @@ class event_detection_test_case(_ut.TestCase):
                 def __call__(self, ta, t, d_sgn):
                     pass
 
-            ta = taylor_adaptive(sys=sys, state=[fp_t(0), fp_t(0.25)], fp_type=desc,
-                                 nt_events=[nt_event(v*v-1e-10, cb0(), fp_type=desc),
-                                            nt_event(v, cb1(), fp_type=desc),
-                                            nt_event(v, cb1(), fp_type=desc)])
+            ta = taylor_adaptive(sys=sys, state=[fp_t(0), fp_t(0.25)], fp_type=fp_t,
+                                 nt_events=[nt_event(v*v-1e-10, cb0(), fp_type=fp_t),
+                                            nt_event(v, cb1(), fp_type=fp_t),
+                                            nt_event(v, cb1(), fp_type=fp_t)])
 
             # Check that the refcount increases by 3
             # (the number of events).
@@ -1372,8 +1372,8 @@ class event_detection_test_case(_ut.TestCase):
             def cb2(ta, t):
                 pass
 
-            ta = taylor_adaptive(sys=sys, state=[fp_t(0), fp_t(0.25)], fp_type=desc,
-                                 nt_events=[nt_event(v*v-1e-10, cb2, fp_type=desc)])
+            ta = taylor_adaptive(sys=sys, state=[fp_t(0), fp_t(0.25)], fp_type=fp_t,
+                                 nt_events=[nt_event(v*v-1e-10, cb2, fp_type=fp_t)])
 
             with self.assertRaises(TypeError):
                 ta.propagate_until(fp_t(4))
@@ -1408,10 +1408,10 @@ class event_detection_test_case(_ut.TestCase):
 
                 return True
 
-            ta = taylor_adaptive(sys=sys, state=[fp_t(0), fp_t(0.25)], fp_type=desc,
+            ta = taylor_adaptive(sys=sys, state=[fp_t(0), fp_t(0.25)], fp_type=fp_t,
                                  nt_events=[
-                                     nt_event(v*v-1e-10, cb0, fp_type=desc)],
-                                 t_events=[t_event(v, callback=cb1, fp_type=desc)])
+                                     nt_event(v*v-1e-10, cb0, fp_type=fp_t)],
+                                 t_events=[t_event(v, callback=cb1, fp_type=fp_t)])
 
             ta_id = id(ta)
 
@@ -1454,11 +1454,11 @@ class event_detection_test_case(_ut.TestCase):
                 def __call__(self, ta, mr, d_sgn):
                     pass
 
-            ta = taylor_adaptive(sys=sys, state=[fp_t(0), fp_t(0.25)], fp_type=desc,
-                                 t_events=[t_event(v*v-1e-10, callback=cb0(), fp_type=desc),
+            ta = taylor_adaptive(sys=sys, state=[fp_t(0), fp_t(0.25)], fp_type=fp_t,
+                                 t_events=[t_event(v*v-1e-10, callback=cb0(), fp_type=fp_t),
                                            t_event(v, callback=cb1(),
-                                                   fp_type=desc),
-                                           t_event(v, callback=cb1(), fp_type=desc)])
+                                                   fp_type=fp_t),
+                                           t_event(v, callback=cb1(), fp_type=fp_t)])
 
             # Check that the refcount increases by 3
             # (the number of events).
@@ -1501,8 +1501,8 @@ class event_detection_test_case(_ut.TestCase):
             def cb2(ta, t):
                 pass
 
-            ta = taylor_adaptive(sys=sys, state=[fp_t(0), fp_t(0.25)], fp_type=desc,
-                                 t_events=[t_event(v*v-1e-10, callback=cb2, fp_type=desc)])
+            ta = taylor_adaptive(sys=sys, state=[fp_t(0), fp_t(0.25)], fp_type=fp_t,
+                                 t_events=[t_event(v*v-1e-10, callback=cb2, fp_type=fp_t)])
 
             with self.assertRaises(TypeError):
                 ta.propagate_until(fp_t(4))
@@ -1511,8 +1511,8 @@ class event_detection_test_case(_ut.TestCase):
             def cb3(ta, mr, d_sgn):
                 return "hello"
 
-            ta = taylor_adaptive(sys=sys, state=[fp_t(0), fp_t(0.25)], fp_type=desc,
-                                 t_events=[t_event(v*v-1e-10, callback=cb3, fp_type=desc)])
+            ta = taylor_adaptive(sys=sys, state=[fp_t(0), fp_t(0.25)], fp_type=fp_t,
+                                 t_events=[t_event(v*v-1e-10, callback=cb3, fp_type=fp_t)])
 
             with self.assertRaises(TypeError) as cm:
                 ta.propagate_until(fp_t(4))
@@ -1531,19 +1531,19 @@ class expression_eval_test_case(_ut.TestCase):
 
         if _ppc_arch:
             fp_types = [
-                ("double", float, int(-log10(np.finfo(float).eps)) - 1)]
+                (float, int(-log10(np.finfo(float).eps)) - 1)]
         else:
-            fp_types = [("double", float, int(-log10(np.finfo(float).eps)) - 1),
-                        ("long double", np.longdouble, int(-log10(np.finfo(np.longdouble).eps)) - 1)]
+            fp_types = [(float, int(-log10(np.finfo(float).eps)) - 1),
+                        (np.longdouble, int(-log10(np.finfo(np.longdouble).eps)) - 1)]
 
         if hasattr(core, "real128"):
-            fp_types.append(("real128", core.real128, 32))
+            fp_types.append((core.real128, 32))
 
-        for desc, fp_t, places in fp_types:
+        for fp_t, places in fp_types:
             target = fp_t("0.123456789012345678901234567890")
-            a = eval(x, {"x": target}, fp_type=desc)
+            a = eval(x, {"x": target}, fp_type=fp_t)
             self.assertEqual(a, target)
-            a = eval(x**3.1, {"x": target}, fp_type=desc)
+            a = eval(x**3.1, {"x": target}, fp_type=fp_t)
             self.assertAlmostEqual(a, target**3.1, places=places)
 
 
@@ -1701,12 +1701,12 @@ class scalar_integrator_test_case(_ut.TestCase):
         x, v = make_vars("x", "v")
 
         if _ppc_arch:
-            fp_types = [("double", float)]
+            fp_types = [float]
         else:
-            fp_types = [("double", float), ("long double", np.longdouble)]
+            fp_types = [float, np.longdouble]
 
         if hasattr(core, "real128"):
-            fp_types.append(("real128", core.real128))
+            fp_types.append(core.real128)
 
         # Use a pendulum for testing purposes.
         sys = [(x, v), (v, -9.8 * sin(x))]
@@ -1714,9 +1714,9 @@ class scalar_integrator_test_case(_ut.TestCase):
         def cb0(ta, t, d_sgn):
             pass
 
-        for desc, fp_t in fp_types:
-            ta = taylor_adaptive(sys=sys, state=[fp_t(0), fp_t(0.25)], fp_type=desc,
-                                 nt_events=[nt_event(v*v-1e-10, cb0, fp_type=desc)])
+        for fp_t in fp_types:
+            ta = taylor_adaptive(sys=sys, state=[fp_t(0), fp_t(0.25)], fp_type=fp_t,
+                                 nt_events=[nt_event(v*v-1e-10, cb0, fp_type=fp_t)])
 
             ta.step()
             ta.step()
@@ -1751,8 +1751,8 @@ class scalar_integrator_test_case(_ut.TestCase):
                     self.n = self.n + 1
 
             clb = cb1()
-            ta = taylor_adaptive(sys=sys, state=[fp_t(0), fp_t(0.25)], fp_type=desc,
-                                 nt_events=[nt_event(v*v-1e-10, clb, fp_type=desc)])
+            ta = taylor_adaptive(sys=sys, state=[fp_t(0), fp_t(0.25)], fp_type=fp_t,
+                                 nt_events=[nt_event(v*v-1e-10, clb, fp_type=fp_t)])
 
             self.assertNotEqual(id(clb), id(ta.nt_events[0].callback))
 
@@ -1770,7 +1770,7 @@ class scalar_integrator_test_case(_ut.TestCase):
             ta = pickle.loads(pickle.dumps(ta))
             self.assertEqual(ta.foo, "hello world")
 
-            ta = taylor_adaptive(sys=sys, state=[fp_t(0), fp_t(0.25)], fp_type=desc,
+            ta = taylor_adaptive(sys=sys, state=[fp_t(0), fp_t(0.25)], fp_type=fp_t,
                                  tol=fp_t(1e-6))
 
             self.assertEqual(ta.tol, fp_t(1e-6))
@@ -1781,7 +1781,7 @@ class scalar_integrator_test_case(_ut.TestCase):
 
             with self.assertRaises(NotImplementedError):
                 taylor_adaptive(sys=sys, state=[fp_t(
-                    0), fp_t(0.25)], fp_type='long double')
+                    0), fp_t(0.25)], fp_type=np.longdouble)
 
 
 class batch_integrator_test_case(_ut.TestCase):
@@ -2853,12 +2853,12 @@ class c_output_test_case(_ut.TestCase):
 
         x, v = make_vars("x", "v")
 
-        fp_types = [("double", float, continuous_output_batch_dbl)]
+        fp_types = [(float, continuous_output_batch_dbl)]
 
         # Use a pendulum for testing purposes.
         sys = [(x, v), (v, -9.8 * sin(x))]
 
-        for desc, fp_t, c_out_t in fp_types:
+        for fp_t, c_out_t in fp_types:
             # Test the default cted object.
             c_out = c_out_t()
 
@@ -2944,11 +2944,11 @@ class c_output_test_case(_ut.TestCase):
             arr_ic = np.array(ic)
 
             ta = taylor_adaptive_batch(
-                sys=sys, state=ic, fp_type=desc)
+                sys=sys, state=ic, fp_type=fp_t)
 
             # Create scalar integrators for comparison.
             ta_scalar = taylor_adaptive(
-                sys=sys, state=[ic[0][0], ic[1][0]], fp_type=desc)
+                sys=sys, state=[ic[0][0], ic[1][0]], fp_type=fp_t)
             ta_scals = [deepcopy(ta_scalar) for _ in range(4)]
 
             # Helper to reset the state of ta and ta_scals.
@@ -2982,14 +2982,13 @@ class c_output_test_case(_ut.TestCase):
 
             self.assertTrue(c_out(check_tm).shape == (2, 4))
 
-            if desc != "real128":
-                with self.assertRaises(ValueError) as cm:
-                    c_out(check_tm)[0] = .5
+            with self.assertRaises(ValueError) as cm:
+                c_out(check_tm)[0] = .5
 
-                rc = getrefcount(c_out)
-                tmp_out = c_out(check_tm)
-                new_rc = getrefcount(c_out)
-                self.assertEqual(new_rc, rc + 1)
+            rc = getrefcount(c_out)
+            tmp_out = c_out(check_tm)
+            new_rc = getrefcount(c_out)
+            self.assertEqual(new_rc, rc + 1)
 
             with self.assertRaises(ValueError) as cm:
                 c_out(np.zeros((1, 1, 1)))
@@ -3020,11 +3019,10 @@ class c_output_test_case(_ut.TestCase):
                 self.assertTrue(np.allclose(
                     c_out_scals[idx].output, c_out.output[:, idx], rtol=np.finfo(fp_t).eps * 10, atol=np.finfo(fp_t).eps * 10))
 
-            if desc != "real128":
-                rc = getrefcount(c_out)
-                tmp_out2 = c_out(check_tm)
-                new_rc = getrefcount(c_out)
-                self.assertEqual(new_rc, rc + 1)
+            rc = getrefcount(c_out)
+            tmp_out2 = c_out(check_tm)
+            new_rc = getrefcount(c_out)
+            self.assertEqual(new_rc, rc + 1)
 
             # Scalar time.
             scal_res = deepcopy(c_out(fp_t(.42)))
@@ -3061,26 +3059,24 @@ class c_output_test_case(_ut.TestCase):
             # Times.
             self.assertEqual(c_out.times.shape, (c_out.n_steps + 1, 4))
             self.assertTrue(np.all(np.isfinite(c_out.times)))
-            if desc != "real128":
-                with self.assertRaises(ValueError) as cm:
-                    c_out.times[0] = .5
+            with self.assertRaises(ValueError) as cm:
+                c_out.times[0] = .5
 
-                rc = getrefcount(c_out)
-                tmp_out3 = c_out.times
-                new_rc = getrefcount(c_out)
-                self.assertEqual(new_rc, rc + 1)
+            rc = getrefcount(c_out)
+            tmp_out3 = c_out.times
+            new_rc = getrefcount(c_out)
+            self.assertEqual(new_rc, rc + 1)
 
             # TCs.
             self.assertEqual(
                 c_out.tcs.shape, (c_out.n_steps, 2, ta.order + 1, 4))
-            if desc != "real128":
-                with self.assertRaises(ValueError) as cm:
-                    c_out.tcs[0] = .5
+            with self.assertRaises(ValueError) as cm:
+                c_out.tcs[0] = .5
 
-                rc = getrefcount(c_out)
-                tmp_out4 = c_out.tcs
-                new_rc = getrefcount(c_out)
-                self.assertEqual(new_rc, rc + 1)
+            rc = getrefcount(c_out)
+            tmp_out4 = c_out.tcs
+            new_rc = getrefcount(c_out)
+            self.assertEqual(new_rc, rc + 1)
 
             # Bounds.
             self.assertTrue(np.all(c_out.bounds[0] == [0.]*4))
@@ -3153,20 +3149,20 @@ class c_output_test_case(_ut.TestCase):
         x, v = make_vars("x", "v")
 
         if _ppc_arch:
-            fp_types = [("double", float, continuous_output_dbl)]
+            fp_types = [(float, continuous_output_dbl)]
         else:
             from . import continuous_output_ldbl
-            fp_types = [("double", float, continuous_output_dbl),
-                        ("long double", np.longdouble, continuous_output_ldbl)]
+            fp_types = [(float, continuous_output_dbl),
+                        (np.longdouble, continuous_output_ldbl)]
 
         if hasattr(core, "real128"):
             from . import continuous_output_f128
-            fp_types.append(("real128", core.real128, continuous_output_f128))
+            fp_types.append((core.real128, continuous_output_f128))
 
         # Use a pendulum for testing purposes.
         sys = [(x, v), (v, -9.8 * sin(x))]
 
-        for desc, fp_t, c_out_t in fp_types:
+        for fp_t, c_out_t in fp_types:
             # Test the default cted object.
             c_out = c_out_t()
 
@@ -3237,7 +3233,7 @@ class c_output_test_case(_ut.TestCase):
             ic = [fp_t(0), fp_t(0.25)]
 
             ta = taylor_adaptive(
-                sys=sys, state=ic, fp_type=desc)
+                sys=sys, state=ic, fp_type=fp_t)
 
             # Helper to reset the state of ta.
             def reset():
@@ -3381,12 +3377,7 @@ class recommended_simd_size_test_case(_ut.TestCase):
 
         self.assertTrue(recommended_simd_size() >= 1)
         self.assertEqual(recommended_simd_size(),
-                         recommended_simd_size(fp_type="double"))
-
-        with self.assertRaises(TypeError) as cm:
-            recommended_simd_size(fp_type="long double")
-        self.assertTrue(
-            "the floating-point type \"long double\" is not recognized/supported" in str(cm.exception))
+                         recommended_simd_size(fp_type=float))
 
 
 class s11n_backend_test_case(_ut.TestCase):
@@ -3738,20 +3729,18 @@ class cfunc_test_case(_ut.TestCase):
         from .core import _ppc_arch
 
         if _ppc_arch:
-            fp_types = [
-                ("double", float)]
+            fp_types = [float]
         else:
-            fp_types = [("double", float),
-                        ("long double", np.longdouble)]
+            fp_types = [float, np.longdouble]
 
         if hasattr(core, "real128"):
-            fp_types.append(("real128", core.real128))
+            fp_types.append(core.real128)
 
         x, y = make_vars("x", "y")
         func = [sin(x + y), x - par[0], x + y + par[1]]
 
-        for desc, fp_t in fp_types:
-            fn = add_cfunc(func, vars=[y, x], fp_type=desc)
+        for fp_t in fp_types:
+            fn = add_cfunc(func, vars=[y, x], fp_type=fp_t)
 
             with self.assertRaises(ValueError) as cm:
                 fn(np.zeros((2, 5), dtype=fp_t), pars=[
@@ -3774,7 +3763,7 @@ class cfunc_test_case(_ut.TestCase):
                 "The array of outputs provided for the evaluation of a compiled function is not writeable" in str(cm.exception))
 
             for nevals in range(0, 10):
-                fn = add_cfunc(func, vars=[y, x], fp_type=desc)
+                fn = add_cfunc(func, vars=[y, x], fp_type=fp_t)
 
                 # NOTE: deterministic seeding.
                 rng = np.random.default_rng(nevals)
@@ -3851,7 +3840,7 @@ class cfunc_test_case(_ut.TestCase):
 
                 # Tests with no inputs.
                 fn = add_cfunc(
-                    [expression(fp_t(3)) + par[1], par[0]], fp_type=desc)
+                    [expression(fp_t(3)) + par[1], par[0]], fp_type=fp_t)
 
                 inputs = rng.random((0, nevals), dtype=float).astype(fp_t)
                 pars = rng.random((2, nevals), dtype=float).astype(fp_t)
@@ -3874,7 +3863,7 @@ class cfunc_test_case(_ut.TestCase):
                                 rtol=_get_eps(fp_t) * 10, atol=_get_eps(fp_t) * 10))
 
                 fn = add_cfunc(
-                    [expression(fp_t(3)), expression(fp_t(4))], fp_type=desc)
+                    [expression(fp_t(3)), expression(fp_t(4))], fp_type=fp_t)
 
                 inputs = rng.random((0, nevals), dtype=float).astype(fp_t)
                 pars = rng.random((0, nevals), dtype=float).astype(fp_t)
@@ -3886,7 +3875,7 @@ class cfunc_test_case(_ut.TestCase):
 
                 # Test case in which there are no pars but a pars array is provided anyway,
                 # with the correct shape.
-                fn = add_cfunc([x+y], fp_type=desc)
+                fn = add_cfunc([x+y], fp_type=fp_t)
                 inputs = rng.random((2, nevals), dtype=float).astype(fp_t)
                 eval_arr = fn(inputs=inputs, pars=np.zeros(
                     (0, nevals), dtype=fp_t))
@@ -3897,7 +3886,7 @@ class cfunc_test_case(_ut.TestCase):
         # Check throwing behaviour with long double on PPC.
         if _ppc_arch:
             with self.assertRaises(NotImplementedError):
-                add_cfunc(func, vars=[y, x], fp_type="long double")
+                add_cfunc(func, vars=[y, x], fp_type=np.longdouble)
 
     def test_single(self):
         import numpy as np
@@ -3905,14 +3894,12 @@ class cfunc_test_case(_ut.TestCase):
         from .core import _ppc_arch
 
         if _ppc_arch:
-            fp_types = [
-                ("double", float)]
+            fp_types = [float]
         else:
-            fp_types = [("double", float),
-                        ("long double", np.longdouble)]
+            fp_types = [float, np.longdouble]
 
         if hasattr(core, "real128"):
-            fp_types.append(("real128", core.real128))
+            fp_types.append(core.real128)
 
         x, y = make_vars("x", "y")
         func = [sin(x + y), x - par[0], x + y + par[1]]
@@ -3921,8 +3908,8 @@ class cfunc_test_case(_ut.TestCase):
         # some more testing for high_accuracy, compact_mode,
         # etc., once we figure out how to test for them. Perhaps
         # examine the llvm states?
-        for desc, fp_t in fp_types:
-            fn = add_cfunc(func, fp_type=desc)
+        for fp_t in fp_types:
+            fn = add_cfunc(func, fp_type=fp_t)
 
             with self.assertRaises(ValueError) as cm:
                 fn([fp_t(1), fp_t(2)])
@@ -3995,7 +3982,7 @@ class cfunc_test_case(_ut.TestCase):
 
             # Tests with no inputs.
             fn = add_cfunc(
-                [expression(fp_t(3)) + par[1], par[0]], fp_type=desc)
+                [expression(fp_t(3)) + par[1], par[0]], fp_type=fp_t)
 
             eval_arr = fn(inputs=np.zeros((0,), dtype=fp_t), pars=[1, 2])
             self.assertTrue(_allclose(eval_arr, [fp_t(3) + 2, fp_t(1)],
@@ -4007,7 +3994,7 @@ class cfunc_test_case(_ut.TestCase):
                             rtol=_get_eps(fp_t) * 10, atol=_get_eps(fp_t) * 10))
 
             fn = add_cfunc(
-                [expression(fp_t(3)), expression(fp_t(4))], fp_type=desc)
+                [expression(fp_t(3)), expression(fp_t(4))], fp_type=fp_t)
 
             eval_arr = fn(inputs=np.zeros((0,), dtype=fp_t), pars=[])
             self.assertTrue(_allclose(eval_arr, [fp_t(3), fp_t(4)],
@@ -4020,7 +4007,7 @@ class cfunc_test_case(_ut.TestCase):
 
             # Test case in which there are no pars but a pars array is provided anyway,
             # with the correct shape.
-            fn = add_cfunc([x+y], fp_type=desc)
+            fn = add_cfunc([x+y], fp_type=fp_t)
             eval_arr = fn(inputs=[1, 2], pars=np.zeros((0, ), dtype=fp_t))
 
             self.assertEqual(eval_arr[0], 3)
@@ -4236,9 +4223,10 @@ class real128_test_case(_ut.TestCase):
 
 def run_test_suite():
     from . import make_nbody_sys, taylor_adaptive
+    import numpy as np
 
     sys = make_nbody_sys(2, masses=[1.1, 2.1], Gconst=1)
-    ta = taylor_adaptive(sys, [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12])
+    ta = taylor_adaptive(sys, np.array([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12], dtype=float))
 
     retval = 0
 

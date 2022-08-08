@@ -185,15 +185,17 @@ void expose_taylor_integrator_impl(py::module &m, const std::string &suffix)
                return ctor_impl(sys, std::move(state), time, std::move(pars), tol, high_accuracy, compact_mode,
                                 std::move(tes), std::move(ntes), parallel_mode);
            }),
-           "sys"_a, "state"_a, "time"_a = T(0), "pars"_a = py::list{}, "tol"_a = T(0), "high_accuracy"_a = false,
-           "compact_mode"_a = false, "t_events"_a = py::list{}, "nt_events"_a = py::list{}, "parallel_mode"_a = false)
+           "sys"_a, "state"_a.noconvert(), "time"_a.noconvert() = static_cast<T>(0), "pars"_a.noconvert() = py::list{},
+           "tol"_a.noconvert() = static_cast<T>(0), "high_accuracy"_a = false, "compact_mode"_a = false,
+           "t_events"_a = py::list{}, "nt_events"_a = py::list{}, "parallel_mode"_a = false)
         .def(py::init([ctor_impl](const std::vector<hey::expression> &sys, std::vector<T> state, T time,
                                   std::vector<T> pars, T tol, bool high_accuracy, bool compact_mode,
                                   std::vector<t_ev_t> tes, std::vector<nt_ev_t> ntes, bool parallel_mode) {
                  return ctor_impl(sys, std::move(state), time, std::move(pars), tol, high_accuracy, compact_mode,
                                   std::move(tes), std::move(ntes), parallel_mode);
              }),
-             "sys"_a, "state"_a, "time"_a = T(0), "pars"_a = py::list{}, "tol"_a = T(0), "high_accuracy"_a = false,
+             "sys"_a, "state"_a.noconvert(), "time"_a.noconvert() = static_cast<T>(0),
+             "pars"_a.noconvert() = py::list{}, "tol"_a.noconvert() = static_cast<T>(0), "high_accuracy"_a = false,
              "compact_mode"_a = false, "t_events"_a = py::list{}, "nt_events"_a = py::list{}, "parallel_mode"_a = false)
         .def_property_readonly(
             "state",
