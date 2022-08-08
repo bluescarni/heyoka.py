@@ -495,18 +495,18 @@ PyObject *py_real128_rcmp(PyObject *a, PyObject *b, int op)
 
     switch (op) {
         case Py_LT:
-            return impl(std::less<>{});
+            return impl(std::less{});
         case Py_LE:
-            return impl(std::less_equal<>{});
+            return impl(std::less_equal{});
         case Py_EQ:
-            return impl(std::equal_to<>{});
+            return impl(std::equal_to{});
         case Py_NE:
-            return impl(std::not_equal_to<>{});
+            return impl(std::not_equal_to{});
         case Py_GT:
-            return impl(std::greater<>{});
+            return impl(std::greater{});
         default:
             assert(op == Py_GE);
-            return impl(std::greater_equal<>{});
+            return impl(std::greater_equal{});
     }
 }
 
@@ -793,13 +793,13 @@ void expose_real128(py::module_ &m)
         = [](PyObject *a) { return detail::py_real128_unop(a, detail::identity_func); };
     detail::py_real128_as_number.nb_absolute = [](PyObject *a) { return detail::py_real128_unop(a, detail::abs_func); };
     detail::py_real128_as_number.nb_add
-        = [](PyObject *a, PyObject *b) { return detail::py_real128_binop(a, b, std::plus<>{}); };
+        = [](PyObject *a, PyObject *b) { return detail::py_real128_binop(a, b, std::plus{}); };
     detail::py_real128_as_number.nb_subtract
-        = [](PyObject *a, PyObject *b) { return detail::py_real128_binop(a, b, std::minus<>{}); };
+        = [](PyObject *a, PyObject *b) { return detail::py_real128_binop(a, b, std::minus{}); };
     detail::py_real128_as_number.nb_multiply
-        = [](PyObject *a, PyObject *b) { return detail::py_real128_binop(a, b, std::multiplies<>{}); };
+        = [](PyObject *a, PyObject *b) { return detail::py_real128_binop(a, b, std::multiplies{}); };
     detail::py_real128_as_number.nb_true_divide
-        = [](PyObject *a, PyObject *b) { return detail::py_real128_binop(a, b, std::divides<>{}); };
+        = [](PyObject *a, PyObject *b) { return detail::py_real128_binop(a, b, std::divides{}); };
     detail::py_real128_as_number.nb_floor_divide
         = [](PyObject *a, PyObject *b) { return detail::py_real128_binop(a, b, detail::floor_divide_func); };
     detail::py_real128_as_number.nb_power = [](PyObject *a, PyObject *b, PyObject *mod) -> PyObject * {
@@ -892,25 +892,25 @@ void expose_real128(py::module_ &m)
     detail::npy_register_ufunc(
         numpy_mod, "add",
         [](char **args, const npy_intp *dimensions, const npy_intp *steps, void *data) {
-            detail::py_real128_ufunc_binary(args, dimensions, steps, data, std::plus<>{});
+            detail::py_real128_ufunc_binary(args, dimensions, steps, data, std::plus{});
         },
         npy_registered_py_real128, npy_registered_py_real128, npy_registered_py_real128);
     detail::npy_register_ufunc(
         numpy_mod, "subtract",
         [](char **args, const npy_intp *dimensions, const npy_intp *steps, void *data) {
-            detail::py_real128_ufunc_binary(args, dimensions, steps, data, std::minus<>{});
+            detail::py_real128_ufunc_binary(args, dimensions, steps, data, std::minus{});
         },
         npy_registered_py_real128, npy_registered_py_real128, npy_registered_py_real128);
     detail::npy_register_ufunc(
         numpy_mod, "multiply",
         [](char **args, const npy_intp *dimensions, const npy_intp *steps, void *data) {
-            detail::py_real128_ufunc_binary(args, dimensions, steps, data, std::multiplies<>{});
+            detail::py_real128_ufunc_binary(args, dimensions, steps, data, std::multiplies{});
         },
         npy_registered_py_real128, npy_registered_py_real128, npy_registered_py_real128);
     detail::npy_register_ufunc(
         numpy_mod, "divide",
         [](char **args, const npy_intp *dimensions, const npy_intp *steps, void *data) {
-            detail::py_real128_ufunc_binary(args, dimensions, steps, data, std::divides<>{});
+            detail::py_real128_ufunc_binary(args, dimensions, steps, data, std::divides{});
         },
         npy_registered_py_real128, npy_registered_py_real128, npy_registered_py_real128);
     detail::npy_register_ufunc(
@@ -964,37 +964,37 @@ void expose_real128(py::module_ &m)
     detail::npy_register_ufunc(
         numpy_mod, "less",
         [](char **args, const npy_intp *dimensions, const npy_intp *steps, void *data) {
-            detail::py_real128_ufunc_binary<npy_bool>(args, dimensions, steps, data, std::less<>{});
+            detail::py_real128_ufunc_binary<npy_bool>(args, dimensions, steps, data, std::less{});
         },
         npy_registered_py_real128, npy_registered_py_real128, NPY_BOOL);
     detail::npy_register_ufunc(
         numpy_mod, "less_equal",
         [](char **args, const npy_intp *dimensions, const npy_intp *steps, void *data) {
-            detail::py_real128_ufunc_binary<npy_bool>(args, dimensions, steps, data, std::less_equal<>{});
+            detail::py_real128_ufunc_binary<npy_bool>(args, dimensions, steps, data, std::less_equal{});
         },
         npy_registered_py_real128, npy_registered_py_real128, NPY_BOOL);
     detail::npy_register_ufunc(
         numpy_mod, "equal",
         [](char **args, const npy_intp *dimensions, const npy_intp *steps, void *data) {
-            detail::py_real128_ufunc_binary<npy_bool>(args, dimensions, steps, data, std::equal_to<>{});
+            detail::py_real128_ufunc_binary<npy_bool>(args, dimensions, steps, data, std::equal_to{});
         },
         npy_registered_py_real128, npy_registered_py_real128, NPY_BOOL);
     detail::npy_register_ufunc(
         numpy_mod, "not_equal",
         [](char **args, const npy_intp *dimensions, const npy_intp *steps, void *data) {
-            detail::py_real128_ufunc_binary<npy_bool>(args, dimensions, steps, data, std::not_equal_to<>{});
+            detail::py_real128_ufunc_binary<npy_bool>(args, dimensions, steps, data, std::not_equal_to{});
         },
         npy_registered_py_real128, npy_registered_py_real128, NPY_BOOL);
     detail::npy_register_ufunc(
         numpy_mod, "greater",
         [](char **args, const npy_intp *dimensions, const npy_intp *steps, void *data) {
-            detail::py_real128_ufunc_binary<npy_bool>(args, dimensions, steps, data, std::greater<>{});
+            detail::py_real128_ufunc_binary<npy_bool>(args, dimensions, steps, data, std::greater{});
         },
         npy_registered_py_real128, npy_registered_py_real128, NPY_BOOL);
     detail::npy_register_ufunc(
         numpy_mod, "greater_equal",
         [](char **args, const npy_intp *dimensions, const npy_intp *steps, void *data) {
-            detail::py_real128_ufunc_binary<npy_bool>(args, dimensions, steps, data, std::greater_equal<>{});
+            detail::py_real128_ufunc_binary<npy_bool>(args, dimensions, steps, data, std::greater_equal{});
         },
         npy_registered_py_real128, npy_registered_py_real128, NPY_BOOL);
     detail::npy_register_ufunc(
