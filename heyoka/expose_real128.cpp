@@ -128,8 +128,7 @@ const auto isfinite_func = [](auto x) {
 const auto floor_divide_func = [](auto x, auto y) {
     using std::floor;
 
-    auto ret = x / y;
-    return floor(ret);
+    return floor(x / y);
 };
 
 const auto pow_func = [](auto x, auto y) {
