@@ -277,7 +277,7 @@ void expose_M2E(py::module_ &m)
 
     // Expose the vector implementation.
     // NOTE: type dispatching is done internally.
-    m.def("M2E", &detail::kepE_vector_wrapper, "e"_a.noconvert(), "M"_a.noconvert());
+    m.def("M2E", &detail::kepE_vector_wrapper, "e"_a, "M"_a);
 
     // Make sure the TBB control structure is cleaned
     // up before shutdown.

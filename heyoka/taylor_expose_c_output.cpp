@@ -90,7 +90,7 @@ void expose_c_output_impl(py::module &m, const std::string &suffix)
                 py::array tm = tm_ob;
                 const auto dt = get_dtype<T>();
                 if (tm.dtype().num() != dt) {
-                    tm = tm.attr("astype")(py::dtype(dt));
+                    tm = tm.attr("astype")(py::dtype(dt), "casting"_a = "safe");
                 }
 
                 auto *c_out = py::cast<c_output_t *>(o);
@@ -263,7 +263,7 @@ void expose_c_output_batch_impl(py::module &m, const std::string &suffix)
                 py::array tm = tm_ob;
                 const auto dt = get_dtype<T>();
                 if (tm.dtype().num() != dt) {
-                    tm = tm.attr("astype")(py::dtype(dt));
+                    tm = tm.attr("astype")(py::dtype(dt), "casting"_a = "safe");
                 }
 
                 auto *c_out = py::cast<c_output_t *>(o);

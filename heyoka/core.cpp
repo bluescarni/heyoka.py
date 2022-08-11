@@ -786,19 +786,19 @@ PYBIND11_MODULE(core, m)
         [](std::uint32_t pl_idx, std::uint32_t var_idx, hey::expression t_expr, double thresh) {
             return hey::vsop2013_elliptic(pl_idx, var_idx, kw::time = std::move(t_expr), kw::thresh = thresh);
         },
-        "pl_idx"_a, "var_idx"_a = 0, "time"_a = hey::time, "thresh"_a = 1e-9);
+        "pl_idx"_a, "var_idx"_a = 0, "time"_a = hey::time, "thresh"_a.noconvert() = 1e-9);
     m.def(
         "vsop2013_cartesian",
         [](std::uint32_t pl_idx, hey::expression t_expr, double thresh) {
             return hey::vsop2013_cartesian(pl_idx, kw::time = std::move(t_expr), kw::thresh = thresh);
         },
-        "pl_idx"_a, "time"_a = hey::time, "thresh"_a = 1e-9);
+        "pl_idx"_a, "time"_a = hey::time, "thresh"_a.noconvert() = 1e-9);
     m.def(
         "vsop2013_cartesian_icrf",
         [](std::uint32_t pl_idx, hey::expression t_expr, double thresh) {
             return hey::vsop2013_cartesian_icrf(pl_idx, kw::time = std::move(t_expr), kw::thresh = thresh);
         },
-        "pl_idx"_a, "time"_a = hey::time, "thresh"_a = 1e-9);
+        "pl_idx"_a, "time"_a = hey::time, "thresh"_a.noconvert() = 1e-9);
     m.def("get_vsop2013_mus", &hey::get_vsop2013_mus);
 
     // Expose the continuous output function objects.
