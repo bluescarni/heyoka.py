@@ -172,7 +172,6 @@ void expose_taylor_integrator_impl(py::module &m, const std::string &suffix)
                        // into the interpreter.
                        py::gil_scoped_release release;
 
-                       namespace kw = hey::kw;
                        return hey::taylor_adaptive<T>{val,
                                                       std::move(state),
                                                       kw::time = time,
