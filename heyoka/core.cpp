@@ -108,6 +108,9 @@ PyObject *import_numpy(PyObject *m)
 
 PYBIND11_MODULE(core, m)
 {
+    using namespace pybind11::literals;
+    namespace kw = hey::kw;
+
     // Import the NumPy API bits.
     if (heypy::detail::import_numpy(m.ptr()) == nullptr) {
         // NOTE: on failure, the NumPy macros already set
@@ -115,9 +118,6 @@ PYBIND11_MODULE(core, m)
         // is to throw the pybind11 exception.
         throw py::error_already_set();
     }
-
-    using namespace pybind11::literals;
-    namespace kw = hey::kw;
 
     m.doc() = "The core heyoka module";
 
@@ -171,7 +171,7 @@ PYBIND11_MODULE(core, m)
     // N-body builders.
     m.def(
         "make_nbody_sys",
-        [](std::uint32_t n, py::object Gconst, std::optional<py::iterable> masses) {
+        [](std::uint32_t n, const py::object &Gconst, std::optional<py::iterable> masses) {
             const auto G = heypy::to_number(Gconst);
 
             std::vector<hey::number> m_vec;
@@ -190,7 +190,7 @@ PYBIND11_MODULE(core, m)
 
     m.def(
         "make_np1body_sys",
-        [](std::uint32_t n, py::object Gconst, std::optional<py::iterable> masses) {
+        [](std::uint32_t n, const py::object &Gconst, std::optional<py::iterable> masses) {
             const auto G = heypy::to_number(Gconst);
 
             std::vector<hey::number> m_vec;
@@ -212,7 +212,7 @@ PYBIND11_MODULE(core, m)
 
     m.def(
         "make_nbody_par_sys",
-        [](std::uint32_t n, py::object Gconst, std::optional<std::uint32_t> n_massive) {
+        [](std::uint32_t n, const py::object &Gconst, std::optional<std::uint32_t> n_massive) {
             const auto G = heypy::to_number(Gconst);
 
             if (n_massive) {
@@ -574,7 +574,7 @@ PYBIND11_MODULE(core, m)
                         }
 
                         // Convert to a std::vector.
-                        const auto grid_v = py::cast<std::vector<double>>(grid.attr("flatten")());
+                        auto grid_v = py::cast<std::vector<double>>(grid.attr("flatten")());
 
 #if !defined(NDEBUG)
                         // Store the grid size for debug.
@@ -681,7 +681,7 @@ PYBIND11_MODULE(core, m)
         .def_property_readonly(
             "tc",
             [](const py::object &o) {
-                auto *ta = py::cast<const hey::taylor_adaptive_batch<double> *>(o);
+                const auto *ta = py::cast<const hey::taylor_adaptive_batch<double> *>(o);
 
                 const auto nvars = boost::numeric_cast<py::ssize_t>(ta->get_dim());
                 const auto ncoeff = boost::numeric_cast<py::ssize_t>(ta->get_order() + 1u);
@@ -697,7 +697,7 @@ PYBIND11_MODULE(core, m)
         .def_property_readonly(
             "last_h",
             [](const py::object &o) {
-                auto *ta = py::cast<const hey::taylor_adaptive_batch<double> *>(o);
+                const auto *ta = py::cast<const hey::taylor_adaptive_batch<double> *>(o);
 
                 auto ret = py::array_t<double>(
                     py::array::ShapeContainer{boost::numeric_cast<py::ssize_t>(ta->get_batch_size())},
@@ -711,7 +711,7 @@ PYBIND11_MODULE(core, m)
         .def_property_readonly(
             "d_output",
             [](const py::object &o) {
-                auto *ta = py::cast<const hey::taylor_adaptive_batch<double> *>(o);
+                const auto *ta = py::cast<const hey::taylor_adaptive_batch<double> *>(o);
 
                 const auto nvars = boost::numeric_cast<py::ssize_t>(ta->get_dim());
                 const auto bs = boost::numeric_cast<py::ssize_t>(ta->get_batch_size());

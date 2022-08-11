@@ -76,7 +76,7 @@ void expose_taylor_integrator_common(py::class_<hey::taylor_adaptive<T>> &cl)
             "step", [](hey::taylor_adaptive<T> &ta, bool wtc) { return ta.step(wtc); }, "write_tc"_a = false)
         .def(
             "step", [](hey::taylor_adaptive<T> &ta, T max_delta_t, bool wtc) { return ta.step(max_delta_t, wtc); },
-            "max_delta_t"_a, "write_tc"_a = false)
+            "max_delta_t"_a.noconvert(), "write_tc"_a = false)
         .def(
             "step_backward", [](hey::taylor_adaptive<T> &ta, bool wtc) { return ta.step_backward(wtc); },
             "write_tc"_a = false)
@@ -97,8 +97,9 @@ void expose_taylor_integrator_common(py::class_<hey::taylor_adaptive<T>> &cl)
                 return ta.propagate_for(delta_t, kw::max_steps = max_steps, kw::max_delta_t = max_delta_t,
                                         kw::callback = cb, kw::write_tc = write_tc, kw::c_output = c_output);
             },
-            "delta_t"_a, "max_steps"_a = 0, "max_delta_t"_a = std::numeric_limits<T>::infinity(),
-            "callback"_a = prop_cb_t{}, "write_tc"_a = false, "c_output"_a = false)
+            "delta_t"_a.noconvert(), "max_steps"_a = 0,
+            "max_delta_t"_a.noconvert() = std::numeric_limits<T>::infinity(), "callback"_a = prop_cb_t{},
+            "write_tc"_a = false, "c_output"_a = false)
         .def(
             "propagate_until",
             [](hey::taylor_adaptive<T> &ta, T t, std::size_t max_steps, T max_delta_t, const prop_cb_t &cb_,
@@ -110,8 +111,8 @@ void expose_taylor_integrator_common(py::class_<hey::taylor_adaptive<T>> &cl)
                 return ta.propagate_until(t, kw::max_steps = max_steps, kw::max_delta_t = max_delta_t,
                                           kw::callback = cb, kw::write_tc = write_tc, kw::c_output = c_output);
             },
-            "t"_a, "max_steps"_a = 0, "max_delta_t"_a = std::numeric_limits<T>::infinity(), "callback"_a = prop_cb_t{},
-            "write_tc"_a = false, "c_output"_a = false)
+            "t"_a.noconvert(), "max_steps"_a = 0, "max_delta_t"_a.noconvert() = std::numeric_limits<T>::infinity(),
+            "callback"_a = prop_cb_t{}, "write_tc"_a = false, "c_output"_a = false)
         // Repr.
         .def("__repr__",
              [](const hey::taylor_adaptive<T> &ta) {
@@ -261,7 +262,7 @@ void expose_taylor_integrator_impl(py::module &m, const std::string &suffix)
 
                 return ret;
             },
-            "t"_a, "rel_time"_a = false)
+            "t"_a.noconvert(), "rel_time"_a = false)
         .def(
             "propagate_grid",
             [](hey::taylor_adaptive<T> &ta, std::vector<T> grid, std::size_t max_steps, T max_delta_t,
@@ -290,7 +291,7 @@ void expose_taylor_integrator_impl(py::module &m, const std::string &suffix)
                 return py::make_tuple(std::get<0>(ret), std::get<1>(ret), std::get<2>(ret), std::get<3>(ret),
                                       std::move(a_ret));
             },
-            "grid"_a, "max_steps"_a = 0, "max_delta_t"_a = std::numeric_limits<T>::infinity(),
+            "grid"_a.noconvert(), "max_steps"_a = 0, "max_delta_t"_a.noconvert() = std::numeric_limits<T>::infinity(),
             "callback"_a = prop_cb_t{});
 
     expose_taylor_integrator_common(cl);

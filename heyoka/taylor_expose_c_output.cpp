@@ -82,10 +82,10 @@ void expose_c_output_impl(py::module &m, const std::string &suffix)
 
                 return ret;
             },
-            "time"_a)
+            "time"_a.noconvert())
         .def(
             "__call__",
-            [](py::object &o, py::iterable tm_ob) {
+            [](py::object &o, const py::iterable &tm_ob) {
                 // Convert the input iterable into an array of the correct type.
                 py::array tm = tm_ob;
                 const auto dt = get_dtype<T>();
@@ -258,7 +258,7 @@ void expose_c_output_batch_impl(py::module &m, const std::string &suffix)
              })
         .def(
             "__call__",
-            [](py::object &o, py::iterable tm_ob) {
+            [](py::object &o, const py::iterable &tm_ob) {
                 // Convert the input iterable into an array of the correct type.
                 py::array tm = tm_ob;
                 const auto dt = get_dtype<T>();
