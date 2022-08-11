@@ -18,6 +18,7 @@
 #include <string>
 #include <tuple>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include <boost/numeric/conversion/cast.hpp>
@@ -157,47 +158,37 @@ void expose_taylor_integrator_impl(py::module &m, const std::string &suffix)
     using nt_ev_t = hey::nt_event<T>;
     using prop_cb_t = std::function<bool(hey::taylor_adaptive<T> &)>;
 
-    auto ctor_impl = [](const auto &sys, std::vector<T> state, T time, std::vector<T> pars, T tol, bool high_accuracy,
-                        bool compact_mode, std::vector<t_ev_t> tes, std::vector<nt_ev_t> ntes, bool parallel_mode) {
-        // NOTE: GIL release is fine here even if the events contain
-        // Python objects, as the event vectors are moved in
-        // upon construction and thus we should never end up calling
-        // into the interpreter.
-        py::gil_scoped_release release;
-
-        namespace kw = hey::kw;
-        return hey::taylor_adaptive<T>{sys,
-                                       std::move(state),
-                                       kw::time = time,
-                                       kw::tol = tol,
-                                       kw::high_accuracy = high_accuracy,
-                                       kw::compact_mode = compact_mode,
-                                       kw::pars = std::move(pars),
-                                       kw::t_events = std::move(tes),
-                                       kw::nt_events = std::move(ntes),
-                                       kw::parallel_mode = parallel_mode};
-    };
+    // Union of ODE system types, used in the ctor.
+    using sys_t = std::variant<std::vector<std::pair<hey::expression, hey::expression>>, std::vector<hey::expression>>;
 
     py::class_<hey::taylor_adaptive<T>> cl(m, (fmt::format("_taylor_adaptive_{}", suffix)).c_str(), py::dynamic_attr{});
-    cl.def(py::init([ctor_impl](const std::vector<std::pair<hey::expression, hey::expression>> &sys,
-                                std::vector<T> state, T time, std::vector<T> pars, T tol, bool high_accuracy,
-                                bool compact_mode, std::vector<t_ev_t> tes, std::vector<nt_ev_t> ntes,
-                                bool parallel_mode) {
-               return ctor_impl(sys, std::move(state), time, std::move(pars), tol, high_accuracy, compact_mode,
-                                std::move(tes), std::move(ntes), parallel_mode);
+    cl.def(py::init([](const sys_t &sys, std::vector<T> state, T time, std::vector<T> pars, T tol, bool high_accuracy,
+                       bool compact_mode, std::vector<t_ev_t> tes, std::vector<nt_ev_t> ntes, bool parallel_mode) {
+               return std::visit(
+                   [&](const auto &val) {
+                       // NOTE: GIL release is fine here even if the events contain
+                       // Python objects, as the event vectors are moved in
+                       // upon construction and thus we should never end up calling
+                       // into the interpreter.
+                       py::gil_scoped_release release;
+
+                       namespace kw = hey::kw;
+                       return hey::taylor_adaptive<T>{val,
+                                                      std::move(state),
+                                                      kw::time = time,
+                                                      kw::tol = tol,
+                                                      kw::high_accuracy = high_accuracy,
+                                                      kw::compact_mode = compact_mode,
+                                                      kw::pars = std::move(pars),
+                                                      kw::t_events = std::move(tes),
+                                                      kw::nt_events = std::move(ntes),
+                                                      kw::parallel_mode = parallel_mode};
+                   },
+                   sys);
            }),
            "sys"_a, "state"_a.noconvert(), "time"_a.noconvert() = static_cast<T>(0), "pars"_a.noconvert() = py::list{},
            "tol"_a.noconvert() = static_cast<T>(0), "high_accuracy"_a = false, "compact_mode"_a = false,
            "t_events"_a = py::list{}, "nt_events"_a = py::list{}, "parallel_mode"_a = false)
-        .def(py::init([ctor_impl](const std::vector<hey::expression> &sys, std::vector<T> state, T time,
-                                  std::vector<T> pars, T tol, bool high_accuracy, bool compact_mode,
-                                  std::vector<t_ev_t> tes, std::vector<nt_ev_t> ntes, bool parallel_mode) {
-                 return ctor_impl(sys, std::move(state), time, std::move(pars), tol, high_accuracy, compact_mode,
-                                  std::move(tes), std::move(ntes), parallel_mode);
-             }),
-             "sys"_a, "state"_a.noconvert(), "time"_a.noconvert() = static_cast<T>(0),
-             "pars"_a.noconvert() = py::list{}, "tol"_a.noconvert() = static_cast<T>(0), "high_accuracy"_a = false,
-             "compact_mode"_a = false, "t_events"_a = py::list{}, "nt_events"_a = py::list{}, "parallel_mode"_a = false)
         .def_property_readonly(
             "state",
             [](py::object &o) {
