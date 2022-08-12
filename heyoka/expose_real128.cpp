@@ -751,17 +751,12 @@ bool py_real128_check(PyObject *ob)
     return PyObject_IsInstance(ob, reinterpret_cast<PyObject *>(&py_real128_type)) != 0;
 }
 
-// Helpers to reach the mppp::real128 stored inside a py_real128.
-mppp::real128 *get_val(py_real128 *self)
-{
-    return std::launder(reinterpret_cast<mppp::real128 *>(self->m_storage));
-}
-
+// Helper to reach the mppp::real128 stored inside a py_real128.
 mppp::real128 *get_val(PyObject *self)
 {
     assert(py_real128_check(self));
 
-    return get_val(reinterpret_cast<py_real128 *>(self));
+    return std::launder(reinterpret_cast<mppp::real128 *>(reinterpret_cast<py_real128 *>(self)->m_storage));
 }
 
 // Helper to create a pyreal128 from a real128.
