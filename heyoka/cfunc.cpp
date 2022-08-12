@@ -328,8 +328,8 @@ void expose_add_cfunc_impl(py::module &m, const char *name)
                     zero_copy = zero_copy && (inputs.owndata() && outputs.owndata() && (!pars || pars->owndata()));
                     if (zero_copy) {
                         auto *out_data = outputs.data();
-                        auto *in_data = inputs.data();
-                        auto *par_data = pars ? pars->data() : nullptr;
+                        const auto *in_data = inputs.data();
+                        const auto *par_data = pars ? pars->data() : nullptr;
 
                         // Are they all distinct from each other?
                         // NOTE: while out_data can never be possibly null (as we are sure there's

@@ -91,7 +91,7 @@ def taylor_adaptive_batch(sys, state, **kwargs):
     fp_type = kwargs.pop("fp_type", float)
     fp_suffix = _fp_to_suffix(fp_type)
 
-    return getattr(core, "_taylor_adaptive_batch{}".format(fp_suffix))(sys, state, **kwargs)
+    return getattr(core, "taylor_adaptive_batch{}".format(fp_suffix))(sys, state, **kwargs)
 
 def eval(e, map, pars=[], **kwargs):
     from . import core
