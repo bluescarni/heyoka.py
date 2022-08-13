@@ -101,10 +101,25 @@ const auto abs_func = [](auto x) {
     return abs(x);
 };
 
+const auto square_func = [](auto x) { return x * x; };
+
+const auto floor_divide_func = [](auto x, auto y) {
+    using std::floor;
+
+    auto ret = x / y;
+    return floor(ret);
+};
+
 const auto sqrt_func = [](auto x) {
     using std::sqrt;
 
     return sqrt(x);
+};
+
+const auto cbrt_func = [](auto x) {
+    using std::cbrt;
+
+    return cbrt(x);
 };
 
 const auto sin_func = [](auto x) {
@@ -119,17 +134,142 @@ const auto cos_func = [](auto x) {
     return cos(x);
 };
 
+const auto tan_func = [](auto x) {
+    using std::tan;
+
+    return tan(x);
+};
+
+const auto asin_func = [](auto x) {
+    using std::asin;
+
+    return asin(x);
+};
+
+const auto acos_func = [](auto x) {
+    using std::acos;
+
+    return acos(x);
+};
+
+const auto atan_func = [](auto x) {
+    using std::atan;
+
+    return atan(x);
+};
+
+const auto atan2_func = [](auto y, auto x) {
+    using std::atan2;
+
+    return atan2(y, x);
+};
+
+const auto sinh_func = [](auto x) {
+    using std::sinh;
+
+    return sinh(x);
+};
+
+const auto cosh_func = [](auto x) {
+    using std::cosh;
+
+    return cosh(x);
+};
+
+const auto tanh_func = [](auto x) {
+    using std::tanh;
+
+    return tanh(x);
+};
+
+const auto asinh_func = [](auto x) {
+    using std::asinh;
+
+    return asinh(x);
+};
+
+const auto acosh_func = [](auto x) {
+    using std::acosh;
+
+    return acosh(x);
+};
+
+const auto atanh_func = [](auto x) {
+    using std::atanh;
+
+    return atanh(x);
+};
+
+// NOTE: this is 2*pi/360 computed in octuple precision.
+const auto deg2rad_const = mppp::real128("0.01745329251994329576923690768488612713442871888541725456097191440171005");
+
+const auto deg2rad_func = [](mppp::real128 x) { return deg2rad_const * x; };
+
+// NOTE: this is 360/(2*pi) computed in octuple precision.
+const auto rad2deg_constant = mppp::real128("57.295779513082320876798154814105170332405472466564321549160243861202985");
+
+const auto rad2deg_func = [](mppp::real128 x) { return rad2deg_constant * x; };
+
+const auto exp_func = [](auto x) {
+    using std::exp;
+
+    return exp(x);
+};
+
+#if defined(MPPP_QUADMATH_HAVE_EXP2Q)
+
+const auto exp2_func = [](auto x) {
+    using std::exp2;
+
+    return exp2(x);
+};
+
+#endif
+
+const auto expm1_func = [](auto x) {
+    using std::expm1;
+
+    return expm1(x);
+};
+
+const auto log_func = [](auto x) {
+    using std::log;
+
+    return log(x);
+};
+
+const auto log2_func = [](auto x) {
+    using std::log2;
+
+    return log2(x);
+};
+
+const auto log10_func = [](auto x) {
+    using std::log10;
+
+    return log10(x);
+};
+
+const auto log1p_func = [](auto x) {
+    using std::log1p;
+
+    return log1p(x);
+};
+
 const auto isfinite_func = [](auto x) {
     using std::isfinite;
 
     return isfinite(x);
 };
 
-const auto floor_divide_func = [](auto x, auto y) {
-    using std::floor;
+const auto sign_func = [](auto x) {
+    using std::isnan;
 
-    auto ret = x / y;
-    return floor(ret);
+    if (isnan(x)) {
+        return x;
+    }
+
+    return static_cast<decltype(x)>((0 < x) - (x < 0));
 };
 
 const auto pow_func = [](auto x, auto y) {
@@ -884,6 +1024,7 @@ void expose_real128(py::module_ &m)
     // NOTE: need access to the numpy module to register ufuncs.
     auto numpy_mod = py::module_::import("numpy");
 
+    // Arithmetics.
     detail::npy_register_ufunc(
         numpy_mod, "add",
         [](char **args, const npy_intp *dimensions, const npy_intp *steps, void *data) {
@@ -903,6 +1044,12 @@ void expose_real128(py::module_ &m)
         },
         npy_registered_py_real128, npy_registered_py_real128, npy_registered_py_real128);
     detail::npy_register_ufunc(
+        numpy_mod, "square",
+        [](char **args, const npy_intp *dimensions, const npy_intp *steps, void *data) {
+            detail::py_real128_ufunc_unary(args, dimensions, steps, data, detail::square_func);
+        },
+        npy_registered_py_real128, npy_registered_py_real128);
+    detail::npy_register_ufunc(
         numpy_mod, "divide",
         [](char **args, const npy_intp *dimensions, const npy_intp *steps, void *data) {
             detail::py_real128_ufunc_binary(args, dimensions, steps, data, std::divides{});
@@ -912,12 +1059,6 @@ void expose_real128(py::module_ &m)
         numpy_mod, "floor_divide",
         [](char **args, const npy_intp *dimensions, const npy_intp *steps, void *data) {
             detail::py_real128_ufunc_binary(args, dimensions, steps, data, detail::floor_divide_func);
-        },
-        npy_registered_py_real128, npy_registered_py_real128, npy_registered_py_real128);
-    detail::npy_register_ufunc(
-        numpy_mod, "power",
-        [](char **args, const npy_intp *dimensions, const npy_intp *steps, void *data) {
-            detail::py_real128_ufunc_binary(args, dimensions, steps, data, detail::pow_func);
         },
         npy_registered_py_real128, npy_registered_py_real128, npy_registered_py_real128);
     detail::npy_register_ufunc(
@@ -938,12 +1079,26 @@ void expose_real128(py::module_ &m)
             detail::py_real128_ufunc_unary(args, dimensions, steps, data, detail::negation_func);
         },
         npy_registered_py_real128, npy_registered_py_real128);
+    // Power/roots.
+    detail::npy_register_ufunc(
+        numpy_mod, "power",
+        [](char **args, const npy_intp *dimensions, const npy_intp *steps, void *data) {
+            detail::py_real128_ufunc_binary(args, dimensions, steps, data, detail::pow_func);
+        },
+        npy_registered_py_real128, npy_registered_py_real128, npy_registered_py_real128);
     detail::npy_register_ufunc(
         numpy_mod, "sqrt",
         [](char **args, const npy_intp *dimensions, const npy_intp *steps, void *data) {
             detail::py_real128_ufunc_unary(args, dimensions, steps, data, detail::sqrt_func);
         },
         npy_registered_py_real128, npy_registered_py_real128);
+    detail::npy_register_ufunc(
+        numpy_mod, "cbrt",
+        [](char **args, const npy_intp *dimensions, const npy_intp *steps, void *data) {
+            detail::py_real128_ufunc_unary(args, dimensions, steps, data, detail::cbrt_func);
+        },
+        npy_registered_py_real128, npy_registered_py_real128);
+    // Trigonometry.
     detail::npy_register_ufunc(
         numpy_mod, "sin",
         [](char **args, const npy_intp *dimensions, const npy_intp *steps, void *data) {
@@ -956,6 +1111,142 @@ void expose_real128(py::module_ &m)
             detail::py_real128_ufunc_unary(args, dimensions, steps, data, detail::cos_func);
         },
         npy_registered_py_real128, npy_registered_py_real128);
+    detail::npy_register_ufunc(
+        numpy_mod, "tan",
+        [](char **args, const npy_intp *dimensions, const npy_intp *steps, void *data) {
+            detail::py_real128_ufunc_unary(args, dimensions, steps, data, detail::tan_func);
+        },
+        npy_registered_py_real128, npy_registered_py_real128);
+    detail::npy_register_ufunc(
+        numpy_mod, "arcsin",
+        [](char **args, const npy_intp *dimensions, const npy_intp *steps, void *data) {
+            detail::py_real128_ufunc_unary(args, dimensions, steps, data, detail::asin_func);
+        },
+        npy_registered_py_real128, npy_registered_py_real128);
+    detail::npy_register_ufunc(
+        numpy_mod, "arccos",
+        [](char **args, const npy_intp *dimensions, const npy_intp *steps, void *data) {
+            detail::py_real128_ufunc_unary(args, dimensions, steps, data, detail::acos_func);
+        },
+        npy_registered_py_real128, npy_registered_py_real128);
+    detail::npy_register_ufunc(
+        numpy_mod, "arctan",
+        [](char **args, const npy_intp *dimensions, const npy_intp *steps, void *data) {
+            detail::py_real128_ufunc_unary(args, dimensions, steps, data, detail::atan_func);
+        },
+        npy_registered_py_real128, npy_registered_py_real128);
+    detail::npy_register_ufunc(
+        numpy_mod, "arctan2",
+        [](char **args, const npy_intp *dimensions, const npy_intp *steps, void *data) {
+            detail::py_real128_ufunc_binary(args, dimensions, steps, data, detail::atan2_func);
+        },
+        npy_registered_py_real128, npy_registered_py_real128, npy_registered_py_real128);
+    detail::npy_register_ufunc(
+        numpy_mod, "sinh",
+        [](char **args, const npy_intp *dimensions, const npy_intp *steps, void *data) {
+            detail::py_real128_ufunc_unary(args, dimensions, steps, data, detail::sinh_func);
+        },
+        npy_registered_py_real128, npy_registered_py_real128);
+    detail::npy_register_ufunc(
+        numpy_mod, "cosh",
+        [](char **args, const npy_intp *dimensions, const npy_intp *steps, void *data) {
+            detail::py_real128_ufunc_unary(args, dimensions, steps, data, detail::cosh_func);
+        },
+        npy_registered_py_real128, npy_registered_py_real128);
+    detail::npy_register_ufunc(
+        numpy_mod, "tanh",
+        [](char **args, const npy_intp *dimensions, const npy_intp *steps, void *data) {
+            detail::py_real128_ufunc_unary(args, dimensions, steps, data, detail::tanh_func);
+        },
+        npy_registered_py_real128, npy_registered_py_real128);
+    detail::npy_register_ufunc(
+        numpy_mod, "arcsinh",
+        [](char **args, const npy_intp *dimensions, const npy_intp *steps, void *data) {
+            detail::py_real128_ufunc_unary(args, dimensions, steps, data, detail::asinh_func);
+        },
+        npy_registered_py_real128, npy_registered_py_real128);
+    detail::npy_register_ufunc(
+        numpy_mod, "arccosh",
+        [](char **args, const npy_intp *dimensions, const npy_intp *steps, void *data) {
+            detail::py_real128_ufunc_unary(args, dimensions, steps, data, detail::acosh_func);
+        },
+        npy_registered_py_real128, npy_registered_py_real128);
+    detail::npy_register_ufunc(
+        numpy_mod, "arctanh",
+        [](char **args, const npy_intp *dimensions, const npy_intp *steps, void *data) {
+            detail::py_real128_ufunc_unary(args, dimensions, steps, data, detail::atanh_func);
+        },
+        npy_registered_py_real128, npy_registered_py_real128);
+    detail::npy_register_ufunc(
+        numpy_mod, "deg2rad",
+        [](char **args, const npy_intp *dimensions, const npy_intp *steps, void *data) {
+            detail::py_real128_ufunc_unary(args, dimensions, steps, data, detail::deg2rad_func);
+        },
+        npy_registered_py_real128, npy_registered_py_real128);
+    detail::npy_register_ufunc(
+        numpy_mod, "radians",
+        [](char **args, const npy_intp *dimensions, const npy_intp *steps, void *data) {
+            detail::py_real128_ufunc_unary(args, dimensions, steps, data, detail::deg2rad_func);
+        },
+        npy_registered_py_real128, npy_registered_py_real128);
+    detail::npy_register_ufunc(
+        numpy_mod, "rad2deg",
+        [](char **args, const npy_intp *dimensions, const npy_intp *steps, void *data) {
+            detail::py_real128_ufunc_unary(args, dimensions, steps, data, detail::rad2deg_func);
+        },
+        npy_registered_py_real128, npy_registered_py_real128);
+    detail::npy_register_ufunc(
+        numpy_mod, "degrees",
+        [](char **args, const npy_intp *dimensions, const npy_intp *steps, void *data) {
+            detail::py_real128_ufunc_unary(args, dimensions, steps, data, detail::rad2deg_func);
+        },
+        npy_registered_py_real128, npy_registered_py_real128);
+    // Exponentials and logarithms.
+    detail::npy_register_ufunc(
+        numpy_mod, "exp",
+        [](char **args, const npy_intp *dimensions, const npy_intp *steps, void *data) {
+            detail::py_real128_ufunc_unary(args, dimensions, steps, data, detail::exp_func);
+        },
+        npy_registered_py_real128, npy_registered_py_real128);
+#if defined(MPPP_QUADMATH_HAVE_EXP2Q)
+    detail::npy_register_ufunc(
+        numpy_mod, "exp2",
+        [](char **args, const npy_intp *dimensions, const npy_intp *steps, void *data) {
+            detail::py_real128_ufunc_unary(args, dimensions, steps, data, detail::exp2_func);
+        },
+        npy_registered_py_real128, npy_registered_py_real128);
+#endif
+    detail::npy_register_ufunc(
+        numpy_mod, "expm1",
+        [](char **args, const npy_intp *dimensions, const npy_intp *steps, void *data) {
+            detail::py_real128_ufunc_unary(args, dimensions, steps, data, detail::expm1_func);
+        },
+        npy_registered_py_real128, npy_registered_py_real128);
+    detail::npy_register_ufunc(
+        numpy_mod, "log",
+        [](char **args, const npy_intp *dimensions, const npy_intp *steps, void *data) {
+            detail::py_real128_ufunc_unary(args, dimensions, steps, data, detail::log_func);
+        },
+        npy_registered_py_real128, npy_registered_py_real128);
+    detail::npy_register_ufunc(
+        numpy_mod, "log2",
+        [](char **args, const npy_intp *dimensions, const npy_intp *steps, void *data) {
+            detail::py_real128_ufunc_unary(args, dimensions, steps, data, detail::log2_func);
+        },
+        npy_registered_py_real128, npy_registered_py_real128);
+    detail::npy_register_ufunc(
+        numpy_mod, "log10",
+        [](char **args, const npy_intp *dimensions, const npy_intp *steps, void *data) {
+            detail::py_real128_ufunc_unary(args, dimensions, steps, data, detail::log10_func);
+        },
+        npy_registered_py_real128, npy_registered_py_real128);
+    detail::npy_register_ufunc(
+        numpy_mod, "log1p",
+        [](char **args, const npy_intp *dimensions, const npy_intp *steps, void *data) {
+            detail::py_real128_ufunc_unary(args, dimensions, steps, data, detail::log1p_func);
+        },
+        npy_registered_py_real128, npy_registered_py_real128);
+    // Comparisons.
     detail::npy_register_ufunc(
         numpy_mod, "less",
         [](char **args, const npy_intp *dimensions, const npy_intp *steps, void *data) {
@@ -998,6 +1289,12 @@ void expose_real128(py::module_ &m)
             detail::py_real128_ufunc_unary<npy_bool>(args, dimensions, steps, data, detail::isfinite_func);
         },
         npy_registered_py_real128, NPY_BOOL);
+    detail::npy_register_ufunc(
+        numpy_mod, "sign",
+        [](char **args, const npy_intp *dimensions, const npy_intp *steps, void *data) {
+            detail::py_real128_ufunc_unary(args, dimensions, steps, data, detail::sign_func);
+        },
+        npy_registered_py_real128, npy_registered_py_real128);
 
     // Casting.
     detail::npy_register_cast_functions<float>();
