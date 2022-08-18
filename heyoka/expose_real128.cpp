@@ -12,6 +12,7 @@
 
 #if defined(HEYOKA_HAVE_REAL128)
 
+#include <algorithm>
 #include <cassert>
 #include <cmath>
 #include <cstddef>
@@ -38,6 +39,7 @@
 #include <Python.h>
 #include <numpy/arrayobject.h>
 #include <numpy/arrayscalars.h>
+#include <numpy/ndarraytypes.h>
 #include <numpy/ufuncobject.h>
 
 #include <mp++/config.hpp>
@@ -277,6 +279,10 @@ const auto pow_func = [](auto x, auto y) {
 
     return pow(x, y);
 };
+
+const auto max_func = [](auto a, auto b) { return std::max(a, b); };
+
+const auto min_func = [](auto a, auto b) { return std::min(a, b); };
 
 // Methods for the number protocol.
 // NOLINTNEXTLINE(cppcoreguidelines-avoid-non-const-global-variables)
@@ -741,6 +747,144 @@ npy_bool npy_py_real128_nonzero(void *data, void *)
     return q != 0 ? NPY_TRUE : NPY_FALSE;
 }
 
+// Comparison primitive.
+int npy_py_real128_compare(const void *d0, const void *d1, void *)
+{
+    const auto &x = *static_cast<const mppp::real128 *>(d0);
+    const auto &y = *static_cast<const mppp::real128 *>(d1);
+
+    return x < y ? -1 : x == y ? 0 : 1;
+}
+
+// argmin/argmax implementation.
+template <typename F>
+int npy_py_real128_argminmax(void *data_, npy_intp n, npy_intp *max_ind, const F &cmp)
+{
+    if (n == 0) {
+        return 0;
+    }
+
+    const auto *data = static_cast<mppp::real128 *>(data_);
+
+    npy_intp best_i = 0;
+    auto best_r = data[0];
+
+    for (npy_intp i = 1; i < n; ++i) {
+        if (cmp(data[i], best_r)) {
+            best_i = i;
+            best_r = data[i];
+        }
+    }
+
+    *max_ind = best_i;
+
+    return 0;
+}
+
+// Fill primitive (e.g., used for arange()).
+int npy_py_real128_fill(void *data_, npy_intp length, void *)
+{
+    auto *data = static_cast<mppp::real128 *>(data_);
+    const auto delta = data[1] - data[0];
+    auto r = data[1];
+
+    for (npy_intp i = 2; i < length; ++i) {
+        r += delta;
+        data[i] = r;
+    }
+
+    return 0;
+}
+
+// Fill with scalar primitive.
+int npy_py_real128_fillwithscalar(void *buffer_, npy_intp length, void *value, void *)
+{
+    const auto r = *static_cast<mppp::real128 *>(value);
+    auto *buffer = static_cast<mppp::real128 *>(buffer_);
+
+    for (npy_intp i = 0; i < length; ++i) {
+        buffer[i] = r;
+    }
+
+    return 0;
+}
+
+// Dot product.
+void npy_py_real128_dot(void *ip0_, npy_intp is0, void *ip1_, npy_intp is1, void *op, npy_intp n, void *)
+{
+    using std::fma;
+
+    mppp::real128 r = 0;
+    const auto *ip0 = static_cast<const char *>(ip0_), *ip1 = static_cast<const char *>(ip1_);
+
+    for (npy_intp i = 0; i < n; ++i) {
+        r = fma(*reinterpret_cast<const mppp::real128 *>(ip0), *reinterpret_cast<const mppp::real128 *>(ip1), r);
+
+        ip0 += is0;
+        ip1 += is1;
+    }
+
+    *static_cast<mppp::real128 *>(op) = r;
+}
+
+// Implementation of matrix multiplication.
+void npy_py_real128_matrix_multiply(char **args, const npy_intp *dimensions, const npy_intp *steps)
+{
+    // Pointers to data for input and output arrays.
+    char *ip1 = args[0];
+    char *ip2 = args[1];
+    char *op = args[2];
+
+    // Lengths of core dimensions.
+    npy_intp dm = dimensions[0];
+    npy_intp dn = dimensions[1];
+    npy_intp dp = dimensions[2];
+
+    // Striding over core dimensions.
+    npy_intp is1_m = steps[0];
+    npy_intp is1_n = steps[1];
+    npy_intp is2_n = steps[2];
+    npy_intp is2_p = steps[3];
+    npy_intp os_m = steps[4];
+    npy_intp os_p = steps[5];
+
+    // Calculate dot product for each row/column vector pair.
+    for (npy_intp m = 0; m < dm; ++m) {
+        npy_intp p = 0;
+        for (; p < dp; ++p) {
+            npy_py_real128_dot(ip1, is1_n, ip2, is2_n, op, dn, nullptr);
+
+            // Advance to next column of 2nd input array and output array.
+            ip2 += is2_p;
+            op += os_p;
+        }
+
+        // Reset to first column of 2nd input array and output array.
+        ip2 -= is2_p * p;
+        op -= os_p * p;
+
+        // Advance to next row of 1st input array and output array.
+        ip1 += is1_m;
+        op += os_m;
+    }
+}
+
+void npy_py_real128_gufunc_matrix_multiply(char **args, const npy_intp *dimensions, const npy_intp *steps, void *)
+{
+    // Length of flattened outer dimensions.
+    npy_intp dN = dimensions[0];
+
+    // Striding over flattened outer dimensions for input and output arrays.
+    npy_intp s0 = steps[0];
+    npy_intp s1 = steps[1];
+    npy_intp s2 = steps[2];
+
+    // Loop through outer dimensions, performing matrix multiply on core dimensions for each loop.
+    for (npy_intp N_ = 0; N_ < dN; N_++, args[0] += s0, args[1] += s1, args[2] += s2) {
+        npy_py_real128_matrix_multiply(args, dimensions + 1, steps + 3);
+    }
+}
+
 // Generic NumPy conversion function to real128.
 template <typename From>
 void npy_cast_to_real128(void *from, void *to, npy_intp n, void *, void *)
@@ -789,6 +933,10 @@ HEYOKA_PY_ASSOC_TY(npy_int8, NPY_INT8);
 HEYOKA_PY_ASSOC_TY(npy_int16, NPY_INT16);
 HEYOKA_PY_ASSOC_TY(npy_int32, NPY_INT32);
 HEYOKA_PY_ASSOC_TY(npy_int64, NPY_INT64);
+HEYOKA_PY_ASSOC_TY(npy_uint8, NPY_UINT8);
+HEYOKA_PY_ASSOC_TY(npy_uint16, NPY_UINT16);
+HEYOKA_PY_ASSOC_TY(npy_uint32, NPY_UINT32);
+HEYOKA_PY_ASSOC_TY(npy_uint64, NPY_UINT64);
 
 #undef HEYOKA_PY_ASSOC_TY
 
@@ -1005,7 +1153,21 @@ void expose_real128(py::module_ &m)
     detail::npy_py_real128_arr_funcs.getitem = detail::npy_py_real128_getitem;
     detail::npy_py_real128_arr_funcs.setitem = detail::npy_py_real128_setitem;
     detail::npy_py_real128_arr_funcs.copyswap = detail::npy_py_real128_copyswap;
+    detail::npy_py_real128_arr_funcs.compare = detail::npy_py_real128_compare;
+    detail::npy_py_real128_arr_funcs.argmin = [](void *data, npy_intp n, npy_intp *max_ind, void *) {
+        return detail::npy_py_real128_argminmax(data, n, max_ind, std::less{});
+    };
+    detail::npy_py_real128_arr_funcs.argmax = [](void *data, npy_intp n, npy_intp *max_ind, void *) {
+        return detail::npy_py_real128_argminmax(data, n, max_ind, std::greater{});
+    };
     detail::npy_py_real128_arr_funcs.nonzero = detail::npy_py_real128_nonzero;
+    detail::npy_py_real128_arr_funcs.fill = detail::npy_py_real128_fill;
+    detail::npy_py_real128_arr_funcs.fillwithscalar = detail::npy_py_real128_fillwithscalar;
+    detail::npy_py_real128_arr_funcs.dotfunc = detail::npy_py_real128_dot;
+    // NOTE: not sure if this is needed - it does not seem to have
+    // any effect and the online examples of user dtypes do not set it.
+    // Let's leave it commented out at this time.
+    // detail::npy_py_real128_arr_funcs.scalarkind = [](void *) -> int { return NPY_FLOAT_SCALAR; };
 
     // Register the NumPy data type.
     Py_TYPE(&detail::npy_py_real128_descr) = &PyArrayDescr_Type;
@@ -1295,6 +1457,21 @@ void expose_real128(py::module_ &m)
             detail::py_real128_ufunc_unary(args, dimensions, steps, data, detail::sign_func);
         },
         npy_registered_py_real128, npy_registered_py_real128);
+    detail::npy_register_ufunc(
+        numpy_mod, "maximum",
+        [](char **args, const npy_intp *dimensions, const npy_intp *steps, void *data) {
+            detail::py_real128_ufunc_binary(args, dimensions, steps, data, detail::max_func);
+        },
+        npy_registered_py_real128, npy_registered_py_real128, npy_registered_py_real128);
+    detail::npy_register_ufunc(
+        numpy_mod, "minimum",
+        [](char **args, const npy_intp *dimensions, const npy_intp *steps, void *data) {
+            detail::py_real128_ufunc_binary(args, dimensions, steps, data, detail::min_func);
+        },
+        npy_registered_py_real128, npy_registered_py_real128, npy_registered_py_real128);
+    // Matrix multiplication.
+    detail::npy_register_ufunc(numpy_mod, "matmul", detail::npy_py_real128_gufunc_matrix_multiply,
+                               npy_registered_py_real128, npy_registered_py_real128, npy_registered_py_real128);
 
     // Casting.
     detail::npy_register_cast_functions<float>();
@@ -1302,7 +1479,11 @@ void expose_real128(py::module_ &m)
 
 #if defined(MPPP_FLOAT128_WITH_LONG_DOUBLE)
 
-    detail::npy_register_cast_functions<long double>();
+    // NOTE: registering conversions to/from long double has several
+    // adverse effects on the casting rules. Unclear at this time if
+    // such issues are from our code or NumPy's. Let's leave it commented
+    // at this time.
+    // detail::npy_register_cast_functions<long double>();
 
 #endif
 
@@ -1310,6 +1491,11 @@ void expose_real128(py::module_ &m)
     detail::npy_register_cast_functions<npy_int16>();
     detail::npy_register_cast_functions<npy_int32>();
     detail::npy_register_cast_functions<npy_int64>();
+
+    detail::npy_register_cast_functions<npy_uint8>();
+    detail::npy_register_cast_functions<npy_uint16>();
+    detail::npy_register_cast_functions<npy_uint32>();
+    detail::npy_register_cast_functions<npy_uint64>();
 
     // Add py_real128_type to the module.
     Py_INCREF(&py_real128_type);
