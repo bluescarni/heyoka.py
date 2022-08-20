@@ -738,6 +738,26 @@ void npy_py_real128_copyswap(void *dst, void *src, int swap, void *)
     }
 }
 
+// Copyswapn primitive.
+void npy_py_real128_copyswapn(void *dst_, npy_intp dstride, void *src_, npy_intp sstride, npy_intp n, int swap, void *)
+{
+    char *dst = static_cast<char *>(dst_), *src = static_cast<char *>(src_);
+
+    for (npy_intp i = 0; i < n; ++i) {
+        auto *r = reinterpret_cast<mppp::real128 *>(dst + dstride * i);
+
+        if (src != nullptr) {
+            // NOTE: not sure if src and dst can overlap here,
+            // use memmove() just in case.
+            std::memmove(r, src + sstride * i, sizeof(mppp::real128));
+        }
+
+        if (swap != 0) {
+            byteswap(r);
+        }
+    }
+}
+
 // Nonzero primitive.
 npy_bool npy_py_real128_nonzero(void *data, void *)
 {
@@ -1153,6 +1173,7 @@ void expose_real128(py::module_ &m)
     detail::npy_py_real128_arr_funcs.getitem = detail::npy_py_real128_getitem;
     detail::npy_py_real128_arr_funcs.setitem = detail::npy_py_real128_setitem;
     detail::npy_py_real128_arr_funcs.copyswap = detail::npy_py_real128_copyswap;
+    detail::npy_py_real128_arr_funcs.copyswapn = detail::npy_py_real128_copyswapn;
     detail::npy_py_real128_arr_funcs.compare = detail::npy_py_real128_compare;
     detail::npy_py_real128_arr_funcs.argmin = [](void *data, npy_intp n, npy_intp *max_ind, void *) {
         return detail::npy_py_real128_argminmax(data, n, max_ind, std::less{});
