@@ -944,7 +944,8 @@ HEYOKA_PY_ASSOC_TY(double, NPY_DOUBLE);
 
 #if defined(MPPP_FLOAT128_WITH_LONG_DOUBLE)
 
-HEYOKA_PY_ASSOC_TY(long double, NPY_LONGDOUBLE);
+// NOTE: see below the reasons for commenting this out.
+// HEYOKA_PY_ASSOC_TY(long double, NPY_LONGDOUBLE);
 
 #endif
 
@@ -1245,6 +1246,12 @@ void expose_real128(py::module_ &m)
         npy_registered_py_real128, npy_registered_py_real128, npy_registered_py_real128);
     detail::npy_register_ufunc(
         numpy_mod, "absolute",
+        [](char **args, const npy_intp *dimensions, const npy_intp *steps, void *data) {
+            detail::py_real128_ufunc_unary(args, dimensions, steps, data, detail::abs_func);
+        },
+        npy_registered_py_real128, npy_registered_py_real128);
+    detail::npy_register_ufunc(
+        numpy_mod, "fabs",
         [](char **args, const npy_intp *dimensions, const npy_intp *steps, void *data) {
             detail::py_real128_ufunc_unary(args, dimensions, steps, data, detail::abs_func);
         },
