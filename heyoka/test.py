@@ -2004,7 +2004,7 @@ class batch_integrator_test_case(_ut.TestCase):
         self.assertTrue(np.all(cp == ta.update_d_output([.3]*4)))
 
         # Functional testing.
-        ta.set_time(0)
+        ta.set_time(0.)
         ta.state[:] = [[0., 0.01, 0.02, 0.03], [0.205, 0.206, 0.207, 0.208]]
         ta.step(write_tc=True)
         ta.update_d_output(ta.time)
@@ -2026,7 +2026,7 @@ class batch_integrator_test_case(_ut.TestCase):
 
         self.assertTrue(np.all(ta.time == [0, 0]))
 
-        ta.set_time([-1, 1])
+        ta.set_time([-1., 1.])
         self.assertTrue(np.all(ta.time == [-1, 1]))
 
         ta.set_time(5.)

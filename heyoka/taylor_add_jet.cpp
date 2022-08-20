@@ -253,13 +253,13 @@ void expose_taylor_add_jet_impl(py::module &m, const char *name)
                     // Enforce the correct dtype for all arrays.
                     const auto dt = get_dtype<T>();
                     if (state.dtype().num() != dt) {
-                        state = state.attr("astype")(py::dtype(dt));
+                        state = state.attr("astype")(py::dtype(dt), "casting"_a = "safe");
                     }
                     if (pars && pars->dtype().num() != dt) {
-                        *pars = pars->attr("astype")(py::dtype(dt));
+                        *pars = pars->attr("astype")(py::dtype(dt), "casting"_a = "safe");
                     }
                     if (time && time->dtype().num() != dt) {
-                        *time = time->attr("astype")(py::dtype(dt));
+                        *time = time->attr("astype")(py::dtype(dt), "casting"_a = "safe");
                     }
 
                     // Check the input arrays.

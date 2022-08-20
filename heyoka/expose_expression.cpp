@@ -72,7 +72,7 @@ void expose_expression(py::module_ &m)
         .def(-py::self)
         .def(+py::self)
         // Binary operators.
-        .def(py::self + py::self)
+        .def(py::self + py::self, "x"_a)
         .def(
             "__add__", [](const hey::expression &ex, std::int32_t x) { return ex + static_cast<double>(x); },
             "x"_a.noconvert())
@@ -87,7 +87,7 @@ void expose_expression(py::module_ &m)
         .def(py::self + mppp::real128(), "x"_a.noconvert())
         .def(mppp::real128() + py::self, "x"_a.noconvert())
 #endif
-        .def(py::self - py::self, "x"_a.noconvert())
+        .def(py::self - py::self, "x"_a)
         .def(
             "__sub__", [](const hey::expression &ex, std::int32_t x) { return ex - static_cast<double>(x); },
             "x"_a.noconvert())
@@ -102,7 +102,7 @@ void expose_expression(py::module_ &m)
         .def(py::self - mppp::real128(), "x"_a.noconvert())
         .def(mppp::real128() - py::self, "x"_a.noconvert())
 #endif
-        .def(py::self * py::self, "x"_a.noconvert())
+        .def(py::self * py::self, "x"_a)
         .def(
             "__mul__", [](const hey::expression &ex, std::int32_t x) { return ex * static_cast<double>(x); },
             "x"_a.noconvert())
@@ -117,7 +117,7 @@ void expose_expression(py::module_ &m)
         .def(py::self * mppp::real128(), "x"_a.noconvert())
         .def(mppp::real128() * py::self, "x"_a.noconvert())
 #endif
-        .def(py::self / py::self, "x"_a.noconvert())
+        .def(py::self / py::self, "x"_a)
         .def(
             "__div__", [](const hey::expression &ex, std::int32_t x) { return ex / static_cast<double>(x); },
             "x"_a.noconvert())
@@ -133,12 +133,11 @@ void expose_expression(py::module_ &m)
         .def(mppp::real128() / py::self, "x"_a.noconvert())
 #endif
         // Comparisons.
-        .def(py::self == py::self, "x"_a.noconvert())
-        .def(py::self != py::self, "x"_a.noconvert())
+        .def(py::self == py::self, "x"_a)
+        .def(py::self != py::self, "x"_a)
         // pow().
         .def(
-            "__pow__", [](const hey::expression &b, const hey::expression &e) { return hey::pow(b, e); },
-            "e"_a.noconvert())
+            "__pow__", [](const hey::expression &b, const hey::expression &e) { return hey::pow(b, e); }, "e"_a)
         .def(
             "__pow__", [](const hey::expression &b, std::int32_t e) { return hey::pow(b, static_cast<double>(e)); },
             "e"_a.noconvert())
@@ -228,58 +227,52 @@ void expose_expression(py::module_ &m)
 
     // kepE().
     m.def(
-        "kepE", [](hey::expression e, hey::expression M) { return hey::kepE(std::move(e), std::move(M)); },
-        "e"_a.noconvert(), "M"_a.noconvert());
+        "kepE", [](hey::expression e, hey::expression M) { return hey::kepE(std::move(e), std::move(M)); }, "e"_a,
+        "M"_a);
     m.def(
-        "kepE", [](double e, hey::expression M) { return hey::kepE(e, std::move(M)); }, "e"_a.noconvert(),
-        "M"_a.noconvert());
+        "kepE", [](double e, hey::expression M) { return hey::kepE(e, std::move(M)); }, "e"_a.noconvert(), "M"_a);
     m.def(
-        "kepE", [](long double e, hey::expression M) { return hey::kepE(e, std::move(M)); }, "e"_a.noconvert(),
-        "M"_a.noconvert());
+        "kepE", [](long double e, hey::expression M) { return hey::kepE(e, std::move(M)); }, "e"_a.noconvert(), "M"_a);
 #if defined(HEYOKA_HAVE_REAL128)
     m.def(
         "kepE", [](mppp::real128 e, hey::expression M) { return hey::kepE(e, std::move(M)); }, "e"_a.noconvert(),
-        "M"_a.noconvert());
+        "M"_a);
 #endif
 
     m.def(
-        "kepE", [](hey::expression e, double M) { return hey::kepE(std::move(e), M); }, "e"_a.noconvert(),
-        "M"_a.noconvert());
+        "kepE", [](hey::expression e, double M) { return hey::kepE(std::move(e), M); }, "e"_a, "M"_a.noconvert());
     m.def(
-        "kepE", [](hey::expression e, long double M) { return hey::kepE(std::move(e), M); }, "e"_a.noconvert(),
-        "M"_a.noconvert());
+        "kepE", [](hey::expression e, long double M) { return hey::kepE(std::move(e), M); }, "e"_a, "M"_a.noconvert());
 #if defined(HEYOKA_HAVE_REAL128)
     m.def(
-        "kepE", [](hey::expression e, mppp::real128 M) { return hey::kepE(std::move(e), M); }, "e"_a.noconvert(),
+        "kepE", [](hey::expression e, mppp::real128 M) { return hey::kepE(std::move(e), M); }, "e"_a,
         "M"_a.noconvert());
 #endif
 
     // atan2().
     m.def(
-        "atan2", [](hey::expression y, hey::expression x) { return hey::atan2(std::move(y), std::move(x)); },
-        "y"_a.noconvert(), "x"_a.noconvert());
+        "atan2", [](hey::expression y, hey::expression x) { return hey::atan2(std::move(y), std::move(x)); }, "y"_a,
+        "x"_a);
 
     m.def(
-        "atan2", [](double y, hey::expression x) { return hey::atan2(y, std::move(x)); }, "y"_a.noconvert(),
-        "x"_a.noconvert());
+        "atan2", [](double y, hey::expression x) { return hey::atan2(y, std::move(x)); }, "y"_a.noconvert(), "x"_a);
     m.def(
         "atan2", [](long double y, hey::expression x) { return hey::atan2(y, std::move(x)); }, "y"_a.noconvert(),
-        "x"_a.noconvert());
+        "x"_a);
 #if defined(HEYOKA_HAVE_REAL128)
     m.def(
         "atan2", [](mppp::real128 y, hey::expression x) { return hey::atan2(y, std::move(x)); }, "y"_a.noconvert(),
-        "x"_a.noconvert());
+        "x"_a);
 #endif
 
     m.def(
-        "atan2", [](hey::expression y, double x) { return hey::atan2(std::move(y), x); }, "y"_a.noconvert(),
-        "x"_a.noconvert());
+        "atan2", [](hey::expression y, double x) { return hey::atan2(std::move(y), x); }, "y"_a, "x"_a.noconvert());
     m.def(
-        "atan2", [](hey::expression y, long double x) { return hey::atan2(std::move(y), x); }, "y"_a.noconvert(),
+        "atan2", [](hey::expression y, long double x) { return hey::atan2(std::move(y), x); }, "y"_a,
         "x"_a.noconvert());
 #if defined(HEYOKA_HAVE_REAL128)
     m.def(
-        "atan2", [](hey::expression y, mppp::real128 x) { return hey::atan2(std::move(y), x); }, "y"_a.noconvert(),
+        "atan2", [](hey::expression y, mppp::real128 x) { return hey::atan2(std::move(y), x); }, "y"_a,
         "x"_a.noconvert());
 #endif
 

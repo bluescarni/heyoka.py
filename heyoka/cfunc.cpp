@@ -165,7 +165,7 @@ void expose_add_cfunc_impl(py::module &m, const char *name)
             return py::cpp_function(
                 [s_scal = std::move(s_scal), s_batch = std::move(s_batch), simd_size, nparams, nouts, nvars, fptr_scal,
                  fptr_scal_s, fptr_batch, fptr_batch_s, buf_in = std::move(buf_in), buf_out = std::move(buf_out),
-                 buf_pars = std::move(buf_pars)](py::iterable inputs_ob, std::optional<py::iterable> outputs_ob,
+                 buf_pars = std::move(buf_pars)](const py::iterable &inputs_ob, std::optional<py::iterable> outputs_ob,
                                                  std::optional<py::iterable> pars_ob) mutable {
                     // Attempt to convert the input arguments into arrays.
                     py::array inputs = inputs_ob;
@@ -175,13 +175,13 @@ void expose_add_cfunc_impl(py::module &m, const char *name)
                     // Enforce the correct dtype for all arrays.
                     const auto dt = get_dtype<T>();
                     if (inputs.dtype().num() != dt) {
-                        inputs = inputs.attr("astype")(py::dtype(dt));
+                        inputs = inputs.attr("astype")(py::dtype(dt), "casting"_a = "safe");
                     }
                     if (outputs_ && outputs_->dtype().num() != dt) {
-                        *outputs_ = outputs_->attr("astype")(py::dtype(dt));
+                        *outputs_ = outputs_->attr("astype")(py::dtype(dt), "casting"_a = "safe");
                     }
                     if (pars && pars->dtype().num() != dt) {
-                        *pars = pars->attr("astype")(py::dtype(dt));
+                        *pars = pars->attr("astype")(py::dtype(dt), "casting"_a = "safe");
                     }
 
                     // If we have params in the function, we must be provided
@@ -328,8 +328,8 @@ void expose_add_cfunc_impl(py::module &m, const char *name)
                     zero_copy = zero_copy && (inputs.owndata() && outputs.owndata() && (!pars || pars->owndata()));
                     if (zero_copy) {
                         auto *out_data = outputs.data();
-                        auto *in_data = inputs.data();
-                        auto *par_data = pars ? pars->data() : nullptr;
+                        const auto *in_data = inputs.data();
+                        const auto *par_data = pars ? pars->data() : nullptr;
 
                         // Are they all distinct from each other?
                         // NOTE: while out_data can never be possibly null (as we are sure there's
