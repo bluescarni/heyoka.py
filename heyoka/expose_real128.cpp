@@ -1524,6 +1524,24 @@ void expose_real128(py::module_ &m)
     detail::npy_register_cast_functions<npy_uint32>();
     detail::npy_register_cast_functions<npy_uint64>();
 
+    // NOTE: need to to bool manually as it typically overlaps
+    // with another C++ type (e.g., uint8).
+    if (PyArray_RegisterCastFunc(PyArray_DescrFromType(NPY_BOOL), npy_registered_py_real128,
+                                 &detail::npy_cast_to_real128<npy_bool>)
+        < 0) {
+        py_throw(PyExc_TypeError, "The registration of a NumPy casting function failed");
+    }
+
+    // NOTE: this is to signal that conversion of any scalar type to real128 is safe.
+    if (PyArray_RegisterCanCast(PyArray_DescrFromType(NPY_BOOL), npy_registered_py_real128, NPY_NOSCALAR) < 0) {
+        py_throw(PyExc_TypeError, "The registration of a NumPy casting function failed");
+    }
+
+    if (PyArray_RegisterCastFunc(&detail::npy_py_real128_descr, NPY_BOOL, &detail::npy_cast_from_real128<npy_bool>)
+        < 0) {
+        py_throw(PyExc_TypeError, "The registration of a NumPy casting function failed");
+    }
+
     // Add py_real128_type to the module.
     Py_INCREF(&py_real128_type);
     if (PyModule_AddObject(m.ptr(), "real128", reinterpret_cast<PyObject *>(&py_real128_type)) < 0) {
