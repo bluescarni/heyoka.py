@@ -41,6 +41,7 @@ void expose_expression(py::module_ &m)
 {
     namespace hey = heyoka;
     namespace heypy = heyoka_py;
+    // NOLINTNEXTLINE(google-build-using-namespace)
     using namespace pybind11::literals;
 
     // NOTE: typedef to avoid complications in the
@@ -87,6 +88,7 @@ void expose_expression(py::module_ &m)
         .def(py::self + mppp::real128(), "x"_a.noconvert())
         .def(mppp::real128() + py::self, "x"_a.noconvert())
 #endif
+        // NOLINTNEXTLINE(misc-redundant-expression)
         .def(py::self - py::self, "x"_a)
         .def(
             "__sub__", [](const hey::expression &ex, std::int32_t x) { return ex - static_cast<double>(x); },
