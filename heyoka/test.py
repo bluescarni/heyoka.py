@@ -2717,10 +2717,154 @@ class zero_division_error_test_case(_ut.TestCase):
 
 class expression_test_case(_ut.TestCase):
     def runTest(self):
+        self.test_basic()
         self.test_s11n()
         self.test_len()
         self.test_diff()
         self.test_copy()
+
+    def test_basic(self):
+        from . import expression as ex, core
+        import numpy as np
+
+        with_real128 = hasattr(core, "real128")
+        ld_63bit = np.finfo(np.longdouble).nmant == 63
+
+        if with_real128:
+            real128 = core.real128
+
+        # Constructors.
+        self.assertEqual(ex(), ex(0))
+        self.assertEqual(ex(123), ex(123.))
+        self.assertEqual(str(ex(123)), "123.00000000000000")
+
+        # Error with large integer.
+        with self.assertRaises(TypeError) as cm:
+            ex(123 << 56)
+        self.assertTrue(
+            "incompatible constructor arguments" in str(cm.exception))
+
+        self.assertEqual(str(ex(1.1)), "1.1000000000000001")
+
+        if ld_63bit:
+            self.assertEqual(str(ex(np.longdouble("1.1"))), "1.10000000000000000002")
+
+        if with_real128:
+            self.assertEqual(str(ex(real128("1.1"))), "1.10000000000000000000000000000000008")
+
+        self.assertEqual(str(ex("x")), "x")
+
+        # Unary arithmetics.
+        self.assertEqual(ex(42), +ex(42))
+        self.assertEqual(ex(-42), -ex(42))
+
+        # Addition.
+        self.assertEqual(ex(42) + ex(-1), ex(41))
+        self.assertEqual(ex(42) + -1, ex(41))
+        self.assertEqual(-1 + ex(42), ex(41))
+        with self.assertRaises(TypeError) as cm:
+            ex(42) + (2 << 112)
+        with self.assertRaises(TypeError) as cm:
+            (2 << 112) + ex(42)
+        self.assertEqual(ex(42) + -1.1, ex(40.899999999999999))
+        self.assertEqual(-1.1 + ex(42), ex(40.899999999999999))
+        if ld_63bit:
+            self.assertEqual(ex(42) + np.longdouble("-1.1"), ex(np.longdouble("40.9000000000000000014")))
+            self.assertEqual(np.longdouble("-1.1") + ex(42), ex(np.longdouble("40.9000000000000000014")))
+        if with_real128:
+            self.assertEqual(ex(42) + real128("-1.1"), ex(real128("40.8999999999999999999999999999999988")))
+            self.assertEqual(real128("-1.1") + ex(42), ex(real128("40.8999999999999999999999999999999988")))
+
+        # Subtraction.
+        self.assertEqual(ex(42) - ex(-1), ex(43))
+        self.assertEqual(ex(42) - -1, ex(43))
+        self.assertEqual(-1 - ex(42), ex(-43))
+        with self.assertRaises(TypeError) as cm:
+            ex(42) - (2 << 112)
+        with self.assertRaises(TypeError) as cm:
+            (2 << 112) - ex(42)
+        self.assertEqual(ex(42) - -1.1, ex(43.100000000000001))
+        self.assertEqual(-1.1 - ex(42), ex(-43.100000000000001))
+        if ld_63bit:
+            self.assertEqual(ex(42) - np.longdouble("-1.1"), ex(np.longdouble("43.0999999999999999986")))
+            self.assertEqual(np.longdouble("-1.1") - ex(42), ex(np.longdouble("-43.0999999999999999986")))
+        if with_real128:
+            self.assertEqual(ex(42) - real128("-1.1"), ex(real128("43.1000000000000000000000000000000012")))
+            self.assertEqual(real128("-1.1") - ex(42), ex(real128("-43.1000000000000000000000000000000012")))
+
+        # Multiplication.
+        self.assertEqual(ex(42) * ex(-1), ex(-42))
+        self.assertEqual(ex(42) * -1, ex(-42))
+        self.assertEqual(-1 * ex(42), ex(-42))
+        with self.assertRaises(TypeError) as cm:
+            ex(42) * (2 << 112)
+        with self.assertRaises(TypeError) as cm:
+            (2 << 112) * ex(42)
+        self.assertEqual(ex(42) * -1.1, ex(-46.200000000000003))
+        self.assertEqual(-1.1 * ex(42), ex(-46.200000000000003))
+        if ld_63bit:
+            self.assertEqual(ex(42) * np.longdouble("-1.1"), ex(np.longdouble("-46.2000000000000000007")))
+            self.assertEqual(np.longdouble("-1.1") * ex(42), ex(np.longdouble("-46.2000000000000000007")))
+        if with_real128:
+            self.assertEqual(ex(42) * real128("-1.1"), ex(real128("-46.2000000000000000000000000000000025")))
+            self.assertEqual(real128("-1.1") * ex(42), ex(real128("-46.2000000000000000000000000000000025")))
+
+        # Division.
+        self.assertEqual(ex(42) / ex(-1), ex(-42))
+        self.assertEqual(ex(42) / -1, ex(-42))
+        self.assertEqual(-42 / ex(1), ex(-42))
+        with self.assertRaises(TypeError) as cm:
+            ex(42) / (2 << 112)
+        with self.assertRaises(TypeError) as cm:
+            (2 << 112) / ex(42)
+        self.assertEqual(ex(42) / -1.1, ex(-38.181818181818180))
+        self.assertEqual(-1.1 / ex(42), ex(-0.02619047619047619))
+        if ld_63bit:
+            self.assertEqual(ex(42) / np.longdouble("-1.1"), ex(np.longdouble("-38.1818181818181818163")))
+            self.assertEqual(np.longdouble("-1.1") / ex(42), ex(np.longdouble("-0.0261904761904761904772")))
+        if with_real128:
+            self.assertEqual(ex(42) / real128("-1.1"), ex(real128("-38.1818181818181818181818181818181801")))
+            self.assertEqual(real128("-1.1") / ex(42), ex(real128("-0.0261904761904761904761904761904761910")))
+
+        # Comparison.
+        self.assertEqual(ex(42), ex(42))
+        self.assertEqual(ex("x"), ex("x"))
+        self.assertNotEqual(ex(41), ex(42))
+        self.assertNotEqual(ex("x"), ex("y"))
+
+        # Exponentiation.
+        self.assertEqual(str(ex("x") ** ex("y")), "pow(x, y)")
+        self.assertEqual(str(ex("x") ** ex(2)), "x**2")
+        self.assertEqual(str(ex("x") ** ex(1.1)), "pow(x, 1.1000000000000001)")
+        with self.assertRaises(TypeError) as cm:
+            ex(42) ** (2 << 112)
+        if ld_63bit:
+            self.assertEqual(ex(42) / np.longdouble("-1.1"), ex(np.longdouble("-38.1818181818181818163")))
+        if ld_63bit:
+            self.assertEqual(str(ex("x") ** ex(np.longdouble("1.1"))), "pow(x, 1.10000000000000000002)")
+        if with_real128:
+            self.assertEqual(str(ex("x") ** ex(real128("1.1"))), "pow(x, 1.10000000000000000000000000000000008)")
+
+        # Len.
+        self.assertEqual(len(ex("x") + ex("y")), 3)
+
+        # Copy and deepcopy.
+        from copy import copy, deepcopy
+        tmp = ex("x") + ex("y")
+        tmp.foo = [1, 2, 3]
+        id_foo = id(tmp.foo)
+        tmp_copy = copy(tmp)
+        self.assertEqual(id_foo, id(tmp_copy.foo))
+        tmp_dcopy = deepcopy(tmp)
+        self.assertNotEqual(id_foo, id(tmp_dcopy.foo))
+        self.assertEqual(tmp.foo, tmp_dcopy.foo)
+
+        # Pickling.
+        from pickle import loads, dumps
+        tmp_p = loads(dumps(tmp))
+        self.assertEqual(tmp_p, tmp)
+        self.assertEqual(tmp_p.foo, tmp.foo)
+        self.assertNotEqual(id(tmp_p.foo), id(tmp.foo))
 
     def test_copy(self):
         from . import make_vars

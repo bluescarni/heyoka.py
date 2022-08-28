@@ -67,7 +67,7 @@ void expose_expression(py::module_ &m)
 #if defined(HEYOKA_HAVE_REAL128)
         .def(py::init<mppp::real128>(), "x"_a.noconvert())
 #endif
-        .def(py::init<std::string>(), "x"_a.noconvert())
+        .def(py::init<std::string>(), "x"_a)
         // Unary operators.
         .def(-py::self)
         .def(+py::self)
@@ -119,10 +119,10 @@ void expose_expression(py::module_ &m)
 #endif
         .def(py::self / py::self, "x"_a)
         .def(
-            "__div__", [](const hey::expression &ex, std::int32_t x) { return ex / static_cast<double>(x); },
+            "__truediv__", [](const hey::expression &ex, std::int32_t x) { return ex / static_cast<double>(x); },
             "x"_a.noconvert())
         .def(
-            "__rdiv__", [](const hey::expression &ex, std::int32_t x) { return static_cast<double>(x) / ex; },
+            "__rtruediv__", [](const hey::expression &ex, std::int32_t x) { return static_cast<double>(x) / ex; },
             "x"_a.noconvert())
         .def(py::self / double(), "x"_a.noconvert())
         .def(double() / py::self, "x"_a.noconvert())
@@ -133,7 +133,9 @@ void expose_expression(py::module_ &m)
         .def(mppp::real128() / py::self, "x"_a.noconvert())
 #endif
         // Comparisons.
+        // NOLINTNEXTLINE(misc-redundant-expression)
         .def(py::self == py::self, "x"_a)
+        // NOLINTNEXTLINE(misc-redundant-expression)
         .def(py::self != py::self, "x"_a)
         // pow().
         .def(
@@ -287,11 +289,10 @@ void expose_expression(py::module_ &m)
 
     // Diff.
     m.def(
-        "diff", [](const hey::expression &ex, const std::string &s) { return hey::diff(ex, s); }, "ex"_a.noconvert(),
-        "var"_a.noconvert());
+        "diff", [](const hey::expression &ex, const std::string &s) { return hey::diff(ex, s); }, "ex"_a, "var"_a);
     m.def(
-        "diff", [](const hey::expression &ex, const hey::expression &var) { return hey::diff(ex, var); },
-        "ex"_a.noconvert(), "var"_a.noconvert());
+        "diff", [](const hey::expression &ex, const hey::expression &var) { return hey::diff(ex, var); }, "ex"_a,
+        "var"_a);
 
     // Syntax sugar for creating parameters.
     py::class_<hey::detail::par_impl>(m, "_par_generator").def("__getitem__", &hey::detail::par_impl::operator[]);
