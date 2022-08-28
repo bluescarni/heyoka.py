@@ -2845,9 +2845,6 @@ class expression_test_case(_ut.TestCase):
         if with_real128:
             self.assertEqual(str(ex("x") ** ex(real128("1.1"))), "pow(x, 1.10000000000000000000000000000000008)")
 
-        # Len.
-        self.assertEqual(len(ex("x") + ex("y")), 3)
-
         # Copy and deepcopy.
         from copy import copy, deepcopy
         tmp = ex("x") + ex("y")
@@ -2858,13 +2855,6 @@ class expression_test_case(_ut.TestCase):
         tmp_dcopy = deepcopy(tmp)
         self.assertNotEqual(id_foo, id(tmp_dcopy.foo))
         self.assertEqual(tmp.foo, tmp_dcopy.foo)
-
-        # Pickling.
-        from pickle import loads, dumps
-        tmp_p = loads(dumps(tmp))
-        self.assertEqual(tmp_p, tmp)
-        self.assertEqual(tmp_p.foo, tmp.foo)
-        self.assertNotEqual(id(tmp_p.foo), id(tmp.foo))
 
     def test_copy(self):
         from . import make_vars
