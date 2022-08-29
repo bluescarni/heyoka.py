@@ -1554,6 +1554,34 @@ class scalar_integrator_test_case(_ut.TestCase):
         self.test_events()
         self.test_copy()
         self.test_dtime()
+        self.test_type_conversions()
+
+    def test_type_conversions(self):
+        # Test to check automatic conversions of std::vector<T>
+        # in the integrator's constructor.
+
+        from . import taylor_adaptive, make_vars, sin
+        from .core import _ppc_arch
+        import numpy as np
+
+        x, v = make_vars("x", "v")
+
+        sys = [(x, v), (v, -9.8 * sin(x))]
+
+        ta = taylor_adaptive(sys=sys, state=(0., 0.25), tol=1e-4)
+        self.assertTrue(np.all(ta.state == [0., 0.25]))
+        ta = taylor_adaptive(sys=sys, state=np.array([0., 0.25]), tol=1e-4)
+        self.assertTrue(np.all(ta.state == [0., 0.25]))
+
+        if _ppc_arch:
+            return
+
+        # Check that conversion from other fp types is forbidden.
+        with self.assertRaises(TypeError) as cm:
+            ta = taylor_adaptive(sys=sys, state=(np.longdouble(0.), np.longdouble(0.25)), tol=1e-4)
+
+        with self.assertRaises(TypeError) as cm:
+            ta = taylor_adaptive(sys=sys, state=np.array([0., 0.25], dtype=np.longdouble), tol=1e-4)
 
     def test_dtime(self):
         from . import taylor_adaptive, make_vars, sin
@@ -1796,6 +1824,37 @@ class batch_integrator_test_case(_ut.TestCase):
         self.test_dtime()
         self.test_update_d_output()
         self.test_copy()
+        self.test_type_conversions()
+
+    def test_type_conversions(self):
+        # Test to check automatic conversions of std::vector<T>
+        # in the integrator's constructor.
+
+        from . import taylor_adaptive_batch, make_vars, sin
+        from .core import _ppc_arch
+        import numpy as np
+
+        x, v = make_vars("x", "v")
+
+        sys = [(x, v), (v, -9.8 * sin(x))]
+
+        ta = taylor_adaptive_batch(sys=sys, state=((0., .1), (0.25, 0.26)), tol=1e-4)
+        self.assertTrue(np.all(ta.state == ((0., .1), (0.25, 0.26))))
+
+        ta = taylor_adaptive_batch(sys=sys, state=np.array([[0., 0.1], [0.25, 0.26]]), tol=1e-4)
+        self.assertTrue(np.all(ta.state == ((0., .1), (0.25, 0.26))))
+
+        if _ppc_arch:
+            return
+
+        ld = np.longdouble
+
+        # Check that conversion from other fp types is forbidden.
+        with self.assertRaises(TypeError) as cm:
+            ta = taylor_adaptive_batch(sys=sys, state=((ld(0.), ld(.1)), (ld(0.25), ld(0.26))), tol=1e-4)
+
+        with self.assertRaises(TypeError) as cm:
+            ta = taylor_adaptive_batch(sys=sys, state=np.array([[0., 0.1], [0.25, 0.26]], dtype=ld), tol=1e-4)
 
     def test_copy(self):
         from . import nt_event_batch, make_vars, sin, taylor_adaptive_batch
