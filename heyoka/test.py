@@ -3977,6 +3977,7 @@ class cfunc_test_case(_ut.TestCase):
                 # provided from the outputs argument.
                 out_arr = np.zeros((3, nevals), dtype=fp_t)
                 eval_arr = fn(inputs=inputs, pars=pars, outputs=out_arr)
+                self.assertEqual(id(eval_arr), id(out_arr))
                 self.assertTrue(_allclose(eval_arr[0], np.sin(inputs[1, :] + inputs[0, :]),
                                 rtol=_get_eps(fp_t) * 10, atol=_get_eps(fp_t) * 10))
                 self.assertTrue(_allclose(eval_arr[1], inputs[1, :] - pars[0, :],
@@ -4140,6 +4141,7 @@ class cfunc_test_case(_ut.TestCase):
             eval_arr = fn([fp_t(1), fp_t(2)], pars=[
                           fp_t(-5), fp_t(1)], outputs=out_arr)
             self.assertTrue(np.shares_memory(eval_arr, out_arr))
+            self.assertEqual(id(eval_arr), id(out_arr))
             self.assertTrue(_allclose(eval_arr, [np.sin(fp_t(1)+fp_t(2)), fp_t(1) - fp_t(-5), fp_t(1) + fp_t(2) + fp_t(1)],
                             rtol=_get_eps(fp_t) * 10, atol=_get_eps(fp_t) * 10))
 
