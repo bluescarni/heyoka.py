@@ -4413,7 +4413,97 @@ class real128_test_case(_ut.TestCase):
                 pass
 
     def test_numpy(self):
-        pass
+        from . import core
+        with_real128 = hasattr(core, "real128")
+
+        if not with_real128:
+            return
+
+        import numpy as np
+        from copy import copy, deepcopy
+        from . import real128
+
+        # Basic creation/getitem/setitem.
+        arr = np.array([1, 2, 3], dtype=real128)
+        self.assertEqual(type(arr[0]), real128)
+        self.assertEqual(arr[0], 1)
+        self.assertEqual(arr[1], 2)
+        self.assertEqual(arr[2], 3)
+
+        arr = np.array([real128("1.1")])
+        self.assertEqual(arr.dtype, real128)
+        self.assertEqual(type(arr[0]), real128)
+        self.assertEqual(arr[0], real128("1.1"))
+        arr[0] = real128("1.3")
+        self.assertEqual(arr[0], real128("1.3"))
+        arr[0] = real128(123)
+        self.assertEqual(arr[0], 123)
+        arr[0] = real128(1.1)
+        self.assertEqual(arr[0], real128(1.1))
+
+        with self.assertRaises(TypeError) as cm:
+            arr = np.array(["1.1"], dtype=np.dtype(real128))
+        self.assertTrue("Cannot invoke __setitem__() on a real128 array with an input value of type \"str\"" in str(cm.exception))
+
+        # Copying primitives.
+        arr = np.array([real128("1.1"), real128("1.3")])
+        arr_copy = copy(arr)
+        self.assertTrue(arr_copy[0] == real128("1.1"))
+        self.assertTrue(arr_copy[1] == real128("1.3"))
+        arr_copy = deepcopy(arr)
+        self.assertTrue(arr_copy[0] == real128("1.1"))
+        self.assertTrue(arr_copy[1] == real128("1.3"))
+
+        # Nonzero.
+        arr = np.array([1, 0, 3, real128("nan")], dtype=real128)
+        self.assertTrue(np.all([0, 2, 3] == np.nonzero(arr)[0]))
+
+        # Argmin/argmax.
+        arr = np.array([1,321,54,6,2,6,-6], dtype=real128)
+        self.assertEqual(np.argmin(arr), 6)
+        self.assertEqual(np.argmax(arr), 1)
+        arr = np.array([], dtype=real128)
+        with self.assertRaises(ValueError) as cm:
+            np.argmin(arr)
+        with self.assertRaises(ValueError) as cm:
+            np.argmax(arr)
+
+        # arange() and linspace().
+        arr = np.arange(0, 1, real128("0.3"))
+        self.assertTrue(np.all(arr == np.array([0, real128("0.29999999999999999999999999999999999"),
+                                                real128("0.599999999999999999999999999999999981"),
+                                                real128("0.899999999999999999999999999999999923")],
+                                                dtype=real128)))
+        arr = np.linspace(real128(0), 1, 4)
+        self.assertTrue(np.all(arr == np.array([0, real128("0.333333333333333333333333333333333317"),
+                                                real128("0.666666666666666666666666666666666635"), 1], dtype=real128)))
+
+        # zeros, ones, full.
+        arr = np.zeros((2,2), dtype=real128)
+        self.assertTrue(np.all(arr == np.array([[0, 0],[0, 0]], dtype=real128)))
+        arr = np.ones((2,2), dtype=real128)
+        self.assertTrue(np.all(arr == np.array([[1, 1],[1, 1]], dtype=real128)))
+        arr = np.full((2,2), real128("1.1"))
+        self.assertTrue(np.all(arr == np.array([[real128("1.1"), real128("1.1")],[real128("1.1"), real128("1.1")]])))
+
+        # dot product.
+        arr1 = np.array([real128("1.1"), real128("1.3")])
+        arr2 = np.array([real128("2.1"), real128("2.3")])
+        self.assertEqual(real128("1.1") * real128("2.1") + real128("1.3") * real128("2.3"), np.dot(arr1, arr2))
+        arr1 = np.array([], dtype=real128)
+        arr2 = np.array([], dtype=real128)
+        self.assertEqual(0, np.dot(arr1, arr2))
+
+        # Matrix multiplication.
+        mat = np.array([[real128("1.1"), real128("1.3")], [real128("2.1"), real128("2.3")]])
+        self.assertTrue(np.all(mat@mat == np.array([[real128("3.94000000000000000000000000000000034"),
+                                                     real128("4.41999999999999999999999999999999994")],
+                                                    [real128("7.14000000000000000000000000000000049"),
+                                                     real128("8.01999999999999999999999999999999963")]])))
+
+        # Conversions.
+
+        # TODO test pickling
 
 
 def run_test_suite():
