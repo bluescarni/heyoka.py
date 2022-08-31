@@ -18,22 +18,29 @@ def _from_sympy_symbol(sym):
     import re
 
     # Check if it is a parameter.
-    m = re.match(r'par\[((?:[1-9][0-9]*|0))\]', sym.name)
+    m = re.match(r"par\[((?:[1-9][0-9]*|0))\]", sym.name)
 
     if m:
         from . import par
+
         return par[int(m.groups()[0])]
     else:
         from . import expression
+
         return expression(sym.name)
 
 
 def _from_sympy_number(ex):
     is_rational = isinstance(ex, _spy.Rational)
 
-    if not isinstance(ex, _spy.Float) and not isinstance(ex, _spy.Integer) and not is_rational:
+    if (
+        not isinstance(ex, _spy.Float)
+        and not isinstance(ex, _spy.Integer)
+        and not is_rational
+    ):
         raise TypeError(
-            "Only floating-point, integer and (some) rational numbers can be converted from sympy")
+            "Only floating-point, integer and (some) rational numbers can be converted from sympy"
+        )
 
     from . import expression
 
@@ -45,16 +52,18 @@ def _from_sympy_number(ex):
         # NOTE: for rationals we allow conversion only
         # if den is a power of 2.
         den = ex.q
-        if not (den & (den-1) == 0):
+        if not (den & (den - 1) == 0):
             raise ValueError(
-                "Cannot convert from sympy a rational number whose denominator is not a power of 2")
+                "Cannot convert from sympy a rational number whose denominator is not a power of 2"
+            )
 
         # The needed precision is given by the bit size of the
         # numerator.
         prec = ex.p.bit_length()
     else:
-        prec = ex.num.context.prec if isinstance(
-            ex, _spy.Float) else int(ex).bit_length()
+        prec = (
+            ex.num.context.prec if isinstance(ex, _spy.Float) else int(ex).bit_length()
+        )
 
     nf_err_msg = "A non-finite value was produced when converting from a sympy number"
 
@@ -74,13 +83,17 @@ def _from_sympy_number(ex):
         return expression(retval)
 
     import numpy as np
+
     # NOTE: the number returned by finfo does not account for
     # the implicit bit.
     if prec <= np.finfo(np.longdouble).nmant + 1:
         # Long double precision is sufficient to represent
         # exactly the number.
-        retval = np.longdouble(
-            ex.p) / np.longdouble(ex.q) if is_rational else np.longdouble(str(ex))
+        retval = (
+            np.longdouble(ex.p) / np.longdouble(ex.q)
+            if is_rational
+            else np.longdouble(str(ex))
+        )
         if not np.isfinite(retval):
             raise ValueError(nf_err_msg)
 
@@ -93,8 +106,7 @@ def _from_sympy_number(ex):
         # is enough to represent exactly the number.
         real128 = core.real128
 
-        retval = real128(ex.p) / \
-            real128(ex.q) if is_rational else real128(str(ex))
+        retval = real128(ex.p) / real128(ex.q) if is_rational else real128(str(ex))
 
         if not np.isfinite(retval):
             raise ValueError(nf_err_msg)
@@ -102,7 +114,10 @@ def _from_sympy_number(ex):
         return expression(retval)
     else:
         raise ValueError(
-            "Cannot convert the number {} from sympy exactly: the required precision ({}) is too high".format(ex, prec))
+            "Cannot convert the number {} from sympy exactly: the required precision ({}) is too high".format(
+                ex, prec
+            )
+        )
 
 
 def _build_fmap():
