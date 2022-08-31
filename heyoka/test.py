@@ -1561,8 +1561,9 @@ class scalar_integrator_test_case(_ut.TestCase):
         # in the integrator's constructor.
 
         from . import taylor_adaptive, make_vars, sin
-        from .core import _ppc_arch
         import numpy as np
+
+        ld_63bit = np.finfo(np.longdouble).nmant == 63
 
         x, v = make_vars("x", "v")
 
@@ -1573,7 +1574,7 @@ class scalar_integrator_test_case(_ut.TestCase):
         ta = taylor_adaptive(sys=sys, state=np.array([0., 0.25]), tol=1e-4)
         self.assertTrue(np.all(ta.state == [0., 0.25]))
 
-        if np.longdouble == np.double:
+        if not ld_63bit:
             return
 
         # Check that conversion from other fp types is forbidden.
@@ -1831,8 +1832,9 @@ class batch_integrator_test_case(_ut.TestCase):
         # in the integrator's constructor.
 
         from . import taylor_adaptive_batch, make_vars, sin
-        from .core import _ppc_arch
         import numpy as np
+
+        ld_63bit = np.finfo(np.longdouble).nmant == 63
 
         x, v = make_vars("x", "v")
 
@@ -1844,7 +1846,7 @@ class batch_integrator_test_case(_ut.TestCase):
         ta = taylor_adaptive_batch(sys=sys, state=np.array([[0., 0.1], [0.25, 0.26]]), tol=1e-4)
         self.assertTrue(np.all(ta.state == ((0., .1), (0.25, 0.26))))
 
-        if np.longdouble == np.double:
+        if not ld_63bit:
             return
 
         ld = np.longdouble
