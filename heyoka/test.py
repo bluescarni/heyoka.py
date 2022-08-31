@@ -5440,13 +5440,6 @@ class real128_test_case(_ut.TestCase):
                 pass
 
     def test_numpy(self):
-        from . import core
-
-        with_real128 = hasattr(core, "real128")
-
-        if not with_real128:
-            return
-
         import numpy as np
         from copy import copy, deepcopy
         from . import real128
