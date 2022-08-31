@@ -1573,7 +1573,7 @@ class scalar_integrator_test_case(_ut.TestCase):
         ta = taylor_adaptive(sys=sys, state=np.array([0., 0.25]), tol=1e-4)
         self.assertTrue(np.all(ta.state == [0., 0.25]))
 
-        if _ppc_arch:
+        if np.longdouble == np.double:
             return
 
         # Check that conversion from other fp types is forbidden.
