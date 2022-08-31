@@ -1844,7 +1844,7 @@ class batch_integrator_test_case(_ut.TestCase):
         ta = taylor_adaptive_batch(sys=sys, state=np.array([[0., 0.1], [0.25, 0.26]]), tol=1e-4)
         self.assertTrue(np.all(ta.state == ((0., .1), (0.25, 0.26))))
 
-        if _ppc_arch:
+        if np.longdouble == np.double:
             return
 
         ld = np.longdouble
