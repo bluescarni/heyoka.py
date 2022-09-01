@@ -128,7 +128,7 @@
     "g_k_t = -x-k*x_k\n",
     "\n",
     "# The initial conditions.\n",
-    "ic = [0, 1., 0, 0, 0]\n",
+    "ic = [0., 1., 0., 0., 0.]\n",
     "\n",
     "# Event to detect the maximum amplitude.\n",
     "ev = hy.t_event(v)\n",
@@ -398,7 +398,7 @@
    "name": "python",
    "nbconvert_exporter": "python",
    "pygments_lexer": "ipython3",
-   "version": "3.8.10"
+   "version": "3.8.13"
   }
  },
  "nbformat": 4,

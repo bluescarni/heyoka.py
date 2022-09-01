@@ -48,7 +48,7 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 1,
+   "execution_count": 5,
    "id": "bcc77097-e310-4baf-bf72-e3fc1d7cdabd",
    "metadata": {},
    "outputs": [],
@@ -56,16 +56,8 @@
     "import heyoka as hy\n",
     "import numpy as np\n",
     "\n",
-    "def run_benchmark(fp_type, final_time, parallel_mode):\n",
+    "def run_benchmark(fp_t, final_time, parallel_mode):\n",
     "    import time    \n",
-    "\n",
-    "    # Fetch the floating-point type.\n",
-    "    if fp_type == 'double':\n",
-    "        fp_t = float\n",
-    "    elif fp_type == 'long double':\n",
-    "        fp_t = np.longdouble\n",
-    "    else:\n",
-    "        raise TypeError(\"Unknown floating-point type '{}'\".format(fp_type))\n",
     "\n",
     "    # The number of protoplanets.\n",
     "    nplanets = 400\n",
@@ -85,7 +77,7 @@
     "    # Create the integrator.\n",
     "    # NOTE: compact_mode is *required* when using parallel mode.\n",
     "    ta = hy.taylor_adaptive(sys, init_state, compact_mode = True,\n",
-    "                            parallel_mode = parallel_mode, fp_type=fp_type)\n",
+    "                            parallel_mode = parallel_mode, fp_type=fp_t)\n",
     "\n",
     "    # Reshape the state vector for ease of indexing.\n",
     "    st = ta.state.reshape((nplanets + 1, 6))\n",
@@ -120,7 +112,7 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 2,
+   "execution_count": 6,
    "id": "f7502686-6146-40dd-a3cd-5ce9e72c112c",
    "metadata": {},
    "outputs": [],
@@ -139,7 +131,7 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 3,
+   "execution_count": 7,
    "id": "1f4225c4-be94-4e67-b520-d81f443d993a",
    "metadata": {},
    "outputs": [
@@ -147,14 +139,14 @@
      "name": "stdout",
      "output_type": "stream",
      "text": [
-      "Serial time (double): 1.784582573\n",
-      "Parallel time (double): 0.48682415\n"
+      "Serial time (double): 0.950375134\n",
+      "Parallel time (double): 0.297775221\n"
      ]
     }
    ],
    "source": [
-    "print(\"Serial time (double): {}\".format(run_benchmark(\"double\", 1, False)))\n",
-    "print(\"Parallel time (double): {}\".format(run_benchmark(\"double\", 1, True)))"
+    "print(\"Serial time (double): {}\".format(run_benchmark(float, 1, False)))\n",
+    "print(\"Parallel time (double): {}\".format(run_benchmark(float, 1, True)))"
    ]
   },
   {
@@ -162,7 +154,7 @@
    "id": "a9541599-27a5-4201-99ee-e7564fbf489d",
    "metadata": {},
    "source": [
-    "We can see how parallel mode resulted in a $\\times 3.5$ speedup with respect to the serial integration.\n",
+    "We can see how parallel mode resulted in a $\\times 3.3$ speedup with respect to the serial integration.\n",
     "While this speedup is suboptimal with respect to the maximum theoretically achievable speedup of $\\times 8$,\n",
     "these timings show that parallel mode can still provide an easy way of boosting the integrator's performance\n",
     "for large ODE systems.\n",
@@ -172,7 +164,7 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 4,
+   "execution_count": 8,
    "id": "809e5fb5-6f22-4e14-97d7-9f5fe984d67f",
    "metadata": {},
    "outputs": [
@@ -180,14 +172,14 @@
      "name": "stdout",
      "output_type": "stream",
      "text": [
-      "Serial time (long double): 6.127501942\n",
-      "Parallel time (long double): 1.626414795\n"
+      "Serial time (long double): 4.384781671\n",
+      "Parallel time (long double): 1.104912046\n"
      ]
     }
    ],
    "source": [
-    "print(\"Serial time (long double): {}\".format(run_benchmark(\"long double\", 1, False)))\n",
-    "print(\"Parallel time (long double): {}\".format(run_benchmark(\"long double\", 1, True)))"
+    "print(\"Serial time (long double): {}\".format(run_benchmark(np.longdouble, 1, False)))\n",
+    "print(\"Parallel time (long double): {}\".format(run_benchmark(np.longdouble, 1, True)))"
    ]
   },
   {
@@ -195,7 +187,7 @@
    "id": "63a161f2-a6ad-41ee-801e-d141f5135af3",
    "metadata": {},
    "source": [
-    "In extended precision, the speedup is now $\\times 3.7$. In quadruple precision, the speedup would be close to optimal (see the [C++ tutorial](https://bluescarni.github.io/heyoka/tut_parallel_mode.html), where a speedup of $\\times 7.2$ is achieved).\n",
+    "In extended precision, the speedup is now $\\times 4$. In quadruple precision, the speedup would be close to optimal (see the [C++ tutorial](https://bluescarni.github.io/heyoka/tut_parallel_mode.html), where a speedup of $\\times 7.2$ is achieved).\n",
     "\n",
     "These results show that parallel mode can provide an easy way of boosting the performance of heyoka's integrators\n",
     "for large ODE systems, and that the speedup of parallel mode is most efficient when operating in extended precision."
@@ -218,7 +210,7 @@
    "name": "python",
    "nbconvert_exporter": "python",
    "pygments_lexer": "ipython3",
-   "version": "3.8.12"
+   "version": "3.8.13"
   }
  },
  "nbformat": 4,

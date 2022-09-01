@@ -43,7 +43,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Sampling events" href="Sampling%20events.html" />
-    <link rel="prev" title="Parallel mode" href="parallel_mode.html" />
+    <link rel="prev" title="Computations in extended precision" href="ext_precision.html" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="docsearch:language" content="None">
     
@@ -179,6 +179,11 @@
    <li class="toctree-l2">
     <a class="reference internal" href="parallel_mode.html">
      Parallel mode
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="ext_precision.html">
+     Computations in extended precision
     </a>
    </li>
    <li class="toctree-l2 current active">
@@ -959,7 +964,7 @@ modifying the <code class="docutils literal notranslate"><span class="pre">zero_
 <span class="n">ta</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">taylor_adaptive</span><span class="p">(((</span><span class="n">x</span><span class="p">,</span> <span class="n">v</span><span class="p">),</span> <span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="o">-</span><span class="mf">9.8</span> <span class="o">*</span> <span class="n">hy</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">x</span><span class="p">))),</span> <span class="p">[</span><span class="o">-</span><span class="mf">0.05</span><span class="p">,</span> <span class="mf">0.</span><span class="p">],</span> <span class="n">nt_events</span> <span class="o">=</span> <span class="p">[</span><span class="n">ev0</span><span class="p">,</span> <span class="n">ev1</span><span class="p">])</span>
 
 <span class="c1"># Propagate for a few time units.</span>
-<span class="n">ta</span><span class="o">.</span><span class="n">propagate_until</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+<span class="n">ta</span><span class="o">.</span><span class="n">propagate_until</span><span class="p">(</span><span class="mf">5.</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -1249,11 +1254,11 @@ to an integration without event detection.</p>
                 
     <!-- Previous / next buttons -->
 <div class='prev-next-area'>
-    <a class='left-prev' id="prev-link" href="parallel_mode.html" title="previous page">
+    <a class='left-prev' id="prev-link" href="ext_precision.html" title="previous page">
         <i class="fas fa-angle-left"></i>
         <div class="prev-next-info">
             <p class="prev-next-subtitle">previous</p>
-            <p class="prev-next-title">Parallel mode</p>
+            <p class="prev-next-title">Computations in extended precision</p>
         </div>
     </a>
     <a class='right-next' id="next-link" href="Sampling%20events.html" title="next page">

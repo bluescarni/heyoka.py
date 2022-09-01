@@ -180,6 +180,11 @@
     </a>
    </li>
    <li class="toctree-l2">
+    <a class="reference internal" href="notebooks/ext_precision.html">
+     Computations in extended precision
+    </a>
+   </li>
+   <li class="toctree-l2">
     <a class="reference internal" href="notebooks/Event%20detection.html">
      Event detection overview
     </a>
@@ -686,6 +691,9 @@ installation from source requires also:</p>
 <li><p><a class="reference external" href="https://github.com/pybind/pybind11">pybind11</a> (version &gt;= 2.10),</p></li>
 <li><p><a class="reference external" href="https://cmake.org/">CMake</a>, version 3.16 or later.</p></li>
 </ul>
+<p>Note that heyoka.py makes use of the <a class="reference external" href="https://numpy.org/doc/stable/reference/c-api/index.html#c-api" title="(in NumPy v1.23)"><span class="xref std std-ref">NumPy C API</span></a>
+and thus NumPy must be installed <strong>before</strong> compiling heyoka.py from source.
+The other Python dependencies need not to be installed at compilation time.</p>
 <p>After making sure the dependencies are installed on your system, you can
 download the heyoka.py source code from the
 <a class="reference external" href="https://github.com/bluescarni/heyoka.py/releases">GitHub release page</a>. Alternatively,

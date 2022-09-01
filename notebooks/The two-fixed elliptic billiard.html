@@ -182,6 +182,11 @@
     </a>
    </li>
    <li class="toctree-l2">
+    <a class="reference internal" href="ext_precision.html">
+     Computations in extended precision
+    </a>
+   </li>
+   <li class="toctree-l2">
     <a class="reference internal" href="Event%20detection.html">
      Event detection overview
     </a>
@@ -691,7 +696,7 @@ y^2 - \left(a - x \right)\cdot\left(x - b\right)\cdot\left(x^2 + c\right) = 0 \\
 <span class="n">ev_curve</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">t_event</span><span class="p">(</span><span class="n">eveq_curve</span><span class="p">,</span> <span class="n">callback</span><span class="o">=</span><span class="n">cb_curve</span><span class="p">,</span> <span class="n">direction</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">event_direction</span><span class="o">.</span><span class="n">positive</span><span class="p">)</span>
 
 <span class="c1"># Construct the integrator.</span>
-<span class="n">ta</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">taylor_adaptive</span><span class="p">(</span><span class="n">eqns</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mf">.8</span><span class="p">],</span> <span class="n">t_events</span> <span class="o">=</span> <span class="p">[</span><span class="n">ev_0</span><span class="p">,</span> <span class="n">ev_1</span><span class="p">,</span> <span class="n">ev_curve</span><span class="p">])</span>
+<span class="n">ta</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">taylor_adaptive</span><span class="p">(</span><span class="n">eqns</span><span class="p">,</span> <span class="p">[</span><span class="mf">0.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.</span><span class="p">,</span> <span class="mf">.8</span><span class="p">],</span> <span class="n">t_events</span> <span class="o">=</span> <span class="p">[</span><span class="n">ev_0</span><span class="p">,</span> <span class="n">ev_1</span><span class="p">,</span> <span class="n">ev_curve</span><span class="p">])</span>
 </pre></div>
 </div>
 </div>

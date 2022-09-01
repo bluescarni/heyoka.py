@@ -182,6 +182,11 @@
     </a>
    </li>
    <li class="toctree-l2">
+    <a class="reference internal" href="ext_precision.html">
+     Computations in extended precision
+    </a>
+   </li>
+   <li class="toctree-l2">
     <a class="reference internal" href="Event%20detection.html">
      Event detection overview
     </a>
@@ -752,15 +757,21 @@ title="Print to PDF"
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CPU times: user 2.1 s, sys: 2.23 ms, total: 2.1 s
-Wall time: 2.1 s
-</pre></div>
-</div>
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(&lt;taylor_outcome.time_limit: -4294967299&gt;,
- 0.006522499652827699,
- 0.017389869702015875,
- 1012008,
- None)
+<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
+<span class="ne">TypeError</span><span class="g g-Whitespace">                                 </span>Traceback (most recent call last)
+<span class="n">File</span> <span class="o">&lt;</span><span class="n">timed</span> <span class="nb">eval</span><span class="o">&gt;</span><span class="p">:</span><span class="mi">1</span><span class="p">,</span> <span class="ow">in</span> <span class="o">&lt;</span><span class="n">module</span><span class="o">&gt;</span>
+
+<span class="ne">TypeError</span>: propagate_until(): incompatible function arguments. The following argument types are supported:
+<span class="g g-Whitespace">    </span><span class="mi">1</span><span class="o">.</span> <span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="n">heyoka</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">taylor_adaptive_dbl</span><span class="p">,</span> <span class="n">t</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">max_steps</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">max_delta_t</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">inf</span><span class="p">,</span> <span class="n">callback</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">heyoka</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">taylor_adaptive_dbl</span><span class="p">],</span> <span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">write_tc</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">c_output</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">heyoka</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">taylor_outcome</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="n">Optional</span><span class="p">[</span><span class="n">heyoka</span><span class="p">::</span><span class="n">continuous_output</span><span class="o">&lt;</span><span class="n">double</span><span class="o">&gt;</span><span class="p">]]</span>
+
+<span class="n">Invoked</span> <span class="k">with</span><span class="p">:</span> <span class="n">Tolerance</span>               <span class="p">:</span> <span class="mf">2.2204460492503131e-16</span>
+<span class="n">High</span> <span class="n">accuracy</span>           <span class="p">:</span> <span class="n">false</span>
+<span class="n">Compact</span> <span class="n">mode</span>            <span class="p">:</span> <span class="n">false</span>
+<span class="n">Taylor</span> <span class="n">order</span>            <span class="p">:</span> <span class="mi">20</span>
+<span class="n">Dimension</span>               <span class="p">:</span> <span class="mi">6</span>
+<span class="n">Time</span>                    <span class="p">:</span> <span class="mf">0.0000000000000000</span>
+<span class="n">State</span>                   <span class="p">:</span> <span class="p">[</span><span class="o">-</span><span class="mf">10.461611630114545</span><span class="p">,</span> <span class="mf">6.6672536671391844</span><span class="p">,</span> <span class="mf">0.81863581394796503</span><span class="p">,</span> <span class="mf">0.16614243942411336</span><span class="p">,</span> <span class="mf">0.25682282397025807</span><span class="p">,</span> <span class="mf">0.031533877671032100</span><span class="p">]</span>
+<span class="p">,</span> <span class="mi">10000</span>
 </pre></div>
 </div>
 </div>
@@ -772,15 +783,21 @@ Wall time: 2.1 s
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CPU times: user 2.43 s, sys: 5.19 ms, total: 2.44 s
-Wall time: 2.44 s
-</pre></div>
-</div>
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(&lt;taylor_outcome.time_limit: -4294967299&gt;,
- 0.006522499652827699,
- 0.017389869692863855,
- 1012008,
- None)
+<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
+<span class="ne">TypeError</span><span class="g g-Whitespace">                                 </span>Traceback (most recent call last)
+<span class="n">File</span> <span class="o">&lt;</span><span class="n">timed</span> <span class="nb">eval</span><span class="o">&gt;</span><span class="p">:</span><span class="mi">1</span><span class="p">,</span> <span class="ow">in</span> <span class="o">&lt;</span><span class="n">module</span><span class="o">&gt;</span>
+
+<span class="ne">TypeError</span>: propagate_until(): incompatible function arguments. The following argument types are supported:
+<span class="g g-Whitespace">    </span><span class="mi">1</span><span class="o">.</span> <span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="n">heyoka</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">taylor_adaptive_dbl</span><span class="p">,</span> <span class="n">t</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">max_steps</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">max_delta_t</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">inf</span><span class="p">,</span> <span class="n">callback</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">heyoka</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">taylor_adaptive_dbl</span><span class="p">],</span> <span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">write_tc</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">c_output</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">heyoka</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">taylor_outcome</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="n">Optional</span><span class="p">[</span><span class="n">heyoka</span><span class="p">::</span><span class="n">continuous_output</span><span class="o">&lt;</span><span class="n">double</span><span class="o">&gt;</span><span class="p">]]</span>
+
+<span class="n">Invoked</span> <span class="k">with</span><span class="p">:</span> <span class="n">Tolerance</span>               <span class="p">:</span> <span class="mf">2.2204460492503131e-16</span>
+<span class="n">High</span> <span class="n">accuracy</span>           <span class="p">:</span> <span class="n">false</span>
+<span class="n">Compact</span> <span class="n">mode</span>            <span class="p">:</span> <span class="n">false</span>
+<span class="n">Taylor</span> <span class="n">order</span>            <span class="p">:</span> <span class="mi">20</span>
+<span class="n">Dimension</span>               <span class="p">:</span> <span class="mi">6</span>
+<span class="n">Time</span>                    <span class="p">:</span> <span class="mf">0.0000000000000000</span>
+<span class="n">State</span>                   <span class="p">:</span> <span class="p">[</span><span class="o">-</span><span class="mf">10.461611630114545</span><span class="p">,</span> <span class="mf">6.6672536671391844</span><span class="p">,</span> <span class="mf">0.81863581394796503</span><span class="p">,</span> <span class="mf">0.16614243942411336</span><span class="p">,</span> <span class="mf">0.25682282397025807</span><span class="p">,</span> <span class="mf">0.031533877671032100</span><span class="p">]</span>
+<span class="p">,</span> <span class="mi">10000</span>
 </pre></div>
 </div>
 </div>

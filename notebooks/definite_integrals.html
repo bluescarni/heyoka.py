@@ -182,6 +182,11 @@
     </a>
    </li>
    <li class="toctree-l2">
+    <a class="reference internal" href="ext_precision.html">
+     Computations in extended precision
+    </a>
+   </li>
+   <li class="toctree-l2">
     <a class="reference internal" href="Event%20detection.html">
      Event detection overview
     </a>
@@ -623,7 +628,7 @@ x\left(B\right) - x\left(A\right) = \int_A^B f\left(t\right) \, dt.
 <span class="n">x</span><span class="p">,</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">make_vars</span><span class="p">(</span><span class="s2">&quot;x&quot;</span><span class="p">)</span>
 
 <span class="c1"># Integrate sin(t) between 0 and pi.</span>
-<span class="n">ta</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">taylor_adaptive</span><span class="p">([(</span><span class="n">x</span><span class="p">,</span> <span class="n">hy</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">hy</span><span class="o">.</span><span class="n">time</span><span class="p">))],</span> <span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="n">ta</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">taylor_adaptive</span><span class="p">([(</span><span class="n">x</span><span class="p">,</span> <span class="n">hy</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">hy</span><span class="o">.</span><span class="n">time</span><span class="p">))],</span> <span class="p">[</span><span class="mf">0.</span><span class="p">])</span>
 <span class="n">ta</span><span class="o">.</span><span class="n">propagate_until</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span>
 
 <span class="c1"># Print the result.</span>
@@ -645,7 +650,7 @@ x\left(B\right) - x\left(A\right) = \int_A^B f\left(t\right) \, dt.
 
 <span class="c1"># New integration limits: from 1 to 2.</span>
 <span class="n">ta</span><span class="o">.</span><span class="n">time</span> <span class="o">=</span> <span class="mi">1</span>
-<span class="n">ta</span><span class="o">.</span><span class="n">propagate_until</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">ta</span><span class="o">.</span><span class="n">propagate_until</span><span class="p">(</span><span class="mf">2.</span><span class="p">)</span>
 
 <span class="n">ta</span><span class="o">.</span><span class="n">state</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 </pre></div>
@@ -666,7 +671,7 @@ x\left(B\right) - x\left(A\right) = \int_A^B f\left(t\right) \, dt.
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ta</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">taylor_adaptive</span><span class="p">([(</span><span class="n">x</span><span class="p">,</span> <span class="n">hy</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">hy</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">hy</span><span class="o">.</span><span class="n">time</span><span class="p">))</span><span class="o">*</span><span class="n">hy</span><span class="o">.</span><span class="n">erf</span><span class="p">(</span><span class="n">hy</span><span class="o">.</span><span class="n">time</span><span class="p">)</span><span class="o">/</span><span class="n">hy</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">hy</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">hy</span><span class="o">.</span><span class="n">time</span><span class="p">)))],</span>
-                        <span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">time</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">2</span><span class="p">))</span>
+                        <span class="p">[</span><span class="mf">0.</span><span class="p">],</span> <span class="n">time</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">2</span><span class="p">))</span>
 <span class="n">ta</span><span class="o">.</span><span class="n">propagate_until</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">3</span><span class="p">))</span>
 <span class="n">ta</span><span class="o">.</span><span class="n">state</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 </pre></div>
@@ -699,7 +704,7 @@ x\left(B\right) - x\left(A\right) = \int_A^B f\left(t\right) \, dt.
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ta</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">taylor_adaptive</span><span class="p">([(</span><span class="n">x</span><span class="p">,</span> <span class="n">hy</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">hy</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">hy</span><span class="o">.</span><span class="n">time</span><span class="p">))</span><span class="o">*</span><span class="n">hy</span><span class="o">.</span><span class="n">erf</span><span class="p">(</span><span class="n">hy</span><span class="o">.</span><span class="n">time</span><span class="p">)</span><span class="o">/</span><span class="n">hy</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">hy</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">hy</span><span class="o">.</span><span class="n">time</span><span class="p">)))],</span>
-                        <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">longdouble</span><span class="p">(</span><span class="mi">0</span><span class="p">)],</span> <span class="n">time</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">longdouble</span><span class="p">(</span><span class="mi">3</span><span class="p">)),</span> <span class="n">fp_type</span><span class="o">=</span><span class="s2">&quot;long double&quot;</span><span class="p">)</span>
+                        <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">longdouble</span><span class="p">(</span><span class="mi">0</span><span class="p">)],</span> <span class="n">time</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">longdouble</span><span class="p">(</span><span class="mi">3</span><span class="p">)),</span> <span class="n">fp_type</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">longdouble</span><span class="p">)</span>
 <span class="n">ta</span><span class="o">.</span><span class="n">propagate_until</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">longdouble</span><span class="p">(</span><span class="mi">2</span><span class="p">)))</span>
 <span class="n">ta</span><span class="o">.</span><span class="n">state</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 </pre></div>
@@ -719,8 +724,8 @@ x\left(B\right) - x\left(A\right) = \int_A^B f\left(t\right) \, dt.
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Cannot compute the area of a semi-circle!</span>
 <span class="n">ta</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">taylor_adaptive</span><span class="p">([(</span><span class="n">x</span><span class="p">,</span> <span class="n">hy</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">hy</span><span class="o">.</span><span class="n">time</span><span class="o">**</span><span class="mi">2</span><span class="p">))],</span>
-                        <span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">time</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
-<span class="n">ta</span><span class="o">.</span><span class="n">propagate_until</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+                        <span class="p">[</span><span class="mf">0.</span><span class="p">],</span> <span class="n">time</span> <span class="o">=</span> <span class="o">-</span><span class="mf">1.</span><span class="p">)</span>
+<span class="n">ta</span><span class="o">.</span><span class="n">propagate_until</span><span class="p">(</span><span class="mf">1.</span><span class="p">)</span>
 <span class="n">ta</span><span class="o">.</span><span class="n">state</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 </pre></div>
 </div>

@@ -42,7 +42,7 @@
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Event detection overview" href="Event%20detection.html" />
+    <link rel="next" title="Computations in extended precision" href="ext_precision.html" />
     <link rel="prev" title="Evaluating the performance of ensemble &amp; batch mode" href="ensemble_batch_perf.html" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="docsearch:language" content="None">
@@ -179,6 +179,11 @@
    <li class="toctree-l2 current active">
     <a class="current reference internal" href="#">
      Parallel mode
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="ext_precision.html">
+     Computations in extended precision
     </a>
    </li>
    <li class="toctree-l2">
@@ -619,16 +624,8 @@ taken by the integration:</p>
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">heyoka</span> <span class="k">as</span> <span class="nn">hy</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
-<span class="k">def</span> <span class="nf">run_benchmark</span><span class="p">(</span><span class="n">fp_type</span><span class="p">,</span> <span class="n">final_time</span><span class="p">,</span> <span class="n">parallel_mode</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">run_benchmark</span><span class="p">(</span><span class="n">fp_t</span><span class="p">,</span> <span class="n">final_time</span><span class="p">,</span> <span class="n">parallel_mode</span><span class="p">):</span>
     <span class="kn">import</span> <span class="nn">time</span>    
-
-    <span class="c1"># Fetch the floating-point type.</span>
-    <span class="k">if</span> <span class="n">fp_type</span> <span class="o">==</span> <span class="s1">&#39;double&#39;</span><span class="p">:</span>
-        <span class="n">fp_t</span> <span class="o">=</span> <span class="nb">float</span>
-    <span class="k">elif</span> <span class="n">fp_type</span> <span class="o">==</span> <span class="s1">&#39;long double&#39;</span><span class="p">:</span>
-        <span class="n">fp_t</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">longdouble</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Unknown floating-point type &#39;</span><span class="si">{}</span><span class="s2">&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">fp_type</span><span class="p">))</span>
 
     <span class="c1"># The number of protoplanets.</span>
     <span class="n">nplanets</span> <span class="o">=</span> <span class="mi">400</span>
@@ -648,7 +645,7 @@ taken by the integration:</p>
     <span class="c1"># Create the integrator.</span>
     <span class="c1"># NOTE: compact_mode is *required* when using parallel mode.</span>
     <span class="n">ta</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">taylor_adaptive</span><span class="p">(</span><span class="n">sys</span><span class="p">,</span> <span class="n">init_state</span><span class="p">,</span> <span class="n">compact_mode</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-                            <span class="n">parallel_mode</span> <span class="o">=</span> <span class="n">parallel_mode</span><span class="p">,</span> <span class="n">fp_type</span><span class="o">=</span><span class="n">fp_type</span><span class="p">)</span>
+                            <span class="n">parallel_mode</span> <span class="o">=</span> <span class="n">parallel_mode</span><span class="p">,</span> <span class="n">fp_type</span><span class="o">=</span><span class="n">fp_t</span><span class="p">)</span>
 
     <span class="c1"># Reshape the state vector for ease of indexing.</span>
     <span class="n">st</span> <span class="o">=</span> <span class="n">ta</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="n">nplanets</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span>
@@ -686,38 +683,38 @@ without enabling compact mode, an exception will be thrown.</p>
 <p>Let us now run the benchmark in double precision, and let us compare the timings with and without parallel mode:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Serial time (double): </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">run_benchmark</span><span class="p">(</span><span class="s2">&quot;double&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="kc">False</span><span class="p">)))</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Parallel time (double): </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">run_benchmark</span><span class="p">(</span><span class="s2">&quot;double&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="kc">True</span><span class="p">)))</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Serial time (double): </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">run_benchmark</span><span class="p">(</span><span class="nb">float</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="kc">False</span><span class="p">)))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Parallel time (double): </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">run_benchmark</span><span class="p">(</span><span class="nb">float</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="kc">True</span><span class="p">)))</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Serial time (double): 1.784582573
-Parallel time (double): 0.48682415
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Serial time (double): 0.950375134
+Parallel time (double): 0.297775221
 </pre></div>
 </div>
 </div>
 </div>
-<p>We can see how parallel mode resulted in a <span class="math notranslate nohighlight">\(\times 3.5\)</span> speedup with respect to the serial integration.
+<p>We can see how parallel mode resulted in a <span class="math notranslate nohighlight">\(\times 3.3\)</span> speedup with respect to the serial integration.
 While this speedup is suboptimal with respect to the maximum theoretically achievable speedup of <span class="math notranslate nohighlight">\(\times 8\)</span>,
 these timings show that parallel mode can still provide an easy way of boosting the integrator’s performance
 for large ODE systems.</p>
 <p>Let us now repeat the same test in extended (<code class="docutils literal notranslate"><span class="pre">long</span> <span class="pre">double</span></code>) precision:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Serial time (long double): </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">run_benchmark</span><span class="p">(</span><span class="s2">&quot;long double&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="kc">False</span><span class="p">)))</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Parallel time (long double): </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">run_benchmark</span><span class="p">(</span><span class="s2">&quot;long double&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="kc">True</span><span class="p">)))</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Serial time (long double): </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">run_benchmark</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">longdouble</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="kc">False</span><span class="p">)))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Parallel time (long double): </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">run_benchmark</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">longdouble</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="kc">True</span><span class="p">)))</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Serial time (long double): 6.127501942
-Parallel time (long double): 1.626414795
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Serial time (long double): 4.384781671
+Parallel time (long double): 1.104912046
 </pre></div>
 </div>
 </div>
 </div>
-<p>In extended precision, the speedup is now <span class="math notranslate nohighlight">\(\times 3.7\)</span>. In quadruple precision, the speedup would be close to optimal (see the <a class="reference external" href="https://bluescarni.github.io/heyoka/tut_parallel_mode.html">C++ tutorial</a>, where a speedup of <span class="math notranslate nohighlight">\(\times 7.2\)</span> is achieved).</p>
+<p>In extended precision, the speedup is now <span class="math notranslate nohighlight">\(\times 4\)</span>. In quadruple precision, the speedup would be close to optimal (see the <a class="reference external" href="https://bluescarni.github.io/heyoka/tut_parallel_mode.html">C++ tutorial</a>, where a speedup of <span class="math notranslate nohighlight">\(\times 7.2\)</span> is achieved).</p>
 <p>These results show that parallel mode can provide an easy way of boosting the performance of heyoka’s integrators
 for large ODE systems, and that the speedup of parallel mode is most efficient when operating in extended precision.</p>
 </section>
@@ -738,10 +735,10 @@ for large ODE systems, and that the speedup of parallel mode is most efficient w
             <p class="prev-next-title">Evaluating the performance of ensemble &amp; batch mode</p>
         </div>
     </a>
-    <a class='right-next' id="next-link" href="Event%20detection.html" title="next page">
+    <a class='right-next' id="next-link" href="ext_precision.html" title="next page">
     <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Event detection overview</p>
+        <p class="prev-next-title">Computations in extended precision</p>
     </div>
     <i class="fas fa-angle-right"></i>
     </a>

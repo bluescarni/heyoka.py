@@ -182,6 +182,11 @@
     </a>
    </li>
    <li class="toctree-l2">
+    <a class="reference internal" href="ext_precision.html">
+     Computations in extended precision
+    </a>
+   </li>
+   <li class="toctree-l2">
     <a class="reference internal" href="Event%20detection.html">
      Event detection overview
     </a>
@@ -635,7 +640,7 @@ y\left( 0 \right) = y_0
                             <span class="p">(</span><span class="n">y_y0</span><span class="p">,</span> <span class="n">y_y0_p</span><span class="p">),</span>
                         <span class="p">],</span>
                         <span class="c1"># Initial conditions.</span>
-                        <span class="n">state</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.05</span><span class="p">,</span> <span class="mf">0.025</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+                        <span class="n">state</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.05</span><span class="p">,</span> <span class="mf">0.025</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">])</span>
 
 <span class="n">ta</span>
 </pre></div>
@@ -657,7 +662,7 @@ State                   : [0.050000000000000003, 0.025000000000000001, 1.0000000
 <p>Let us now propagate the state of the system (including the variational equations) up to <span class="math notranslate nohighlight">\(t=50\)</span>:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ta</span><span class="o">.</span><span class="n">propagate_until</span><span class="p">(</span><span class="mi">50</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ta</span><span class="o">.</span><span class="n">propagate_until</span><span class="p">(</span><span class="mf">50.</span><span class="p">)</span>
 <span class="n">ta</span><span class="o">.</span><span class="n">state</span>
 </pre></div>
 </div>
@@ -681,7 +686,7 @@ State                   : [0.050000000000000003, 0.025000000000000001, 1.0000000
                         <span class="c1"># Initial conditions.</span>
                         <span class="n">state</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.05</span> <span class="o">+</span> <span class="mf">1e-8</span><span class="p">,</span> <span class="mf">0.025</span><span class="p">])</span>
 
-<span class="n">ta_dx</span><span class="o">.</span><span class="n">propagate_until</span><span class="p">(</span><span class="mi">50</span><span class="p">)</span>
+<span class="n">ta_dx</span><span class="o">.</span><span class="n">propagate_until</span><span class="p">(</span><span class="mf">50.</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>

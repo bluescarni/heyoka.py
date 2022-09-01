@@ -182,6 +182,11 @@
     </a>
    </li>
    <li class="toctree-l2">
+    <a class="reference internal" href="ext_precision.html">
+     Computations in extended precision
+    </a>
+   </li>
+   <li class="toctree-l2">
     <a class="reference internal" href="Event%20detection.html">
      Event detection overview
     </a>
@@ -844,7 +849,7 @@ solved by a root finder.</p>
 <span class="n">ps</span> <span class="o">=</span> <span class="p">[</span><span class="mf">1.1</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">]</span>
 
 <span class="c1"># Initial conditions</span>
-<span class="n">x_0</span><span class="p">,</span> <span class="n">y_0</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">10</span>
+<span class="n">x_0</span><span class="p">,</span> <span class="n">y_0</span> <span class="o">=</span> <span class="mf">10.</span><span class="p">,</span> <span class="mf">10.</span>
 </pre></div>
 </div>
 </div>
@@ -929,10 +934,10 @@ Parameters              : [1.1000000000000001, 0.20000000000000001, 0.1000000000
 <span class="n">ode_sys</span> <span class="o">=</span> <span class="p">[(</span><span class="n">x</span><span class="p">,</span><span class="n">fx</span><span class="p">),</span> <span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">fy</span><span class="p">),</span> <span class="p">(</span><span class="n">lx</span><span class="p">,</span> <span class="n">flx</span><span class="p">),</span> <span class="p">(</span><span class="n">ly</span><span class="p">,</span> <span class="n">fly</span><span class="p">)]</span>
 
 <span class="c1"># System parameters</span>
-<span class="n">p0</span><span class="p">,</span><span class="n">p1</span><span class="p">,</span><span class="n">p2</span><span class="p">,</span><span class="n">p3</span><span class="p">,</span><span class="n">p4</span><span class="p">,</span><span class="n">p5</span><span class="p">,</span><span class="n">p6</span> <span class="o">=</span> <span class="n">ps</span> <span class="o">=</span> <span class="p">[</span><span class="mf">1.1</span><span class="p">,</span><span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span><span class="mf">0.4</span><span class="p">,</span><span class="mf">0.03</span><span class="p">,</span><span class="mf">0.03</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+<span class="n">p0</span><span class="p">,</span><span class="n">p1</span><span class="p">,</span><span class="n">p2</span><span class="p">,</span><span class="n">p3</span><span class="p">,</span><span class="n">p4</span><span class="p">,</span><span class="n">p5</span><span class="p">,</span><span class="n">p6</span> <span class="o">=</span> <span class="n">ps</span> <span class="o">=</span> <span class="p">[</span><span class="mf">1.1</span><span class="p">,</span><span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span><span class="mf">0.4</span><span class="p">,</span><span class="mf">0.03</span><span class="p">,</span><span class="mf">0.03</span><span class="p">,</span> <span class="mf">0.</span><span class="p">]</span>
 
 <span class="c1"># Target conditions</span>
-<span class="n">x_t</span><span class="p">,</span> <span class="n">y_t</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">4</span>
+<span class="n">x_t</span><span class="p">,</span> <span class="n">y_t</span> <span class="o">=</span> <span class="mf">10.</span><span class="p">,</span> <span class="mf">4.</span>
 
 <span class="c1"># A random choice for the initial costates</span>
 <span class="n">lx_0</span><span class="p">,</span> <span class="n">ly_0</span>  <span class="o">=-</span><span class="mf">1.105</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.6274561403508774</span>
@@ -1221,12 +1226,12 @@ N of terminal events    : 2
 <span class="n">tf</span> <span class="o">=</span> <span class="n">candidates_t</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
 <span class="n">lx_0</span> <span class="o">=</span> <span class="n">res</span><span class="o">.</span><span class="n">x</span>
 <span class="c1"># We reset the time</span>
-<span class="n">ta</span><span class="o">.</span><span class="n">time</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="n">ta</span><span class="o">.</span><span class="n">time</span> <span class="o">=</span> <span class="mf">0.</span>
 <span class="c1"># We compute the inititial value for the y co-state (form H=0)</span>
 <span class="n">ly_0</span> <span class="o">=</span> <span class="n">find_lambda_y0</span><span class="p">(</span><span class="n">x_0</span><span class="p">,</span> <span class="n">y_0</span><span class="p">,</span> <span class="n">lx_0</span><span class="p">,</span> <span class="n">ps</span><span class="p">)</span>
 
 <span class="n">switch_times</span> <span class="o">=</span> <span class="p">[]</span>
-<span class="n">ta</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">taylor_adaptive</span><span class="p">(</span><span class="n">ode_sys</span><span class="p">,</span> <span class="p">[</span><span class="n">x_0</span><span class="p">,</span> <span class="n">y_0</span><span class="p">,</span><span class="n">lx_0</span><span class="p">,</span> <span class="n">ly_0</span><span class="p">],</span> <span class="n">pars</span><span class="o">=</span><span class="n">ps</span><span class="p">,</span> <span class="n">t_events</span> <span class="o">=</span> <span class="p">[</span><span class="n">switching_event</span><span class="p">])</span>
+<span class="n">ta</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">taylor_adaptive</span><span class="p">(</span><span class="n">ode_sys</span><span class="p">,</span> <span class="p">[</span><span class="n">x_0</span><span class="p">,</span> <span class="n">y_0</span><span class="p">,</span><span class="n">lx_0</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">ly_0</span><span class="p">[</span><span class="mi">0</span><span class="p">]],</span> <span class="n">pars</span><span class="o">=</span><span class="n">ps</span><span class="p">,</span> <span class="n">t_events</span> <span class="o">=</span> <span class="p">[</span><span class="n">switching_event</span><span class="p">])</span>
 <span class="c1"># We compute the initial value of the optimal control</span>
 <span class="n">ta</span><span class="o">.</span><span class="n">pars</span><span class="p">[</span><span class="mi">6</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">heaviside</span><span class="p">(</span><span class="n">switching_function</span><span class="p">(</span><span class="n">x_0</span><span class="p">,</span><span class="n">y_0</span><span class="p">,</span><span class="n">lx_0</span><span class="p">,</span><span class="n">ly_0</span><span class="p">,</span> <span class="n">ps</span><span class="p">),</span> <span class="mf">1.</span><span class="p">)</span>
 
