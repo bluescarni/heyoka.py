@@ -319,26 +319,13 @@ void expose_add_cfunc_impl(py::module &m, const char *name)
                     }
 
                     // Check if we can use a zero-copy implementation. This is enabled
-                    // for distinct C style arrays who own their data.
-
-                    // All C style?
-                    bool zero_copy = (inputs.flags() & py::array::c_style) && (outputs.flags() & py::array::c_style)
-                                     && (!pars || (pars->flags() & py::array::c_style));
-                    // Do they all own their data?
-                    zero_copy = zero_copy && (inputs.owndata() && outputs.owndata() && (!pars || pars->owndata()));
+                    // for C-style contiguous aligned arrays guaranteed not to share any data.
+                    bool zero_copy = is_npy_array_carray(inputs) && is_npy_array_carray(outputs)
+                                     && (!pars || is_npy_array_carray(*pars));
                     if (zero_copy) {
-                        auto *out_data = outputs.data();
-                        const auto *in_data = inputs.data();
-                        const auto *par_data = pars ? pars->data() : nullptr;
-
-                        // Are they all distinct from each other?
-                        // NOTE: while out_data can never be possibly null (as we are sure there's
-                        // always at least one output), I am not 100% sure what happens with empty
-                        // inputs and/or pars. Just to be on the safe side, we check in_data == par_data
-                        // only if both in_data and par_data are not null, so that both pointers
-                        // being null does not prevent the zero-copy implementation.
-                        if (out_data == in_data || out_data == par_data
-                            || (in_data && par_data && in_data == par_data)) {
+                        const auto maybe_share_memory
+                            = pars ? may_share_memory(inputs, outputs, *pars) : may_share_memory(inputs, outputs);
+                        if (maybe_share_memory) {
                             zero_copy = false;
                         }
                     }

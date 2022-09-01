@@ -299,13 +299,8 @@ void expose_c_output_batch_impl(py::module &m, const std::string &suffix)
                                      .c_str());
                     }
 
-                    // Check if tm is contiguous.
-                    // NOTE: it looks like c_style does not necessarily imply well-aligned:
-                    // https://numpy.org/devdocs/reference/c-api/array.html#c.PyArray_FromAny.NPY_ARRAY_CARRAY
-                    // If this becomes a problem, we can tap into the NumPy C API and do additional
-                    // flag checking:
-                    // https://numpy.org/devdocs/reference/c-api/array.html#c.PyArray_CHKFLAGS
-                    const auto tm_cont = static_cast<bool>(tm.flags() & py::array::c_style);
+                    // Check if tm is a C-style contiguous aligned array.
+                    const auto tm_cont = is_npy_array_carray(tm);
 
                     if (tm_cont) {
                         // tm is contiguous.

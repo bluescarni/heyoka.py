@@ -188,7 +188,7 @@ class taylor_add_jet_test_case(_ut.TestCase):
             with self.assertRaises(ValueError) as cm:
                 jet(st[::2])
             self.assertTrue(
-                "Invalid state vector passed to a function for the computation of the jet of Taylor derivatives: the NumPy array is not C contiguous"
+                "Invalid state vector passed to a function for the computation of the jet of Taylor derivatives: the NumPy array is not C contiguous or not writeable"
                 in str(cm.exception)
             )
 
@@ -197,7 +197,7 @@ class taylor_add_jet_test_case(_ut.TestCase):
             with self.assertRaises(ValueError) as cm:
                 jet(st)
             self.assertTrue(
-                "Invalid state vector passed to a function for the computation of the jet of Taylor derivatives: the NumPy array is not writeable"
+                "Invalid state vector passed to a function for the computation of the jet of Taylor derivatives: the NumPy array is not C contiguous or not writeable"
                 in str(cm.exception)
             )
 
@@ -224,19 +224,19 @@ class taylor_add_jet_test_case(_ut.TestCase):
             with self.assertRaises(ValueError) as cm:
                 jet_par(st, pars=st, time=time_arr)
             self.assertTrue(
-                "Invalid vectors passed to a function for the computation of the jet of Taylor derivatives: the NumPy arrays must all be distinct"
+                "Invalid vectors passed to a function for the computation of the jet of Taylor derivatives: the NumPy arrays must not share any memory"
                 in str(cm.exception)
             )
             with self.assertRaises(ValueError) as cm:
                 jet_par(st, pars=par_arr, time=st)
             self.assertTrue(
-                "Invalid vectors passed to a function for the computation of the jet of Taylor derivatives: the NumPy arrays must all be distinct"
+                "Invalid vectors passed to a function for the computation of the jet of Taylor derivatives: the NumPy arrays must not share any memory"
                 in str(cm.exception)
             )
             with self.assertRaises(ValueError) as cm:
                 jet_par(st, pars=st, time=st)
             self.assertTrue(
-                "Invalid vectors passed to a function for the computation of the jet of Taylor derivatives: the NumPy arrays must all be distinct"
+                "Invalid vectors passed to a function for the computation of the jet of Taylor derivatives: the NumPy arrays must not share any memory"
                 in str(cm.exception)
             )
 
@@ -341,30 +341,6 @@ class taylor_add_jet_test_case(_ut.TestCase):
                 jet(st, time=np.zeros((0,), dtype=fp_t))
             self.assertTrue(
                 "Invalid time vector passed to a function for the computation of the jet of Taylor derivatives: the shape must be (1, ), but it is (0) instead"
-                in str(cm.exception)
-            )
-
-            # Non-owning arrays, scalar case.
-            with self.assertRaises(ValueError) as cm:
-                jet(st[:])
-            self.assertTrue(
-                "The arrays passed to a function for the computation of the jet of Taylor derivatives must all own their data"
-                in str(cm.exception)
-            )
-
-            par_arr = np.zeros((0,), dtype=fp_t)
-            with self.assertRaises(ValueError) as cm:
-                jet(st, pars=par_arr[:])
-            self.assertTrue(
-                "The arrays passed to a function for the computation of the jet of Taylor derivatives must all own their data"
-                in str(cm.exception)
-            )
-
-            time_arr = np.zeros((1,), dtype=fp_t)
-            with self.assertRaises(ValueError) as cm:
-                jet(st, time=time_arr[:])
-            self.assertTrue(
-                "The arrays passed to a function for the computation of the jet of Taylor derivatives must all own their data"
                 in str(cm.exception)
             )
 
@@ -522,30 +498,6 @@ class taylor_add_jet_test_case(_ut.TestCase):
                 jet(st, time=np.zeros((0,), dtype=fp_t))
             self.assertTrue(
                 "Invalid time vector passed to a function for the computation of the jet of Taylor derivatives: the shape must be (4, ), but it is (0) instead"
-                in str(cm.exception)
-            )
-
-            # Non-owning arrays, batch case.
-            with self.assertRaises(ValueError) as cm:
-                jet(st[:])
-            self.assertTrue(
-                "The arrays passed to a function for the computation of the jet of Taylor derivatives must all own their data"
-                in str(cm.exception)
-            )
-
-            par_arr = np.zeros((0,), dtype=fp_t)
-            with self.assertRaises(ValueError) as cm:
-                jet(st, pars=par_arr[:])
-            self.assertTrue(
-                "The arrays passed to a function for the computation of the jet of Taylor derivatives must all own their data"
-                in str(cm.exception)
-            )
-
-            time_arr = np.zeros((1,), dtype=fp_t)
-            with self.assertRaises(ValueError) as cm:
-                jet(st, time=time_arr[:])
-            self.assertTrue(
-                "The arrays passed to a function for the computation of the jet of Taylor derivatives must all own their data"
                 in str(cm.exception)
             )
 
