@@ -5443,6 +5443,7 @@ class real128_test_case(_ut.TestCase):
         import numpy as np
         from copy import copy, deepcopy
         from . import real128
+        from pickle import dumps, loads
 
         # Basic creation/getitem/setitem.
         arr = np.array([1, 2, 3], dtype=real128)
@@ -5573,8 +5574,253 @@ class real128_test_case(_ut.TestCase):
         )
 
         # Conversions.
+        arr = np.array([real128("1.1")])
+        self.assertEqual(arr.astype(float)[0], 1.1)
+        self.assertEqual(arr.astype(np.int32)[0], 1)
+        self.assertEqual(arr.astype(bool)[0], True)
+        arr = np.array([1], dtype=np.int32)
+        self.assertEqual(arr.astype(real128)[0], real128(1))
+        self.assertEqual(arr.astype(real128, casting="safe")[0], real128(1))
+        arr = np.array([1.1], dtype=float)
+        self.assertEqual(arr.astype(real128)[0], real128(1.1))
+        self.assertEqual(arr.astype(real128, casting="safe")[0], real128(1.1))
+        arr = np.array([real128("1.1")])
+        with self.assertRaises(TypeError) as cm:
+            arr.astype(float, casting="safe")
+        with self.assertRaises(TypeError) as cm:
+            arr.astype(np.int32, casting="safe")
 
-        # TODO test pickling
+        # Arithmetic.
+        a = real128("1.1")
+        b = real128("1.3")
+        c = real128("-.7")
+        intval = 2
+        arr1 = np.array([a])
+        arr2 = np.array([b])
+        arr3 = np.array([c])
+        arrint = np.array([2], dtype=np.int64)
+
+        self.assertEqual((arr1 + arr2)[0], a + b)
+        self.assertEqual((arr1 + arrint)[0], a + intval)
+        self.assertEqual((arrint + arr2)[0], intval + b)
+
+        self.assertEqual((arr1 - arr2)[0], a - b)
+        self.assertEqual((arr1 - arrint)[0], a - intval)
+        self.assertEqual((arrint - arr2)[0], intval - b)
+
+        self.assertEqual((arr1 * arr2)[0], a * b)
+        self.assertEqual((arr1 * arrint)[0], a * intval)
+        self.assertEqual((arrint * arr2)[0], intval * b)
+
+        self.assertEqual((arr1 / arr2)[0], a / b)
+        self.assertEqual((arr1 / arrint)[0], a / intval)
+        self.assertEqual((arrint / arr2)[0], intval / b)
+
+        self.assertEqual(np.square(arr1)[0], a * a)
+
+        self.assertEqual((arr1 // arr2)[0], a // b)
+        self.assertEqual((arr1 // arrint)[0], a // intval)
+        self.assertEqual((arrint // arr2)[0], intval // b)
+
+        self.assertEqual((+arr1)[0], a)
+        self.assertEqual((-arr1)[0], -a)
+
+        self.assertEqual(abs(-arr1)[0], a)
+        self.assertEqual(np.abs(-arr1)[0], a)
+        self.assertEqual(np.fabs(-arr1)[0], a)
+
+        # Power/roots.
+        self.assertEqual((arr1**arr2)[0], a**b)
+        self.assertEqual((arr1**arrint)[0], a**intval)
+        self.assertEqual((arrint**arr2)[0], intval**b)
+
+        self.assertEqual(
+            np.sqrt(arr1)[0], real128("1.04880884817015154699145351367993759")
+        )
+
+        self.assertEqual(
+            np.cbrt(arr1)[0], real128("1.03228011545636715921358522500970152")
+        )
+
+        # Trigonometry.
+        self.assertEqual(
+            np.sin(arr1)[0], real128("0.891207360061435339951802577871703605")
+        )
+
+        self.assertEqual(
+            np.cos(arr1)[0], real128("0.453596121425577387771370051784716053")
+        )
+
+        self.assertEqual(
+            np.tan(arr1)[0], real128("1.96475965724865195093092278177937863")
+        )
+
+        self.assertEqual(
+            np.arcsin(arr3)[0], real128("-0.775397496610753063740353352714987079")
+        )
+
+        self.assertEqual(
+            np.arccos(arr3)[0], real128("2.34619382340564968297167504435473857")
+        )
+
+        self.assertEqual(
+            np.arctan(arr3)[0], real128("-0.610725964389208616543758876490236037")
+        )
+
+        self.assertEqual(
+            np.arctan2(arr1, arr2)[0], real128("0.702256931509007079704992531169094469")
+        )
+
+        self.assertEqual(
+            np.arctan2(arr1, arrint)[0],
+            real128("0.502843210927860827330882029245277632"),
+        )
+        self.assertEqual(
+            np.arctan2(arrint, arr2)[0],
+            real128("0.994421106203712939003751213245981381"),
+        )
+
+        self.assertEqual(
+            np.sinh(arr1)[0], real128("1.33564747012417677938478052357867843")
+        )
+
+        self.assertEqual(
+            np.cosh(arr1)[0], real128("1.6685185538222563326736274300099942")
+        )
+
+        self.assertEqual(
+            np.tanh(arr1)[0], real128("0.800499021760629706011461330600696557")
+        )
+
+        self.assertEqual(
+            np.arcsinh(arr3)[0], real128("-0.652666566082355786808686344109675833")
+        )
+
+        self.assertEqual(
+            np.arccosh(arr1)[0], real128("0.443568254385115189132911066352498299")
+        )
+
+        self.assertEqual(
+            np.arctanh(arr3)[0], real128("-0.867300527694053194427144690475300431")
+        )
+
+        self.assertEqual(
+            np.deg2rad(np.array([1], dtype=real128))[0],
+            real128(
+                "0.01745329251994329576923690768488612713442871888541725456097191440171005"
+            ),
+        )
+
+        self.assertEqual(
+            np.radians(np.array([1], dtype=real128))[0],
+            real128(
+                "0.01745329251994329576923690768488612713442871888541725456097191440171005"
+            ),
+        )
+
+        self.assertEqual(
+            np.rad2deg(np.array([1], dtype=real128))[0],
+            real128(
+                "57.295779513082320876798154814105170332405472466564321549160243861202985"
+            ),
+        )
+
+        self.assertEqual(
+            np.degrees(np.array([1], dtype=real128))[0],
+            real128(
+                "57.295779513082320876798154814105170332405472466564321549160243861202985"
+            ),
+        )
+
+        # Exponentials and logarithms.
+        self.assertEqual(
+            np.exp(arr1)[0], real128("3.00416602394643311205840795358867282")
+        )
+
+        self.assertEqual(
+            np.expm1(arr1)[0], real128("2.00416602394643311205840795358867243")
+        )
+
+        self.assertEqual(
+            np.log(arr1)[0], real128("0.0953101798043248600439521232807651556")
+        )
+
+        self.assertEqual(
+            np.log2(arr1)[0], real128("0.137503523749934908329043617236402896")
+        )
+
+        self.assertEqual(
+            np.log10(arr1)[0], real128("0.0413926851582250407501999712430242757")
+        )
+
+        self.assertEqual(
+            np.log1p(arr1)[0], real128("0.741937344729377312482606525681341284")
+        )
+
+        # Comparisons.
+        self.assertEqual((arr1 < arr2).dtype, bool)
+        self.assertTrue((arr1 < arr2)[0])
+        self.assertEqual((arr1 < arrint).dtype, bool)
+        self.assertTrue((arr1 < arrint)[0])
+
+        self.assertEqual((arr1 <= arr1).dtype, bool)
+        self.assertTrue((arr1 <= arr2)[0])
+        self.assertEqual((arr1 <= arrint).dtype, bool)
+        self.assertTrue((arr1 <= arrint)[0])
+
+        self.assertEqual((arr1 == arr1).dtype, bool)
+        self.assertFalse((arr1 == arr2)[0])
+        self.assertEqual((arr1 == arrint).dtype, bool)
+        self.assertFalse((arr1 == arrint)[0])
+
+        self.assertEqual((arr1 != arr1).dtype, bool)
+        self.assertTrue((arr1 != arr2)[0])
+        self.assertEqual((arr1 != arrint).dtype, bool)
+        self.assertTrue((arr1 != arrint)[0])
+
+        self.assertEqual((arr1 > arr2).dtype, bool)
+        self.assertTrue((arr2 > arr1)[0])
+        self.assertEqual((arrint > arr1).dtype, bool)
+        self.assertTrue((arrint > arr1)[0])
+
+        self.assertEqual((arr1 >= arr1).dtype, bool)
+        self.assertTrue((arr2 >= arr1)[0])
+        self.assertEqual((arrint >= arr1).dtype, bool)
+        self.assertTrue((arrint >= arr1)[0])
+
+        # isfinite().
+        self.assertEqual((np.isfinite(arr1)).dtype, bool)
+        self.assertTrue((np.isfinite(arr1))[0])
+        self.assertTrue((np.isfinite([real128("1"), real128("nan")]))[0])
+        self.assertFalse((np.isfinite([real128("1"), real128("nan")]))[1])
+        self.assertFalse((np.isfinite([real128("1"), real128("+inf")]))[1])
+
+        # sign.
+        self.assertEqual(np.sign(-real128("1.1")), -1)
+        self.assertEqual(np.sign(real128("0")), 0)
+        self.assertEqual(np.sign(real128("1.1")), 1)
+        self.assertEqual((np.sign(arr1)).dtype, real128)
+        self.assertTrue(
+            np.all(np.sign([real128("10"), real128("0"), real128("-10")]) == [1, 0, -1])
+        )
+
+        # maximum/minimum.
+        self.assertTrue(
+            np.all(
+                np.minimum([10, real128("1.1"), 20], [1, real128("1.11"), 25])
+                == [1, real128("1.1"), 20]
+            )
+        )
+        self.assertTrue(
+            np.all(
+                np.maximum([10, real128("1.1"), 20], [1, real128("1.11"), 25])
+                == [10, real128("1.11"), 25]
+            )
+        )
+
+        # Pickling.
+        tmp = np.array([real128("1.1"), real128("1.11"), real128("1.13")])
+        self.assertTrue(np.all(tmp == loads(dumps(tmp))))
 
 
 def run_test_suite():
