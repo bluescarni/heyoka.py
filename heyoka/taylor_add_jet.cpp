@@ -243,8 +243,9 @@ void expose_taylor_add_jet_impl(py::module &m, const char *name)
             // Build and return the Python wrapper for jptr.
             return py::cpp_function(
                 [s = std::move(s), batch_size, order, has_time, n_params,
-                 tot_n_eq = static_cast<std::uint32_t>(n_eq) + static_cast<std::uint32_t>(n_sv_funcs), jptr](
-                    py::iterable state_ob, std::optional<py::iterable> pars_ob, std::optional<py::iterable> time_ob) {
+                 tot_n_eq = static_cast<std::uint32_t>(n_eq) + static_cast<std::uint32_t>(n_sv_funcs),
+                 jptr](const py::iterable &state_ob, std::optional<py::iterable> pars_ob,
+                       std::optional<py::iterable> time_ob) {
                     // Attempt to turn the input objects into arrays.
                     py::array state = state_ob;
                     std::optional<py::array> pars = pars_ob ? *pars_ob : std::optional<py::array>{};
@@ -253,58 +254,52 @@ void expose_taylor_add_jet_impl(py::module &m, const char *name)
                     // Enforce the correct dtype for all arrays.
                     const auto dt = get_dtype<T>();
                     if (state.dtype().num() != dt) {
-                        state = state.attr("astype")(py::dtype(dt));
+                        state = state.attr("astype")(py::dtype(dt), "casting"_a = "safe");
                     }
                     if (pars && pars->dtype().num() != dt) {
-                        *pars = pars->attr("astype")(py::dtype(dt));
+                        *pars = pars->attr("astype")(py::dtype(dt), "casting"_a = "safe");
                     }
                     if (time && time->dtype().num() != dt) {
-                        *time = time->attr("astype")(py::dtype(dt));
+                        *time = time->attr("astype")(py::dtype(dt), "casting"_a = "safe");
                     }
 
-                    // Check the input arrays.
-                    // NOTE: it looks like c_style does not necessarily imply well-aligned:
-                    // https://numpy.org/devdocs/reference/c-api/array.html#c.PyArray_FromAny.NPY_ARRAY_CARRAY
-                    // If this becomes a problem, we can tap into the NumPy C API and do additional
-                    // flag checking:
-                    // https://numpy.org/devdocs/reference/c-api/array.html#c.PyArray_CHKFLAGS
-                    if (!(state.flags() & py::array::c_style)) {
+                    // Check the input arrays. They must all be C-style contiguous and properly aligned,
+                    // and they cannot share any memory.
+                    if (!is_npy_array_carray(state, true)) {
                         py_throw(PyExc_ValueError,
                                  "Invalid state vector passed to a function for the computation of the jet of "
-                                 "Taylor derivatives: the NumPy array is not C contiguous");
+                                 "Taylor derivatives: the NumPy array is not C contiguous or not writeable");
                     }
-                    if (!state.writeable()) {
-                        py_throw(PyExc_ValueError,
-                                 "Invalid state vector passed to a function for the computation of the jet of "
-                                 "Taylor derivatives: the NumPy array is not writeable");
-                    }
-                    if (pars && !(pars->flags() & py::array::c_style)) {
+                    if (pars && !is_npy_array_carray(*pars)) {
                         py_throw(PyExc_ValueError,
                                  "Invalid parameters vector passed to a function for the computation of the jet of "
                                  "Taylor derivatives: the NumPy array is not C contiguous");
                     }
-                    if (time && !(time->flags() & py::array::c_style)) {
+                    if (time && !is_npy_array_carray(*time)) {
                         py_throw(PyExc_ValueError,
                                  "Invalid time vector passed to a function for the computation of the jet of "
                                  "Taylor derivatives: the NumPy array is not C contiguous");
                     }
 
-                    // Require that all arrays own their data.
-                    if (!state.owndata() || (pars && !pars->owndata()) || (time && !time->owndata())) {
-                        py_throw(PyExc_ValueError, "The arrays passed to a function for the computation of the jet "
-                                                   "of Taylor derivatives must all own their data");
+                    bool maybe_share_memory = false;
+                    if (pars && time) {
+                        maybe_share_memory = may_share_memory(state, *pars, *time);
+                    } else if (pars) {
+                        maybe_share_memory = may_share_memory(state, *pars);
+                    } else if (time) {
+                        maybe_share_memory = may_share_memory(state, *time);
                     }
 
-                    // Get out the raw pointers and make sure they are distinct.
+                    if (maybe_share_memory) {
+                        py_throw(PyExc_ValueError,
+                                 "Invalid vectors passed to a function for the computation of the jet of "
+                                 "Taylor derivatives: the NumPy arrays must not share any memory");
+                    }
+
+                    // Get out the raw pointers
                     auto *s_ptr = static_cast<T *>(state.mutable_data());
                     const auto *p_ptr = pars ? static_cast<const T *>(pars->data()) : nullptr;
                     const auto *t_ptr = time ? static_cast<const T *>(time->data()) : nullptr;
-
-                    if (s_ptr == p_ptr || s_ptr == t_ptr || (p_ptr && t_ptr && p_ptr == t_ptr)) {
-                        py_throw(PyExc_ValueError,
-                                 "Invalid vectors passed to a function for the computation of the jet of "
-                                 "Taylor derivatives: the NumPy arrays must all be distinct");
-                    }
 
                     // Check that, if there are params or time, the corresponding
                     // arrays have been provided.

@@ -43,7 +43,7 @@ def _ensemble_propagate_thread(tp, ta, arg, n_iter, gen, **kwargs):
         # NOTE: in batch mode, loc_ret will be single
         # value rather than a tuple, hence the branch.
         if isinstance(loc_ret, tuple):
-            return (local_ta, ) + loc_ret
+            return (local_ta,) + loc_ret
         else:
             return (local_ta, loc_ret)
 
@@ -83,7 +83,7 @@ def _mp_propagate(tup):
     # NOTE: in batch mode, loc_ret will be single
     # value rather than a tuple, hence the branch.
     if isinstance(loc_ret, tuple):
-        return s11n_be.dumps((local_ta, ) + loc_ret)
+        return s11n_be.dumps((local_ta,) + loc_ret)
     else:
         return s11n_be.dumps((local_ta, loc_ret))
 
@@ -109,10 +109,20 @@ def _ensemble_propagate_process(tp, ta, arg, n_iter, gen, **kwargs):
     chunksize = kwargs.pop("chunksize", 1)
 
     with ProcessPoolExecutor(max_workers=max_workers, mp_context=ctx) as executor:
-        ret = list(executor.map(
-            _mp_propagate, zip([tp]*n_iter, [s11n_be.dumps(ta)]*n_iter, [s11n_be.dumps(gen)]*n_iter,
-                               [arg]*n_iter, [s11n_be.dumps(kwargs)] *
-                               n_iter, range(n_iter),
-                               [s11n_str]*n_iter), chunksize=chunksize))
+        ret = list(
+            executor.map(
+                _mp_propagate,
+                zip(
+                    [tp] * n_iter,
+                    [s11n_be.dumps(ta)] * n_iter,
+                    [s11n_be.dumps(gen)] * n_iter,
+                    [arg] * n_iter,
+                    [s11n_be.dumps(kwargs)] * n_iter,
+                    range(n_iter),
+                    [s11n_str] * n_iter,
+                ),
+                chunksize=chunksize,
+            )
+        )
 
     return [s11n_be.loads(_) for _ in ret]

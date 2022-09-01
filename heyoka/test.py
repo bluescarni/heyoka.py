@@ -23,7 +23,9 @@ def _get_eps(fp_t):
         return core._get_real128_eps()
 
     raise TypeError(
-        "Cannot compute the epsilon of the floating-point type \"{}\"".format(fp_t))
+        'Cannot compute the epsilon of the floating-point type "{}"'.format(fp_t)
+    )
+
 
 # Reimplementation of several NumPy functions which do not work correctly with real128.
 
@@ -32,8 +34,8 @@ def _isclose(a, b, rtol, atol):
     from numpy import errstate, less_equal, asanyarray, isfinite, zeros_like, ones_like
 
     def within_tol(x, y, atol, rtol):
-        with errstate(invalid='ignore'):
-            return less_equal(abs(x-y), atol + rtol * abs(y))
+        with errstate(invalid="ignore"):
+            return less_equal(abs(x - y), atol + rtol * abs(y))
 
     x = asanyarray(a)
     y = asanyarray(b)
@@ -53,7 +55,7 @@ def _isclose(a, b, rtol, atol):
         # Avoid subtraction with infinite/nan values...
         cond[finite] = within_tol(x[finite], y[finite], atol, rtol)
         # Check for equality of infinite values...
-        cond[~finite] = (x[~finite] == y[~finite])
+        cond[~finite] = x[~finite] == y[~finite]
 
         return cond[()]  # Flatten 0d arrays to scalars
 
@@ -65,7 +67,17 @@ def _allclose(a, b, rtol, atol):
 
 class taylor_add_jet_test_case(_ut.TestCase):
     def runTest(self):
-        from . import taylor_add_jet, make_vars, sin, taylor_adaptive, par, time, taylor_adaptive_batch, tpoly, core
+        from . import (
+            taylor_add_jet,
+            make_vars,
+            sin,
+            taylor_adaptive,
+            par,
+            time,
+            taylor_adaptive_batch,
+            tpoly,
+            core,
+        )
         from .core import _ppc_arch
         import numpy as np
 
@@ -77,24 +89,31 @@ class taylor_add_jet_test_case(_ut.TestCase):
         sys_par_t2 = [(x, v), (v, -par[0] * sin(x) + tpoly(par[1], par[6]))]
 
         if _ppc_arch:
-            fp_types = [("double", float)]
+            fp_types = [float]
         else:
-            fp_types = [("double", float), ("long double", np.longdouble)]
+            fp_types = [float, np.longdouble]
 
         if hasattr(core, "real128"):
-            fp_types.append(("real128", core.real128))
+            fp_types.append(core.real128)
 
-        for desc, fp_t in fp_types:
+        for fp_t in fp_types:
             # Check that the jet is consistent
             # with the Taylor coefficients.
             init_state = [fp_t(0.05), fp_t(0.025)]
             pars = [fp_t(-9.8)]
-            pars2 = [fp_t(-9.8), fp_t(.01), fp_t(.02), fp_t(.03),
-                     fp_t(.04), fp_t(.05), fp_t(.06)]
+            pars2 = [
+                fp_t(-9.8),
+                fp_t(0.01),
+                fp_t(0.02),
+                fp_t(0.03),
+                fp_t(0.04),
+                fp_t(0.05),
+                fp_t(0.06),
+            ]
 
-            ta = taylor_adaptive(sys, init_state, tol=fp_t(1e-9), fp_type=desc)
+            ta = taylor_adaptive(sys, init_state, tol=fp_t(1e-9), fp_type=fp_t)
 
-            jet = taylor_add_jet(sys, 5, fp_type=desc)
+            jet = taylor_add_jet(sys, 5, fp_type=fp_t)
             st = np.full((6, 2), fp_t(0), dtype=fp_t)
             st[0] = init_state
 
@@ -104,7 +123,7 @@ class taylor_add_jet_test_case(_ut.TestCase):
             self.assertTrue(np.all(ta.tc[:, :6].transpose() == st))
 
             # Try adding an sv_func.
-            jet = taylor_add_jet(sys, 5, fp_type=desc, sv_funcs=[x + v])
+            jet = taylor_add_jet(sys, 5, fp_type=fp_t, sv_funcs=[x + v])
             st = np.full((6, 3), fp_t(0), dtype=fp_t)
             st[0, :2] = init_state
 
@@ -112,13 +131,15 @@ class taylor_add_jet_test_case(_ut.TestCase):
 
             self.assertTrue(np.all(ta.tc[:, :6].transpose() == st[:, :2]))
             self.assertTrue(
-                np.all((ta.tc[0, :6] + ta.tc[1, :6]).transpose() == st[:, 2]))
+                np.all((ta.tc[0, :6] + ta.tc[1, :6]).transpose() == st[:, 2])
+            )
 
             # An example with params.
             ta_par = taylor_adaptive(
-                sys_par, init_state, tol=fp_t(1e-9), fp_type=desc, pars=pars)
+                sys_par, init_state, tol=fp_t(1e-9), fp_type=fp_t, pars=pars
+            )
 
-            jet_par = taylor_add_jet(sys_par, 5, fp_type=desc)
+            jet_par = taylor_add_jet(sys_par, 5, fp_type=fp_t)
             st = np.full((6, 2), fp_t(0), dtype=fp_t)
             st[0] = init_state
             par_arr = np.full((1,), fp_t(-9.8), dtype=fp_t)
@@ -130,10 +151,11 @@ class taylor_add_jet_test_case(_ut.TestCase):
 
             # Params + time.
             ta_par_t = taylor_adaptive(
-                sys_par_t, init_state, tol=fp_t(1e-9), fp_type=desc, pars=pars)
+                sys_par_t, init_state, tol=fp_t(1e-9), fp_type=fp_t, pars=pars
+            )
             ta_par_t.time = fp_t(0.01)
 
-            jet_par_t = taylor_add_jet(sys_par_t, 5, fp_type=desc)
+            jet_par_t = taylor_add_jet(sys_par_t, 5, fp_type=fp_t)
             st = np.full((6, 2), fp_t(0), dtype=fp_t)
             st[0] = init_state
             par_arr = np.full((1,), fp_t(-9.8), dtype=fp_t)
@@ -145,10 +167,11 @@ class taylor_add_jet_test_case(_ut.TestCase):
             self.assertTrue(np.all(ta_par_t.tc[:, :6].transpose() == st))
 
             ta_par_t2 = taylor_adaptive(
-                sys_par_t2, init_state, tol=fp_t(1e-9), fp_type=desc, pars=pars2)
+                sys_par_t2, init_state, tol=fp_t(1e-9), fp_type=fp_t, pars=pars2
+            )
             ta_par_t2.time = fp_t(0.01)
 
-            jet_par_t2 = taylor_add_jet(sys_par_t2, 5, fp_type=desc)
+            jet_par_t2 = taylor_add_jet(sys_par_t2, 5, fp_type=fp_t)
             st = np.full((6, 2), fp_t(0), dtype=fp_t)
             st[0] = init_state
             par_arr2 = np.array(pars2, dtype=fp_t)
@@ -165,14 +188,18 @@ class taylor_add_jet_test_case(_ut.TestCase):
             with self.assertRaises(ValueError) as cm:
                 jet(st[::2])
             self.assertTrue(
-                "Invalid state vector passed to a function for the computation of the jet of Taylor derivatives: the NumPy array is not C contiguous" in str(cm.exception))
+                "Invalid state vector passed to a function for the computation of the jet of Taylor derivatives: the NumPy array is not C contiguous or not writeable"
+                in str(cm.exception)
+            )
 
             # Non-writeable state.
             st.flags.writeable = False
             with self.assertRaises(ValueError) as cm:
                 jet(st)
             self.assertTrue(
-                "Invalid state vector passed to a function for the computation of the jet of Taylor derivatives: the NumPy array is not writeable" in str(cm.exception))
+                "Invalid state vector passed to a function for the computation of the jet of Taylor derivatives: the NumPy array is not C contiguous or not writeable"
+                in str(cm.exception)
+            )
 
             # Non-contiguous pars.
             st = np.full((6, 2), fp_t(0), dtype=fp_t)
@@ -180,150 +207,165 @@ class taylor_add_jet_test_case(_ut.TestCase):
             with self.assertRaises(ValueError) as cm:
                 jet_par(st, pars=par_arr[::2])
             self.assertTrue(
-                "Invalid parameters vector passed to a function for the computation of the jet of Taylor derivatives: the NumPy array is not C contiguous" in str(cm.exception))
+                "Invalid parameters vector passed to a function for the computation of the jet of Taylor derivatives: the NumPy array is not C contiguous"
+                in str(cm.exception)
+            )
 
             # Non-contiguous time.
             time_arr = np.full((5,), fp_t(0.01), dtype=fp_t)
             with self.assertRaises(ValueError) as cm:
                 jet_par(st, pars=par_arr, time=time_arr[::2])
             self.assertTrue(
-                "Invalid time vector passed to a function for the computation of the jet of Taylor derivatives: the NumPy array is not C contiguous" in str(cm.exception))
+                "Invalid time vector passed to a function for the computation of the jet of Taylor derivatives: the NumPy array is not C contiguous"
+                in str(cm.exception)
+            )
 
             # Overlapping arrays.
             with self.assertRaises(ValueError) as cm:
                 jet_par(st, pars=st, time=time_arr)
             self.assertTrue(
-                "Invalid vectors passed to a function for the computation of the jet of Taylor derivatives: the NumPy arrays must all be distinct" in str(cm.exception))
+                "Invalid vectors passed to a function for the computation of the jet of Taylor derivatives: the NumPy arrays must not share any memory"
+                in str(cm.exception)
+            )
             with self.assertRaises(ValueError) as cm:
                 jet_par(st, pars=par_arr, time=st)
             self.assertTrue(
-                "Invalid vectors passed to a function for the computation of the jet of Taylor derivatives: the NumPy arrays must all be distinct" in str(cm.exception))
+                "Invalid vectors passed to a function for the computation of the jet of Taylor derivatives: the NumPy arrays must not share any memory"
+                in str(cm.exception)
+            )
             with self.assertRaises(ValueError) as cm:
                 jet_par(st, pars=st, time=st)
             self.assertTrue(
-                "Invalid vectors passed to a function for the computation of the jet of Taylor derivatives: the NumPy arrays must all be distinct" in str(cm.exception))
+                "Invalid vectors passed to a function for the computation of the jet of Taylor derivatives: the NumPy arrays must not share any memory"
+                in str(cm.exception)
+            )
 
             # Params needed but not provided.
             with self.assertRaises(ValueError) as cm:
                 jet_par(st)
-            self.assertTrue("Invalid vectors passed to a function for the computation of the jet of "
-                            "Taylor derivatives: the ODE system contains parameters, but no parameter array was "
-                            "passed as input argument" in str(cm.exception))
+            self.assertTrue(
+                "Invalid vectors passed to a function for the computation of the jet of "
+                "Taylor derivatives: the ODE system contains parameters, but no parameter array was "
+                "passed as input argument" in str(cm.exception)
+            )
 
             # Time needed but not provided.
             with self.assertRaises(ValueError) as cm:
                 jet_par_t(st, pars=par_arr)
-            self.assertTrue("Invalid vectors passed to a function for the computation of the jet of "
-                            "Taylor derivatives: the ODE system is non-autonomous, but no time array was "
-                            "passed as input argument" in str(cm.exception))
+            self.assertTrue(
+                "Invalid vectors passed to a function for the computation of the jet of "
+                "Taylor derivatives: the ODE system is non-autonomous, but no time array was "
+                "passed as input argument" in str(cm.exception)
+            )
             with self.assertRaises(ValueError) as cm:
                 jet_par_t2(st, pars=par_arr2)
-            self.assertTrue("Invalid vectors passed to a function for the computation of the jet of "
-                            "Taylor derivatives: the ODE system is non-autonomous, but no time array was "
-                            "passed as input argument" in str(cm.exception))
+            self.assertTrue(
+                "Invalid vectors passed to a function for the computation of the jet of "
+                "Taylor derivatives: the ODE system is non-autonomous, but no time array was "
+                "passed as input argument" in str(cm.exception)
+            )
 
             # Wrong st shape, scalar case.
             st = np.full((6, 2, 1), fp_t(0), dtype=fp_t)
             with self.assertRaises(ValueError) as cm:
                 jet(st)
-            self.assertTrue("Invalid state vector passed to a function for the computation of the jet of "
-                            "Taylor derivatives: the number of dimensions must be 2, but it is "
-                            "3 instead" in str(cm.exception))
+            self.assertTrue(
+                "Invalid state vector passed to a function for the computation of the jet of "
+                "Taylor derivatives: the number of dimensions must be 2, but it is "
+                "3 instead" in str(cm.exception)
+            )
 
             st = np.full((6, 4), fp_t(0), dtype=fp_t)
             with self.assertRaises(ValueError) as cm:
                 jet(st)
-            self.assertTrue("Invalid state vector passed to a function for the computation of the jet of "
-                            "Taylor derivatives: the shape must be (6, 3), but it is "
-                            "(6, 4) instead" in str(cm.exception))
+            self.assertTrue(
+                "Invalid state vector passed to a function for the computation of the jet of "
+                "Taylor derivatives: the shape must be (6, 3), but it is "
+                "(6, 4) instead" in str(cm.exception)
+            )
 
             # Wrong param shape, scalar case.
             st = np.full((6, 2), fp_t(0), dtype=fp_t)
             par_arr = np.full((5, 2), fp_t(-9.8), dtype=fp_t)
             with self.assertRaises(ValueError) as cm:
                 jet_par(st, pars=par_arr)
-            self.assertTrue("Invalid parameters vector passed to a function for the computation of "
-                            "the jet of "
-                            "Taylor derivatives: the number of dimensions must be 1, but it is "
-                            "2 instead" in str(cm.exception))
+            self.assertTrue(
+                "Invalid parameters vector passed to a function for the computation of "
+                "the jet of "
+                "Taylor derivatives: the number of dimensions must be 1, but it is "
+                "2 instead" in str(cm.exception)
+            )
 
             par_arr = np.full((5,), fp_t(-9.8), dtype=fp_t)
             with self.assertRaises(ValueError) as cm:
                 jet_par(st, pars=par_arr)
-            self.assertTrue("Invalid parameters vector passed to a function for the "
-                            "computation of the jet of "
-                            "Taylor derivatives: the shape must be (1, ), but it is "
-                            "(5) instead" in str(cm.exception))
+            self.assertTrue(
+                "Invalid parameters vector passed to a function for the "
+                "computation of the jet of "
+                "Taylor derivatives: the shape must be (1, ), but it is "
+                "(5) instead" in str(cm.exception)
+            )
 
             # Wrong time shape, scalar case.
             par_arr = np.full((1,), fp_t(-9.8), dtype=fp_t)
             time_arr = np.full((2, 1), fp_t(0.01), dtype=fp_t)
             with self.assertRaises(ValueError) as cm:
                 jet_par_t(st, pars=par_arr, time=time_arr)
-            self.assertTrue("Invalid time vector passed to a function for the computation of the jet of "
-                            "Taylor derivatives: the number of dimensions must be 1, but it is "
-                            "2 instead" in str(cm.exception))
+            self.assertTrue(
+                "Invalid time vector passed to a function for the computation of the jet of "
+                "Taylor derivatives: the number of dimensions must be 1, but it is "
+                "2 instead" in str(cm.exception)
+            )
 
             time_arr = np.full((5,), fp_t(0.01), dtype=fp_t)
             with self.assertRaises(ValueError) as cm:
                 jet_par_t(st, pars=par_arr, time=time_arr)
-            self.assertTrue("Invalid time vector passed to a function for the computation of the jet of "
-                            "Taylor derivatives: the shape must be (1, ), but it is "
-                            "(5) instead" in str(cm.exception))
+            self.assertTrue(
+                "Invalid time vector passed to a function for the computation of the jet of "
+                "Taylor derivatives: the shape must be (1, ), but it is "
+                "(5) instead" in str(cm.exception)
+            )
 
             # No pars in the system, wrong par array provided, scalar case.
-            jet = taylor_add_jet(sys, 5, fp_type=desc)
+            jet = taylor_add_jet(sys, 5, fp_type=fp_t)
             st = np.full((6, 2), fp_t(0), dtype=fp_t)
             with self.assertRaises(ValueError) as cm:
                 jet(st, pars=np.zeros((1,), dtype=fp_t))
             self.assertTrue(
-                "Invalid parameters vector passed to a function for the computation of the jet of Taylor derivatives: the shape must be (0, ), but it is (1) instead" in str(cm.exception))
+                "Invalid parameters vector passed to a function for the computation of the jet of Taylor derivatives: the shape must be (0, ), but it is (1) instead"
+                in str(cm.exception)
+            )
 
             # No time in the system, wrong time array provided, scalar case.
             with self.assertRaises(ValueError) as cm:
                 jet(st, time=np.zeros((0,), dtype=fp_t))
             self.assertTrue(
-                "Invalid time vector passed to a function for the computation of the jet of Taylor derivatives: the shape must be (1, ), but it is (0) instead" in str(cm.exception))
-
-            # Non-owning arrays, scalar case.
-            with self.assertRaises(ValueError) as cm:
-                jet(st[:])
-            self.assertTrue(
-                "The arrays passed to a function for the computation of the jet of Taylor derivatives must all own their data" in str(cm.exception))
-
-            par_arr = np.zeros((0,), dtype=fp_t)
-            with self.assertRaises(ValueError) as cm:
-                jet(st, pars=par_arr[:])
-            self.assertTrue(
-                "The arrays passed to a function for the computation of the jet of Taylor derivatives must all own their data" in str(cm.exception))
-
-            time_arr = np.zeros((1,), dtype=fp_t)
-            with self.assertRaises(ValueError) as cm:
-                jet(st, time=time_arr[:])
-            self.assertTrue(
-                "The arrays passed to a function for the computation of the jet of Taylor derivatives must all own their data" in str(cm.exception))
+                "Invalid time vector passed to a function for the computation of the jet of Taylor derivatives: the shape must be (1, ), but it is (0) instead"
+                in str(cm.exception)
+            )
 
         # Check throwing behaviour with long double on PPC.
         if _ppc_arch:
             with self.assertRaises(NotImplementedError):
-                taylor_add_jet(sys, 5, fp_type="long double")
+                taylor_add_jet(sys, 5, fp_type=np.longdouble)
 
         # Batch mode testing.
-        fp_types = [("double", float)]
+        fp_types = [float]
 
-        for desc, fp_t in fp_types:
+        for fp_t in fp_types:
             batch_size = 4
 
             # Check that the jet is consistent
             # with the Taylor coefficients.
-            init_state = [[fp_t(0.05), fp_t(0.06), fp_t(0.07), fp_t(0.08)],
-                          [fp_t(0.025), fp_t(0.026), fp_t(0.027), fp_t(0.028)]]
+            init_state = [
+                [fp_t(0.05), fp_t(0.06), fp_t(0.07), fp_t(0.08)],
+                [fp_t(0.025), fp_t(0.026), fp_t(0.027), fp_t(0.028)],
+            ]
             pars = [[fp_t(-9.8), fp_t(-9.7), fp_t(-9.6), fp_t(-9.5)]]
 
-            ta = taylor_adaptive_batch(
-                sys, init_state, tol=fp_t(1e-9), fp_type=desc)
+            ta = taylor_adaptive_batch(sys, init_state, tol=fp_t(1e-9), fp_type=fp_t)
 
-            jet = taylor_add_jet(sys, 5, fp_type=desc, batch_size=batch_size)
+            jet = taylor_add_jet(sys, 5, fp_type=fp_t, batch_size=batch_size)
             st = np.full((6, 2, batch_size), fp_t(0), dtype=fp_t)
             st[0] = init_state
 
@@ -333,24 +375,23 @@ class taylor_add_jet_test_case(_ut.TestCase):
             self.assertTrue(np.all(ta.tc[:, :6, :].transpose((1, 0, 2)) == st))
 
             # Try adding an sv_func.
-            jet = taylor_add_jet(sys, 5, fp_type=desc, sv_funcs=[
-                                 x + v], batch_size=batch_size)
+            jet = taylor_add_jet(
+                sys, 5, fp_type=fp_t, sv_funcs=[x + v], batch_size=batch_size
+            )
             st = np.full((6, 3, batch_size), fp_t(0), dtype=fp_t)
             st[0, :2] = init_state
 
             jet(st)
 
-            self.assertTrue(
-                np.all(ta.tc[:, :6, :].transpose((1, 0, 2)) == st[:, :2]))
-            self.assertTrue(
-                np.all((ta.tc[0, :6, :] + ta.tc[1, :6, :]) == st[:, 2, :]))
+            self.assertTrue(np.all(ta.tc[:, :6, :].transpose((1, 0, 2)) == st[:, :2]))
+            self.assertTrue(np.all((ta.tc[0, :6, :] + ta.tc[1, :6, :]) == st[:, 2, :]))
 
             # An example with params.
             ta_par = taylor_adaptive_batch(
-                sys_par, init_state, tol=fp_t(1e-9), fp_type=desc, pars=pars)
+                sys_par, init_state, tol=fp_t(1e-9), fp_type=fp_t, pars=pars
+            )
 
-            jet_par = taylor_add_jet(
-                sys_par, 5, fp_type=desc, batch_size=batch_size)
+            jet_par = taylor_add_jet(sys_par, 5, fp_type=fp_t, batch_size=batch_size)
             st = np.full((6, 2, batch_size), fp_t(0), dtype=fp_t)
             st[0] = init_state
             par_arr = np.array(pars)
@@ -358,27 +399,26 @@ class taylor_add_jet_test_case(_ut.TestCase):
             ta_par.step(write_tc=True)
             jet_par(st, pars=par_arr)
 
-            self.assertTrue(
-                np.all(ta_par.tc[:, :6, :].transpose((1, 0, 2)) == st))
+            self.assertTrue(np.all(ta_par.tc[:, :6, :].transpose((1, 0, 2)) == st))
 
             # Params + time.
             ta_par_t = taylor_adaptive_batch(
-                sys_par_t, init_state, tol=fp_t(1e-9), fp_type=desc, pars=pars)
+                sys_par_t, init_state, tol=fp_t(1e-9), fp_type=fp_t, pars=pars
+            )
             ta_par_t.set_time([fp_t(0.01), fp_t(0.02), fp_t(0.03), fp_t(0.04)])
 
             jet_par_t = taylor_add_jet(
-                sys_par_t, 5, fp_type=desc, batch_size=batch_size)
+                sys_par_t, 5, fp_type=fp_t, batch_size=batch_size
+            )
             st = np.full((6, 2, batch_size), fp_t(0), dtype=fp_t)
             st[0] = init_state
             par_arr = np.array(pars)
-            time_arr = np.array(
-                [fp_t(0.01), fp_t(0.02), fp_t(0.03), fp_t(0.04)])
+            time_arr = np.array([fp_t(0.01), fp_t(0.02), fp_t(0.03), fp_t(0.04)])
 
             ta_par_t.step(write_tc=True)
             jet_par_t(st, pars=par_arr, time=time_arr)
 
-            self.assertTrue(
-                np.all(ta_par_t.tc[:, :6, :].transpose((1, 0, 2)) == st))
+            self.assertTrue(np.all(ta_par_t.tc[:, :6, :].transpose((1, 0, 2)) == st))
 
             # Just do shape/dims checks for the batch case.
 
@@ -386,87 +426,93 @@ class taylor_add_jet_test_case(_ut.TestCase):
             st = np.full((6, 2, 1, 1), fp_t(0), dtype=fp_t)
             with self.assertRaises(ValueError) as cm:
                 jet(st)
-            self.assertTrue("Invalid state vector passed to a function for the computation of the jet of "
-                            "Taylor derivatives: the number of dimensions must be 3, but it is "
-                            "4 instead" in str(cm.exception))
+            self.assertTrue(
+                "Invalid state vector passed to a function for the computation of the jet of "
+                "Taylor derivatives: the number of dimensions must be 3, but it is "
+                "4 instead" in str(cm.exception)
+            )
 
             st = np.full((6, 4, 4), fp_t(0), dtype=fp_t)
             with self.assertRaises(ValueError) as cm:
                 jet(st)
-            self.assertTrue("Invalid state vector passed to a function for the computation of the jet of "
-                            "Taylor derivatives: the shape must be (6, 3, 4), but it is "
-                            "(6, 4, 4) instead" in str(cm.exception))
+            self.assertTrue(
+                "Invalid state vector passed to a function for the computation of the jet of "
+                "Taylor derivatives: the shape must be (6, 3, 4), but it is "
+                "(6, 4, 4) instead" in str(cm.exception)
+            )
 
             # Wrong param shape, batch case.
             st = np.full((6, 2, 4), fp_t(0), dtype=fp_t)
             par_arr = np.full((5, 2, 1), fp_t(-9.8), dtype=fp_t)
             with self.assertRaises(ValueError) as cm:
                 jet_par(st, pars=par_arr)
-            self.assertTrue("Invalid parameters vector passed to a function for the computation of "
-                            "the jet of "
-                            "Taylor derivatives: the number of dimensions must be 2, but it is "
-                            "3 instead" in str(cm.exception))
+            self.assertTrue(
+                "Invalid parameters vector passed to a function for the computation of "
+                "the jet of "
+                "Taylor derivatives: the number of dimensions must be 2, but it is "
+                "3 instead" in str(cm.exception)
+            )
 
             par_arr = np.full((5, 1), fp_t(-9.8), dtype=fp_t)
             with self.assertRaises(ValueError) as cm:
                 jet_par(st, pars=par_arr)
-            self.assertTrue("Invalid parameters vector passed to a function for the "
-                            "computation of the jet of "
-                            "Taylor derivatives: the shape must be (1, 4), but it is "
-                            "(5, 1) instead" in str(cm.exception))
+            self.assertTrue(
+                "Invalid parameters vector passed to a function for the "
+                "computation of the jet of "
+                "Taylor derivatives: the shape must be (1, 4), but it is "
+                "(5, 1) instead" in str(cm.exception)
+            )
 
             # Wrong time shape, batch case.
             par_arr = np.full((1, 4), fp_t(-9.8), dtype=fp_t)
             time_arr = np.full((2, 1), fp_t(0.01), dtype=fp_t)
             with self.assertRaises(ValueError) as cm:
                 jet_par_t(st, pars=par_arr, time=time_arr)
-            self.assertTrue("Invalid time vector passed to a function for the computation of the jet of "
-                            "Taylor derivatives: the number of dimensions must be 1, but it is "
-                            "2 instead" in str(cm.exception))
+            self.assertTrue(
+                "Invalid time vector passed to a function for the computation of the jet of "
+                "Taylor derivatives: the number of dimensions must be 1, but it is "
+                "2 instead" in str(cm.exception)
+            )
 
             time_arr = np.full((5,), fp_t(0.01), dtype=fp_t)
             with self.assertRaises(ValueError) as cm:
                 jet_par_t(st, pars=par_arr, time=time_arr)
-            self.assertTrue("Invalid time vector passed to a function for the computation of the jet of "
-                            "Taylor derivatives: the shape must be (4, ), but it is "
-                            "(5) instead" in str(cm.exception))
+            self.assertTrue(
+                "Invalid time vector passed to a function for the computation of the jet of "
+                "Taylor derivatives: the shape must be (4, ), but it is "
+                "(5) instead" in str(cm.exception)
+            )
 
             # No pars in the system, wrong par array provided, batch case.
-            jet = taylor_add_jet(sys, 5, fp_type=desc, batch_size=batch_size)
+            jet = taylor_add_jet(sys, 5, fp_type=fp_t, batch_size=batch_size)
             st = np.full((6, 2, batch_size), fp_t(0), dtype=fp_t)
             with self.assertRaises(ValueError) as cm:
                 jet(st, pars=np.zeros((1, 4), dtype=fp_t))
             self.assertTrue(
-                "Invalid parameters vector passed to a function for the computation of the jet of Taylor derivatives: the shape must be (0, 4), but it is (1, 4) instead" in str(cm.exception))
+                "Invalid parameters vector passed to a function for the computation of the jet of Taylor derivatives: the shape must be (0, 4), but it is (1, 4) instead"
+                in str(cm.exception)
+            )
 
             # No time in the system, wrong time array provided, batch case.
             with self.assertRaises(ValueError) as cm:
                 jet(st, time=np.zeros((0,), dtype=fp_t))
             self.assertTrue(
-                "Invalid time vector passed to a function for the computation of the jet of Taylor derivatives: the shape must be (4, ), but it is (0) instead" in str(cm.exception))
-
-            # Non-owning arrays, batch case.
-            with self.assertRaises(ValueError) as cm:
-                jet(st[:])
-            self.assertTrue(
-                "The arrays passed to a function for the computation of the jet of Taylor derivatives must all own their data" in str(cm.exception))
-
-            par_arr = np.zeros((0,), dtype=fp_t)
-            with self.assertRaises(ValueError) as cm:
-                jet(st, pars=par_arr[:])
-            self.assertTrue(
-                "The arrays passed to a function for the computation of the jet of Taylor derivatives must all own their data" in str(cm.exception))
-
-            time_arr = np.zeros((1,), dtype=fp_t)
-            with self.assertRaises(ValueError) as cm:
-                jet(st, time=time_arr[:])
-            self.assertTrue(
-                "The arrays passed to a function for the computation of the jet of Taylor derivatives must all own their data" in str(cm.exception))
+                "Invalid time vector passed to a function for the computation of the jet of Taylor derivatives: the shape must be (4, ), but it is (0) instead"
+                in str(cm.exception)
+            )
 
 
 class event_classes_test_case(_ut.TestCase):
     def runTest(self):
-        from . import t_event, nt_event, t_event_batch, nt_event_batch, make_vars, event_direction, core
+        from . import (
+            t_event,
+            nt_event,
+            t_event_batch,
+            nt_event_batch,
+            make_vars,
+            event_direction,
+            core,
+        )
         from .core import _ppc_arch
         import numpy as np
         import pickle
@@ -476,16 +522,16 @@ class event_classes_test_case(_ut.TestCase):
         x, v = make_vars("x", "v")
 
         if _ppc_arch:
-            fp_types = [("double", float)]
+            fp_types = [float]
         else:
-            fp_types = [("double", float), ("long double", np.longdouble)]
+            fp_types = [float, np.longdouble]
 
         if hasattr(core, "real128"):
-            fp_types.append(("real128", core.real128))
+            fp_types.append(core.real128)
 
-        for desc, fp_t in fp_types:
+        for fp_t in fp_types:
             # Non-terminal event.
-            ev = nt_event(x + v, lambda _: _, fp_type=desc)
+            ev = nt_event(x + v, lambda _: _, fp_type=fp_t)
 
             self.assertTrue(" non-terminal" in repr(ev))
             self.assertTrue("(x + v)" in repr(ev))
@@ -494,7 +540,7 @@ class event_classes_test_case(_ut.TestCase):
             self.assertEqual(ev.direction, event_direction.any)
             self.assertFalse(ev.callback is None)
 
-            ev = nt_event(ex=x + v, callback=lambda _: _, fp_type=desc)
+            ev = nt_event(ex=x + v, callback=lambda _: _, fp_type=fp_t)
             self.assertTrue(" non-terminal" in repr(ev))
             self.assertTrue("(x + v)" in repr(ev))
             self.assertTrue("event_direction::any" in repr(ev))
@@ -502,8 +548,12 @@ class event_classes_test_case(_ut.TestCase):
             self.assertEqual(ev.direction, event_direction.any)
             self.assertFalse(ev.callback is None)
 
-            ev = nt_event(ex=x + v, callback=lambda _: _,
-                          direction=event_direction.positive, fp_type=desc)
+            ev = nt_event(
+                ex=x + v,
+                callback=lambda _: _,
+                direction=event_direction.positive,
+                fp_type=fp_t,
+            )
             self.assertTrue(" non-terminal" in repr(ev))
             self.assertTrue("(x + v)" in repr(ev))
             self.assertTrue("event_direction::positive" in repr(ev))
@@ -511,8 +561,12 @@ class event_classes_test_case(_ut.TestCase):
             self.assertEqual(ev.direction, event_direction.positive)
             self.assertFalse(ev.callback is None)
 
-            ev = nt_event(ex=x + v, callback=lambda _: _,
-                          direction=event_direction.negative, fp_type=desc)
+            ev = nt_event(
+                ex=x + v,
+                callback=lambda _: _,
+                direction=event_direction.negative,
+                fp_type=fp_t,
+            )
             self.assertTrue(" non-terminal" in repr(ev))
             self.assertTrue("(x + v)" in repr(ev))
             self.assertTrue("event_direction::negative" in repr(ev))
@@ -528,8 +582,9 @@ class event_classes_test_case(_ut.TestCase):
                     self.n = self.n + 1
 
             lcb = local_cb()
-            ev = nt_event(ex=x + v, callback=lcb,
-                          direction=event_direction.negative, fp_type=desc)
+            ev = nt_event(
+                ex=x + v, callback=lcb, direction=event_direction.negative, fp_type=fp_t
+            )
             self.assertEqual(ev.callback.n, 0)
             cb = ev.callback
             cb(1, 2, 3)
@@ -541,23 +596,41 @@ class event_classes_test_case(_ut.TestCase):
             self.assertEqual(id(lcb), id(ev.callback))
 
             with self.assertRaises(ValueError) as cm:
-                nt_event(ex=x + v, callback=lambda _: _,
-                         direction=event_direction(10), fp_type=desc)
+                nt_event(
+                    ex=x + v,
+                    callback=lambda _: _,
+                    direction=event_direction(10),
+                    fp_type=fp_t,
+                )
             self.assertTrue(
-                "Invalid value selected for the direction of a non-terminal event" in str(cm.exception))
+                "Invalid value selected for the direction of a non-terminal event"
+                in str(cm.exception)
+            )
 
             with self.assertRaises(TypeError) as cm:
-                nt_event(ex=x + v, callback=3, fp_type=desc)
+                nt_event(ex=x + v, callback=3, fp_type=fp_t)
             self.assertTrue(
-                "An object of type '{}' cannot be used as an event callback because it is not callable".format(str(type(3))) in str(cm.exception))
+                "An object of type '{}' cannot be used as an event callback because it is not callable".format(
+                    str(type(3))
+                )
+                in str(cm.exception)
+            )
 
             with self.assertRaises(TypeError) as cm:
-                nt_event(ex=x + v, callback=None, fp_type=desc)
+                nt_event(ex=x + v, callback=None, fp_type=fp_t)
             self.assertTrue(
-                "An object of type '{}' cannot be used as an event callback because it is not callable".format(str(type(None))) in str(cm.exception))
+                "An object of type '{}' cannot be used as an event callback because it is not callable".format(
+                    str(type(None))
+                )
+                in str(cm.exception)
+            )
 
-            ev = nt_event(ex=x + v, callback=lambda _: _,
-                          direction=event_direction.negative, fp_type=desc)
+            ev = nt_event(
+                ex=x + v,
+                callback=lambda _: _,
+                direction=event_direction.negative,
+                fp_type=fp_t,
+            )
             ev = pickle.loads(pickle.dumps(ev))
             self.assertTrue(" non-terminal" in repr(ev))
             self.assertTrue("(x + v)" in repr(ev))
@@ -579,10 +652,14 @@ class event_classes_test_case(_ut.TestCase):
 
             # Test to ensure a callback extracted from the event
             # is kept alive and usable when the event is destroyed.
-            ev = nt_event(ex=x + v, callback=local_cb(),
-                          direction=event_direction.negative, fp_type=desc)
+            ev = nt_event(
+                ex=x + v,
+                callback=local_cb(),
+                direction=event_direction.negative,
+                fp_type=fp_t,
+            )
             out_cb = ev.callback
-            del(ev)
+            del ev
             gc.collect()
             out_cb(1, 2, 3)
             out_cb(1, 2, 3)
@@ -590,7 +667,7 @@ class event_classes_test_case(_ut.TestCase):
             self.assertEqual(out_cb.n, 3)
 
             # Terminal event.
-            ev = t_event(x + v, fp_type=desc)
+            ev = t_event(x + v, fp_type=fp_t)
 
             self.assertTrue(" terminal" in repr(ev))
             self.assertTrue("(x + v)" in repr(ev))
@@ -602,8 +679,12 @@ class event_classes_test_case(_ut.TestCase):
             self.assertEqual(ev.cooldown, fp_t(-1))
             self.assertTrue(ev.callback is None)
 
-            ev = t_event(x + v, fp_type=desc,
-                         direction=event_direction.negative, cooldown=fp_t(3))
+            ev = t_event(
+                x + v,
+                fp_type=fp_t,
+                direction=event_direction.negative,
+                cooldown=fp_t(3),
+            )
 
             self.assertTrue(" terminal" in repr(ev))
             self.assertTrue("(x + v)" in repr(ev))
@@ -615,8 +696,13 @@ class event_classes_test_case(_ut.TestCase):
             self.assertEqual(ev.cooldown, fp_t(3))
             self.assertTrue(ev.callback is None)
 
-            ev = t_event(x + v, fp_type=desc, direction=event_direction.positive,
-                         cooldown=fp_t(3), callback=lambda _: _)
+            ev = t_event(
+                x + v,
+                fp_type=fp_t,
+                direction=event_direction.positive,
+                cooldown=fp_t(3),
+                callback=lambda _: _,
+            )
 
             self.assertTrue(" terminal" in repr(ev))
             self.assertTrue("(x + v)" in repr(ev))
@@ -636,8 +722,13 @@ class event_classes_test_case(_ut.TestCase):
                     self.n = self.n + 1
 
             lcb = local_cb()
-            ev = t_event(x + v, fp_type=desc, direction=event_direction.positive,
-                         cooldown=fp_t(3), callback=lcb)
+            ev = t_event(
+                x + v,
+                fp_type=fp_t,
+                direction=event_direction.positive,
+                cooldown=fp_t(3),
+                callback=lcb,
+            )
 
             self.assertTrue(" terminal" in repr(ev))
             self.assertTrue("(x + v)" in repr(ev))
@@ -658,23 +749,44 @@ class event_classes_test_case(_ut.TestCase):
             self.assertEqual(ev.callback.n, 0)
             self.assertEqual(id(lcb), id(ev.callback))
 
-            ev = t_event(x + v, fp_type=desc, direction=event_direction.positive,
-                         cooldown=fp_t(3), callback=None)
+            ev = t_event(
+                x + v,
+                fp_type=fp_t,
+                direction=event_direction.positive,
+                cooldown=fp_t(3),
+                callback=None,
+            )
             self.assertTrue(ev.callback is None)
 
             with self.assertRaises(ValueError) as cm:
-                t_event(x + v, fp_type=desc, direction=event_direction(45),
-                        cooldown=fp_t(3), callback=lambda _: _)
+                t_event(
+                    x + v,
+                    fp_type=fp_t,
+                    direction=event_direction(45),
+                    cooldown=fp_t(3),
+                    callback=lambda _: _,
+                )
             self.assertTrue(
-                "Invalid value selected for the direction of a terminal event" in str(cm.exception))
+                "Invalid value selected for the direction of a terminal event"
+                in str(cm.exception)
+            )
 
             with self.assertRaises(TypeError) as cm:
-                t_event(x + v, callback=3, fp_type=desc)
+                t_event(x + v, callback=3, fp_type=fp_t)
             self.assertTrue(
-                "An object of type '{}' cannot be used as an event callback because it is not callable".format(str(type(3))) in str(cm.exception))
+                "An object of type '{}' cannot be used as an event callback because it is not callable".format(
+                    str(type(3))
+                )
+                in str(cm.exception)
+            )
 
-            ev = t_event(x + v, fp_type=desc, direction=event_direction.positive,
-                         cooldown=fp_t(3), callback=lambda _: _)
+            ev = t_event(
+                x + v,
+                fp_type=fp_t,
+                direction=event_direction.positive,
+                cooldown=fp_t(3),
+                callback=lambda _: _,
+            )
 
             ev = pickle.loads(pickle.dumps(ev))
             self.assertTrue(" terminal" in repr(ev))
@@ -698,8 +810,12 @@ class event_classes_test_case(_ut.TestCase):
             self.assertNotEqual(id(ev.bar), id(deepcopy(ev).bar))
 
             # Test also with empty callback.
-            ev = t_event(x + v, fp_type=desc, direction=event_direction.positive,
-                         cooldown=fp_t(3))
+            ev = t_event(
+                x + v,
+                fp_type=fp_t,
+                direction=event_direction.positive,
+                cooldown=fp_t(3),
+            )
 
             ev = pickle.loads(pickle.dumps(ev))
             self.assertTrue(" terminal" in repr(ev))
@@ -710,10 +826,14 @@ class event_classes_test_case(_ut.TestCase):
 
             # Test to ensure a callback extracted from the event
             # is kept alive and usable when the event is destroyed.
-            ev = t_event(ex=x + v, callback=local_cb(),
-                         direction=event_direction.negative, fp_type=desc)
+            ev = t_event(
+                ex=x + v,
+                callback=local_cb(),
+                direction=event_direction.negative,
+                fp_type=fp_t,
+            )
             out_cb = ev.callback
-            del(ev)
+            del ev
             gc.collect()
             out_cb(1, 2, 3)
             out_cb(1, 2, 3)
@@ -722,14 +842,18 @@ class event_classes_test_case(_ut.TestCase):
 
         # Unsupported fp_type.
         with self.assertRaises(TypeError) as cm:
-            nt_event(x + v, lambda _: _, fp_type="pippo")
+            nt_event(x + v, lambda _: _, fp_type=str)
         self.assertTrue(
-            "the floating-point type \"pippo\" is not recognized/supported" in str(cm.exception))
+            'The floating-point type "{}" is not recognized/supported'.format(str)
+            in str(cm.exception)
+        )
 
         with self.assertRaises(TypeError) as cm:
-            t_event(x + v, fp_type="pippo")
+            t_event(x + v, fp_type=list)
         self.assertTrue(
-            "the floating-point type \"pippo\" is not recognized/supported" in str(cm.exception))
+            'The floating-point type "{}" is not recognized/supported'.format(list)
+            in str(cm.exception)
+        )
 
         # Batch events.
         ev = nt_event_batch(x + v, lambda _: _)
@@ -740,7 +864,7 @@ class event_classes_test_case(_ut.TestCase):
         self.assertEqual(ev.direction, event_direction.any)
         self.assertFalse(ev.callback is None)
 
-        ev = nt_event_batch(ex=x + v, callback=lambda _: _, fp_type="double")
+        ev = nt_event_batch(ex=x + v, callback=lambda _: _, fp_type=float)
         self.assertTrue(" non-terminal" in repr(ev))
         self.assertTrue("(x + v)" in repr(ev))
         self.assertTrue("event_direction::any" in repr(ev))
@@ -748,8 +872,9 @@ class event_classes_test_case(_ut.TestCase):
         self.assertEqual(ev.direction, event_direction.any)
         self.assertFalse(ev.callback is None)
 
-        ev = nt_event_batch(ex=x + v, callback=lambda _: _,
-                            direction=event_direction.positive)
+        ev = nt_event_batch(
+            ex=x + v, callback=lambda _: _, direction=event_direction.positive
+        )
         self.assertTrue(" non-terminal" in repr(ev))
         self.assertTrue("(x + v)" in repr(ev))
         self.assertTrue("event_direction::positive" in repr(ev))
@@ -757,8 +882,9 @@ class event_classes_test_case(_ut.TestCase):
         self.assertEqual(ev.direction, event_direction.positive)
         self.assertFalse(ev.callback is None)
 
-        ev = nt_event_batch(ex=x + v, callback=lambda _: _,
-                            direction=event_direction.negative)
+        ev = nt_event_batch(
+            ex=x + v, callback=lambda _: _, direction=event_direction.negative
+        )
         self.assertTrue(" non-terminal" in repr(ev))
         self.assertTrue("(x + v)" in repr(ev))
         self.assertTrue("event_direction::negative" in repr(ev))
@@ -774,8 +900,7 @@ class event_classes_test_case(_ut.TestCase):
                 self.n = self.n + 1
 
         lcb = local_cb()
-        ev = nt_event_batch(ex=x + v, callback=lcb,
-                            direction=event_direction.negative)
+        ev = nt_event_batch(ex=x + v, callback=lcb, direction=event_direction.negative)
         self.assertEqual(ev.callback.n, 0)
         cb = ev.callback
         cb(1, 2, 3)
@@ -787,23 +912,35 @@ class event_classes_test_case(_ut.TestCase):
         self.assertEqual(id(lcb), id(ev.callback))
 
         with self.assertRaises(ValueError) as cm:
-            nt_event_batch(ex=x + v, callback=lambda _: _,
-                           direction=event_direction(10))
+            nt_event_batch(
+                ex=x + v, callback=lambda _: _, direction=event_direction(10)
+            )
         self.assertTrue(
-            "Invalid value selected for the direction of a non-terminal event" in str(cm.exception))
+            "Invalid value selected for the direction of a non-terminal event"
+            in str(cm.exception)
+        )
 
         with self.assertRaises(TypeError) as cm:
             nt_event_batch(ex=x + v, callback=3)
         self.assertTrue(
-            "An object of type '{}' cannot be used as an event callback because it is not callable".format(str(type(3))) in str(cm.exception))
+            "An object of type '{}' cannot be used as an event callback because it is not callable".format(
+                str(type(3))
+            )
+            in str(cm.exception)
+        )
 
         with self.assertRaises(TypeError) as cm:
             nt_event_batch(ex=x + v, callback=None)
         self.assertTrue(
-            "An object of type '{}' cannot be used as an event callback because it is not callable".format(str(type(None))) in str(cm.exception))
+            "An object of type '{}' cannot be used as an event callback because it is not callable".format(
+                str(type(None))
+            )
+            in str(cm.exception)
+        )
 
-        ev = nt_event_batch(ex=x + v, callback=lambda _: _,
-                            direction=event_direction.negative)
+        ev = nt_event_batch(
+            ex=x + v, callback=lambda _: _, direction=event_direction.negative
+        )
         ev = pickle.loads(pickle.dumps(ev))
         self.assertTrue(" non-terminal" in repr(ev))
         self.assertTrue("(x + v)" in repr(ev))
@@ -825,10 +962,11 @@ class event_classes_test_case(_ut.TestCase):
 
         # Test to ensure a callback extracted from the event
         # is kept alive and usable when the event is destroyed.
-        ev = nt_event_batch(ex=x + v, callback=local_cb(),
-                            direction=event_direction.negative)
+        ev = nt_event_batch(
+            ex=x + v, callback=local_cb(), direction=event_direction.negative
+        )
         out_cb = ev.callback
-        del(ev)
+        del ev
         gc.collect()
         out_cb(1, 2, 3)
         out_cb(1, 2, 3)
@@ -849,8 +987,7 @@ class event_classes_test_case(_ut.TestCase):
         self.assertEqual(ev.cooldown, fp_t(-1))
         self.assertTrue(ev.callback is None)
 
-        ev = t_event_batch(x + v,
-                           direction=event_direction.negative, cooldown=fp_t(3))
+        ev = t_event_batch(x + v, direction=event_direction.negative, cooldown=fp_t(3))
 
         self.assertTrue(" terminal" in repr(ev))
         self.assertTrue("(x + v)" in repr(ev))
@@ -862,8 +999,12 @@ class event_classes_test_case(_ut.TestCase):
         self.assertEqual(ev.cooldown, fp_t(3))
         self.assertTrue(ev.callback is None)
 
-        ev = t_event_batch(x + v, direction=event_direction.positive,
-                           cooldown=fp_t(3), callback=lambda _: _)
+        ev = t_event_batch(
+            x + v,
+            direction=event_direction.positive,
+            cooldown=fp_t(3),
+            callback=lambda _: _,
+        )
 
         self.assertTrue(" terminal" in repr(ev))
         self.assertTrue("(x + v)" in repr(ev))
@@ -883,8 +1024,9 @@ class event_classes_test_case(_ut.TestCase):
                 self.n = self.n + 1
 
         lcb = local_cb()
-        ev = t_event_batch(x + v, direction=event_direction.positive,
-                           cooldown=fp_t(3), callback=lcb)
+        ev = t_event_batch(
+            x + v, direction=event_direction.positive, cooldown=fp_t(3), callback=lcb
+        )
 
         self.assertTrue(" terminal" in repr(ev))
         self.assertTrue("(x + v)" in repr(ev))
@@ -905,23 +1047,38 @@ class event_classes_test_case(_ut.TestCase):
         self.assertEqual(ev.callback.n, 0)
         self.assertEqual(id(lcb), id(ev.callback))
 
-        ev = t_event_batch(x + v, direction=event_direction.positive,
-                           cooldown=fp_t(3), callback=None)
+        ev = t_event_batch(
+            x + v, direction=event_direction.positive, cooldown=fp_t(3), callback=None
+        )
         self.assertTrue(ev.callback is None)
 
         with self.assertRaises(ValueError) as cm:
-            t_event_batch(x + v, direction=event_direction(45),
-                          cooldown=fp_t(3), callback=lambda _: _)
+            t_event_batch(
+                x + v,
+                direction=event_direction(45),
+                cooldown=fp_t(3),
+                callback=lambda _: _,
+            )
         self.assertTrue(
-            "Invalid value selected for the direction of a terminal event" in str(cm.exception))
+            "Invalid value selected for the direction of a terminal event"
+            in str(cm.exception)
+        )
 
         with self.assertRaises(TypeError) as cm:
             t_event_batch(x + v, callback=3)
         self.assertTrue(
-            "An object of type '{}' cannot be used as an event callback because it is not callable".format(str(type(3))) in str(cm.exception))
+            "An object of type '{}' cannot be used as an event callback because it is not callable".format(
+                str(type(3))
+            )
+            in str(cm.exception)
+        )
 
-        ev = t_event_batch(x + v, direction=event_direction.positive,
-                           cooldown=fp_t(3), callback=lambda _: _)
+        ev = t_event_batch(
+            x + v,
+            direction=event_direction.positive,
+            cooldown=fp_t(3),
+            callback=lambda _: _,
+        )
 
         ev = pickle.loads(pickle.dumps(ev))
         self.assertTrue(" terminal" in repr(ev))
@@ -945,8 +1102,7 @@ class event_classes_test_case(_ut.TestCase):
         self.assertNotEqual(id(ev.bar), id(deepcopy(ev).bar))
 
         # Test also with empty callback.
-        ev = t_event_batch(x + v, direction=event_direction.positive,
-                           cooldown=fp_t(3))
+        ev = t_event_batch(x + v, direction=event_direction.positive, cooldown=fp_t(3))
 
         ev = pickle.loads(pickle.dumps(ev))
         self.assertTrue(" terminal" in repr(ev))
@@ -957,10 +1113,11 @@ class event_classes_test_case(_ut.TestCase):
 
         # Test to ensure a callback extracted from the event
         # is kept alive and usable when the event is destroyed.
-        ev = t_event_batch(ex=x + v, callback=local_cb(),
-                           direction=event_direction.negative)
+        ev = t_event_batch(
+            ex=x + v, callback=local_cb(), direction=event_direction.negative
+        )
         out_cb = ev.callback
-        del(ev)
+        del ev
         gc.collect()
         out_cb(1, 2, 3)
         out_cb(1, 2, 3)
@@ -968,14 +1125,18 @@ class event_classes_test_case(_ut.TestCase):
         self.assertEqual(out_cb.n, 3)
 
         with self.assertRaises(TypeError) as cm:
-            nt_event_batch(x + v, lambda _: _, fp_type="pippo")
+            nt_event_batch(x + v, lambda _: _, fp_type=str)
         self.assertTrue(
-            "the floating-point type \"pippo\" is not recognized/supported" in str(cm.exception))
+            'The floating-point type "{}" is not recognized/supported'.format(str)
+            in str(cm.exception)
+        )
 
         with self.assertRaises(TypeError) as cm:
-            t_event_batch(x + v, fp_type="pippo")
+            t_event_batch(x + v, fp_type=list)
         self.assertTrue(
-            "the floating-point type \"pippo\" is not recognized/supported" in str(cm.exception))
+            'The floating-point type "{}" is not recognized/supported'.format(list)
+            in str(cm.exception)
+        )
 
 
 class event_detection_test_case(_ut.TestCase):
@@ -984,7 +1145,14 @@ class event_detection_test_case(_ut.TestCase):
         self.test_batch()
 
     def test_batch(self):
-        from . import t_event_batch, nt_event_batch, make_vars, taylor_adaptive_batch, sin, taylor_outcome
+        from . import (
+            t_event_batch,
+            nt_event_batch,
+            make_vars,
+            taylor_adaptive_batch,
+            sin,
+            taylor_outcome,
+        )
         from sys import getrefcount
         from copy import deepcopy
 
@@ -995,7 +1163,7 @@ class event_detection_test_case(_ut.TestCase):
 
         # Non-terminal events.
         counter = [0] * 2
-        cur_time = [0.] * 2
+        cur_time = [0.0] * 2
 
         # Track the memory address of the integrator object
         # in order to make sure that it is passed correctly
@@ -1026,15 +1194,18 @@ class event_detection_test_case(_ut.TestCase):
             counter[bidx] = counter[bidx] + 1
             cur_time[bidx] = t
 
-        ta = taylor_adaptive_batch(sys=sys, state=[[0., 0.001], [0.25, 0.2501]],
-                                   nt_events=[nt_event_batch(v*v-1e-10, cb0),
-                                              nt_event_batch(v, cb1)])
+        ta = taylor_adaptive_batch(
+            sys=sys,
+            state=[[0.0, 0.001], [0.25, 0.2501]],
+            nt_events=[nt_event_batch(v * v - 1e-10, cb0), nt_event_batch(v, cb1)],
+        )
 
         ta_id = id(ta)
 
-        ta.propagate_until([4., 4.])
+        ta.propagate_until([4.0, 4.0])
         self.assertTrue(
-            all(_[0] == taylor_outcome.time_limit for _ in ta.propagate_res))
+            all(_[0] == taylor_outcome.time_limit for _ in ta.propagate_res)
+        )
 
         self.assertEqual(counter[0], 12)
         self.assertEqual(counter[1], 12)
@@ -1056,10 +1227,15 @@ class event_detection_test_case(_ut.TestCase):
             def __call__(self, ta, t, d_sgn, bidx):
                 pass
 
-        ta = taylor_adaptive_batch(sys=sys, state=[[0., 0.001], [0.25, 0.2501]],
-                                   nt_events=[nt_event_batch(v*v-1e-10, cb0()),
-                                              nt_event_batch(v, cb1()),
-                                              nt_event_batch(v, cb1())])
+        ta = taylor_adaptive_batch(
+            sys=sys,
+            state=[[0.0, 0.001], [0.25, 0.2501]],
+            nt_events=[
+                nt_event_batch(v * v - 1e-10, cb0()),
+                nt_event_batch(v, cb1()),
+                nt_event_batch(v, cb1()),
+            ],
+        )
 
         # Check that the refcount increases by 3
         # (the number of events).
@@ -1068,50 +1244,59 @@ class event_detection_test_case(_ut.TestCase):
         new_rc = getrefcount(ta)
         self.assertEqual(new_rc, rc + 3)
 
-        self.assertEqual(id(ta.nt_events[0].callback), id(
-            ta.nt_events[0].callback))
-        self.assertEqual(id(ta.nt_events[0].callback.lst), id(
-            ta.nt_events[0].callback.lst))
-        self.assertEqual(id(ta.nt_events[1].callback), id(
-            ta.nt_events[1].callback))
-        self.assertEqual(id(ta.nt_events[1].callback.lst), id(
-            ta.nt_events[1].callback.lst))
-        self.assertEqual(id(ta.nt_events[2].callback), id(
-            ta.nt_events[2].callback))
-        self.assertEqual(id(ta.nt_events[2].callback.lst), id(
-            ta.nt_events[2].callback.lst))
+        self.assertEqual(id(ta.nt_events[0].callback), id(ta.nt_events[0].callback))
+        self.assertEqual(
+            id(ta.nt_events[0].callback.lst), id(ta.nt_events[0].callback.lst)
+        )
+        self.assertEqual(id(ta.nt_events[1].callback), id(ta.nt_events[1].callback))
+        self.assertEqual(
+            id(ta.nt_events[1].callback.lst), id(ta.nt_events[1].callback.lst)
+        )
+        self.assertEqual(id(ta.nt_events[2].callback), id(ta.nt_events[2].callback))
+        self.assertEqual(
+            id(ta.nt_events[2].callback.lst), id(ta.nt_events[2].callback.lst)
+        )
 
         # Ensure a deep copy of the integrator performs
         # a deep copy of the events.
         ta_copy = deepcopy(ta)
 
-        self.assertNotEqual(id(ta_copy.nt_events[0].callback), id(
-            ta.nt_events[0].callback))
-        self.assertNotEqual(id(ta_copy.nt_events[0].callback.lst), id(
-            ta.nt_events[0].callback.lst))
-        self.assertNotEqual(id(ta_copy.nt_events[1].callback), id(
-            ta.nt_events[1].callback))
-        self.assertNotEqual(id(ta_copy.nt_events[1].callback.lst), id(
-            ta.nt_events[1].callback.lst))
-        self.assertNotEqual(id(ta_copy.nt_events[2].callback), id(
-            ta.nt_events[2].callback))
-        self.assertNotEqual(id(ta_copy.nt_events[2].callback.lst), id(
-            ta.nt_events[2].callback.lst))
+        self.assertNotEqual(
+            id(ta_copy.nt_events[0].callback), id(ta.nt_events[0].callback)
+        )
+        self.assertNotEqual(
+            id(ta_copy.nt_events[0].callback.lst), id(ta.nt_events[0].callback.lst)
+        )
+        self.assertNotEqual(
+            id(ta_copy.nt_events[1].callback), id(ta.nt_events[1].callback)
+        )
+        self.assertNotEqual(
+            id(ta_copy.nt_events[1].callback.lst), id(ta.nt_events[1].callback.lst)
+        )
+        self.assertNotEqual(
+            id(ta_copy.nt_events[2].callback), id(ta.nt_events[2].callback)
+        )
+        self.assertNotEqual(
+            id(ta_copy.nt_events[2].callback.lst), id(ta.nt_events[2].callback.lst)
+        )
 
         # Callback with wrong signature.
         def cb2(ta, t):
             pass
 
-        ta = taylor_adaptive_batch(sys=sys, state=[[0., 0.001], [0.25, 0.2501]],
-                                   nt_events=[nt_event_batch(v*v-1e-10, cb2)])
+        ta = taylor_adaptive_batch(
+            sys=sys,
+            state=[[0.0, 0.001], [0.25, 0.2501]],
+            nt_events=[nt_event_batch(v * v - 1e-10, cb2)],
+        )
 
         with self.assertRaises(TypeError):
-            ta.propagate_until([4., 4.])
+            ta.propagate_until([4.0, 4.0])
 
         # Terminal events.
         counter_t = [0] * 2
         counter_nt = [0] * 2
-        cur_time = [0.] * 2
+        cur_time = [0.0] * 2
 
         def cb0(ta, t, d_sgn, bidx):
             nonlocal counter_nt
@@ -1138,8 +1323,12 @@ class event_detection_test_case(_ut.TestCase):
 
             return True
 
-        ta = taylor_adaptive_batch(sys=sys, state=[[0., 0.001], [0.25, 0.2501]],
-                                   nt_events=[nt_event_batch(v*v-1e-10, cb0)], t_events=[t_event_batch(v, callback=cb1)])
+        ta = taylor_adaptive_batch(
+            sys=sys,
+            state=[[0.0, 0.001], [0.25, 0.2501]],
+            nt_events=[nt_event_batch(v * v - 1e-10, cb0)],
+            t_events=[t_event_batch(v, callback=cb1)],
+        )
 
         ta_id = id(ta)
 
@@ -1180,10 +1369,15 @@ class event_detection_test_case(_ut.TestCase):
             def __call__(self, ta, mr, d_sgn, bidx):
                 pass
 
-        ta = taylor_adaptive_batch(sys=sys, state=[[0., 0.001], [0.25, 0.2501]],
-                                   t_events=[t_event_batch(v*v-1e-10, callback=cb0()),
-                                             t_event_batch(v, callback=cb1()),
-                                             t_event_batch(v, callback=cb1())])
+        ta = taylor_adaptive_batch(
+            sys=sys,
+            state=[[0.0, 0.001], [0.25, 0.2501]],
+            t_events=[
+                t_event_batch(v * v - 1e-10, callback=cb0()),
+                t_event_batch(v, callback=cb1()),
+                t_event_batch(v, callback=cb1()),
+            ],
+        )
 
         # Check that the refcount increases by 3
         # (the number of events).
@@ -1192,60 +1386,82 @@ class event_detection_test_case(_ut.TestCase):
         new_rc = getrefcount(ta)
         self.assertEqual(new_rc, rc + 3)
 
-        self.assertEqual(id(ta.t_events[0].callback), id(
-            ta.t_events[0].callback))
-        self.assertEqual(id(ta.t_events[0].callback.lst), id(
-            ta.t_events[0].callback.lst))
-        self.assertEqual(id(ta.t_events[1].callback), id(
-            ta.t_events[1].callback))
-        self.assertEqual(id(ta.t_events[1].callback.lst), id(
-            ta.t_events[1].callback.lst))
-        self.assertEqual(id(ta.t_events[2].callback), id(
-            ta.t_events[2].callback))
-        self.assertEqual(id(ta.t_events[2].callback.lst), id(
-            ta.t_events[2].callback.lst))
+        self.assertEqual(id(ta.t_events[0].callback), id(ta.t_events[0].callback))
+        self.assertEqual(
+            id(ta.t_events[0].callback.lst), id(ta.t_events[0].callback.lst)
+        )
+        self.assertEqual(id(ta.t_events[1].callback), id(ta.t_events[1].callback))
+        self.assertEqual(
+            id(ta.t_events[1].callback.lst), id(ta.t_events[1].callback.lst)
+        )
+        self.assertEqual(id(ta.t_events[2].callback), id(ta.t_events[2].callback))
+        self.assertEqual(
+            id(ta.t_events[2].callback.lst), id(ta.t_events[2].callback.lst)
+        )
 
         # Ensure a deep copy of the integrator performs
         # a deep copy of the events.
         ta_copy = deepcopy(ta)
 
-        self.assertNotEqual(id(ta_copy.t_events[0].callback), id(
-            ta.t_events[0].callback))
-        self.assertNotEqual(id(ta_copy.t_events[0].callback.lst), id(
-            ta.t_events[0].callback.lst))
-        self.assertNotEqual(id(ta_copy.t_events[1].callback), id(
-            ta.t_events[1].callback))
-        self.assertNotEqual(id(ta_copy.t_events[1].callback.lst), id(
-            ta.t_events[1].callback.lst))
-        self.assertNotEqual(id(ta_copy.t_events[2].callback), id(
-            ta.t_events[2].callback))
-        self.assertNotEqual(id(ta_copy.t_events[2].callback.lst), id(
-            ta.t_events[2].callback.lst))
+        self.assertNotEqual(
+            id(ta_copy.t_events[0].callback), id(ta.t_events[0].callback)
+        )
+        self.assertNotEqual(
+            id(ta_copy.t_events[0].callback.lst), id(ta.t_events[0].callback.lst)
+        )
+        self.assertNotEqual(
+            id(ta_copy.t_events[1].callback), id(ta.t_events[1].callback)
+        )
+        self.assertNotEqual(
+            id(ta_copy.t_events[1].callback.lst), id(ta.t_events[1].callback.lst)
+        )
+        self.assertNotEqual(
+            id(ta_copy.t_events[2].callback), id(ta.t_events[2].callback)
+        )
+        self.assertNotEqual(
+            id(ta_copy.t_events[2].callback.lst), id(ta.t_events[2].callback.lst)
+        )
 
         # Callback with wrong signature.
         def cb2(ta, t):
             pass
 
-        ta = taylor_adaptive_batch(sys=sys, state=[[0., 0.001], [0.25, 0.2501]],
-                                   t_events=[t_event_batch(v*v-1e-10, callback=cb2)])
+        ta = taylor_adaptive_batch(
+            sys=sys,
+            state=[[0.0, 0.001], [0.25, 0.2501]],
+            t_events=[t_event_batch(v * v - 1e-10, callback=cb2)],
+        )
 
         with self.assertRaises(TypeError):
-            ta.propagate_until([4., 4.])
+            ta.propagate_until([4.0, 4.0])
 
         # Callback with wrong retval.
         def cb3(ta, mr, d_sgn, bidx):
             return "hello"
 
-        ta = taylor_adaptive_batch(sys=sys, state=[[0., 0.001], [0.25, 0.2501]],
-                                   t_events=[t_event_batch(v*v-1e-10, callback=cb3)])
+        ta = taylor_adaptive_batch(
+            sys=sys,
+            state=[[0.0, 0.001], [0.25, 0.2501]],
+            t_events=[t_event_batch(v * v - 1e-10, callback=cb3)],
+        )
 
         with self.assertRaises(TypeError) as cm:
-            ta.propagate_until([4., 4.])
+            ta.propagate_until([4.0, 4.0])
         self.assertTrue(
-            "in the construction of the return value of an event callback" in str(cm.exception))
+            "in the construction of the return value of an event callback"
+            in str(cm.exception)
+        )
 
     def test_scalar(self):
-        from . import t_event, nt_event, make_vars, event_direction, sin, taylor_adaptive, taylor_outcome, core
+        from . import (
+            t_event,
+            nt_event,
+            make_vars,
+            sin,
+            taylor_adaptive,
+            taylor_outcome,
+            core,
+        )
         from .core import _ppc_arch
         from sys import getrefcount
         import numpy as np
@@ -1254,17 +1470,17 @@ class event_detection_test_case(_ut.TestCase):
         x, v = make_vars("x", "v")
 
         if _ppc_arch:
-            fp_types = [("double", float)]
+            fp_types = [float]
         else:
-            fp_types = [("double", float), ("long double", np.longdouble)]
+            fp_types = [float, np.longdouble]
 
         if hasattr(core, "real128"):
-            fp_types.append(("real128", core.real128))
+            fp_types.append(core.real128)
 
         # Use a pendulum for testing purposes.
         sys = [(x, v), (v, -9.8 * sin(x))]
 
-        for desc, fp_t in fp_types:
+        for fp_t in fp_types:
             # Non-terminal events.
             counter = 0
             cur_time = fp_t(0)
@@ -1298,14 +1514,19 @@ class event_detection_test_case(_ut.TestCase):
                 counter = counter + 1
                 cur_time = t
 
-            ta = taylor_adaptive(sys=sys, state=[fp_t(0), fp_t(0.25)], fp_type=desc,
-                                 nt_events=[nt_event(v*v-1e-10, cb0, fp_type=desc),
-                                            nt_event(v, cb1, fp_type=desc)])
+            ta = taylor_adaptive(
+                sys=sys,
+                state=[fp_t(0), fp_t(0.25)],
+                fp_type=fp_t,
+                nt_events=[
+                    nt_event(v * v - 1e-10, cb0, fp_type=fp_t),
+                    nt_event(v, cb1, fp_type=fp_t),
+                ],
+            )
 
             ta_id = id(ta)
 
-            self.assertEqual(ta.propagate_until(fp_t(4))[
-                             0], taylor_outcome.time_limit)
+            self.assertEqual(ta.propagate_until(fp_t(4))[0], taylor_outcome.time_limit)
 
             self.assertEqual(counter, 12)
 
@@ -1326,10 +1547,16 @@ class event_detection_test_case(_ut.TestCase):
                 def __call__(self, ta, t, d_sgn):
                     pass
 
-            ta = taylor_adaptive(sys=sys, state=[fp_t(0), fp_t(0.25)], fp_type=desc,
-                                 nt_events=[nt_event(v*v-1e-10, cb0(), fp_type=desc),
-                                            nt_event(v, cb1(), fp_type=desc),
-                                            nt_event(v, cb1(), fp_type=desc)])
+            ta = taylor_adaptive(
+                sys=sys,
+                state=[fp_t(0), fp_t(0.25)],
+                fp_type=fp_t,
+                nt_events=[
+                    nt_event(v * v - 1e-10, cb0(), fp_type=fp_t),
+                    nt_event(v, cb1(), fp_type=fp_t),
+                    nt_event(v, cb1(), fp_type=fp_t),
+                ],
+            )
 
             # Check that the refcount increases by 3
             # (the number of events).
@@ -1338,42 +1565,52 @@ class event_detection_test_case(_ut.TestCase):
             new_rc = getrefcount(ta)
             self.assertEqual(new_rc, rc + 3)
 
-            self.assertEqual(id(ta.nt_events[0].callback), id(
-                ta.nt_events[0].callback))
-            self.assertEqual(id(ta.nt_events[0].callback.lst), id(
-                ta.nt_events[0].callback.lst))
-            self.assertEqual(id(ta.nt_events[1].callback), id(
-                ta.nt_events[1].callback))
-            self.assertEqual(id(ta.nt_events[1].callback.lst), id(
-                ta.nt_events[1].callback.lst))
-            self.assertEqual(id(ta.nt_events[2].callback), id(
-                ta.nt_events[2].callback))
-            self.assertEqual(id(ta.nt_events[2].callback.lst), id(
-                ta.nt_events[2].callback.lst))
+            self.assertEqual(id(ta.nt_events[0].callback), id(ta.nt_events[0].callback))
+            self.assertEqual(
+                id(ta.nt_events[0].callback.lst), id(ta.nt_events[0].callback.lst)
+            )
+            self.assertEqual(id(ta.nt_events[1].callback), id(ta.nt_events[1].callback))
+            self.assertEqual(
+                id(ta.nt_events[1].callback.lst), id(ta.nt_events[1].callback.lst)
+            )
+            self.assertEqual(id(ta.nt_events[2].callback), id(ta.nt_events[2].callback))
+            self.assertEqual(
+                id(ta.nt_events[2].callback.lst), id(ta.nt_events[2].callback.lst)
+            )
 
             # Ensure a deep copy of the integrator performs
             # a deep copy of the events.
             ta_copy = deepcopy(ta)
 
-            self.assertNotEqual(id(ta_copy.nt_events[0].callback), id(
-                ta.nt_events[0].callback))
-            self.assertNotEqual(id(ta_copy.nt_events[0].callback.lst), id(
-                ta.nt_events[0].callback.lst))
-            self.assertNotEqual(id(ta_copy.nt_events[1].callback), id(
-                ta.nt_events[1].callback))
-            self.assertNotEqual(id(ta_copy.nt_events[1].callback.lst), id(
-                ta.nt_events[1].callback.lst))
-            self.assertNotEqual(id(ta_copy.nt_events[2].callback), id(
-                ta.nt_events[2].callback))
-            self.assertNotEqual(id(ta_copy.nt_events[2].callback.lst), id(
-                ta.nt_events[2].callback.lst))
+            self.assertNotEqual(
+                id(ta_copy.nt_events[0].callback), id(ta.nt_events[0].callback)
+            )
+            self.assertNotEqual(
+                id(ta_copy.nt_events[0].callback.lst), id(ta.nt_events[0].callback.lst)
+            )
+            self.assertNotEqual(
+                id(ta_copy.nt_events[1].callback), id(ta.nt_events[1].callback)
+            )
+            self.assertNotEqual(
+                id(ta_copy.nt_events[1].callback.lst), id(ta.nt_events[1].callback.lst)
+            )
+            self.assertNotEqual(
+                id(ta_copy.nt_events[2].callback), id(ta.nt_events[2].callback)
+            )
+            self.assertNotEqual(
+                id(ta_copy.nt_events[2].callback.lst), id(ta.nt_events[2].callback.lst)
+            )
 
             # Callback with wrong signature.
             def cb2(ta, t):
                 pass
 
-            ta = taylor_adaptive(sys=sys, state=[fp_t(0), fp_t(0.25)], fp_type=desc,
-                                 nt_events=[nt_event(v*v-1e-10, cb2, fp_type=desc)])
+            ta = taylor_adaptive(
+                sys=sys,
+                state=[fp_t(0), fp_t(0.25)],
+                fp_type=fp_t,
+                nt_events=[nt_event(v * v - 1e-10, cb2, fp_type=fp_t)],
+            )
 
             with self.assertRaises(TypeError):
                 ta.propagate_until(fp_t(4))
@@ -1408,10 +1645,13 @@ class event_detection_test_case(_ut.TestCase):
 
                 return True
 
-            ta = taylor_adaptive(sys=sys, state=[fp_t(0), fp_t(0.25)], fp_type=desc,
-                                 nt_events=[
-                                     nt_event(v*v-1e-10, cb0, fp_type=desc)],
-                                 t_events=[t_event(v, callback=cb1, fp_type=desc)])
+            ta = taylor_adaptive(
+                sys=sys,
+                state=[fp_t(0), fp_t(0.25)],
+                fp_type=fp_t,
+                nt_events=[nt_event(v * v - 1e-10, cb0, fp_type=fp_t)],
+                t_events=[t_event(v, callback=cb1, fp_type=fp_t)],
+            )
 
             ta_id = id(ta)
 
@@ -1454,11 +1694,16 @@ class event_detection_test_case(_ut.TestCase):
                 def __call__(self, ta, mr, d_sgn):
                     pass
 
-            ta = taylor_adaptive(sys=sys, state=[fp_t(0), fp_t(0.25)], fp_type=desc,
-                                 t_events=[t_event(v*v-1e-10, callback=cb0(), fp_type=desc),
-                                           t_event(v, callback=cb1(),
-                                                   fp_type=desc),
-                                           t_event(v, callback=cb1(), fp_type=desc)])
+            ta = taylor_adaptive(
+                sys=sys,
+                state=[fp_t(0), fp_t(0.25)],
+                fp_type=fp_t,
+                t_events=[
+                    t_event(v * v - 1e-10, callback=cb0(), fp_type=fp_t),
+                    t_event(v, callback=cb1(), fp_type=fp_t),
+                    t_event(v, callback=cb1(), fp_type=fp_t),
+                ],
+            )
 
             # Check that the refcount increases by 3
             # (the number of events).
@@ -1467,42 +1712,52 @@ class event_detection_test_case(_ut.TestCase):
             new_rc = getrefcount(ta)
             self.assertEqual(new_rc, rc + 3)
 
-            self.assertEqual(id(ta.t_events[0].callback), id(
-                ta.t_events[0].callback))
-            self.assertEqual(id(ta.t_events[0].callback.lst), id(
-                ta.t_events[0].callback.lst))
-            self.assertEqual(id(ta.t_events[1].callback), id(
-                ta.t_events[1].callback))
-            self.assertEqual(id(ta.t_events[1].callback.lst), id(
-                ta.t_events[1].callback.lst))
-            self.assertEqual(id(ta.t_events[2].callback), id(
-                ta.t_events[2].callback))
-            self.assertEqual(id(ta.t_events[2].callback.lst), id(
-                ta.t_events[2].callback.lst))
+            self.assertEqual(id(ta.t_events[0].callback), id(ta.t_events[0].callback))
+            self.assertEqual(
+                id(ta.t_events[0].callback.lst), id(ta.t_events[0].callback.lst)
+            )
+            self.assertEqual(id(ta.t_events[1].callback), id(ta.t_events[1].callback))
+            self.assertEqual(
+                id(ta.t_events[1].callback.lst), id(ta.t_events[1].callback.lst)
+            )
+            self.assertEqual(id(ta.t_events[2].callback), id(ta.t_events[2].callback))
+            self.assertEqual(
+                id(ta.t_events[2].callback.lst), id(ta.t_events[2].callback.lst)
+            )
 
             # Ensure a deep copy of the integrator performs
             # a deep copy of the events.
             ta_copy = deepcopy(ta)
 
-            self.assertNotEqual(id(ta_copy.t_events[0].callback), id(
-                ta.t_events[0].callback))
-            self.assertNotEqual(id(ta_copy.t_events[0].callback.lst), id(
-                ta.t_events[0].callback.lst))
-            self.assertNotEqual(id(ta_copy.t_events[1].callback), id(
-                ta.t_events[1].callback))
-            self.assertNotEqual(id(ta_copy.t_events[1].callback.lst), id(
-                ta.t_events[1].callback.lst))
-            self.assertNotEqual(id(ta_copy.t_events[2].callback), id(
-                ta.t_events[2].callback))
-            self.assertNotEqual(id(ta_copy.t_events[2].callback.lst), id(
-                ta.t_events[2].callback.lst))
+            self.assertNotEqual(
+                id(ta_copy.t_events[0].callback), id(ta.t_events[0].callback)
+            )
+            self.assertNotEqual(
+                id(ta_copy.t_events[0].callback.lst), id(ta.t_events[0].callback.lst)
+            )
+            self.assertNotEqual(
+                id(ta_copy.t_events[1].callback), id(ta.t_events[1].callback)
+            )
+            self.assertNotEqual(
+                id(ta_copy.t_events[1].callback.lst), id(ta.t_events[1].callback.lst)
+            )
+            self.assertNotEqual(
+                id(ta_copy.t_events[2].callback), id(ta.t_events[2].callback)
+            )
+            self.assertNotEqual(
+                id(ta_copy.t_events[2].callback.lst), id(ta.t_events[2].callback.lst)
+            )
 
             # Callback with wrong signature.
             def cb2(ta, t):
                 pass
 
-            ta = taylor_adaptive(sys=sys, state=[fp_t(0), fp_t(0.25)], fp_type=desc,
-                                 t_events=[t_event(v*v-1e-10, callback=cb2, fp_type=desc)])
+            ta = taylor_adaptive(
+                sys=sys,
+                state=[fp_t(0), fp_t(0.25)],
+                fp_type=fp_t,
+                t_events=[t_event(v * v - 1e-10, callback=cb2, fp_type=fp_t)],
+            )
 
             with self.assertRaises(TypeError):
                 ta.propagate_until(fp_t(4))
@@ -1511,39 +1766,46 @@ class event_detection_test_case(_ut.TestCase):
             def cb3(ta, mr, d_sgn):
                 return "hello"
 
-            ta = taylor_adaptive(sys=sys, state=[fp_t(0), fp_t(0.25)], fp_type=desc,
-                                 t_events=[t_event(v*v-1e-10, callback=cb3, fp_type=desc)])
+            ta = taylor_adaptive(
+                sys=sys,
+                state=[fp_t(0), fp_t(0.25)],
+                fp_type=fp_t,
+                t_events=[t_event(v * v - 1e-10, callback=cb3, fp_type=fp_t)],
+            )
 
             with self.assertRaises(TypeError) as cm:
                 ta.propagate_until(fp_t(4))
             self.assertTrue(
-                "in the construction of the return value of an event callback" in str(cm.exception))
+                "in the construction of the return value of an event callback"
+                in str(cm.exception)
+            )
 
 
 class expression_eval_test_case(_ut.TestCase):
     def runTest(self):
-        from . import sin, make_vars, eval, core
+        from . import make_vars, eval, core
         from .core import _ppc_arch
         import numpy as np
         from math import log10
 
-        x, = make_vars("x")
+        (x,) = make_vars("x")
 
         if _ppc_arch:
-            fp_types = [
-                ("double", float, int(-log10(np.finfo(float).eps)) - 1)]
+            fp_types = [(float, int(-log10(np.finfo(float).eps)) - 1)]
         else:
-            fp_types = [("double", float, int(-log10(np.finfo(float).eps)) - 1),
-                        ("long double", np.longdouble, int(-log10(np.finfo(np.longdouble).eps)) - 1)]
+            fp_types = [
+                (float, int(-log10(np.finfo(float).eps)) - 1),
+                (np.longdouble, int(-log10(np.finfo(np.longdouble).eps)) - 1),
+            ]
 
         if hasattr(core, "real128"):
-            fp_types.append(("real128", core.real128, 32))
+            fp_types.append((core.real128, 32))
 
-        for desc, fp_t, places in fp_types:
+        for fp_t, places in fp_types:
             target = fp_t("0.123456789012345678901234567890")
-            a = eval(x, {"x": target}, fp_type=desc)
+            a = eval(x, {"x": target}, fp_type=fp_t)
             self.assertEqual(a, target)
-            a = eval(x**3.1, {"x": target}, fp_type=desc)
+            a = eval(x**3.1, {"x": target}, fp_type=fp_t)
             self.assertAlmostEqual(a, target**3.1, places=places)
 
 
@@ -1554,6 +1816,40 @@ class scalar_integrator_test_case(_ut.TestCase):
         self.test_events()
         self.test_copy()
         self.test_dtime()
+        self.test_type_conversions()
+
+    def test_type_conversions(self):
+        # Test to check automatic conversions of std::vector<T>
+        # in the integrator's constructor.
+
+        from . import taylor_adaptive, make_vars, sin
+        import numpy as np
+
+        d_digs = np.finfo(np.double).nmant
+        ld_digs = np.finfo(np.longdouble).nmant
+
+        x, v = make_vars("x", "v")
+
+        sys = [(x, v), (v, -9.8 * sin(x))]
+
+        ta = taylor_adaptive(sys=sys, state=(0.0, 0.25), tol=1e-4)
+        self.assertTrue(np.all(ta.state == [0.0, 0.25]))
+        ta = taylor_adaptive(sys=sys, state=np.array([0.0, 0.25]), tol=1e-4)
+        self.assertTrue(np.all(ta.state == [0.0, 0.25]))
+
+        if d_digs == ld_digs:
+            return
+
+        # Check that conversion from other fp types is forbidden.
+        with self.assertRaises(TypeError) as cm:
+            ta = taylor_adaptive(
+                sys=sys, state=(np.longdouble(0.0), np.longdouble(0.25)), tol=1e-4
+            )
+
+        with self.assertRaises(TypeError) as cm:
+            ta = taylor_adaptive(
+                sys=sys, state=np.array([0.0, 0.25], dtype=np.longdouble), tol=1e-4
+            )
 
     def test_dtime(self):
         from . import taylor_adaptive, make_vars, sin
@@ -1562,18 +1858,18 @@ class scalar_integrator_test_case(_ut.TestCase):
 
         sys = [(x, v), (v, -9.8 * sin(x))]
 
-        ta = taylor_adaptive(sys=sys, state=[0., 0.25])
+        ta = taylor_adaptive(sys=sys, state=[0.0, 0.25])
 
-        self.assertEqual(ta.dtime, (0., 0.))
+        self.assertEqual(ta.dtime, (0.0, 0.0))
 
         ta.step()
         ta.propagate_for(1001.1)
 
         self.assertTrue(ta.dtime[1] != 0)
 
-        ta.dtime = (1, .5)
+        ta.dtime = (1, 0.5)
 
-        self.assertEqual(ta.dtime, (1.5, 0.))
+        self.assertEqual(ta.dtime, (1.5, 0.0))
 
     def test_copy(self):
         from . import taylor_adaptive, make_vars, t_event, sin
@@ -1584,8 +1880,7 @@ class scalar_integrator_test_case(_ut.TestCase):
 
         sys = [(x, v), (v, -9.8 * sin(x))]
 
-        ta = taylor_adaptive(sys=sys, state=[0., 0.25],
-                             t_events=[t_event(v)])
+        ta = taylor_adaptive(sys=sys, state=[0.0, 0.25], t_events=[t_event(v)])
 
         ta.step()
 
@@ -1611,15 +1906,15 @@ class scalar_integrator_test_case(_ut.TestCase):
 
         sys = [(x, v), (v, -9.8 * sin(x))]
 
-        ta = taylor_adaptive(sys=sys, state=[0., 0.25],
-                             t_events=[t_event(v)])
+        ta = taylor_adaptive(sys=sys, state=[0.0, 0.25], t_events=[t_event(v)])
 
         self.assertTrue(ta.with_events)
         self.assertFalse(ta.compact_mode)
         self.assertFalse(ta.high_accuracy)
 
-        ta = taylor_adaptive(sys=sys, state=[0., 0.25],
-                             compact_mode=True, high_accuracy=True)
+        ta = taylor_adaptive(
+            sys=sys, state=[0.0, 0.25], compact_mode=True, high_accuracy=True
+        )
 
         self.assertFalse(ta.with_events)
         self.assertTrue(ta.compact_mode)
@@ -1635,18 +1930,18 @@ class scalar_integrator_test_case(_ut.TestCase):
 
             return True
 
-        ta.propagate_until(10., callback=cb)
+        ta.propagate_until(10.0, callback=cb)
 
         self.assertTrue(ta.counter > 0)
         orig_ct = ta.counter
 
-        ta.propagate_for(10., callback=cb)
+        ta.propagate_for(10.0, callback=cb)
 
         self.assertTrue(ta.counter > orig_ct)
         orig_ct = ta.counter
 
-        ta.time = 0.
-        ta.propagate_grid([0., 1., 2.], callback=cb)
+        ta.time = 0.0
+        ta.propagate_grid([0.0, 1.0, 2.0], callback=cb)
 
         self.assertTrue(ta.counter > orig_ct)
 
@@ -1660,11 +1955,11 @@ class scalar_integrator_test_case(_ut.TestCase):
         cb_inst = cb()
         cb_inst.orig_id = id(cb_inst)
 
-        ta.time = 0.
-        ta.propagate_until(10., callback=cb_inst)
-        ta.propagate_for(10., callback=cb_inst)
-        ta.time = 0.
-        ta.propagate_grid([0., 1., 2.], callback=cb_inst)
+        ta.time = 0.0
+        ta.propagate_until(10.0, callback=cb_inst)
+        ta.propagate_for(10.0, callback=cb_inst)
+        ta.time = 0.0
+        ta.propagate_grid([0.0, 1.0, 2.0], callback=cb_inst)
 
     def test_events(self):
         from . import nt_event, t_event, make_vars, sin, taylor_adaptive
@@ -1677,9 +1972,12 @@ class scalar_integrator_test_case(_ut.TestCase):
         def cb0(ta, t, d_sgn):
             pass
 
-        ta = taylor_adaptive(sys=sys, state=[0., 0.25],
-                             nt_events=[nt_event(v*v-1e-10, cb0)],
-                             t_events=[t_event(v)])
+        ta = taylor_adaptive(
+            sys=sys,
+            state=[0.0, 0.25],
+            nt_events=[nt_event(v * v - 1e-10, cb0)],
+            t_events=[t_event(v)],
+        )
 
         self.assertTrue(ta.with_events)
         self.assertEqual(len(ta.t_events), 1)
@@ -1701,12 +1999,12 @@ class scalar_integrator_test_case(_ut.TestCase):
         x, v = make_vars("x", "v")
 
         if _ppc_arch:
-            fp_types = [("double", float)]
+            fp_types = [float]
         else:
-            fp_types = [("double", float), ("long double", np.longdouble)]
+            fp_types = [float, np.longdouble]
 
         if hasattr(core, "real128"):
-            fp_types.append(("real128", core.real128))
+            fp_types.append(core.real128)
 
         # Use a pendulum for testing purposes.
         sys = [(x, v), (v, -9.8 * sin(x))]
@@ -1714,9 +2012,13 @@ class scalar_integrator_test_case(_ut.TestCase):
         def cb0(ta, t, d_sgn):
             pass
 
-        for desc, fp_t in fp_types:
-            ta = taylor_adaptive(sys=sys, state=[fp_t(0), fp_t(0.25)], fp_type=desc,
-                                 nt_events=[nt_event(v*v-1e-10, cb0, fp_type=desc)])
+        for fp_t in fp_types:
+            ta = taylor_adaptive(
+                sys=sys,
+                state=[fp_t(0), fp_t(0.25)],
+                fp_type=fp_t,
+                nt_events=[nt_event(v * v - 1e-10, cb0, fp_type=fp_t)],
+            )
 
             ta.step()
             ta.step()
@@ -1751,8 +2053,12 @@ class scalar_integrator_test_case(_ut.TestCase):
                     self.n = self.n + 1
 
             clb = cb1()
-            ta = taylor_adaptive(sys=sys, state=[fp_t(0), fp_t(0.25)], fp_type=desc,
-                                 nt_events=[nt_event(v*v-1e-10, clb, fp_type=desc)])
+            ta = taylor_adaptive(
+                sys=sys,
+                state=[fp_t(0), fp_t(0.25)],
+                fp_type=fp_t,
+                nt_events=[nt_event(v * v - 1e-10, clb, fp_type=fp_t)],
+            )
 
             self.assertNotEqual(id(clb), id(ta.nt_events[0].callback))
 
@@ -1762,16 +2068,16 @@ class scalar_integrator_test_case(_ut.TestCase):
 
             ta2 = pickle.loads(pickle.dumps(ta))
 
-            self.assertEqual(
-                ta.nt_events[0].callback.n, ta2.nt_events[0].callback.n)
+            self.assertEqual(ta.nt_events[0].callback.n, ta2.nt_events[0].callback.n)
 
             # Test dynamic attributes.
             ta.foo = "hello world"
             ta = pickle.loads(pickle.dumps(ta))
             self.assertEqual(ta.foo, "hello world")
 
-            ta = taylor_adaptive(sys=sys, state=[fp_t(0), fp_t(0.25)], fp_type=desc,
-                                 tol=fp_t(1e-6))
+            ta = taylor_adaptive(
+                sys=sys, state=[fp_t(0), fp_t(0.25)], fp_type=fp_t, tol=fp_t(1e-6)
+            )
 
             self.assertEqual(ta.tol, fp_t(1e-6))
 
@@ -1780,8 +2086,9 @@ class scalar_integrator_test_case(_ut.TestCase):
             fp_t = np.longdouble
 
             with self.assertRaises(NotImplementedError):
-                taylor_adaptive(sys=sys, state=[fp_t(
-                    0), fp_t(0.25)], fp_type='long double')
+                taylor_adaptive(
+                    sys=sys, state=[fp_t(0), fp_t(0.25)], fp_type=np.longdouble
+                )
 
 
 class batch_integrator_test_case(_ut.TestCase):
@@ -1796,6 +2103,45 @@ class batch_integrator_test_case(_ut.TestCase):
         self.test_dtime()
         self.test_update_d_output()
         self.test_copy()
+        self.test_type_conversions()
+
+    def test_type_conversions(self):
+        # Test to check automatic conversions of std::vector<T>
+        # in the integrator's constructor.
+
+        from . import taylor_adaptive_batch, make_vars, sin
+        import numpy as np
+
+        d_digs = np.finfo(np.double).nmant
+        ld_digs = np.finfo(np.longdouble).nmant
+
+        x, v = make_vars("x", "v")
+
+        sys = [(x, v), (v, -9.8 * sin(x))]
+
+        ta = taylor_adaptive_batch(sys=sys, state=((0.0, 0.1), (0.25, 0.26)), tol=1e-4)
+        self.assertTrue(np.all(ta.state == ((0.0, 0.1), (0.25, 0.26))))
+
+        ta = taylor_adaptive_batch(
+            sys=sys, state=np.array([[0.0, 0.1], [0.25, 0.26]]), tol=1e-4
+        )
+        self.assertTrue(np.all(ta.state == ((0.0, 0.1), (0.25, 0.26))))
+
+        if d_digs == ld_digs:
+            return
+
+        ld = np.longdouble
+
+        # Check that conversion from other fp types is forbidden.
+        with self.assertRaises(TypeError) as cm:
+            ta = taylor_adaptive_batch(
+                sys=sys, state=((ld(0.0), ld(0.1)), (ld(0.25), ld(0.26))), tol=1e-4
+            )
+
+        with self.assertRaises(TypeError) as cm:
+            ta = taylor_adaptive_batch(
+                sys=sys, state=np.array([[0.0, 0.1], [0.25, 0.26]], dtype=ld), tol=1e-4
+            )
 
     def test_copy(self):
         from . import nt_event_batch, make_vars, sin, taylor_adaptive_batch
@@ -1810,8 +2156,11 @@ class batch_integrator_test_case(_ut.TestCase):
         def cb0(ta, t, d_sgn, bidx):
             pass
 
-        ta = taylor_adaptive_batch(sys=sys, state=[[0, .01], [0.25, 0.26]],
-                                   nt_events=[nt_event_batch(v*v-1e-10, cb0)])
+        ta = taylor_adaptive_batch(
+            sys=sys,
+            state=[[0, 0.01], [0.25, 0.26]],
+            nt_events=[nt_event_batch(v * v - 1e-10, cb0)],
+        )
 
         ta.step()
         ta.step()
@@ -1838,7 +2187,7 @@ class batch_integrator_test_case(_ut.TestCase):
         from copy import deepcopy
         import numpy as np
 
-        ic = [[0., 0.1, 0.2, 0.3], [0.25, 0.26, 0.27, 0.28]]
+        ic = [[0.0, 0.1, 0.2, 0.3], [0.25, 0.26, 0.27, 0.28]]
 
         x, v = make_vars("x", "v")
 
@@ -1847,28 +2196,28 @@ class batch_integrator_test_case(_ut.TestCase):
         ta = taylor_adaptive_batch(sys=sys, state=ic)
 
         # Compare vector/scalar delta_t and max_delta_t.
-        ta.propagate_for([10.] * 4)
+        ta.propagate_for([10.0] * 4)
         st = deepcopy(ta.state)
         res = deepcopy(ta.propagate_res)
 
-        ta.set_time(0.)
+        ta.set_time(0.0)
         ta.state[:] = ic
 
-        ta.propagate_for(10.)
+        ta.propagate_for(10.0)
         self.assertTrue(np.all(ta.state == st))
         self.assertEqual(res, ta.propagate_res)
 
-        ta.set_time(0.)
+        ta.set_time(0.0)
         ta.state[:] = ic
 
-        ta.propagate_for([10.] * 4, max_delta_t=[1e-4] * 4)
+        ta.propagate_for([10.0] * 4, max_delta_t=[1e-4] * 4)
         st = deepcopy(ta.state)
         res = deepcopy(ta.propagate_res)
 
-        ta.set_time(0.)
+        ta.set_time(0.0)
         ta.state[:] = ic
 
-        ta.propagate_for(10., max_delta_t=1e-4)
+        ta.propagate_for(10.0, max_delta_t=1e-4)
         self.assertTrue(np.all(ta.state == st))
         self.assertEqual(res, ta.propagate_res)
 
@@ -1882,7 +2231,7 @@ class batch_integrator_test_case(_ut.TestCase):
 
             return True
 
-        ta.propagate_for(10., callback=cb)
+        ta.propagate_for(10.0, callback=cb)
 
         self.assertTrue(ta.counter > 0)
 
@@ -1896,14 +2245,14 @@ class batch_integrator_test_case(_ut.TestCase):
         cb_inst = cb()
         cb_inst.orig_id = id(cb_inst)
 
-        ta.propagate_for(10., callback=cb_inst)
+        ta.propagate_for(10.0, callback=cb_inst)
 
     def test_propagate_until(self):
         from . import taylor_adaptive_batch, make_vars, sin
         from copy import deepcopy
         import numpy as np
 
-        ic = [[0., 0.1, 0.2, 0.3], [0.25, 0.26, 0.27, 0.28]]
+        ic = [[0.0, 0.1, 0.2, 0.3], [0.25, 0.26, 0.27, 0.28]]
 
         x, v = make_vars("x", "v")
 
@@ -1912,28 +2261,28 @@ class batch_integrator_test_case(_ut.TestCase):
         ta = taylor_adaptive_batch(sys=sys, state=ic)
 
         # Compare vector/scalar delta_t and max_delta_t.
-        ta.propagate_until([10.] * 4)
+        ta.propagate_until([10.0] * 4)
         st = deepcopy(ta.state)
         res = deepcopy(ta.propagate_res)
 
-        ta.set_time(0.)
+        ta.set_time(0.0)
         ta.state[:] = ic
 
-        ta.propagate_until(10.)
+        ta.propagate_until(10.0)
         self.assertTrue(np.all(ta.state == st))
         self.assertEqual(res, ta.propagate_res)
 
-        ta.set_time(0.)
+        ta.set_time(0.0)
         ta.state[:] = ic
 
-        ta.propagate_until([10.] * 4, max_delta_t=[1e-4] * 4)
+        ta.propagate_until([10.0] * 4, max_delta_t=[1e-4] * 4)
         st = deepcopy(ta.state)
         res = deepcopy(ta.propagate_res)
 
-        ta.set_time(0.)
+        ta.set_time(0.0)
         ta.state[:] = ic
 
-        ta.propagate_until(10., max_delta_t=1e-4)
+        ta.propagate_until(10.0, max_delta_t=1e-4)
         self.assertTrue(np.all(ta.state == st))
         self.assertEqual(res, ta.propagate_res)
 
@@ -1947,7 +2296,7 @@ class batch_integrator_test_case(_ut.TestCase):
 
             return True
 
-        ta.propagate_until(20., callback=cb)
+        ta.propagate_until(20.0, callback=cb)
 
         self.assertTrue(ta.counter > 0)
 
@@ -1961,7 +2310,7 @@ class batch_integrator_test_case(_ut.TestCase):
         cb_inst = cb()
         cb_inst.orig_id = id(cb_inst)
 
-        ta.propagate_until(30., callback=cb_inst)
+        ta.propagate_until(30.0, callback=cb_inst)
 
     def test_update_d_output(self):
         from . import taylor_adaptive_batch, make_vars, sin
@@ -1974,13 +2323,14 @@ class batch_integrator_test_case(_ut.TestCase):
         sys = [(x, v), (v, -9.8 * sin(x))]
 
         ta = taylor_adaptive_batch(
-            sys=sys, state=[[0., 0.1, 0.2, 0.3], [0.25, 0.26, 0.27, 0.28]])
+            sys=sys, state=[[0.0, 0.1, 0.2, 0.3], [0.25, 0.26, 0.27, 0.28]]
+        )
 
         ta.step(write_tc=True)
 
         # Scalar overload.
         with self.assertRaises(ValueError) as cm:
-            ta.update_d_output(0.3)[0] = .5
+            ta.update_d_output(0.3)[0] = 0.5
 
         d_out = ta.update_d_output(0.3)
         self.assertEqual(d_out.shape, (2, 4))
@@ -1991,7 +2341,7 @@ class batch_integrator_test_case(_ut.TestCase):
 
         # Vector overload.
         with self.assertRaises(ValueError) as cm:
-            ta.update_d_output([0.3, 0.4, 0.45, 0.46])[0] = .5
+            ta.update_d_output([0.3, 0.4, 0.45, 0.46])[0] = 0.5
 
         d_out2 = ta.update_d_output([0.3, 0.4, 0.45, 0.46])
         self.assertEqual(d_out2.shape, (2, 4))
@@ -2000,19 +2350,31 @@ class batch_integrator_test_case(_ut.TestCase):
         new_rc = getrefcount(ta)
         self.assertEqual(new_rc, rc + 1)
 
-        cp = deepcopy(ta.update_d_output(.3))
-        self.assertTrue(np.all(cp == ta.update_d_output([.3]*4)))
+        cp = deepcopy(ta.update_d_output(0.3))
+        self.assertTrue(np.all(cp == ta.update_d_output([0.3] * 4)))
 
         # Functional testing.
-        ta.set_time(0)
-        ta.state[:] = [[0., 0.01, 0.02, 0.03], [0.205, 0.206, 0.207, 0.208]]
+        ta.set_time(0.0)
+        ta.state[:] = [[0.0, 0.01, 0.02, 0.03], [0.205, 0.206, 0.207, 0.208]]
         ta.step(write_tc=True)
         ta.update_d_output(ta.time)
-        self.assertTrue(np.allclose(
-            ta.d_output, ta.state, rtol=np.finfo(float).eps * 10, atol=np.finfo(float).eps * 10))
-        ta.update_d_output(0., rel_time=True)
-        self.assertTrue(np.allclose(
-            ta.d_output, ta.state, rtol=np.finfo(float).eps * 10, atol=np.finfo(float).eps * 10))
+        self.assertTrue(
+            np.allclose(
+                ta.d_output,
+                ta.state,
+                rtol=np.finfo(float).eps * 10,
+                atol=np.finfo(float).eps * 10,
+            )
+        )
+        ta.update_d_output(0.0, rel_time=True)
+        self.assertTrue(
+            np.allclose(
+                ta.d_output,
+                ta.state,
+                rtol=np.finfo(float).eps * 10,
+                atol=np.finfo(float).eps * 10,
+            )
+        )
 
     def test_set_time(self):
         from . import taylor_adaptive_batch, make_vars, sin
@@ -2022,14 +2384,14 @@ class batch_integrator_test_case(_ut.TestCase):
 
         sys = [(x, v), (v, -9.8 * sin(x))]
 
-        ta = taylor_adaptive_batch(sys=sys, state=[[0., 0.1], [0.25, 0.26]])
+        ta = taylor_adaptive_batch(sys=sys, state=[[0.0, 0.1], [0.25, 0.26]])
 
         self.assertTrue(np.all(ta.time == [0, 0]))
 
-        ta.set_time([-1, 1])
+        ta.set_time([-1.0, 1.0])
         self.assertTrue(np.all(ta.time == [-1, 1]))
 
-        ta.set_time(5.)
+        ta.set_time(5.0)
         self.assertTrue(np.all(ta.time == [5, 5]))
 
     def test_dtime(self):
@@ -2040,38 +2402,40 @@ class batch_integrator_test_case(_ut.TestCase):
 
         sys = [(x, v), (v, -9.8 * sin(x))]
 
-        ta = taylor_adaptive_batch(sys=sys, state=[[0., 0.1], [0.25, 0.26]])
+        ta = taylor_adaptive_batch(sys=sys, state=[[0.0, 0.1], [0.25, 0.26]])
 
         self.assertTrue(np.all(ta.dtime[0] == [0, 0]))
         self.assertTrue(np.all(ta.dtime[1] == [0, 0]))
 
         # Check not writeable,
         with self.assertRaises(ValueError) as cm:
-            ta.dtime[0][0] = .5
+            ta.dtime[0][0] = 0.5
 
         with self.assertRaises(ValueError) as cm:
-            ta.dtime[1][0] = .5
+            ta.dtime[1][0] = 0.5
 
         ta.step()
         ta.propagate_for(1000.1)
 
         self.assertFalse(np.all(ta.dtime[1] == [0, 0]))
 
-        ta.set_dtime(1., .5)
+        ta.set_dtime(1.0, 0.5)
 
         self.assertTrue(np.all(ta.dtime[0] == [1.5, 1.5]))
         self.assertTrue(np.all(ta.dtime[1] == [0, 0]))
 
-        ta.set_dtime([1., 2.], [.5, 0.25])
+        ta.set_dtime([1.0, 2.0], [0.5, 0.25])
 
         self.assertTrue(np.all(ta.dtime[0] == [1.5, 2.25]))
         self.assertTrue(np.all(ta.dtime[1] == [0, 0]))
 
         # Failure modes.
         with self.assertRaises(TypeError) as cm:
-            ta.set_dtime([1., 2.], .5)
+            ta.set_dtime([1.0, 2.0], 0.5)
         self.assertTrue(
-            "The two arguments to the set_dtime() method must be of the same type" in str(cm.exception))
+            "The two arguments to the set_dtime() method must be of the same type"
+            in str(cm.exception)
+        )
 
     def test_basic(self):
         from . import taylor_adaptive_batch, make_vars, t_event_batch, sin
@@ -2080,22 +2444,33 @@ class batch_integrator_test_case(_ut.TestCase):
 
         sys = [(x, v), (v, -9.8 * sin(x))]
 
-        ta = taylor_adaptive_batch(sys=sys, state=[[0., 0.1], [0.25, 0.26]],
-                                   t_events=[t_event_batch(v)])
+        ta = taylor_adaptive_batch(
+            sys=sys, state=[[0.0, 0.1], [0.25, 0.26]], t_events=[t_event_batch(v)]
+        )
 
         self.assertTrue(ta.with_events)
         self.assertFalse(ta.compact_mode)
         self.assertFalse(ta.high_accuracy)
 
-        ta = taylor_adaptive_batch(sys=sys, state=[[0., 0.1], [0.25, 0.26]],
-                                   compact_mode=True, high_accuracy=True)
+        ta = taylor_adaptive_batch(
+            sys=sys,
+            state=[[0.0, 0.1], [0.25, 0.26]],
+            compact_mode=True,
+            high_accuracy=True,
+        )
 
         self.assertFalse(ta.with_events)
         self.assertTrue(ta.compact_mode)
         self.assertTrue(ta.high_accuracy)
 
     def test_events(self):
-        from . import nt_event_batch, t_event_batch, make_vars, sin, taylor_adaptive_batch
+        from . import (
+            nt_event_batch,
+            t_event_batch,
+            make_vars,
+            sin,
+            taylor_adaptive_batch,
+        )
 
         x, v = make_vars("x", "v")
 
@@ -2105,9 +2480,12 @@ class batch_integrator_test_case(_ut.TestCase):
         def cb0(ta, t, d_sgn, bidx):
             pass
 
-        ta = taylor_adaptive_batch(sys=sys, state=[[0., 0.001], [0.25, 0.2501]],
-                                   nt_events=[nt_event_batch(v*v-1e-10, cb0)],
-                                   t_events=[t_event_batch(v)])
+        ta = taylor_adaptive_batch(
+            sys=sys,
+            state=[[0.0, 0.001], [0.25, 0.2501]],
+            nt_events=[nt_event_batch(v * v - 1e-10, cb0)],
+            t_events=[t_event_batch(v)],
+        )
 
         self.assertTrue(ta.with_events)
         self.assertEqual(len(ta.t_events), 1)
@@ -2128,7 +2506,13 @@ class batch_integrator_test_case(_ut.TestCase):
         self.assertTrue(ta.te_cooldowns[1][0] is None)
 
     def test_s11n(self):
-        from . import nt_event_batch, t_event_batch, make_vars, sin, taylor_adaptive_batch
+        from . import (
+            nt_event_batch,
+            t_event_batch,
+            make_vars,
+            sin,
+            taylor_adaptive_batch,
+        )
         import numpy as np
         import pickle
 
@@ -2140,8 +2524,11 @@ class batch_integrator_test_case(_ut.TestCase):
         def cb0(ta, t, d_sgn, bidx):
             pass
 
-        ta = taylor_adaptive_batch(sys=sys, state=[[0, .01], [0.25, 0.26]],
-                                   nt_events=[nt_event_batch(v*v-1e-10, cb0)])
+        ta = taylor_adaptive_batch(
+            sys=sys,
+            state=[[0, 0.01], [0.25, 0.26]],
+            nt_events=[nt_event_batch(v * v - 1e-10, cb0)],
+        )
 
         ta.step()
         ta.step()
@@ -2162,8 +2549,7 @@ class batch_integrator_test_case(_ut.TestCase):
         self.assertTrue(np.all(ta.state == ta2.state))
         self.assertTrue(np.all(ta.time == ta2.time))
 
-        ta = taylor_adaptive_batch(
-            sys=sys, state=[[0, .01], [0.25, 0.26]], tol=1e-6)
+        ta = taylor_adaptive_batch(sys=sys, state=[[0, 0.01], [0.25, 0.26]], tol=1e-6)
 
         self.assertEqual(ta.tol, 1e-6)
 
@@ -2183,19 +2569,21 @@ class batch_integrator_test_case(_ut.TestCase):
                 return True
 
         clb = cb1()
-        ta = taylor_adaptive_batch(sys=sys, state=[[0, .01], [0.25, 0.26]],
-                                   t_events=[t_event_batch(v, callback=clb)])
+        ta = taylor_adaptive_batch(
+            sys=sys,
+            state=[[0, 0.01], [0.25, 0.26]],
+            t_events=[t_event_batch(v, callback=clb)],
+        )
 
         self.assertNotEqual(id(clb), id(ta.t_events[0].callback))
 
         self.assertEqual(ta.t_events[0].callback.n, 0)
 
-        ta.propagate_until([100., 100.])
+        ta.propagate_until([100.0, 100.0])
 
         ta2 = pickle.loads(pickle.dumps(ta))
 
-        self.assertEqual(
-            ta.t_events[0].callback.n, ta2.t_events[0].callback.n)
+        self.assertEqual(ta.t_events[0].callback.n, ta2.t_events[0].callback.n)
 
     def test_propagate_grid(self):
         from . import make_vars, taylor_adaptive, taylor_adaptive_batch, sin
@@ -2203,10 +2591,9 @@ class batch_integrator_test_case(_ut.TestCase):
         from copy import deepcopy
 
         x, v = make_vars("x", "v")
-        eqns = [(x, v),
-                (v, -9.8*sin(x))]
+        eqns = [(x, v), (v, -9.8 * sin(x))]
 
-        x_ic = [0.06, 0.07, 0.08,  0.09]
+        x_ic = [0.06, 0.07, 0.08, 0.09]
         v_ic = [0.025, 0.026, 0.027, 0.028]
 
         ta = taylor_adaptive_batch(eqns, [x_ic, v_ic])
@@ -2216,13 +2603,17 @@ class batch_integrator_test_case(_ut.TestCase):
             ta.propagate_grid([])
         self.assertTrue(
             "Invalid grid passed to the propagate_grid() method of a batch integrator: "
-            "the expected number of dimensions is 2, but the input array has a dimension of 1" in str(cm.exception))
+            "the expected number of dimensions is 2, but the input array has a dimension of 1"
+            in str(cm.exception)
+        )
 
         with self.assertRaises(ValueError) as cm:
             ta.propagate_grid([[1, 2], [3, 4]])
         self.assertTrue(
             "Invalid grid passed to the propagate_grid() method of a batch integrator: "
-            "the shape must be (n, 4) but the number of columns is 2 instead" in str(cm.exception))
+            "the shape must be (n, 4) but the number of columns is 2 instead"
+            in str(cm.exception)
+        )
 
         # Run a simple scalar/batch comparison.
         tas = []
@@ -2230,35 +2621,37 @@ class batch_integrator_test_case(_ut.TestCase):
         for x0, v0 in zip(x_ic, v_ic):
             tas.append(taylor_adaptive(eqns, [x0, v0]))
 
-        grid = np.array([[-0.1, -0.2, -0.3, -0.4],
-                         [0.01, 0.02, 0.03, 0.9],
-                         [1., 1.1, 1.2, 1.3],
-                         [11., 11.1, 11.2, 11.3]])
+        grid = np.array(
+            [
+                [-0.1, -0.2, -0.3, -0.4],
+                [0.01, 0.02, 0.03, 0.9],
+                [1.0, 1.1, 1.2, 1.3],
+                [11.0, 11.1, 11.2, 11.3],
+            ]
+        )
 
         bres = ta.propagate_grid(grid)
 
-        sres = [tas[0].propagate_grid(grid[:, 0]),
-                tas[1].propagate_grid(grid[:, 1]),
-                tas[2].propagate_grid(grid[:, 2]),
-                tas[3].propagate_grid(grid[:, 3])]
+        sres = [
+            tas[0].propagate_grid(grid[:, 0]),
+            tas[1].propagate_grid(grid[:, 1]),
+            tas[2].propagate_grid(grid[:, 2]),
+            tas[3].propagate_grid(grid[:, 3]),
+        ]
 
-        self.assertTrue(
-            np.max(np.abs(sres[0][4] - bres[:, :, 0]).flatten()) < 1e-14)
-        self.assertTrue(
-            np.max(np.abs(sres[1][4] - bres[:, :, 1]).flatten()) < 1e-14)
-        self.assertTrue(
-            np.max(np.abs(sres[2][4] - bres[:, :, 2]).flatten()) < 1e-14)
-        self.assertTrue(
-            np.max(np.abs(sres[3][4] - bres[:, :, 3]).flatten()) < 1e-14)
+        self.assertTrue(np.max(np.abs(sres[0][4] - bres[:, :, 0]).flatten()) < 1e-14)
+        self.assertTrue(np.max(np.abs(sres[1][4] - bres[:, :, 1]).flatten()) < 1e-14)
+        self.assertTrue(np.max(np.abs(sres[2][4] - bres[:, :, 2]).flatten()) < 1e-14)
+        self.assertTrue(np.max(np.abs(sres[3][4] - bres[:, :, 3]).flatten()) < 1e-14)
 
         # Test vector/scalar max_delta_t.
-        ta.set_time(0.)
+        ta.set_time(0.0)
         ta.state[:] = [x_ic, v_ic]
 
         bres = ta.propagate_grid(grid, max_delta_t=[1e-3] * 4)
         res = deepcopy(ta.propagate_res)
 
-        ta.set_time(0.)
+        ta.set_time(0.0)
         ta.state[:] = [x_ic, v_ic]
 
         bres2 = ta.propagate_grid(grid, max_delta_t=1e-3)
@@ -2276,7 +2669,7 @@ class batch_integrator_test_case(_ut.TestCase):
 
             return True
 
-        ta.set_time(0.)
+        ta.set_time(0.0)
         ta.propagate_grid(grid, callback=cb)
 
         self.assertTrue(ta.counter > 0)
@@ -2291,7 +2684,7 @@ class batch_integrator_test_case(_ut.TestCase):
         cb_inst = cb()
         cb_inst.orig_id = id(cb_inst)
 
-        ta.set_time(0.)
+        ta.set_time(0.0)
         ta.propagate_grid(grid, callback=cb_inst)
 
 
@@ -2306,115 +2699,204 @@ class kepE_test_case(_ut.TestCase):
         import numpy as np
 
         x, y = make_vars("x", "y")
-        self.assertEqual(diff(kepE(x, y), x), sin(
-            kepE(x, y)) / (1. - x * cos(kepE(x, y))))
-        self.assertEqual(diff(kepE(x, y), y), 1. / (1. - x * cos(kepE(x, y))))
+        self.assertEqual(
+            diff(kepE(x, y), x), sin(kepE(x, y)) / (1.0 - x * cos(kepE(x, y)))
+        )
+        self.assertEqual(diff(kepE(x, y), y), 1.0 / (1.0 - x * cos(kepE(x, y))))
 
         if not _ppc_arch:
-            self.assertEqual(diff(kepE(x, np.longdouble("1.1")), x), sin(
-                kepE(x, np.longdouble("1.1"))) / (1. - x * cos(kepE(x, np.longdouble("1.1")))))
-            self.assertEqual(diff(kepE(np.longdouble("1.1"), y), y), 1. /
-                             (1. - np.longdouble("1.1") * cos(kepE(np.longdouble("1.1"), y))))
+            self.assertEqual(
+                diff(kepE(x, np.longdouble("1.1")), x),
+                sin(kepE(x, np.longdouble("1.1")))
+                / (1.0 - x * cos(kepE(x, np.longdouble("1.1")))),
+            )
+            self.assertEqual(
+                diff(kepE(np.longdouble("1.1"), y), y),
+                1.0 / (1.0 - np.longdouble("1.1") * cos(kepE(np.longdouble("1.1"), y))),
+            )
 
         if not hasattr(core, "real128"):
             return
 
         from .core import real128
 
-        self.assertEqual(diff(kepE(x, real128("1.1")), x), sin(
-            kepE(x, real128("1.1"))) / (1. - x * cos(kepE(x, real128("1.1")))))
-        self.assertEqual(diff(kepE(real128("1.1"), y), y), 1. /
-                         (1. - real128("1.1") * cos(kepE(real128("1.1"), y))))
+        self.assertEqual(
+            diff(kepE(x, real128("1.1")), x),
+            sin(kepE(x, real128("1.1"))) / (1.0 - x * cos(kepE(x, real128("1.1")))),
+        )
+        self.assertEqual(
+            diff(kepE(real128("1.1"), y), y),
+            1.0 / (1.0 - real128("1.1") * cos(kepE(real128("1.1"), y))),
+        )
 
     def test_num(self):
-        from . import kepE, core
+        from . import M2E, core
         from .core import _ppc_arch
         import numpy as np
 
         # Double.
         fp_t = float
 
-        e = .123
-        M = 5.
-        E = kepE(e, M)
+        e = 0.123
+        M = 5.0
+        E = M2E(e, M)
 
-        self.assertTrue(np.allclose(np.cos(M), np.cos(
-            E - e*np.sin(E)), rtol=np.finfo(fp_t).eps * 10, atol=np.finfo(fp_t).eps * 10))
-        self.assertTrue(np.allclose(np.sin(M), np.sin(
-            E - e*np.sin(E)), rtol=np.finfo(fp_t).eps * 10, atol=np.finfo(fp_t).eps * 10))
+        self.assertTrue(
+            np.allclose(
+                np.cos(M),
+                np.cos(E - e * np.sin(E)),
+                rtol=np.finfo(fp_t).eps * 10,
+                atol=np.finfo(fp_t).eps * 10,
+            )
+        )
+        self.assertTrue(
+            np.allclose(
+                np.sin(M),
+                np.sin(E - e * np.sin(E)),
+                rtol=np.finfo(fp_t).eps * 10,
+                atol=np.finfo(fp_t).eps * 10,
+            )
+        )
 
-        e = [.123, .124, .125, .126]
-        M = [5., 6., 7., 8.]
-        E = kepE(e, M)
+        e = [0.123, 0.124, 0.125, 0.126]
+        M = [5.0, 6.0, 7.0, 8.0]
+        E = M2E(e, M)
 
-        self.assertTrue(np.allclose(np.cos(M), np.cos(
-            E - e*np.sin(E)), rtol=np.finfo(fp_t).eps * 10, atol=np.finfo(fp_t).eps * 10))
-        self.assertTrue(np.allclose(np.sin(M), np.sin(
-            E - e*np.sin(E)), rtol=np.finfo(fp_t).eps * 10, atol=np.finfo(fp_t).eps * 10))
+        self.assertTrue(
+            np.allclose(
+                np.cos(M),
+                np.cos(E - e * np.sin(E)),
+                rtol=np.finfo(fp_t).eps * 10,
+                atol=np.finfo(fp_t).eps * 10,
+            )
+        )
+        self.assertTrue(
+            np.allclose(
+                np.sin(M),
+                np.sin(E - e * np.sin(E)),
+                rtol=np.finfo(fp_t).eps * 10,
+                atol=np.finfo(fp_t).eps * 10,
+            )
+        )
 
-        e = [.123, .124, .125, .126, .127]
-        M = [5., 6., 7., 8., 9.]
-        E = kepE(e, M)
+        e = [0.123, 0.124, 0.125, 0.126, 0.127]
+        M = [5.0, 6.0, 7.0, 8.0, 9.0]
+        E = M2E(e, M)
 
-        self.assertTrue(np.allclose(np.cos(M), np.cos(
-            E - e*np.sin(E)), rtol=np.finfo(fp_t).eps * 10, atol=np.finfo(fp_t).eps * 10))
-        self.assertTrue(np.allclose(np.sin(M), np.sin(
-            E - e*np.sin(E)), rtol=np.finfo(fp_t).eps * 10, atol=np.finfo(fp_t).eps * 10))
+        self.assertTrue(
+            np.allclose(
+                np.cos(M),
+                np.cos(E - e * np.sin(E)),
+                rtol=np.finfo(fp_t).eps * 10,
+                atol=np.finfo(fp_t).eps * 10,
+            )
+        )
+        self.assertTrue(
+            np.allclose(
+                np.sin(M),
+                np.sin(E - e * np.sin(E)),
+                rtol=np.finfo(fp_t).eps * 10,
+                atol=np.finfo(fp_t).eps * 10,
+            )
+        )
 
         with self.assertRaises(ValueError) as cm:
-            kepE([[1.]], [[2.]])
+            M2E([[1.0]], [[2.0]])
         self.assertTrue(
-            "Invalid eccentricity array passed to kepE(): a one-dimensional array is expected, but the input array has 2 dimensions" in str(cm.exception))
+            "Invalid eccentricity array passed to M2E(): a one-dimensional array is expected, but the input array has 2 dimensions"
+            in str(cm.exception)
+        )
 
         with self.assertRaises(ValueError) as cm:
-            kepE([1.], [[2.]])
+            M2E([1.0], [[2.0]])
         self.assertTrue(
-            "Invalid mean anomaly array passed to kepE(): a one-dimensional array is expected, but the input array has 2 dimensions" in str(cm.exception))
+            "Invalid mean anomaly array passed to M2E(): a one-dimensional array is expected, but the input array has 2 dimensions"
+            in str(cm.exception)
+        )
 
         with self.assertRaises(ValueError) as cm:
-            kepE([1.], [2., 3.])
+            M2E([1.0], [2.0, 3.0])
         self.assertTrue(
-            "Invalid arrays passed to kepE(): the eccentricity array has a size of 1, but the mean anomaly array has a size of 2 (the sizes must be equal)" in str(cm.exception))
+            "Invalid arrays passed to M2E(): the eccentricity array has a size of 1, but the mean anomaly array has a size of 2 (the sizes must be equal)"
+            in str(cm.exception)
+        )
 
         with self.assertRaises(TypeError) as cm:
-            kepE([1.], [2])
+            M2E([1.0], [2])
         self.assertTrue(
-            "Inconsistent dtypes detected in the vectorised kepE() implementation: the eccentricity array has dtype" in str(cm.exception))
+            "Inconsistent dtypes detected in the vectorised M2E() implementation: the eccentricity array has dtype"
+            in str(cm.exception)
+        )
 
         with self.assertRaises(TypeError) as cm:
-            kepE(["a"], ["b"])
-        self.assertTrue(
-            "Unsupported dtype \"" in str(cm.exception))
+            M2E(["a"], ["b"])
+        self.assertTrue('Unsupported dtype "' in str(cm.exception))
 
         if not _ppc_arch:
             fp_t = np.longdouble
 
-            e = fp_t(.123)
-            M = fp_t(5.)
-            E = kepE(e, M)
+            e = fp_t(0.123)
+            M = fp_t(5.0)
+            E = M2E(e, M)
 
-            self.assertTrue(np.allclose(np.cos(M), np.cos(
-                E - e*np.sin(E)), rtol=np.finfo(fp_t).eps * 10, atol=np.finfo(fp_t).eps * 10))
-            self.assertTrue(np.allclose(np.sin(M), np.sin(
-                E - e*np.sin(E)), rtol=np.finfo(fp_t).eps * 10, atol=np.finfo(fp_t).eps * 10))
+            self.assertTrue(
+                np.allclose(
+                    np.cos(M),
+                    np.cos(E - e * np.sin(E)),
+                    rtol=np.finfo(fp_t).eps * 10,
+                    atol=np.finfo(fp_t).eps * 10,
+                )
+            )
+            self.assertTrue(
+                np.allclose(
+                    np.sin(M),
+                    np.sin(E - e * np.sin(E)),
+                    rtol=np.finfo(fp_t).eps * 10,
+                    atol=np.finfo(fp_t).eps * 10,
+                )
+            )
 
-            e = np.array([.123, .124, .125, .126], dtype=fp_t)
-            M = np.array([5., 6., 7., 8.], dtype=fp_t)
-            E = kepE(e, M)
+            e = np.array([0.123, 0.124, 0.125, 0.126], dtype=fp_t)
+            M = np.array([5.0, 6.0, 7.0, 8.0], dtype=fp_t)
+            E = M2E(e, M)
 
-            self.assertTrue(np.allclose(np.cos(M), np.cos(
-                E - e*np.sin(E)), rtol=np.finfo(fp_t).eps * 10, atol=np.finfo(fp_t).eps * 10))
-            self.assertTrue(np.allclose(np.sin(M), np.sin(
-                E - e*np.sin(E)), rtol=np.finfo(fp_t).eps * 10, atol=np.finfo(fp_t).eps * 10))
+            self.assertTrue(
+                np.allclose(
+                    np.cos(M),
+                    np.cos(E - e * np.sin(E)),
+                    rtol=np.finfo(fp_t).eps * 10,
+                    atol=np.finfo(fp_t).eps * 10,
+                )
+            )
+            self.assertTrue(
+                np.allclose(
+                    np.sin(M),
+                    np.sin(E - e * np.sin(E)),
+                    rtol=np.finfo(fp_t).eps * 10,
+                    atol=np.finfo(fp_t).eps * 10,
+                )
+            )
 
-            e = np.array([.123, .124, .125, .126, .127], dtype=fp_t)
-            M = np.array([5., 6., 7., 8., 9.], dtype=fp_t)
-            E = kepE(e, M)
+            e = np.array([0.123, 0.124, 0.125, 0.126, 0.127], dtype=fp_t)
+            M = np.array([5.0, 6.0, 7.0, 8.0, 9.0], dtype=fp_t)
+            E = M2E(e, M)
 
-            self.assertTrue(np.allclose(np.cos(M), np.cos(
-                E - e*np.sin(E)), rtol=np.finfo(fp_t).eps * 10, atol=np.finfo(fp_t).eps * 10))
-            self.assertTrue(np.allclose(np.sin(M), np.sin(
-                E - e*np.sin(E)), rtol=np.finfo(fp_t).eps * 10, atol=np.finfo(fp_t).eps * 10))
+            self.assertTrue(
+                np.allclose(
+                    np.cos(M),
+                    np.cos(E - e * np.sin(E)),
+                    rtol=np.finfo(fp_t).eps * 10,
+                    atol=np.finfo(fp_t).eps * 10,
+                )
+            )
+            self.assertTrue(
+                np.allclose(
+                    np.sin(M),
+                    np.sin(E - e * np.sin(E)),
+                    rtol=np.finfo(fp_t).eps * 10,
+                    atol=np.finfo(fp_t).eps * 10,
+                )
+            )
 
         if not hasattr(core, "real128"):
             return
@@ -2423,26 +2905,36 @@ class kepE_test_case(_ut.TestCase):
 
         fp_t = real128
 
-        e = fp_t(.123)
-        M = fp_t(5.)
-        E = kepE(e, M)
+        e = fp_t(0.123)
+        M = fp_t(5.0)
+        E = M2E(e, M)
 
-        self.assertTrue(abs(np.cos(M) - np.cos(E-e*np.sin(E))) < 1e-32)
-        self.assertTrue(abs(np.sin(M) - np.sin(E-e*np.sin(E))) < 1e-32)
+        self.assertTrue(abs(np.cos(M) - np.cos(E - e * np.sin(E))) < 1e-32)
+        self.assertTrue(abs(np.sin(M) - np.sin(E - e * np.sin(E))) < 1e-32)
 
-        e = np.array([.123, .124, .125, .126, .127], dtype=fp_t)
-        M = np.array([5., 6., 7., 8., 9.], dtype=fp_t)
-        E = kepE(e, M)
+        e = np.array([0.123, 0.124, 0.125, 0.126, 0.127], dtype=fp_t)
+        M = np.array([5.0, 6.0, 7.0, 8.0, 9.0], dtype=fp_t)
+        E = M2E(e, M)
 
-        self.assertTrue(all(abs(np.cos(M) - np.cos(E-e*np.sin(E))) <
-                        1e-32 for e, M, E in zip(e, M, E)))
-        self.assertTrue(all(abs(np.sin(M) - np.sin(E-e*np.sin(E))) <
-                        1e-32 for e, M, E in zip(e, M, E)))
+        self.assertTrue(
+            all(
+                abs(np.cos(M) - np.cos(E - e * np.sin(E))) < 1e-32
+                for e, M, E in zip(e, M, E)
+            )
+        )
+        self.assertTrue(
+            all(
+                abs(np.sin(M) - np.sin(E - e * np.sin(E))) < 1e-32
+                for e, M, E in zip(e, M, E)
+            )
+        )
 
         with self.assertRaises(ValueError) as cm:
-            kepE([real128(1.)], [real128(2.), real128(3.)])
+            M2E([real128(1.0)], [real128(2.0), real128(3.0)])
         self.assertTrue(
-            "Invalid arrays passed to kepE(): the eccentricity array has a size of 1, but the mean anomaly array has a size of 2 (the sizes must be equal)" in str(cm.exception))
+            "Invalid arrays passed to M2E(): the eccentricity array has a size of 1, but the mean anomaly array has a size of 2 (the sizes must be equal)"
+            in str(cm.exception)
+        )
 
 
 class sympy_test_case(_ut.TestCase):
@@ -2461,29 +2953,36 @@ class sympy_test_case(_ut.TestCase):
         with self.assertRaises(TypeError) as cm:
             from_sympy(3.5)
         self.assertTrue(
-            "The 'ex' parameter must be a sympy expression but it is of type" in str(cm.exception))
+            "The 'ex' parameter must be a sympy expression but it is of type"
+            in str(cm.exception)
+        )
 
         with self.assertRaises(TypeError) as cm:
             from_sympy(sympy.Symbol("x"), [])
         self.assertTrue(
-            "The 's_dict' parameter must be a dict but it is of type" in str(cm.exception))
+            "The 's_dict' parameter must be a dict but it is of type"
+            in str(cm.exception)
+        )
 
         with self.assertRaises(TypeError) as cm:
             from_sympy(sympy.Symbol("x"), {3.5: 3.5})
         self.assertTrue(
-            "The keys in 's_dict' must all be sympy expressions" in str(cm.exception))
+            "The keys in 's_dict' must all be sympy expressions" in str(cm.exception)
+        )
 
         with self.assertRaises(TypeError) as cm:
             from_sympy(sympy.Symbol("x"), {sympy.Symbol("x"): 3.5})
         self.assertTrue(
-            "The values in 's_dict' must all be heyoka expressions" in str(cm.exception))
+            "The values in 's_dict' must all be heyoka expressions" in str(cm.exception)
+        )
 
         # Test the s_dict functionality of from_sympy().
         x, y = sympy.symbols("x y", real=True)
         hx, hy, hz = make_vars("x", "y", "z")
 
-        self.assertEqual(from_sympy(
-            (x-y)*(x+y), s_dict={x-y: hz}), hsum([hx, hy])*hz)
+        self.assertEqual(
+            from_sympy((x - y) * (x + y), s_dict={x - y: hz}), hsum([hx, hy]) * hz
+        )
 
     def test_number_conversion(self):
         from . import to_sympy, from_sympy, expression, core
@@ -2495,13 +2994,15 @@ class sympy_test_case(_ut.TestCase):
         with self.assertRaises(ValueError) as cm:
             from_sympy(Rational(3, 5))
         self.assertTrue(
-            "Cannot convert from sympy a rational number whose denominator is not a power of 2" in str(cm.exception))
+            "Cannot convert from sympy a rational number whose denominator is not a power of 2"
+            in str(cm.exception)
+        )
 
         # From integer.
-        self.assertEqual(from_sympy(Integer(-42)), expression(-42.))
+        self.assertEqual(from_sympy(Integer(-42)), expression(-42.0))
 
         # From rational.
-        self.assertEqual(from_sympy(Rational(42, -2)), expression(-21.))
+        self.assertEqual(from_sympy(Rational(42, -2)), expression(-21.0))
 
         # Double precision.
         with workprec(53):
@@ -2509,23 +3010,38 @@ class sympy_test_case(_ut.TestCase):
             self.assertEqual(from_sympy(Float(1.1)), expression(1.1))
 
             self.assertEqual(
-                to_sympy(expression((2**40+1)/(2**128))), Rational(2**40+1, 2**128))
-            self.assertEqual(from_sympy(Rational(2**40+1, 2**128)),
-                             expression((2**40+1)/(2**128)))
+                to_sympy(expression((2**40 + 1) / (2**128))),
+                Rational(2**40 + 1, 2**128),
+            )
+            self.assertEqual(
+                from_sympy(Rational(2**40 + 1, 2**128)),
+                expression((2**40 + 1) / (2**128)),
+            )
 
         # Long double precision.
         if not _ppc_arch:
             with workprec(np.finfo(np.longdouble).nmant + 1):
-                self.assertEqual(to_sympy(expression(np.longdouble("1.1"))), Float(
-                    "1.1", precision=np.finfo(np.longdouble).nmant + 1))
-                self.assertEqual(from_sympy(Float("1.1")),
-                                 expression(np.longdouble("1.1")))
+                self.assertEqual(
+                    to_sympy(expression(np.longdouble("1.1"))),
+                    Float("1.1", precision=np.finfo(np.longdouble).nmant + 1),
+                )
+                self.assertEqual(
+                    from_sympy(Float("1.1")), expression(np.longdouble("1.1"))
+                )
 
                 expo = np.finfo(np.longdouble).nmant - 10
-                self.assertEqual(to_sympy(expression(np.longdouble(
-                    2**expo+1)/np.longdouble(2**128))), Rational(2**expo+1, 2**128))
-                self.assertEqual(from_sympy(Rational(2**expo+1, 2**128)),
-                                 expression(np.longdouble(2**expo+1)/np.longdouble(2**128)))
+                self.assertEqual(
+                    to_sympy(
+                        expression(
+                            np.longdouble(2**expo + 1) / np.longdouble(2**128)
+                        )
+                    ),
+                    Rational(2**expo + 1, 2**128),
+                )
+                self.assertEqual(
+                    from_sympy(Rational(2**expo + 1, 2**128)),
+                    expression(np.longdouble(2**expo + 1) / np.longdouble(2**128)),
+                )
 
         # Too high precision.
         with self.assertRaises(ValueError) as cm:
@@ -2539,16 +3055,20 @@ class sympy_test_case(_ut.TestCase):
 
         # Quad precision.
         with workprec(113):
-            self.assertEqual(to_sympy(expression(real128("1.1"))),
-                             Float("1.1", precision=113))
-            self.assertEqual(from_sympy(Float("1.1")),
-                             expression(real128("1.1")))
+            self.assertEqual(
+                to_sympy(expression(real128("1.1"))), Float("1.1", precision=113)
+            )
+            self.assertEqual(from_sympy(Float("1.1")), expression(real128("1.1")))
 
             expo = 100
             self.assertEqual(
-                to_sympy(expression(real128(2**expo+1)/real128(2**128))), Rational(2**expo+1, 2**128))
-            self.assertEqual(from_sympy(Rational(2**expo+1, 2**128)),
-                             expression(real128(2**expo+1)/real128(2**128)))
+                to_sympy(expression(real128(2**expo + 1) / real128(2**128))),
+                Rational(2**expo + 1, 2**128),
+            )
+            self.assertEqual(
+                from_sympy(Rational(2**expo + 1, 2**128)),
+                expression(real128(2**expo + 1) / real128(2**128)),
+            )
 
     def test_sympar_conversion(self):
         from . import to_sympy, from_sympy, expression, par
@@ -2558,24 +3078,33 @@ class sympy_test_case(_ut.TestCase):
         self.assertEqual(Symbol("par[0]", real=True), to_sympy(par[0]))
         self.assertEqual(Symbol("par[9]", real=True), to_sympy(par[9]))
         self.assertEqual(Symbol("par[123]", real=True), to_sympy(par[123]))
-        self.assertEqual(Symbol("par[-123]", real=True),
-                         to_sympy(expression("par[-123]")))
-        self.assertEqual(Symbol("par[]", real=True),
-                         to_sympy(expression("par[]")))
+        self.assertEqual(
+            Symbol("par[-123]", real=True), to_sympy(expression("par[-123]"))
+        )
+        self.assertEqual(Symbol("par[]", real=True), to_sympy(expression("par[]")))
 
         self.assertEqual(from_sympy(Symbol("x")), expression("x"))
         self.assertEqual(from_sympy(Symbol("par[0]")), par[0])
         self.assertEqual(from_sympy(Symbol("par[9]")), par[9])
         self.assertEqual(from_sympy(Symbol("par[123]")), par[123])
-        self.assertEqual(from_sympy(
-            Symbol("par[-123]")), expression("par[-123]"))
+        self.assertEqual(from_sympy(Symbol("par[-123]")), expression("par[-123]"))
         self.assertEqual(from_sympy(Symbol("par[]")), expression("par[]"))
 
     def test_func_conversion(self):
         import sympy as spy
+
         # NOTE: if we ever change in heyoka addition to return a sum(),
         # we can probably get rid of hsum.
-        from . import core, make_vars, from_sympy, to_sympy, pi, sum as hsum, sum_sq, make_nbody_sys
+        from . import (
+            core,
+            make_vars,
+            from_sympy,
+            to_sympy,
+            pi,
+            sum as hsum,
+            sum_sq,
+            make_nbody_sys,
+        )
 
         x, y, z, a, b, c = spy.symbols("x y z a b c", real=True)
         hx, hy, hz, ha, hb, hc = make_vars("x", "y", "z", "a", "b", "c")
@@ -2634,63 +3163,77 @@ class sympy_test_case(_ut.TestCase):
         self.assertEqual(hx**3.5, from_sympy(x**3.5))
         self.assertEqual(to_sympy(hx**3.5), x**3.5)
 
-        self.assertEqual(hsum([hx, hy, hz]), from_sympy(x+y+z))
-        self.assertEqual(to_sympy(hx+hy+hz), x+y+z)
-        self.assertEqual(to_sympy(hsum([hx, hy, hz])), x+y+z)
+        self.assertEqual(hsum([hx, hy, hz]), from_sympy(x + y + z))
+        self.assertEqual(to_sympy(hx + hy + hz), x + y + z)
+        self.assertEqual(to_sympy(hsum([hx, hy, hz])), x + y + z)
         self.assertEqual(to_sympy(hsum([hx])), x)
-        self.assertEqual(to_sympy(hsum([])), 0.)
-        self.assertEqual(hsum([ha, hb, hc, hx, hy, hz]),
-                         from_sympy(x+y+z+a+b+c))
-        self.assertEqual(to_sympy(ha+hb+hc+hx+hy+hz), x+y+z+a+b+c)
-        self.assertEqual(to_sympy(hsum([ha, hb, hc, hx, hy, hz])), x+y+z+a+b+c)
+        self.assertEqual(to_sympy(hsum([])), 0.0)
+        self.assertEqual(
+            hsum([ha, hb, hc, hx, hy, hz]), from_sympy(x + y + z + a + b + c)
+        )
+        self.assertEqual(to_sympy(ha + hb + hc + hx + hy + hz), x + y + z + a + b + c)
+        self.assertEqual(
+            to_sympy(hsum([ha, hb, hc, hx, hy, hz])), x + y + z + a + b + c
+        )
 
-        self.assertEqual(to_sympy(sum_sq([hx, hy, hz])), x*x+y*y+z*z)
-        self.assertEqual(to_sympy(sum_sq([hx])), x*x)
-        self.assertEqual(to_sympy(sum_sq([])), 0.)
+        self.assertEqual(to_sympy(sum_sq([hx, hy, hz])), x * x + y * y + z * z)
+        self.assertEqual(to_sympy(sum_sq([hx])), x * x)
+        self.assertEqual(to_sympy(sum_sq([])), 0.0)
 
-        self.assertEqual(hx*hy*hz, from_sympy(x*y*z))
-        self.assertEqual(to_sympy(hx*hy*hz), x*y*z)
-        self.assertEqual((ha*hb)*(hc*hx)*(hy*hz), from_sympy(x*y*z*a*b*c))
-        self.assertEqual(to_sympy(ha*hb*hc*hx*hy*hz), x*y*z*a*b*c)
+        self.assertEqual(hx * hy * hz, from_sympy(x * y * z))
+        self.assertEqual(to_sympy(hx * hy * hz), x * y * z)
+        self.assertEqual(
+            (ha * hb) * (hc * hx) * (hy * hz), from_sympy(x * y * z * a * b * c)
+        )
+        self.assertEqual(to_sympy(ha * hb * hc * hx * hy * hz), x * y * z * a * b * c)
 
-        self.assertEqual(hsum([hx, -1.*hy, -1.*hz]), from_sympy(x-y-z))
-        self.assertEqual(to_sympy(hx - hy - hz), x-y-z)
+        self.assertEqual(hsum([hx, -1.0 * hy, -1.0 * hz]), from_sympy(x - y - z))
+        self.assertEqual(to_sympy(hx - hy - hz), x - y - z)
 
-        self.assertEqual(hx * hz**-1., from_sympy(x/z))
+        self.assertEqual(hx * hz**-1.0, from_sympy(x / z))
         self.assertEqual(to_sympy(hx / hz), x / z)
 
-        self.assertEqual(core.kepE(hx, hy), from_sympy(
-            spy.Function("heyoka_kepE")(x, y)))
-        self.assertEqual(to_sympy(core.kepE(hx, hy)),
-                         spy.Function("heyoka_kepE")(x, y))
+        self.assertEqual(
+            core.kepE(hx, hy), from_sympy(spy.Function("heyoka_kepE")(x, y))
+        )
+        self.assertEqual(to_sympy(core.kepE(hx, hy)), spy.Function("heyoka_kepE")(x, y))
 
-        self.assertEqual(-1. * hx, from_sympy(-x))
+        self.assertEqual(-1.0 * hx, from_sympy(-x))
         self.assertEqual(to_sympy(-hx), -x)
 
-        self.assertEqual(to_sympy(core.sigmoid(hx + hy)),
-                         1. / (1. + spy.exp(-x - y)))
+        self.assertEqual(to_sympy(core.sigmoid(hx + hy)), 1.0 / (1.0 + spy.exp(-x - y)))
 
         self.assertEqual(core.square(hx + hy), (hx + hy) * (hx + hy))
 
         self.assertEqual(core.time, from_sympy(spy.Function("heyoka_time")()))
         self.assertEqual(to_sympy(core.time), spy.Function("heyoka_time")())
 
-        self.assertEqual(core.tpoly(core.par[0], core.par[10]), from_sympy(
-            spy.Function("heyoka_tpoly")(spy.Symbol("par[0]"), spy.Symbol("par[10]"))))
-        self.assertEqual(to_sympy(core.tpoly(core.par[0], core.par[10])), spy.Function(
-            "heyoka_tpoly")(spy.Symbol("par[0]", real=True), spy.Symbol("par[10]", real=True)))
+        self.assertEqual(
+            core.tpoly(core.par[0], core.par[10]),
+            from_sympy(
+                spy.Function("heyoka_tpoly")(
+                    spy.Symbol("par[0]"), spy.Symbol("par[10]")
+                )
+            ),
+        )
+        self.assertEqual(
+            to_sympy(core.tpoly(core.par[0], core.par[10])),
+            spy.Function("heyoka_tpoly")(
+                spy.Symbol("par[0]", real=True), spy.Symbol("par[10]", real=True)
+            ),
+        )
 
         with self.assertRaises(TypeError) as cm:
             from_sympy(abs(x))
-        self.assertTrue(
-            "Unable to convert the sympy object" in str(cm.exception))
+        self.assertTrue("Unable to convert the sympy object" in str(cm.exception))
 
         # Test caching behaviour.
         foo = hx + hy
-        bar = foo / (foo * hz + 1.)
+        bar = foo / (foo * hz + 1.0)
         bar_spy = to_sympy(bar)
-        self.assertEqual(id(bar_spy.args[1]), id(
-            bar_spy.args[0].args[0].args[1].args[1]))
+        self.assertEqual(
+            id(bar_spy.args[1]), id(bar_spy.args[0].args[0].args[1].args[1])
+        )
 
         # pi constant.
         self.assertEqual(to_sympy(pi), spy.pi)
@@ -2707,27 +3250,219 @@ class zero_division_error_test_case(_ut.TestCase):
     def runTest(self):
         from . import make_vars
 
-        x, = make_vars("x")
+        (x,) = make_vars("x")
 
         with self.assertRaises(ZeroDivisionError) as cm:
-            x / 0.
-        self.assertTrue(
-            "Division by zero" in str(cm.exception))
+            x / 0.0
+        self.assertTrue("Division by zero" in str(cm.exception))
 
 
 class expression_test_case(_ut.TestCase):
     def runTest(self):
+        self.test_basic()
         self.test_s11n()
         self.test_len()
         self.test_diff()
         self.test_copy()
+
+    def test_basic(self):
+        from . import expression as ex, core
+        import numpy as np
+
+        with_real128 = hasattr(core, "real128")
+        ld_63bit = np.finfo(np.longdouble).nmant == 63
+
+        if with_real128:
+            real128 = core.real128
+
+        # Constructors.
+        self.assertEqual(ex(), ex(0))
+        self.assertEqual(ex(123), ex(123.0))
+        self.assertEqual(str(ex(123)), "123.00000000000000")
+
+        # Error with large integer.
+        with self.assertRaises(TypeError) as cm:
+            ex(123 << 56)
+        self.assertTrue("incompatible constructor arguments" in str(cm.exception))
+
+        self.assertEqual(str(ex(1.1)), "1.1000000000000001")
+
+        if ld_63bit:
+            self.assertEqual(str(ex(np.longdouble("1.1"))), "1.10000000000000000002")
+
+        if with_real128:
+            self.assertEqual(
+                str(ex(real128("1.1"))), "1.10000000000000000000000000000000008"
+            )
+
+        self.assertEqual(str(ex("x")), "x")
+
+        # Unary arithmetics.
+        self.assertEqual(ex(42), +ex(42))
+        self.assertEqual(ex(-42), -ex(42))
+
+        # Addition.
+        self.assertEqual(ex(42) + ex(-1), ex(41))
+        self.assertEqual(ex(42) + -1, ex(41))
+        self.assertEqual(-1 + ex(42), ex(41))
+        with self.assertRaises(TypeError) as cm:
+            ex(42) + (2 << 112)
+        with self.assertRaises(TypeError) as cm:
+            (2 << 112) + ex(42)
+        self.assertEqual(ex(42) + -1.1, ex(40.899999999999999))
+        self.assertEqual(-1.1 + ex(42), ex(40.899999999999999))
+        if ld_63bit:
+            self.assertEqual(
+                ex(42) + np.longdouble("-1.1"),
+                ex(np.longdouble("40.9000000000000000014")),
+            )
+            self.assertEqual(
+                np.longdouble("-1.1") + ex(42),
+                ex(np.longdouble("40.9000000000000000014")),
+            )
+        if with_real128:
+            self.assertEqual(
+                ex(42) + real128("-1.1"),
+                ex(real128("40.8999999999999999999999999999999988")),
+            )
+            self.assertEqual(
+                real128("-1.1") + ex(42),
+                ex(real128("40.8999999999999999999999999999999988")),
+            )
+
+        # Subtraction.
+        self.assertEqual(ex(42) - ex(-1), ex(43))
+        self.assertEqual(ex(42) - -1, ex(43))
+        self.assertEqual(-1 - ex(42), ex(-43))
+        with self.assertRaises(TypeError) as cm:
+            ex(42) - (2 << 112)
+        with self.assertRaises(TypeError) as cm:
+            (2 << 112) - ex(42)
+        self.assertEqual(ex(42) - -1.1, ex(43.100000000000001))
+        self.assertEqual(-1.1 - ex(42), ex(-43.100000000000001))
+        if ld_63bit:
+            self.assertEqual(
+                ex(42) - np.longdouble("-1.1"),
+                ex(np.longdouble("43.0999999999999999986")),
+            )
+            self.assertEqual(
+                np.longdouble("-1.1") - ex(42),
+                ex(np.longdouble("-43.0999999999999999986")),
+            )
+        if with_real128:
+            self.assertEqual(
+                ex(42) - real128("-1.1"),
+                ex(real128("43.1000000000000000000000000000000012")),
+            )
+            self.assertEqual(
+                real128("-1.1") - ex(42),
+                ex(real128("-43.1000000000000000000000000000000012")),
+            )
+
+        # Multiplication.
+        self.assertEqual(ex(42) * ex(-1), ex(-42))
+        self.assertEqual(ex(42) * -1, ex(-42))
+        self.assertEqual(-1 * ex(42), ex(-42))
+        with self.assertRaises(TypeError) as cm:
+            ex(42) * (2 << 112)
+        with self.assertRaises(TypeError) as cm:
+            (2 << 112) * ex(42)
+        self.assertEqual(ex(42) * -1.1, ex(-46.200000000000003))
+        self.assertEqual(-1.1 * ex(42), ex(-46.200000000000003))
+        if ld_63bit:
+            self.assertEqual(
+                ex(42) * np.longdouble("-1.1"),
+                ex(np.longdouble("-46.2000000000000000007")),
+            )
+            self.assertEqual(
+                np.longdouble("-1.1") * ex(42),
+                ex(np.longdouble("-46.2000000000000000007")),
+            )
+        if with_real128:
+            self.assertEqual(
+                ex(42) * real128("-1.1"),
+                ex(real128("-46.2000000000000000000000000000000025")),
+            )
+            self.assertEqual(
+                real128("-1.1") * ex(42),
+                ex(real128("-46.2000000000000000000000000000000025")),
+            )
+
+        # Division.
+        self.assertEqual(ex(42) / ex(-1), ex(-42))
+        self.assertEqual(ex(42) / -1, ex(-42))
+        self.assertEqual(-42 / ex(1), ex(-42))
+        with self.assertRaises(TypeError) as cm:
+            ex(42) / (2 << 112)
+        with self.assertRaises(TypeError) as cm:
+            (2 << 112) / ex(42)
+        self.assertEqual(ex(42) / -1.1, ex(-38.181818181818180))
+        self.assertEqual(-1.1 / ex(42), ex(-0.02619047619047619))
+        if ld_63bit:
+            self.assertEqual(
+                ex(42) / np.longdouble("-1.1"),
+                ex(np.longdouble("-38.1818181818181818163")),
+            )
+            self.assertEqual(
+                np.longdouble("-1.1") / ex(42),
+                ex(np.longdouble("-0.0261904761904761904772")),
+            )
+        if with_real128:
+            self.assertEqual(
+                ex(42) / real128("-1.1"),
+                ex(real128("-38.1818181818181818181818181818181801")),
+            )
+            self.assertEqual(
+                real128("-1.1") / ex(42),
+                ex(real128("-0.0261904761904761904761904761904761910")),
+            )
+
+        # Comparison.
+        self.assertEqual(ex(42), ex(42))
+        self.assertEqual(ex("x"), ex("x"))
+        self.assertNotEqual(ex(41), ex(42))
+        self.assertNotEqual(ex("x"), ex("y"))
+
+        # Exponentiation.
+        self.assertEqual(str(ex("x") ** ex("y")), "pow(x, y)")
+        self.assertEqual(str(ex("x") ** ex(2)), "x**2")
+        self.assertEqual(str(ex("x") ** ex(1.1)), "pow(x, 1.1000000000000001)")
+        with self.assertRaises(TypeError) as cm:
+            ex(42) ** (2 << 112)
+        if ld_63bit:
+            self.assertEqual(
+                ex(42) / np.longdouble("-1.1"),
+                ex(np.longdouble("-38.1818181818181818163")),
+            )
+        if ld_63bit:
+            self.assertEqual(
+                str(ex("x") ** ex(np.longdouble("1.1"))),
+                "pow(x, 1.10000000000000000002)",
+            )
+        if with_real128:
+            self.assertEqual(
+                str(ex("x") ** ex(real128("1.1"))),
+                "pow(x, 1.10000000000000000000000000000000008)",
+            )
+
+        # Copy and deepcopy.
+        from copy import copy, deepcopy
+
+        tmp = ex("x") + ex("y")
+        tmp.foo = [1, 2, 3]
+        id_foo = id(tmp.foo)
+        tmp_copy = copy(tmp)
+        self.assertEqual(id_foo, id(tmp_copy.foo))
+        tmp_dcopy = deepcopy(tmp)
+        self.assertNotEqual(id_foo, id(tmp_dcopy.foo))
+        self.assertEqual(tmp.foo, tmp_dcopy.foo)
 
     def test_copy(self):
         from . import make_vars
         from copy import copy, deepcopy
 
         x, y = make_vars("x", "y")
-        ex = x+y
+        ex = x + y
 
         class foo:
             pass
@@ -2743,10 +3478,12 @@ class expression_test_case(_ut.TestCase):
         from . import make_vars, sin, cos, diff, par
 
         x, y = make_vars("x", "y")
-        self.assertEqual(diff(cos(x*x-y), "x"), -sin(x*x-y) * (2.*x))
-        self.assertEqual(diff(cos(x*x-y), x), -sin(x*x-y) * (2.*x))
+        self.assertEqual(diff(cos(x * x - y), "x"), -sin(x * x - y) * (2.0 * x))
+        self.assertEqual(diff(cos(x * x - y), x), -sin(x * x - y) * (2.0 * x))
         self.assertEqual(
-            diff(cos(par[0]*par[0]-y), par[0]), -sin(par[0]*par[0]-y) * (2.*par[0]))
+            diff(cos(par[0] * par[0] - y), par[0]),
+            -sin(par[0] * par[0] - y) * (2.0 * par[0]),
+        )
 
     def test_s11n(self):
         from . import make_vars, sin, cos, core
@@ -2756,7 +3493,7 @@ class expression_test_case(_ut.TestCase):
 
         x, y = make_vars("x", "y")
 
-        ex = x + 2.*y
+        ex = x + 2.0 * y
         self.assertEqual(ex, pickle.loads(pickle.dumps(ex)))
 
         # Test dynamic attributes.
@@ -2765,7 +3502,7 @@ class expression_test_case(_ut.TestCase):
         self.assertEqual(ex.foo, "hello world")
 
         if not _ppc_arch:
-            ex = sin(longdouble('1.1')*x) + 2.*y
+            ex = sin(longdouble("1.1") * x) + 2.0 * y
             self.assertEqual(ex, pickle.loads(pickle.dumps(ex)))
 
         if not hasattr(core, "real128"):
@@ -2775,7 +3512,7 @@ class expression_test_case(_ut.TestCase):
 
         # Quad precision.
         if not _ppc_arch:
-            ex = sin(longdouble('1.1')*x) + real128('1.3')*cos(2.*y)
+            ex = sin(longdouble("1.1") * x) + real128("1.3") * cos(2.0 * y)
             self.assertEqual(ex, pickle.loads(pickle.dumps(ex)))
 
     def test_len(self):
@@ -2800,7 +3537,7 @@ class llvm_state_test_case(_ut.TestCase):
 
         sys = [(x, v), (v, -9.8 * sin(x))]
 
-        ta = taylor_adaptive(sys=sys, state=[0., 0.25])
+        ta = taylor_adaptive(sys=sys, state=[0.0, 0.25])
 
         ls = ta.llvm_state
 
@@ -2823,7 +3560,7 @@ class llvm_state_test_case(_ut.TestCase):
 
         sys = [(x, v), (v, -9.8 * sin(x))]
 
-        ta = taylor_adaptive(sys=sys, state=[0., 0.25])
+        ta = taylor_adaptive(sys=sys, state=[0.0, 0.25])
 
         # Verify that the reference count of ta
         # is increased when we fetch the llvm_state.
@@ -2846,36 +3583,48 @@ class c_output_test_case(_ut.TestCase):
 
     def test_batch(self):
         from copy import copy, deepcopy
-        from . import make_vars, sin, taylor_adaptive_batch, continuous_output_batch_dbl, taylor_adaptive
+        from . import (
+            make_vars,
+            sin,
+            taylor_adaptive_batch,
+            continuous_output_batch_dbl,
+            taylor_adaptive,
+        )
         from pickle import dumps, loads
         from sys import getrefcount
         import numpy as np
 
         x, v = make_vars("x", "v")
 
-        fp_types = [("double", float, continuous_output_batch_dbl)]
+        fp_types = [(float, continuous_output_batch_dbl)]
 
         # Use a pendulum for testing purposes.
         sys = [(x, v), (v, -9.8 * sin(x))]
 
-        for desc, fp_t, c_out_t in fp_types:
+        for fp_t, c_out_t in fp_types:
             # Test the default cted object.
             c_out = c_out_t()
 
             with self.assertRaises(ValueError) as cm:
                 c_out([])
             self.assertTrue(
-                "Cannot use a default-constructed continuous_output_batch object" in str(cm.exception))
+                "Cannot use a default-constructed continuous_output_batch object"
+                in str(cm.exception)
+            )
 
             with self.assertRaises(ValueError) as cm:
                 c_out(fp_t(1))
             self.assertTrue(
-                "Cannot use a default-constructed continuous_output_batch object" in str(cm.exception))
+                "Cannot use a default-constructed continuous_output_batch object"
+                in str(cm.exception)
+            )
 
             with self.assertRaises(ValueError) as cm:
                 c_out(time=[fp_t(0), fp_t(0)])
             self.assertTrue(
-                "Cannot use a default-constructed continuous_output_batch object" in str(cm.exception))
+                "Cannot use a default-constructed continuous_output_batch object"
+                in str(cm.exception)
+            )
 
             self.assertTrue(c_out.output is None)
             self.assertTrue(c_out.times is None)
@@ -2884,12 +3633,16 @@ class c_output_test_case(_ut.TestCase):
             with self.assertRaises(ValueError) as cm:
                 c_out.bounds
             self.assertTrue(
-                "Cannot use a default-constructed continuous_output_batch object" in str(cm.exception))
+                "Cannot use a default-constructed continuous_output_batch object"
+                in str(cm.exception)
+            )
 
             with self.assertRaises(ValueError) as cm:
                 c_out.n_steps
             self.assertTrue(
-                "Cannot use a default-constructed continuous_output_batch object" in str(cm.exception))
+                "Cannot use a default-constructed continuous_output_batch object"
+                in str(cm.exception)
+            )
 
             self.assertEqual(c_out.batch_size, 0)
 
@@ -2903,7 +3656,9 @@ class c_output_test_case(_ut.TestCase):
             with self.assertRaises(ValueError) as cm:
                 c_out.n_steps
             self.assertTrue(
-                "Cannot use a default-constructed continuous_output_batch object" in str(cm.exception))
+                "Cannot use a default-constructed continuous_output_batch object"
+                in str(cm.exception)
+            )
 
             self.assertEqual(c_out.batch_size, 0)
 
@@ -2916,7 +3671,9 @@ class c_output_test_case(_ut.TestCase):
             with self.assertRaises(ValueError) as cm:
                 c_out.n_steps
             self.assertTrue(
-                "Cannot use a default-constructed continuous_output_batch object" in str(cm.exception))
+                "Cannot use a default-constructed continuous_output_batch object"
+                in str(cm.exception)
+            )
 
             self.assertEqual(c_out.batch_size, 0)
 
@@ -2930,7 +3687,9 @@ class c_output_test_case(_ut.TestCase):
             with self.assertRaises(ValueError) as cm:
                 c_out.n_steps
             self.assertTrue(
-                "Cannot use a default-constructed continuous_output_batch object" in str(cm.exception))
+                "Cannot use a default-constructed continuous_output_batch object"
+                in str(cm.exception)
+            )
 
             self.assertEqual(c_out.batch_size, 0)
 
@@ -2938,17 +3697,19 @@ class c_output_test_case(_ut.TestCase):
 
             self.assertFalse(c_out.llvm_state.get_ir() == "")
 
-            ic = [[fp_t(0), fp_t(0.01), fp_t(0.02), fp_t(0.03)], [
-                fp_t(0.25), fp_t(0.26), fp_t(0.27), fp_t(0.28)]]
+            ic = [
+                [fp_t(0), fp_t(0.01), fp_t(0.02), fp_t(0.03)],
+                [fp_t(0.25), fp_t(0.26), fp_t(0.27), fp_t(0.28)],
+            ]
 
             arr_ic = np.array(ic)
 
-            ta = taylor_adaptive_batch(
-                sys=sys, state=ic, fp_type=desc)
+            ta = taylor_adaptive_batch(sys=sys, state=ic, fp_type=fp_t)
 
             # Create scalar integrators for comparison.
             ta_scalar = taylor_adaptive(
-                sys=sys, state=[ic[0][0], ic[1][0]], fp_type=desc)
+                sys=sys, state=[ic[0][0], ic[1][0]], fp_type=fp_t
+            )
             ta_scals = [deepcopy(ta_scalar) for _ in range(4)]
 
             # Helper to reset the state of ta and ta_scals.
@@ -2960,7 +3721,7 @@ class c_output_test_case(_ut.TestCase):
                     tint.state[:] = arr_ic[:, idx]
                     tint.time = 0
 
-            final_tm = [fp_t(10), fp_t(10.4), fp_t(10.5), fp_t(11.)]
+            final_tm = [fp_t(10), fp_t(10.4), fp_t(10.5), fp_t(11.0)]
 
             check_tm = [fp_t(0.1), fp_t(1.3), fp_t(5.6), fp_t(9.1)]
 
@@ -2982,67 +3743,88 @@ class c_output_test_case(_ut.TestCase):
 
             self.assertTrue(c_out(check_tm).shape == (2, 4))
 
-            if desc != "real128":
-                with self.assertRaises(ValueError) as cm:
-                    c_out(check_tm)[0] = .5
+            with self.assertRaises(ValueError) as cm:
+                c_out(check_tm)[0] = 0.5
 
-                rc = getrefcount(c_out)
-                tmp_out = c_out(check_tm)
-                new_rc = getrefcount(c_out)
-                self.assertEqual(new_rc, rc + 1)
+            rc = getrefcount(c_out)
+            tmp_out = c_out(check_tm)
+            new_rc = getrefcount(c_out)
+            self.assertEqual(new_rc, rc + 1)
 
             with self.assertRaises(ValueError) as cm:
                 c_out(np.zeros((1, 1, 1)))
             self.assertTrue(
-                "Invalid time array passed to a continuous_output_batch object: the number of dimensions must be 1 or 2, but it is 3 instead" in str(cm.exception))
+                "Invalid time array passed to a continuous_output_batch object: the number of dimensions must be 1 or 2, but it is 3 instead"
+                in str(cm.exception)
+            )
 
             # Single batch tests.
             with self.assertRaises(ValueError) as cm:
-                c_out(np.zeros((1, )))
+                c_out(np.zeros((1,)))
             self.assertTrue(
-                "Invalid time array passed to a continuous_output_batch object: the length must be 4 but it is 1 instead" in str(cm.exception))
+                "Invalid time array passed to a continuous_output_batch object: the length must be 4 but it is 1 instead"
+                in str(cm.exception)
+            )
             with self.assertRaises(ValueError) as cm:
-                c_out(np.zeros((0, )))
+                c_out(np.zeros((0,)))
             self.assertTrue(
-                "Invalid time array passed to a continuous_output_batch object: the length must be 4 but it is 0 instead" in str(cm.exception))
+                "Invalid time array passed to a continuous_output_batch object: the length must be 4 but it is 0 instead"
+                in str(cm.exception)
+            )
             with self.assertRaises(ValueError) as cm:
-                c_out(np.zeros((5, )))
+                c_out(np.zeros((5,)))
             self.assertTrue(
-                "Invalid time array passed to a continuous_output_batch object: the length must be 4 but it is 5 instead" in str(cm.exception))
+                "Invalid time array passed to a continuous_output_batch object: the length must be 4 but it is 5 instead"
+                in str(cm.exception)
+            )
 
             # Contiguous single batch.
-            c_out_scals = [ta_scals[idx].propagate_until(
-                final_tm[idx], c_output=True)[4] for idx in range(4)]
+            c_out_scals = [
+                ta_scals[idx].propagate_until(final_tm[idx], c_output=True)[4]
+                for idx in range(4)
+            ]
             c_out(check_tm)
 
             for idx in range(4):
                 c_out_scals[idx](check_tm[idx])
-                self.assertTrue(np.allclose(
-                    c_out_scals[idx].output, c_out.output[:, idx], rtol=np.finfo(fp_t).eps * 10, atol=np.finfo(fp_t).eps * 10))
+                self.assertTrue(
+                    np.allclose(
+                        c_out_scals[idx].output,
+                        c_out.output[:, idx],
+                        rtol=np.finfo(fp_t).eps * 10,
+                        atol=np.finfo(fp_t).eps * 10,
+                    )
+                )
 
-            if desc != "real128":
-                rc = getrefcount(c_out)
-                tmp_out2 = c_out(check_tm)
-                new_rc = getrefcount(c_out)
-                self.assertEqual(new_rc, rc + 1)
+            rc = getrefcount(c_out)
+            tmp_out2 = c_out(check_tm)
+            new_rc = getrefcount(c_out)
+            self.assertEqual(new_rc, rc + 1)
 
             # Scalar time.
-            scal_res = deepcopy(c_out(fp_t(.42)))
-            self.assertTrue(np.all(scal_res == c_out([fp_t(.42)] * 4)))
+            scal_res = deepcopy(c_out(fp_t(0.42)))
+            self.assertTrue(np.all(scal_res == c_out([fp_t(0.42)] * 4)))
 
             # Non-contiguous single batch.
-            nc_check_tm = np.vstack(
-                [check_tm, np.zeros((4,))]).T.flatten()[::2]
+            nc_check_tm = np.vstack([check_tm, np.zeros((4,))]).T.flatten()[::2]
             c_out(nc_check_tm)
             for idx in range(4):
-                self.assertTrue(np.allclose(
-                    c_out_scals[idx].output, c_out.output[:, idx], rtol=np.finfo(fp_t).eps * 10, atol=np.finfo(fp_t).eps * 10))
+                self.assertTrue(
+                    np.allclose(
+                        c_out_scals[idx].output,
+                        c_out.output[:, idx],
+                        rtol=np.finfo(fp_t).eps * 10,
+                        atol=np.finfo(fp_t).eps * 10,
+                    )
+                )
 
             # Multiple time batches.
             with self.assertRaises(ValueError) as cm:
                 c_out(np.zeros((5, 3)))
             self.assertTrue(
-                "Invalid time array passed to a continuous_output_batch object: the number of columns must be 4 but it is 3 instead" in str(cm.exception))
+                "Invalid time array passed to a continuous_output_batch object: the number of columns must be 4 but it is 3 instead"
+                in str(cm.exception)
+            )
 
             b_check_tm = np.repeat(check_tm, 5, axis=0).reshape((4, 5)).T
             out_b = c_out(b_check_tm)
@@ -3051,8 +3833,14 @@ class c_output_test_case(_ut.TestCase):
                 c_out_scals[idx](check_tm[idx])
 
                 for j in range(5):
-                    self.assertTrue(np.allclose(
-                        c_out_scals[idx].output, out_b[j, :, idx], rtol=np.finfo(fp_t).eps * 10, atol=np.finfo(fp_t).eps * 10))
+                    self.assertTrue(
+                        np.allclose(
+                            c_out_scals[idx].output,
+                            out_b[j, :, idx],
+                            rtol=np.finfo(fp_t).eps * 10,
+                            atol=np.finfo(fp_t).eps * 10,
+                        )
+                    )
 
             # Zero rows in input.
             out_b = c_out(np.zeros((0, 4)))
@@ -3061,31 +3849,34 @@ class c_output_test_case(_ut.TestCase):
             # Times.
             self.assertEqual(c_out.times.shape, (c_out.n_steps + 1, 4))
             self.assertTrue(np.all(np.isfinite(c_out.times)))
-            if desc != "real128":
-                with self.assertRaises(ValueError) as cm:
-                    c_out.times[0] = .5
+            with self.assertRaises(ValueError) as cm:
+                c_out.times[0] = 0.5
 
-                rc = getrefcount(c_out)
-                tmp_out3 = c_out.times
-                new_rc = getrefcount(c_out)
-                self.assertEqual(new_rc, rc + 1)
+            rc = getrefcount(c_out)
+            tmp_out3 = c_out.times
+            new_rc = getrefcount(c_out)
+            self.assertEqual(new_rc, rc + 1)
 
             # TCs.
-            self.assertEqual(
-                c_out.tcs.shape, (c_out.n_steps, 2, ta.order + 1, 4))
-            if desc != "real128":
-                with self.assertRaises(ValueError) as cm:
-                    c_out.tcs[0] = .5
+            self.assertEqual(c_out.tcs.shape, (c_out.n_steps, 2, ta.order + 1, 4))
+            with self.assertRaises(ValueError) as cm:
+                c_out.tcs[0] = 0.5
 
-                rc = getrefcount(c_out)
-                tmp_out4 = c_out.tcs
-                new_rc = getrefcount(c_out)
-                self.assertEqual(new_rc, rc + 1)
+            rc = getrefcount(c_out)
+            tmp_out4 = c_out.tcs
+            new_rc = getrefcount(c_out)
+            self.assertEqual(new_rc, rc + 1)
 
             # Bounds.
-            self.assertTrue(np.all(c_out.bounds[0] == [0.]*4))
-            self.assertTrue(np.allclose(c_out.bounds[1], final_tm, rtol=np.finfo(
-                fp_t).eps * 10, atol=np.finfo(fp_t).eps * 10))
+            self.assertTrue(np.all(c_out.bounds[0] == [0.0] * 4))
+            self.assertTrue(
+                np.allclose(
+                    c_out.bounds[1],
+                    final_tm,
+                    rtol=np.finfo(fp_t).eps * 10,
+                    atol=np.finfo(fp_t).eps * 10,
+                )
+            )
 
             # Batch size.
             self.assertEqual(c_out.batch_size, 4)
@@ -3098,23 +3889,20 @@ class c_output_test_case(_ut.TestCase):
             # Try copies as well.
             c_out = copy(c_out)
 
-            self.assertEqual(
-                c_out.tcs.shape, (c_out.n_steps, 2, ta.order + 1, 4))
+            self.assertEqual(c_out.tcs.shape, (c_out.n_steps, 2, ta.order + 1, 4))
 
             self.assertFalse(c_out.llvm_state.get_ir() == "")
 
             c_out = deepcopy(c_out)
 
-            self.assertEqual(
-                c_out.tcs.shape, (c_out.n_steps, 2, ta.order + 1, 4))
+            self.assertEqual(c_out.tcs.shape, (c_out.n_steps, 2, ta.order + 1, 4))
 
             # Pickling.
             c_out = loads(dumps(c_out))
 
             self.assertFalse(c_out.llvm_state.get_ir() == "")
 
-            self.assertEqual(
-                c_out.tcs.shape, (c_out.n_steps, 2, ta.order + 1, 4))
+            self.assertEqual(c_out.tcs.shape, (c_out.n_steps, 2, ta.order + 1, 4))
 
             class foo:
                 pass
@@ -3124,12 +3912,13 @@ class c_output_test_case(_ut.TestCase):
             c_out_copy.bar = foo()
 
             self.assertEqual(id(c_out_copy.bar), id(copy(c_out_copy).bar))
-            self.assertNotEqual(id(c_out_copy.bar),
-                                id(deepcopy(c_out_copy).bar))
-            self.assertTrue(np.all(c_out_copy(fp_t(0.1)) ==
-                            copy(c_out_copy)(fp_t(0.1))))
-            self.assertTrue(np.all(c_out_copy(fp_t(0.1)) ==
-                            deepcopy(c_out_copy)(fp_t(0.1))))
+            self.assertNotEqual(id(c_out_copy.bar), id(deepcopy(c_out_copy).bar))
+            self.assertTrue(
+                np.all(c_out_copy(fp_t(0.1)) == copy(c_out_copy)(fp_t(0.1)))
+            )
+            self.assertTrue(
+                np.all(c_out_copy(fp_t(0.1)) == deepcopy(c_out_copy)(fp_t(0.1)))
+            )
 
             # Pickling with dynattrs.
             c_out.foo = []
@@ -3137,8 +3926,7 @@ class c_output_test_case(_ut.TestCase):
 
             self.assertFalse(c_out.llvm_state.get_ir() == "")
 
-            self.assertEqual(
-                c_out.tcs.shape, (c_out.n_steps, 2, ta.order + 1, 4))
+            self.assertEqual(c_out.tcs.shape, (c_out.n_steps, 2, ta.order + 1, 4))
 
             self.assertEqual(c_out.foo, [])
 
@@ -3153,32 +3941,40 @@ class c_output_test_case(_ut.TestCase):
         x, v = make_vars("x", "v")
 
         if _ppc_arch:
-            fp_types = [("double", float, continuous_output_dbl)]
+            fp_types = [(float, continuous_output_dbl)]
         else:
             from . import continuous_output_ldbl
-            fp_types = [("double", float, continuous_output_dbl),
-                        ("long double", np.longdouble, continuous_output_ldbl)]
+
+            fp_types = [
+                (float, continuous_output_dbl),
+                (np.longdouble, continuous_output_ldbl),
+            ]
 
         if hasattr(core, "real128"):
             from . import continuous_output_f128
-            fp_types.append(("real128", core.real128, continuous_output_f128))
+
+            fp_types.append((core.real128, continuous_output_f128))
 
         # Use a pendulum for testing purposes.
         sys = [(x, v), (v, -9.8 * sin(x))]
 
-        for desc, fp_t, c_out_t in fp_types:
+        for fp_t, c_out_t in fp_types:
             # Test the default cted object.
             c_out = c_out_t()
 
             with self.assertRaises(ValueError) as cm:
                 c_out(fp_t(0))
             self.assertTrue(
-                "Cannot use a default-constructed continuous_output object" in str(cm.exception))
+                "Cannot use a default-constructed continuous_output object"
+                in str(cm.exception)
+            )
 
             with self.assertRaises(ValueError) as cm:
                 c_out(time=[fp_t(0), fp_t(0)])
             self.assertTrue(
-                "Cannot use a default-constructed continuous_output object" in str(cm.exception))
+                "Cannot use a default-constructed continuous_output object"
+                in str(cm.exception)
+            )
 
             self.assertTrue(c_out(time=[]).shape == (0, 0))
             self.assertTrue(c_out.output is None)
@@ -3188,12 +3984,16 @@ class c_output_test_case(_ut.TestCase):
             with self.assertRaises(ValueError) as cm:
                 c_out.bounds
             self.assertTrue(
-                "Cannot use a default-constructed continuous_output object" in str(cm.exception))
+                "Cannot use a default-constructed continuous_output object"
+                in str(cm.exception)
+            )
 
             with self.assertRaises(ValueError) as cm:
                 c_out.n_steps
             self.assertTrue(
-                "Cannot use a default-constructed continuous_output object" in str(cm.exception))
+                "Cannot use a default-constructed continuous_output object"
+                in str(cm.exception)
+            )
 
             self.assertFalse("forward" in repr(c_out))
 
@@ -3205,7 +4005,9 @@ class c_output_test_case(_ut.TestCase):
             with self.assertRaises(ValueError) as cm:
                 c_out.n_steps
             self.assertTrue(
-                "Cannot use a default-constructed continuous_output object" in str(cm.exception))
+                "Cannot use a default-constructed continuous_output object"
+                in str(cm.exception)
+            )
 
             self.assertFalse("forward" in repr(c_out))
 
@@ -3216,7 +4018,9 @@ class c_output_test_case(_ut.TestCase):
             with self.assertRaises(ValueError) as cm:
                 c_out.n_steps
             self.assertTrue(
-                "Cannot use a default-constructed continuous_output object" in str(cm.exception))
+                "Cannot use a default-constructed continuous_output object"
+                in str(cm.exception)
+            )
 
             self.assertFalse("forward" in repr(c_out))
 
@@ -3228,7 +4032,9 @@ class c_output_test_case(_ut.TestCase):
             with self.assertRaises(ValueError) as cm:
                 c_out.n_steps
             self.assertTrue(
-                "Cannot use a default-constructed continuous_output object" in str(cm.exception))
+                "Cannot use a default-constructed continuous_output object"
+                in str(cm.exception)
+            )
 
             self.assertFalse("forward" in repr(c_out))
 
@@ -3236,8 +4042,7 @@ class c_output_test_case(_ut.TestCase):
 
             ic = [fp_t(0), fp_t(0.25)]
 
-            ta = taylor_adaptive(
-                sys=sys, state=ic, fp_type=desc)
+            ta = taylor_adaptive(sys=sys, state=ic, fp_type=fp_t)
 
             # Helper to reset the state of ta.
             def reset():
@@ -3256,15 +4061,14 @@ class c_output_test_case(_ut.TestCase):
 
             reset()
 
-            _, _, _, nsteps, c_out = ta.propagate_until(
-                fp_t(10), c_output=True)
+            _, _, _, nsteps, c_out = ta.propagate_until(fp_t(10), c_output=True)
 
             self.assertFalse(c_out is None)
 
-            self.assertTrue(c_out(fp_t(0.1)).shape == (2, ))
+            self.assertTrue(c_out(fp_t(0.1)).shape == (2,))
 
             with self.assertRaises(ValueError) as cm:
-                c_out(fp_t(0.1))[0] = .5
+                c_out(fp_t(0.1))[0] = 0.5
 
             rc = getrefcount(c_out)
             tmp_out = c_out(fp_t(0.1))
@@ -3282,11 +4086,13 @@ class c_output_test_case(_ut.TestCase):
             with self.assertRaises(ValueError) as cm:
                 c_out([[fp_t(0)], [fp_t(1)], [fp_t(2)]])
             self.assertTrue(
-                "Invalid time array passed to a continuous_output object: the number of dimensions must be 1, but it is 2 instead" in str(cm.exception))
+                "Invalid time array passed to a continuous_output object: the number of dimensions must be 1, but it is 2 instead"
+                in str(cm.exception)
+            )
 
             self.assertTrue(np.all(c_out.output == tmp[2]))
             with self.assertRaises(ValueError) as cm:
-                c_out.output[0] = .5
+                c_out.output[0] = 0.5
 
             rc = getrefcount(c_out)
             tmp_out2 = c_out.output
@@ -3295,7 +4101,7 @@ class c_output_test_case(_ut.TestCase):
 
             self.assertEqual(c_out.times.shape, (nsteps + 1,))
             with self.assertRaises(ValueError) as cm:
-                c_out.times[0] = .5
+                c_out.times[0] = 0.5
 
             rc = getrefcount(c_out)
             tmp_out3 = c_out.times
@@ -3305,7 +4111,7 @@ class c_output_test_case(_ut.TestCase):
             self.assertEqual(c_out.tcs.shape, (nsteps, 2, ta.order + 1))
             self.assertTrue(np.all(np.isfinite(c_out.tcs)))
             with self.assertRaises(ValueError) as cm:
-                c_out.tcs[0, 0, 0] = .5
+                c_out.tcs[0, 0, 0] = 0.5
 
             rc = getrefcount(c_out)
             tmp_out4 = c_out.tcs
@@ -3325,7 +4131,7 @@ class c_output_test_case(_ut.TestCase):
             self.assertEqual(c_out.tcs.shape, (nsteps, 2, ta.order + 1))
             self.assertTrue(np.all(np.isfinite(c_out.tcs)))
             with self.assertRaises(ValueError) as cm:
-                c_out.tcs[0, 0, 0] = .5
+                c_out.tcs[0, 0, 0] = 0.5
 
             self.assertFalse(c_out.llvm_state.get_ir() == "")
 
@@ -3334,7 +4140,7 @@ class c_output_test_case(_ut.TestCase):
             self.assertEqual(c_out.tcs.shape, (nsteps, 2, ta.order + 1))
             self.assertTrue(np.all(np.isfinite(c_out.tcs)))
             with self.assertRaises(ValueError) as cm:
-                c_out.tcs[0, 0, 0] = .5
+                c_out.tcs[0, 0, 0] = 0.5
 
             class foo:
                 pass
@@ -3344,12 +4150,13 @@ class c_output_test_case(_ut.TestCase):
             c_out_copy.bar = foo()
 
             self.assertEqual(id(c_out_copy.bar), id(copy(c_out_copy).bar))
-            self.assertNotEqual(id(c_out_copy.bar),
-                                id(deepcopy(c_out_copy).bar))
-            self.assertTrue(np.all(c_out_copy(fp_t(0.1)) ==
-                            copy(c_out_copy)(fp_t(0.1))))
-            self.assertTrue(np.all(c_out_copy(fp_t(0.1)) ==
-                            deepcopy(c_out_copy)(fp_t(0.1))))
+            self.assertNotEqual(id(c_out_copy.bar), id(deepcopy(c_out_copy).bar))
+            self.assertTrue(
+                np.all(c_out_copy(fp_t(0.1)) == copy(c_out_copy)(fp_t(0.1)))
+            )
+            self.assertTrue(
+                np.all(c_out_copy(fp_t(0.1)) == deepcopy(c_out_copy)(fp_t(0.1)))
+            )
 
             # Pickling.
             c_out = loads(dumps(c_out))
@@ -3359,7 +4166,7 @@ class c_output_test_case(_ut.TestCase):
             self.assertEqual(c_out.tcs.shape, (nsteps, 2, ta.order + 1))
             self.assertTrue(np.all(np.isfinite(c_out.tcs)))
             with self.assertRaises(ValueError) as cm:
-                c_out.tcs[0, 0, 0] = .5
+                c_out.tcs[0, 0, 0] = 0.5
 
             # Pickling with dynattrs.
             c_out.foo = []
@@ -3370,7 +4177,7 @@ class c_output_test_case(_ut.TestCase):
             self.assertEqual(c_out.tcs.shape, (nsteps, 2, ta.order + 1))
             self.assertTrue(np.all(np.isfinite(c_out.tcs)))
             with self.assertRaises(ValueError) as cm:
-                c_out.tcs[0, 0, 0] = .5
+                c_out.tcs[0, 0, 0] = 0.5
 
             self.assertEqual(c_out.foo, [])
 
@@ -3380,13 +4187,7 @@ class recommended_simd_size_test_case(_ut.TestCase):
         from . import recommended_simd_size
 
         self.assertTrue(recommended_simd_size() >= 1)
-        self.assertEqual(recommended_simd_size(),
-                         recommended_simd_size(fp_type="double"))
-
-        with self.assertRaises(TypeError) as cm:
-            recommended_simd_size(fp_type="long double")
-        self.assertTrue(
-            "the floating-point type \"long double\" is not recognized/supported" in str(cm.exception))
+        self.assertEqual(recommended_simd_size(), recommended_simd_size(fp_type=float))
 
 
 class s11n_backend_test_case(_ut.TestCase):
@@ -3404,12 +4205,16 @@ class s11n_backend_test_case(_ut.TestCase):
         with self.assertRaises(TypeError) as cm:
             set_serialization_backend(1)
         self.assertTrue(
-            "The serialization backend must be specified as a string" in str(cm.exception))
+            "The serialization backend must be specified as a string"
+            in str(cm.exception)
+        )
 
         with self.assertRaises(ValueError) as cm:
             set_serialization_backend("pippo")
         self.assertTrue(
-            "The serialization backend 'pippo' is not valid. The valid backends are:" in str(cm.exception))
+            "The serialization backend 'pippo' is not valid. The valid backends are:"
+            in str(cm.exception)
+        )
 
         self.assertEqual(get_serialization_backend(), cp)
 
@@ -3420,7 +4225,14 @@ class ensemble_test_case(_ut.TestCase):
         self.test_batch()
 
     def test_batch(self):
-        from . import ensemble_propagate_until_batch, ensemble_propagate_for_batch, ensemble_propagate_grid_batch, make_vars, sin, taylor_adaptive_batch, taylor_outcome
+        from . import (
+            ensemble_propagate_until_batch,
+            ensemble_propagate_for_batch,
+            ensemble_propagate_grid_batch,
+            make_vars,
+            sin,
+            taylor_adaptive_batch,
+        )
         import numpy as np
 
         x, v = make_vars("x", "v")
@@ -3430,18 +4242,26 @@ class ensemble_test_case(_ut.TestCase):
 
         algos = ["thread", "process"]
 
-        ta = taylor_adaptive_batch(sys=sys, state=[[0.]*4]*2)
+        ta = taylor_adaptive_batch(sys=sys, state=[[0.0] * 4] * 2)
 
         ics = np.zeros((10, 2, 4))
         for i in range(10):
-            ics[i, 0] = [0.05 + i / 100, 0.051 + i /
-                         100, 0.052 + i / 100, 0.053 + i / 100.]
-            ics[i, 0] = [0.025 + i / 100, 0.026 + i /
-                         100, 0.027 + i / 100, 0.028 + i / 100.]
+            ics[i, 0] = [
+                0.05 + i / 100,
+                0.051 + i / 100,
+                0.052 + i / 100,
+                0.053 + i / 100.0,
+            ]
+            ics[i, 0] = [
+                0.025 + i / 100,
+                0.026 + i / 100,
+                0.027 + i / 100,
+                0.028 + i / 100.0,
+            ]
 
         # propagate_until().
         def gen(ta, idx):
-            ta.set_time(0.)
+            ta.set_time(0.0)
             ta.state[:] = ics[idx]
 
             return ta
@@ -3449,20 +4269,22 @@ class ensemble_test_case(_ut.TestCase):
         for algo in algos:
             if algo == "thread":
                 ret = ensemble_propagate_until_batch(
-                    ta, 20., 10, gen, algorithm=algo, max_workers=8)
+                    ta, 20.0, 10, gen, algorithm=algo, max_workers=8
+                )
             elif algo == "process":
                 ret = ensemble_propagate_until_batch(
-                    ta, 20., 10, gen, algorithm=algo, max_workers=8, chunksize=3)
+                    ta, 20.0, 10, gen, algorithm=algo, max_workers=8, chunksize=3
+                )
 
             self.assertEqual(len(ret), 10)
 
             for i in range(10):
-                ta.set_time(0.)
+                ta.set_time(0.0)
                 ta.state[:] = ics[i]
-                loc_ret = ta.propagate_until(20.)
+                loc_ret = ta.propagate_until(20.0)
 
                 for j in range(4):
-                    self.assertAlmostEqual(ret[i][0].time[j], 20.)
+                    self.assertAlmostEqual(ret[i][0].time[j], 20.0)
                 self.assertTrue(np.all(ta.state == ret[i][0].state))
                 self.assertTrue(ret[i][1] is None)
                 self.assertTrue(np.all(ta.time == ret[i][0].time))
@@ -3471,30 +4293,39 @@ class ensemble_test_case(_ut.TestCase):
             # Run a test with c_output too.
             if algo == "thread":
                 ret = ensemble_propagate_until_batch(
-                    ta, 20., 10, gen, algorithm=algo, max_workers=8, c_output=True)
+                    ta, 20.0, 10, gen, algorithm=algo, max_workers=8, c_output=True
+                )
             elif algo == "process":
                 ret = ensemble_propagate_until_batch(
-                    ta, 20., 10, gen, algorithm=algo, max_workers=8, chunksize=3, c_output=True)
+                    ta,
+                    20.0,
+                    10,
+                    gen,
+                    algorithm=algo,
+                    max_workers=8,
+                    chunksize=3,
+                    c_output=True,
+                )
 
             self.assertEqual(len(ret), 10)
 
             for i in range(10):
-                ta.set_time(0.)
+                ta.set_time(0.0)
                 ta.state[:] = ics[i]
-                loc_ret = ta.propagate_until(20., c_output=True)
+                loc_ret = ta.propagate_until(20.0, c_output=True)
 
                 for j in range(4):
-                    self.assertAlmostEqual(ret[i][0].time[j], 20.)
+                    self.assertAlmostEqual(ret[i][0].time[j], 20.0)
                 self.assertTrue(np.all(ta.state == ret[i][0].state))
                 self.assertFalse(ret[i][1] is None)
                 self.assertTrue(np.all(ta.time == ret[i][0].time))
                 self.assertEqual(ta.propagate_res, ret[i][0].propagate_res)
 
-                self.assertTrue(np.all(loc_ret(5.) == ret[i][1](5.)))
+                self.assertTrue(np.all(loc_ret(5.0) == ret[i][1](5.0)))
 
         # propagate_for().
         def gen(ta, idx):
-            ta.set_time(10.)
+            ta.set_time(10.0)
             ta.state[:] = ics[idx]
 
             return ta
@@ -3502,32 +4333,34 @@ class ensemble_test_case(_ut.TestCase):
         for algo in algos:
             if algo == "thread":
                 ret = ensemble_propagate_for_batch(
-                    ta, 20., 10, gen, algorithm=algo, max_workers=8)
+                    ta, 20.0, 10, gen, algorithm=algo, max_workers=8
+                )
             elif algo == "process":
                 ret = ensemble_propagate_for_batch(
-                    ta, 20., 10, gen, algorithm=algo, max_workers=8, chunksize=3)
+                    ta, 20.0, 10, gen, algorithm=algo, max_workers=8, chunksize=3
+                )
 
             self.assertEqual(len(ret), 10)
 
             for i in range(10):
-                ta.set_time(10.)
+                ta.set_time(10.0)
                 ta.state[:] = ics[i]
-                loc_ret = ta.propagate_for(20.)
+                loc_ret = ta.propagate_for(20.0)
 
                 for j in range(4):
-                    self.assertAlmostEqual(ret[i][0].time[j], 30.)
+                    self.assertAlmostEqual(ret[i][0].time[j], 30.0)
                 self.assertTrue(np.all(ta.state == ret[i][0].state))
                 self.assertTrue(ret[i][1] is None)
                 self.assertTrue(np.all(ta.time == ret[i][0].time))
                 self.assertEqual(ta.propagate_res, ret[i][0].propagate_res)
 
         # propagate_grid().
-        grid = np.linspace(0., 20., 80)
+        grid = np.linspace(0.0, 20.0, 80)
 
         splat_grid = np.repeat(grid, 4).reshape(-1, 4)
 
         def gen(ta, idx):
-            ta.set_time(0.)
+            ta.set_time(0.0)
             ta.state[:] = ics[idx]
 
             return ta
@@ -3535,28 +4368,38 @@ class ensemble_test_case(_ut.TestCase):
         for algo in algos:
             if algo == "thread":
                 ret = ensemble_propagate_grid_batch(
-                    ta, grid, 10, gen, algorithm=algo, max_workers=8)
+                    ta, grid, 10, gen, algorithm=algo, max_workers=8
+                )
             elif algo == "process":
                 ret = ensemble_propagate_grid_batch(
-                    ta, grid, 10, gen, algorithm=algo, max_workers=8, chunksize=3)
+                    ta, grid, 10, gen, algorithm=algo, max_workers=8, chunksize=3
+                )
 
             self.assertEqual(len(ret), 10)
 
             for i in range(10):
-                ta.set_time(0.)
+                ta.set_time(0.0)
                 ta.state[:] = ics[i]
                 loc_ret = ta.propagate_grid(splat_grid)
 
                 self.assertTrue(np.all(loc_ret == ret[i][1]))
 
                 for j in range(4):
-                    self.assertAlmostEqual(ret[i][0].time[j], 20.)
+                    self.assertAlmostEqual(ret[i][0].time[j], 20.0)
                 self.assertTrue(np.all(ta.state == ret[i][0].state))
                 self.assertTrue(np.all(ta.time == ret[i][0].time))
                 self.assertEqual(ta.propagate_res, ret[i][0].propagate_res)
 
     def test_scalar(self):
-        from . import ensemble_propagate_until, ensemble_propagate_for, ensemble_propagate_grid, make_vars, sin, taylor_adaptive, taylor_outcome
+        from . import (
+            ensemble_propagate_until,
+            ensemble_propagate_for,
+            ensemble_propagate_grid,
+            make_vars,
+            sin,
+            taylor_adaptive,
+            taylor_outcome,
+        )
         import numpy as np
 
         x, v = make_vars("x", "v")
@@ -3566,15 +4409,15 @@ class ensemble_test_case(_ut.TestCase):
 
         algos = ["thread", "process"]
 
-        ta = taylor_adaptive(sys=sys, state=[0.]*2)
+        ta = taylor_adaptive(sys=sys, state=[0.0] * 2)
 
-        ics = np.array([[0.05, 0.025]]*10)
+        ics = np.array([[0.05, 0.025]] * 10)
         for i in range(10):
-            ics[i] += i / 100.
+            ics[i] += i / 100.0
 
         # propagate_until().
         def gen(ta, idx):
-            ta.time = 0.
+            ta.time = 0.0
             ta.state[:] = ics[idx]
 
             return ta
@@ -3582,22 +4425,23 @@ class ensemble_test_case(_ut.TestCase):
         for algo in algos:
             if algo == "thread":
                 ret = ensemble_propagate_until(
-                    ta, 20., 10, gen, algorithm=algo, max_workers=8)
+                    ta, 20.0, 10, gen, algorithm=algo, max_workers=8
+                )
             elif algo == "process":
                 ret = ensemble_propagate_until(
-                    ta, 20., 10, gen, algorithm=algo, max_workers=8, chunksize=3)
+                    ta, 20.0, 10, gen, algorithm=algo, max_workers=8, chunksize=3
+                )
 
             self.assertEqual(len(ret), 10)
 
-            self.assertTrue(
-                all([_[1] == taylor_outcome.time_limit for _ in ret]))
+            self.assertTrue(all([_[1] == taylor_outcome.time_limit for _ in ret]))
 
             for i in range(10):
-                ta.time = 0.
+                ta.time = 0.0
                 ta.state[:] = ics[i]
-                loc_ret = ta.propagate_until(20.)
+                loc_ret = ta.propagate_until(20.0)
 
-                self.assertAlmostEqual(ret[i][0].time, 20.)
+                self.assertAlmostEqual(ret[i][0].time, 20.0)
                 self.assertTrue(np.all(ta.state == ret[i][0].state))
                 self.assertEqual(loc_ret, ret[i][1:])
                 self.assertEqual(ta.time, ret[i][0].time)
@@ -3605,31 +4449,39 @@ class ensemble_test_case(_ut.TestCase):
             # Run a test with c_output too.
             if algo == "thread":
                 ret = ensemble_propagate_until(
-                    ta, 20., 10, gen, algorithm=algo, max_workers=8, c_output=True)
+                    ta, 20.0, 10, gen, algorithm=algo, max_workers=8, c_output=True
+                )
             elif algo == "process":
                 ret = ensemble_propagate_until(
-                    ta, 20., 10, gen, algorithm=algo, max_workers=8, chunksize=3, c_output=True)
+                    ta,
+                    20.0,
+                    10,
+                    gen,
+                    algorithm=algo,
+                    max_workers=8,
+                    chunksize=3,
+                    c_output=True,
+                )
 
             self.assertEqual(len(ret), 10)
 
-            self.assertTrue(
-                all([_[1] == taylor_outcome.time_limit for _ in ret]))
+            self.assertTrue(all([_[1] == taylor_outcome.time_limit for _ in ret]))
 
             for i in range(10):
-                ta.time = 0.
+                ta.time = 0.0
                 ta.state[:] = ics[i]
-                loc_ret = ta.propagate_until(20., c_output=True)
+                loc_ret = ta.propagate_until(20.0, c_output=True)
 
-                self.assertAlmostEqual(ret[i][0].time, 20.)
+                self.assertAlmostEqual(ret[i][0].time, 20.0)
                 self.assertTrue(np.all(ta.state == ret[i][0].state))
                 self.assertEqual(loc_ret[:-1], ret[i][1:-1])
                 self.assertEqual(ta.time, ret[i][0].time)
 
-                self.assertTrue(np.all(loc_ret[-1](5.) == ret[i][-1](5.)))
+                self.assertTrue(np.all(loc_ret[-1](5.0) == ret[i][-1](5.0)))
 
         # propagate_for().
         def gen(ta, idx):
-            ta.time = 10.
+            ta.time = 10.0
             ta.state[:] = ics[idx]
 
             return ta
@@ -3637,31 +4489,32 @@ class ensemble_test_case(_ut.TestCase):
         for algo in algos:
             if algo == "thread":
                 ret = ensemble_propagate_for(
-                    ta, 20., 10, gen, algorithm=algo, max_workers=8)
+                    ta, 20.0, 10, gen, algorithm=algo, max_workers=8
+                )
             elif algo == "process":
                 ret = ensemble_propagate_for(
-                    ta, 20., 10, gen, algorithm=algo, max_workers=8, chunksize=3)
+                    ta, 20.0, 10, gen, algorithm=algo, max_workers=8, chunksize=3
+                )
 
             self.assertEqual(len(ret), 10)
 
-            self.assertTrue(
-                all([_[1] == taylor_outcome.time_limit for _ in ret]))
+            self.assertTrue(all([_[1] == taylor_outcome.time_limit for _ in ret]))
 
             for i in range(10):
-                ta.time = 10.
+                ta.time = 10.0
                 ta.state[:] = ics[i]
-                loc_ret = ta.propagate_for(20.)
+                loc_ret = ta.propagate_for(20.0)
 
-                self.assertAlmostEqual(ret[i][0].time, 30.)
+                self.assertAlmostEqual(ret[i][0].time, 30.0)
                 self.assertTrue(np.all(ta.state == ret[i][0].state))
                 self.assertEqual(loc_ret, ret[i][1:])
                 self.assertEqual(ta.time, ret[i][0].time)
 
         # propagate_grid().
-        grid = np.linspace(0., 20., 80)
+        grid = np.linspace(0.0, 20.0, 80)
 
         def gen(ta, idx):
-            ta.time = 0.
+            ta.time = 0.0
             ta.state[:] = ics[idx]
 
             return ta
@@ -3669,22 +4522,23 @@ class ensemble_test_case(_ut.TestCase):
         for algo in algos:
             if algo == "thread":
                 ret = ensemble_propagate_grid(
-                    ta, grid, 10, gen, algorithm=algo, max_workers=8)
+                    ta, grid, 10, gen, algorithm=algo, max_workers=8
+                )
             elif algo == "process":
                 ret = ensemble_propagate_grid(
-                    ta, grid, 10, gen, algorithm=algo, max_workers=8, chunksize=3)
+                    ta, grid, 10, gen, algorithm=algo, max_workers=8, chunksize=3
+                )
 
             self.assertEqual(len(ret), 10)
 
-            self.assertTrue(
-                all([_[1] == taylor_outcome.time_limit for _ in ret]))
+            self.assertTrue(all([_[1] == taylor_outcome.time_limit for _ in ret]))
 
             for i in range(10):
-                ta.time = 0.
+                ta.time = 0.0
                 ta.state[:] = ics[i]
                 loc_ret = ta.propagate_grid(grid)
 
-                self.assertAlmostEqual(ret[i][0].time, 20.)
+                self.assertAlmostEqual(ret[i][0].time, 20.0)
                 self.assertTrue(np.all(ta.state == ret[i][0].state))
                 self.assertEqual(loc_ret[:-1], ret[i][1:-1])
                 self.assertTrue(np.all(loc_ret[-1] == ret[i][-1]))
@@ -3692,39 +4546,50 @@ class ensemble_test_case(_ut.TestCase):
 
         # Error handling.
         with self.assertRaises(TypeError) as cm:
-            ensemble_propagate_until(ta, 20., "a", gen)
+            ensemble_propagate_until(ta, 20.0, "a", gen)
         self.assertTrue(
-            "The n_iter parameter must be an integer, but an object of type" in str(cm.exception))
+            "The n_iter parameter must be an integer, but an object of type"
+            in str(cm.exception)
+        )
 
         with self.assertRaises(ValueError) as cm:
-            ensemble_propagate_until(ta, 20., -1, gen)
+            ensemble_propagate_until(ta, 20.0, -1, gen)
         self.assertTrue(
-            "The n_iter parameter must be non-negative" in str(cm.exception))
+            "The n_iter parameter must be non-negative" in str(cm.exception)
+        )
 
         with self.assertRaises(TypeError) as cm:
-            ensemble_propagate_until(ta, [20.], 10, gen)
+            ensemble_propagate_until(ta, [20.0], 10, gen)
         self.assertTrue(
-            "Cannot perform an ensemble propagate_until/for(): the final epoch/time interval must be a scalar, not an iterable object" in str(cm.exception))
+            "Cannot perform an ensemble propagate_until/for(): the final epoch/time interval must be a scalar, not an iterable object"
+            in str(cm.exception)
+        )
 
         with self.assertRaises(TypeError) as cm:
-            ensemble_propagate_for(ta, [20.], 10, gen)
+            ensemble_propagate_for(ta, [20.0], 10, gen)
         self.assertTrue(
-            "Cannot perform an ensemble propagate_until/for(): the final epoch/time interval must be a scalar, not an iterable object" in str(cm.exception))
+            "Cannot perform an ensemble propagate_until/for(): the final epoch/time interval must be a scalar, not an iterable object"
+            in str(cm.exception)
+        )
 
         with self.assertRaises(ValueError) as cm:
-            ensemble_propagate_grid(ta, [[20., 20.]], 10, gen)
+            ensemble_propagate_grid(ta, [[20.0, 20.0]], 10, gen)
         self.assertTrue(
-            "Cannot perform an ensemble propagate_grid(): the input time grid must be one-dimensional, but instead it has 2 dimensions" in str(cm.exception))
+            "Cannot perform an ensemble propagate_grid(): the input time grid must be one-dimensional, but instead it has 2 dimensions"
+            in str(cm.exception)
+        )
 
         with self.assertRaises(TypeError) as cm:
-            ensemble_propagate_until(ta, 20., 10, gen, max_delta_t=[10])
+            ensemble_propagate_until(ta, 20.0, 10, gen, max_delta_t=[10])
         self.assertTrue(
-            "Cannot perform an ensemble propagate_until/for/grid(): the \"max_delta_t\" argument must be a scalar, not an iterable object" in str(cm.exception))
+            'Cannot perform an ensemble propagate_until/for/grid(): the "max_delta_t" argument must be a scalar, not an iterable object'
+            in str(cm.exception)
+        )
 
         # NOTE: check that the chunksize option is not recognised
         # in threaded mode.
         with self.assertRaises(TypeError) as cm:
-            ensemble_propagate_until(ta, 20., 10, gen, chunksize=1)
+            ensemble_propagate_until(ta, 20.0, 10, gen, chunksize=1)
 
 
 class cfunc_test_case(_ut.TestCase):
@@ -3738,43 +4603,52 @@ class cfunc_test_case(_ut.TestCase):
         from .core import _ppc_arch
 
         if _ppc_arch:
-            fp_types = [
-                ("double", float)]
+            fp_types = [float]
         else:
-            fp_types = [("double", float),
-                        ("long double", np.longdouble)]
+            fp_types = [float, np.longdouble]
 
         if hasattr(core, "real128"):
-            fp_types.append(("real128", core.real128))
+            fp_types.append(core.real128)
 
         x, y = make_vars("x", "y")
         func = [sin(x + y), x - par[0], x + y + par[1]]
 
-        for desc, fp_t in fp_types:
-            fn = add_cfunc(func, vars=[y, x], fp_type=desc)
+        for fp_t in fp_types:
+            fn = add_cfunc(func, vars=[y, x], fp_type=fp_t)
 
             with self.assertRaises(ValueError) as cm:
-                fn(np.zeros((2, 5), dtype=fp_t), pars=[
-                   fp_t(0)], outputs=np.zeros((3, 1), dtype=fp_t))
+                fn(
+                    np.zeros((2, 5), dtype=fp_t),
+                    pars=[fp_t(0)],
+                    outputs=np.zeros((3, 1), dtype=fp_t),
+                )
             self.assertTrue(
-                "The size in the second dimension for the output array provided for the evaluation of a compiled function (1) must match the size in the second dimension for the array of inputs (5)" in str(cm.exception))
+                "The size in the second dimension for the output array provided for the evaluation of a compiled function (1) must match the size in the second dimension for the array of inputs (5)"
+                in str(cm.exception)
+            )
 
             with self.assertRaises(ValueError) as cm:
-                fn(np.zeros((2, 5), dtype=fp_t),
-                   pars=np.zeros((2, 4), dtype=fp_t))
+                fn(np.zeros((2, 5), dtype=fp_t), pars=np.zeros((2, 4), dtype=fp_t))
             self.assertTrue(
-                "The size in the second dimension for the array of parameter values provided for the evaluation of a compiled function (4) must match the size in the second dimension for the array of inputs (5)" in str(cm.exception))
+                "The size in the second dimension for the array of parameter values provided for the evaluation of a compiled function (4) must match the size in the second dimension for the array of inputs (5)"
+                in str(cm.exception)
+            )
 
             nw_arr = np.zeros((3, 5), dtype=fp_t)
             nw_arr.setflags(write=False)
             with self.assertRaises(ValueError) as cm:
-                fn(np.zeros((2, 5), dtype=fp_t), outputs=nw_arr,
-                   pars=np.zeros((2, 5), dtype=fp_t))
+                fn(
+                    np.zeros((2, 5), dtype=fp_t),
+                    outputs=nw_arr,
+                    pars=np.zeros((2, 5), dtype=fp_t),
+                )
             self.assertTrue(
-                "The array of outputs provided for the evaluation of a compiled function is not writeable" in str(cm.exception))
+                "The array of outputs provided for the evaluation of a compiled function is not writeable"
+                in str(cm.exception)
+            )
 
             for nevals in range(0, 10):
-                fn = add_cfunc(func, vars=[y, x], fp_type=desc)
+                fn = add_cfunc(func, vars=[y, x], fp_type=fp_t)
 
                 # NOTE: deterministic seeding.
                 rng = np.random.default_rng(nevals)
@@ -3784,120 +4658,298 @@ class cfunc_test_case(_ut.TestCase):
                 pars = rng.random((2, nevals), dtype=float).astype(fp_t)
 
                 eval_arr = fn(inputs=inputs, pars=pars)
-                self.assertTrue(_allclose(eval_arr[0], np.sin(inputs[1, :] + inputs[0, :]),
-                                rtol=_get_eps(fp_t) * 10, atol=_get_eps(fp_t) * 10))
-                self.assertTrue(_allclose(eval_arr[1], inputs[1, :] - pars[0, :],
-                                rtol=_get_eps(fp_t) * 10, atol=_get_eps(fp_t) * 10))
-                self.assertTrue(_allclose(eval_arr[2], inputs[1, :] + inputs[0, :] + pars[1, :],
-                                rtol=_get_eps(fp_t) * 10, atol=_get_eps(fp_t) * 10))
+                self.assertTrue(
+                    _allclose(
+                        eval_arr[0],
+                        np.sin(inputs[1, :] + inputs[0, :]),
+                        rtol=_get_eps(fp_t) * 10,
+                        atol=_get_eps(fp_t) * 10,
+                    )
+                )
+                self.assertTrue(
+                    _allclose(
+                        eval_arr[1],
+                        inputs[1, :] - pars[0, :],
+                        rtol=_get_eps(fp_t) * 10,
+                        atol=_get_eps(fp_t) * 10,
+                    )
+                )
+                self.assertTrue(
+                    _allclose(
+                        eval_arr[2],
+                        inputs[1, :] + inputs[0, :] + pars[1, :],
+                        rtol=_get_eps(fp_t) * 10,
+                        atol=_get_eps(fp_t) * 10,
+                    )
+                )
 
                 # Check that eval_arr actually uses the memory
                 # provided from the outputs argument.
                 out_arr = np.zeros((3, nevals), dtype=fp_t)
                 eval_arr = fn(inputs=inputs, pars=pars, outputs=out_arr)
-                self.assertTrue(_allclose(eval_arr[0], np.sin(inputs[1, :] + inputs[0, :]),
-                                rtol=_get_eps(fp_t) * 10, atol=_get_eps(fp_t) * 10))
-                self.assertTrue(_allclose(eval_arr[1], inputs[1, :] - pars[0, :],
-                                rtol=_get_eps(fp_t) * 10, atol=_get_eps(fp_t) * 10))
-                self.assertTrue(_allclose(eval_arr[2], inputs[1, :] + inputs[0, :] + pars[1, :],
-                                rtol=_get_eps(fp_t) * 10, atol=_get_eps(fp_t) * 10))
+                self.assertEqual(id(eval_arr), id(out_arr))
+                self.assertTrue(
+                    _allclose(
+                        eval_arr[0],
+                        np.sin(inputs[1, :] + inputs[0, :]),
+                        rtol=_get_eps(fp_t) * 10,
+                        atol=_get_eps(fp_t) * 10,
+                    )
+                )
+                self.assertTrue(
+                    _allclose(
+                        eval_arr[1],
+                        inputs[1, :] - pars[0, :],
+                        rtol=_get_eps(fp_t) * 10,
+                        atol=_get_eps(fp_t) * 10,
+                    )
+                )
+                self.assertTrue(
+                    _allclose(
+                        eval_arr[2],
+                        inputs[1, :] + inputs[0, :] + pars[1, :],
+                        rtol=_get_eps(fp_t) * 10,
+                        atol=_get_eps(fp_t) * 10,
+                    )
+                )
 
                 # Test with non-owning arrays.
                 eval_arr = fn(inputs=inputs[:], pars=pars)
-                self.assertTrue(_allclose(eval_arr[0], np.sin(inputs[1, :] + inputs[0, :]),
-                                rtol=_get_eps(fp_t) * 10, atol=_get_eps(fp_t) * 10))
-                self.assertTrue(_allclose(eval_arr[1], inputs[1, :] - pars[0, :],
-                                rtol=_get_eps(fp_t) * 10, atol=_get_eps(fp_t) * 10))
-                self.assertTrue(_allclose(eval_arr[2], inputs[1, :] + inputs[0, :] + pars[1, :],
-                                rtol=_get_eps(fp_t) * 10, atol=_get_eps(fp_t) * 10))
+                self.assertTrue(
+                    _allclose(
+                        eval_arr[0],
+                        np.sin(inputs[1, :] + inputs[0, :]),
+                        rtol=_get_eps(fp_t) * 10,
+                        atol=_get_eps(fp_t) * 10,
+                    )
+                )
+                self.assertTrue(
+                    _allclose(
+                        eval_arr[1],
+                        inputs[1, :] - pars[0, :],
+                        rtol=_get_eps(fp_t) * 10,
+                        atol=_get_eps(fp_t) * 10,
+                    )
+                )
+                self.assertTrue(
+                    _allclose(
+                        eval_arr[2],
+                        inputs[1, :] + inputs[0, :] + pars[1, :],
+                        rtol=_get_eps(fp_t) * 10,
+                        atol=_get_eps(fp_t) * 10,
+                    )
+                )
 
                 eval_arr = fn(inputs=inputs, pars=pars[:])
-                self.assertTrue(_allclose(eval_arr[0], np.sin(inputs[1, :] + inputs[0, :]),
-                                rtol=_get_eps(fp_t) * 10, atol=_get_eps(fp_t) * 10))
-                self.assertTrue(_allclose(eval_arr[1], inputs[1, :] - pars[0, :],
-                                rtol=_get_eps(fp_t) * 10, atol=_get_eps(fp_t) * 10))
-                self.assertTrue(_allclose(eval_arr[2], inputs[1, :] + inputs[0, :] + pars[1, :],
-                                rtol=_get_eps(fp_t) * 10, atol=_get_eps(fp_t) * 10))
+                self.assertTrue(
+                    _allclose(
+                        eval_arr[0],
+                        np.sin(inputs[1, :] + inputs[0, :]),
+                        rtol=_get_eps(fp_t) * 10,
+                        atol=_get_eps(fp_t) * 10,
+                    )
+                )
+                self.assertTrue(
+                    _allclose(
+                        eval_arr[1],
+                        inputs[1, :] - pars[0, :],
+                        rtol=_get_eps(fp_t) * 10,
+                        atol=_get_eps(fp_t) * 10,
+                    )
+                )
+                self.assertTrue(
+                    _allclose(
+                        eval_arr[2],
+                        inputs[1, :] + inputs[0, :] + pars[1, :],
+                        rtol=_get_eps(fp_t) * 10,
+                        atol=_get_eps(fp_t) * 10,
+                    )
+                )
 
                 # Test with non-distinct arrays.
                 eval_arr = fn(inputs=inputs, pars=inputs)
-                self.assertTrue(_allclose(eval_arr[0], np.sin(inputs[1, :] + inputs[0, :]),
-                                rtol=_get_eps(fp_t) * 10, atol=_get_eps(fp_t) * 10))
-                self.assertTrue(_allclose(eval_arr[1], inputs[1, :] - inputs[0, :],
-                                rtol=_get_eps(fp_t) * 10, atol=_get_eps(fp_t) * 10))
-                self.assertTrue(_allclose(eval_arr[2], inputs[1, :] + inputs[0, :] + inputs[1, :],
-                                rtol=_get_eps(fp_t) * 10, atol=_get_eps(fp_t) * 10))
+                self.assertTrue(
+                    _allclose(
+                        eval_arr[0],
+                        np.sin(inputs[1, :] + inputs[0, :]),
+                        rtol=_get_eps(fp_t) * 10,
+                        atol=_get_eps(fp_t) * 10,
+                    )
+                )
+                self.assertTrue(
+                    _allclose(
+                        eval_arr[1],
+                        inputs[1, :] - inputs[0, :],
+                        rtol=_get_eps(fp_t) * 10,
+                        atol=_get_eps(fp_t) * 10,
+                    )
+                )
+                self.assertTrue(
+                    _allclose(
+                        eval_arr[2],
+                        inputs[1, :] + inputs[0, :] + inputs[1, :],
+                        rtol=_get_eps(fp_t) * 10,
+                        atol=_get_eps(fp_t) * 10,
+                    )
+                )
 
                 # Test with arrays which are not C style.
                 inputs = rng.random((4, nevals), dtype=float).astype(fp_t)
                 inputs = inputs[::2]
                 eval_arr = fn(inputs=inputs, pars=pars)
-                self.assertTrue(_allclose(eval_arr[0], np.sin(inputs[1, :] + inputs[0, :]),
-                                rtol=_get_eps(fp_t) * 10, atol=_get_eps(fp_t) * 10))
-                self.assertTrue(_allclose(eval_arr[1], inputs[1, :] - pars[0, :],
-                                rtol=_get_eps(fp_t) * 10, atol=_get_eps(fp_t) * 10))
-                self.assertTrue(_allclose(eval_arr[2], inputs[1, :] + inputs[0, :] + pars[1, :],
-                                rtol=_get_eps(fp_t) * 10, atol=_get_eps(fp_t) * 10))
+                self.assertTrue(
+                    _allclose(
+                        eval_arr[0],
+                        np.sin(inputs[1, :] + inputs[0, :]),
+                        rtol=_get_eps(fp_t) * 10,
+                        atol=_get_eps(fp_t) * 10,
+                    )
+                )
+                self.assertTrue(
+                    _allclose(
+                        eval_arr[1],
+                        inputs[1, :] - pars[0, :],
+                        rtol=_get_eps(fp_t) * 10,
+                        atol=_get_eps(fp_t) * 10,
+                    )
+                )
+                self.assertTrue(
+                    _allclose(
+                        eval_arr[2],
+                        inputs[1, :] + inputs[0, :] + pars[1, :],
+                        rtol=_get_eps(fp_t) * 10,
+                        atol=_get_eps(fp_t) * 10,
+                    )
+                )
 
                 pars = rng.random((4, nevals), dtype=float).astype(fp_t)
                 pars = pars[::2]
                 eval_arr = fn(inputs=inputs, pars=pars)
-                self.assertTrue(_allclose(eval_arr[0], np.sin(inputs[1, :] + inputs[0, :]),
-                                rtol=_get_eps(fp_t) * 10, atol=_get_eps(fp_t) * 10))
-                self.assertTrue(_allclose(eval_arr[1], inputs[1, :] - pars[0, :],
-                                rtol=_get_eps(fp_t) * 10, atol=_get_eps(fp_t) * 10))
-                self.assertTrue(_allclose(eval_arr[2], inputs[1, :] + inputs[0, :] + pars[1, :],
-                                rtol=_get_eps(fp_t) * 10, atol=_get_eps(fp_t) * 10))
+                self.assertTrue(
+                    _allclose(
+                        eval_arr[0],
+                        np.sin(inputs[1, :] + inputs[0, :]),
+                        rtol=_get_eps(fp_t) * 10,
+                        atol=_get_eps(fp_t) * 10,
+                    )
+                )
+                self.assertTrue(
+                    _allclose(
+                        eval_arr[1],
+                        inputs[1, :] - pars[0, :],
+                        rtol=_get_eps(fp_t) * 10,
+                        atol=_get_eps(fp_t) * 10,
+                    )
+                )
+                self.assertTrue(
+                    _allclose(
+                        eval_arr[2],
+                        inputs[1, :] + inputs[0, :] + pars[1, :],
+                        rtol=_get_eps(fp_t) * 10,
+                        atol=_get_eps(fp_t) * 10,
+                    )
+                )
 
                 # Tests with no inputs.
-                fn = add_cfunc(
-                    [expression(fp_t(3)) + par[1], par[0]], fp_type=desc)
+                fn = add_cfunc([expression(fp_t(3)) + par[1], par[0]], fp_type=fp_t)
 
                 inputs = rng.random((0, nevals), dtype=float).astype(fp_t)
                 pars = rng.random((2, nevals), dtype=float).astype(fp_t)
                 eval_arr = fn(inputs=inputs, pars=pars)
-                self.assertTrue(_allclose(eval_arr[0], 3+pars[1, :],
-                                rtol=_get_eps(fp_t) * 10, atol=_get_eps(fp_t) * 10))
-                self.assertTrue(_allclose(eval_arr[1], pars[0, :],
-                                rtol=_get_eps(fp_t) * 10, atol=_get_eps(fp_t) * 10))
+                self.assertTrue(
+                    _allclose(
+                        eval_arr[0],
+                        3 + pars[1, :],
+                        rtol=_get_eps(fp_t) * 10,
+                        atol=_get_eps(fp_t) * 10,
+                    )
+                )
+                self.assertTrue(
+                    _allclose(
+                        eval_arr[1],
+                        pars[0, :],
+                        rtol=_get_eps(fp_t) * 10,
+                        atol=_get_eps(fp_t) * 10,
+                    )
+                )
 
                 eval_arr = fn(inputs=inputs[:], pars=pars)
-                self.assertTrue(_allclose(eval_arr[0], 3+pars[1, :],
-                                rtol=_get_eps(fp_t) * 10, atol=_get_eps(fp_t) * 10))
-                self.assertTrue(_allclose(eval_arr[1], pars[0, :],
-                                rtol=_get_eps(fp_t) * 10, atol=_get_eps(fp_t) * 10))
+                self.assertTrue(
+                    _allclose(
+                        eval_arr[0],
+                        3 + pars[1, :],
+                        rtol=_get_eps(fp_t) * 10,
+                        atol=_get_eps(fp_t) * 10,
+                    )
+                )
+                self.assertTrue(
+                    _allclose(
+                        eval_arr[1],
+                        pars[0, :],
+                        rtol=_get_eps(fp_t) * 10,
+                        atol=_get_eps(fp_t) * 10,
+                    )
+                )
 
                 eval_arr = fn(inputs=inputs, pars=pars[:])
-                self.assertTrue(_allclose(eval_arr[0], 3+pars[1, :],
-                                rtol=_get_eps(fp_t) * 10, atol=_get_eps(fp_t) * 10))
-                self.assertTrue(_allclose(eval_arr[1], pars[0, :],
-                                rtol=_get_eps(fp_t) * 10, atol=_get_eps(fp_t) * 10))
+                self.assertTrue(
+                    _allclose(
+                        eval_arr[0],
+                        3 + pars[1, :],
+                        rtol=_get_eps(fp_t) * 10,
+                        atol=_get_eps(fp_t) * 10,
+                    )
+                )
+                self.assertTrue(
+                    _allclose(
+                        eval_arr[1],
+                        pars[0, :],
+                        rtol=_get_eps(fp_t) * 10,
+                        atol=_get_eps(fp_t) * 10,
+                    )
+                )
 
-                fn = add_cfunc(
-                    [expression(fp_t(3)), expression(fp_t(4))], fp_type=desc)
+                fn = add_cfunc([expression(fp_t(3)), expression(fp_t(4))], fp_type=fp_t)
 
                 inputs = rng.random((0, nevals), dtype=float).astype(fp_t)
                 pars = rng.random((0, nevals), dtype=float).astype(fp_t)
                 eval_arr = fn(inputs=inputs, pars=pars)
-                self.assertTrue(_allclose(eval_arr[0], [3]*nevals,
-                                rtol=_get_eps(fp_t) * 10, atol=_get_eps(fp_t) * 10))
-                self.assertTrue(_allclose(eval_arr[1], [4]*nevals,
-                                rtol=_get_eps(fp_t) * 10, atol=_get_eps(fp_t) * 10))
+                self.assertTrue(
+                    _allclose(
+                        eval_arr[0],
+                        [3] * nevals,
+                        rtol=_get_eps(fp_t) * 10,
+                        atol=_get_eps(fp_t) * 10,
+                    )
+                )
+                self.assertTrue(
+                    _allclose(
+                        eval_arr[1],
+                        [4] * nevals,
+                        rtol=_get_eps(fp_t) * 10,
+                        atol=_get_eps(fp_t) * 10,
+                    )
+                )
 
                 # Test case in which there are no pars but a pars array is provided anyway,
                 # with the correct shape.
-                fn = add_cfunc([x+y], fp_type=desc)
+                fn = add_cfunc([x + y], fp_type=fp_t)
                 inputs = rng.random((2, nevals), dtype=float).astype(fp_t)
-                eval_arr = fn(inputs=inputs, pars=np.zeros(
-                    (0, nevals), dtype=fp_t))
+                eval_arr = fn(inputs=inputs, pars=np.zeros((0, nevals), dtype=fp_t))
 
-                self.assertTrue(_allclose(eval_arr[0], inputs[0, :] + inputs[1, :],
-                                rtol=_get_eps(fp_t) * 10, atol=_get_eps(fp_t) * 10))
+                self.assertTrue(
+                    _allclose(
+                        eval_arr[0],
+                        inputs[0, :] + inputs[1, :],
+                        rtol=_get_eps(fp_t) * 10,
+                        atol=_get_eps(fp_t) * 10,
+                    )
+                )
 
         # Check throwing behaviour with long double on PPC.
         if _ppc_arch:
             with self.assertRaises(NotImplementedError):
-                add_cfunc(func, vars=[y, x], fp_type="long double")
+                add_cfunc(func, vars=[y, x], fp_type=np.longdouble)
 
     def test_single(self):
         import numpy as np
@@ -3905,14 +4957,12 @@ class cfunc_test_case(_ut.TestCase):
         from .core import _ppc_arch
 
         if _ppc_arch:
-            fp_types = [
-                ("double", float)]
+            fp_types = [float]
         else:
-            fp_types = [("double", float),
-                        ("long double", np.longdouble)]
+            fp_types = [float, np.longdouble]
 
         if hasattr(core, "real128"):
-            fp_types.append(("real128", core.real128))
+            fp_types.append(core.real128)
 
         x, y = make_vars("x", "y")
         func = [sin(x + y), x - par[0], x + y + par[1]]
@@ -3921,107 +4971,213 @@ class cfunc_test_case(_ut.TestCase):
         # some more testing for high_accuracy, compact_mode,
         # etc., once we figure out how to test for them. Perhaps
         # examine the llvm states?
-        for desc, fp_t in fp_types:
-            fn = add_cfunc(func, fp_type=desc)
+        for fp_t in fp_types:
+            fn = add_cfunc(func, fp_type=fp_t)
 
             with self.assertRaises(ValueError) as cm:
                 fn([fp_t(1), fp_t(2)])
             self.assertTrue(
-                "The compiled function contains 2 parameter(s), but no array of parameter values was provided for evaluation" in str(cm.exception))
+                "The compiled function contains 2 parameter(s), but no array of parameter values was provided for evaluation"
+                in str(cm.exception)
+            )
 
             with self.assertRaises(ValueError) as cm:
                 fn(np.zeros((1, 2, 3), dtype=fp_t), pars=[fp_t(0)])
             self.assertTrue(
-                "The array of inputs provided for the evaluation of a compiled function has 3 dimensions, but it must have either 1 or 2 dimensions instead" in str(cm.exception))
+                "The array of inputs provided for the evaluation of a compiled function has 3 dimensions, but it must have either 1 or 2 dimensions instead"
+                in str(cm.exception)
+            )
 
             with self.assertRaises(ValueError) as cm:
                 fn([fp_t(0)], pars=[fp_t(0)])
             self.assertTrue(
-                "The array of inputs provided for the evaluation of a compiled function has size 1 in the first dimension, but it must have a size of 2 instead (i.e., the size in the first dimension must be equal to the number of variables)" in str(cm.exception))
+                "The array of inputs provided for the evaluation of a compiled function has size 1 in the first dimension, but it must have a size of 2 instead (i.e., the size in the first dimension must be equal to the number of variables)"
+                in str(cm.exception)
+            )
 
             with self.assertRaises(ValueError) as cm:
-                fn(np.zeros((2,), dtype=fp_t), pars=[
-                   fp_t(0)], outputs=np.zeros((2,), dtype=fp_t))
+                fn(
+                    np.zeros((2,), dtype=fp_t),
+                    pars=[fp_t(0)],
+                    outputs=np.zeros((2,), dtype=fp_t),
+                )
             self.assertTrue(
-                "The array of outputs provided for the evaluation of a compiled function has size 2 in the first dimension, but it must have a size of 3 instead (i.e., the size in the first dimension must be equal to the number of outputs)" in str(cm.exception))
+                "The array of outputs provided for the evaluation of a compiled function has size 2 in the first dimension, but it must have a size of 3 instead (i.e., the size in the first dimension must be equal to the number of outputs)"
+                in str(cm.exception)
+            )
 
             with self.assertRaises(ValueError) as cm:
                 fn(np.zeros((2,), dtype=fp_t), pars=np.zeros((0,), dtype=fp_t))
             self.assertTrue(
-                "The array of parameter values provided for the evaluation of a compiled function has size 0 in the first dimension, but it must have a size of 2 instead (i.e., the size in the first dimension must be equal to the number of parameters in the function)" in str(cm.exception))
+                "The array of parameter values provided for the evaluation of a compiled function has size 0 in the first dimension, but it must have a size of 2 instead (i.e., the size in the first dimension must be equal to the number of parameters in the function)"
+                in str(cm.exception)
+            )
 
             eval_arr = fn([fp_t(1), fp_t(2)], pars=[fp_t(-5), fp_t(1)])
-            self.assertTrue(_allclose(eval_arr, [np.sin(fp_t(1)+fp_t(2)), fp_t(1) - fp_t(-5), fp_t(1) + fp_t(2) + fp_t(1)],
-                            rtol=_get_eps(fp_t) * 10, atol=_get_eps(fp_t) * 10))
+            self.assertTrue(
+                _allclose(
+                    eval_arr,
+                    [
+                        np.sin(fp_t(1) + fp_t(2)),
+                        fp_t(1) - fp_t(-5),
+                        fp_t(1) + fp_t(2) + fp_t(1),
+                    ],
+                    rtol=_get_eps(fp_t) * 10,
+                    atol=_get_eps(fp_t) * 10,
+                )
+            )
 
             # Check that eval_arr actually uses the memory
             # provided from the outputs argument.
             out_arr = np.zeros((3,), dtype=fp_t)
-            eval_arr = fn([fp_t(1), fp_t(2)], pars=[
-                          fp_t(-5), fp_t(1)], outputs=out_arr)
+            eval_arr = fn([fp_t(1), fp_t(2)], pars=[fp_t(-5), fp_t(1)], outputs=out_arr)
             self.assertTrue(np.shares_memory(eval_arr, out_arr))
-            self.assertTrue(_allclose(eval_arr, [np.sin(fp_t(1)+fp_t(2)), fp_t(1) - fp_t(-5), fp_t(1) + fp_t(2) + fp_t(1)],
-                            rtol=_get_eps(fp_t) * 10, atol=_get_eps(fp_t) * 10))
+            self.assertEqual(id(eval_arr), id(out_arr))
+            self.assertTrue(
+                _allclose(
+                    eval_arr,
+                    [
+                        np.sin(fp_t(1) + fp_t(2)),
+                        fp_t(1) - fp_t(-5),
+                        fp_t(1) + fp_t(2) + fp_t(1),
+                    ],
+                    rtol=_get_eps(fp_t) * 10,
+                    atol=_get_eps(fp_t) * 10,
+                )
+            )
 
             # Test with non-owning arrays.
             inputs = np.array([fp_t(1), fp_t(2)])
             eval_arr = fn(inputs=inputs[:], pars=[fp_t(-5), fp_t(1)])
-            self.assertTrue(_allclose(eval_arr, [np.sin(fp_t(1)+fp_t(2)), fp_t(1) - fp_t(-5), fp_t(1) + fp_t(2) + fp_t(1)],
-                            rtol=_get_eps(fp_t) * 10, atol=_get_eps(fp_t) * 10))
+            self.assertTrue(
+                _allclose(
+                    eval_arr,
+                    [
+                        np.sin(fp_t(1) + fp_t(2)),
+                        fp_t(1) - fp_t(-5),
+                        fp_t(1) + fp_t(2) + fp_t(1),
+                    ],
+                    rtol=_get_eps(fp_t) * 10,
+                    atol=_get_eps(fp_t) * 10,
+                )
+            )
 
             pars = np.array([fp_t(-5), fp_t(1)])
             eval_arr = fn(inputs=inputs, pars=pars[:])
-            self.assertTrue(_allclose(eval_arr, [np.sin(fp_t(1)+fp_t(2)), fp_t(1) - fp_t(-5), fp_t(1) + fp_t(2) + fp_t(1)],
-                            rtol=_get_eps(fp_t) * 10, atol=_get_eps(fp_t) * 10))
+            self.assertTrue(
+                _allclose(
+                    eval_arr,
+                    [
+                        np.sin(fp_t(1) + fp_t(2)),
+                        fp_t(1) - fp_t(-5),
+                        fp_t(1) + fp_t(2) + fp_t(1),
+                    ],
+                    rtol=_get_eps(fp_t) * 10,
+                    atol=_get_eps(fp_t) * 10,
+                )
+            )
 
             # Test with non-distinct arrays.
             eval_arr = fn(inputs=inputs, pars=inputs)
-            self.assertTrue(_allclose(eval_arr, [np.sin(fp_t(1)+fp_t(2)), fp_t(1) - fp_t(1), fp_t(1) + fp_t(2) + fp_t(2)],
-                            rtol=_get_eps(fp_t) * 10, atol=_get_eps(fp_t) * 10))
+            self.assertTrue(
+                _allclose(
+                    eval_arr,
+                    [
+                        np.sin(fp_t(1) + fp_t(2)),
+                        fp_t(1) - fp_t(1),
+                        fp_t(1) + fp_t(2) + fp_t(2),
+                    ],
+                    rtol=_get_eps(fp_t) * 10,
+                    atol=_get_eps(fp_t) * 10,
+                )
+            )
 
             # Test with arrays which are not C style.
             inputs = np.zeros((4,), dtype=fp_t)
             inputs[::2] = [fp_t(1), fp_t(2)]
             eval_arr = fn(inputs=inputs[::2], pars=pars)
-            self.assertTrue(_allclose(eval_arr, [np.sin(fp_t(1)+fp_t(2)), fp_t(1) - fp_t(-5), fp_t(1) + fp_t(2) + fp_t(1)],
-                            rtol=_get_eps(fp_t) * 10, atol=_get_eps(fp_t) * 10))
+            self.assertTrue(
+                _allclose(
+                    eval_arr,
+                    [
+                        np.sin(fp_t(1) + fp_t(2)),
+                        fp_t(1) - fp_t(-5),
+                        fp_t(1) + fp_t(2) + fp_t(1),
+                    ],
+                    rtol=_get_eps(fp_t) * 10,
+                    atol=_get_eps(fp_t) * 10,
+                )
+            )
 
             inputs = np.array([fp_t(1), fp_t(2)])
             pars = np.zeros((4,), dtype=fp_t)
             pars[::2] = [fp_t(-5), fp_t(1)]
             eval_arr = fn(inputs=inputs, pars=pars[::2])
-            self.assertTrue(_allclose(eval_arr, [np.sin(fp_t(1)+fp_t(2)), fp_t(1) - fp_t(-5), fp_t(1) + fp_t(2) + fp_t(1)],
-                            rtol=_get_eps(fp_t) * 10, atol=_get_eps(fp_t) * 10))
+            self.assertTrue(
+                _allclose(
+                    eval_arr,
+                    [
+                        np.sin(fp_t(1) + fp_t(2)),
+                        fp_t(1) - fp_t(-5),
+                        fp_t(1) + fp_t(2) + fp_t(1),
+                    ],
+                    rtol=_get_eps(fp_t) * 10,
+                    atol=_get_eps(fp_t) * 10,
+                )
+            )
 
             # Tests with no inputs.
-            fn = add_cfunc(
-                [expression(fp_t(3)) + par[1], par[0]], fp_type=desc)
+            fn = add_cfunc([expression(fp_t(3)) + par[1], par[0]], fp_type=fp_t)
 
             eval_arr = fn(inputs=np.zeros((0,), dtype=fp_t), pars=[1, 2])
-            self.assertTrue(_allclose(eval_arr, [fp_t(3) + 2, fp_t(1)],
-                            rtol=_get_eps(fp_t) * 10, atol=_get_eps(fp_t) * 10))
+            self.assertTrue(
+                _allclose(
+                    eval_arr,
+                    [fp_t(3) + 2, fp_t(1)],
+                    rtol=_get_eps(fp_t) * 10,
+                    atol=_get_eps(fp_t) * 10,
+                )
+            )
 
             inputs = np.zeros((0,), dtype=fp_t)
             eval_arr = fn(inputs=inputs[:], pars=[1, 2])
-            self.assertTrue(_allclose(eval_arr, [fp_t(3) + 2, fp_t(1)],
-                            rtol=_get_eps(fp_t) * 10, atol=_get_eps(fp_t) * 10))
+            self.assertTrue(
+                _allclose(
+                    eval_arr,
+                    [fp_t(3) + 2, fp_t(1)],
+                    rtol=_get_eps(fp_t) * 10,
+                    atol=_get_eps(fp_t) * 10,
+                )
+            )
 
-            fn = add_cfunc(
-                [expression(fp_t(3)), expression(fp_t(4))], fp_type=desc)
+            fn = add_cfunc([expression(fp_t(3)), expression(fp_t(4))], fp_type=fp_t)
 
             eval_arr = fn(inputs=np.zeros((0,), dtype=fp_t), pars=[])
-            self.assertTrue(_allclose(eval_arr, [fp_t(3), fp_t(4)],
-                            rtol=_get_eps(fp_t) * 10, atol=_get_eps(fp_t) * 10))
+            self.assertTrue(
+                _allclose(
+                    eval_arr,
+                    [fp_t(3), fp_t(4)],
+                    rtol=_get_eps(fp_t) * 10,
+                    atol=_get_eps(fp_t) * 10,
+                )
+            )
 
-            eval_arr = fn(inputs=np.zeros((0,), dtype=fp_t),
-                          pars=np.zeros((0,), dtype=fp_t))
-            self.assertTrue(_allclose(eval_arr, [fp_t(3), fp_t(4)],
-                            rtol=_get_eps(fp_t) * 10, atol=_get_eps(fp_t) * 10))
+            eval_arr = fn(
+                inputs=np.zeros((0,), dtype=fp_t), pars=np.zeros((0,), dtype=fp_t)
+            )
+            self.assertTrue(
+                _allclose(
+                    eval_arr,
+                    [fp_t(3), fp_t(4)],
+                    rtol=_get_eps(fp_t) * 10,
+                    atol=_get_eps(fp_t) * 10,
+                )
+            )
 
             # Test case in which there are no pars but a pars array is provided anyway,
             # with the correct shape.
-            fn = add_cfunc([x+y], fp_type=desc)
-            eval_arr = fn(inputs=[1, 2], pars=np.zeros((0, ), dtype=fp_t))
+            fn = add_cfunc([x + y], fp_type=fp_t)
+            eval_arr = fn(inputs=[1, 2], pars=np.zeros((0,), dtype=fp_t))
 
             self.assertEqual(eval_arr[0], 3)
 
@@ -4060,31 +5216,31 @@ class real128_test_case(_ut.TestCase):
 
         # Large ints, still exactly representable.
         for _ in range(100):
-            n = random.randint(-2**101, 2**101)
+            n = random.randint(-(2**101), 2**101)
             self.assertEqual(str(real128(n)), str(n))
 
         # Ints with bit width around the mantissa bit width.
         self.assertEqual(str(real128(2**113)), str(2**113))
-        self.assertEqual(str(real128(-2**113)), str(-2**113))
-        self.assertEqual(str(real128(2**113+1)), str(2**113))
-        self.assertEqual(str(real128(-2**113-1)), str(-2**113))
-        self.assertEqual(str(real128(2**113-1)), str(2**113-1))
-        self.assertEqual(str(real128(-2**113+1)), str(-2**113+1))
+        self.assertEqual(str(real128(-(2**113))), str(-(2**113)))
+        self.assertEqual(str(real128(2**113 + 1)), str(2**113))
+        self.assertEqual(str(real128(-(2**113) - 1)), str(-(2**113)))
+        self.assertEqual(str(real128(2**113 - 1)), str(2**113 - 1))
+        self.assertEqual(str(real128(-(2**113) + 1)), str(-(2**113) + 1))
 
         # Very large ints.
         for _ in range(100):
-            n = random.randint(-2**1001, 2**1001)
+            n = random.randint(-(2**1001), 2**1001)
             self.assertEqual(str(real128(n)), str(real128(str(n))))
 
         # Construction from floats.
-        self.assertEqual(str(real128(-0.)), "-0")
-        self.assertEqual(str(real128(42.)), "42")
+        self.assertEqual(str(real128(-0.0)), "-0")
+        self.assertEqual(str(real128(42.0)), "42")
         self.assertEqual(str(real128(-float("inf"))), "-inf")
         self.assertEqual(str(real128(float("nan"))), "nan")
 
         # Construction from long double.
-        self.assertEqual(str(real128(ld(-0.))), "-0")
-        self.assertEqual(str(real128(ld(42.))), "42")
+        self.assertEqual(str(real128(ld(-0.0))), "-0")
+        self.assertEqual(str(real128(ld(42.0))), "42")
         self.assertEqual(str(real128(ld(-float("inf")))), "-inf")
         self.assertEqual(str(real128(ld(float("nan")))), "nan")
 
@@ -4098,12 +5254,16 @@ class real128_test_case(_ut.TestCase):
         with self.assertRaises(ValueError) as cm:
             real128("hello world")
         self.assertTrue(
-            "The string 'hello world' does not represent a valid quadruple-precision floating-point value" in str(cm.exception))
+            "The string 'hello world' does not represent a valid quadruple-precision floating-point value"
+            in str(cm.exception)
+        )
 
         with self.assertRaises(TypeError) as cm:
             real128([])
         self.assertTrue(
-            "Cannot construct a real128 from an object of type \"list\"" in str(cm.exception))
+            'Cannot construct a real128 from an object of type "list"'
+            in str(cm.exception)
+        )
 
         # Conversion to bool.
         self.assertTrue(bool(real128(1)))
@@ -4123,10 +5283,10 @@ class real128_test_case(_ut.TestCase):
         # Binary math ops.
         self.assertEqual(repr(real128(42) + real128(1)), "43")
         self.assertEqual(repr(real128(42) + 1), "43")
-        self.assertEqual(repr(real128(42) + 1.), "43")
+        self.assertEqual(repr(real128(42) + 1.0), "43")
         self.assertEqual(repr(real128(42) + ld(1)), "43")
         self.assertEqual(repr(1 + real128(42)), "43")
-        self.assertEqual(repr(1. + real128(42)), "43")
+        self.assertEqual(repr(1.0 + real128(42)), "43")
         self.assertEqual(repr(ld(1) + real128(42)), "43")
         with self.assertRaises(TypeError) as cm:
             real128(1) + []
@@ -4135,10 +5295,10 @@ class real128_test_case(_ut.TestCase):
 
         self.assertEqual(repr(real128(42) - real128(1)), "41")
         self.assertEqual(repr(real128(42) - 1), "41")
-        self.assertEqual(repr(real128(42) - 1.), "41")
+        self.assertEqual(repr(real128(42) - 1.0), "41")
         self.assertEqual(repr(real128(42) - ld(1)), "41")
         self.assertEqual(repr(1 - real128(42)), "-41")
-        self.assertEqual(repr(1. - real128(42)), "-41")
+        self.assertEqual(repr(1.0 - real128(42)), "-41")
         self.assertEqual(repr(ld(1) - real128(42)), "-41")
         with self.assertRaises(TypeError) as cm:
             real128(1) - []
@@ -4147,10 +5307,10 @@ class real128_test_case(_ut.TestCase):
 
         self.assertEqual(repr(real128(42) * real128(2)), "84")
         self.assertEqual(repr(real128(42) * 2), "84")
-        self.assertEqual(repr(real128(42) * 2.), "84")
+        self.assertEqual(repr(real128(42) * 2.0), "84")
         self.assertEqual(repr(real128(42) * ld(2)), "84")
         self.assertEqual(repr(2 * real128(42)), "84")
-        self.assertEqual(repr(2. * real128(42)), "84")
+        self.assertEqual(repr(2.0 * real128(42)), "84")
         self.assertEqual(repr(ld(2) * real128(42)), "84")
         with self.assertRaises(TypeError) as cm:
             real128(1) * []
@@ -4159,10 +5319,10 @@ class real128_test_case(_ut.TestCase):
 
         self.assertEqual(repr(real128(42) // real128(9)), "4")
         self.assertEqual(repr(real128(42) // 9), "4")
-        self.assertEqual(repr(real128(42) // 9.), "4")
+        self.assertEqual(repr(real128(42) // 9.0), "4")
         self.assertEqual(repr(real128(42) // ld(9)), "4")
         self.assertEqual(repr(-42 // real128(9)), "-5")
-        self.assertEqual(repr(-42. // real128(9)), "-5")
+        self.assertEqual(repr(-42.0 // real128(9)), "-5")
         self.assertEqual(repr(ld(-42) // real128(9)), "-5")
         with self.assertRaises(TypeError) as cm:
             real128(1) // []
@@ -4171,10 +5331,10 @@ class real128_test_case(_ut.TestCase):
 
         self.assertEqual(repr(real128(42) ** real128(2)), "1764")
         self.assertEqual(repr(real128(42) ** 2), "1764")
-        self.assertEqual(repr(real128(42) ** 2.), "1764")
+        self.assertEqual(repr(real128(42) ** 2.0), "1764")
         self.assertEqual(repr(real128(42) ** ld(2)), "1764")
         self.assertEqual(repr(42 ** real128(2)), "1764")
-        self.assertEqual(repr(42. ** real128(2)), "1764")
+        self.assertEqual(repr(42.0 ** real128(2)), "1764")
         self.assertEqual(repr(ld(42) ** real128(2)), "1764")
         with self.assertRaises(TypeError) as cm:
             real128(1) ** []
@@ -4183,15 +5343,16 @@ class real128_test_case(_ut.TestCase):
         with self.assertRaises(ValueError) as cm:
             pow(real128(1), 3, mod=4)
         self.assertTrue(
-            "Modular exponentiation is not supported for real128" in str(cm.exception))
+            "Modular exponentiation is not supported for real128" in str(cm.exception)
+        )
 
         # Comparisons.
         self.assertTrue(real128(1) < real128(2))
         self.assertTrue(real128(1) < 2)
-        self.assertTrue(real128(1) < 2.)
+        self.assertTrue(real128(1) < 2.0)
         self.assertTrue(real128(1) < ld(2))
         self.assertTrue(1 < real128(2))
-        self.assertTrue(1. < real128(2))
+        self.assertTrue(1.0 < real128(2))
         self.assertTrue(ld(1) < real128(2))
         self.assertFalse(real128("nan") < 2)
         self.assertFalse(2 < real128("nan"))
@@ -4231,14 +5392,397 @@ class real128_test_case(_ut.TestCase):
                 pass
 
     def test_numpy(self):
-        pass
+        import numpy as np
+        from copy import copy, deepcopy
+        from . import real128
+        from pickle import dumps, loads
+
+        # Basic creation/getitem/setitem.
+        arr = np.array([1, 2, 3], dtype=real128)
+        self.assertEqual(type(arr[0]), real128)
+        self.assertEqual(arr[0], 1)
+        self.assertEqual(arr[1], 2)
+        self.assertEqual(arr[2], 3)
+
+        arr = np.array([real128("1.1")])
+        self.assertEqual(arr.dtype, real128)
+        self.assertEqual(type(arr[0]), real128)
+        self.assertEqual(arr[0], real128("1.1"))
+        arr[0] = real128("1.3")
+        self.assertEqual(arr[0], real128("1.3"))
+        arr[0] = real128(123)
+        self.assertEqual(arr[0], 123)
+        arr[0] = real128(1.1)
+        self.assertEqual(arr[0], real128(1.1))
+
+        with self.assertRaises(TypeError) as cm:
+            arr = np.array(["1.1"], dtype=np.dtype(real128))
+        self.assertTrue(
+            'Cannot invoke __setitem__() on a real128 array with an input value of type "str"'
+            in str(cm.exception)
+        )
+
+        # Copying primitives.
+        arr = np.array([real128("1.1"), real128("1.3")])
+        arr_copy = copy(arr)
+        self.assertTrue(arr_copy[0] == real128("1.1"))
+        self.assertTrue(arr_copy[1] == real128("1.3"))
+        arr_copy = deepcopy(arr)
+        self.assertTrue(arr_copy[0] == real128("1.1"))
+        self.assertTrue(arr_copy[1] == real128("1.3"))
+
+        # Nonzero.
+        arr = np.array([1, 0, 3, real128("nan")], dtype=real128)
+        self.assertTrue(np.all([0, 2, 3] == np.nonzero(arr)[0]))
+
+        # Argmin/argmax.
+        arr = np.array([1, 321, 54, 6, 2, 6, -6], dtype=real128)
+        self.assertEqual(np.argmin(arr), 6)
+        self.assertEqual(np.argmax(arr), 1)
+        arr = np.array([], dtype=real128)
+        with self.assertRaises(ValueError) as cm:
+            np.argmin(arr)
+        with self.assertRaises(ValueError) as cm:
+            np.argmax(arr)
+
+        # arange() and linspace().
+        arr = np.arange(0, 1, real128("0.3"))
+        self.assertTrue(
+            np.all(
+                arr
+                == np.array(
+                    [
+                        0,
+                        real128("0.29999999999999999999999999999999999"),
+                        real128("0.599999999999999999999999999999999981"),
+                        real128("0.899999999999999999999999999999999923"),
+                    ],
+                    dtype=real128,
+                )
+            )
+        )
+        arr = np.linspace(real128(0), 1, 4)
+        self.assertTrue(
+            np.all(
+                arr
+                == np.array(
+                    [
+                        0,
+                        real128("0.333333333333333333333333333333333317"),
+                        real128("0.666666666666666666666666666666666635"),
+                        1,
+                    ],
+                    dtype=real128,
+                )
+            )
+        )
+
+        # zeros, ones, full.
+        arr = np.zeros((2, 2), dtype=real128)
+        self.assertTrue(np.all(arr == np.array([[0, 0], [0, 0]], dtype=real128)))
+        arr = np.ones((2, 2), dtype=real128)
+        self.assertTrue(np.all(arr == np.array([[1, 1], [1, 1]], dtype=real128)))
+        arr = np.full((2, 2), real128("1.1"))
+        self.assertTrue(
+            np.all(
+                arr
+                == np.array(
+                    [[real128("1.1"), real128("1.1")], [real128("1.1"), real128("1.1")]]
+                )
+            )
+        )
+
+        # dot product.
+        arr1 = np.array([real128("1.1"), real128("1.3")])
+        arr2 = np.array([real128("2.1"), real128("2.3")])
+        self.assertEqual(
+            real128("1.1") * real128("2.1") + real128("1.3") * real128("2.3"),
+            np.dot(arr1, arr2),
+        )
+        arr1 = np.array([], dtype=real128)
+        arr2 = np.array([], dtype=real128)
+        self.assertEqual(0, np.dot(arr1, arr2))
+
+        # Matrix multiplication.
+        mat = np.array(
+            [[real128("1.1"), real128("1.3")], [real128("2.1"), real128("2.3")]]
+        )
+        self.assertTrue(
+            np.all(
+                mat @ mat
+                == np.array(
+                    [
+                        [
+                            real128("3.94000000000000000000000000000000034"),
+                            real128("4.41999999999999999999999999999999994"),
+                        ],
+                        [
+                            real128("7.14000000000000000000000000000000049"),
+                            real128("8.01999999999999999999999999999999963"),
+                        ],
+                    ]
+                )
+            )
+        )
+
+        # Conversions.
+        arr = np.array([real128("1.1")])
+        self.assertEqual(arr.astype(float)[0], 1.1)
+        self.assertEqual(arr.astype(np.int32)[0], 1)
+        self.assertEqual(arr.astype(bool)[0], True)
+        arr = np.array([1], dtype=np.int32)
+        self.assertEqual(arr.astype(real128)[0], real128(1))
+        self.assertEqual(arr.astype(real128, casting="safe")[0], real128(1))
+        arr = np.array([1.1], dtype=float)
+        self.assertEqual(arr.astype(real128)[0], real128(1.1))
+        self.assertEqual(arr.astype(real128, casting="safe")[0], real128(1.1))
+        arr = np.array([real128("1.1")])
+        with self.assertRaises(TypeError) as cm:
+            arr.astype(float, casting="safe")
+        with self.assertRaises(TypeError) as cm:
+            arr.astype(np.int32, casting="safe")
+
+        # Arithmetic.
+        a = real128("1.1")
+        b = real128("1.3")
+        c = real128("-.7")
+        intval = 2
+        arr1 = np.array([a])
+        arr2 = np.array([b])
+        arr3 = np.array([c])
+        arrint = np.array([2], dtype=np.int64)
+
+        self.assertEqual((arr1 + arr2)[0], a + b)
+        self.assertEqual((arr1 + arrint)[0], a + intval)
+        self.assertEqual((arrint + arr2)[0], intval + b)
+
+        self.assertEqual((arr1 - arr2)[0], a - b)
+        self.assertEqual((arr1 - arrint)[0], a - intval)
+        self.assertEqual((arrint - arr2)[0], intval - b)
+
+        self.assertEqual((arr1 * arr2)[0], a * b)
+        self.assertEqual((arr1 * arrint)[0], a * intval)
+        self.assertEqual((arrint * arr2)[0], intval * b)
+
+        self.assertEqual((arr1 / arr2)[0], a / b)
+        self.assertEqual((arr1 / arrint)[0], a / intval)
+        self.assertEqual((arrint / arr2)[0], intval / b)
+
+        self.assertEqual(np.square(arr1)[0], a * a)
+
+        self.assertEqual((arr1 // arr2)[0], a // b)
+        self.assertEqual((arr1 // arrint)[0], a // intval)
+        self.assertEqual((arrint // arr2)[0], intval // b)
+
+        self.assertEqual((+arr1)[0], a)
+        self.assertEqual((-arr1)[0], -a)
+
+        self.assertEqual(abs(-arr1)[0], a)
+        self.assertEqual(np.abs(-arr1)[0], a)
+        self.assertEqual(np.fabs(-arr1)[0], a)
+
+        # Power/roots.
+        self.assertEqual((arr1**arr2)[0], a**b)
+        self.assertEqual((arr1**arrint)[0], a**intval)
+        self.assertEqual((arrint**arr2)[0], intval**b)
+
+        self.assertEqual(
+            np.sqrt(arr1)[0], real128("1.04880884817015154699145351367993759")
+        )
+
+        self.assertEqual(
+            np.cbrt(arr1)[0], real128("1.03228011545636715921358522500970152")
+        )
+
+        # Trigonometry.
+        self.assertEqual(
+            np.sin(arr1)[0], real128("0.891207360061435339951802577871703605")
+        )
+
+        self.assertEqual(
+            np.cos(arr1)[0], real128("0.453596121425577387771370051784716053")
+        )
+
+        self.assertEqual(
+            np.tan(arr1)[0], real128("1.96475965724865195093092278177937863")
+        )
+
+        self.assertEqual(
+            np.arcsin(arr3)[0], real128("-0.775397496610753063740353352714987079")
+        )
+
+        self.assertEqual(
+            np.arccos(arr3)[0], real128("2.34619382340564968297167504435473857")
+        )
+
+        self.assertEqual(
+            np.arctan(arr3)[0], real128("-0.610725964389208616543758876490236037")
+        )
+
+        self.assertEqual(
+            np.arctan2(arr1, arr2)[0], real128("0.702256931509007079704992531169094469")
+        )
+
+        self.assertEqual(
+            np.arctan2(arr1, arrint)[0],
+            real128("0.502843210927860827330882029245277632"),
+        )
+        self.assertEqual(
+            np.arctan2(arrint, arr2)[0],
+            real128("0.994421106203712939003751213245981381"),
+        )
+
+        self.assertEqual(
+            np.sinh(arr1)[0], real128("1.33564747012417677938478052357867843")
+        )
+
+        self.assertEqual(
+            np.cosh(arr1)[0], real128("1.6685185538222563326736274300099942")
+        )
+
+        self.assertEqual(
+            np.tanh(arr1)[0], real128("0.800499021760629706011461330600696557")
+        )
+
+        self.assertEqual(
+            np.arcsinh(arr3)[0], real128("-0.652666566082355786808686344109675833")
+        )
+
+        self.assertEqual(
+            np.arccosh(arr1)[0], real128("0.443568254385115189132911066352498299")
+        )
+
+        self.assertEqual(
+            np.arctanh(arr3)[0], real128("-0.867300527694053194427144690475300431")
+        )
+
+        self.assertEqual(
+            np.deg2rad(np.array([1], dtype=real128))[0],
+            real128(
+                "0.01745329251994329576923690768488612713442871888541725456097191440171005"
+            ),
+        )
+
+        self.assertEqual(
+            np.radians(np.array([1], dtype=real128))[0],
+            real128(
+                "0.01745329251994329576923690768488612713442871888541725456097191440171005"
+            ),
+        )
+
+        self.assertEqual(
+            np.rad2deg(np.array([1], dtype=real128))[0],
+            real128(
+                "57.295779513082320876798154814105170332405472466564321549160243861202985"
+            ),
+        )
+
+        self.assertEqual(
+            np.degrees(np.array([1], dtype=real128))[0],
+            real128(
+                "57.295779513082320876798154814105170332405472466564321549160243861202985"
+            ),
+        )
+
+        # Exponentials and logarithms.
+        self.assertEqual(
+            np.exp(arr1)[0], real128("3.00416602394643311205840795358867282")
+        )
+
+        self.assertEqual(
+            np.expm1(arr1)[0], real128("2.00416602394643311205840795358867243")
+        )
+
+        self.assertEqual(
+            np.log(arr1)[0], real128("0.0953101798043248600439521232807651556")
+        )
+
+        self.assertEqual(
+            np.log2(arr1)[0], real128("0.137503523749934908329043617236402896")
+        )
+
+        self.assertEqual(
+            np.log10(arr1)[0], real128("0.0413926851582250407501999712430242757")
+        )
+
+        self.assertEqual(
+            np.log1p(arr1)[0], real128("0.741937344729377312482606525681341284")
+        )
+
+        # Comparisons.
+        self.assertEqual((arr1 < arr2).dtype, bool)
+        self.assertTrue((arr1 < arr2)[0])
+        self.assertEqual((arr1 < arrint).dtype, bool)
+        self.assertTrue((arr1 < arrint)[0])
+
+        self.assertEqual((arr1 <= arr1).dtype, bool)
+        self.assertTrue((arr1 <= arr2)[0])
+        self.assertEqual((arr1 <= arrint).dtype, bool)
+        self.assertTrue((arr1 <= arrint)[0])
+
+        self.assertEqual((arr1 == arr1).dtype, bool)
+        self.assertFalse((arr1 == arr2)[0])
+        self.assertEqual((arr1 == arrint).dtype, bool)
+        self.assertFalse((arr1 == arrint)[0])
+
+        self.assertEqual((arr1 != arr1).dtype, bool)
+        self.assertTrue((arr1 != arr2)[0])
+        self.assertEqual((arr1 != arrint).dtype, bool)
+        self.assertTrue((arr1 != arrint)[0])
+
+        self.assertEqual((arr1 > arr2).dtype, bool)
+        self.assertTrue((arr2 > arr1)[0])
+        self.assertEqual((arrint > arr1).dtype, bool)
+        self.assertTrue((arrint > arr1)[0])
+
+        self.assertEqual((arr1 >= arr1).dtype, bool)
+        self.assertTrue((arr2 >= arr1)[0])
+        self.assertEqual((arrint >= arr1).dtype, bool)
+        self.assertTrue((arrint >= arr1)[0])
+
+        # isfinite().
+        self.assertEqual((np.isfinite(arr1)).dtype, bool)
+        self.assertTrue((np.isfinite(arr1))[0])
+        self.assertTrue((np.isfinite([real128("1"), real128("nan")]))[0])
+        self.assertFalse((np.isfinite([real128("1"), real128("nan")]))[1])
+        self.assertFalse((np.isfinite([real128("1"), real128("+inf")]))[1])
+
+        # sign.
+        self.assertEqual(np.sign(-real128("1.1")), -1)
+        self.assertEqual(np.sign(real128("0")), 0)
+        self.assertEqual(np.sign(real128("1.1")), 1)
+        self.assertEqual((np.sign(arr1)).dtype, real128)
+        self.assertTrue(
+            np.all(np.sign([real128("10"), real128("0"), real128("-10")]) == [1, 0, -1])
+        )
+
+        # maximum/minimum.
+        self.assertTrue(
+            np.all(
+                np.minimum([10, real128("1.1"), 20], [1, real128("1.11"), 25])
+                == [1, real128("1.1"), 20]
+            )
+        )
+        self.assertTrue(
+            np.all(
+                np.maximum([10, real128("1.1"), 20], [1, real128("1.11"), 25])
+                == [10, real128("1.11"), 25]
+            )
+        )
+
+        # Pickling.
+        tmp = np.array([real128("1.1"), real128("1.11"), real128("1.13")])
+        self.assertTrue(np.all(tmp == loads(dumps(tmp))))
 
 
 def run_test_suite():
     from . import make_nbody_sys, taylor_adaptive
+    import numpy as np
 
     sys = make_nbody_sys(2, masses=[1.1, 2.1], Gconst=1)
-    ta = taylor_adaptive(sys, [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12])
+    ta = taylor_adaptive(
+        sys, np.array([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12], dtype=float)
+    )
 
     retval = 0
 
@@ -4265,4 +5809,4 @@ def run_test_suite():
     if len(test_result.failures) > 0 or len(test_result.errors) > 0:
         retval = 1
     if retval != 0:
-        raise RuntimeError('One or more tests failed.')
+        raise RuntimeError("One or more tests failed.")

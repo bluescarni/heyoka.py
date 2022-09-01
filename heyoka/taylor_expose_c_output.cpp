@@ -82,15 +82,15 @@ void expose_c_output_impl(py::module &m, const std::string &suffix)
 
                 return ret;
             },
-            "time"_a)
+            "time"_a.noconvert())
         .def(
             "__call__",
-            [](py::object &o, py::iterable tm_ob) {
+            [](py::object &o, const py::iterable &tm_ob) {
                 // Convert the input iterable into an array of the correct type.
                 py::array tm = tm_ob;
                 const auto dt = get_dtype<T>();
                 if (tm.dtype().num() != dt) {
-                    tm = tm.attr("astype")(py::dtype(dt));
+                    tm = tm.attr("astype")(py::dtype(dt), "casting"_a = "safe");
                 }
 
                 auto *c_out = py::cast<c_output_t *>(o);
@@ -258,12 +258,12 @@ void expose_c_output_batch_impl(py::module &m, const std::string &suffix)
              })
         .def(
             "__call__",
-            [](py::object &o, py::iterable tm_ob) {
+            [](py::object &o, const py::iterable &tm_ob) {
                 // Convert the input iterable into an array of the correct type.
                 py::array tm = tm_ob;
                 const auto dt = get_dtype<T>();
                 if (tm.dtype().num() != dt) {
-                    tm = tm.attr("astype")(py::dtype(dt));
+                    tm = tm.attr("astype")(py::dtype(dt), "casting"_a = "safe");
                 }
 
                 auto *c_out = py::cast<c_output_t *>(o);
@@ -299,13 +299,8 @@ void expose_c_output_batch_impl(py::module &m, const std::string &suffix)
                                      .c_str());
                     }
 
-                    // Check if tm is contiguous.
-                    // NOTE: it looks like c_style does not necessarily imply well-aligned:
-                    // https://numpy.org/devdocs/reference/c-api/array.html#c.PyArray_FromAny.NPY_ARRAY_CARRAY
-                    // If this becomes a problem, we can tap into the NumPy C API and do additional
-                    // flag checking:
-                    // https://numpy.org/devdocs/reference/c-api/array.html#c.PyArray_CHKFLAGS
-                    const auto tm_cont = static_cast<bool>(tm.flags() & py::array::c_style);
+                    // Check if tm is a C-style contiguous aligned array.
+                    const auto tm_cont = is_npy_array_carray(tm);
 
                     if (tm_cont) {
                         // tm is contiguous.

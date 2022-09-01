@@ -265,7 +265,8 @@ void expose_taylor_t_event_impl(py::module &m, const std::string &suffix)
                                 kw::cooldown = cooldown);
                 }
             }),
-            "expression"_a, "callback"_a = py::none{}, "direction"_a = hey::event_direction::any, "cooldown"_a = T(-1))
+            "expression"_a, "callback"_a = py::none{}, "direction"_a = hey::event_direction::any,
+            "cooldown"_a.noconvert() = static_cast<T>(-1))
         // Repr.
         .def("__repr__",
              [](const ev_t &e) {

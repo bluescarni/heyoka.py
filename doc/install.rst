@@ -82,6 +82,10 @@ installation from source requires also:
 * `pybind11 <https://github.com/pybind/pybind11>`__ (version >= 2.10),
 * `CMake <https://cmake.org/>`__, version 3.16 or later.
 
+Note that heyoka.py makes use of the :ref:`NumPy C API <numpy:c-api>`
+and thus NumPy must be installed **before** compiling heyoka.py from source.
+The other Python dependencies need not to be installed at compilation time.
+
 After making sure the dependencies are installed on your system, you can
 download the heyoka.py source code from the
 `GitHub release page <https://github.com/bluescarni/heyoka.py/releases>`__. Alternatively,

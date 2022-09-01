@@ -18,6 +18,7 @@
 #include <string>
 #include <tuple>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include <boost/numeric/conversion/cast.hpp>
@@ -51,7 +52,6 @@ namespace heyoka_py
 
 namespace py = pybind11;
 namespace hey = heyoka;
-namespace heypy = heyoka_py;
 
 namespace detail
 {
@@ -59,143 +59,48 @@ namespace detail
 namespace
 {
 
-// Common bits for the exposition of the scalar integrators
-// for double, long double and real128.
-template <typename T>
-void expose_taylor_integrator_common(py::class_<hey::taylor_adaptive<T>> &cl)
-{
-    using namespace pybind11::literals;
-    using prop_cb_t = std::function<bool(hey::taylor_adaptive<T> &)>;
-    namespace kw = heyoka::kw;
-
-    cl.def_property_readonly("decomposition", &hey::taylor_adaptive<T>::get_decomposition)
-        .def_property("time", &hey::taylor_adaptive<T>::get_time, &hey::taylor_adaptive<T>::set_time)
-        .def_property("dtime", &hey::taylor_adaptive<T>::get_dtime,
-                      [](hey::taylor_adaptive<T> &ta, std::pair<double, double> p) { ta.set_dtime(p.first, p.second); })
-        // Step functions.
-        .def(
-            "step", [](hey::taylor_adaptive<T> &ta, bool wtc) { return ta.step(wtc); }, "write_tc"_a = false)
-        .def(
-            "step", [](hey::taylor_adaptive<T> &ta, T max_delta_t, bool wtc) { return ta.step(max_delta_t, wtc); },
-            "max_delta_t"_a, "write_tc"_a = false)
-        .def(
-            "step_backward", [](hey::taylor_adaptive<T> &ta, bool wtc) { return ta.step_backward(wtc); },
-            "write_tc"_a = false)
-        // propagate_*().
-        .def(
-            "propagate_for",
-            [](hey::taylor_adaptive<T> &ta, T delta_t, std::size_t max_steps, T max_delta_t, const prop_cb_t &cb_,
-               bool write_tc, bool c_output) {
-                // Create the callback wrapper.
-                auto cb = make_prop_cb(cb_);
-
-                // NOTE: after releasing the GIL here, the only potential
-                // calls into the Python interpreter are when invoking cb
-                // or the events' callbacks (which are all protected by GIL reacquire).
-                // Note that copying cb around or destroying it is harmless, as it contains only
-                // a reference to the original callback cb_, or it is an empty callback.
-                py::gil_scoped_release release;
-                return ta.propagate_for(delta_t, kw::max_steps = max_steps, kw::max_delta_t = max_delta_t,
-                                        kw::callback = cb, kw::write_tc = write_tc, kw::c_output = c_output);
-            },
-            "delta_t"_a, "max_steps"_a = 0, "max_delta_t"_a = std::numeric_limits<T>::infinity(),
-            "callback"_a = prop_cb_t{}, "write_tc"_a = false, "c_output"_a = false)
-        .def(
-            "propagate_until",
-            [](hey::taylor_adaptive<T> &ta, T t, std::size_t max_steps, T max_delta_t, const prop_cb_t &cb_,
-               bool write_tc, bool c_output) {
-                // Create the callback wrapper.
-                auto cb = make_prop_cb(cb_);
-
-                py::gil_scoped_release release;
-                return ta.propagate_until(t, kw::max_steps = max_steps, kw::max_delta_t = max_delta_t,
-                                          kw::callback = cb, kw::write_tc = write_tc, kw::c_output = c_output);
-            },
-            "t"_a, "max_steps"_a = 0, "max_delta_t"_a = std::numeric_limits<T>::infinity(), "callback"_a = prop_cb_t{},
-            "write_tc"_a = false, "c_output"_a = false)
-        // Repr.
-        .def("__repr__",
-             [](const hey::taylor_adaptive<T> &ta) {
-                 std::ostringstream oss;
-                 oss << ta;
-                 return oss.str();
-             })
-        // Copy/deepcopy.
-        .def("__copy__", copy_wrapper<hey::taylor_adaptive<T>>)
-        .def("__deepcopy__", deepcopy_wrapper<hey::taylor_adaptive<T>>, "memo"_a)
-        // Pickle support.
-        .def(py::pickle(&pickle_getstate_wrapper<hey::taylor_adaptive<T>>,
-                        &pickle_setstate_wrapper<hey::taylor_adaptive<T>>))
-        // Various read-only properties.
-        .def_property_readonly("last_h", &hey::taylor_adaptive<T>::get_last_h)
-        .def_property_readonly("order", &hey::taylor_adaptive<T>::get_order)
-        .def_property_readonly("tol", &hey::taylor_adaptive<T>::get_tol)
-        .def_property_readonly("dim", &hey::taylor_adaptive<T>::get_dim)
-        .def_property_readonly("compact_mode", &hey::taylor_adaptive<T>::get_compact_mode)
-        .def_property_readonly("high_accuracy", &hey::taylor_adaptive<T>::get_high_accuracy)
-        .def_property_readonly("with_events", &hey::taylor_adaptive<T>::with_events)
-        // Event detection.
-        .def_property_readonly("with_events", &hey::taylor_adaptive<T>::with_events)
-        .def_property_readonly("te_cooldowns", &hey::taylor_adaptive<T>::get_te_cooldowns)
-        .def("reset_cooldowns", &hey::taylor_adaptive<T>::reset_cooldowns)
-        .def_property_readonly("t_events", &hey::taylor_adaptive<T>::get_t_events)
-        .def_property_readonly("nt_events", &hey::taylor_adaptive<T>::get_nt_events);
-
-    // Expose the llvm state getter.
-    expose_llvm_state_property(cl);
-}
-
 // Implementation of the exposition of the scalar integrators
 // for double and long double.
 template <typename T>
 void expose_taylor_integrator_impl(py::module &m, const std::string &suffix)
 {
-    using namespace pybind11::literals;
+    using namespace py::literals;
     namespace kw = heyoka::kw;
 
     using t_ev_t = hey::t_event<T>;
     using nt_ev_t = hey::nt_event<T>;
     using prop_cb_t = std::function<bool(hey::taylor_adaptive<T> &)>;
 
-    auto ctor_impl = [](const auto &sys, std::vector<T> state, T time, std::vector<T> pars, T tol, bool high_accuracy,
-                        bool compact_mode, std::vector<t_ev_t> tes, std::vector<nt_ev_t> ntes, bool parallel_mode) {
-        // NOTE: GIL release is fine here even if the events contain
-        // Python objects, as the event vectors are moved in
-        // upon construction and thus we should never end up calling
-        // into the interpreter.
-        py::gil_scoped_release release;
+    // Union of ODE system types, used in the ctor.
+    using sys_t = std::variant<std::vector<std::pair<hey::expression, hey::expression>>, std::vector<hey::expression>>;
 
-        namespace kw = hey::kw;
-        return hey::taylor_adaptive<T>{sys,
-                                       std::move(state),
-                                       kw::time = time,
-                                       kw::tol = tol,
-                                       kw::high_accuracy = high_accuracy,
-                                       kw::compact_mode = compact_mode,
-                                       kw::pars = std::move(pars),
-                                       kw::t_events = std::move(tes),
-                                       kw::nt_events = std::move(ntes),
-                                       kw::parallel_mode = parallel_mode};
-    };
+    py::class_<hey::taylor_adaptive<T>> cl(m, (fmt::format("taylor_adaptive_{}", suffix)).c_str(), py::dynamic_attr{});
+    cl.def(py::init([](const sys_t &sys, std::vector<T> state, T time, std::vector<T> pars, T tol, bool high_accuracy,
+                       bool compact_mode, std::vector<t_ev_t> tes, std::vector<nt_ev_t> ntes, bool parallel_mode) {
+               return std::visit(
+                   [&](const auto &val) {
+                       // NOTE: GIL release is fine here even if the events contain
+                       // Python objects, as the event vectors are moved in
+                       // upon construction and thus we should never end up calling
+                       // into the interpreter.
+                       py::gil_scoped_release release;
 
-    py::class_<hey::taylor_adaptive<T>> cl(m, (fmt::format("_taylor_adaptive_{}", suffix)).c_str(), py::dynamic_attr{});
-    cl.def(py::init([ctor_impl](const std::vector<std::pair<hey::expression, hey::expression>> &sys,
-                                std::vector<T> state, T time, std::vector<T> pars, T tol, bool high_accuracy,
-                                bool compact_mode, std::vector<t_ev_t> tes, std::vector<nt_ev_t> ntes,
-                                bool parallel_mode) {
-               return ctor_impl(sys, std::move(state), time, std::move(pars), tol, high_accuracy, compact_mode,
-                                std::move(tes), std::move(ntes), parallel_mode);
+                       return hey::taylor_adaptive<T>{val,
+                                                      std::move(state),
+                                                      kw::time = time,
+                                                      kw::tol = tol,
+                                                      kw::high_accuracy = high_accuracy,
+                                                      kw::compact_mode = compact_mode,
+                                                      kw::pars = std::move(pars),
+                                                      kw::t_events = std::move(tes),
+                                                      kw::nt_events = std::move(ntes),
+                                                      kw::parallel_mode = parallel_mode};
+                   },
+                   sys);
            }),
-           "sys"_a, "state"_a, "time"_a = T(0), "pars"_a = py::list{}, "tol"_a = T(0), "high_accuracy"_a = false,
-           "compact_mode"_a = false, "t_events"_a = py::list{}, "nt_events"_a = py::list{}, "parallel_mode"_a = false)
-        .def(py::init([ctor_impl](const std::vector<hey::expression> &sys, std::vector<T> state, T time,
-                                  std::vector<T> pars, T tol, bool high_accuracy, bool compact_mode,
-                                  std::vector<t_ev_t> tes, std::vector<nt_ev_t> ntes, bool parallel_mode) {
-                 return ctor_impl(sys, std::move(state), time, std::move(pars), tol, high_accuracy, compact_mode,
-                                  std::move(tes), std::move(ntes), parallel_mode);
-             }),
-             "sys"_a, "state"_a, "time"_a = T(0), "pars"_a = py::list{}, "tol"_a = T(0), "high_accuracy"_a = false,
-             "compact_mode"_a = false, "t_events"_a = py::list{}, "nt_events"_a = py::list{}, "parallel_mode"_a = false)
+           "sys"_a, "state"_a.noconvert(), "time"_a.noconvert() = static_cast<T>(0), "pars"_a.noconvert() = py::list{},
+           "tol"_a.noconvert() = static_cast<T>(0), "high_accuracy"_a = false, "compact_mode"_a = false,
+           "t_events"_a = py::list{}, "nt_events"_a = py::list{}, "parallel_mode"_a = false)
         .def_property_readonly(
             "state",
             [](py::object &o) {
@@ -260,7 +165,53 @@ void expose_taylor_integrator_impl(py::module &m, const std::string &suffix)
 
                 return ret;
             },
-            "t"_a, "rel_time"_a = false)
+            "t"_a.noconvert(), "rel_time"_a = false)
+        .def_property_readonly("decomposition", &hey::taylor_adaptive<T>::get_decomposition)
+        .def_property("time", &hey::taylor_adaptive<T>::get_time, &hey::taylor_adaptive<T>::set_time)
+        .def_property("dtime", &hey::taylor_adaptive<T>::get_dtime,
+                      [](hey::taylor_adaptive<T> &ta, std::pair<double, double> p) { ta.set_dtime(p.first, p.second); })
+        // Step functions.
+        .def(
+            "step", [](hey::taylor_adaptive<T> &ta, bool wtc) { return ta.step(wtc); }, "write_tc"_a = false)
+        .def(
+            "step", [](hey::taylor_adaptive<T> &ta, T max_delta_t, bool wtc) { return ta.step(max_delta_t, wtc); },
+            "max_delta_t"_a.noconvert(), "write_tc"_a = false)
+        .def(
+            "step_backward", [](hey::taylor_adaptive<T> &ta, bool wtc) { return ta.step_backward(wtc); },
+            "write_tc"_a = false)
+        // propagate_*().
+        .def(
+            "propagate_for",
+            [](hey::taylor_adaptive<T> &ta, T delta_t, std::size_t max_steps, T max_delta_t, const prop_cb_t &cb_,
+               bool write_tc, bool c_output) {
+                // Create the callback wrapper.
+                auto cb = make_prop_cb(cb_);
+
+                // NOTE: after releasing the GIL here, the only potential
+                // calls into the Python interpreter are when invoking cb
+                // or the events' callbacks (which are all protected by GIL reacquire).
+                // Note that copying cb around or destroying it is harmless, as it contains only
+                // a reference to the original callback cb_, or it is an empty callback.
+                py::gil_scoped_release release;
+                return ta.propagate_for(delta_t, kw::max_steps = max_steps, kw::max_delta_t = max_delta_t,
+                                        kw::callback = cb, kw::write_tc = write_tc, kw::c_output = c_output);
+            },
+            "delta_t"_a.noconvert(), "max_steps"_a = 0,
+            "max_delta_t"_a.noconvert() = std::numeric_limits<T>::infinity(), "callback"_a = prop_cb_t{},
+            "write_tc"_a = false, "c_output"_a = false)
+        .def(
+            "propagate_until",
+            [](hey::taylor_adaptive<T> &ta, T t, std::size_t max_steps, T max_delta_t, const prop_cb_t &cb_,
+               bool write_tc, bool c_output) {
+                // Create the callback wrapper.
+                auto cb = make_prop_cb(cb_);
+
+                py::gil_scoped_release release;
+                return ta.propagate_until(t, kw::max_steps = max_steps, kw::max_delta_t = max_delta_t,
+                                          kw::callback = cb, kw::write_tc = write_tc, kw::c_output = c_output);
+            },
+            "t"_a.noconvert(), "max_steps"_a = 0, "max_delta_t"_a.noconvert() = std::numeric_limits<T>::infinity(),
+            "callback"_a = prop_cb_t{}, "write_tc"_a = false, "c_output"_a = false)
         .def(
             "propagate_grid",
             [](hey::taylor_adaptive<T> &ta, std::vector<T> grid, std::size_t max_steps, T max_delta_t,
@@ -289,10 +240,38 @@ void expose_taylor_integrator_impl(py::module &m, const std::string &suffix)
                 return py::make_tuple(std::get<0>(ret), std::get<1>(ret), std::get<2>(ret), std::get<3>(ret),
                                       std::move(a_ret));
             },
-            "grid"_a, "max_steps"_a = 0, "max_delta_t"_a = std::numeric_limits<T>::infinity(),
-            "callback"_a = prop_cb_t{});
+            "grid"_a.noconvert(), "max_steps"_a = 0, "max_delta_t"_a.noconvert() = std::numeric_limits<T>::infinity(),
+            "callback"_a = prop_cb_t{})
+        // Repr.
+        .def("__repr__",
+             [](const hey::taylor_adaptive<T> &ta) {
+                 std::ostringstream oss;
+                 oss << ta;
+                 return oss.str();
+             })
+        // Copy/deepcopy.
+        .def("__copy__", copy_wrapper<hey::taylor_adaptive<T>>)
+        .def("__deepcopy__", deepcopy_wrapper<hey::taylor_adaptive<T>>, "memo"_a)
+        // Pickle support.
+        .def(py::pickle(&pickle_getstate_wrapper<hey::taylor_adaptive<T>>,
+                        &pickle_setstate_wrapper<hey::taylor_adaptive<T>>))
+        // Various read-only properties.
+        .def_property_readonly("last_h", &hey::taylor_adaptive<T>::get_last_h)
+        .def_property_readonly("order", &hey::taylor_adaptive<T>::get_order)
+        .def_property_readonly("tol", &hey::taylor_adaptive<T>::get_tol)
+        .def_property_readonly("dim", &hey::taylor_adaptive<T>::get_dim)
+        .def_property_readonly("compact_mode", &hey::taylor_adaptive<T>::get_compact_mode)
+        .def_property_readonly("high_accuracy", &hey::taylor_adaptive<T>::get_high_accuracy)
+        .def_property_readonly("with_events", &hey::taylor_adaptive<T>::with_events)
+        // Event detection.
+        .def_property_readonly("with_events", &hey::taylor_adaptive<T>::with_events)
+        .def_property_readonly("te_cooldowns", &hey::taylor_adaptive<T>::get_te_cooldowns)
+        .def("reset_cooldowns", &hey::taylor_adaptive<T>::reset_cooldowns)
+        .def_property_readonly("t_events", &hey::taylor_adaptive<T>::get_t_events)
+        .def_property_readonly("nt_events", &hey::taylor_adaptive<T>::get_nt_events);
 
-    expose_taylor_integrator_common(cl);
+    // Expose the llvm state getter.
+    expose_llvm_state_property(cl);
 }
 
 } // namespace

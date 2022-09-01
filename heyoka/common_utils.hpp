@@ -9,8 +9,13 @@
 #ifndef HEYOKA_PY_COMMON_UTILS_HPP
 #define HEYOKA_PY_COMMON_UTILS_HPP
 
+#include <array>
+#include <cstddef>
+#include <functional>
 #include <string>
+#include <utility>
 
+#include <pybind11/numpy.h>
 #include <pybind11/pybind11.h>
 
 #include <Python.h>
@@ -129,6 +134,55 @@ py::object deepcopy_wrapper(py::object o, py::dict memo)
 
     return ret;
 }
+
+// NOTE: this helper wraps a callback for the propagate_*()
+// functions ensuring that the GIL is acquired before invoking the callback.
+// Additionally, the returned wrapper will contain a const reference to the
+// original callback. This ensures that copying the wrapper does not
+// copy the original callback, so that copying the wrapper
+// never ends up calling into the Python interpreter.
+// If cb is an empty callback, a copy of cb will be returned.
+template <typename T>
+inline auto make_prop_cb(const std::function<bool(T &)> &cb)
+{
+    if (cb) {
+        auto ret = [&cb](T &ta) {
+            py::gil_scoped_acquire acquire;
+
+            return cb(ta);
+        };
+
+        return std::function<bool(T &)>(std::move(ret));
+    } else {
+        return cb;
+    }
+}
+
+// Helper to check if a list of arrays may share any memory with each other.
+// Quadratic complexity.
+bool may_share_memory(const py::array &, const py::array &);
+
+template <typename... Args>
+bool may_share_memory(const py::array &a, const py::array &b, const Args &...args)
+{
+    const std::array args_arr = {std::cref(a), std::cref(b), std::cref(args)...};
+    const auto nargs = args_arr.size();
+
+    for (std::size_t i = 0; i < nargs; ++i) {
+        for (std::size_t j = i + 1u; j < nargs; ++j) {
+            if (may_share_memory(args_arr[i].get(), args_arr[j].get())) {
+                return true;
+            }
+        }
+    }
+
+    return false;
+}
+
+// Helper to check if a numpy array is a NPY_ARRAY_CARRAY (i.e., C-style
+// contiguous and with properly aligned storage). The flag signals whether
+// the array must also be writeable or not.
+bool is_npy_array_carray(const py::array &, bool = false);
 
 } // namespace heyoka_py
 
