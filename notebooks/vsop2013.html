@@ -187,6 +187,11 @@
     </a>
    </li>
    <li class="toctree-l2">
+    <a class="reference internal" href="compiled_functions.html">
+     Compiled functions
+    </a>
+   </li>
+   <li class="toctree-l2">
     <a class="reference internal" href="Event%20detection.html">
      Event detection overview
     </a>
@@ -694,13 +699,7 @@ Mars&#39; semi-major axis solution, threshold = 6e-5, time rescaled by a factor 
 </section>
 <section id="checking-the-implementation">
 <h2>Checking the implementation<a class="headerlink" href="#checking-the-implementation" title="Permalink to this headline">#</a></h2>
-<p>In order to check the correctness of heyoka.py’s implementation of the VSOP2013 theory, we are going to use the <a class="reference external" href="https://ssd.jpl.nasa.gov/?horizons">NASA HORIZONS service</a> via the <a class="reference external" href="https://astroquery.readthedocs.io/en/latest/">Astroquery</a> package. Our objective is to compare the planetary positions computed by VSOP2013 at different threshold levels with those computed by HORIZONS.</p>
-<p>On the heyoka.py side, we will have to perform the computation of the planetary positions in a bit of a roundabout way. Specifically, given an explicit time-dependent formula <span class="math notranslate nohighlight">\(x_p\left( t \right)\)</span> produced by VSOP2013 for, say, the <span class="math notranslate nohighlight">\(x\)</span> coordinate of a planet, we will formulate an ODE of type</p>
-<div class="math notranslate nohighlight">
-\[
-\frac{ds}{d\tau} = x_p\left( \alpha \right),
-\]</div>
-<p>where <span class="math notranslate nohighlight">\(s\)</span> is a dummy variable, and the time <span class="math notranslate nohighlight">\(t\)</span> has been replaced with a constant <span class="math notranslate nohighlight">\(\alpha\)</span> in the formula for <span class="math notranslate nohighlight">\(x_p\)</span>. Because <span class="math notranslate nohighlight">\(x_p\left( \alpha \right)\)</span> is now a constant, the solution of this ODE is simply <span class="math notranslate nohighlight">\(s\left( \tau \right) = s_0 + x_p\left( \alpha \right)\tau\)</span>. By setting <span class="math notranslate nohighlight">\(s_0 = 0\)</span> and <span class="math notranslate nohighlight">\(\alpha\)</span> to the time coordinate at which we want to evaluate <span class="math notranslate nohighlight">\(x_p\)</span>, propagating the state of <span class="math notranslate nohighlight">\(s\)</span> up to <span class="math notranslate nohighlight">\(\tau=1\)</span> will produce an evaluation of <span class="math notranslate nohighlight">\(x_p\left( t \right)\)</span> at the desired time coordinate. A horrible hack, but it works :)</p>
+<p>In order to check the correctness of heyoka.py’s implementation of the VSOP2013 theory, we are going to use the <a class="reference external" href="https://ssd.jpl.nasa.gov/?horizons">NASA HORIZONS service</a> via the <a class="reference external" href="https://astroquery.readthedocs.io/en/latest/">Astroquery</a> package. Our objective is to compare the planetary positions computed by VSOP2013 at different threshold levels with those computed by HORIZONS. On the heyoka.py side, we will be using <a class="reference internal" href="compiled_functions.html"><span class="doc std std-doc">compiled functions</span></a> to evaluate the VSOP2013 series.</p>
 <p>In this example, we will be using Venus as a target body. Because the ecliptical coordinate system used by VSOP2013 does not match exactly any of the coordinate systems available in HORIZONS, we will be using the <code class="docutils literal notranslate"><span class="pre">vsop2013_cartesian_icrf()</span></code> function instead, which outputs heliocentric Cartesian coordinates in the standard <a class="reference external" href="https://en.wikipedia.org/wiki/International_Celestial_Reference_System_and_Frame">ICRF</a> (which is available in HORIZONS). Let’s take a look at the code and at the results:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -708,7 +707,6 @@ Mars&#39; semi-major axis solution, threshold = 6e-5, time rescaled by a factor 
 <span class="kn">from</span> <span class="nn">matplotlib.pylab</span> <span class="kn">import</span> <span class="n">plt</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">astroquery.jplhorizons</span> <span class="kn">import</span> <span class="n">Horizons</span>
-<span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">deepcopy</span>
 
 <span class="c1"># Setup the plot.</span>
 <span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">9</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span>
@@ -716,7 +714,7 @@ Mars&#39; semi-major axis solution, threshold = 6e-5, time rescaled by a factor 
 <span class="n">plt</span><span class="o">.</span><span class="n">yscale</span><span class="p">(</span><span class="s1">&#39;log&#39;</span><span class="p">)</span>
 
 <span class="c1"># Create the heyoka variables.</span>
-<span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">make_vars</span><span class="p">(</span><span class="s2">&quot;x&quot;</span><span class="p">,</span> <span class="s2">&quot;y&quot;</span><span class="p">,</span> <span class="s2">&quot;z&quot;</span><span class="p">)</span>
+<span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">tm</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">make_vars</span><span class="p">(</span><span class="s2">&quot;x&quot;</span><span class="p">,</span> <span class="s2">&quot;y&quot;</span><span class="p">,</span> <span class="s2">&quot;z&quot;</span><span class="p">,</span> <span class="s2">&quot;tm&quot;</span><span class="p">)</span>
 
 <span class="c1"># Threshold levels at which we will be computing</span>
 <span class="c1"># the VSOP2013 solution.</span>
@@ -725,39 +723,23 @@ Mars&#39; semi-major axis solution, threshold = 6e-5, time rescaled by a factor 
 <span class="c1"># We will perform 10 evaluations of the</span>
 <span class="c1"># position of Venus in the 10 years following</span>
 <span class="c1"># J2000.</span>
-<span class="n">dates</span> <span class="o">=</span> <span class="p">[</span><span class="mf">2451545.0</span> <span class="o">+</span> <span class="n">_</span> <span class="o">*</span> <span class="mi">365</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">)]</span>
+<span class="n">dates</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mf">2451545.0</span><span class="p">,</span> <span class="mf">2451545.0</span> <span class="o">+</span> <span class="mi">365</span> <span class="o">*</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
 
 <span class="k">for</span> <span class="n">thr</span> <span class="ow">in</span> <span class="n">thr_values</span><span class="p">:</span>
     <span class="c1"># Build the VSOP2013 formulae for the heliocentric Cartesian</span>
     <span class="c1"># position of Venus (planet index 2) in the ICRF. Replace the</span>
-    <span class="c1"># default time variable with a runtime parameter and set</span>
+    <span class="c1"># default time variable with the &quot;tm&quot; symbolic variable and set</span>
     <span class="c1"># a custom threshold level.</span>
-    <span class="n">venus_x</span><span class="p">,</span> <span class="n">venus_y</span><span class="p">,</span> <span class="n">venus_z</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">vsop2013_cartesian_icrf</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">time</span><span class="o">=</span><span class="n">hy</span><span class="o">.</span><span class="n">par</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">thresh</span><span class="o">=</span><span class="n">thr</span><span class="p">)[:</span><span class="mi">3</span><span class="p">]</span>
+    <span class="n">venus_x</span><span class="p">,</span> <span class="n">venus_y</span><span class="p">,</span> <span class="n">venus_z</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">vsop2013_cartesian_icrf</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">time</span><span class="o">=</span><span class="n">tm</span><span class="p">,</span> <span class="n">thresh</span><span class="o">=</span><span class="n">thr</span><span class="p">)[:</span><span class="mi">3</span><span class="p">]</span>
 
-    <span class="c1"># Build the dummy integrator which we will use to compute</span>
-    <span class="c1"># the VSOP2013 solution in heyoka.py.</span>
-    <span class="n">ta</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">taylor_adaptive</span><span class="p">([(</span><span class="n">x</span><span class="p">,</span> <span class="n">venus_x</span><span class="p">),</span> <span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">venus_y</span><span class="p">),</span> <span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="n">venus_z</span><span class="p">)],</span> <span class="p">[</span><span class="mf">0.</span><span class="p">]</span><span class="o">*</span><span class="mi">3</span><span class="p">,</span> <span class="n">compact_mode</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-
-    <span class="n">vsop_states</span> <span class="o">=</span> <span class="p">[]</span>
-
-    <span class="k">for</span> <span class="n">date</span> <span class="ow">in</span> <span class="n">dates</span><span class="p">:</span>
-        <span class="c1"># Reset the integrator state.</span>
-        <span class="n">ta</span><span class="o">.</span><span class="n">time</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="n">ta</span><span class="o">.</span><span class="n">state</span><span class="p">[:]</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="c1"># Assign the time at which we want to</span>
-        <span class="c1"># evaluate the VSOP2013 solution.</span>
-        <span class="c1"># NOTE: the default time coordinate</span>
-        <span class="c1"># for VSOP2013 is thousands of Julian</span>
-        <span class="c1"># years from J2000.</span>
-        <span class="n">ta</span><span class="o">.</span><span class="n">pars</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">date</span> <span class="o">-</span> <span class="mf">2451545.0</span><span class="p">)</span> <span class="o">/</span> <span class="mi">365250</span> 
-        
-        <span class="c1"># Do the evaluation.</span>
-        <span class="n">ta</span><span class="o">.</span><span class="n">propagate_until</span><span class="p">(</span><span class="mf">1.</span><span class="p">)</span>
-        
-        <span class="c1"># Append the computed Venus position.</span>
-        <span class="n">vsop_states</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">ta</span><span class="o">.</span><span class="n">state</span><span class="p">))</span>
-   
-    <span class="n">vsop_states</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">vsop_states</span><span class="p">)</span>
+    <span class="c1"># Compile the function for the evaluation of venus_x/y/z.</span>
+    <span class="n">venus_cf</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">make_cfunc</span><span class="p">([</span><span class="n">venus_x</span><span class="p">,</span> <span class="n">venus_y</span><span class="p">,</span> <span class="n">venus_z</span><span class="p">])</span>
+    
+    <span class="c1"># Run the evaluation.</span>
+    <span class="c1"># NOTE: the default time coordinate</span>
+    <span class="c1"># for VSOP2013 is thousands of Julian</span>
+    <span class="c1"># years from J2000.</span>
+    <span class="n">vsop_states</span> <span class="o">=</span> <span class="n">venus_cf</span><span class="p">((</span><span class="n">dates</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">))</span> <span class="o">-</span> <span class="mf">2451545.0</span><span class="p">)</span> <span class="o">/</span> <span class="mi">365250</span><span class="p">)</span>
 
     <span class="c1"># HORIZONS query:</span>
     <span class="c1"># - 299 is the ID of Venus,</span>
@@ -771,11 +753,11 @@ Mars&#39; semi-major axis solution, threshold = 6e-5, time rescaled by a factor 
     <span class="n">hor_y</span> <span class="o">=</span> <span class="n">tab</span><span class="p">[</span><span class="s1">&#39;y&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">quantity</span><span class="p">[:]</span><span class="o">.</span><span class="n">value</span>
     <span class="n">hor_z</span> <span class="o">=</span> <span class="n">tab</span><span class="p">[</span><span class="s1">&#39;z&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">quantity</span><span class="p">[:]</span><span class="o">.</span><span class="n">value</span>
     
-    <span class="n">hor_states</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">hor_x</span><span class="p">,</span> <span class="n">hor_y</span><span class="p">,</span> <span class="n">hor_z</span><span class="p">])</span><span class="o">.</span><span class="n">transpose</span><span class="p">()</span>
+    <span class="n">hor_states</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">hor_x</span><span class="p">,</span> <span class="n">hor_y</span><span class="p">,</span> <span class="n">hor_z</span><span class="p">])</span>
 
-    <span class="c1"># Plot the difference (in km) between the position computed</span>
+    <span class="c1"># Plot the difference (in km) between the positions computed</span>
     <span class="c1"># by VSOP2013 and HORIZONS.</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">([</span><span class="n">thr</span><span class="p">]</span><span class="o">*</span><span class="nb">len</span><span class="p">(</span><span class="n">vsop_states</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">vsop_states</span> <span class="o">-</span> <span class="n">hor_states</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="mf">1.496e8</span><span class="p">,</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">([</span><span class="n">thr</span><span class="p">]</span><span class="o">*</span><span class="nb">len</span><span class="p">(</span><span class="n">dates</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">vsop_states</span> <span class="o">-</span> <span class="n">hor_states</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="o">*</span> <span class="mf">1.496e8</span><span class="p">,</span>
                <span class="n">alpha</span><span class="o">=</span><span class="mf">.5</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Threshold = </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">thr</span><span class="p">))</span>
 
 <span class="c1"># Finish setting up the plot.</span>
@@ -795,6 +777,7 @@ Mars&#39; semi-major axis solution, threshold = 6e-5, time rescaled by a factor 
 <section id="limitations-and-caveats">
 <h2>Limitations and caveats<a class="headerlink" href="#limitations-and-caveats" title="Permalink to this headline">#</a></h2>
 <p>A possible issue in astrodynamical applications is that VSOP2013 does not directly provide formulae for the state vector of the Sun. The barycentric position of the Sun can be estimated via the heliocentric planetary formulae after imposing that the system’s barycentre is fixed in the origin. It is not clear at this time if this approach is 100% accurate (as VSOP2013 includes perturbations on the planets by asteroids, whose state vectors are not provided in the solution), but it should be adequate for most practical purposes.</p>
+<p>A better alternative is to formulate the dynamical equations of motion (e.g., of a spacecraft or a small body) in a heliocentric reference frame (i.e., in the framework of the so-called (N+1)-body problem).</p>
 </section>
 </section>
 

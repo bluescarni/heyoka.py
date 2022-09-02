@@ -6,6 +6,12 @@ Changelog
 0.19.0 (unreleased)
 -------------------
 
+New
+~~~
+
+- Add the capability to compile multivariate vector functions at runtime
+  (`#96 <https://github.com/bluescarni/heyoka.py/pull/96>`__).
+
 Changes
 ~~~~~~~
 

@@ -1,0 +1,543 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "id": "2df18ff4-f34a-49e0-8450-0fd3a0fad55f",
+   "metadata": {},
+   "source": [
+    "# Compiled functions\n",
+    "\n",
+    "Starting from version 0.19, heyoka.py can compile just-in-time (JIT) multivariate vector functions defined via the [expression system](<./The expression system.ipynb>). On the one hand, JIT compilation can greatly increase the performance of function evaluation with respect to a Python implementation of the same function. On the other hand, the JIT compilation process is computationally expensive and thus JIT compilation is most useful when a function needs to be evaluated repeatedly with different input values (so that the initial overhead of JIT compilation can be absorbed by the evaluation performance increase).\n",
+    "\n",
+    "## A simple example\n",
+    "\n",
+    "As an initial example, we will JIT compile the simple function\n",
+    "\n",
+    "$$\n",
+    "f\\left(x, y \\right) = x^2 - y^2.\n",
+    "$$\n",
+    "\n",
+    "Let us begin, as usual, with the introduction of the symbolic variables:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 1,
+   "id": "4efb98e9-06b5-466e-bae4-d0a8449b8372",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "import heyoka as hy\n",
+    "\n",
+    "x,y = hy.make_vars(\"x\", \"y\")"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "4cfdeb81-80a8-470c-9b4f-7b8b86031122",
+   "metadata": {},
+   "source": [
+    "Next, we define the function to be compiled:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 2,
+   "id": "feb0f07c-be65-4954-9e9f-11cda449af6f",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "sym_func = x**2-y**2"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "68861247-8ac9-42a3-bf58-b893282ccdf7",
+   "metadata": {},
+   "source": [
+    "We can now proceed to JIT compile ``sym_func`` via the ``make_cfunc()`` function. ``make_cfunc()`` takes as a mandatory input argument the list of symbolic expressions representing the outputs of a vector function. In this case, we only have a single output, ``sym_func``:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 3,
+   "id": "77df9c86-120a-483c-bec0-6f057e8be4b6",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "cf = hy.make_cfunc([sym_func])"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "8df3f92c-49b2-459d-bb0a-33e2e000812c",
+   "metadata": {},
+   "source": [
+    "The value returned by ``make_cfunc()`` is a callable function object which accepts as input a NumPy array representing the values to use in the evaluation of ``sym_func``:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 4,
+   "id": "a513ab62-df2b-421d-a6b9-05378a7e3e56",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "array([-24.])"
+      ]
+     },
+     "execution_count": 4,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "# Evaluate for x=1 and y=5.\n",
+    "cf([1,5])"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "08652425-9b2f-4ed1-b3ee-fb48154a79a0",
+   "metadata": {},
+   "source": [
+    "The value returned by ``cf`` is also a NumPy array containing the outputs of the compiled function. In this specific case, we have a single output and thus an array with a single element is returned.\n",
+    "\n",
+    "Because when we created ``cf`` we passed only the list of output expressions to ``make_cfunc()``, heyoka.py used lexicographic ordering to infer the order of the input variables during evaluation: $x$ is the first variable, $y$ is the second. If you don't want to rely on the default lexicographic ordering, you can pass to ``make_cfunc()`` an explicit ordering for the input variables:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 5,
+   "id": "addf2ebd-e1ed-415d-a0a6-57986504826f",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "array([-24.])"
+      ]
+     },
+     "execution_count": 5,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "# Explicitly specify the order of the input variables:\n",
+    "# first y, then x.\n",
+    "cf2 = hy.make_cfunc([sym_func], vars=[y,x])\n",
+    "\n",
+    "# Evaluate for x=1 and y=5.\n",
+    "cf2([5,1])"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "43f895e7-2da5-440d-84f8-1932d5a9d1fc",
+   "metadata": {},
+   "source": [
+    "``make_cfunc`` accepts additional keyword arguments, the most important of which is the boolean flag ``compact_mode`` (defaulting to ``False``). Similarly to the [adaptive Taylor integrators](<./Customising the adaptive integrator.ipynb>), you should enable ``compact_mode`` if you want to compile extremely large symbolic expressions that result in excessively long compilation times. The downside of ``compact_mode`` is a slight performance degradation due to the different code generation model adopted during the JIT compilation process.\n",
+    "\n",
+    "The function object returned by ``make_cfunc`` also accepts several optional keyword arguments. It is possible, for instance, to pass as ``outputs`` argument a pre-allocated NumPy array into which the result of the evaluation will be written. This is useful to avoid the overhead of allocating new memory for the return value, if such memory is already available:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 6,
+   "id": "675f630a-0a76-46c8-9276-15ab1c410346",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "array([-24.])"
+      ]
+     },
+     "execution_count": 6,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "import numpy as np\n",
+    "\n",
+    "# Pre-allocate a NumPy array to store the\n",
+    "# result of the evaluation.\n",
+    "ret_arr = np.zeros((1,))\n",
+    "\n",
+    "# Evaluate, specifying that the result\n",
+    "# will be written into ret_arr.\n",
+    "cf([1,5], outputs=ret_arr)\n",
+    "\n",
+    "ret_arr"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "4bea5b7b-ab72-47cf-a2dd-7f944248992b",
+   "metadata": {},
+   "source": [
+    "It the compiled function references external parameters, the parameters array will have to be supplied during evaluation via the ``pars`` keyword argument:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 7,
+   "id": "43f01d12-df42-41bc-8ca7-0b9394c793ef",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "array([46.])"
+      ]
+     },
+     "execution_count": 7,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "# A function with 3 parameters.\n",
+    "sym_func_par = hy.par[0]*x**2-hy.par[1]*y**2+hy.par[2]\n",
+    "\n",
+    "# Compile it.\n",
+    "cf_par = hy.make_cfunc([sym_func_par])\n",
+    "\n",
+    "# Evaluate, specifying the parameter values\n",
+    "cf_par([1,5], pars=[-1, -2, -3])"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "42b334f6-ce74-44ba-ab38-28288f86807b",
+   "metadata": {},
+   "source": [
+    "## Batched evaluations\n",
+    "\n",
+    "An important feature of compiled functions is the ability to be evaluated over batches of input variables in a single evaluation. Let us see a simple example:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 8,
+   "id": "be9fbe1d-b411-400d-83bd-03cd2c3ebca8",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "array([[-24., -32., -40.]])"
+      ]
+     },
+     "execution_count": 8,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "# Evaluate cf for x=[1,2,3] and y=[5,6,7].\n",
+    "cf([[1,2,3],[5,6,7]])"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "caf05a7c-a5d1-4b54-a815-767dcb15fc6e",
+   "metadata": {},
+   "source": [
+    "Because we now passed the two-dimensional array $[[1,2,3],[5,6,7]]$ as input argument (rather than a one-dimensional array, like in the previous examples), ``cf`` will be evaluated for multiple values of $x$ ($\\left[1,2,3\\right]$) and $y$ ($\\left[5,6,7\\right]$). The result also consists of a two-dimensional array in which the first dimension is the number of outputs (1 in this case), and the second dimension is the number of evaluation points (3 in this case).\n",
+    "\n",
+    "Because heyoka.py makes extensive use of the [SIMD instructions](https://en.wikipedia.org/wiki/SIMD) available in modern processors, a single batched evaluation will perform considerably better than multiple unbatched evaluations.\n",
+    "\n",
+    "## Performance analysis\n",
+    "\n",
+    "In order to assess the performance of heyoka.py's compiled functions, we will consider the evaluation of the Hamiltonian of the [restricted three-body problem](<./The restricted three-body problem.ipynb>), a 6-dimensional scalar function defined as:\n",
+    "\n",
+    "$$\n",
+    "\\mathcal{H}\\left(p_x,p_y,p_z,x,y,z\\right) = \\frac{1}{2}\\left( p_x^2+p_y^2+p_z^2 \\right) +yp_x-xp_y-\\frac{1-\\mu}{r_{PS}}-\\frac{\\mu}{r_{PJ}},\n",
+    "$$\n",
+    "\n",
+    "where\n",
+    "\n",
+    "$$\n",
+    "\\begin{align}\n",
+    "\\mu &= 0.1, \\\\\n",
+    "r_{PS} &=\\sqrt{\\left( x-\\mu \\right)^2+y^2+z^2}, \\\\\n",
+    "r_{PJ} &=\\sqrt{\\left( x -\\mu + 1 \\right)^2+y^2+z^2}.\n",
+    "\\end{align}\n",
+    "$$\n",
+    "\n",
+    "$\\mathcal{H}$ will be evaluated on a grid of $10^8$ randomly-generated evaluation points:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 9,
+   "id": "f5c647da-6120-4bc4-b429-ff2a1bfe6b9b",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# Deterministic seeding.\n",
+    "rng = np.random.default_rng(42)\n",
+    "\n",
+    "# Generate 10**8 evaluation points randomly.\n",
+    "nevals = 100000000\n",
+    "inputs = rng.uniform(size=(6, nevals))\n",
+    "\n",
+    "# The mu parameter.\n",
+    "mu = .1"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "384e55ea-8505-4744-ad1d-371dfacc2d60",
+   "metadata": {},
+   "source": [
+    "Let us begin with a NumPy-based evaluation:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 10,
+   "id": "65de0e04-bfb2-4d3b-af0d-5b7cd6446511",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "2.12 s ± 2.33 ms per loop (mean ± std. dev. of 7 runs, 1 loop each)\n"
+     ]
+    }
+   ],
+   "source": [
+    "# Evaluation of H via NumPy.\n",
+    "def Ham_np(px,py,pz,x,y,z):\n",
+    "    rps = np.sqrt((x-mu)**2 + (y**2+z**2))\n",
+    "    rpj = np.sqrt((x-mu+1)**2 + (y**2+z**2))\n",
+    "    \n",
+    "    return .5*(px**2+py**2+pz**2) + y*px - x*py - (1-mu)/rps - mu/rpj\n",
+    "\n",
+    "# Extract the function arguments from\n",
+    "# the inputs array.\n",
+    "px_arr = inputs[0,:]\n",
+    "py_arr = inputs[1,:]\n",
+    "pz_arr = inputs[2,:]\n",
+    "x_arr = inputs[3,:]\n",
+    "y_arr = inputs[4,:]\n",
+    "z_arr = inputs[5,:]\n",
+    "\n",
+    "# Time it.\n",
+    "%timeit Ham_np(px_arr,py_arr,pz_arr,x_arr,y_arr,z_arr)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "a6378df3-6cec-4442-ad27-c75ad5be2ad7",
+   "metadata": {},
+   "source": [
+    "Let us now try with heyoka.py. First we define the symbolic variables and the mathematical expression of $\\mathcal{H}$:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 11,
+   "id": "f7ecd05c-3932-481a-80b7-f0573ea21459",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "px,py,pz,x,y,z=hy.make_vars(\"px\", \"py\", \"pz\", \"x\", \"y\", \"z\")\n",
+    "\n",
+    "rps = hy.sqrt((x-mu)**2 + (y**2+z**2))\n",
+    "rpj = hy.sqrt((x-mu+1)**2 + (y**2+z**2))\n",
+    "\n",
+    "Ham_sym = .5*(px**2+py**2+pz**2) + y*px - x*py - (1-mu)/rps - mu/rpj"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "db7fdfd7-4e32-441e-9d83-c597e583aa07",
+   "metadata": {},
+   "source": [
+    "Then we compile ``Ham_sym``:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 12,
+   "id": "558ee9ab-d6e8-4d48-8556-46966eef9d30",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "Ham_cf = hy.make_cfunc([Ham_sym], vars=[px,py,pz,x,y,z])"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "216ded35-32ae-4a42-9c7a-a5f06b00a952",
+   "metadata": {},
+   "source": [
+    "We can now time ``Ham_cf``:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 17,
+   "id": "32131124-52a4-4b92-97fb-3fccd9a77157",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "209 ms ± 4.31 ms per loop (mean ± std. dev. of 7 runs, 1 loop each)\n"
+     ]
+    }
+   ],
+   "source": [
+    "%timeit Ham_cf(inputs)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "6a8de724-cb4e-414e-97f8-06a26e00a831",
+   "metadata": {},
+   "source": [
+    "We can see how heyoka.py's compiled function is about 10 times faster than the NumPy based implementation. We can also appreciate the effect of providing an externally-allocated ``outputs`` array:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 18,
+   "id": "59999b6a-e45a-4673-b239-e8b76a6c9be0",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "178 ms ± 1.4 ms per loop (mean ± std. dev. of 7 runs, 1 loop each)\n"
+     ]
+    }
+   ],
+   "source": [
+    "# Pre-allocate the outputs array.\n",
+    "outputs = np.zeros((1, nevals))\n",
+    "%timeit Ham_cf(inputs,outputs=outputs)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "01eb77b7-fc6a-4eb8-8d8b-235401d862a5",
+   "metadata": {},
+   "source": [
+    "The effect is not dramatic but measurable nevertheless.\n",
+    "\n",
+    "As a last benchmark, we will be performing the same evaluation with [JAX](https://jax.readthedocs.io/en/latest/index.html). Similarly to heyoka.py, JAX offers the possibility to [JIT compile Python functions](https://jax.readthedocs.io/en/latest/notebooks/quickstart.html#using-jit-to-speed-up-functions), so we expect similar performance to heyoka.py. Note that, in order to perform a fair comparison, for the execution of this notebook we [enabled 64-bit floats in JAX](https://jax.readthedocs.io/en/latest/notebooks/Common_Gotchas_in_JAX.html#double-64bit-precision) and we used JAX's CPU backend [forcing a single thread of execution](https://github.com/google/jax/issues/1539) (JAX by default uses multiple threads of execution, but heyoka.py's compiled functions do not yet support multithreaded execution).\n",
+    "\n",
+    "Let us see the jax code:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 15,
+   "id": "e5e3a887-fc7a-4df4-8081-bce7db5db23f",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "WARNING:absl:No GPU/TPU found, falling back to CPU. (Set TF_CPP_MIN_LOG_LEVEL=0 and rerun for more info.)\n"
+     ]
+    }
+   ],
+   "source": [
+    "import jax\n",
+    "import jax.numpy as jnp\n",
+    "\n",
+    "# Turn inputs into a JAX array of float64.\n",
+    "jinputs = jnp.array(inputs, dtype=jnp.float64)\n",
+    "\n",
+    "# Fetch the function arguments from jinputs.\n",
+    "jpx_arr = jinputs[0,:]\n",
+    "jpy_arr = jinputs[1,:]\n",
+    "jpz_arr = jinputs[2,:]\n",
+    "jx_arr = jinputs[3,:]\n",
+    "jy_arr = jinputs[4,:]\n",
+    "jz_arr = jinputs[5,:]\n",
+    "\n",
+    "# The function for the evaluation of the Hamiltonian.\n",
+    "def Ham_jnp(jpx,jpy,jpz,jx,jy,jz):\n",
+    "    rps = jnp.sqrt((jx-mu)**2 + (jy**2+jz**2))\n",
+    "    rpj = jnp.sqrt((jx-mu+1)**2 + (jy**2+jz**2))\n",
+    "    \n",
+    "    return .5*(jpx**2+jpy**2+jpz**2) + jy*jpx - jx*jpy - (1-mu)/rps - mu/rpj\n",
+    "\n",
+    "# Compile it.\n",
+    "Ham_jnp_jit = jax.jit(Ham_jnp)\n",
+    "\n",
+    "# Warm up.\n",
+    "Ham_jnp_jit(jpx_arr,jpy_arr,jpz_arr,jx_arr,jy_arr,jz_arr).block_until_ready();"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "472726f0-41b1-411d-8837-ede4dfac701f",
+   "metadata": {},
+   "source": [
+    "We are now ready to run the benchmark:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 19,
+   "id": "9b9af294-27a3-44f9-8678-208b30f405b3",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "304 ms ± 2.71 ms per loop (mean ± std. dev. of 7 runs, 1 loop each)\n"
+     ]
+    }
+   ],
+   "source": [
+    "%timeit Ham_jnp_jit(jpx_arr,jpy_arr,jpz_arr,jx_arr,jy_arr,jz_arr).block_until_ready()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "bf670b25-591a-47e2-82ed-6db75356f5ba",
+   "metadata": {},
+   "source": [
+    "We can indeed see how JAX's performance is similar to heyoka.py, although heyoka.py retains a performance edge."
+   ]
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "Python 3 (ipykernel)",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.8.13"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 5
+}
