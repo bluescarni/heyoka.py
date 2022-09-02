@@ -50,6 +50,7 @@ Advanced features
   notebooks/ensemble_batch_perf.ipynb
   notebooks/parallel_mode.ipynb
   notebooks/ext_precision.ipynb
+  notebooks/compiled_functions.ipynb
 
 Event detection
 ---------------
