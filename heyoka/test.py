@@ -4599,7 +4599,7 @@ class cfunc_test_case(_ut.TestCase):
 
     def test_multi(self):
         import numpy as np
-        from . import add_cfunc, make_vars, sin, par, expression, core
+        from . import make_cfunc, make_vars, sin, par, expression, core
         from .core import _ppc_arch
 
         if _ppc_arch:
@@ -4614,7 +4614,7 @@ class cfunc_test_case(_ut.TestCase):
         func = [sin(x + y), x - par[0], x + y + par[1]]
 
         for fp_t in fp_types:
-            fn = add_cfunc(func, vars=[y, x], fp_type=fp_t)
+            fn = make_cfunc(func, vars=[y, x], fp_type=fp_t)
 
             with self.assertRaises(ValueError) as cm:
                 fn(
@@ -4648,7 +4648,7 @@ class cfunc_test_case(_ut.TestCase):
             )
 
             for nevals in range(0, 10):
-                fn = add_cfunc(func, vars=[y, x], fp_type=fp_t)
+                fn = make_cfunc(func, vars=[y, x], fp_type=fp_t)
 
                 # NOTE: deterministic seeding.
                 rng = np.random.default_rng(nevals)
@@ -4851,7 +4851,7 @@ class cfunc_test_case(_ut.TestCase):
                 )
 
                 # Tests with no inputs.
-                fn = add_cfunc([expression(fp_t(3)) + par[1], par[0]], fp_type=fp_t)
+                fn = make_cfunc([expression(fp_t(3)) + par[1], par[0]], fp_type=fp_t)
 
                 inputs = rng.random((0, nevals), dtype=float).astype(fp_t)
                 pars = rng.random((2, nevals), dtype=float).astype(fp_t)
@@ -4909,7 +4909,9 @@ class cfunc_test_case(_ut.TestCase):
                     )
                 )
 
-                fn = add_cfunc([expression(fp_t(3)), expression(fp_t(4))], fp_type=fp_t)
+                fn = make_cfunc(
+                    [expression(fp_t(3)), expression(fp_t(4))], fp_type=fp_t
+                )
 
                 inputs = rng.random((0, nevals), dtype=float).astype(fp_t)
                 pars = rng.random((0, nevals), dtype=float).astype(fp_t)
@@ -4933,7 +4935,7 @@ class cfunc_test_case(_ut.TestCase):
 
                 # Test case in which there are no pars but a pars array is provided anyway,
                 # with the correct shape.
-                fn = add_cfunc([x + y], fp_type=fp_t)
+                fn = make_cfunc([x + y], fp_type=fp_t)
                 inputs = rng.random((2, nevals), dtype=float).astype(fp_t)
                 eval_arr = fn(inputs=inputs, pars=np.zeros((0, nevals), dtype=fp_t))
 
@@ -4949,11 +4951,11 @@ class cfunc_test_case(_ut.TestCase):
         # Check throwing behaviour with long double on PPC.
         if _ppc_arch:
             with self.assertRaises(NotImplementedError):
-                add_cfunc(func, vars=[y, x], fp_type=np.longdouble)
+                make_cfunc(func, vars=[y, x], fp_type=np.longdouble)
 
     def test_single(self):
         import numpy as np
-        from . import add_cfunc, make_vars, sin, par, expression, core
+        from . import make_cfunc, make_vars, sin, par, expression, core
         from .core import _ppc_arch
 
         if _ppc_arch:
@@ -4972,7 +4974,7 @@ class cfunc_test_case(_ut.TestCase):
         # etc., once we figure out how to test for them. Perhaps
         # examine the llvm states?
         for fp_t in fp_types:
-            fn = add_cfunc(func, fp_type=fp_t)
+            fn = make_cfunc(func, fp_type=fp_t)
 
             with self.assertRaises(ValueError) as cm:
                 fn([fp_t(1), fp_t(2)])
@@ -5127,7 +5129,7 @@ class cfunc_test_case(_ut.TestCase):
             )
 
             # Tests with no inputs.
-            fn = add_cfunc([expression(fp_t(3)) + par[1], par[0]], fp_type=fp_t)
+            fn = make_cfunc([expression(fp_t(3)) + par[1], par[0]], fp_type=fp_t)
 
             eval_arr = fn(inputs=np.zeros((0,), dtype=fp_t), pars=[1, 2])
             self.assertTrue(
@@ -5150,7 +5152,7 @@ class cfunc_test_case(_ut.TestCase):
                 )
             )
 
-            fn = add_cfunc([expression(fp_t(3)), expression(fp_t(4))], fp_type=fp_t)
+            fn = make_cfunc([expression(fp_t(3)), expression(fp_t(4))], fp_type=fp_t)
 
             eval_arr = fn(inputs=np.zeros((0,), dtype=fp_t), pars=[])
             self.assertTrue(
@@ -5176,7 +5178,7 @@ class cfunc_test_case(_ut.TestCase):
 
             # Test case in which there are no pars but a pars array is provided anyway,
             # with the correct shape.
-            fn = add_cfunc([x + y], fp_type=fp_t)
+            fn = make_cfunc([x + y], fp_type=fp_t)
             eval_arr = fn(inputs=[1, 2], pars=np.zeros((0,), dtype=fp_t))
 
             self.assertEqual(eval_arr[0], 3)

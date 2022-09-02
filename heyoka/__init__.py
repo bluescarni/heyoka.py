@@ -132,7 +132,7 @@ def taylor_add_jet(sys, order, **kwargs):
     return getattr(core, "_taylor_add_jet{}".format(fp_suffix))(sys, order, **kwargs)
 
 
-def add_cfunc(fn, **kwargs):
+def make_cfunc(fn, **kwargs):
     from . import core
 
     fp_type = kwargs.pop("fp_type", float)
