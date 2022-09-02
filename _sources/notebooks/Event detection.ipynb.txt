@@ -5,7 +5,7 @@
    "id": "489ba1ac",
    "metadata": {},
    "source": [
-    "# Event detection overview\n",
+    "# Event detection\n",
     "\n",
     "When integrating systems of ODEs, the need often arises to detect the occurrence of specific\n",
     "conditions (or *events*) in the state of the system. Many real systems, for instance, are described by equations\n",

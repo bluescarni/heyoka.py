@@ -42,8 +42,8 @@
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Pickle support" href="pickling.html" />
-    <link rel="prev" title="Dense &amp; continuous output" href="Dense%20output.html" />
+    <link rel="next" title="Compiled functions" href="compiled_functions.html" />
+    <link rel="prev" title="Computations in extended precision" href="ext_precision.html" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="docsearch:language" content="None">
     
@@ -151,14 +151,9 @@
      Dense &amp; continuous output
     </a>
    </li>
-   <li class="toctree-l2 current active">
-    <a class="current reference internal" href="#">
-     Interoperability with SymPy
-    </a>
-   </li>
    <li class="toctree-l2">
-    <a class="reference internal" href="pickling.html">
-     Pickle support
+    <a class="reference internal" href="Event%20detection.html">
+     Event detection
     </a>
    </li>
    <li class="toctree-l2">
@@ -172,11 +167,6 @@
     </a>
    </li>
    <li class="toctree-l2">
-    <a class="reference internal" href="ensemble_batch_perf.html">
-     Evaluating the performance of ensemble &amp; batch mode
-    </a>
-   </li>
-   <li class="toctree-l2">
     <a class="reference internal" href="parallel_mode.html">
      Parallel mode
     </a>
@@ -186,49 +176,19 @@
      Computations in extended precision
     </a>
    </li>
+   <li class="toctree-l2 current active">
+    <a class="current reference internal" href="#">
+     Interoperability with SymPy
+    </a>
+   </li>
    <li class="toctree-l2">
     <a class="reference internal" href="compiled_functions.html">
      Compiled functions
     </a>
    </li>
    <li class="toctree-l2">
-    <a class="reference internal" href="Event%20detection.html">
-     Event detection overview
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="Sampling%20events.html">
-     Sampling events
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="Poincar%C3%A9%20sections.html">
-     Poincaré sections
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="The%20Keplerian%20billiard.html">
-     The Keplerian billiard
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="The%20two-fixed%20elliptic%20billiard.html">
-     The two-fixed centres elliptic billiard
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="The%20wavy%20ramp.html">
-     The wavy ramp
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="The%20Maxwell-Boltzmann%20distribution.html">
-     The Maxwell-Boltzmann distribution
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="ev_sensitivity.html">
-     Computing event sensitivity
+    <a class="reference internal" href="pickling.html">
+     Pickle support
     </a>
    </li>
   </ul>
@@ -304,8 +264,48 @@
     </a>
    </li>
    <li class="toctree-l2">
+    <a class="reference internal" href="Sampling%20events.html">
+     Sampling events
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="Poincar%C3%A9%20sections.html">
+     Poincaré sections
+    </a>
+   </li>
+   <li class="toctree-l2">
     <a class="reference internal" href="second_integral.html">
      The second integral of motion
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="The%20Keplerian%20billiard.html">
+     The Keplerian billiard
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="The%20two-fixed%20elliptic%20billiard.html">
+     The two-fixed centres elliptic billiard
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="The%20wavy%20ramp.html">
+     The wavy ramp
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="The%20Maxwell-Boltzmann%20distribution.html">
+     The Maxwell-Boltzmann distribution
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="ev_sensitivity.html">
+     Computing event sensitivity
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="ensemble_batch_perf.html">
+     Evaluating the performance of ensemble &amp; batch mode
     </a>
    </li>
    <li class="toctree-l2">
@@ -757,52 +757,40 @@ title="Print to PDF"
 <p>What is the performance impact of these simplifications? Let us find out:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">time</span> <span class="n">ta_spy</span><span class="o">.</span><span class="n">propagate_until</span><span class="p">(</span><span class="mi">10000</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">time</span> <span class="n">ta_spy</span><span class="o">.</span><span class="n">propagate_until</span><span class="p">(</span><span class="mf">10000.</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
-<span class="ne">TypeError</span><span class="g g-Whitespace">                                 </span>Traceback (most recent call last)
-<span class="n">File</span> <span class="o">&lt;</span><span class="n">timed</span> <span class="nb">eval</span><span class="o">&gt;</span><span class="p">:</span><span class="mi">1</span><span class="p">,</span> <span class="ow">in</span> <span class="o">&lt;</span><span class="n">module</span><span class="o">&gt;</span>
-
-<span class="ne">TypeError</span>: propagate_until(): incompatible function arguments. The following argument types are supported:
-<span class="g g-Whitespace">    </span><span class="mi">1</span><span class="o">.</span> <span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="n">heyoka</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">taylor_adaptive_dbl</span><span class="p">,</span> <span class="n">t</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">max_steps</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">max_delta_t</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">inf</span><span class="p">,</span> <span class="n">callback</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">heyoka</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">taylor_adaptive_dbl</span><span class="p">],</span> <span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">write_tc</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">c_output</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">heyoka</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">taylor_outcome</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="n">Optional</span><span class="p">[</span><span class="n">heyoka</span><span class="p">::</span><span class="n">continuous_output</span><span class="o">&lt;</span><span class="n">double</span><span class="o">&gt;</span><span class="p">]]</span>
-
-<span class="n">Invoked</span> <span class="k">with</span><span class="p">:</span> <span class="n">Tolerance</span>               <span class="p">:</span> <span class="mf">2.2204460492503131e-16</span>
-<span class="n">High</span> <span class="n">accuracy</span>           <span class="p">:</span> <span class="n">false</span>
-<span class="n">Compact</span> <span class="n">mode</span>            <span class="p">:</span> <span class="n">false</span>
-<span class="n">Taylor</span> <span class="n">order</span>            <span class="p">:</span> <span class="mi">20</span>
-<span class="n">Dimension</span>               <span class="p">:</span> <span class="mi">6</span>
-<span class="n">Time</span>                    <span class="p">:</span> <span class="mf">0.0000000000000000</span>
-<span class="n">State</span>                   <span class="p">:</span> <span class="p">[</span><span class="o">-</span><span class="mf">10.461611630114545</span><span class="p">,</span> <span class="mf">6.6672536671391844</span><span class="p">,</span> <span class="mf">0.81863581394796503</span><span class="p">,</span> <span class="mf">0.16614243942411336</span><span class="p">,</span> <span class="mf">0.25682282397025807</span><span class="p">,</span> <span class="mf">0.031533877671032100</span><span class="p">]</span>
-<span class="p">,</span> <span class="mi">10000</span>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CPU times: user 2.39 s, sys: 0 ns, total: 2.39 s
+Wall time: 2.57 s
+</pre></div>
+</div>
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(&lt;taylor_outcome.time_limit: -4294967299&gt;,
+ 0.006522499652827699,
+ 0.017389869702015875,
+ 1012008,
+ None)
 </pre></div>
 </div>
 </div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">time</span> <span class="n">ta</span><span class="o">.</span><span class="n">propagate_until</span><span class="p">(</span><span class="mi">10000</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">time</span> <span class="n">ta</span><span class="o">.</span><span class="n">propagate_until</span><span class="p">(</span><span class="mf">10000.</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
-<span class="ne">TypeError</span><span class="g g-Whitespace">                                 </span>Traceback (most recent call last)
-<span class="n">File</span> <span class="o">&lt;</span><span class="n">timed</span> <span class="nb">eval</span><span class="o">&gt;</span><span class="p">:</span><span class="mi">1</span><span class="p">,</span> <span class="ow">in</span> <span class="o">&lt;</span><span class="n">module</span><span class="o">&gt;</span>
-
-<span class="ne">TypeError</span>: propagate_until(): incompatible function arguments. The following argument types are supported:
-<span class="g g-Whitespace">    </span><span class="mi">1</span><span class="o">.</span> <span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="n">heyoka</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">taylor_adaptive_dbl</span><span class="p">,</span> <span class="n">t</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">max_steps</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">max_delta_t</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">inf</span><span class="p">,</span> <span class="n">callback</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">heyoka</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">taylor_adaptive_dbl</span><span class="p">],</span> <span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">write_tc</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">c_output</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">heyoka</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">taylor_outcome</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="n">Optional</span><span class="p">[</span><span class="n">heyoka</span><span class="p">::</span><span class="n">continuous_output</span><span class="o">&lt;</span><span class="n">double</span><span class="o">&gt;</span><span class="p">]]</span>
-
-<span class="n">Invoked</span> <span class="k">with</span><span class="p">:</span> <span class="n">Tolerance</span>               <span class="p">:</span> <span class="mf">2.2204460492503131e-16</span>
-<span class="n">High</span> <span class="n">accuracy</span>           <span class="p">:</span> <span class="n">false</span>
-<span class="n">Compact</span> <span class="n">mode</span>            <span class="p">:</span> <span class="n">false</span>
-<span class="n">Taylor</span> <span class="n">order</span>            <span class="p">:</span> <span class="mi">20</span>
-<span class="n">Dimension</span>               <span class="p">:</span> <span class="mi">6</span>
-<span class="n">Time</span>                    <span class="p">:</span> <span class="mf">0.0000000000000000</span>
-<span class="n">State</span>                   <span class="p">:</span> <span class="p">[</span><span class="o">-</span><span class="mf">10.461611630114545</span><span class="p">,</span> <span class="mf">6.6672536671391844</span><span class="p">,</span> <span class="mf">0.81863581394796503</span><span class="p">,</span> <span class="mf">0.16614243942411336</span><span class="p">,</span> <span class="mf">0.25682282397025807</span><span class="p">,</span> <span class="mf">0.031533877671032100</span><span class="p">]</span>
-<span class="p">,</span> <span class="mi">10000</span>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CPU times: user 2.76 s, sys: 0 ns, total: 2.76 s
+Wall time: 2.97 s
+</pre></div>
+</div>
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(&lt;taylor_outcome.time_limit: -4294967299&gt;,
+ 0.006522499652827699,
+ 0.017389869692863855,
+ 1012008,
+ None)
 </pre></div>
 </div>
 </div>
@@ -871,17 +859,17 @@ title="Print to PDF"
                 
     <!-- Previous / next buttons -->
 <div class='prev-next-area'>
-    <a class='left-prev' id="prev-link" href="Dense%20output.html" title="previous page">
+    <a class='left-prev' id="prev-link" href="ext_precision.html" title="previous page">
         <i class="fas fa-angle-left"></i>
         <div class="prev-next-info">
             <p class="prev-next-subtitle">previous</p>
-            <p class="prev-next-title">Dense &amp; continuous output</p>
+            <p class="prev-next-title">Computations in extended precision</p>
         </div>
     </a>
-    <a class='right-next' id="next-link" href="pickling.html" title="next page">
+    <a class='right-next' id="next-link" href="compiled_functions.html" title="next page">
     <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Pickle support</p>
+        <p class="prev-next-title">Compiled functions</p>
     </div>
     <i class="fas fa-angle-right"></i>
     </a>

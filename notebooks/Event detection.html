@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>Event detection overview &#8212; heyoka.py 0.19.0 documentation</title>
+    <title>Event detection &#8212; heyoka.py 0.19.0 documentation</title>
     
   <!-- Loaded before other Sphinx assets -->
   <link href="../_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
@@ -42,8 +42,8 @@
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Sampling events" href="Sampling%20events.html" />
-    <link rel="prev" title="Compiled functions" href="compiled_functions.html" />
+    <link rel="next" title="Batch mode" href="Batch%20mode%20overview.html" />
+    <link rel="prev" title="Dense &amp; continuous output" href="Dense%20output.html" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="docsearch:language" content="None">
     
@@ -151,14 +151,9 @@
      Dense &amp; continuous output
     </a>
    </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="sympy_interop.html">
-     Interoperability with SymPy
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="pickling.html">
-     Pickle support
+   <li class="toctree-l2 current active">
+    <a class="current reference internal" href="#">
+     Event detection
     </a>
    </li>
    <li class="toctree-l2">
@@ -172,11 +167,6 @@
     </a>
    </li>
    <li class="toctree-l2">
-    <a class="reference internal" href="ensemble_batch_perf.html">
-     Evaluating the performance of ensemble &amp; batch mode
-    </a>
-   </li>
-   <li class="toctree-l2">
     <a class="reference internal" href="parallel_mode.html">
      Parallel mode
     </a>
@@ -187,48 +177,18 @@
     </a>
    </li>
    <li class="toctree-l2">
+    <a class="reference internal" href="sympy_interop.html">
+     Interoperability with SymPy
+    </a>
+   </li>
+   <li class="toctree-l2">
     <a class="reference internal" href="compiled_functions.html">
      Compiled functions
     </a>
    </li>
-   <li class="toctree-l2 current active">
-    <a class="current reference internal" href="#">
-     Event detection overview
-    </a>
-   </li>
    <li class="toctree-l2">
-    <a class="reference internal" href="Sampling%20events.html">
-     Sampling events
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="Poincar%C3%A9%20sections.html">
-     Poincaré sections
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="The%20Keplerian%20billiard.html">
-     The Keplerian billiard
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="The%20two-fixed%20elliptic%20billiard.html">
-     The two-fixed centres elliptic billiard
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="The%20wavy%20ramp.html">
-     The wavy ramp
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="The%20Maxwell-Boltzmann%20distribution.html">
-     The Maxwell-Boltzmann distribution
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="ev_sensitivity.html">
-     Computing event sensitivity
+    <a class="reference internal" href="pickling.html">
+     Pickle support
     </a>
    </li>
   </ul>
@@ -304,8 +264,48 @@
     </a>
    </li>
    <li class="toctree-l2">
+    <a class="reference internal" href="Sampling%20events.html">
+     Sampling events
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="Poincar%C3%A9%20sections.html">
+     Poincaré sections
+    </a>
+   </li>
+   <li class="toctree-l2">
     <a class="reference internal" href="second_integral.html">
      The second integral of motion
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="The%20Keplerian%20billiard.html">
+     The Keplerian billiard
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="The%20two-fixed%20elliptic%20billiard.html">
+     The two-fixed centres elliptic billiard
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="The%20wavy%20ramp.html">
+     The wavy ramp
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="The%20Maxwell-Boltzmann%20distribution.html">
+     The Maxwell-Boltzmann distribution
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="ev_sensitivity.html">
+     Computing event sensitivity
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="ensemble_batch_perf.html">
+     Evaluating the performance of ensemble &amp; batch mode
     </a>
    </li>
    <li class="toctree-l2">
@@ -606,7 +606,7 @@ title="Print to PDF"
         <div class="col pl-md-3 pl-lg-5 content-container">
             <!-- Table of contents that is only displayed when printing the page -->
             <div id="jb-print-docs-body" class="onlyprint">
-                <h1>Event detection overview</h1>
+                <h1>Event detection</h1>
                 <!-- Table of contents -->
                 <div id="print-main-content">
                     <div id="jb-print-toc">
@@ -672,8 +672,8 @@ title="Print to PDF"
                 
               <div>
                 
-  <section class="tex2jax_ignore mathjax_ignore" id="event-detection-overview">
-<h1>Event detection overview<a class="headerlink" href="#event-detection-overview" title="Permalink to this headline">#</a></h1>
+  <section class="tex2jax_ignore mathjax_ignore" id="event-detection">
+<h1>Event detection<a class="headerlink" href="#event-detection" title="Permalink to this headline">#</a></h1>
 <p>When integrating systems of ODEs, the need often arises to detect the occurrence of specific
 conditions (or <em>events</em>) in the state of the system. Many real systems, for instance, are described by equations
 that change discontinuously in response to particular conditions
@@ -1259,17 +1259,17 @@ to an integration without event detection.</p>
                 
     <!-- Previous / next buttons -->
 <div class='prev-next-area'>
-    <a class='left-prev' id="prev-link" href="compiled_functions.html" title="previous page">
+    <a class='left-prev' id="prev-link" href="Dense%20output.html" title="previous page">
         <i class="fas fa-angle-left"></i>
         <div class="prev-next-info">
             <p class="prev-next-subtitle">previous</p>
-            <p class="prev-next-title">Compiled functions</p>
+            <p class="prev-next-title">Dense &amp; continuous output</p>
         </div>
     </a>
-    <a class='right-next' id="next-link" href="Sampling%20events.html" title="next page">
+    <a class='right-next' id="next-link" href="Batch%20mode%20overview.html" title="next page">
     <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Sampling events</p>
+        <p class="prev-next-title">Batch mode</p>
     </div>
     <i class="fas fa-angle-right"></i>
     </a>
