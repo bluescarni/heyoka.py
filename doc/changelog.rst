@@ -9,6 +9,15 @@ Changelog
 New
 ~~~
 
+- Add a tutorial on extended-precision computations
+  (`#99 <https://github.com/bluescarni/heyoka.py/pull/99>`__).
+- The way quadruple-precision computations are supported via ``real128``
+  has been completely overhauled: ``real128`` is now exposed as a
+  NumPy-enabled Python type, meaning that ``real128``
+  can now be used in exactly the same way as ``float`` and
+  ``np.longdouble`` in the heyoka.py API
+  (`#99 <https://github.com/bluescarni/heyoka.py/pull/99>`__,
+  `#98 <https://github.com/bluescarni/heyoka.py/pull/98>`__).
 - Add the capability to compile multivariate vector functions at runtime
   (`#96 <https://github.com/bluescarni/heyoka.py/pull/96>`__).
 
