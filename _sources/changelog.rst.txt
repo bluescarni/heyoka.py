@@ -18,12 +18,16 @@ New
   ``np.longdouble`` in the heyoka.py API
   (`#99 <https://github.com/bluescarni/heyoka.py/pull/99>`__,
   `#98 <https://github.com/bluescarni/heyoka.py/pull/98>`__).
+  This is a :ref:`breaking change <bchanges_0_19_0>`.
 - Add the capability to compile multivariate vector functions at runtime
   (`#96 <https://github.com/bluescarni/heyoka.py/pull/96>`__).
 
 Changes
 ~~~~~~~
 
+- **BREAKING**: heyoka.py is now more strict with respect
+  to type conversions. See the :ref:`breaking changes <bchanges_0_19_0>`
+  section for more details.
 - heyoka.py now compiles without deprecation warnings against
   the latest fmt versions
   (`#98 <https://github.com/bluescarni/heyoka.py/pull/98>`__).

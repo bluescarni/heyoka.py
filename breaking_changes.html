@@ -521,6 +521,11 @@ title="Print to PDF"
     <nav id="bd-toc-nav" aria-label="Page">
         <ul class="visible nav section-nav flex-column">
  <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#bchanges-0-19-0">
+   0.19.0
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
   <a class="reference internal nav-link" href="#bchanges-0-16-0">
    0.16.0
   </a>
@@ -555,6 +560,11 @@ title="Print to PDF"
                         <nav aria-label="Page">
                             <ul class="visible nav section-nav flex-column">
  <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#bchanges-0-19-0">
+   0.19.0
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
   <a class="reference internal nav-link" href="#bchanges-0-16-0">
    0.16.0
   </a>
@@ -581,8 +591,43 @@ title="Print to PDF"
                 
   <section id="breaking-changes">
 <span id="id1"></span><h1>Breaking changes<a class="headerlink" href="#breaking-changes" title="Permalink to this headline">#</a></h1>
+<section id="bchanges-0-19-0">
+<span id="id2"></span><h2>0.19.0<a class="headerlink" href="#bchanges-0-19-0" title="Permalink to this headline">#</a></h2>
+<ul>
+<li><p>Quadruple-precision computations via the <code class="docutils literal notranslate"><span class="pre">real128</span></code> type now
+use the same API as the other supported floating-point types
+(<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code> and <a class="reference external" href="https://numpy.org/doc/stable/reference/arrays.scalars.html#numpy.longdouble" title="(in NumPy v1.23)"><code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.longdouble</span></code></a>). Additionally,
+the way extended-precision mode is enabled has changed - please
+refer to the <a class="reference external" href="https://bluescarni.github.io/heyoka.py/notebooks/ext_precision.html">extended-precision tutorial</a>
+for detailed information.</p></li>
+<li><p>The heyoka.py API is now more strict with respect to type conversions.
+For instance, attempting to initialise an integrator object with a state
+vector consisting of an array of integers will now raise an error:</p>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;&gt;&gt;</span> <span class="n">ta</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">taylor_adaptive</span><span class="p">(</span><span class="n">sys</span><span class="p">,</span> <span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
+<span class="p">[</span><span class="o">...</span><span class="p">]</span>
+<span class="ne">TypeError</span><span class="p">:</span> <span class="fm">__init__</span><span class="p">():</span> <span class="n">incompatible</span> <span class="n">constructor</span> <span class="n">arguments</span><span class="o">.</span>
+</pre></div>
+</div>
+<p>The solution here is to pass the initial state as an array of floats
+instead, i.e., <code class="docutils literal notranslate"><span class="pre">[-1.,</span> <span class="pre">0.]</span></code>. Similarly:</p>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;&gt;&gt;</span> <span class="n">ta</span><span class="o">.</span><span class="n">propagate_until</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+<span class="p">[</span><span class="o">...</span><span class="p">]</span>
+<span class="ne">TypeError</span><span class="p">:</span> <span class="n">propagate_until</span><span class="p">():</span> <span class="n">incompatible</span> <span class="n">function</span> <span class="n">arguments</span><span class="o">.</span>
+</pre></div>
+</div>
+<p>Again, the problem here is that a floating-point value is expected by
+the <code class="docutils literal notranslate"><span class="pre">propagate_until()</span></code> method, but an integral value was passed instead.
+The solution is to use <code class="docutils literal notranslate"><span class="pre">propagate_until(10.)</span></code> instead.
+In a similar fashion, if your code
+is raising <code class="xref py py-class docutils literal notranslate"><span class="pre">TypeError</span></code> exceptions with heyoka.py &gt;=0.19,
+the solution is to ensure that values of the correct
+type are passed to the heyoka.py API (especially whenever floating-point arguments
+are expected).</p>
+</li>
+</ul>
+</section>
 <section id="bchanges-0-16-0">
-<span id="id2"></span><h2>0.16.0<a class="headerlink" href="#bchanges-0-16-0" title="Permalink to this headline">#</a></h2>
+<span id="id3"></span><h2>0.16.0<a class="headerlink" href="#bchanges-0-16-0" title="Permalink to this headline">#</a></h2>
 <ul>
 <li><p>The tuple returned by the <code class="docutils literal notranslate"><span class="pre">propagate_for/until()</span></code> methods
 in a scalar integrator has now 5 elements, rather than 4.
@@ -604,7 +649,7 @@ function object (if requested).</p>
 </ul>
 </section>
 <section id="bchanges-0-10-0">
-<span id="id3"></span><h2>0.10.0<a class="headerlink" href="#bchanges-0-10-0" title="Permalink to this headline">#</a></h2>
+<span id="id4"></span><h2>0.10.0<a class="headerlink" href="#bchanges-0-10-0" title="Permalink to this headline">#</a></h2>
 <ul class="simple">
 <li><p>The callback that can (optionally) be passed to
 the <code class="docutils literal notranslate"><span class="pre">propagate_*()</span></code> methods must now return
@@ -613,7 +658,7 @@ continue or not. The callback used to return <code class="docutils literal notra
 </ul>
 </section>
 <section id="bchanges-0-8-0">
-<span id="id4"></span><h2>0.8.0<a class="headerlink" href="#bchanges-0-8-0" title="Permalink to this headline">#</a></h2>
+<span id="id5"></span><h2>0.8.0<a class="headerlink" href="#bchanges-0-8-0" title="Permalink to this headline">#</a></h2>
 <ul class="simple">
 <li><p>An <code class="docutils literal notranslate"><span class="pre">int</span></code> argument has been appended to the signature of
 the events’ callbacks. This new argument represents the sign
