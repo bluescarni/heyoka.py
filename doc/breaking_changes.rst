@@ -37,7 +37,7 @@ Breaking changes
   the ``propagate_until()`` method, but an integral value was passed instead.
   The solution is to use ``propagate_until(10.)`` instead.
   In a similar fashion, if your code
-  is raising :py:exc:`TypeError` exceptions with heyoka.py >=0.19,
+  is raising ``TypeError`` exceptions with heyoka.py >=0.19,
   the solution is to ensure that values of the correct
   type are passed to the heyoka.py API (especially whenever floating-point arguments
   are expected).
