@@ -153,6 +153,24 @@ PYBIND11_MODULE(core, m)
         }
     });
 
+    // LLVM state.
+    py::class_<hey::llvm_state>(m, "llvm_state", py::dynamic_attr{})
+        .def("get_ir", &hey::llvm_state::get_ir)
+        .def("get_object_code", [](hey::llvm_state &s) { return py::bytes(s.get_object_code()); })
+        // Repr.
+        .def("__repr__",
+             [](const hey::llvm_state &s) {
+                 std::ostringstream oss;
+                 oss << s;
+                 return oss.str();
+             })
+        // Copy/deepcopy.
+        .def("__copy__", heypy::copy_wrapper<hey::llvm_state>)
+        .def("__deepcopy__", heypy::deepcopy_wrapper<hey::llvm_state>, "memo"_a)
+        // Pickle support.
+        .def(py::pickle(&heypy::pickle_getstate_wrapper<hey::llvm_state>,
+                        &heypy::pickle_setstate_wrapper<hey::llvm_state>));
+
     // Expression.
     heypy::expose_expression(m);
 
@@ -311,20 +329,12 @@ PYBIND11_MODULE(core, m)
 
 #endif
 
-    // Scalar adaptive taylor integrators.
-    heypy::expose_taylor_integrator_dbl(m);
-    heypy::expose_taylor_integrator_ldbl(m);
-
-#if defined(HEYOKA_HAVE_REAL128)
-
-    heypy::expose_taylor_integrator_f128(m);
-
-#endif
-
-    // Batch integrators.
-    heypy::expose_batch_integrators(m);
-
     // Expose the events.
+    // NOTE: make sure these are exposed *before* the integrators.
+    // Events are used in the integrator API (e.g., ctors), and in order
+    // to have their types pretty-printed in the pybind11 machinery (e.g.,
+    // when raising an error message about wrong types being passed to an
+    // integrator's method), they need to be already exposed.
     heypy::expose_taylor_t_event_dbl(m);
     heypy::expose_taylor_t_event_ldbl(m);
 
@@ -347,23 +357,18 @@ PYBIND11_MODULE(core, m)
     heypy::expose_taylor_nt_event_batch_dbl(m);
     heypy::expose_taylor_t_event_batch_dbl(m);
 
-    // LLVM state.
-    py::class_<hey::llvm_state>(m, "llvm_state", py::dynamic_attr{})
-        .def("get_ir", &hey::llvm_state::get_ir)
-        .def("get_object_code", [](hey::llvm_state &s) { return py::bytes(s.get_object_code()); })
-        // Repr.
-        .def("__repr__",
-             [](const hey::llvm_state &s) {
-                 std::ostringstream oss;
-                 oss << s;
-                 return oss.str();
-             })
-        // Copy/deepcopy.
-        .def("__copy__", heypy::copy_wrapper<hey::llvm_state>)
-        .def("__deepcopy__", heypy::deepcopy_wrapper<hey::llvm_state>, "memo"_a)
-        // Pickle support.
-        .def(py::pickle(&heypy::pickle_getstate_wrapper<hey::llvm_state>,
-                        &heypy::pickle_setstate_wrapper<hey::llvm_state>));
+    // Scalar adaptive taylor integrators.
+    heypy::expose_taylor_integrator_dbl(m);
+    heypy::expose_taylor_integrator_ldbl(m);
+
+#if defined(HEYOKA_HAVE_REAL128)
+
+    heypy::expose_taylor_integrator_f128(m);
+
+#endif
+
+    // Batch integrators.
+    heypy::expose_batch_integrators(m);
 
     // Recommended simd size helper.
     m.def("_recommended_simd_size_dbl", &hey::recommended_simd_size<double>);

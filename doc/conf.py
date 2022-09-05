@@ -38,6 +38,7 @@ intersphinx_mapping = {
     "hy": ("https://bluescarni.github.io/heyoka", None),
     "mppp": ("https://bluescarni.github.io/mppp", None),
     "numpy": ("https://numpy.org/doc/stable/", None),
+    "python": ("https://docs.python.org/3", None),
 }
 
 # Add any paths that contain templates here, relative to this directory.

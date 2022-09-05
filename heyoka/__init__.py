@@ -147,7 +147,7 @@ def nt_event(ex, callback, **kwargs):
     fp_type = kwargs.pop("fp_type", float)
     fp_suffix = _fp_to_suffix(fp_type)
 
-    return getattr(core, "_nt_event{}".format(fp_suffix))(ex, callback, **kwargs)
+    return getattr(core, "nt_event{}".format(fp_suffix))(ex, callback, **kwargs)
 
 
 def t_event(ex, **kwargs):
@@ -156,7 +156,7 @@ def t_event(ex, **kwargs):
     fp_type = kwargs.pop("fp_type", float)
     fp_suffix = _fp_to_suffix(fp_type)
 
-    return getattr(core, "_t_event{}".format(fp_suffix))(ex, **kwargs)
+    return getattr(core, "t_event{}".format(fp_suffix))(ex, **kwargs)
 
 
 def nt_event_batch(ex, callback, **kwargs):
@@ -165,7 +165,7 @@ def nt_event_batch(ex, callback, **kwargs):
     fp_type = kwargs.pop("fp_type", float)
     fp_suffix = _fp_to_suffix(fp_type)
 
-    return getattr(core, "_nt_event_batch{}".format(fp_suffix))(ex, callback, **kwargs)
+    return getattr(core, "nt_event_batch{}".format(fp_suffix))(ex, callback, **kwargs)
 
 
 def t_event_batch(ex, **kwargs):
@@ -174,7 +174,7 @@ def t_event_batch(ex, **kwargs):
     fp_type = kwargs.pop("fp_type", float)
     fp_suffix = _fp_to_suffix(fp_type)
 
-    return getattr(core, "_t_event_batch{}".format(fp_suffix))(ex, **kwargs)
+    return getattr(core, "t_event_batch{}".format(fp_suffix))(ex, **kwargs)
 
 
 def from_sympy(ex, s_dict={}):

@@ -170,7 +170,7 @@ void expose_taylor_nt_event_impl(py::module &m, const std::string &suffix)
     using callback_t = std::conditional_t<B, ev_callback<void, hey::taylor_adaptive_batch<T> &, T, int, std::uint32_t>,
                                           ev_callback<void, hey::taylor_adaptive<T> &, T, int>>;
 
-    const auto name = B ? fmt::format("_nt_event_batch_{}", suffix) : fmt::format("_nt_event_{}", suffix);
+    const auto name = B ? fmt::format("nt_event_batch_{}", suffix) : fmt::format("nt_event_{}", suffix);
 
     // NOTE: for events, dynamic attributes do not make much sense
     // because when they are copied inside an integrator object any
@@ -239,7 +239,7 @@ void expose_taylor_t_event_impl(py::module &m, const std::string &suffix)
         = std::conditional_t<B, ev_callback<bool, hey::taylor_adaptive_batch<T> &, bool, int, std::uint32_t>,
                              ev_callback<bool, hey::taylor_adaptive<T> &, bool, int>>;
 
-    const auto name = B ? fmt::format("_t_event_batch_{}", suffix) : fmt::format("_t_event_{}", suffix);
+    const auto name = B ? fmt::format("t_event_batch_{}", suffix) : fmt::format("t_event_{}", suffix);
 
     // NOTE: for events, dynamic attributes do not make much sense
     // because when they are copied inside an integrator object any
