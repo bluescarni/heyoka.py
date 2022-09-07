@@ -289,6 +289,10 @@ PyNumberMethods py_real128_as_number = {};
 
 // Create a py_real128 containing an mppp::real128
 // constructed from the input set of arguments.
+// NOTE: at this time, this is used in ways which never
+// result in exceptions, but strictly speaking we should
+// take care of handling exceptions being thrown by the
+// real128 ctor.
 template <typename... Args>
 PyObject *py_real128_from_args(Args &&...args)
 {
@@ -453,11 +457,13 @@ int py_real128_init(PyObject *self, PyObject *args, PyObject *)
 // Deallocation.
 void py_real128_dealloc(PyObject *self)
 {
+    assert(py_real128_check(self));
+
     // Invoke the destructor.
     get_val(self)->~real128();
 
     // Free the memory.
-    Py_TYPE(self)->tp_free(reinterpret_cast<PyObject *>(self));
+    Py_TYPE(self)->tp_free(self);
 }
 
 // Helper to construct a real128 from one of the
