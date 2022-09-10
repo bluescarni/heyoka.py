@@ -5776,6 +5776,14 @@ class real128_test_case(_ut.TestCase):
         tmp = np.array([real128("1.1"), real128("1.11"), real128("1.13")])
         self.assertTrue(np.all(tmp == loads(dumps(tmp))))
 
+        # Use hstack to check the copyswap implementation.
+        arr1 = np.array([real128("1.1"), real128("1.11"), real128("1.13")])
+        arr2 = np.array([real128("2.1"), real128("2.11"), real128("2.13")])
+        arr3 = np.hstack([arr1, arr2])
+
+        self.assertTrue(np.all(arr3[:3] == arr1))
+        self.assertTrue(np.all(arr3[3:] == arr2))
+
 
 def run_test_suite():
     from . import make_nbody_sys, taylor_adaptive

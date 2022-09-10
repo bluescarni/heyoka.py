@@ -26,6 +26,12 @@
 #include <type_traits>
 #include <utility>
 
+#if defined(__GLIBCXX__)
+
+#include <cxxabi.h>
+
+#endif
+
 #include <boost/numeric/conversion/cast.hpp>
 
 #include <fmt/format.h>
@@ -287,12 +293,43 @@ const auto min_func = [](auto a, auto b) { return std::min(a, b); };
 // NOLINTNEXTLINE(cppcoreguidelines-avoid-non-const-global-variables)
 PyNumberMethods py_real128_as_number = {};
 
+// This function will invoke the function object f,
+// wrapping its execution in the pybind11 C++ -> Python
+// exception translation logic. If a C++ exception is
+// thrown by the execution of f, the Python error flag is set
+// and true is returned. Otherwise, false will be returned.
+// The return value of f is ignored.
+template <typename F>
+bool with_pybind11_eh(const F &f)
+{
+    try {
+        f();
+
+        return false;
+    } catch (py::error_already_set &e) {
+        e.restore();
+        return true;
+#ifdef __GLIBCXX__
+    } catch (abi::__forced_unwind &) {
+        throw;
+#endif
+    } catch (...) {
+        auto &local_exception_translators = py::detail::get_local_internals().registered_exception_translators;
+        if (py::detail::apply_exception_translators(local_exception_translators)) {
+            return true;
+        }
+        auto &exception_translators = py::detail::get_internals().registered_exception_translators;
+        if (py::detail::apply_exception_translators(exception_translators)) {
+            return true;
+        }
+
+        PyErr_SetString(PyExc_SystemError, "Exception escaped from default exception translator!");
+        return true;
+    }
+}
+
 // Create a py_real128 containing an mppp::real128
 // constructed from the input set of arguments.
-// NOTE: at this time, this is used in ways which never
-// result in exceptions, but strictly speaking we should
-// take care of handling exceptions being thrown by the
-// real128 ctor.
 template <typename... Args>
 PyObject *py_real128_from_args(Args &&...args)
 {
@@ -306,8 +343,16 @@ PyObject *py_real128_from_args(Args &&...args)
     // NOLINTNEXTLINE(cppcoreguidelines-owning-memory)
     auto *p = ::new (pv) py_real128;
 
-    // Setup its internal data.
-    ::new (p->m_storage) mppp::real128(std::forward<Args>(args)...);
+    if (with_pybind11_eh([&]() {
+            // Setup its internal data.
+            ::new (p->m_storage) mppp::real128(std::forward<Args>(args)...);
+        })) {
+
+        // Clean up.
+        py_real128_type.tp_free(pv);
+
+        return nullptr;
+    }
 
     return reinterpret_cast<PyObject *>(p);
 }
@@ -429,19 +474,7 @@ int py_real128_init(PyObject *self, PyObject *args, PyObject *)
             return -1;
         }
 
-        try {
-            *get_val(self) = mppp::real128(str);
-        } catch (const std::invalid_argument &ia) {
-            PyErr_SetString(PyExc_ValueError, ia.what());
-
-            return -1;
-        } catch (const std::exception &ex) {
-            PyErr_SetString(PyExc_RuntimeError, ex.what());
-
-            return -1;
-        } catch (...) {
-            PyErr_SetString(PyExc_RuntimeError, "Unknown exception caught while trying to build a real128 from string");
-
+        if (with_pybind11_eh([&]() { *get_val(self) = mppp::real128(str); })) {
             return -1;
         }
     } else {
@@ -502,16 +535,14 @@ std::pair<std::optional<mppp::real128>, bool> real128_from_ob(PyObject *arg)
 // __repr__().
 PyObject *py_real128_repr(PyObject *self)
 {
-    try {
-        return PyUnicode_FromString(get_val(self)->to_string().c_str());
-    } catch (const std::exception &ex) {
-        PyErr_SetString(PyExc_RuntimeError, ex.what());
-    } catch (...) {
-        PyErr_SetString(PyExc_RuntimeError,
-                        "An unknown exception was caught while trying to obtain the representation of a real128");
-    }
+    PyObject *retval = nullptr;
 
-    return nullptr;
+    // NOTE: C++ exceptions here can be thrown only *before*
+    // the invocation of PyUnicode_FromString(). Hence, in case of
+    // exceptions, retval will remain nullptr.
+    with_pybind11_eh([&]() { retval = PyUnicode_FromString(get_val(self)->to_string().c_str()); });
+
+    return retval;
 }
 
 // Generic implementation of unary operations.
@@ -744,6 +775,10 @@ void npy_py_real128_copyswap(void *dst, void *src, int swap, void *)
 }
 
 // Copyswapn primitive.
+// NOTE: although the NumPy docs mention that you *must* implement copyswapn, it seems
+// that - at least in recent NumPy versions - a synthesized default implementation of
+// copyswapn built on top of copyswap is used if copyswapn is not defined. Perhaps
+// then we can remove this in the future.
 void npy_py_real128_copyswapn(void *dst_, npy_intp dstride, void *src_, npy_intp sstride, npy_intp n, int swap, void *)
 {
     char *dst = static_cast<char *>(dst_), *src = static_cast<char *>(src_);
@@ -1140,22 +1175,19 @@ void expose_real128(py::module_ &m)
             return nullptr;
         }
 
-        try {
+        PyObject *retval = nullptr;
+
+        detail::with_pybind11_eh([&]() {
             const auto val_int = mppp::integer<1>{val};
             long long candidate = 0;
             if (val_int.get(candidate)) {
-                return PyLong_FromLongLong(candidate);
+                retval = PyLong_FromLongLong(candidate);
+            } else {
+                retval = PyLong_FromString(val_int.to_string().c_str(), nullptr, 10);
             }
+        });
 
-            return PyLong_FromString(val_int.to_string().c_str(), nullptr, 10);
-        } catch (const std::exception &ex) {
-            PyErr_SetString(PyExc_RuntimeError, ex.what());
-            return nullptr;
-        } catch (...) {
-            PyErr_SetString(PyExc_RuntimeError,
-                            "An unknown exception was caught while attempting to convert a real128 to int");
-            return nullptr;
-        }
+        return retval;
     };
 
     // Finalize py_real128_type.
