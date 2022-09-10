@@ -38,6 +38,8 @@
     <script src="../_static/togglebutton.js"></script>
     <script src="../_static/scripts/sphinx-book-theme.js?digest=9c920249402e914e316237a7dbc6769907cce411"></script>
     <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="The adaptive integrator" href="The%20adaptive%20integrator.html" />
@@ -551,7 +553,7 @@ title="Print to PDF"
                 
               <div>
                 
-  <section id="the-expression-system">
+  <section class="tex2jax_ignore mathjax_ignore" id="the-expression-system">
 <h1>The expression system<a class="headerlink" href="#the-expression-system" title="Permalink to this headline">#</a></h1>
 <p>As we saw in the previous section, heyoka.py
 needs to be able to represent the right-hand side of an ODE system in symbolic
@@ -569,8 +571,8 @@ and the leaf nodes can be:</p>
 that the value of a constant is determined when the expression is created, whereas
 the value of a parameter is loaded from a user-supplied data array at a later stage.</p>
 <p>As a simple example, here is a graphical representation of the
-AST for the expression $\left( 1 - x^2\right)y-x$:</p>
-<img src="../_static/ast.png" width="350">
+AST for the expression <span class="math notranslate nohighlight">\(\left( 1 - x^2\right)y-x\)</span>:</p>
+<a class="reference internal image-reference" href="../_images/ast.png"><img alt="../_images/ast.png" src="../_images/ast.png" style="width: 350px;" /></a>
 <p>The construction of the AST of an expression in heyoka.py can be accomplished via natural
 mathematical notation:</p>
 <div class="cell docutils container">

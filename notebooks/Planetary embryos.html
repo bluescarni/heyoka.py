@@ -38,6 +38,8 @@
     <script src="../_static/togglebutton.js"></script>
     <script src="../_static/scripts/sphinx-book-theme.js?digest=9c920249402e914e316237a7dbc6769907cce411"></script>
     <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Mercury’s relativistic precession" href="mercury_precession.html" />
@@ -618,11 +620,11 @@ title="Print to PDF"
                 
               <div>
                 
-  <section id="planetary-embryos-in-the-inner-solar-system">
+  <section class="tex2jax_ignore mathjax_ignore" id="planetary-embryos-in-the-inner-solar-system">
 <h1>Planetary embryos in the inner Solar System<a class="headerlink" href="#planetary-embryos-in-the-inner-solar-system" title="Permalink to this headline">#</a></h1>
 <p>In this example we will simulate the dynamics of a group of <a class="reference external" href="https://en.wikipedia.org/wiki/Protoplanet">planetary embryos</a> in the inner Solar System, tracking their close encounters via heyoka.py’s <a class="reference internal" href="Event%20detection.html"><span class="doc std std-doc">event detection</span></a> system.</p>
-<p>Current theories of planet formation posit that planetary embryos form via the collision of kilometer-sized <a class="reference external" href="https://en.wikipedia.org/wiki/Planetesimal">planetesimals</a>, which in turn originate from the aggregation of dust in protoplanetary disks. Planetary embryos have masses of about $10^{22}$ to $10^{23},\mathrm{kg}$, and they have diameters up to a few thousand kilometers. Over the course of hundreds of millions of years, planetary embryos are thought to collide with each other, eventually resulting in the formation of planets.</p>
-<p>In this tutorial we will consider a system consisting of a Sun-like star and 30 embryos distributed on planar orbits with semi-major axes ranging from $0.5$ to $1.2,\mathrm{AU}$. The embryos have masses between $0.2$ Earth masses and $0.6$ Lunar masses and the dynamics is purely gravitational (i.e., there’s no protoplanetary disk and no <a class="reference external" href="https://en.wikipedia.org/wiki/Planetary_migration">planetary migration</a> takes place). The setup is inspired by <a class="reference external" href="https://ui.adsabs.harvard.edu/abs/1999MNRAS.304..793C/abstract">this paper</a>.</p>
+<p>Current theories of planet formation posit that planetary embryos form via the collision of kilometer-sized <a class="reference external" href="https://en.wikipedia.org/wiki/Planetesimal">planetesimals</a>, which in turn originate from the aggregation of dust in protoplanetary disks. Planetary embryos have masses of about <span class="math notranslate nohighlight">\(10^{22}\)</span> to <span class="math notranslate nohighlight">\(10^{23}\,\mathrm{kg}\)</span>, and they have diameters up to a few thousand kilometers. Over the course of hundreds of millions of years, planetary embryos are thought to collide with each other, eventually resulting in the formation of planets.</p>
+<p>In this tutorial we will consider a system consisting of a Sun-like star and 30 embryos distributed on planar orbits with semi-major axes ranging from <span class="math notranslate nohighlight">\(0.5\)</span> to <span class="math notranslate nohighlight">\(1.2\,\mathrm{AU}\)</span>. The embryos have masses between <span class="math notranslate nohighlight">\(0.2\)</span> Earth masses and <span class="math notranslate nohighlight">\(0.6\)</span> Lunar masses and the dynamics is purely gravitational (i.e., there’s no protoplanetary disk and no <a class="reference external" href="https://en.wikipedia.org/wiki/Planetary_migration">planetary migration</a> takes place). The setup is inspired by <a class="reference external" href="https://ui.adsabs.harvard.edu/abs/1999MNRAS.304..793C/abstract">this paper</a>.</p>
 <section id="constants-and-initial-conditions">
 <h2>Constants and initial conditions<a class="headerlink" href="#constants-and-initial-conditions" title="Permalink to this headline">#</a></h2>
 <p>Let us begin by defining a couple of constants:</p>
@@ -638,11 +640,12 @@ title="Print to PDF"
 </div>
 </div>
 <p>We will be using Solar masses, astronomical units and years as units of measure.</p>
-<p>Initially the embryos are placed on randomly-generated low-eccentricity planar orbits. The semi-major axes of the orbits are equispaced between $0.5$ and $1.2,\mathrm{AU}$, and the embryo masses decrease with the distance $r$ from the Sun following the power law</p>
-<p>$$
+<p>Initially the embryos are placed on randomly-generated low-eccentricity planar orbits. The semi-major axes of the orbits are equispaced between <span class="math notranslate nohighlight">\(0.5\)</span> and <span class="math notranslate nohighlight">\(1.2\,\mathrm{AU}\)</span>, and the embryo masses decrease with the distance <span class="math notranslate nohighlight">\(r\)</span> from the Sun following the power law</p>
+<div class="math notranslate nohighlight">
+\[
 4.32\cdot 10^{-8}r^{-3.8},
-$$</p>
-<p>so that the innermost embryo has a mass of $0.2$ Earth masses while the outermost embryo has a mass of $0.6$ Lunar masses.</p>
+\]</div>
+<p>so that the innermost embryo has a mass of <span class="math notranslate nohighlight">\(0.2\)</span> Earth masses while the outermost embryo has a mass of <span class="math notranslate nohighlight">\(0.6\)</span> Lunar masses.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pykep</span> <span class="k">as</span> <span class="nn">pk</span>
@@ -697,16 +700,18 @@ $$</p>
 </section>
 <section id="tracking-close-encounters">
 <h2>Tracking close encounters<a class="headerlink" href="#tracking-close-encounters" title="Permalink to this headline">#</a></h2>
-<p>In order to track close encounters between embryos we will be using heyoka.py’s <a class="reference internal" href="Event%20detection.html"><span class="doc std std-doc">event detection</span></a> system to track over time the minima of the distances between each pair of embryos. The mutual distance $D_{ij}\left( t \right)$ between embryos $i$ and $j$ is at a local minimum when its time derivative,</p>
-<p>$$
-\frac{dD_{ij}\left( t \right)}{dt}  = 2\left[ x_i\left( t \right) - x_j\left( t \right) \right]\left[ v_{xi}\left( t \right) - v_{xj}\left( t \right) \right]
-+2\left[ y_i\left( t \right) - y_j\left( t \right) \right]\left[ v_{yi}\left( t \right) - v_{yj}\left( t \right) \right]
-+2\left[ z_i\left( t \right) - z_j\left( t \right) \right]\left[ v_{zi}\left( t \right) - v_{zj}\left( t \right) \right],
-$$</p>
+<p>In order to track close encounters between embryos we will be using heyoka.py’s <a class="reference internal" href="Event%20detection.html"><span class="doc std std-doc">event detection</span></a> system to track over time the minima of the distances between each pair of embryos. The mutual distance <span class="math notranslate nohighlight">\(D_{ij}\left( t \right)\)</span> between embryos <span class="math notranslate nohighlight">\(i\)</span> and <span class="math notranslate nohighlight">\(j\)</span> is at a local minimum when its time derivative,</p>
+<div class="math notranslate nohighlight">
+\[
+\frac{dD_{ij}\left( t \right)}{dt}  = 2\left[ x_i\left( t \right) - x_j\left( t \right) \right]\left[ v_{xi}\left( t \right) - v_{xj}\left( t \right) \right] 
+ +2\left[ y_i\left( t \right) - y_j\left( t \right) \right]\left[ v_{yi}\left( t \right) - v_{yj}\left( t \right) \right]
+ +2\left[ z_i\left( t \right) - z_j\left( t \right) \right]\left[ v_{zi}\left( t \right) - v_{zj}\left( t \right) \right],
+\]</div>
 <p>is zero. Thus, by defining the event equation</p>
-<p>$$
+<div class="math notranslate nohighlight">
+\[
 \frac{dD_{ij}\left( t \right)}{dt} = 0
-$$</p>
+\]</div>
 <p>we will be able to detect and keep track of the close encounters between embryos.</p>
 <p>Let us see the definition of the event callback:</p>
 <div class="cell docutils container">
@@ -768,8 +773,8 @@ $$</p>
 </div>
 </div>
 </div>
-<p>Note how we specified a <em>positive</em> direction for the events. This means that the event is detected only when the value of ${dD_{ij}\left( t \right)}/{dt}$ switches from negative to positive (and not viceversa). In other words, by specifying a positive event direction we will be filtering out the maxima of $D_{ij}\left( t \right)$, retaining only the minima.</p>
-<p>We are now ready to create the integrator. In order to curb the compilation time, we will activate the <code class="docutils literal notranslate"><span class="pre">compact_mode</span></code> option. We will also use a relatively high tolerance of $10^{-9}$, since in this situation we are not interested in being accurate to machine precision:</p>
+<p>Note how we specified a <em>positive</em> direction for the events. This means that the event is detected only when the value of <span class="math notranslate nohighlight">\({dD_{ij}\left( t \right)}/{dt}\)</span> switches from negative to positive (and not viceversa). In other words, by specifying a positive event direction we will be filtering out the maxima of <span class="math notranslate nohighlight">\(D_{ij}\left( t \right)\)</span>, retaining only the minima.</p>
+<p>We are now ready to create the integrator. In order to curb the compilation time, we will activate the <code class="docutils literal notranslate"><span class="pre">compact_mode</span></code> option. We will also use a relatively high tolerance of <span class="math notranslate nohighlight">\(10^{-9}\)</span>, since in this situation we are not interested in being accurate to machine precision:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ta</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">taylor_adaptive</span><span class="p">(</span><span class="n">sys</span><span class="p">,</span> <span class="n">ic</span><span class="p">,</span> <span class="n">tol</span> <span class="o">=</span> <span class="mf">1e-9</span><span class="p">,</span> <span class="n">compact_mode</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
@@ -875,7 +880,7 @@ $$</p>
 <img alt="../_images/a94426d326329e0de5b18de078f733fe0f7280c50f4c08f5497951ca9fe64d70.png" src="../_images/a94426d326329e0de5b18de078f733fe0f7280c50f4c08f5497951ca9fe64d70.png" />
 </div>
 </div>
-<p>We can see how the closest encounter distance throughout the simulation was $\sim 2.8,\mathrm{km}$. The cumulative number of close encounters seem to increase with a power law.</p>
+<p>We can see how the closest encounter distance throughout the simulation was <span class="math notranslate nohighlight">\(\sim 2.8\,\mathrm{km}\)</span>. The cumulative number of close encounters seem to increase with a power law.</p>
 <p>Let us now take a look at the evolution of the Heliocentric orbital elements:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -929,7 +934,7 @@ $$</p>
 <img alt="../_images/2da292eaa46a8c2f645034b0c2b7dbb8601c56a449cfabd24ca8731d7d674b21.png" src="../_images/2da292eaa46a8c2f645034b0c2b7dbb8601c56a449cfabd24ca8731d7d674b21.png" />
 </div>
 </div>
-<p>In the plot we also added vertical dashed lines representing all encounters closer than $10^{-5},\mathrm{AU}$ (or $\sim 1500,\mathrm{km})$. The lines begin and end in correspondence of the embryos involved in the encounter, and the text above the lines represents the encounter distance.</p>
+<p>In the plot we also added vertical dashed lines representing all encounters closer than <span class="math notranslate nohighlight">\(10^{-5}\,\mathrm{AU}\)</span> (or <span class="math notranslate nohighlight">\(\sim 1500\,\mathrm{km})\)</span>. The lines begin and end in correspondence of the embryos involved in the encounter, and the text above the lines represents the encounter distance.</p>
 <p>And here’s the plot for the eccentricities:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">

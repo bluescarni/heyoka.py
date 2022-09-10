@@ -38,6 +38,8 @@
     <script src="../_static/togglebutton.js"></script>
     <script src="../_static/scripts/sphinx-book-theme.js?digest=9c920249402e914e316237a7dbc6769907cce411"></script>
     <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="The Keplerian billiard" href="The%20Keplerian%20billiard.html" />
@@ -608,40 +610,45 @@ title="Print to PDF"
                 
               <div>
                 
-  <section id="the-second-integral-of-motion">
+  <section class="tex2jax_ignore mathjax_ignore" id="the-second-integral-of-motion">
 <h1>The second integral of motion<a class="headerlink" href="#the-second-integral-of-motion" title="Permalink to this headline">#</a></h1>
 <p>In this example we will reproduce a <a class="reference external" href="https://ui.adsabs.harvard.edu/abs/1964AJ.....69...73H/abstract">famous numerical experiment</a> investigating the existence of a second integral of motion in axisymmetric potentials. Specifically, we will focus on a two-dimensional dynamical system described by the Hamiltonian</p>
-<p>$$
+<div class="math notranslate nohighlight">
+\[
 \mathcal{H}\left(\dot{x}, \dot{y}, x, y \right) = \frac{1}{2}\left(\dot{x}^2+\dot{y}^2\right) + U\left(x, y\right),
-$$</p>
+\]</div>
 <p>where</p>
-<p>$$
+<div class="math notranslate nohighlight">
+\[
 U\left(x, y\right) = \frac{1}{2}\left( x^2 + y^2 + 2x^2y - \frac{2}{3}y^3 \right).
-$$</p>
-<p>$x$ and $y$ are the cylindrical coordinates ($R$ and $z$) of a point mass moving under the influence of the axially-symmetric potential $U\left(x, y\right)$.</p>
-<p>Because we are dealing with an autonomous dynamical system, the Hamiltonian $\mathcal{H}$ is a constant of motion, corresponding to the total energy of the system.
-Our objective is to investigate the existence of <em>another</em> integral of motion independent of $\mathcal{H}$: if that were the case, we could solve analytically this dynamical system via the <a class="reference external" href="https://en.wikipedia.org/wiki/Liouville%E2%80%93Arnold_theorem">Liouville-Arnold theorem</a>.</p>
+\]</div>
+<p><span class="math notranslate nohighlight">\(x\)</span> and <span class="math notranslate nohighlight">\(y\)</span> are the cylindrical coordinates (<span class="math notranslate nohighlight">\(R\)</span> and <span class="math notranslate nohighlight">\(z\)</span>) of a point mass moving under the influence of the axially-symmetric potential <span class="math notranslate nohighlight">\(U\left(x, y\right)\)</span>.</p>
+<p>Because we are dealing with an autonomous dynamical system, the Hamiltonian <span class="math notranslate nohighlight">\(\mathcal{H}\)</span> is a constant of motion, corresponding to the total energy of the system.
+Our objective is to investigate the existence of <em>another</em> integral of motion independent of <span class="math notranslate nohighlight">\(\mathcal{H}\)</span>: if that were the case, we could solve analytically this dynamical system via the <a class="reference external" href="https://en.wikipedia.org/wiki/Liouville%E2%80%93Arnold_theorem">Liouville-Arnold theorem</a>.</p>
 <section id="procedure">
 <h2>Procedure<a class="headerlink" href="#procedure" title="Permalink to this headline">#</a></h2>
-<p>Because $\mathcal{H}$ is a constant of motion, we can invert the definition of the Hamiltonian to yield</p>
-<p>$$
+<p>Because <span class="math notranslate nohighlight">\(\mathcal{H}\)</span> is a constant of motion, we can invert the definition of the Hamiltonian to yield</p>
+<div class="math notranslate nohighlight">
+\[
 \frac{1}{2}\dot{x}^2 = \mathcal{H} - U\left(x, y\right) - \frac{1}{2}\dot{y}^2,\tag{1}
-$$</p>
+\]</div>
 <p>which, in turn, implies the constraint</p>
-<p>$$
+<div class="math notranslate nohighlight">
+\[
 \mathcal{H} - U\left(x, y\right) - \frac{1}{2}\dot{y}^2 \geq 0,\tag{2}
-$$</p>
-<p>because $\frac{1}{2}\dot{x}^2$ cannot assume negative values. Eq. (2) implicitly defines a <em>volume</em> in the $\left(x, y, \dot{y}\right)$ phase space within which the motion of the particle is bounded. On the other hand, <em>if</em> another integral of motion $\mathcal{C} = \mathcal{C}\left( \dot{x}, \dot{y}, x, y \right)$ exists, we can invert it to determine
-$\dot{x} = \dot{x}\left( x, y, \dot{y}, \mathcal{C} \right)$, plug this definition of $\dot{x}$ into eq. (1) and obtain an equation of type</p>
-<p>$$
+\]</div>
+<p>because <span class="math notranslate nohighlight">\(\frac{1}{2}\dot{x}^2\)</span> cannot assume negative values. Eq. (2) implicitly defines a <em>volume</em> in the <span class="math notranslate nohighlight">\(\left(x, y, \dot{y}\right)\)</span> phase space within which the motion of the particle is bounded. On the other hand, <em>if</em> another integral of motion <span class="math notranslate nohighlight">\(\mathcal{C} = \mathcal{C}\left( \dot{x}, \dot{y}, x, y \right)\)</span> exists, we can invert it to determine
+<span class="math notranslate nohighlight">\(\dot{x} = \dot{x}\left( x, y, \dot{y}, \mathcal{C} \right)\)</span>, plug this definition of <span class="math notranslate nohighlight">\(\dot{x}\)</span> into eq. (1) and obtain an equation of type</p>
+<div class="math notranslate nohighlight">
+\[
 f\left(x, y, \dot{y}, \mathcal{H}, \mathcal{C}\right) = 0
-$$</p>
-<p>which defines a <em>surface</em> embedded in the phase space $\left(x, y, \dot{y}\right)$, rather than a volume. In other words, the existence of another integral of motion $\mathcal{C}$ further constraints the possible motion of the particle in the $\left(x, y, \dot{y}\right)$ space. Thus, the strategy of our investigation revolves around detecting if the particle motion in phase space is constrained on a surface, rather than within a volume. How can we do that?</p>
-<p>A possible answer to this question is to consider the intersections of the particle’s trajectory in phase space with a fixed 2D plane (or, in other words, a <a class="reference external" href="https://en.wikipedia.org/wiki/Poincar%C3%A9_map">Poincare’ section</a>). If the particle’s trajectory is constrained by a surface (i.e., if the additional integral of motion $\mathcal{C}$ <em>does</em> exist), the Poincare’ section will consist of a curve representing the intersection of the surface with the 2D plane. If, instead, the particle’s trajectory is constrained by a volume (i.e., if the additional integral of motion $\mathcal{C}$ <em>does not</em> exist), the Poincare’ section will resemble a densely-filled surface, rather than a curve.</p>
+\]</div>
+<p>which defines a <em>surface</em> embedded in the phase space <span class="math notranslate nohighlight">\(\left(x, y, \dot{y}\right)\)</span>, rather than a volume. In other words, the existence of another integral of motion <span class="math notranslate nohighlight">\(\mathcal{C}\)</span> further constraints the possible motion of the particle in the <span class="math notranslate nohighlight">\(\left(x, y, \dot{y}\right)\)</span> space. Thus, the strategy of our investigation revolves around detecting if the particle motion in phase space is constrained on a surface, rather than within a volume. How can we do that?</p>
+<p>A possible answer to this question is to consider the intersections of the particle’s trajectory in phase space with a fixed 2D plane (or, in other words, a <a class="reference external" href="https://en.wikipedia.org/wiki/Poincar%C3%A9_map">Poincare’ section</a>). If the particle’s trajectory is constrained by a surface (i.e., if the additional integral of motion <span class="math notranslate nohighlight">\(\mathcal{C}\)</span> <em>does</em> exist), the Poincare’ section will consist of a curve representing the intersection of the surface with the 2D plane. If, instead, the particle’s trajectory is constrained by a volume (i.e., if the additional integral of motion <span class="math notranslate nohighlight">\(\mathcal{C}\)</span> <em>does not</em> exist), the Poincare’ section will resemble a densely-filled surface, rather than a curve.</p>
 </section>
 <section id="running-the-experiments">
 <h2>Running the experiments<a class="headerlink" href="#running-the-experiments" title="Permalink to this headline">#</a></h2>
-<p>For the computation of Poincare’ sections, we use the plane defined by the condition $x = 0$ (i.e., the $\left(y, \dot{y}\right)$ plane), and, for the sake of consistency with the <a class="reference external" href="https://ui.adsabs.harvard.edu/abs/1964AJ.....69...73H/abstract">original paper</a>, we consider only intersections for which $\dot{x} &gt; 0$ (i.e., the particle is moving from below to above the plane). We will compute different Poincare’ sections at different energy levels (i.e., values of the $\mathcal{H}$ constant). The initial value of $x$ is always $0$ (so that the motion always starts on the plane of the Poincare’ section), and the initial values for $y$ and $\dot{y}$ are randomly selected. The initial value for $\dot{x}$ is then implicitly defined by the value of the energy constant.</p>
+<p>For the computation of Poincare’ sections, we use the plane defined by the condition <span class="math notranslate nohighlight">\(x = 0\)</span> (i.e., the <span class="math notranslate nohighlight">\(\left(y, \dot{y}\right)\)</span> plane), and, for the sake of consistency with the <a class="reference external" href="https://ui.adsabs.harvard.edu/abs/1964AJ.....69...73H/abstract">original paper</a>, we consider only intersections for which <span class="math notranslate nohighlight">\(\dot{x} &gt; 0\)</span> (i.e., the particle is moving from below to above the plane). We will compute different Poincare’ sections at different energy levels (i.e., values of the <span class="math notranslate nohighlight">\(\mathcal{H}\)</span> constant). The initial value of <span class="math notranslate nohighlight">\(x\)</span> is always <span class="math notranslate nohighlight">\(0\)</span> (so that the motion always starts on the plane of the Poincare’ section), and the initial values for <span class="math notranslate nohighlight">\(y\)</span> and <span class="math notranslate nohighlight">\(\dot{y}\)</span> are randomly selected. The initial value for <span class="math notranslate nohighlight">\(\dot{x}\)</span> is then implicitly defined by the value of the energy constant.</p>
 <p>Let us begin by defining a function for the generation of a set of initial conditions from an energy value:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -681,11 +688,12 @@ $$</p>
 </div>
 </div>
 </div>
-<p>In order to detect when the particle crosses the $x=0$ plane, we will be using heyoka.py’s <a class="reference internal" href="Event%20detection.html"><span class="doc std std-doc">event detection system</span></a>. The event equation is simply</p>
-<p>$$
+<p>In order to detect when the particle crosses the <span class="math notranslate nohighlight">\(x=0\)</span> plane, we will be using heyoka.py’s <a class="reference internal" href="Event%20detection.html"><span class="doc std std-doc">event detection system</span></a>. The event equation is simply</p>
+<div class="math notranslate nohighlight">
+\[
 x = 0,
-$$</p>
-<p>whereas for the callback we will be using a function object which will record internally the values of $\dot{y}$ and $y$ when the particle crosses the $x=0$ plane:</p>
+\]</div>
+<p>whereas for the callback we will be using a function object which will record internally the values of <span class="math notranslate nohighlight">\(\dot{y}\)</span> and <span class="math notranslate nohighlight">\(y\)</span> when the particle crosses the <span class="math notranslate nohighlight">\(x=0\)</span> plane:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Definition of the event callback.</span>
@@ -727,7 +735,7 @@ $$</p>
 </div>
 </div>
 </div>
-<p>We can now proceed to numerically compute and plot the Poincare’ sections. We define a small helper function that, given an input energy level, generates and integrate a few random orbits. The event object will record internally the intersections of these orbits with the $x=0$ plane, which will then be used to plot the Poincare’ section:</p>
+<p>We can now proceed to numerically compute and plot the Poincare’ sections. We define a small helper function that, given an input energy level, generates and integrate a few random orbits. The event object will record internally the intersections of these orbits with the <span class="math notranslate nohighlight">\(x=0\)</span> plane, which will then be used to plot the Poincare’ section:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">plot_poincare</span><span class="p">(</span><span class="n">H</span><span class="p">):</span>
@@ -763,7 +771,7 @@ $$</p>
 </div>
 </div>
 </div>
-<p>As done in the <a class="reference external" href="https://ui.adsabs.harvard.edu/abs/1964AJ.....69...73H/abstract">original paper</a>, let us first plot a Poincare’ section for the energy level $\mathcal{H} = 0.083333$:</p>
+<p>As done in the <a class="reference external" href="https://ui.adsabs.harvard.edu/abs/1964AJ.....69...73H/abstract">original paper</a>, let us first plot a Poincare’ section for the energy level <span class="math notranslate nohighlight">\(\mathcal{H} = 0.083333\)</span>:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">plot_poincare</span><span class="p">(</span><span class="mf">0.083333</span><span class="p">)</span>
@@ -771,10 +779,10 @@ $$</p>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/5a95df475267c42c8a8933efa19d8c379ae6e39a6f6c1ba5d1f3610b8303c11f.png" src="../_images/5a95df475267c42c8a8933efa19d8c379ae6e39a6f6c1ba5d1f3610b8303c11f.png" />
+<img alt="../_images/d97242dbbc06118674cc738e26748a232f304c89742428fed1f9e9ddc61dd33d.png" src="../_images/d97242dbbc06118674cc738e26748a232f304c89742428fed1f9e9ddc61dd33d.png" />
 </div>
 </div>
-<p>This Poincare’ section is suggesting that the integral of motion $\mathcal{C}$ does indeed exist, because the intersections of all random orbits are clearly tracing curves on the $x=0$ plane.</p>
+<p>This Poincare’ section is suggesting that the integral of motion <span class="math notranslate nohighlight">\(\mathcal{C}\)</span> does indeed exist, because the intersections of all random orbits are clearly tracing curves on the <span class="math notranslate nohighlight">\(x=0\)</span> plane.</p>
 <blockquote>
 <div><p><strong>NOTE</strong>: if you are running this tutorial in interactive mode, feel free to re-execute the previous cell to randomly generate a new Poincare’ section with the same energy level.</p>
 </div></blockquote>
@@ -786,7 +794,7 @@ $$</p>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/7f94765da7add8ec0a8bba406e65acc30e34771737339100950360341fcfad5c.png" src="../_images/7f94765da7add8ec0a8bba406e65acc30e34771737339100950360341fcfad5c.png" />
+<img alt="../_images/dccd98659b1fa914a6224fcfbb2fbc7e872cbd18df2c6aef06d282af947425c6.png" src="../_images/dccd98659b1fa914a6224fcfbb2fbc7e872cbd18df2c6aef06d282af947425c6.png" />
 </div>
 </div>
 <p>The qualitative picture is now radically different. Although islands of stable motion persist, now most trajectories seem to be densely filling the plane, rather than tracing curves on it. Let us further increase the energy level:</p>
@@ -797,7 +805,7 @@ $$</p>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/2c0c85aa07be8843e4c5c676fbcb92ca266ef8bffc194df9e06200ea76f72a5b.png" src="../_images/2c0c85aa07be8843e4c5c676fbcb92ca266ef8bffc194df9e06200ea76f72a5b.png" />
+<img alt="../_images/fd583a55f6e5d25d8f01997e39d8681a5230842fd7a319e148517e9efc18cd0f.png" src="../_images/fd583a55f6e5d25d8f01997e39d8681a5230842fd7a319e148517e9efc18cd0f.png" />
 </div>
 </div>
 <p>At higher energies, the densely-filling behaviour (which Henon and Heiles call <em>ergodic</em>) is even more prevalent than before.</p>

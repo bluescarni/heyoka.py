@@ -38,6 +38,8 @@
     <script src="../_static/togglebutton.js"></script>
     <script src="../_static/scripts/sphinx-book-theme.js?digest=9c920249402e914e316237a7dbc6769907cce411"></script>
     <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Brouwer’s law in the outer Solar System" href="Outer%20Solar%20System.html" />
@@ -551,19 +553,20 @@ title="Print to PDF"
                 
               <div>
                 
-  <section id="long-term-stability-of-n-body-simulations-the-case-of-trappist-1">
+  <section class="tex2jax_ignore mathjax_ignore" id="long-term-stability-of-n-body-simulations-the-case-of-trappist-1">
 <h1>Long term stability of N-body simulations: the case of Trappist-1<a class="headerlink" href="#long-term-stability-of-n-body-simulations-the-case-of-trappist-1" title="Permalink to this headline">#</a></h1>
 <p><a class="reference external" href="https://en.wikipedia.org/wiki/TRAPPIST-1">TRAPPIST-1</a> is a system made of seven Earth-sized planets, orbiting closely around a small ultra-cool dwarf with periods forming a near-resonant chain. The system is of particular interest as it is considered as a candidate to host extraterrestrial life and it is relatively close to our solar system (∼40 light years).</p>
 <p>Here we show how to use <em>heyoka.py</em> to setup a simulation to study the long-term stability of the system. For this purpose we will simulate the N-body dynamics of the system directly in Cartesian coordinates and in an inertial reference frame, the equations of motion (EOM) being:</p>
-<p>$$
-\left{
+<div class="math notranslate nohighlight">
+\[\begin{split}
+\left\{
 \begin{aligned}
-\frac{d^2x_i}{dt^2} &amp;= -G \sum_{i\ne j}^N \frac {m_j (x_i-x_j)}{\left[{(x_i-x_j)^2+(y_i-y_j)^2+(z_i-z_j)^2}\right]^\frac 32} \
-\frac{d^2y_i}{dt^2} &amp;= -G \sum_{i\ne j}^N \frac {m_j (y_i-y_j)}{\left[{(x_i-x_j)^2+(y_i-y_j)^2+(z_i-z_j)^2}\right]^\frac 32} \
-\frac{d^2z_i}{dt^2} &amp;= -G \sum_{i\ne j}^N \frac {m_j (z_i-z_j)}{\left[{(x_i-x_j)^2+(y_i-y_j)^2+(z_i-z_j)^2}\right]^\frac 32}
+\frac{d^2x_i}{dt^2} &amp;= -G \sum_{i\ne j}^N \frac {m_j (x_i-x_j)}{\left[{(x_i-x_j)^2+(y_i-y_j)^2+(z_i-z_j)^2}\right]^\frac 32} \\
+\frac{d^2y_i}{dt^2} &amp;= -G \sum_{i\ne j}^N \frac {m_j (y_i-y_j)}{\left[{(x_i-x_j)^2+(y_i-y_j)^2+(z_i-z_j)^2}\right]^\frac 32} \\
+\frac{d^2z_i}{dt^2} &amp;= -G \sum_{i\ne j}^N \frac {m_j (z_i-z_j)}{\left[{(x_i-x_j)^2+(y_i-y_j)^2+(z_i-z_j)^2}\right]^\frac 32} 
 \end{aligned}
 \right. \qquad \qquad \rightarrow i = 1..N
-$$</p>
+\end{split}\]</div>
 <p>To build this system of equations we can use heyoka built-in <code class="docutils literal notranslate"><span class="pre">make_nbody_sys</span></code> which will implement for us the equations of motion above. Our main concern is, thus, to generate sets of initial conditions that are compatible with the Earth-based astronomical observations made and simulate a bunch of them in parallel.</p>
 <p>NOTE: We will not use in this notebook <em>heyoka.py</em>’s vectorization capabilities and we will, instead, only parallelise using multiple threads.</p>
 <p>NOTE: Thread parallelism is possible as the <em>heyoka.py</em> Taylor integrator releases the python GIL.</p>

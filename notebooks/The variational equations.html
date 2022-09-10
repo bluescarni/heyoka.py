@@ -38,6 +38,8 @@
     <script src="../_static/togglebutton.js"></script>
     <script src="../_static/scripts/sphinx-book-theme.js?digest=9c920249402e914e316237a7dbc6769907cce411"></script>
     <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Optimal Control of the Lotka-Volterra equations" href="Optimal%20Control%20of%20the%20Lotka-Volterra%20equations.html" />
@@ -551,60 +553,67 @@ title="Print to PDF"
                 
               <div>
                 
-  <section id="the-variational-equations">
+  <section class="tex2jax_ignore mathjax_ignore" id="the-variational-equations">
 <h1>The variational equations<a class="headerlink" href="#the-variational-equations" title="Permalink to this headline">#</a></h1>
 <p>In this tutorial, we will show how it is possible to exploit heyoka.py’s <a class="reference internal" href="The%20expression%20system.html"><span class="doc std std-doc">expression system</span></a> to implement first-order variational equations for a system of ODEs.</p>
-<p>First, let’s start with a brief recap on the variational equations. For simplicity, we will consider an autonomous ODE system in the variables $x$ and $y$ (the extension to more variables just complicates the notation):</p>
-<p>$$
+<p>First, let’s start with a brief recap on the variational equations. For simplicity, we will consider an autonomous ODE system in the variables <span class="math notranslate nohighlight">\(x\)</span> and <span class="math notranslate nohighlight">\(y\)</span> (the extension to more variables just complicates the notation):</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
 \begin{cases}
-\frac{dx}{dt} = f\left(x, y \right)\
+\frac{dx}{dt} = f\left(x, y \right)\\
 \frac{dy}{dt} = g\left(x, y \right)
 \end{cases},
-$$</p>
+\end{split}\]</div>
 <p>with initial conditions</p>
-<p>$$
+<div class="math notranslate nohighlight">
+\[\begin{split}
 \begin{cases}
-x\left( 0 \right) = x_0\
+x\left( 0 \right) = x_0\\
 y\left( 0 \right) = y_0
 \end{cases}.
-$$</p>
-<p>The solutions of this ODE system will be the functions $x\left( t; x_0, y_0 \right)$ and $y\left( t; x_0, y_0 \right)$. Our objective is to determine the evolution in time of the first-order derivatives of these solutions with respect to the initial conditions $\left( x_0, y_0 \right)$:</p>
-<p>$$
+\end{split}\]</div>
+<p>The solutions of this ODE system will be the functions <span class="math notranslate nohighlight">\(x\left( t; x_0, y_0 \right)\)</span> and <span class="math notranslate nohighlight">\(y\left( t; x_0, y_0 \right)\)</span>. Our objective is to determine the evolution in time of the first-order derivatives of these solutions with respect to the initial conditions <span class="math notranslate nohighlight">\(\left( x_0, y_0 \right)\)</span>:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
 \begin{aligned}
-\left(\frac{\partial x}{\partial x_0}\right)\left(t; x_0, y_0\right),\
-\left(\frac{\partial x}{\partial y_0}\right)\left(t; x_0, y_0\right),\
-\left(\frac{\partial y}{\partial x_0}\right)\left(t; x_0, y_0\right),\
-\left(\frac{\partial y}{\partial y_0}\right)\left(t; x_0, y_0\right).\
+\left(\frac{\partial x}{\partial x_0}\right)\left(t; x_0, y_0\right),\\
+\left(\frac{\partial x}{\partial y_0}\right)\left(t; x_0, y_0\right),\\
+\left(\frac{\partial y}{\partial x_0}\right)\left(t; x_0, y_0\right),\\
+\left(\frac{\partial y}{\partial y_0}\right)\left(t; x_0, y_0\right).\\
 \end{aligned}
-$$</p>
-<p>These functions tell us how the the solutions of the ODE system react to changes in the initial values $\left( x_0, y_0 \right)$. One way of determining numerically the evolution in time of the partial derivatives is to introduce them as additional state variables in the original ODE system, together with an additional set of differential equations (i.e., the variational equations). Let’s see how this is done for, e.g., $\frac{\partial x}{\partial x_0}$. We take the time derivative of $\frac{\partial x}{\partial x_0}$,</p>
-<p>$$
+\end{split}\]</div>
+<p>These functions tell us how the the solutions of the ODE system react to changes in the initial values <span class="math notranslate nohighlight">\(\left( x_0, y_0 \right)\)</span>. One way of determining numerically the evolution in time of the partial derivatives is to introduce them as additional state variables in the original ODE system, together with an additional set of differential equations (i.e., the variational equations). Let’s see how this is done for, e.g., <span class="math notranslate nohighlight">\(\frac{\partial x}{\partial x_0}\)</span>. We take the time derivative of <span class="math notranslate nohighlight">\(\frac{\partial x}{\partial x_0}\)</span>,</p>
+<div class="math notranslate nohighlight">
+\[
 \frac{d \left( \frac{\partial x}{\partial x_0} \right)}{dt},
-$$</p>
+\]</div>
 <p>and expand it, via elementary calculus rules, to</p>
-<p>$$
+<div class="math notranslate nohighlight">
+\[
 \frac{d \left( \frac{\partial x}{\partial x_0} \right)}{dt} = \frac{\partial \left( \frac{dx}{dt} \right) }{\partial x_0}=\frac{\partial f\left(x, y\right)}{\partial x}\frac{\partial x}{\partial x_0}+\frac{\partial f \left(x, y\right)}{\partial y}\frac{\partial y}{\partial x_0}.
-$$</p>
+\]</div>
 <p>We can write similar ODEs for the other partial derivatives, append them below the original ODE system and finally obtain an augmented ODE system containing the variational equations:</p>
-<p>$$
+<div class="math notranslate nohighlight">
+\[\begin{split}
 \begin{cases}
-\frac{dx}{dt} = f\left(x, y \right)\
-\frac{dy}{dt} = g\left(x, y \right)\
-\frac{d \left( \frac{\partial x}{\partial x_0} \right)}{dt} = \frac{\partial f\left(x, y\right)}{\partial x}\frac{\partial x}{\partial x_0}+\frac{\partial f\left(x, y\right)}{\partial y}\frac{\partial y}{\partial x_0}\
-\frac{d \left( \frac{\partial x}{\partial y_0} \right)}{dt} = \frac{\partial f\left(x, y\right)}{\partial x}\frac{\partial x}{\partial y_0}+\frac{\partial f\left(x, y\right)}{\partial y}\frac{\partial y}{\partial y_0}\
-\frac{d \left( \frac{\partial y}{\partial x_0} \right)}{dt} = \frac{\partial g\left(x, y\right)}{\partial x}\frac{\partial x}{\partial x_0}+\frac{\partial g\left(x, y\right)}{\partial y}\frac{\partial y}{\partial x_0}\
+\frac{dx}{dt} = f\left(x, y \right)\\
+\frac{dy}{dt} = g\left(x, y \right)\\
+\frac{d \left( \frac{\partial x}{\partial x_0} \right)}{dt} = \frac{\partial f\left(x, y\right)}{\partial x}\frac{\partial x}{\partial x_0}+\frac{\partial f\left(x, y\right)}{\partial y}\frac{\partial y}{\partial x_0}\\
+\frac{d \left( \frac{\partial x}{\partial y_0} \right)}{dt} = \frac{\partial f\left(x, y\right)}{\partial x}\frac{\partial x}{\partial y_0}+\frac{\partial f\left(x, y\right)}{\partial y}\frac{\partial y}{\partial y_0}\\
+\frac{d \left( \frac{\partial y}{\partial x_0} \right)}{dt} = \frac{\partial g\left(x, y\right)}{\partial x}\frac{\partial x}{\partial x_0}+\frac{\partial g\left(x, y\right)}{\partial y}\frac{\partial y}{\partial x_0}\\
 \frac{d \left( \frac{\partial y}{\partial y_0} \right)}{dt} = \frac{\partial g\left(x, y\right)}{\partial x}\frac{\partial x}{\partial y_0}+\frac{\partial g\left(x, y\right)}{\partial y}\frac{\partial y}{\partial y_0}
 \end{cases}.
-$$</p>
-<p>The introduction of the variational equations in an ODE system of $n$ equations results in additional $n^2$ equations and variables. The initial conditions for the new variables are:</p>
-<p>$$
+\end{split}\]</div>
+<p>The introduction of the variational equations in an ODE system of <span class="math notranslate nohighlight">\(n\)</span> equations results in additional <span class="math notranslate nohighlight">\(n^2\)</span> equations and variables. The initial conditions for the new variables are:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
 \begin{cases}
-\frac{\partial x}{\partial x_0} \left( 0 \right) = 1\
-\frac{\partial x}{\partial y_0} \left( 0 \right) = 0\
-\frac{\partial y}{\partial x_0} \left( 0 \right) = 0\
-\frac{\partial y}{\partial y_0} \left( 0 \right) = 1\
+\frac{\partial x}{\partial x_0} \left( 0 \right) = 1\\
+\frac{\partial x}{\partial y_0} \left( 0 \right) = 0\\
+\frac{\partial y}{\partial x_0} \left( 0 \right) = 0\\
+\frac{\partial y}{\partial y_0} \left( 0 \right) = 1\\
 \end{cases}.
-$$</p>
+\end{split}\]</div>
 <p>Let us now try to implement the variational equations for the simple pendulum:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -655,7 +664,7 @@ State                   : [0.050000000000000003, 0.025000000000000001, 1.0000000
 </div>
 </div>
 <p>Here we used the <code class="docutils literal notranslate"><span class="pre">diff()</span></code> function to perform the symbolic differentiation of <code class="docutils literal notranslate"><span class="pre">f</span></code> and <code class="docutils literal notranslate"><span class="pre">g</span></code> with respect to the state variables.</p>
-<p>Let us now propagate the state of the system (including the variational equations) up to $t=50$:</p>
+<p>Let us now propagate the state of the system (including the variational equations) up to <span class="math notranslate nohighlight">\(t=50\)</span>:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ta</span><span class="o">.</span><span class="n">propagate_until</span><span class="p">(</span><span class="mf">50.</span><span class="p">)</span>
@@ -670,7 +679,7 @@ State                   : [0.050000000000000003, 0.025000000000000001, 1.0000000
 </div>
 </div>
 </div>
-<p>Next, we are going to create another integrator for the simple pendulum, this time <em>without</em> the variational equations and perturbing the initial value of $x$ by $10^{-8}$ with respect to the original initial conditions:</p>
+<p>Next, we are going to create another integrator for the simple pendulum, this time <em>without</em> the variational equations and perturbing the initial value of <span class="math notranslate nohighlight">\(x\)</span> by <span class="math notranslate nohighlight">\(10^{-8}\)</span> with respect to the original initial conditions:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ta_dx</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">taylor_adaptive</span><span class="p">(</span>
@@ -696,7 +705,7 @@ State                   : [0.050000000000000003, 0.025000000000000001, 1.0000000
 </div>
 </div>
 </div>
-<p>Because of the perturbation on the initial value of $x$, the value of $x$ at $t=50$ will differ in the two integrators:</p>
+<p>Because of the perturbation on the initial value of <span class="math notranslate nohighlight">\(x\)</span>, the value of <span class="math notranslate nohighlight">\(x\)</span> at <span class="math notranslate nohighlight">\(t=50\)</span> will differ in the two integrators:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ta</span><span class="o">.</span><span class="n">state</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">ta_dx</span><span class="o">.</span><span class="n">state</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
@@ -709,10 +718,11 @@ State                   : [0.050000000000000003, 0.025000000000000001, 1.0000000
 </div>
 </div>
 </div>
-<p>However, because in the variational integrator we now have the value of $\frac{\partial x}{\partial x_0}$ at $t=50$, we can compute an approximation of the $\Delta x$ induced by the perturbation on the initial state as</p>
-<p>$$
+<p>However, because in the variational integrator we now have the value of <span class="math notranslate nohighlight">\(\frac{\partial x}{\partial x_0}\)</span> at <span class="math notranslate nohighlight">\(t=50\)</span>, we can compute an approximation of the <span class="math notranslate nohighlight">\(\Delta x\)</span> induced by the perturbation on the initial state as</p>
+<div class="math notranslate nohighlight">
+\[
 \Delta x \approx \frac{\partial x}{\partial x_0}\left( 50 \right) \cdot 10^{-8}.
-$$</p>
+\]</div>
 <p>Indeed:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">

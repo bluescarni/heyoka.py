@@ -38,6 +38,8 @@
     <script src="../_static/togglebutton.js"></script>
     <script src="../_static/scripts/sphinx-book-theme.js?digest=9c920249402e914e316237a7dbc6769907cce411"></script>
     <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Evaluating the performance of ensemble &amp; batch mode" href="ensemble_batch_perf.html" />
@@ -608,76 +610,87 @@ title="Print to PDF"
                 
               <div>
                 
-  <section id="computing-event-sensitivity">
+  <section class="tex2jax_ignore mathjax_ignore" id="computing-event-sensitivity">
 <h1>Computing event sensitivity<a class="headerlink" href="#computing-event-sensitivity" title="Permalink to this headline">#</a></h1>
 <p>In this example, we will show how it is possible to use heyoka.py’s <a class="reference internal" href="Event%20detection.html"><span class="doc std std-doc">event detection</span></a> system to compute the first-order <em>sensitivity</em> of an event’s trigger time. For the sake of simplicity, we will consider here a dynamical system with a single parameter and we will consider only the sensitivity with respect to this parameter. The approach can easily be generalised to the computation of the sensitivities with respect to multiple parameters and/or the initial conditions.</p>
 <p>In order to illustrate the method, we will be focusing on an analytically-solvable system of ODEs, so that we will be able to determine an explicit expression for the sensitivity which we will then use to validate the numerical computation.</p>
 <section id="the-analytical-approach">
 <h2>The analytical approach<a class="headerlink" href="#the-analytical-approach" title="Permalink to this headline">#</a></h2>
 <p>We consider the ODE system for the <a class="reference external" href="https://en.wikipedia.org/wiki/Simple_harmonic_motion">harmonic oscillator</a>:</p>
-<p>$$
-\begin{cases}
-x^\prime &amp;= v \
-v^\prime &amp;= -kx
-\end{cases},
-$$</p>
-<p>where $k&gt;0$ is the spring constant. We fix the following initial conditions:</p>
-<p>$$
-\begin{cases}
-x\left( 0 \right) &amp;= 0 \
-v\left( 0 \right) &amp;= 1
-\end{cases}.
-$$</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+   \begin{cases}
+   x^\prime &amp;= v \\
+   v^\prime &amp;= -kx
+   \end{cases},
+\end{split}\]</div>
+<p>where <span class="math notranslate nohighlight">\(k&gt;0\)</span> is the spring constant. We fix the following initial conditions:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+   \begin{cases}
+   x\left( 0 \right) &amp;= 0 \\
+   v\left( 0 \right) &amp;= 1
+   \end{cases}.
+\end{split}\]</div>
 <p>The analytical solution for this simple initial-value problem is:</p>
-<p>$$
-\begin{cases}
-x\left( t \right) &amp;= \frac{1}{\sqrt{k}}\sin\left(\sqrt{k}t\right) \
-v\left( t \right) &amp;= \cos\left(\sqrt{k}t\right)
-\end{cases}.
-$$</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+   \begin{cases}
+   x\left( t \right) &amp;= \frac{1}{\sqrt{k}}\sin\left(\sqrt{k}t\right) \\
+   v\left( t \right) &amp;= \cos\left(\sqrt{k}t\right)
+   \end{cases}.
+\end{split}\]</div>
 <p>Let us now suppose that we want to detect when the oscillation reaches the maximum amplitude. We can do so by defining the simple event equation</p>
-<p>$$
+<div class="math notranslate nohighlight">
+\[
 g\left( x, v \right) \equiv v = 0.
-$$</p>
-<p>I.e., the maximum amplitude in the harmonic oscillator is reached when the velocity is zero. We can substitute the solution $v\left( t \right)$ into the event equation, yielding the time-dependent equation</p>
-<p>$$
+\]</div>
+<p>I.e., the maximum amplitude in the harmonic oscillator is reached when the velocity is zero. We can substitute the solution <span class="math notranslate nohighlight">\(v\left( t \right)\)</span> into the event equation, yielding the time-dependent equation</p>
+<div class="math notranslate nohighlight">
+\[
 \cos\left( \sqrt{k} t \right) = 0.
-$$</p>
-<p>Solving this equation for $t$ gives us an analytical expression for the trigger time of the event, i.e., the time of maximum amplitude $t_M$:</p>
-<p>$$
+\]</div>
+<p>Solving this equation for <span class="math notranslate nohighlight">\(t\)</span> gives us an analytical expression for the trigger time of the event, i.e., the time of maximum amplitude <span class="math notranslate nohighlight">\(t_M\)</span>:</p>
+<div class="math notranslate nohighlight">
+\[
 t_M = \frac{\pi}{2\sqrt{k}}.
-$$</p>
-<p>The first-order sensitivity of $t_M$ with respect to $k$ is easily computed:</p>
-<p>$$
+\]</div>
+<p>The first-order sensitivity of <span class="math notranslate nohighlight">\(t_M\)</span> with respect to <span class="math notranslate nohighlight">\(k\)</span> is easily computed:</p>
+<div class="math notranslate nohighlight">
+\[
 \frac{d t_M}{d k} = -\frac{\pi}{4k^\frac{3}{2}}.
-$$</p>
+\]</div>
 </section>
 <section id="the-numerical-approach">
 <h2>The numerical approach<a class="headerlink" href="#the-numerical-approach" title="Permalink to this headline">#</a></h2>
-<p>If we do not have the analytical solution of the ODE system, it is not possible to compute an explicit expression for the event equation as a function of $t$ and $k$, like we did above. By extension, we cannot compute an explicit expression for $t_M$ and its sensitivity either.
+<p>If we do not have the analytical solution of the ODE system, it is not possible to compute an explicit expression for the event equation as a function of <span class="math notranslate nohighlight">\(t\)</span> and <span class="math notranslate nohighlight">\(k\)</span>, like we did above. By extension, we cannot compute an explicit expression for <span class="math notranslate nohighlight">\(t_M\)</span> and its sensitivity either.
 We can however compute numerically the sensitivity with the help of the <a class="reference internal" href="The%20variational%20equations.html"><span class="doc std std-doc">variational equations</span></a>.</p>
-<p>In the absence of an analytical solution, the left-hand side of the event equation can be seen as an unknown function of $t$ and $k$:</p>
-<p>$$
+<p>In the absence of an analytical solution, the left-hand side of the event equation can be seen as an unknown function of <span class="math notranslate nohighlight">\(t\)</span> and <span class="math notranslate nohighlight">\(k\)</span>:</p>
+<div class="math notranslate nohighlight">
+\[
 g\left(t, k\right) = 0.
-$$</p>
-<p>We cannot write an explicit expression for $t_M$ using this equation, but via the formula for the derivative of an <a class="reference external" href="https://en.wikipedia.org/wiki/Implicit_function#Implicit_differentiation">implicit function</a>, we can write the sensitivity $d t_M / d k$ as</p>
-<p>$$
+\]</div>
+<p>We cannot write an explicit expression for <span class="math notranslate nohighlight">\(t_M\)</span> using this equation, but via the formula for the derivative of an <a class="reference external" href="https://en.wikipedia.org/wiki/Implicit_function#Implicit_differentiation">implicit function</a>, we can write the sensitivity <span class="math notranslate nohighlight">\(d t_M / d k\)</span> as</p>
+<div class="math notranslate nohighlight">
+\[
 \frac{d t_M}{d k} = -\frac{\frac{\partial g}{\partial k}}{\frac{\partial g}{\partial t_M}}.
-$$</p>
-<p>$\frac{\partial g}{\partial t_M}$ is the time derivative of $g$ calculated at the trigger time $t_M$, which can be computed directly from the original definition of the event equation in terms of the state variables:</p>
-<p>$$
+\]</div>
+<p><span class="math notranslate nohighlight">\(\frac{\partial g}{\partial t_M}\)</span> is the time derivative of <span class="math notranslate nohighlight">\(g\)</span> calculated at the trigger time <span class="math notranslate nohighlight">\(t_M\)</span>, which can be computed directly from the original definition of the event equation in terms of the state variables:</p>
+<div class="math notranslate nohighlight">
+\[
 \frac{\partial g}{\partial t_M} = -kx\left(t_M\right).
-$$</p>
-<p>In order to compute $\frac{\partial g}{\partial k}$, we need to augment the original ODE system with the variational equations for $x$, $v$ and $g$ with respect to $k$:</p>
-<p>$$
-\begin{cases}
-x^\prime &amp; = v \
-v^\prime &amp; = -kx \
-\left( \frac{\partial x}{\partial k} \right)^\prime &amp; = \frac{\partial v}{\partial k} \
-\left( \frac{\partial v}{\partial k} \right)^\prime &amp; = -x-k\frac{\partial x}{\partial k} \
-\left( \frac{\partial g}{\partial k} \right)^\prime &amp; = -x-k\frac{\partial x}{\partial k}
-\end{cases}.
-$$</p>
+\]</div>
+<p>In order to compute <span class="math notranslate nohighlight">\(\frac{\partial g}{\partial k}\)</span>, we need to augment the original ODE system with the variational equations for <span class="math notranslate nohighlight">\(x\)</span>, <span class="math notranslate nohighlight">\(v\)</span> and <span class="math notranslate nohighlight">\(g\)</span> with respect to <span class="math notranslate nohighlight">\(k\)</span>:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+   \begin{cases}
+   x^\prime &amp; = v \\
+   v^\prime &amp; = -kx \\
+   \left( \frac{\partial x}{\partial k} \right)^\prime &amp; = \frac{\partial v}{\partial k} \\
+   \left( \frac{\partial v}{\partial k} \right)^\prime &amp; = -x-k\frac{\partial x}{\partial k} \\
+   \left( \frac{\partial g}{\partial k} \right)^\prime &amp; = -x-k\frac{\partial x}{\partial k}
+   \end{cases}.
+\end{split}\]</div>
 <p>We can now proceed to the definition of the heyoka.py integrator:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -731,7 +744,7 @@ $$</p>
 </div>
 </div>
 </div>
-<p>Recall that, analytically, we expect the sensitivity value to be $-\frac{\pi}{4k^\frac{3}{2}}$, i.e.,</p>
+<p>Recall that, analytically, we expect the sensitivity value to be <span class="math notranslate nohighlight">\(-\frac{\pi}{4k^\frac{3}{2}}\)</span>, i.e.,</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="p">(</span><span class="mi">4</span><span class="o">*</span><span class="n">ta</span><span class="o">.</span><span class="n">pars</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">**</span><span class="p">(</span><span class="mf">3.</span><span class="o">/</span><span class="mi">2</span><span class="p">))</span>
@@ -744,7 +757,7 @@ $$</p>
 </div>
 </div>
 </div>
-<p>From the numerical integration, we can compute the sensitivity value, as explained above, as $-\frac{\frac{\partial g}{\partial k}}{\frac{\partial g}{\partial t_M}}$. The value of $\frac{\partial g}{\partial k}$ can be read directly from the state vector (at index 4), while $\frac{\partial g}{\partial t_M} = -kx\left(t_M\right)$:</p>
+<p>From the numerical integration, we can compute the sensitivity value, as explained above, as <span class="math notranslate nohighlight">\(-\frac{\frac{\partial g}{\partial k}}{\frac{\partial g}{\partial t_M}}\)</span>. The value of <span class="math notranslate nohighlight">\(\frac{\partial g}{\partial k}\)</span> can be read directly from the state vector (at index 4), while <span class="math notranslate nohighlight">\(\frac{\partial g}{\partial t_M} = -kx\left(t_M\right)\)</span>:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">-</span><span class="n">ta</span><span class="o">.</span><span class="n">state</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span><span class="o">/</span><span class="p">(</span><span class="o">-</span><span class="n">ta</span><span class="o">.</span><span class="n">pars</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">ta</span><span class="o">.</span><span class="n">state</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
@@ -761,23 +774,26 @@ $$</p>
 </section>
 <section id="application-to-optimisation-problems">
 <h2>Application to optimisation problems<a class="headerlink" href="#application-to-optimisation-problems" title="Permalink to this headline">#</a></h2>
-<p>Suppose that we want to determine what value the spring constant $k$ must assume in order for the maximum amplitude of the oscillator to be $A$ (a fixed constant). We can formulate this problem as the minimisation of the function</p>
-<p>$$
+<p>Suppose that we want to determine what value the spring constant <span class="math notranslate nohighlight">\(k\)</span> must assume in order for the maximum amplitude of the oscillator to be <span class="math notranslate nohighlight">\(A\)</span> (a fixed constant). We can formulate this problem as the minimisation of the function</p>
+<div class="math notranslate nohighlight">
+\[
 f\left( k \right) = \left[ x\left(t_M\left(k\right), k\right) - A\right]^2,
-$$</p>
-<p>where $x\left(t_M\left(k\right), k\right)$ is the value assumed by the coordinates $x$ at the event trigger time $t_M$. Local optimisation algorithms can greatly benefit from the availability of the gradient of $f$ with respect to the optimisation variable $k$. For the harmonic oscillator system considered here, $df/dk$ is easily computed analytically as</p>
-<p>$$
+\]</div>
+<p>where <span class="math notranslate nohighlight">\(x\left(t_M\left(k\right), k\right)\)</span> is the value assumed by the coordinates <span class="math notranslate nohighlight">\(x\)</span> at the event trigger time <span class="math notranslate nohighlight">\(t_M\)</span>. Local optimisation algorithms can greatly benefit from the availability of the gradient of <span class="math notranslate nohighlight">\(f\)</span> with respect to the optimisation variable <span class="math notranslate nohighlight">\(k\)</span>. For the harmonic oscillator system considered here, <span class="math notranslate nohighlight">\(df/dk\)</span> is easily computed analytically as</p>
+<div class="math notranslate nohighlight">
+\[
 \frac{df}{dk} = -\left(\frac{1}{\sqrt{k}} -A \right)k^{-\frac{3}{2}}.
-$$</p>
-<p>If we assume that an analytical solution is not available (as it is generally the case), we can compute $df/dk$ numerically with the help of the <a class="reference internal" href="The%20variational%20equations.html"><span class="doc std std-doc">variational equations</span></a>. Specifically, we can write:</p>
-<p>$$
+\]</div>
+<p>If we assume that an analytical solution is not available (as it is generally the case), we can compute <span class="math notranslate nohighlight">\(df/dk\)</span> numerically with the help of the <a class="reference internal" href="The%20variational%20equations.html"><span class="doc std std-doc">variational equations</span></a>. Specifically, we can write:</p>
+<div class="math notranslate nohighlight">
+\[
 \frac{df}{dk} = 2 \left[ x\left(t_M\left(k\right), k\right) - A\right]\left( \frac{\partial x}{\partial t_M}\frac{\partial t_M}{\partial k} + \frac{\partial x}{\partial k} \right),
-$$</p>
+\]</div>
 <p>where:</p>
 <ul class="simple">
-<li><p>$\partial x/\partial t_M$ is the time derivative of $x$ (i.e., the velocity $v$) at the trigger time $t_M$,</p></li>
-<li><p>$\partial t_M/\partial k$ is the sensitivity of $t_M$ (as computed earlier),</p></li>
-<li><p>$\partial x/\partial k$ is the sensitivity of $x$ with respect to $k$ (which appears as an extra state variable in the augmented ODE system defined earlier).</p></li>
+<li><p><span class="math notranslate nohighlight">\(\partial x/\partial t_M\)</span> is the time derivative of <span class="math notranslate nohighlight">\(x\)</span> (i.e., the velocity <span class="math notranslate nohighlight">\(v\)</span>) at the trigger time <span class="math notranslate nohighlight">\(t_M\)</span>,</p></li>
+<li><p><span class="math notranslate nohighlight">\(\partial t_M/\partial k\)</span> is the sensitivity of <span class="math notranslate nohighlight">\(t_M\)</span> (as computed earlier),</p></li>
+<li><p><span class="math notranslate nohighlight">\(\partial x/\partial k\)</span> is the sensitivity of <span class="math notranslate nohighlight">\(x\)</span> with respect to <span class="math notranslate nohighlight">\(k\)</span> (which appears as an extra state variable in the augmented ODE system defined earlier).</p></li>
 </ul>
 <p>Let us now define the objective function and let us implement its gradient using the numerical solution of the augmented ODE:</p>
 <div class="cell docutils container">
@@ -821,7 +837,7 @@ $$</p>
 </div>
 </div>
 </div>
-<p>Let us now compute $df/dk$ via the analytical formula for a specific value of $k$:</p>
+<p>Let us now compute <span class="math notranslate nohighlight">\(df/dk\)</span> via the analytical formula for a specific value of <span class="math notranslate nohighlight">\(k\)</span>:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Pick a value for k.</span>

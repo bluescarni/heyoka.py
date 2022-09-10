@@ -38,6 +38,8 @@
     <script src="../_static/togglebutton.js"></script>
     <script src="../_static/scripts/sphinx-book-theme.js?digest=9c920249402e914e316237a7dbc6769907cce411"></script>
     <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Pickle support" href="pickling.html" />
@@ -642,15 +644,16 @@ title="Print to PDF"
                 
               <div>
                 
-  <section id="compiled-functions">
+  <section class="tex2jax_ignore mathjax_ignore" id="compiled-functions">
 <h1>Compiled functions<a class="headerlink" href="#compiled-functions" title="Permalink to this headline">#</a></h1>
 <p>Starting from version 0.19, heyoka.py can compile just-in-time (JIT) multivariate vector functions defined via the <a class="reference internal" href="The%20expression%20system.html"><span class="doc std std-doc">expression system</span></a>. On the one hand, JIT compilation can greatly increase the performance of function evaluation with respect to a Python implementation of the same function. On the other hand, the JIT compilation process is computationally expensive and thus JIT compilation is most useful when a function needs to be evaluated repeatedly with different input values (so that the initial overhead of JIT compilation can be absorbed by the evaluation performance increase).</p>
 <section id="a-simple-example">
 <h2>A simple example<a class="headerlink" href="#a-simple-example" title="Permalink to this headline">#</a></h2>
 <p>As an initial example, we will JIT compile the simple function</p>
-<p>$$
+<div class="math notranslate nohighlight">
+\[
 f\left(x, y \right) = x^2 - y^2.
-$$</p>
+\]</div>
 <p>Let us begin, as usual, with the introduction of the symbolic variables:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -692,7 +695,7 @@ $$</p>
 </div>
 </div>
 <p>The value returned by <code class="docutils literal notranslate"><span class="pre">cf</span></code> is also a NumPy array containing the outputs of the compiled function. In this specific case, we have a single output and thus an array with a single element is returned.</p>
-<p>Because when we created <code class="docutils literal notranslate"><span class="pre">cf</span></code> we passed only the list of output expressions to <code class="docutils literal notranslate"><span class="pre">make_cfunc()</span></code>, heyoka.py used lexicographic ordering to infer the order of the input variables during evaluation: $x$ is the first variable, $y$ is the second. If you don’t want to rely on the default lexicographic ordering, you can pass to <code class="docutils literal notranslate"><span class="pre">make_cfunc()</span></code> an explicit ordering for the input variables:</p>
+<p>Because when we created <code class="docutils literal notranslate"><span class="pre">cf</span></code> we passed only the list of output expressions to <code class="docutils literal notranslate"><span class="pre">make_cfunc()</span></code>, heyoka.py used lexicographic ordering to infer the order of the input variables during evaluation: <span class="math notranslate nohighlight">\(x\)</span> is the first variable, <span class="math notranslate nohighlight">\(y\)</span> is the second. If you don’t want to rely on the default lexicographic ordering, you can pass to <code class="docutils literal notranslate"><span class="pre">make_cfunc()</span></code> an explicit ordering for the input variables:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Explicitly specify the order of the input variables:</span>
@@ -771,24 +774,26 @@ $$</p>
 </div>
 </div>
 </div>
-<p>Because we now passed the two-dimensional array $[[1,2,3],[5,6,7]]$ as input argument (rather than a one-dimensional array, like in the previous examples), <code class="docutils literal notranslate"><span class="pre">cf</span></code> will be evaluated for multiple values of $x$ ($\left[1,2,3\right]$) and $y$ ($\left[5,6,7\right]$). The result also consists of a two-dimensional array in which the first dimension is the number of outputs (1 in this case), and the second dimension is the number of evaluation points (3 in this case).</p>
+<p>Because we now passed the two-dimensional array <span class="math notranslate nohighlight">\([[1,2,3],[5,6,7]]\)</span> as input argument (rather than a one-dimensional array, like in the previous examples), <code class="docutils literal notranslate"><span class="pre">cf</span></code> will be evaluated for multiple values of <span class="math notranslate nohighlight">\(x\)</span> (<span class="math notranslate nohighlight">\(\left[1,2,3\right]\)</span>) and <span class="math notranslate nohighlight">\(y\)</span> (<span class="math notranslate nohighlight">\(\left[5,6,7\right]\)</span>). The result also consists of a two-dimensional array in which the first dimension is the number of outputs (1 in this case), and the second dimension is the number of evaluation points (3 in this case).</p>
 <p>Because heyoka.py makes extensive use of the <a class="reference external" href="https://en.wikipedia.org/wiki/SIMD">SIMD instructions</a> available in modern processors, a single batched evaluation will perform considerably better than multiple unbatched evaluations.</p>
 </section>
 <section id="performance-analysis">
 <h2>Performance analysis<a class="headerlink" href="#performance-analysis" title="Permalink to this headline">#</a></h2>
 <p>In order to assess the performance of heyoka.py’s compiled functions, we will consider the evaluation of the Hamiltonian of the <a class="reference internal" href="The%20restricted%20three-body%20problem.html"><span class="doc std std-doc">restricted three-body problem</span></a>, a 6-dimensional scalar function defined as:</p>
-<p>$$
+<div class="math notranslate nohighlight">
+\[
 \mathcal{H}\left(p_x,p_y,p_z,x,y,z\right) = \frac{1}{2}\left( p_x^2+p_y^2+p_z^2 \right) +yp_x-xp_y-\frac{1-\mu}{r_{PS}}-\frac{\mu}{r_{PJ}},
-$$</p>
+\]</div>
 <p>where</p>
-<p>$$
+<div class="math notranslate nohighlight">
+\[\begin{split}
 \begin{align}
-\mu &amp;= 0.1, \
-r_{PS} &amp;=\sqrt{\left( x-\mu \right)^2+y^2+z^2}, \
+\mu &amp;= 0.1, \\
+r_{PS} &amp;=\sqrt{\left( x-\mu \right)^2+y^2+z^2}, \\
 r_{PJ} &amp;=\sqrt{\left( x -\mu + 1 \right)^2+y^2+z^2}.
 \end{align}
-$$</p>
-<p>$\mathcal{H}$ will be evaluated on a grid of $10^8$ randomly-generated evaluation points:</p>
+\end{split}\]</div>
+<p><span class="math notranslate nohighlight">\(\mathcal{H}\)</span> will be evaluated on a grid of <span class="math notranslate nohighlight">\(10^8\)</span> randomly-generated evaluation points:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Deterministic seeding.</span>
@@ -839,7 +844,7 @@ $$</p>
 </section>
 <section id="heyoka-py">
 <h3>heyoka.py<a class="headerlink" href="#heyoka-py" title="Permalink to this headline">#</a></h3>
-<p>Let us now try with heyoka.py. First we define the symbolic variables and the mathematical expression of $\mathcal{H}$:</p>
+<p>Let us now try with heyoka.py. First we define the symbolic variables and the mathematical expression of <span class="math notranslate nohighlight">\(\mathcal{H}\)</span>:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">px</span><span class="p">,</span><span class="n">py</span><span class="p">,</span><span class="n">pz</span><span class="p">,</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">z</span><span class="o">=</span><span class="n">hy</span><span class="o">.</span><span class="n">make_vars</span><span class="p">(</span><span class="s2">&quot;px&quot;</span><span class="p">,</span> <span class="s2">&quot;py&quot;</span><span class="p">,</span> <span class="s2">&quot;pz&quot;</span><span class="p">,</span> <span class="s2">&quot;x&quot;</span><span class="p">,</span> <span class="s2">&quot;y&quot;</span><span class="p">,</span> <span class="s2">&quot;z&quot;</span><span class="p">)</span>

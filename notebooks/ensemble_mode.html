@@ -38,6 +38,8 @@
     <script src="../_static/togglebutton.js"></script>
     <script src="../_static/scripts/sphinx-book-theme.js?digest=9c920249402e914e316237a7dbc6769907cce411"></script>
     <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Parallel mode" href="parallel_mode.html" />
@@ -598,7 +600,7 @@ title="Print to PDF"
                 
               <div>
                 
-  <section id="ensemble-propagations">
+  <section class="tex2jax_ignore mathjax_ignore" id="ensemble-propagations">
 <h1>Ensemble propagations<a class="headerlink" href="#ensemble-propagations" title="Permalink to this headline">#</a></h1>
 <p>Starting with version 0.17.0, heyoka.py offers support for
 <em>ensemble propagations</em>. In ensemble mode, multiple distinct
@@ -734,11 +736,11 @@ requested).</p>
  Taylor order            : 20
  Dimension               : 2
  Time                    : 20.000000000000000
- State                   : [0.051055419338956722, 0.066693117771608343],
+ State                   : [0.056343591118263724, 0.065509051929241668],
  &lt;taylor_outcome.time_limit: -4294967299&gt;,
- 0.19838626750347058,
- 0.21993753268687413,
- 98,
+ 0.19511863810459965,
+ 0.22619658663154954,
+ 100,
  None)
 </pre></div>
 </div>
@@ -766,7 +768,7 @@ This keyword argument can be specified only when using the <code class="docutils
 </div>
 </div>
 </div>
-<p>Let us now use the continuous output to plot the evolution of the $x$ coordinate over time for each element of the ensemble:</p>
+<p>Let us now use the continuous output to plot the evolution of the <span class="math notranslate nohighlight">\(x\)</span> coordinate over time for each element of the ensemble:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">matplotlib.pylab</span> <span class="kn">import</span> <span class="n">plt</span>
@@ -789,7 +791,7 @@ This keyword argument can be specified only when using the <code class="docutils
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/2dca75e5f4a939a823882b0fe36be44f62f6009b44e24507b572de7d65bbf6ee.png" src="../_images/2dca75e5f4a939a823882b0fe36be44f62f6009b44e24507b572de7d65bbf6ee.png" />
+<img alt="../_images/5bac2a9b5576a77a8da26c4c1fbb614352a36a45225c422f411726b337e64d53.png" src="../_images/5bac2a9b5576a77a8da26c4c1fbb614352a36a45225c422f411726b337e64d53.png" />
 </div>
 </div>
 </section>

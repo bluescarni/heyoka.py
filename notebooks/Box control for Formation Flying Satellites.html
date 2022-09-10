@@ -38,6 +38,8 @@
     <script src="../_static/togglebutton.js"></script>
     <script src="../_static/scripts/sphinx-book-theme.js?digest=9c920249402e914e316237a7dbc6769907cce411"></script>
     <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Comparing coordinate systems" href="Comparing%20coordinate%20systems.html" />
@@ -628,130 +630,133 @@ title="Print to PDF"
                 
               <div>
                 
-  <section id="box-control-in-satellite-formation-flying">
+  <section class="tex2jax_ignore mathjax_ignore" id="box-control-in-satellite-formation-flying">
 <h1>Box control in satellite Formation Flying<a class="headerlink" href="#box-control-in-satellite-formation-flying" title="Permalink to this headline">#</a></h1>
 <p>We show how <em>heyoka.py</em>’s <a class="reference internal" href="Event%20detection.html"><span class="doc std std-doc">event detection</span></a> machinery can be used in an innovative formulation of the box-control problem for formation flying satellites. This is the problem of controlling a Deputy satellite to remain within a predefined control box defined in the Local Horizontal Local Vertical frame of the Chief satellite. Our solution is to apply impulsive DV when certain events trigger.</p>
 <p>To derive all equations we used and abused the <a class="reference external" href="https://vatankhahghadim.github.io/AER506/Notes/1%20-%20Fundamentals.pdf">Vectrix notation from Hugues</a>.</p>
 <section id="preliminaries">
 <h2>Preliminaries<a class="headerlink" href="#preliminaries" title="Permalink to this headline">#</a></h2>
-<p>We consider the fundamental problem of satellite formation flying. A main satellite called Chief orbits some primary body (here the Earth). We consider two reference frames. $\mathcal F_i=\left[\hat{\mathbf e}_i, \hat{\mathbf e}_j, \hat{\mathbf e}_k \right]$ is the inertial frame where the motion of both satellites will be described, while $\mathcal F_L=\left[\hat{\mathbf e}<em>r, \hat{\mathbf e}</em>\theta, \hat{\mathbf e}_h \right]$ is the Local Horizontal Local Vertical frame referred to the Chief satellite. Its definition in terms of the Chief satellite position $\overrightarrow{\mathbf r}$ and velocity $\overrightarrow{\mathbf v}$ is:</p>
-<p>$$
-\left{
+<p>We consider the fundamental problem of satellite formation flying. A main satellite called Chief orbits some primary body (here the Earth). We consider two reference frames. <span class="math notranslate nohighlight">\(\mathcal F_i=\left[\hat{\mathbf e}_i, \hat{\mathbf e}_j, \hat{\mathbf e}_k \right]\)</span> is the inertial frame where the motion of both satellites will be described, while <span class="math notranslate nohighlight">\(\mathcal F_L=\left[\hat{\mathbf e}_r, \hat{\mathbf e}_\theta, \hat{\mathbf e}_h \right]\)</span> is the Local Horizontal Local Vertical frame referred to the Chief satellite. Its definition in terms of the Chief satellite position <span class="math notranslate nohighlight">\(\overrightarrow{\mathbf r}\)</span> and velocity <span class="math notranslate nohighlight">\(\overrightarrow{\mathbf v}\)</span> is:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+\left\{
 \begin{array}{ll}
-\hat{\mathbf e}<em>r &amp;= \frac{\overrightarrow{\mathbf r}}{r} \
-\hat{\mathbf e}</em>\theta &amp;= \hat{\mathbf e}_h \times \hat{\mathbf e}_r\
+\hat{\mathbf e}_r &amp;= \frac{\overrightarrow{\mathbf r}}{r} \\
+\hat{\mathbf e}_\theta &amp;= \hat{\mathbf e}_h \times \hat{\mathbf e}_r\\ 
 \hat{\mathbf e}_h &amp;= \frac{\overrightarrow{\mathbf r} \times {\overrightarrow{\mathbf v}}} {\vert\overrightarrow{\mathbf r} \times {\overrightarrow{\mathbf v}}\vert}
 \end{array}
 \right.
-$$</p>
-<p>We indicate with capital letters $X,Y,Z$ the components of the satellite position vector in the frame $\mathcal F_i$, we introduce the quantities $r = \vert\overrightarrow{\mathbf r}\vert$, $r = \vert\overrightarrow{\mathbf h}\vert$ and $\sigma = \overrightarrow{\mathbf r}\cdot \overrightarrow{\mathbf v}$ and write the rotation matrix $\mathbf C_{Li} = \mathcal F_L^T \cdot \mathcal F_i$ for the LHLV frame:</p>
-<p>$$
-\mathbf C_{Li} =
+\end{split}\]</div>
+<p>We indicate with capital letters <span class="math notranslate nohighlight">\(X,Y,Z\)</span> the components of the satellite position vector in the frame <span class="math notranslate nohighlight">\(\mathcal F_i\)</span>, we introduce the quantities <span class="math notranslate nohighlight">\(r = \vert\overrightarrow{\mathbf r}\vert\)</span>, <span class="math notranslate nohighlight">\(r = \vert\overrightarrow{\mathbf h}\vert\)</span> and <span class="math notranslate nohighlight">\(\sigma = \overrightarrow{\mathbf r}\cdot \overrightarrow{\mathbf v}\)</span> and write the rotation matrix <span class="math notranslate nohighlight">\(\mathbf C_{Li} = \mathcal F_L^T \cdot \mathcal F_i\)</span> for the LHLV frame:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+\mathbf C_{Li} = 
 \frac{1}{hr}\left[
 \begin{array}{ccc}
-hX &amp; hY &amp; hZ \
-r^2\dot X - \sigma X &amp; r^2\dot Y - \sigma Y &amp; r^2\dot Z - \sigma Z \
-r(Y\dot Z - Z\dot Y) &amp; r(Z\dot X - X\dot Z) &amp; r(X\dot Y - Y\dot X) \
+hX &amp; hY &amp; hZ \\
+r^2\dot X - \sigma X &amp; r^2\dot Y - \sigma Y &amp; r^2\dot Z - \sigma Z \\
+r(Y\dot Z - Z\dot Y) &amp; r(Z\dot X - X\dot Z) &amp; r(X\dot Y - Y\dot X) \\
 \end{array}
 \right]
-$$</p>
-<p>which allows to find the $\mathcal F_i$ components of a vector $\mathbf v_i$ from its $\mathcal F_L$ components as $\mathbf v_i = \mathbf C_{Li} \mathbf v_L$. The angular velocity of the LHLV frame is:</p>
-<p>$$
-\overrightarrow{\boldsymbol \omega} = \mathcal F_L \boldsymbol \omega_L =
-\left[\hat{\mathbf e}<em>r, \hat{\mathbf e}</em>\theta, \hat{\mathbf e}_h \right]
+\end{split}\]</div>
+<p>which allows to find the <span class="math notranslate nohighlight">\(\mathcal F_i\)</span> components of a vector <span class="math notranslate nohighlight">\(\mathbf v_i\)</span> from its <span class="math notranslate nohighlight">\(\mathcal F_L\)</span> components as <span class="math notranslate nohighlight">\(\mathbf v_i = \mathbf C_{Li} \mathbf v_L\)</span>. The angular velocity of the LHLV frame is:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+\overrightarrow{\boldsymbol \omega} = \mathcal F_L \boldsymbol \omega_L = 
+\left[\hat{\mathbf e}_r, \hat{\mathbf e}_\theta, \hat{\mathbf e}_h \right]
 \left[
 \begin{array}{l}
-\omega_x\
-\omega_y\
-\omega_z\
+\omega_x\\
+\omega_y\\
+\omega_z\\
 \end{array}
-\right] =
-\left[\hat{\mathbf e}<em>r, \hat{\mathbf e}</em>\theta, \hat{\mathbf e}_h \right]
+\right] = 
+\left[\hat{\mathbf e}_r, \hat{\mathbf e}_\theta, \hat{\mathbf e}_h \right]
 \left[
 \begin{array}{l}
-\frac rh  f_h\
-0 \
+\frac rh  f_h\\
+0 \\
 \frac{h}{r^2}
 \end{array}
 \right]
-$$</p>
-<p>where $f_h$ is the perturbative acceleration acting on the satellite along the $\hat{\mathbf e}_h$ direction.</p>
+\end{split}\]</div>
+<p>where <span class="math notranslate nohighlight">\(f_h\)</span> is the perturbative acceleration acting on the satellite along the <span class="math notranslate nohighlight">\(\hat{\mathbf e}_h\)</span> direction.</p>
 </section>
 <section id="the-equations-of-motion">
 <h2>The Equations of Motion<a class="headerlink" href="#the-equations-of-motion" title="Permalink to this headline">#</a></h2>
-<p>We consider the dynamics of both the Chief and the Deputy expressed in terms of their position and velocity in $\mathcal F_i$ and subject to the J2 term only (the expression of additional terms for the Earth gravitational potential can be found <a class="reference external" href="https://space.stackexchange.com/questions/22266/j2-long-period-perturbations-in-the-inclination">here</a>:</p>
-<p>$$
-\left{
+<p>We consider the dynamics of both the Chief and the Deputy expressed in terms of their position and velocity in <span class="math notranslate nohighlight">\(\mathcal F_i\)</span> and subject to the J2 term only (the expression of additional terms for the Earth gravitational potential can be found <a class="reference external" href="https://space.stackexchange.com/questions/22266/j2-long-period-perturbations-in-the-inclination">here</a>:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+\left\{
 \begin{array}{ll}
-\ddot X_C &amp;= -\frac \mu{r_C^3}X_C + c\frac 1{r_C^5} \left(5\frac{Z_C^2}{r_C^2}-1 \right) X_C\
-\ddot Y_C &amp;= -\frac \mu{r_C^3}Y_C + c\frac 1{r_C^5} \left(5\frac{Z_C^2}{r_C^2}-1 \right) Y_C\
-\ddot Z_C &amp;= -\frac \mu{r_C^3}Z_C + c\frac 1{r_C^5} \left(5\frac{Z_C^2}{r_C^2}-1 \right) Z_C - 2c\frac 1{r_C^5} Z_C\
-\ddot X_D &amp;= -\frac \mu{r_D^3}X_D + c\frac 1{r_D^5} \left(5\frac{Z_D^2}{r_D^2}-1 \right) X_D\
-\ddot Y_D &amp;= -\frac \mu{r_D^3}Y_D + c\frac 1{r_D^5} \left(5\frac{Z_D^2}{r_D^2}-1 \right) Y_D\
-\ddot Z_D &amp;= -\frac \mu{r_D^3}Z_D + c\frac 1{r_D^5} \left(5\frac{Z_D^2}{r_D^2}-1 \right) Z_D - 2c\frac 1{r_D^5} Z_D\
+\ddot X_C &amp;= -\frac \mu{r_C^3}X_C + c\frac 1{r_C^5} \left(5\frac{Z_C^2}{r_C^2}-1 \right) X_C\\
+\ddot Y_C &amp;= -\frac \mu{r_C^3}Y_C + c\frac 1{r_C^5} \left(5\frac{Z_C^2}{r_C^2}-1 \right) Y_C\\ 
+\ddot Z_C &amp;= -\frac \mu{r_C^3}Z_C + c\frac 1{r_C^5} \left(5\frac{Z_C^2}{r_C^2}-1 \right) Z_C - 2c\frac 1{r_C^5} Z_C\\
+\ddot X_D &amp;= -\frac \mu{r_D^3}X_D + c\frac 1{r_D^5} \left(5\frac{Z_D^2}{r_D^2}-1 \right) X_D\\
+\ddot Y_D &amp;= -\frac \mu{r_D^3}Y_D + c\frac 1{r_D^5} \left(5\frac{Z_D^2}{r_D^2}-1 \right) Y_D\\ 
+\ddot Z_D &amp;= -\frac \mu{r_D^3}Z_D + c\frac 1{r_D^5} \left(5\frac{Z_D^2}{r_D^2}-1 \right) Z_D - 2c\frac 1{r_D^5} Z_D\\
 \end{array}
 \right.
-$$</p>
+\end{split}\]</div>
 </section>
 <section id="the-initial-conditions">
 <h2>The Initial conditions<a class="headerlink" href="#the-initial-conditions" title="Permalink to this headline">#</a></h2>
-<p>The initial conditions for the Chief satellite can be generic and are given in the $\mathcal F_i$ frame. The initial conditions for the Deputy, instead, are given in the $\mathcal F_L$ frame,. This simple fact couples the system breaking the symmetry of the equations of motion written above. Expressing the relative position and velocity as absolute and viceversa requires the use of $\mathbf C_{Li}$, and most importantly of $\omega_L$ which is, in turn, affected by the perturbative accelerations acting on the Chief. The following transformations hold:</p>
-<p>$$
+<p>The initial conditions for the Chief satellite can be generic and are given in the <span class="math notranslate nohighlight">\(\mathcal F_i\)</span> frame. The initial conditions for the Deputy, instead, are given in the <span class="math notranslate nohighlight">\(\mathcal F_L\)</span> frame,. This simple fact couples the system breaking the symmetry of the equations of motion written above. Expressing the relative position and velocity as absolute and viceversa requires the use of <span class="math notranslate nohighlight">\(\mathbf C_{Li}\)</span>, and most importantly of <span class="math notranslate nohighlight">\(\omega_L\)</span> which is, in turn, affected by the perturbative accelerations acting on the Chief. The following transformations hold:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
 \begin{array}{ll}
 \left[
 \begin{array}{l}
-X_D\
-Y_D \
-Z_D
+ X_D\\
+ Y_D \\
+ Z_D
 \end{array}
-\right] &amp;=
+\right] &amp;= 
 \left[
 \begin{array}{l}
-X_C\
-Y_C \
-Z_C
+ X_C\\
+ Y_C \\
+ Z_C
 \end{array}
 \right]+
 \mathbf C_{Li}^T \left[
 \begin{array}{l}
-x\
-y \
-z
+ x\\
+ y \\
+ z
 \end{array}
 \right]
-\
+\\
 \left[
 \begin{array}{l}
-\dot X_D\
-\dot Y_D \
+\dot X_D\\
+\dot Y_D \\
 \dot Z_D
 \end{array}
-\right] &amp;=
+\right] &amp;= 
 \left[
 \begin{array}{l}
-\dot X_C\
-\dot Y_C \
+\dot X_C\\
+\dot Y_C \\
 \dot Z_C
 \end{array}
 \right]+
 \mathbf C_{Li}^T \left[
 \begin{array}{l}
-\dot x\
-\dot y \
-\dot z
+ \dot x\\
+ \dot y \\
+ \dot z
 \end{array}
-\right]</p>
-<ul class="simple">
-<li><p>\mathbf C_{Li}^T \boldsymbol w_L^\times \left[\begin{array}{l}
-x\
-y \
-z
+\right]
++ \mathbf C_{Li}^T \boldsymbol w_L^\times \left[\begin{array}{l}
+ x\\
+ y \\
+ z
 \end{array}
 \right]
 \end{array}
-$$</p></li>
-</ul>
-<p>where we have indicated with small letters $x,y,z$ the components of the relative position vector of the Deputy.</p>
+\end{split}\]</div>
+<p>where we have indicated with small letters <span class="math notranslate nohighlight">\(x,y,z\)</span> the components of the relative position vector of the Deputy.</p>
 <p>We can now start to code this in <em>heyoka.py</em>, we will introduce later the control part of the problem.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -1008,8 +1013,8 @@ $$</p></li>
 <h2>Controlling the formation within a predefined box<a class="headerlink" href="#controlling-the-formation-within-a-predefined-box" title="Permalink to this headline">#</a></h2>
 <p>Now that we have established the equation of motion, we can simulate a box-control strategy.
 In essence, we want to keep the Deputy within a box centered around its initial trailing position and of a predefined size.</p>
-<p>To do so, each time the box border is reached, we will apply a $\Delta V$ flipping the relative velocity component along the corresponding axis, thus keeping the Deputy within the desired box.</p>
-<p>First we write two callbacks which will flip or cancel the velocity and update the $\Delta V$ count.</p>
+<p>To do so, each time the box border is reached, we will apply a <span class="math notranslate nohighlight">\(\Delta V\)</span> flipping the relative velocity component along the corresponding axis, thus keeping the Deputy within the desired box.</p>
+<p>First we write two callbacks which will flip or cancel the velocity and update the <span class="math notranslate nohighlight">\(\Delta V\)</span> count.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># This callback flips the selected component (x = 3, y = 4, z = 5)</span>
@@ -1097,7 +1102,7 @@ In essence, we want to keep the Deputy within a box centered around its initial 
 </div>
 </div>
 </div>
-<p>And propagate, taking care to reset first the $\Delta V$ count:</p>
+<p>And propagate, taking care to reset first the <span class="math notranslate nohighlight">\(\Delta V\)</span> count:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Resetting the DV counter</span>
