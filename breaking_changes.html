@@ -22,8 +22,8 @@
 
     <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" href="_static/styles/sphinx-book-theme.css?digest=5115cc725059bd94278eecd172e13a965bf8f5a9" type="text/css" />
-    <link rel="stylesheet" type="text/css" href="_static/togglebutton.css" />
     <link rel="stylesheet" type="text/css" href="_static/mystnb.css" />
+    <link rel="stylesheet" type="text/css" href="_static/togglebutton.css" />
     
   <!-- Pre-loaded scripts that we'll load fully later -->
   <link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf">
@@ -596,7 +596,7 @@ title="Print to PDF"
 <ul>
 <li><p>Quadruple-precision computations via the <code class="docutils literal notranslate"><span class="pre">real128</span></code> type now
 use the same API as the other supported floating-point types
-(<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code> and <a class="reference external" href="https://numpy.org/doc/stable/reference/arrays.scalars.html#numpy.longdouble" title="(in NumPy v1.23)"><code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.longdouble</span></code></a>). Additionally,
+(<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a> and <a class="reference external" href="https://numpy.org/doc/stable/reference/arrays.scalars.html#numpy.longdouble" title="(in NumPy v1.23)"><code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.longdouble</span></code></a>). Additionally,
 the way extended-precision mode is enabled has changed - please
 refer to the <a class="reference external" href="https://bluescarni.github.io/heyoka.py/notebooks/ext_precision.html">extended-precision tutorial</a>
 for detailed information.</p></li>
@@ -619,7 +619,7 @@ instead, i.e., <code class="docutils literal notranslate"><span class="pre">[-1.
 the <code class="docutils literal notranslate"><span class="pre">propagate_until()</span></code> method, but an integral value was passed instead.
 The solution is to use <code class="docutils literal notranslate"><span class="pre">propagate_until(10.)</span></code> instead.
 In a similar fashion, if your code
-is raising <code class="xref py py-exc docutils literal notranslate"><span class="pre">TypeError</span></code> exceptions with heyoka.py &gt;=0.19,
+is raising <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#TypeError" title="(in Python v3.10)"><code class="xref py py-exc docutils literal notranslate"><span class="pre">TypeError</span></code></a> exceptions with heyoka.py &gt;=0.19,
 the solution is to ensure that values of the correct
 type are passed to the heyoka.py API (especially whenever floating-point arguments
 are expected).</p>

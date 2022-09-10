@@ -22,8 +22,8 @@
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
     <link rel="stylesheet" href="../_static/styles/sphinx-book-theme.css?digest=5115cc725059bd94278eecd172e13a965bf8f5a9" type="text/css" />
-    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css" />
     <link rel="stylesheet" type="text/css" href="../_static/mystnb.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css" />
     
   <!-- Pre-loaded scripts that we'll load fully later -->
   <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf">
@@ -38,8 +38,6 @@
     <script src="../_static/togglebutton.js"></script>
     <script src="../_static/scripts/sphinx-book-theme.js?digest=9c920249402e914e316237a7dbc6769907cce411"></script>
     <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
-    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
-    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Inverting Kepler’s equation in ODEs" href="Inverting%20Kepler%27s%20equation%20in%20ODEs.html" />
@@ -630,15 +628,14 @@ title="Print to PDF"
                 
               <div>
                 
-  <section class="tex2jax_ignore mathjax_ignore" id="comparing-coordinate-systems">
+  <section id="comparing-coordinate-systems">
 <h1>Comparing coordinate systems<a class="headerlink" href="#comparing-coordinate-systems" title="Permalink to this headline">#</a></h1>
 <p>In this example, we will study how the choice of coordinate system influences the behaviour of heyoka.py’s adaptive integrator. We will focus on a simple (but nontrivial) dynamical system, consisting of a central Keplerian force field coupled to a force field constant in direction and magnitude. This dynamical system is known as the <em>Stark problem</em> or <em>accelerated Kepler problem</em>, and it has numerous applications of practical interest (including spaceflight mechanics, the dynamics of dust grains in the outer Solar System, atomic physics, etc.). Note that the Stark problem can be solved analytically via <a class="reference external" href="https://arxiv.org/abs/1306.6442">elliptic functions</a>, but of course here we will consider a numerical approach.</p>
-<p>Without loss of generality, we can choose to orient the constant force field towards the positive <span class="math notranslate nohighlight">\(z\)</span> direction. The Hamiltonian of the Stark problem in Cartesian coordinates (and adimensional units) thus reads:</p>
-<div class="math notranslate nohighlight">
-\[
+<p>Without loss of generality, we can choose to orient the constant force field towards the positive $z$ direction. The Hamiltonian of the Stark problem in Cartesian coordinates (and adimensional units) thus reads:</p>
+<p>$$
 \mathcal{H}_\mathrm{cart}\left(v_x, v_y, v_z, x, y, z \right) = \frac{1}{2}\left( v_x^2+v_y^2+v_z^2 \right) - \frac{1}{\sqrt{x^2+y^2+z^2}} - \varepsilon z,
-\]</div>
-<p>where <span class="math notranslate nohighlight">\(\varepsilon\)</span> is the magnitude of the constant acceleration field. For this study, we will pick a “small” value <span class="math notranslate nohighlight">\(\varepsilon=10^{-3}\)</span>, so that the constant acceleration field act as a perturbation on the otherwise Keplerian motion of the test particle:</p>
+$$</p>
+<p>where $\varepsilon$ is the magnitude of the constant acceleration field. For this study, we will pick a “small” value $\varepsilon=10^{-3}$, so that the constant acceleration field act as a perturbation on the otherwise Keplerian motion of the test particle:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Value of the constant acceleration field.</span>
@@ -647,7 +644,7 @@ title="Print to PDF"
 </div>
 </div>
 </div>
-<p>We will also select a set of initial conditions corresponding to a low-eccentricity, low-inclination orbit with semi-major axis <span class="math notranslate nohighlight">\(\sim 1\)</span>:</p>
+<p>We will also select a set of initial conditions corresponding to a low-eccentricity, low-inclination orbit with semi-major axis $\sim 1$:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Initial Cartesian conditions.</span>
@@ -737,7 +734,7 @@ title="Print to PDF"
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/Comparing coordinate systems_11_0.png" src="../_images/Comparing coordinate systems_11_0.png" />
+<img alt="../_images/56054abe5be2a6df7fd1886304ffbab5acf08adbd57436f386bf1f6f5efaa995.png" src="../_images/56054abe5be2a6df7fd1886304ffbab5acf08adbd57436f386bf1f6f5efaa995.png" />
 </div>
 </div>
 <p>The plot shows how the initially-Keplerian orbit is slowly being deformed by the constant acceleration field.</p>
@@ -767,27 +764,25 @@ title="Print to PDF"
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/Comparing coordinate systems_13_0.png" src="../_images/Comparing coordinate systems_13_0.png" />
+<img alt="../_images/65ae3b993b77b9036de5a18fd4b8389546c2045fdb4b3d6807b24e50cd7bab9f.png" src="../_images/65ae3b993b77b9036de5a18fd4b8389546c2045fdb4b3d6807b24e50cd7bab9f.png" />
 </div>
 </div>
 <p>Note that the oscillatory behaviour in these plots is a quasi-Keplerian motion driven by the central-force field. The additional constant acceleration has a longer-term secular effect which is however not immediately recognisable in these plots.</p>
 </section>
 <section id="spherical-coordinates">
 <h2>Spherical coordinates<a class="headerlink" href="#spherical-coordinates" title="Permalink to this headline">#</a></h2>
-<p>Let us now switch to a <a class="reference external" href="https://en.wikipedia.org/wiki/Spherical_coordinate_system">spherical coordinate system</a>. Because we are operating in the Hamiltonian framework, we cannot use directly the time derivatives <span class="math notranslate nohighlight">\(\left( \dot{r}, \dot{\theta}, \dot{\phi} \right)\)</span> of the spherical coordinates as new momenta, and we have to use instead a set of canonical momenta <span class="math notranslate nohighlight">\(\left( p_r, p_\theta, p_\phi \right)\)</span>. The coordinate transformation <span class="math notranslate nohighlight">\(\left(v_x, v_y, v_z, x, y, z\right) \rightarrow \left( p_r, p_\theta, p_\phi, r, \theta, \phi \right)\)</span> reads:</p>
-<div class="math notranslate nohighlight">
-\[\begin{split}
+<p>Let us now switch to a <a class="reference external" href="https://en.wikipedia.org/wiki/Spherical_coordinate_system">spherical coordinate system</a>. Because we are operating in the Hamiltonian framework, we cannot use directly the time derivatives $\left( \dot{r}, \dot{\theta}, \dot{\phi} \right)$ of the spherical coordinates as new momenta, and we have to use instead a set of canonical momenta $\left( p_r, p_\theta, p_\phi \right)$. The coordinate transformation $\left(v_x, v_y, v_z, x, y, z\right) \rightarrow \left( p_r, p_\theta, p_\phi, r, \theta, \phi \right)$ reads:</p>
+<p>$$
 \begin{aligned}
-p_r &amp; = \dot{r}, &amp; r &amp; =  \sqrt{x^2+y^2+z^2}, \\
-p_\theta &amp; = r^2\dot{\theta}, &amp; \theta &amp; = \arccos \frac{z}{r}, \\
+p_r &amp; = \dot{r}, &amp; r &amp; =  \sqrt{x^2+y^2+z^2}, \
+p_\theta &amp; = r^2\dot{\theta}, &amp; \theta &amp; = \arccos \frac{z}{r}, \
 p_\phi &amp; = r^2\dot{\phi}\sin^2\theta, &amp; \phi &amp; = \arctan \frac{y}{x}.
 \end{aligned}
-\end{split}\]</div>
+$$</p>
 <p>The Hamiltonian of the Stark problem in spherical coordinates becomes:</p>
-<div class="math notranslate nohighlight">
-\[
-\mathcal{H}_\mathrm{sph} = \frac{1}{2}\left( p_r^2+\frac{p_\theta^2}{r^2} + \frac{p_\phi^2}{r^2\sin^2\theta} \right) - \frac{1}{r} - \varepsilon r \cos\theta.
-\]</div>
+<p>$$
+\mathcal{H}<em>\mathrm{sph} = \frac{1}{2}\left( p_r^2+\frac{p</em>\theta^2}{r^2} + \frac{p_\phi^2}{r^2\sin^2\theta} \right) - \frac{1}{r} - \varepsilon r \cos\theta.
+$$</p>
 <p>Let us define a couple of functions to convert a state vector between Cartesian and spherical coordinates:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -831,9 +826,9 @@ p_\phi &amp; = r^2\dot{\phi}\sin^2\theta, &amp; \phi &amp; = \arctan \frac{y}{x}
 </div>
 </div>
 <p>We are now almost ready to numerically integrate the Stark problem in spherical coordinates. There is one additional complication however that we need to take into account.</p>
-<p>Because now we are operating in spherical coordinates, two of the coordinates are angles <span class="math notranslate nohighlight">\(\left(\theta, \phi \right)\)</span> whose numerical values can grow in principle unbounded even if the motion remains bounded. In this specific example, the angle <span class="math notranslate nohighlight">\(\phi\)</span> will keep on growing as the particle orbits around the origin.</p>
-<p>This constant growth can become a problem because heyoka.py uses the largest absolute value in the state vector to transform the relative integration tolerance into an absolute error allowed within the integration loop: in other words, if (the absolute value of) <span class="math notranslate nohighlight">\(\phi\)</span> keeps on growing, the integrator will progressively become less accurate.</p>
-<p>We can avoid this undesirable effect by periodically reducing <span class="math notranslate nohighlight">\(\phi\)</span> modulo <span class="math notranslate nohighlight">\(2\pi\)</span>. One possible way of implementing this is to define a callback function to be called at the end of every integration timestep:</p>
+<p>Because now we are operating in spherical coordinates, two of the coordinates are angles $\left(\theta, \phi \right)$ whose numerical values can grow in principle unbounded even if the motion remains bounded. In this specific example, the angle $\phi$ will keep on growing as the particle orbits around the origin.</p>
+<p>This constant growth can become a problem because heyoka.py uses the largest absolute value in the state vector to transform the relative integration tolerance into an absolute error allowed within the integration loop: in other words, if (the absolute value of) $\phi$ keeps on growing, the integrator will progressively become less accurate.</p>
+<p>We can avoid this undesirable effect by periodically reducing $\phi$ modulo $2\pi$. One possible way of implementing this is to define a callback function to be called at the end of every integration timestep:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">mod_cb_sph</span><span class="p">(</span><span class="n">ta</span><span class="p">):</span>
@@ -891,12 +886,12 @@ p_\phi &amp; = r^2\dot{\phi}\sin^2\theta, &amp; \phi &amp; = \arctan \frac{y}{x}
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/Comparing coordinate systems_21_0.png" src="../_images/Comparing coordinate systems_21_0.png" />
+<img alt="../_images/40b85d45aa5498ac03db09d3a8ddbb61eadc3e87fd98353a3e3524bca86f2dee.png" src="../_images/40b85d45aa5498ac03db09d3a8ddbb61eadc3e87fd98353a3e3524bca86f2dee.png" />
 </div>
 </div>
-<p>Comparing these plots with those for the Cartesian coordinates, we can see how the oscillatory quasi-Keplerian behaviour remains. However, the oscillation amplitude is reduced with respect to the Cartesian case, and one of the momenta (<span class="math notranslate nohighlight">\(p_\phi\)</span>, top right panel) has become a constant. This reflects the fact that the <span class="math notranslate nohighlight">\(z\)</span> component of the angular momentum in the Stark problem is a constant of motion.</p>
-<p>Note that the bottom right panel, referring to the time evolution of <span class="math notranslate nohighlight">\(\phi\)</span>, does <strong>not</strong> represent an oscillatory motion around 0: the sine-like shape is a visual effect of the periodic reduction of <span class="math notranslate nohighlight">\(\phi\)</span> to the <span class="math notranslate nohighlight">\(\left[ -\pi, \pi\right]\)</span> range, but in reality the time evolution of <span class="math notranslate nohighlight">\(\phi\)</span> is linear with a periodic modulation on top.</p>
-<p>The periodic modulations in these plots arise from the fact that the initial Keplerian orbit is not perfectly circular and planar, and thus all coordinates (except <span class="math notranslate nohighlight">\(p_\phi\)</span>) oscillate as the motion deviates from a perfect planar circle within each orbit. For a circular planar orbit around the origin, all coordinates and momenta would be constants, except for <span class="math notranslate nohighlight">\(\phi\)</span> which would evolve linearly.</p>
+<p>Comparing these plots with those for the Cartesian coordinates, we can see how the oscillatory quasi-Keplerian behaviour remains. However, the oscillation amplitude is reduced with respect to the Cartesian case, and one of the momenta ($p_\phi$, top right panel) has become a constant. This reflects the fact that the $z$ component of the angular momentum in the Stark problem is a constant of motion.</p>
+<p>Note that the bottom right panel, referring to the time evolution of $\phi$, does <strong>not</strong> represent an oscillatory motion around 0: the sine-like shape is a visual effect of the periodic reduction of $\phi$ to the $\left[ -\pi, \pi\right]$ range, but in reality the time evolution of $\phi$ is linear with a periodic modulation on top.</p>
+<p>The periodic modulations in these plots arise from the fact that the initial Keplerian orbit is not perfectly circular and planar, and thus all coordinates (except $p_\phi$) oscillate as the motion deviates from a perfect planar circle within each orbit. For a circular planar orbit around the origin, all coordinates and momenta would be constants, except for $\phi$ which would evolve linearly.</p>
 <p>The fact that the amplitude of the periodic modulations is reduced with respect to the Cartesian case has an effect on the number of timesteps necessary to integrate the system:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -919,64 +914,55 @@ Number of steps (spherical): 899
 <h2>Delaunay elements<a class="headerlink" href="#delaunay-elements" title="Permalink to this headline">#</a></h2>
 <p>The results of the previous section suggest that introducing another system of coordinates which further reduces the amplitude of periodic oscillations may further decrease the number of timesteps required by the integrator. Because we are dealing with a perturbed Keplerian system, an obvious choice is to use <a class="reference external" href="https://en.wikipedia.org/wiki/Orbital_elements">Keplerian orbital elements</a>.</p>
 <p>In the Hamiltonian formalism, we cannot use directly the Keplerian elements as coordinates as they are not canonical variables. Instead, we can use the <a class="reference external" href="https://en.wikipedia.org/wiki/Orbital_elements#Delaunay_variables">Delaunay elements</a>, which are closely-related to the Keplerian elements via the following relations (valid in adimensional units):</p>
-<div class="math notranslate nohighlight">
-\[\begin{split}
+<p>$$
 \begin{aligned}
-L &amp; = \sqrt{a}, &amp; l &amp; =  M, \\
-G &amp; = \sqrt{a\left( 1 - e^2\right)}, &amp; g &amp; = \omega, \\
+L &amp; = \sqrt{a}, &amp; l &amp; =  M, \
+G &amp; = \sqrt{a\left( 1 - e^2\right)}, &amp; g &amp; = \omega, \
 H &amp; = \sqrt{a\left( 1 - e^2\right)} \cos i, &amp; h &amp; =  \Omega.
 \end{aligned}
-\end{split}\]</div>
-<p>In these formulae, <span class="math notranslate nohighlight">\(\left( a, e, i, M, \omega, \Omega \right)\)</span> are the usual Keplerian elements: semi-major axis, eccentricity, inclination, mean anomaly, longitude of pericentre and longitude of the ascending node.</p>
-<p>When employing Delaunay elements, a major complication is the appearance of the mean anomaly <span class="math notranslate nohighlight">\(l\)</span>, which is related to the eccentric anomaly <span class="math notranslate nohighlight">\(E\)</span> via <a class="reference external" href="https://en.wikipedia.org/wiki/Kepler%27s_equation">Kepler’s equation</a>, which, in terms of Delaunay elements, reads:</p>
-<div class="math notranslate nohighlight">
-\[
+$$</p>
+<p>In these formulae, $\left( a, e, i, M, \omega, \Omega \right)$ are the usual Keplerian elements: semi-major axis, eccentricity, inclination, mean anomaly, longitude of pericentre and longitude of the ascending node.</p>
+<p>When employing Delaunay elements, a major complication is the appearance of the mean anomaly $l$, which is related to the eccentric anomaly $E$ via <a class="reference external" href="https://en.wikipedia.org/wiki/Kepler%27s_equation">Kepler’s equation</a>, which, in terms of Delaunay elements, reads:</p>
+<p>$$
 l = E - \sqrt{1-\frac{G^2}{L^2}} \sin E.
-\]</div>
-<p>This equation cannot be inverted in finite terms using elementary functions, thus, from now on, we will regard the eccentric anomaly <span class="math notranslate nohighlight">\(E\)</span> as an unspecified function of <span class="math notranslate nohighlight">\(l\)</span>, <span class="math notranslate nohighlight">\(G\)</span> and <span class="math notranslate nohighlight">\(L\)</span>:</p>
-<div class="math notranslate nohighlight">
-\[
+$$</p>
+<p>This equation cannot be inverted in finite terms using elementary functions, thus, from now on, we will regard the eccentric anomaly $E$ as an unspecified function of $l$, $G$ and $L$:</p>
+<p>$$
 E = E\left( l, G, L \right).
-\]</div>
-<p>The cartesian coordinate <span class="math notranslate nohighlight">\(z\)</span> can be written in terms of Delaunay elements as</p>
-<div class="math notranslate nohighlight">
-\[
+$$</p>
+<p>The cartesian coordinate $z$ can be written in terms of Delaunay elements as</p>
+<p>$$
 z = L\sqrt{1-\frac{H^2}{G^2}}\left[ L\left( \cos E - \sqrt{1-\frac{G^2}{L^2}} \right)\sin g + G\sin E \cos g \right],
-\]</div>
+$$</p>
 <p>while the two-body problem Hamiltonian is simply</p>
-<div class="math notranslate nohighlight">
-\[
+<p>$$
 \mathcal{H}_\mathrm{2bp} = -\frac{1}{2L^2}.
-\]</div>
+$$</p>
 <p>Thus, the full Hamiltonian for the Stark problem in Delaunay elements reads:</p>
-<div class="math notranslate nohighlight">
-\[
+<p>$$
 \mathcal{H}_\mathrm{Del} \left( L, G, H, l, g, h \right) = -\frac{1}{2L^2}-\varepsilon L\sqrt{1-\frac{H^2}{G^2}}\left[ L\left( \cos E - \sqrt{1-\frac{G^2}{L^2}} \right)\sin g + G\sin E \cos g \right].
-\]</div>
-<p>In order to write the equations of motion, we will have to take into account that <span class="math notranslate nohighlight">\(E\)</span> is a function of <span class="math notranslate nohighlight">\(\left( l, G, L \right)\)</span> whose derivatives can be explicitly computed from Kepler’s equation:</p>
-<div class="math notranslate nohighlight">
-\[\begin{split}
+$$</p>
+<p>In order to write the equations of motion, we will have to take into account that $E$ is a function of $\left( l, G, L \right)$ whose derivatives can be explicitly computed from Kepler’s equation:</p>
+<p>$$
 \begin{aligned}
-\frac{\partial E}{\partial l} &amp; = \frac{1}{1-\sqrt{1-\frac{G^2}{L^2}}\cos E},\\
-\frac{\partial E}{\partial L} &amp; = \frac{G^2\sin E}{L^3\sqrt{1-\frac{G^2}{L^2}}\left(1-\sqrt{1-\frac{G^2}{L^2}}\cos E\right)},\\
+\frac{\partial E}{\partial l} &amp; = \frac{1}{1-\sqrt{1-\frac{G^2}{L^2}}\cos E},\
+\frac{\partial E}{\partial L} &amp; = \frac{G^2\sin E}{L^3\sqrt{1-\frac{G^2}{L^2}}\left(1-\sqrt{1-\frac{G^2}{L^2}}\cos E\right)},\
 \frac{\partial E}{\partial G} &amp; = \frac{-G\sin E}{L^2\sqrt{1-\frac{G^2}{L^2}}\left(1-\sqrt{1-\frac{G^2}{L^2}}\cos E\right)}.
 \end{aligned}
-\end{split}\]</div>
+$$</p>
 <p>We can now proceed to formulate the equations of motion:</p>
-<div class="math notranslate nohighlight">
-\[\begin{split}
+<p>$$
 \begin{aligned}
-\frac{dL}{dt} &amp; =-\frac{\partial \mathcal{H}_\mathrm{Del}}{\partial E}\frac{\partial E}{\partial l}, &amp; \frac{dl}{dt} &amp; =  \frac{\partial \mathcal{H}_\mathrm{Del}}{\partial L}+\frac{\partial \mathcal{H}_\mathrm{Del}}{\partial E}\frac{\partial E}{\partial L}, \\
-\frac{dG}{dt} &amp; = -\frac{\partial \mathcal{H}_\mathrm{Del}}{\partial g}, &amp; \frac{dg}{dt} &amp; = \frac{\partial \mathcal{H}_\mathrm{Del}}{\partial G}+\frac{\partial \mathcal{H}_\mathrm{Del}}{\partial E}\frac{\partial E}{\partial G}, \\
-\frac{dH}{dt} &amp; = -\frac{\partial \mathcal{H}_\mathrm{Del}}{\partial h}=0, &amp; \frac{dh}{dt} &amp; =  \frac{\partial \mathcal{H}_\mathrm{Del}}{\partial H} .
+\frac{dL}{dt} &amp; =-\frac{\partial \mathcal{H}<em>\mathrm{Del}}{\partial E}\frac{\partial E}{\partial l}, &amp; \frac{dl}{dt} &amp; =  \frac{\partial \mathcal{H}</em>\mathrm{Del}}{\partial L}+\frac{\partial \mathcal{H}<em>\mathrm{Del}}{\partial E}\frac{\partial E}{\partial L}, \
+\frac{dG}{dt} &amp; = -\frac{\partial \mathcal{H}</em>\mathrm{Del}}{\partial g}, &amp; \frac{dg}{dt} &amp; = \frac{\partial \mathcal{H}<em>\mathrm{Del}}{\partial G}+\frac{\partial \mathcal{H}</em>\mathrm{Del}}{\partial E}\frac{\partial E}{\partial G}, \
+\frac{dH}{dt} &amp; = -\frac{\partial \mathcal{H}<em>\mathrm{Del}}{\partial h}=0, &amp; \frac{dh}{dt} &amp; =  \frac{\partial \mathcal{H}</em>\mathrm{Del}}{\partial H} .
 \end{aligned}
-\end{split}\]</div>
-<p>Note that the Hamiltonian does not depend directly on <span class="math notranslate nohighlight">\(l\)</span> (only indirectly via <span class="math notranslate nohighlight">\(E\)</span>). Thus, in the numerical integration, we will be replacing the differential equation for <span class="math notranslate nohighlight">\(l\)</span> with the differential equation for <span class="math notranslate nohighlight">\(E\)</span>:</p>
-<div class="math notranslate nohighlight">
-\[
+$$</p>
+<p>Note that the Hamiltonian does not depend directly on $l$ (only indirectly via $E$). Thus, in the numerical integration, we will be replacing the differential equation for $l$ with the differential equation for $E$:</p>
+<p>$$
 \frac{dE}{dt}=\frac{\partial E}{\partial l}\frac{dl}{dt}+\frac{\partial E}{\partial L}\frac{dL}{dt} + \frac{\partial E}{\partial G}\frac{dG}{dt}.
-\]</div>
-<p>The value of <span class="math notranslate nohighlight">\(l\)</span> for a given <span class="math notranslate nohighlight">\(E\)</span> can be obtained via Kepler’s equation.</p>
+$$</p>
+<p>The value of $l$ for a given $E$ can be obtained via Kepler’s equation.</p>
 <p>On the implementation side, let us begin with a couple of functions to convert between Cartesian coordinates and Delaunay elements. We will be using <a class="reference external" href="https://esa.github.io/pykep/">pykep</a> for the conversion between cartesian coordinates and Keplerian elements:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -1043,7 +1029,7 @@ z = L\sqrt{1-\frac{H^2}{G^2}}\left[ L\left( \cos E - \sqrt{1-\frac{G^2}{L^2}} \r
 </div>
 </div>
 </div>
-<p>Like in the case of spherical coordinates, we will also need to prevent <span class="math notranslate nohighlight">\(E\)</span> from growing indefinitely:</p>
+<p>Like in the case of spherical coordinates, we will also need to prevent $E$ from growing indefinitely:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Callback to reduce E to the</span>
@@ -1095,10 +1081,10 @@ z = L\sqrt{1-\frac{H^2}{G^2}}\left[ L\left( \cos E - \sqrt{1-\frac{G^2}{L^2}} \r
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/Comparing coordinate systems_35_0.png" src="../_images/Comparing coordinate systems_35_0.png" />
+<img alt="../_images/2a2d845d1de98f1976ed7404a9c8b5301371eae9c526ab83ffb9f069ae8c8870.png" src="../_images/2a2d845d1de98f1976ed7404a9c8b5301371eae9c526ab83ffb9f069ae8c8870.png" />
 </div>
 </div>
-<p>The plots for <span class="math notranslate nohighlight">\(L\)</span>, <span class="math notranslate nohighlight">\(G\)</span>, <span class="math notranslate nohighlight">\(H\)</span>, <span class="math notranslate nohighlight">\(g\)</span> and <span class="math notranslate nohighlight">\(h\)</span> clearly show how the Keplerian oscillations for these elements have been removed thanks to the use of orbital elements as a coordinate system. These elements would be constant in a perfectly Keplerian orbit, while in the Stark problem they undergo short-term oscillations with amplitude <span class="math notranslate nohighlight">\(\sim\varepsilon\)</span> and long-term evolution with timescale <span class="math notranslate nohighlight">\(\sim 1/\varepsilon\)</span>. We can see the perturbation induced by the constant acceleration field by zooming into, e.g., the plot for the <span class="math notranslate nohighlight">\(g\)</span> angle (the argument of pericentre):</p>
+<p>The plots for $L$, $G$, $H$, $g$ and $h$ clearly show how the Keplerian oscillations for these elements have been removed thanks to the use of orbital elements as a coordinate system. These elements would be constant in a perfectly Keplerian orbit, while in the Stark problem they undergo short-term oscillations with amplitude $\sim\varepsilon$ and long-term evolution with timescale $\sim 1/\varepsilon$. We can see the perturbation induced by the constant acceleration field by zooming into, e.g., the plot for the $g$ angle (the argument of pericentre):</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span> <span class="o">=</span> <span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
@@ -1110,10 +1096,10 @@ z = L\sqrt{1-\frac{H^2}{G^2}}\left[ L\left( \cos E - \sqrt{1-\frac{G^2}{L^2}} \r
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/Comparing coordinate systems_37_0.png" src="../_images/Comparing coordinate systems_37_0.png" />
+<img alt="../_images/04ed478ccf7718d98a1f1f83ff0fc1214232705a35c4517bbb1b6e0902516887.png" src="../_images/04ed478ccf7718d98a1f1f83ff0fc1214232705a35c4517bbb1b6e0902516887.png" />
 </div>
 </div>
-<p>Let us now zoom into the plot for <span class="math notranslate nohighlight">\(E\)</span>:</p>
+<p>Let us now zoom into the plot for $E$:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span> <span class="o">=</span> <span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
@@ -1125,11 +1111,11 @@ z = L\sqrt{1-\frac{H^2}{G^2}}\left[ L\left( \cos E - \sqrt{1-\frac{G^2}{L^2}} \r
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/Comparing coordinate systems_39_0.png" src="../_images/Comparing coordinate systems_39_0.png" />
+<img alt="../_images/eb3755e9a87008e0bde7216c05c84049ed7afe1f2ae9f146b0c1b761aca6d498.png" src="../_images/eb3755e9a87008e0bde7216c05c84049ed7afe1f2ae9f146b0c1b761aca6d498.png" />
 </div>
 </div>
-<p>We can see how <span class="math notranslate nohighlight">\(E\)</span> is still subject to Keplerian oscillations. Indeed, even in a perfectly Keplerian orbit, the time evolution of <span class="math notranslate nohighlight">\(E\)</span> is linear only for circular orbits.</p>
-<p>Because of the presence of Keplerian oscillations in <span class="math notranslate nohighlight">\(E\)</span>, the reduction in number of integration timesteps after switching to Delaunay elements is measurable but not very large:</p>
+<p>We can see how $E$ is still subject to Keplerian oscillations. Indeed, even in a perfectly Keplerian orbit, the time evolution of $E$ is linear only for circular orbits.</p>
+<p>Because of the presence of Keplerian oscillations in $E$, the reduction in number of integration timesteps after switching to Delaunay elements is measurable but not very large:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Number of steps (Cartesian): </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">nsteps_cart</span><span class="p">))</span>
@@ -1150,24 +1136,21 @@ Number of steps (Delaunay) : 764
 </section>
 <section id="delaunay-sundman">
 <h2>Delaunay + Sundman<a class="headerlink" href="#delaunay-sundman" title="Permalink to this headline">#</a></h2>
-<p>The idea we will be exploring in this section is to replace the time <span class="math notranslate nohighlight">\(t\)</span> with a fictitious time <span class="math notranslate nohighlight">\(\tau\)</span> defined by the differential relation</p>
-<div class="math notranslate nohighlight">
-\[
+<p>The idea we will be exploring in this section is to replace the time $t$ with a fictitious time $\tau$ defined by the differential relation</p>
+<p>$$
 \frac{dt}{d\tau} = r,
-\]</div>
-<p>where <span class="math notranslate nohighlight">\(r\)</span> is the distance from the Keplerian centre of force (i.e., the origin). This time transformation belongs to the class of <a class="reference external" href="https://en.wikipedia.org/wiki/Karl_F._Sundman">Sundman transformations</a>, which were originally introduced for regularisation purposes: the fictitious time <span class="math notranslate nohighlight">\(\tau\)</span> flows slower close to the centre of force, so that it is impossible for a test particle to reach the gravitational singularity as that would take an infinite amount of fictitious time <span class="math notranslate nohighlight">\(\tau\)</span>.</p>
-<p>Here, however, we are not interested in the regularisation properties of this transformation. Rather, what is of interest to us in this context is that, in Keplerian orbits, <span class="math notranslate nohighlight">\(E\)</span> evolves <em>linearly</em> with <span class="math notranslate nohighlight">\(\tau\)</span>. In other words, by replacing the time coordinate <span class="math notranslate nohighlight">\(t\)</span> with <span class="math notranslate nohighlight">\(\tau\)</span>, we will be able to remove the Keplerian oscillations of <span class="math notranslate nohighlight">\(E\)</span> in the Stark problem.</p>
-<p>We can introduce the new time coordinate <span class="math notranslate nohighlight">\(\tau\)</span> directly in the definition of the equations of motion. <span class="math notranslate nohighlight">\(r\)</span> can be expressed in terms of Delaunay elements as</p>
-<div class="math notranslate nohighlight">
-\[
+$$</p>
+<p>where $r$ is the distance from the Keplerian centre of force (i.e., the origin). This time transformation belongs to the class of <a class="reference external" href="https://en.wikipedia.org/wiki/Karl_F._Sundman">Sundman transformations</a>, which were originally introduced for regularisation purposes: the fictitious time $\tau$ flows slower close to the centre of force, so that it is impossible for a test particle to reach the gravitational singularity as that would take an infinite amount of fictitious time $\tau$.</p>
+<p>Here, however, we are not interested in the regularisation properties of this transformation. Rather, what is of interest to us in this context is that, in Keplerian orbits, $E$ evolves <em>linearly</em> with $\tau$. In other words, by replacing the time coordinate $t$ with $\tau$, we will be able to remove the Keplerian oscillations of $E$ in the Stark problem.</p>
+<p>We can introduce the new time coordinate $\tau$ directly in the definition of the equations of motion. $r$ can be expressed in terms of Delaunay elements as</p>
+<p>$$
 r = L^2\left( 1 - \sqrt{1-\frac{G^2}{L^2}}\cos E\right).
-\]</div>
-<p>For each Delaunay element <span class="math notranslate nohighlight">\(D_i\)</span> we can then write:</p>
-<div class="math notranslate nohighlight">
-\[
+$$</p>
+<p>For each Delaunay element $D_i$ we can then write:</p>
+<p>$$
 \frac{dD_i}{d\tau} = \frac{dD_i}{dt}\frac{dt}{d\tau} = \frac{dD_i}{dt} L^2\left( 1 - \sqrt{1-\frac{G^2}{L^2}}\cos E\right).
-\]</div>
-<p>We will also append the differential equation for <span class="math notranslate nohighlight">\(dt/d\tau\)</span> to the ODE system, so that we can track the evolution of the real time <span class="math notranslate nohighlight">\(t\)</span> in fictitious time <span class="math notranslate nohighlight">\(\tau\)</span>:</p>
+$$</p>
+<p>We will also append the differential equation for $dt/d\tau$ to the ODE system, so that we can track the evolution of the real time $t$ in fictitious time $\tau$:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Expression for dt/dtau.</span>
@@ -1194,7 +1177,7 @@ r = L^2\left( 1 - \sqrt{1-\frac{G^2}{L^2}}\cos E\right).
 </div>
 </div>
 </div>
-<p>In order to prevent the real time <span class="math notranslate nohighlight">\(t\)</span> from growing indefinitely, we will periodically reset its value:</p>
+<p>In order to prevent the real time $t$ from growing indefinitely, we will periodically reset its value:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">mod_cb_del_e</span><span class="p">(</span><span class="n">ta</span><span class="p">):</span>
@@ -1230,10 +1213,10 @@ r = L^2\left( 1 - \sqrt{1-\frac{G^2}{L^2}}\cos E\right).
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/Comparing coordinate systems_50_0.png" src="../_images/Comparing coordinate systems_50_0.png" />
+<img alt="../_images/f9dec6e45488048822352e086e5cf665819d76efddeadd2eb48d066988e0fb77.png" src="../_images/f9dec6e45488048822352e086e5cf665819d76efddeadd2eb48d066988e0fb77.png" />
 </div>
 </div>
-<p>And let us zoom into the plot for <span class="math notranslate nohighlight">\(E\)</span>:</p>
+<p>And let us zoom into the plot for $E$:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span> <span class="o">=</span> <span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
@@ -1245,10 +1228,10 @@ r = L^2\left( 1 - \sqrt{1-\frac{G^2}{L^2}}\cos E\right).
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/Comparing coordinate systems_52_0.png" src="../_images/Comparing coordinate systems_52_0.png" />
+<img alt="../_images/811ab6f7136810492847c11840d98bb5d9f38d4d13f4082c4dc89aeae5341e72.png" src="../_images/811ab6f7136810492847c11840d98bb5d9f38d4d13f4082c4dc89aeae5341e72.png" />
 </div>
 </div>
-<p>The plot indeed confirms that the Keplerian oscillations for <span class="math notranslate nohighlight">\(E\)</span> are gone.</p>
+<p>The plot indeed confirms that the Keplerian oscillations for $E$ are gone.</p>
 <p>What about the number of steps?</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -1268,7 +1251,7 @@ Number of steps (D + S)    : 388
 </div>
 </div>
 </div>
-<p>We can see how, after the removal of the short-term Keplerian oscillations from <span class="math notranslate nohighlight">\(E\)</span>, the reduction in number of steps is substantial. Indeed, in the Delaunay + Sundman setup, the evolution of the coordinates in fictitious time deviates from constant or linear behaviour only through the external perturbation, whose magnitude <span class="math notranslate nohighlight">\(\varepsilon\)</span> is small.</p>
+<p>We can see how, after the removal of the short-term Keplerian oscillations from $E$, the reduction in number of steps is substantial. Indeed, in the Delaunay + Sundman setup, the evolution of the coordinates in fictitious time deviates from constant or linear behaviour only through the external perturbation, whose magnitude $\varepsilon$ is small.</p>
 <p>Let us conclude by summarising in a plot the number of steps required by each coordinate system:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -1280,7 +1263,7 @@ Number of steps (D + S)    : 388
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/Comparing coordinate systems_56_0.png" src="../_images/Comparing coordinate systems_56_0.png" />
+<img alt="../_images/9a23e7a89f877470d607ac1adc86822f538178aecf643f39e49ceadfa0da82da.png" src="../_images/9a23e7a89f877470d607ac1adc86822f538178aecf643f39e49ceadfa0da82da.png" />
 </div>
 </div>
 </section>

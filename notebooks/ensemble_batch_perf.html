@@ -22,8 +22,8 @@
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
     <link rel="stylesheet" href="../_static/styles/sphinx-book-theme.css?digest=5115cc725059bd94278eecd172e13a965bf8f5a9" type="text/css" />
-    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css" />
     <link rel="stylesheet" type="text/css" href="../_static/mystnb.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css" />
     
   <!-- Pre-loaded scripts that we'll load fully later -->
   <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf">
@@ -38,8 +38,6 @@
     <script src="../_static/togglebutton.js"></script>
     <script src="../_static/scripts/sphinx-book-theme.js?digest=9c920249402e914e316237a7dbc6769907cce411"></script>
     <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
-    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
-    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="The variational equations" href="The%20variational%20equations.html" />
@@ -620,14 +618,14 @@ title="Print to PDF"
                 
               <div>
                 
-  <section class="tex2jax_ignore mathjax_ignore" id="evaluating-the-performance-of-ensemble-batch-mode">
+  <section id="evaluating-the-performance-of-ensemble-batch-mode">
 <h1>Evaluating the performance of ensemble &amp; batch mode<a class="headerlink" href="#evaluating-the-performance-of-ensemble-batch-mode" title="Permalink to this headline">#</a></h1>
 <p>In this short tutorial, we will run a couple of benchmarks with the goal of evaluating how features such as <a class="reference internal" href="Batch%20mode%20overview.html"><span class="doc std std-doc">batch mode</span></a> and <a class="reference internal" href="ensemble_mode.html"><span class="doc std std-doc">ensemble propagation</span></a> can lead to substantial speedups in the solution of multiple independent ODE systems.</p>
 <p>As an illustrative example, we will be using a toy model of the outer Solar System consisting of the Sun, Jupiter, Saturn, Uranus, Neptune and Pluto, with all bodies represented as point masses attracting each other according to Newtonian gravity. This dynamical system is described in detail in <a class="reference internal" href="Outer%20Solar%20System.html"><span class="doc std std-doc">another tutorial</span></a>.</p>
 <p>All timings were taken on a Ryzen 3950x CPU.</p>
 <section id="the-scalar-serial-baseline">
 <h2>The scalar, serial baseline<a class="headerlink" href="#the-scalar-serial-baseline" title="Permalink to this headline">#</a></h2>
-<p>To begin with, we set up a single, scalar numerical integration of the system for <span class="math notranslate nohighlight">\(10^6\)</span> years. Let us start by introducing a few physical constants:</p>
+<p>To begin with, we set up a single, scalar numerical integration of the system for $10^6$ years. Let us start by introducing a few physical constants:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Masses, from Sun to Pluto.</span>
@@ -771,7 +769,7 @@ Wall time: 21.8 s
 </section>
 <section id="conclusions">
 <h2>Conclusions<a class="headerlink" href="#conclusions" title="Permalink to this headline">#</a></h2>
-<p>Thanks to the use of batch mode and ensemble propagation, we were able to increase the computational throughput of our simulations with respect to the serial scalar baseline by a factor of <span class="math notranslate nohighlight">\(\sim 24\)</span> using 8 CPU cores. These results show how batch mode and ensemble propagation can be very effective in accelerating Monte Carlo simulations and parameter searches.</p>
+<p>Thanks to the use of batch mode and ensemble propagation, we were able to increase the computational throughput of our simulations with respect to the serial scalar baseline by a factor of $\sim 24$ using 8 CPU cores. These results show how batch mode and ensemble propagation can be very effective in accelerating Monte Carlo simulations and parameter searches.</p>
 </section>
 </section>
 

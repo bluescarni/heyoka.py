@@ -22,8 +22,8 @@
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
     <link rel="stylesheet" href="../_static/styles/sphinx-book-theme.css?digest=5115cc725059bd94278eecd172e13a965bf8f5a9" type="text/css" />
-    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css" />
     <link rel="stylesheet" type="text/css" href="../_static/mystnb.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css" />
     
   <!-- Pre-loaded scripts that we'll load fully later -->
   <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf">
@@ -38,8 +38,6 @@
     <script src="../_static/togglebutton.js"></script>
     <script src="../_static/scripts/sphinx-book-theme.js?digest=9c920249402e914e316237a7dbc6769907cce411"></script>
     <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
-    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
-    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Elastic tides" href="tides_spokes.html" />
@@ -630,7 +628,7 @@ title="Print to PDF"
                 
               <div>
                 
-  <section class="tex2jax_ignore mathjax_ignore" id="introduction-to-the-vsop2013-planetary-theory">
+  <section id="introduction-to-the-vsop2013-planetary-theory">
 <h1>Introduction to the VSOP2013 planetary theory<a class="headerlink" href="#introduction-to-the-vsop2013-planetary-theory" title="Permalink to this headline">#</a></h1>
 <p>Starting from version 0.15, heyoka.py provides an implementation of the <a class="reference external" href="https://en.wikipedia.org/wiki/VSOP_%28planets%29">VSOP2013</a> planetary theory. VSOP2013 consists of a set of (large) analytical formulae which calculate the heliocentric orbital elements of the 8 planets of the Solar System (plus the dwarf planet Pluto) as a function of time. Because the VSOP2013 theory is expressed as a set of analytical, differentiable formulae, it can be implemented in heyoka.py’s expression system and it can thus be used in the formulation of differential equations.</p>
 <section id="api-overview">
@@ -638,19 +636,19 @@ title="Print to PDF"
 <p>heyoka.py provides three functions to generate the analytical formulae for the VSOP2013 theory.</p>
 <p>The first one, <code class="docutils literal notranslate"><span class="pre">vsop2013_elliptic()</span></code>, returns the formulae for the heliocentric elliptic orbital elements for a given planet. The 6 elliptic orbital elements are, in order:</p>
 <ul class="simple">
-<li><p>the semi-major axis <span class="math notranslate nohighlight">\(a\)</span> (in astronomical units),</p></li>
-<li><p>the <a class="reference external" href="https://en.wikipedia.org/wiki/Mean_longitude">mean longitude</a> <span class="math notranslate nohighlight">\(\lambda\)</span> (in radians),</p></li>
-<li><p><span class="math notranslate nohighlight">\(k=e\cos\varpi\)</span> and <span class="math notranslate nohighlight">\(h=e\sin\varpi\)</span>, where <span class="math notranslate nohighlight">\(e\)</span> is the eccentricity and <span class="math notranslate nohighlight">\(\varpi=\Omega+\omega\)</span> is the <a class="reference external" href="https://en.wikipedia.org/wiki/Longitude_of_the_periapsis">longitude of the perihelion</a>,</p></li>
-<li><p><span class="math notranslate nohighlight">\(q=\sin\frac{i}{2}\cos\Omega\)</span> and <span class="math notranslate nohighlight">\(p=\sin\frac{i}{2}\sin\Omega\)</span>, where <span class="math notranslate nohighlight">\(i\)</span> is the inclination and <span class="math notranslate nohighlight">\(\Omega\)</span> is the longitude of the ascending node.</p></li>
+<li><p>the semi-major axis $a$ (in astronomical units),</p></li>
+<li><p>the <a class="reference external" href="https://en.wikipedia.org/wiki/Mean_longitude">mean longitude</a> $\lambda$ (in radians),</p></li>
+<li><p>$k=e\cos\varpi$ and $h=e\sin\varpi$, where $e$ is the eccentricity and $\varpi=\Omega+\omega$ is the <a class="reference external" href="https://en.wikipedia.org/wiki/Longitude_of_the_periapsis">longitude of the perihelion</a>,</p></li>
+<li><p>$q=\sin\frac{i}{2}\cos\Omega$ and $p=\sin\frac{i}{2}\sin\Omega$, where $i$ is the inclination and $\Omega$ is the longitude of the ascending node.</p></li>
 </ul>
 <p>This function requires as input the planet index (from 1 to 9) and the orbital element index (from 1 to 6). The orbital elements are referred to the inertial frame defined by the dynamical equinox and ecliptic J2000. Note that the VSOP2013 solution for the Earth (planet index 3) actually refers to the Earth-Moon barycentre.</p>
-<p>The second function, <code class="docutils literal notranslate"><span class="pre">vsop2013_cartesian()</span></code>, returns the heliocentric Cartesian state vector <span class="math notranslate nohighlight">\(\left( x, y, z, v_x, v_y, v_z \right)\)</span> for a given planet. The Cartesian state is computed via a direct conversion of the orbital elements returned by <code class="docutils literal notranslate"><span class="pre">vsop2013_elliptic()</span></code>, and thus it also refers to the inertial frame defined by the dynamical equinox and ecliptic J2000.</p>
+<p>The second function, <code class="docutils literal notranslate"><span class="pre">vsop2013_cartesian()</span></code>, returns the heliocentric Cartesian state vector $\left( x, y, z, v_x, v_y, v_z \right)$ for a given planet. The Cartesian state is computed via a direct conversion of the orbital elements returned by <code class="docutils literal notranslate"><span class="pre">vsop2013_elliptic()</span></code>, and thus it also refers to the inertial frame defined by the dynamical equinox and ecliptic J2000.</p>
 <p>The third function, <code class="docutils literal notranslate"><span class="pre">vsop2013_cartesian_icrf()</span></code>, returns the heliocentric Cartesian state vector for a given planet in the <a class="reference external" href="https://en.wikipedia.org/wiki/International_Celestial_Reference_System_and_Frame">International Celestial Reference Frame (ICRF)</a>. The ICRF state vector is computed by applying a rotation to the output of <code class="docutils literal notranslate"><span class="pre">vsop2013_cartesian()</span></code>.</p>
 </section>
 <section id="precision-and-truncation-threshold">
 <h2>Precision and truncation threshold<a class="headerlink" href="#precision-and-truncation-threshold" title="Permalink to this headline">#</a></h2>
 <p>The VSOP2013 solution is formulated as large Fourier/Poisson series whose numerical coefficients decay exponentially. When using the full VSOP2013 solution, the precision with respect to high-accuracy numerical integrations is roughly sub-meter for the inner planets (except Mars) and kilometers for the outer planets (except Pluto). By dropping the smaller terms from the series, the precision of the theory degrades but computational efficiency greatly increases. See the <a class="reference external" href="https://ftp.imcce.fr/pub/ephem/planets/vsop2013/solution/README.pdf">VSOP2013 readme</a> for more details and estimates of the precision at various truncation levels.</p>
-<p>By default, all <code class="docutils literal notranslate"><span class="pre">vsop2013_*()</span></code> functions filter out from the solution terms whose numerical coefficients have a magnitude smaller than <span class="math notranslate nohighlight">\(10^{-9}\)</span>. The truncation threshold can be changed via the <code class="docutils literal notranslate"><span class="pre">thresh</span></code> keyword argument:</p>
+<p>By default, all <code class="docutils literal notranslate"><span class="pre">vsop2013_*()</span></code> functions filter out from the solution terms whose numerical coefficients have a magnitude smaller than $10^{-9}$. The truncation threshold can be changed via the <code class="docutils literal notranslate"><span class="pre">thresh</span></code> keyword argument:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">heyoka</span> <span class="k">as</span> <span class="nn">hy</span>
@@ -671,9 +669,9 @@ Size of Mars&#39; semi-major axis solution @ 1e-11: 467781
 </section>
 <section id="time-coordinate">
 <h2>Time coordinate<a class="headerlink" href="#time-coordinate" title="Permalink to this headline">#</a></h2>
-<p>The precision of the VSOP2013 solution is highest betwen <span class="math notranslate nohighlight">\(1890\,\mathrm{CE}\)</span> and <span class="math notranslate nohighlight">\(2000\,\mathrm{CE}\)</span>, and it slowly degrades outside this time range. See the <a class="reference external" href="https://ftp.imcce.fr/pub/ephem/planets/vsop2013/solution/README.pdf">VSOP2013 readme</a> for estimates of the precision degradation up to a few thousand years in the past/future.</p>
+<p>The precision of the VSOP2013 solution is highest betwen $1890,\mathrm{CE}$ and $2000,\mathrm{CE}$, and it slowly degrades outside this time range. See the <a class="reference external" href="https://ftp.imcce.fr/pub/ephem/planets/vsop2013/solution/README.pdf">VSOP2013 readme</a> for estimates of the precision degradation up to a few thousand years in the past/future.</p>
 <p>VSOP2013 uses <a class="reference external" href="https://en.wikipedia.org/wiki/Barycentric_Dynamical_Time">barycentric dynamical time (TDB)</a>, expressed in thousands of Julian years from J2000 (JD2451545.0). Note than one Julian year = 365250 days.</p>
-<p>By default, all <code class="docutils literal notranslate"><span class="pre">vsop2013_*()</span></code> functions use <code class="docutils literal notranslate"><span class="pre">hy.time</span></code> to represent the time variable in the VSOP2013 formulae. This means that, by default, when the VSOP2013 solution is used in an ODE system, time is assumed to be measured in thousands of Julian years of TDB and <span class="math notranslate nohighlight">\(t = 0\)</span> corresponds to the Julian date <span class="math notranslate nohighlight">\(2451545.0\)</span>.</p>
+<p>By default, all <code class="docutils literal notranslate"><span class="pre">vsop2013_*()</span></code> functions use <code class="docutils literal notranslate"><span class="pre">hy.time</span></code> to represent the time variable in the VSOP2013 formulae. This means that, by default, when the VSOP2013 solution is used in an ODE system, time is assumed to be measured in thousands of Julian years of TDB and $t = 0$ corresponds to the Julian date $2451545.0$.</p>
 <p>It is possible to change the expression used to represent the time variable in the VSOP2013 solution via the <code class="docutils literal notranslate"><span class="pre">time</span></code> keyword argument. This allows, for instance, to rescale and change the origin of time in the VSOP2013 formulae. Let us see a few examples:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -769,10 +767,10 @@ Mars&#39; semi-major axis solution, threshold = 6e-5, time rescaled by a factor 
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/vsop2013_5_0.png" src="../_images/vsop2013_5_0.png" />
+<img alt="../_images/9a42670b6580c85224007bd8a7f8907b0fc3b7cf2f060d76f37befb55b12ae82.png" src="../_images/9a42670b6580c85224007bd8a7f8907b0fc3b7cf2f060d76f37befb55b12ae82.png" />
 </div>
 </div>
-<p>We can see how VSOP2013 matches up well with respect to HORIZONS, and how lower truncation levels indeed increase the precision of the VSOP2013 solution (up to an error of hundreds of meters for a threshold of <span class="math notranslate nohighlight">\(10^{-10}\)</span>).</p>
+<p>We can see how VSOP2013 matches up well with respect to HORIZONS, and how lower truncation levels indeed increase the precision of the VSOP2013 solution (up to an error of hundreds of meters for a threshold of $10^{-10}$).</p>
 </section>
 <section id="limitations-and-caveats">
 <h2>Limitations and caveats<a class="headerlink" href="#limitations-and-caveats" title="Permalink to this headline">#</a></h2>

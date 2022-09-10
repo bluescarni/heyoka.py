@@ -22,8 +22,8 @@
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
     <link rel="stylesheet" href="../_static/styles/sphinx-book-theme.css?digest=5115cc725059bd94278eecd172e13a965bf8f5a9" type="text/css" />
-    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css" />
     <link rel="stylesheet" type="text/css" href="../_static/mystnb.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css" />
     
   <!-- Pre-loaded scripts that we'll load fully later -->
   <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf">
@@ -38,8 +38,6 @@
     <script src="../_static/togglebutton.js"></script>
     <script src="../_static/scripts/sphinx-book-theme.js?digest=9c920249402e914e316237a7dbc6769907cce411"></script>
     <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
-    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
-    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="ODEs with parameters" href="ODEs%20with%20parameters.html" />
@@ -610,7 +608,7 @@ title="Print to PDF"
                 
               <div>
                 
-  <section class="tex2jax_ignore mathjax_ignore" id="customising-the-adaptive-integrator">
+  <section id="customising-the-adaptive-integrator">
 <h1>Customising the adaptive integrator<a class="headerlink" href="#customising-the-adaptive-integrator" title="Permalink to this headline">#</a></h1>
 <p>In the previous section we showed a few
 usage examples of the <code class="docutils literal notranslate"><span class="pre">taylor_adaptive</span></code> class using the default
@@ -621,7 +619,7 @@ can be customised in a variety of ways.</p>
 <p>As we mentioned earlier, by default the <code class="docutils literal notranslate"><span class="pre">taylor_adaptive</span></code> class
 uses an error tolerance equal to the machine
 epsilon of the floating-point type in use. E.g., when using double precision,
-the tolerance is set to <span class="math notranslate nohighlight">\(\sim 2.2\times 10^{-16}\)</span>.</p>
+the tolerance is set to $\sim 2.2\times 10^{-16}$.</p>
 <p>The tolerance value is used by the <code class="docutils literal notranslate"><span class="pre">taylor_adaptive</span></code>
 class to control the error arising from truncating the (infinite)
 Taylor series representing the solution of the ODE system.
@@ -669,8 +667,8 @@ State                   : [0.050000000000000003, 0.025000000000000001]
 </div>
 </div>
 </div>
-<p>The optimal Taylor order for a tolerance of <span class="math notranslate nohighlight">\(10^{-9}\)</span>
-is now 12 (instead of 20 for a tolerance of <span class="math notranslate nohighlight">\(\sim 2.2\times 10^{-16}\)</span>).</p>
+<p>The optimal Taylor order for a tolerance of $10^{-9}$
+is now 12 (instead of 20 for a tolerance of $\sim 2.2\times 10^{-16}$).</p>
 <p>Integrating the system back and forth shows how the accuracy of the
 integration is reduced with respect to the default tolerance value:</p>
 <div class="cell docutils container">
@@ -709,7 +707,7 @@ and high memory usage for large ODE systems. Thus, heyoka.py provides
 also a <em>compact mode</em> option in which code generation employs
 more traditional programming idioms that greatly reduce compilation time
 and memory usage. Compact mode results in a performance degradation
-of <span class="math notranslate nohighlight">\(\lesssim 2\times\)</span> with respect to the default code generation
+of $\lesssim 2\times$ with respect to the default code generation
 mode, but it renders heyoka.py usable with ODE systems consisting
 of thousands of terms.</p>
 <p>Let’s try to quantify the performance difference in a concrete case.
@@ -744,8 +742,8 @@ code generation mode:</p>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CPU times: user 6.01 s, sys: 70 ms, total: 6.08 s
-Wall time: 6.38 s
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CPU times: user 5.01 s, sys: 47.5 ms, total: 5.06 s
+Wall time: 5.06 s
 </pre></div>
 </div>
 </div>
@@ -760,8 +758,8 @@ keyword argument):</p>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CPU times: user 206 ms, sys: 0 ns, total: 206 ms
-Wall time: 222 ms
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CPU times: user 183 ms, sys: 13 µs, total: 183 ms
+Wall time: 182 ms
 </pre></div>
 </div>
 </div>

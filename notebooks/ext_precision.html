@@ -22,8 +22,8 @@
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
     <link rel="stylesheet" href="../_static/styles/sphinx-book-theme.css?digest=5115cc725059bd94278eecd172e13a965bf8f5a9" type="text/css" />
-    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css" />
     <link rel="stylesheet" type="text/css" href="../_static/mystnb.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css" />
     
   <!-- Pre-loaded scripts that we'll load fully later -->
   <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf">
@@ -38,8 +38,6 @@
     <script src="../_static/togglebutton.js"></script>
     <script src="../_static/scripts/sphinx-book-theme.js?digest=9c920249402e914e316237a7dbc6769907cce411"></script>
     <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
-    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
-    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Interoperability with SymPy" href="sympy_interop.html" />
@@ -644,7 +642,7 @@ title="Print to PDF"
                 
               <div>
                 
-  <section class="tex2jax_ignore mathjax_ignore" id="computations-in-extended-precision">
+  <section id="computations-in-extended-precision">
 <h1>Computations in extended precision<a class="headerlink" href="#computations-in-extended-precision" title="Permalink to this headline">#</a></h1>
 <p>As hinted in the <a class="reference internal" href="The%20expression%20system.html"><span class="doc std std-doc">expression system tutorial</span></a>, heyoka.py supports computations not only in double precision, but also in extended precision. Specifically, heyoka.py currently supports:</p>
 <ul class="simple">
@@ -707,7 +705,7 @@ title="Print to PDF"
 </div>
 </div>
 </div>
-<p>We proceed now with a numerical integration over a time grid, up to <span class="math notranslate nohighlight">\(t=300\)</span>:</p>
+<p>We proceed now with a numerical integration over a time grid, up to $t=300$:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Create a time grid in extended precision.</span>
@@ -734,10 +732,10 @@ title="Print to PDF"
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/ext_precision_9_0.png" src="../_images/ext_precision_9_0.png" />
+<img alt="../_images/3cf8bdeb5437c4dc55df4286a7c7ff1e940c39fff9c730936aeb6edee0c63c6b.png" src="../_images/3cf8bdeb5437c4dc55df4286a7c7ff1e940c39fff9c730936aeb6edee0c63c6b.png" />
 </div>
 </div>
-<p>We can see indeed how the energy error is kept at around the epsilon of the extended-precision floating-point type (<span class="math notranslate nohighlight">\(\sim 10^{-19}\)</span>).</p>
+<p>We can see indeed how the energy error is kept at around the epsilon of the extended-precision floating-point type ($\sim 10^{-19}$).</p>
 </section>
 <section id="quadruple-precision-128-bit-example">
 <h2>Quadruple-precision (128-bit) example<a class="headerlink" href="#quadruple-precision-128-bit-example" title="Permalink to this headline">#</a></h2>
@@ -780,7 +778,7 @@ title="Print to PDF"
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/ext_precision_13_0.png" src="../_images/ext_precision_13_0.png" />
+<img alt="../_images/201383733757197aeb9bba89c3ac63dd94b38d71f86fae251e8a8b753057f7d0.png" src="../_images/201383733757197aeb9bba89c3ac63dd94b38d71f86fae251e8a8b753057f7d0.png" />
 </div>
 </div>
 <p>We can see indeed how the energy error is kept at around the epsilon of the quadruple-precision floating-point type.</p>
@@ -803,7 +801,7 @@ title="Print to PDF"
 <h2>Caveats, limitations &amp; issues<a class="headerlink" href="#caveats-limitations-issues" title="Permalink to this headline">#</a></h2>
 <section id="initialising-numbers-in-extended-precision">
 <h3>Initialising numbers in extended precision<a class="headerlink" href="#initialising-numbers-in-extended-precision" title="Permalink to this headline">#</a></h3>
-<p>A typical pitfall when working with extended precision numbers involves their initialisation. For instance, if you want to initialise a quadruple-precision approximation of the number <span class="math notranslate nohighlight">\(1.1\)</span>, you may be tempted to write:</p>
+<p>A typical pitfall when working with extended precision numbers involves their initialisation. For instance, if you want to initialise a quadruple-precision approximation of the number $1.1$, you may be tempted to write:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">hy</span><span class="o">.</span><span class="n">real128</span><span class="p">(</span><span class="mf">1.1</span><span class="p">)</span>
@@ -816,7 +814,7 @@ title="Print to PDF"
 </div>
 </div>
 </div>
-<p>As you can see however, doing so does not produce the best possible quadruple-precision approximation of <span class="math notranslate nohighlight">\(1.1\)</span>. The issue here is that the Python literal <code class="docutils literal notranslate"><span class="pre">1.1</span></code> is first interpreted as a double-precision value, and then widened to quadruple-precision in the conversion to <code class="docutils literal notranslate"><span class="pre">hy.real128</span></code>.</p>
+<p>As you can see however, doing so does not produce the best possible quadruple-precision approximation of $1.1$. The issue here is that the Python literal <code class="docutils literal notranslate"><span class="pre">1.1</span></code> is first interpreted as a double-precision value, and then widened to quadruple-precision in the conversion to <code class="docutils literal notranslate"><span class="pre">hy.real128</span></code>.</p>
 <p>The issue can be solved by initialising from string:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">

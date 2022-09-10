@@ -22,8 +22,8 @@
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
     <link rel="stylesheet" href="../_static/styles/sphinx-book-theme.css?digest=5115cc725059bd94278eecd172e13a965bf8f5a9" type="text/css" />
-    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css" />
     <link rel="stylesheet" type="text/css" href="../_static/mystnb.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css" />
     
   <!-- Pre-loaded scripts that we'll load fully later -->
   <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf">
@@ -38,8 +38,6 @@
     <script src="../_static/togglebutton.js"></script>
     <script src="../_static/scripts/sphinx-book-theme.js?digest=9c920249402e914e316237a7dbc6769907cce411"></script>
     <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
-    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
-    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Box control in satellite Formation Flying" href="Box%20control%20for%20Formation%20Flying%20Satellites.html" />
@@ -610,7 +608,7 @@ title="Print to PDF"
                 
               <div>
                 
-  <section class="tex2jax_ignore mathjax_ignore" id="brouwer-s-law-in-the-outer-solar-system">
+  <section id="brouwer-s-law-in-the-outer-solar-system">
 <h1>Brouwer’s law in the outer Solar System<a class="headerlink" href="#brouwer-s-law-in-the-outer-solar-system" title="Permalink to this headline">#</a></h1>
 <p>In this tutorial we will show how heyoka.py can be used for long-term integrations of the outer Solar System accurate to machine precision.</p>
 <p>Long-term integrations of the Solar System are often undertaken with <a class="reference external" href="https://en.wikipedia.org/wiki/Symplectic_integrator">symplectic integrators</a>,
@@ -618,7 +616,7 @@ which guarantee (from the point of view of the integration scheme) the conservat
 as the total energy of the system. Because energy conservation is enforced by the integration scheme, in symplectic integrators the only
 source of error for the conservation of the total energy of the system derives from the use of approximate floating-point arithmetics.
 A result known as <em>Brouwer’s law</em> establishes that the energy error deriving from the use of floating-point arithmetics cannot grow slower
-than <span class="math notranslate nohighlight">\(\sim \sqrt{t}\)</span> (i.e., as a one-dimensional random walk). In other words, for any numerical integrator implemented on a real computer, the optimal behaviour (with respect
+than $\sim \sqrt{t}$ (i.e., as a one-dimensional random walk). In other words, for any numerical integrator implemented on a real computer, the optimal behaviour (with respect
 to energy conservation in long-term integrations) is an error that grows with the square root of time.</p>
 <p>Although heyoka.py is <em>not</em> a symplectic integrator, it is nevertheless able to achieve Brouwer’s law, if properly configured. Specifically, in order to achieve Brouwer’s law
 with heyoka.py we will need to:</p>
@@ -629,7 +627,7 @@ with heyoka.py we will need to:</p>
 <section id="the-dynamical-system">
 <h2>The dynamical system<a class="headerlink" href="#the-dynamical-system" title="Permalink to this headline">#</a></h2>
 <p>In this example we will study the dynamics the outer Solar System, that is, a 6-body problem consisting of the Sun, Jupiter, Saturn, Uranus, Neptune and Pluto,
-all considered as mutually-interacting point masses. We will adopt the Solar mass <span class="math notranslate nohighlight">\(M_\odot\)</span> as unit of mass, the astronomical unit as unit of distance and the
+all considered as mutually-interacting point masses. We will adopt the Solar mass $M_\odot$ as unit of mass, the astronomical unit as unit of distance and the
 calendar year (365 days) as unit of time.</p>
 <p>Let us begin with the definition of the numerical constants:</p>
 <div class="cell docutils container">
@@ -679,7 +677,7 @@ calendar year (365 days) as unit of time.</p>
 </div>
 </div>
 </div>
-<p>The next step is the creation of the numerical integrator. We will be using a <a class="reference internal" href="Batch%20mode%20overview.html"><span class="doc std std-doc">batch integrator</span></a>, which will allow us to substantially increase the floating-point throughput by integrating multiple sets of initial conditions at once. When creating the integrator, we will specify a tolerance of <span class="math notranslate nohighlight">\(10^{-18}\)</span> (below machine precision) and we will activate high-accuracy mode. In high-accuracy mode, the integrator internally uses techniques (based on <a class="reference external" href="https://en.wikipedia.org/wiki/Kahan_summation_algorithm">compensated summation</a> and similar algorithms) to reduce the numerical errors arising from the use of floating-point arithmetics, at the price of a slight performance penalty.</p>
+<p>The next step is the creation of the numerical integrator. We will be using a <a class="reference internal" href="Batch%20mode%20overview.html"><span class="doc std std-doc">batch integrator</span></a>, which will allow us to substantially increase the floating-point throughput by integrating multiple sets of initial conditions at once. When creating the integrator, we will specify a tolerance of $10^{-18}$ (below machine precision) and we will activate high-accuracy mode. In high-accuracy mode, the integrator internally uses techniques (based on <a class="reference external" href="https://en.wikipedia.org/wiki/Kahan_summation_algorithm">compensated summation</a> and similar algorithms) to reduce the numerical errors arising from the use of floating-point arithmetics, at the price of a slight performance penalty.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Multiplex the initial conditions to batches of 4 elements.</span>
@@ -781,7 +779,7 @@ calendar year (365 days) as unit of time.</p>
 </div>
 </div>
 <p>The <code class="docutils literal notranslate"><span class="pre">worker()</span></code> function will be invoked concurrently from multiple threads of execution. It will first create a local copy of the integrator object, add some noise to the initial conditions, reset the centre of mass and then integrate the system for 1 million years.</p>
-<p>Let us now run 16 batch integrations concurrently, for a total of <span class="math notranslate nohighlight">\(16\times 4 = 64\)</span> sets of initial conditions.</p>
+<p>Let us now run 16 batch integrations concurrently, for a total of $16\times 4 = 64$ sets of initial conditions.</p>
 <blockquote>
 <div><p><strong>NOTE</strong>: the following code will take a while to run (from a few seconds to a few minutes, depending
 on the CPU). In order to shorten the runtime, you can reduce the number of threads and/or the total integration time.</p>
@@ -839,7 +837,7 @@ Let us re-arrange the array in order to facilitate further analysis:</p>
 <li><p>the relative energy error for all batch elements and parallel integrations,</p></li>
 <li><p>the root mean square of the relative energy error across all batch elements and parallel integrations.</p></li>
 </ul>
-<p>We will also add a dashed line representing Brouwer’s law (i.e., <span class="math notranslate nohighlight">\(\sqrt{t}\)</span>) for comparison:</p>
+<p>We will also add a dashed line representing Brouwer’s law (i.e., $\sqrt{t}$) for comparison:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">matplotlib.pylab</span> <span class="kn">import</span> <span class="n">plt</span>
@@ -866,7 +864,7 @@ Let us re-arrange the array in order to facilitate further analysis:</p>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/Outer Solar System_17_0.png" src="../_images/Outer Solar System_17_0.png" />
+<img alt="../_images/8e5ac948fc85362d4bca5ebce4fdb0f02c2d9e19f3792219bddd7a69f73c619a.png" src="../_images/8e5ac948fc85362d4bca5ebce4fdb0f02c2d9e19f3792219bddd7a69f73c619a.png" />
 </div>
 </div>
 <p>The plot clearly shows how the average energy error starts out around machine precision and then begins to grow following Brouwer’s law. These results indicate that heyoka.py is able to optimally conserve the invariants of a dynamical system over long-term integrations.</p>

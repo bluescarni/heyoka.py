@@ -22,8 +22,8 @@
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
     <link rel="stylesheet" href="../_static/styles/sphinx-book-theme.css?digest=5115cc725059bd94278eecd172e13a965bf8f5a9" type="text/css" />
-    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css" />
     <link rel="stylesheet" type="text/css" href="../_static/mystnb.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css" />
     
   <!-- Pre-loaded scripts that we'll load fully later -->
   <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf">
@@ -38,8 +38,6 @@
     <script src="../_static/togglebutton.js"></script>
     <script src="../_static/scripts/sphinx-book-theme.js?digest=9c920249402e914e316237a7dbc6769907cce411"></script>
     <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
-    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
-    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Brouwer’s law in the outer Solar System" href="Outer%20Solar%20System.html" />
@@ -553,20 +551,19 @@ title="Print to PDF"
                 
               <div>
                 
-  <section class="tex2jax_ignore mathjax_ignore" id="long-term-stability-of-n-body-simulations-the-case-of-trappist-1">
+  <section id="long-term-stability-of-n-body-simulations-the-case-of-trappist-1">
 <h1>Long term stability of N-body simulations: the case of Trappist-1<a class="headerlink" href="#long-term-stability-of-n-body-simulations-the-case-of-trappist-1" title="Permalink to this headline">#</a></h1>
 <p><a class="reference external" href="https://en.wikipedia.org/wiki/TRAPPIST-1">TRAPPIST-1</a> is a system made of seven Earth-sized planets, orbiting closely around a small ultra-cool dwarf with periods forming a near-resonant chain. The system is of particular interest as it is considered as a candidate to host extraterrestrial life and it is relatively close to our solar system (∼40 light years).</p>
 <p>Here we show how to use <em>heyoka.py</em> to setup a simulation to study the long-term stability of the system. For this purpose we will simulate the N-body dynamics of the system directly in Cartesian coordinates and in an inertial reference frame, the equations of motion (EOM) being:</p>
-<div class="math notranslate nohighlight">
-\[\begin{split}
-\left\{
+<p>$$
+\left{
 \begin{aligned}
-\frac{d^2x_i}{dt^2} &amp;= -G \sum_{i\ne j}^N \frac {m_j (x_i-x_j)}{\left[{(x_i-x_j)^2+(y_i-y_j)^2+(z_i-z_j)^2}\right]^\frac 32} \\
-\frac{d^2y_i}{dt^2} &amp;= -G \sum_{i\ne j}^N \frac {m_j (y_i-y_j)}{\left[{(x_i-x_j)^2+(y_i-y_j)^2+(z_i-z_j)^2}\right]^\frac 32} \\
-\frac{d^2z_i}{dt^2} &amp;= -G \sum_{i\ne j}^N \frac {m_j (z_i-z_j)}{\left[{(x_i-x_j)^2+(y_i-y_j)^2+(z_i-z_j)^2}\right]^\frac 32} 
+\frac{d^2x_i}{dt^2} &amp;= -G \sum_{i\ne j}^N \frac {m_j (x_i-x_j)}{\left[{(x_i-x_j)^2+(y_i-y_j)^2+(z_i-z_j)^2}\right]^\frac 32} \
+\frac{d^2y_i}{dt^2} &amp;= -G \sum_{i\ne j}^N \frac {m_j (y_i-y_j)}{\left[{(x_i-x_j)^2+(y_i-y_j)^2+(z_i-z_j)^2}\right]^\frac 32} \
+\frac{d^2z_i}{dt^2} &amp;= -G \sum_{i\ne j}^N \frac {m_j (z_i-z_j)}{\left[{(x_i-x_j)^2+(y_i-y_j)^2+(z_i-z_j)^2}\right]^\frac 32}
 \end{aligned}
 \right. \qquad \qquad \rightarrow i = 1..N
-\end{split}\]</div>
+$$</p>
 <p>To build this system of equations we can use heyoka built-in <code class="docutils literal notranslate"><span class="pre">make_nbody_sys</span></code> which will implement for us the equations of motion above. Our main concern is, thus, to generate sets of initial conditions that are compatible with the Earth-based astronomical observations made and simulate a bunch of them in parallel.</p>
 <p>NOTE: We will not use in this notebook <em>heyoka.py</em>’s vectorization capabilities and we will, instead, only parallelise using multiple threads.</p>
 <p>NOTE: Thread parallelism is possible as the <em>heyoka.py</em> Taylor integrator releases the python GIL.</p>
@@ -734,7 +731,7 @@ title="Print to PDF"
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/Long term stability of Trappist-1_7_0.png" src="../_images/Long term stability of Trappist-1_7_0.png" />
+<img alt="../_images/8202029296df1248aa38a0b3e3204a6cdad08af15d5bb6f4263be713858fd4e0.png" src="../_images/8202029296df1248aa38a0b3e3204a6cdad08af15d5bb6f4263be713858fd4e0.png" />
 </div>
 </div>
 <p>We are now ready to define the details of the experiment which will simulate in parallel a number of plausible Trappist-1 systems.</p>
@@ -912,7 +909,7 @@ title="Print to PDF"
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/Long term stability of Trappist-1_27_0.png" src="../_images/Long term stability of Trappist-1_27_0.png" />
+<img alt="../_images/5c5cb2876ca22ec89500cb1b25f7b8b8db0a87a00c30aba37cf26cca99eb8134.png" src="../_images/5c5cb2876ca22ec89500cb1b25f7b8b8db0a87a00c30aba37cf26cca99eb8134.png" />
 </div>
 </div>
 <p>Let us also look at the energy conservation and plot it along the simulation, since we only simulated 1000 years in this example, there is not much we can see, but for long term simulation we would see that the Brouwer’s law is achieved for the error growth:</p>
@@ -932,7 +929,7 @@ title="Print to PDF"
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/Long term stability of Trappist-1_29_0.png" src="../_images/Long term stability of Trappist-1_29_0.png" />
+<img alt="../_images/7ef7a10e1380236352a36ea98c9c83afe45e3159ea16c15c47a9735a4567a50a.png" src="../_images/7ef7a10e1380236352a36ea98c9c83afe45e3159ea16c15c47a9735a4567a50a.png" />
 </div>
 </div>
 </section>

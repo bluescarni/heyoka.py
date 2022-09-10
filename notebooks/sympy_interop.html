@@ -22,8 +22,8 @@
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
     <link rel="stylesheet" href="../_static/styles/sphinx-book-theme.css?digest=5115cc725059bd94278eecd172e13a965bf8f5a9" type="text/css" />
-    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css" />
     <link rel="stylesheet" type="text/css" href="../_static/mystnb.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css" />
     
   <!-- Pre-loaded scripts that we'll load fully later -->
   <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf">
@@ -38,8 +38,7 @@
     <script src="../_static/togglebutton.js"></script>
     <script src="../_static/scripts/sphinx-book-theme.js?digest=9c920249402e914e316237a7dbc6769907cce411"></script>
     <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
-    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
-    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Compiled functions" href="compiled_functions.html" />
@@ -600,7 +599,7 @@ title="Print to PDF"
                 
               <div>
                 
-  <section class="tex2jax_ignore mathjax_ignore" id="interoperability-with-sympy">
+  <section id="interoperability-with-sympy">
 <h1>Interoperability with SymPy<a class="headerlink" href="#interoperability-with-sympy" title="Permalink to this headline">#</a></h1>
 <p>Starting with version 0.10, symbolic expressions in heyoka.py can be converted to/from <a class="reference external" href="https://www.sympy.org/en/index.html">SymPy</a> expressions. This feature can be very useful, as it unlocks the possibility of using the wide arsenal of SymPy algorithms on heyoka.py’s expressions. Possible use cases include:</p>
 <ul class="simple">
@@ -613,11 +612,10 @@ title="Print to PDF"
 <div><p><strong>NOTE</strong>: <a class="reference internal" href="tides_spokes.html"><span class="doc std std-doc">another tutorial</span></a> showcasing a more complex interaction between heyoka.py and SymPy is available.</p>
 </div></blockquote>
 <p>For this example, we will consider the relativistic dynamics of Mercury’s orbit around the Sun, which, in the first post-Newtonian approximation, can be described by the following Hamiltonian:</p>
-<div class="math notranslate nohighlight">
-\[
+<p>$$
 \mathcal{H}_\mathrm{1PN} \left(v_x, v_y, v_z, x, y, z \right) = \frac{1}{2}v^2-\frac{\mu}{r} + \varepsilon \left(\frac{\mu^2}{2r^2} -\frac{1}{8}v^4-\frac{3}{2}\frac{\mu v^2}{r} \right).
-\]</div>
-<p>where <span class="math notranslate nohighlight">\(\left(v_x, v_y, v_z, x, y, z \right)\)</span> is Mercury’s Cartesian state vector with respect to the Sun, <span class="math notranslate nohighlight">\(\varepsilon = 1/c^2\)</span>, <span class="math notranslate nohighlight">\(v=\sqrt{v_x^2+v_y^2+v_z^2}\)</span>, <span class="math notranslate nohighlight">\(r=\sqrt{x^2+y^2+z^2}\)</span> and <span class="math notranslate nohighlight">\(\mu=GM_\odot\)</span> is the gravitational parameter of the system. See the <a class="reference internal" href="mercury_precession.html"><span class="doc std std-doc">tutorial about Mercury’s relativistic precession</span></a> for more details about this dynamical system.</p>
+$$</p>
+<p>where $\left(v_x, v_y, v_z, x, y, z \right)$ is Mercury’s Cartesian state vector with respect to the Sun, $\varepsilon = 1/c^2$, $v=\sqrt{v_x^2+v_y^2+v_z^2}$, $r=\sqrt{x^2+y^2+z^2}$ and $\mu=GM_\odot$ is the gravitational parameter of the system. See the <a class="reference internal" href="mercury_precession.html"><span class="doc std std-doc">tutorial about Mercury’s relativistic precession</span></a> for more details about this dynamical system.</p>
 <p>Let us begin by defining the Hamiltonian as a symbolic expression in heyoka.py’s expression system:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -753,7 +751,7 @@ title="Print to PDF"
 </div>
 </div>
 </div>
-<p>In other words, thanks to SymPy’s expression simplification capabilities, we reduced by <span class="math notranslate nohighlight">\(\sim 50\%\)</span> the symbolic complexity (i.e., the number of elementary subexpressions) of our ODE system.</p>
+<p>In other words, thanks to SymPy’s expression simplification capabilities, we reduced by $\sim 50%$ the symbolic complexity (i.e., the number of elementary subexpressions) of our ODE system.</p>
 <p>What is the performance impact of these simplifications? Let us find out:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -762,8 +760,8 @@ title="Print to PDF"
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CPU times: user 2.36 s, sys: 0 ns, total: 2.36 s
-Wall time: 2.49 s
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CPU times: user 2.08 s, sys: 776 µs, total: 2.09 s
+Wall time: 2.09 s
 </pre></div>
 </div>
 <div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(&lt;taylor_outcome.time_limit: -4294967299&gt;,
@@ -782,8 +780,8 @@ Wall time: 2.49 s
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CPU times: user 2.78 s, sys: 3.75 ms, total: 2.78 s
-Wall time: 2.91 s
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CPU times: user 2.4 s, sys: 458 µs, total: 2.4 s
+Wall time: 2.4 s
 </pre></div>
 </div>
 <div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(&lt;taylor_outcome.time_limit: -4294967299&gt;,

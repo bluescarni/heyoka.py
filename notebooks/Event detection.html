@@ -22,8 +22,8 @@
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
     <link rel="stylesheet" href="../_static/styles/sphinx-book-theme.css?digest=5115cc725059bd94278eecd172e13a965bf8f5a9" type="text/css" />
-    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css" />
     <link rel="stylesheet" type="text/css" href="../_static/mystnb.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css" />
     
   <!-- Pre-loaded scripts that we'll load fully later -->
   <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf">
@@ -38,8 +38,6 @@
     <script src="../_static/togglebutton.js"></script>
     <script src="../_static/scripts/sphinx-book-theme.js?digest=9c920249402e914e316237a7dbc6769907cce411"></script>
     <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
-    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
-    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Batch mode" href="Batch%20mode%20overview.html" />
@@ -672,7 +670,7 @@ title="Print to PDF"
                 
               <div>
                 
-  <section class="tex2jax_ignore mathjax_ignore" id="event-detection">
+  <section id="event-detection">
 <h1>Event detection<a class="headerlink" href="#event-detection" title="Permalink to this headline">#</a></h1>
 <p>When integrating systems of ODEs, the need often arises to detect the occurrence of specific
 conditions (or <em>events</em>) in the state of the system. Many real systems, for instance, are described by equations
@@ -682,18 +680,16 @@ or a thermostat switching on once the temperature reaches a certain level). In o
 detection of specific system states may suffice (e.g., in the computation of
 <a class="reference external" href="https://en.wikipedia.org/wiki/Poincar%C3%A9_map">Poincaré sections</a>).</p>
 <p>An event in a system of ODEs can be defined by an <em>event equation</em> of the form</p>
-<div class="math notranslate nohighlight">
-\[
+<p>$$
 g\left( t, \boldsymbol{x} \left( t \right) \right) = 0,
-\]</div>
-<p>where, as usual, <span class="math notranslate nohighlight">\(t\)</span> is the independent variable (time) and <span class="math notranslate nohighlight">\(\boldsymbol{x} \left( t \right)\)</span> the state vector of the system.
+$$</p>
+<p>where, as usual, $t$ is the independent variable (time) and $\boldsymbol{x} \left( t \right)$ the state vector of the system.
 As a concrete example, the collision between two spheres of radius 1 moving in a three-dimensional space can be described
 by the event equation</p>
-<div class="math notranslate nohighlight">
-\[
+<p>$$
 \left( x_1 - x_0 \right)^2 + \left( y_1 - y_0 \right)^2 + \left( z_1 - z_0 \right)^2 - 4 = 0,
-\]</div>
-<p>where <span class="math notranslate nohighlight">\(\left( x_0, y_0, z_0 \right)\)</span> and <span class="math notranslate nohighlight">\(\left( x_1, y_1, z_1 \right)\)</span> are the Cartesian coordinates
+$$</p>
+<p>where $\left( x_0, y_0, z_0 \right)$ and $\left( x_1, y_1, z_1 \right)$ are the Cartesian coordinates
 of the spheres’ centres.</p>
 <p>heyoka.py features a flexible and accurate event detection framework in which the <a class="reference internal" href="The%20expression%20system.html"><span class="doc std std-doc">expression system</span></a>
 can be used to formulate arbitrary event equations. The event equations are then added to the ODE system and
@@ -709,19 +705,17 @@ change the system’s dynamics and it does not alter the state vector of the sys
 when the system reaches a particular state of interest (e.g., flagging close encounters between celestial bodies, detecting when
 a velocity or coordinate is zero, etc.).</p>
 <p>As an initial example, we will turn to our good ole friend, the simple pendulum:</p>
-<div class="math notranslate nohighlight">
-\[\begin{split}
+<p>$$
 \begin{cases}
-x^\prime = v \\
+x^\prime = v \
 v^\prime = -9.8 \sin x
 \end{cases}.
-\end{split}\]</div>
+$$</p>
 <p>Our goal will be to detect when the bob reaches the point of maximum amplitude, which corresponds to the angular velocity
-<span class="math notranslate nohighlight">\(v\)</span> going to zero. In other words, out (very simple) event equation is</p>
-<div class="math notranslate nohighlight">
-\[
+$v$ going to zero. In other words, out (very simple) event equation is</p>
+<p>$$
 v = 0.
-\]</div>
+$$</p>
 <p>We begin, as usual, with the definition of the symbolic variables:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -732,7 +726,7 @@ v = 0.
 </div>
 </div>
 </div>
-<p>Next, we create a list into which we will log the times at which <span class="math notranslate nohighlight">\(v = 0\)</span>:</p>
+<p>Next, we create a list into which we will log the times at which $v = 0$:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">zero_vel_times</span> <span class="o">=</span> <span class="p">[]</span>
@@ -763,7 +757,7 @@ v = 0.
 </div>
 </div>
 <p>Non-terminal events are represented in heyoka.py by the <code class="docutils literal notranslate"><span class="pre">nt_event</span></code> class. The first mandatory argument for the construction of a non-terminal event is the left-hand
-side of the event equation, which in this case is simply <span class="math notranslate nohighlight">\(v\)</span>.
+side of the event equation, which in this case is simply $v$.
 The second mandatory construction argument is a callback function that will be invoked when the event is detected.
 The callback function can be a lambda, a regular function, or a function object - the only requirement is that the
 callback is a callable object. The callback will be invoked with a reference to the integrator object as first argument,
@@ -802,7 +796,7 @@ the value of the <code class="docutils literal notranslate"><span class="pre">x<
 <p>The list of non-terminal events is passed to the constructor of the
 integrator via the <code class="docutils literal notranslate"><span class="pre">nt_events</span></code> keyword argument. Note how we
 set up the initial conditions so that the bob is at rest at an
-angle of amplitude <span class="math notranslate nohighlight">\(0.05\)</span>.</p>
+angle of amplitude $0.05$.</p>
 <p>Let us now integrate for a few time units and plot the evolution of the system
 together with the times at which the event triggers:</p>
 <div class="cell docutils container">
@@ -837,12 +831,12 @@ Value of x when v is zero: 0.05
 Value of x when v is zero: -0.049999999999999996
 </pre></div>
 </div>
-<img alt="../_images/Event detection_9_1.png" src="../_images/Event detection_9_1.png" />
+<img alt="../_images/84f1487a3a3712eee9a6db270a7b55e28a4ab9b4d6093f5ea46425896b0ef7c9.png" src="../_images/84f1487a3a3712eee9a6db270a7b55e28a4ab9b4d6093f5ea46425896b0ef7c9.png" />
 </div>
 </div>
-<p>As expected, <span class="math notranslate nohighlight">\(v\)</span> is zero at the points of maximum amplitude for the angle,
-and in these points the absolute value the <span class="math notranslate nohighlight">\(x\)</span> angle corresponds to the
-initial amplitude of <span class="math notranslate nohighlight">\(0.05\)</span>.</p>
+<p>As expected, $v$ is zero at the points of maximum amplitude for the angle,
+and in these points the absolute value the $x$ angle corresponds to the
+initial amplitude of $0.05$.</p>
 <p>Let us now print the event times:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -856,11 +850,11 @@ initial amplitude of <span class="math notranslate nohighlight">\(0.05\)</span>.
 </div>
 </div>
 </div>
-<p>We can see how the the initial condition <span class="math notranslate nohighlight">\(v_0 = 0\)</span> immediately
-and correctly triggers an event at <span class="math notranslate nohighlight">\(t = 0\)</span>. Physically, we know that the time
-interval between the events must be half the period <span class="math notranslate nohighlight">\(T\)</span> of the pendulum,
+<p>We can see how the the initial condition $v_0 = 0$ immediately
+and correctly triggers an event at $t = 0$. Physically, we know that the time
+interval between the events must be half the period $T$ of the pendulum,
 which can be computed exactly via elliptic functions. With the specific
-initial conditions of this example, <span class="math notranslate nohighlight">\(T = 2.0074035758801299\ldots\)</span>, and
+initial conditions of this example, $T = 2.0074035758801299\ldots$, and
 we can see from the event times printed to screen
 how the event detection system was accurate to machine precision.</p>
 <section id="event-direction">
@@ -893,7 +887,7 @@ in heyoka.py by the <code class="docutils literal notranslate"><span class="pre"
 </div>
 </div>
 <p>In this specific case, constraining the event direction to be positive is equivalent
-to detecting <span class="math notranslate nohighlight">\(v = 0\)</span> only when the pendulum reaches the maximum amplitude on the left.
+to detecting $v = 0$ only when the pendulum reaches the maximum amplitude on the left.
 Let us take a look at the plot:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -913,7 +907,7 @@ Let us take a look at the plot:</p>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/Event detection_15_0.png" src="../_images/Event detection_15_0.png" />
+<img alt="../_images/b014fb785677fbb4db9d100f0b68e98ef7e691857dc62797676776fdfef20ca7.png" src="../_images/b014fb785677fbb4db9d100f0b68e98ef7e691857dc62797676776fdfef20ca7.png" />
 </div>
 </div>
 <p>Indeed, the event now triggers only 3 times (instead of 5). Let’s take a loot at the event times:</p>
@@ -929,8 +923,8 @@ Let us take a look at the plot:</p>
 </div>
 </div>
 </div>
-<p>The times confirm that the event is detected only when <span class="math notranslate nohighlight">\(v\)</span> switches from negative to positive, i.e.,
-at <span class="math notranslate nohighlight">\(t=0\)</span>, <span class="math notranslate nohighlight">\(t=T\)</span> and <span class="math notranslate nohighlight">\(t=2T\)</span>.</p>
+<p>The times confirm that the event is detected only when $v$ switches from negative to positive, i.e.,
+at $t=0$, $t=T$ and $t=2T$.</p>
 </section>
 <section id="multiple-events">
 <h3>Multiple events<a class="headerlink" href="#multiple-events" title="Permalink to this headline">#</a></h3>
@@ -939,14 +933,13 @@ multiple times), heyoka.py will process the events in chronological order
 (or reverse chronological order when integrating backwards in time).</p>
 <p>Let us demonstrate this with another example with the simple pendulum.
 We will now aim to detect two events defined by the equations:</p>
-<div class="math notranslate nohighlight">
-\[\begin{split}
+<p>$$
 \begin{cases}
-v = 0 \\
+v = 0 \
 v^2 - 10^{-12} = 0
 \end{cases}.
-\end{split}\]</div>
-<p>In other words, we are looking to determine the time of maximum amplitude (<span class="math notranslate nohighlight">\(v = 0\)</span>) and
+$$</p>
+<p>In other words, we are looking to determine the time of maximum amplitude ($v = 0$) and
 the time at which the absolute value of the angular velocity is small but not zero. Because
 of the closeness of these events, we can expect both events to be detected during the same timestep,
 with the second event triggering twice.</p>
@@ -1035,16 +1028,15 @@ the first terminal event are discarded. heyoka.py then propagates the state of t
 trigger time of the first terminal event, executes the callbacks of the surviving non-terminal events
 in chronological order and finally executes the callback of the first terminal event (if provided).</p>
 <p>In order to illustrate the use of terminal events, we will consider a damped pendulum with a small twist:
-the friction coefficient <span class="math notranslate nohighlight">\(\alpha\)</span> switches discontinuously between 1 and 0 every time the angular
-velocity <span class="math notranslate nohighlight">\(v\)</span> is zero. The ODE system reads:</p>
-<div class="math notranslate nohighlight">
-\[\begin{split}
+the friction coefficient $\alpha$ switches discontinuously between 1 and 0 every time the angular
+velocity $v$ is zero. The ODE system reads:</p>
+<p>$$
 \begin{cases}
-x^\prime = v \\
+x^\prime = v \
 v^\prime = - 9.8\sin x - \alpha v
 \end{cases},
-\end{split}\]</div>
-<p>and the terminal event equation is, again, simply <span class="math notranslate nohighlight">\(v = 0\)</span>.</p>
+$$</p>
+<p>and the terminal event equation is, again, simply $v = 0$.</p>
 <p>Let us begin with the definition of the terminal event:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -1104,8 +1096,8 @@ as <em>stopping</em> terminal events, because their occurrence will prevent the 
 without user intervention.</p>
 <p>Like for non-terminal events, the last callback argument is the sign of the time derivative
 of the event equation at the event trigger time.</p>
-<p>In this example, within the callback code we alter the value of the drag coefficient <span class="math notranslate nohighlight">\(\alpha\)</span>
-(which is stored within the runtime parameters of the integrator): if <span class="math notranslate nohighlight">\(\alpha\)</span>
+<p>In this example, within the callback code we alter the value of the drag coefficient $\alpha$
+(which is stored within the runtime parameters of the integrator): if $\alpha$
 is currently 0, we set it to 1, otherwise we set it to 0.</p>
 <p>Let us proceed to the construction of the integrator:</p>
 <div class="cell docutils container">
@@ -1177,11 +1169,11 @@ execution of the callback:</p>
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Final time: 10.0
 </pre></div>
 </div>
-<img alt="../_images/Event detection_29_1.png" src="../_images/Event detection_29_1.png" />
+<img alt="../_images/2364f3a08373890e8c85aca482e7b5f8f11717f4aa52290d40bac7ff074ac2f7.png" src="../_images/2364f3a08373890e8c85aca482e7b5f8f11717f4aa52290d40bac7ff074ac2f7.png" />
 </div>
 </div>
-<p>The screen output confirms that indeed the integration continued up to the final time <span class="math notranslate nohighlight">\(t = 10\)</span>.</p>
-<p>The plot shows how the event correctly triggered at <span class="math notranslate nohighlight">\(v=0\)</span> and how, in the time intervals in which <span class="math notranslate nohighlight">\(\alpha = 1\)</span>, the motion of the pendulum was damped by the air drag.</p>
+<p>The screen output confirms that indeed the integration continued up to the final time $t = 10$.</p>
+<p>The plot shows how the event correctly triggered at $v=0$ and how, in the time intervals in which $\alpha = 1$, the motion of the pendulum was damped by the air drag.</p>
 <section id="cooldown">
 <h3>Cooldown<a class="headerlink" href="#cooldown" title="Permalink to this headline">#</a></h3>
 <p>One notable complication when restarting an integration that was stopped in correspondence of a terminal event
@@ -1221,10 +1213,9 @@ issues when the Taylor series of the event equations have roots of multiplicity 
 not a problem in practice, unless the event equations are written in such a way to always generate polynomials
 with multiple roots.</p>
 <p>For instance, an event equation such as</p>
-<div class="math notranslate nohighlight">
-\[
+<p>$$
 \left[ g\left( t, \boldsymbol{x} \left( t \right) \right) \right]^2 = 0
-\]</div>
+$$</p>
 <p>will be troublesome, because both the event equation <em>and</em> its time derivative will be zero
 when the event triggers. This will translate to a Taylor series with a double root in correspondence
 of the event trigger time, which will lead to a breakdown of the root finding algorithm.
