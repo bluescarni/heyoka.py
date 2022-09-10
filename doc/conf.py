@@ -32,12 +32,13 @@ release = hy.__version__
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
-extensions = ["sphinx.ext.mathjax", "myst_nb", "sphinx.ext.intersphinx"]
+extensions = ["myst_nb", "sphinx.ext.intersphinx"]
 
 intersphinx_mapping = {
     "hy": ("https://bluescarni.github.io/heyoka", None),
     "mppp": ("https://bluescarni.github.io/mppp", None),
     "numpy": ("https://numpy.org/doc/stable/", None),
+    "python": ("https://docs.python.org/3", None),
 }
 
 # Add any paths that contain templates here, relative to this directory.
@@ -75,8 +76,9 @@ html_theme_options = {
     },
 }
 
-jupyter_execute_notebooks = "force"
-execution_excludepatterns = [
+nb_execution_mode = "force"
+
+nb_execution_excludepatterns = [
     "*Trappist-1*",
     "*Outer*",
     "*Maxwell*",
