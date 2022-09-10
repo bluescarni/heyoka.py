@@ -93,3 +93,11 @@ nb_execution_excludepatterns = [
 ]
 
 latex_engine = "xelatex"
+
+myst_enable_extensions = [
+    "amsmath",
+    "colon_fence",
+    "deflist",
+    "dollarmath",
+    "html_image",
+]
