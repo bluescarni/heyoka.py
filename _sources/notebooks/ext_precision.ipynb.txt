@@ -378,7 +378,7 @@
     }
    ],
    "source": [
-    "# Do this instead,\n",
+    "# Do this instead.\n",
     "hy.real128(3) / hy.real128(10)"
    ]
   },
