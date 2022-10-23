@@ -44,7 +44,8 @@ compilation via [LLVM](https://llvm.org/). Notable features include:
 * high-precision zero-cost dense output,
 * accurate and reliable event detection,
 * batch mode integration to harness the power of modern
-  [SIMD](https://en.wikipedia.org/wiki/SIMD) instruction sets,
+  [SIMD](https://en.wikipedia.org/wiki/SIMD) instruction sets
+  (including AVX/AVX2/AVX-512/Neon/VSX),
 * ensemble simulations and automatic parallelisation,
 * interoperability with [SymPy](https://www.sympy.org/en/index.html).
 
