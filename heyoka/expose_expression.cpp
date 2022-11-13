@@ -212,7 +212,7 @@ void expose_expression(py::module_ &m)
     m.def("square", &hey::square);
     m.def("sqrt", &hey::sqrt);
     m.def("log", &hey::log);
-    m.def("exp", &hey::exp);
+    m.def("exp", [](hey::expression e) {return hey::exp(std::move(e));});
     m.def("sin", &hey::sin);
     m.def("cos", &hey::cos);
     m.def("tan", &hey::tan);

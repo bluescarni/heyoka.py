@@ -290,10 +290,18 @@ void setup_sympy(py::module &m)
         auto sympy_tpoly = py::object(detail::spy->attr("Function")("heyoka_tpoly"));
         detail::fmap[typeid(hy::detail::tpoly_impl)] = sympy_tpoly;
 
-        // pi.
-        detail::fmap[typeid(hy::detail::pi_impl)]
-            = [](std::unordered_map<const void *, py::object> &, const hy::func &) {
-                  return py::object(detail::spy->attr("pi"));
+        // Constants.
+        detail::fmap[typeid(hy::constant)]
+            = [](std::unordered_map<const void *, py::object> &, const hy::func &f) {
+                  const auto *cptr = f.extract<hy::constant>();
+                  assert(cptr != nullptr);
+
+                  if (cptr->get_str_func_t() == typeid(hy::detail::pi_constant_func)) {
+                    return py::object(detail::spy->attr("pi"));
+                  }
+
+                  // TODO error message.
+                  throw std::invalid_argument("");
               };
 
         // Expose the conversion function.

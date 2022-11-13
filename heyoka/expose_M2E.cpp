@@ -219,24 +219,24 @@ void expose_M2E(py::module_ &m)
     detail::kepE_state.emplace();
 
     // Scalar implementations.
-    hey::detail::llvm_add_inv_kep_E_wrapper<double>(*detail::kepE_state, 1, "kepE_scal_dbl");
+    hey::detail::llvm_add_inv_kep_E_wrapper(*detail::kepE_state, hey::detail::to_llvm_type<double>(detail::kepE_state->context()), 1, "kepE_scal_dbl");
 #if !defined(HEYOKA_ARCH_PPC)
-    hey::detail::llvm_add_inv_kep_E_wrapper<long double>(*detail::kepE_state, 1, "kepE_scal_ldbl");
+    hey::detail::llvm_add_inv_kep_E_wrapper(*detail::kepE_state, hey::detail::to_llvm_type<long double>(detail::kepE_state->context()), 1, "kepE_scal_ldbl");
 #endif
 #if defined(HEYOKA_HAVE_REAL128)
-    hey::detail::llvm_add_inv_kep_E_wrapper<mppp::real128>(*detail::kepE_state, 1, "kepE_scal_f128");
+    hey::detail::llvm_add_inv_kep_E_wrapper(*detail::kepE_state, hey::detail::to_llvm_type<mppp::real128>(detail::kepE_state->context()), 1, "kepE_scal_f128");
 #endif
 
     // Batch implementations.
-    hey::detail::llvm_add_inv_kep_E_wrapper<double>(*detail::kepE_state, hey::recommended_simd_size<double>(),
+    hey::detail::llvm_add_inv_kep_E_wrapper(*detail::kepE_state, hey::detail::to_llvm_type<double>(detail::kepE_state->context()), hey::recommended_simd_size<double>(),
                                                     "kepE_batch_dbl");
 #if !defined(HEYOKA_ARCH_PPC)
-    hey::detail::llvm_add_inv_kep_E_wrapper<long double>(*detail::kepE_state, hey::recommended_simd_size<long double>(),
+    hey::detail::llvm_add_inv_kep_E_wrapper(*detail::kepE_state, hey::detail::to_llvm_type<long double>(detail::kepE_state->context()), hey::recommended_simd_size<long double>(),
                                                          "kepE_batch_ldbl");
 #endif
 #if defined(HEYOKA_HAVE_REAL128)
-    hey::detail::llvm_add_inv_kep_E_wrapper<mppp::real128>(
-        *detail::kepE_state, hey::recommended_simd_size<mppp::real128>(), "kepE_batch_f128");
+    hey::detail::llvm_add_inv_kep_E_wrapper(
+        *detail::kepE_state, hey::detail::to_llvm_type<mppp::real128>(detail::kepE_state->context()), hey::recommended_simd_size<mppp::real128>(), "kepE_batch_f128");
 #endif
 
     detail::kepE_state->optimise();
