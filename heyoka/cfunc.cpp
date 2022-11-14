@@ -81,7 +81,7 @@ void expose_add_cfunc_impl(py::module &m, const char *name)
             ptr_s_t fptr_scal_s = nullptr, fptr_batch_s = nullptr;
 
             hey::llvm_state s_scal{kw::opt_level = opt_level, kw::force_avx512 = force_avx512},
-            s_batch{kw::opt_level = opt_level, kw::force_avx512 = force_avx512};
+                s_batch{kw::opt_level = opt_level, kw::force_avx512 = force_avx512};
 
             {
                 // NOTE: release the GIL during compilation.

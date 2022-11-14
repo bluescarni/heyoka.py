@@ -291,18 +291,17 @@ void setup_sympy(py::module &m)
         detail::fmap[typeid(hy::detail::tpoly_impl)] = sympy_tpoly;
 
         // Constants.
-        detail::fmap[typeid(hy::constant)]
-            = [](std::unordered_map<const void *, py::object> &, const hy::func &f) {
-                  const auto *cptr = f.extract<hy::constant>();
-                  assert(cptr != nullptr);
+        detail::fmap[typeid(hy::constant)] = [](std::unordered_map<const void *, py::object> &, const hy::func &f) {
+            const auto *cptr = f.extract<hy::constant>();
+            assert(cptr != nullptr);
 
-                  if (cptr->get_str_func_t() == typeid(hy::detail::pi_constant_func)) {
-                    return py::object(detail::spy->attr("pi"));
-                  }
+            if (cptr->get_str_func_t() == typeid(hy::detail::pi_constant_func)) {
+                return py::object(detail::spy->attr("pi"));
+            }
 
-                  // TODO error message.
-                  throw std::invalid_argument("");
-              };
+            // TODO error message.
+            throw std::invalid_argument("");
+        };
 
         // Expose the conversion function.
         m.def("to_sympy", &detail::to_sympy);
