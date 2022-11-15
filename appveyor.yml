@@ -15,7 +15,7 @@ install:
 - conda update -n base conda
 - conda config --add channels conda-forge
 - conda config --set channel_priority strict
-- conda create --name heyoka python=3.10 git pybind11 numpy cmake llvmdev tbb-devel tbb astroquery boost-cpp fmt spdlog sleef sympy cloudpickle zlib libzlib
+- conda create --name heyoka python=3.10 git pybind11 numpy cmake llvmdev=15.0.2 tbb-devel tbb astroquery boost-cpp fmt spdlog sleef sympy cloudpickle zlib libzlib
 - call activate heyoka
 
 build_script:
