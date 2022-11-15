@@ -299,8 +299,8 @@ void setup_sympy(py::module &m)
                 return py::object(detail::spy->attr("pi"));
             }
 
-            // TODO error message.
-            throw std::invalid_argument("");
+            // Translate other constants as unevaluated nullary functions.
+            return py::object(detail::spy->attr("Function")(f.get_name().c_str()));
         };
 
         // Expose the conversion function.
