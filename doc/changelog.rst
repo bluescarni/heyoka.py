@@ -13,6 +13,12 @@ Changes
   heyoka C++ library
   (`#107 <https://github.com/bluescarni/heyoka.py/pull/107>`__).
 
+Fix
+~~~
+
+- Fix a build issue with Python 3.11
+  (`#106 <https://github.com/bluescarni/heyoka.py/pull/106>`__).
+
 0.19.0 (2022-09-19)
 -------------------
 
