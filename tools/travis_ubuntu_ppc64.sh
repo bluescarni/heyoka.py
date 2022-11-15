@@ -22,7 +22,7 @@ cd build
 
 # GCC build.
 cmake ../ -DCMAKE_INSTALL_PREFIX=$deps_dir -DCMAKE_PREFIX_PATH=$deps_dir -DCMAKE_BUILD_TYPE=Release -DHEYOKA_WITH_SLEEF=yes -DHEYOKA_WITH_MPPP=yes -DBoost_NO_BOOST_CMAKE=ON -DHEYOKA_INSTALL_LIBDIR=lib
-make -j2 VERBOSE=1 install
+make VERBOSE=1 install
 
 cd ../../
 
@@ -31,7 +31,7 @@ mkdir build
 cd build
 
 cmake ../ -DCMAKE_INSTALL_PREFIX=$deps_dir -DCMAKE_PREFIX_PATH=$deps_dir -DCMAKE_BUILD_TYPE=Release -DBoost_NO_BOOST_CMAKE=ON
-make -j2 VERBOSE=1 install
+make VERBOSE=1 install
 
 cd /
 
