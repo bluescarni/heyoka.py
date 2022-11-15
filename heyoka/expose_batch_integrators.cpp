@@ -28,6 +28,7 @@
 #include <pybind11/stl.h>
 
 #include <heyoka/expression.hpp>
+#include <heyoka/llvm_state.hpp>
 #include <heyoka/taylor.hpp>
 
 #include "common_utils.hpp"
@@ -64,7 +65,8 @@ void expose_batch_integrator_impl(py::module_ &m, const std::string &suffix)
     // Implementation of the ctor.
     auto tab_ctor_impl = [](const auto &sys, const py::iterable &state_ob, std::optional<py::iterable> time_ob,
                             std::optional<py::iterable> pars_ob, T tol, bool high_accuracy, bool compact_mode,
-                            std::vector<t_ev_t> tes, std::vector<nt_ev_t> ntes, bool parallel_mode) {
+                            std::vector<t_ev_t> tes, std::vector<nt_ev_t> ntes, bool parallel_mode, unsigned opt_level,
+                            bool force_avx512) {
         // Fetch the dtype corresponding to T.
         const auto dt = get_dtype<T>();
 
@@ -141,7 +143,9 @@ void expose_batch_integrator_impl(py::module_ &m, const std::string &suffix)
                                                  kw::pars = std::move(pars),
                                                  kw::t_events = std::move(tes),
                                                  kw::nt_events = std::move(ntes),
-                                                 kw::parallel_mode = parallel_mode};
+                                                 kw::parallel_mode = parallel_mode,
+                                                 kw::opt_level = opt_level,
+                                                 kw::force_avx512 = force_avx512};
         } else {
             // Times not provided.
 
@@ -160,7 +164,9 @@ void expose_batch_integrator_impl(py::module_ &m, const std::string &suffix)
                                                  kw::pars = std::move(pars),
                                                  kw::t_events = std::move(tes),
                                                  kw::nt_events = std::move(ntes),
-                                                 kw::parallel_mode = parallel_mode};
+                                                 kw::parallel_mode = parallel_mode,
+                                                 kw::opt_level = opt_level,
+                                                 kw::force_avx512 = force_avx512};
         }
     };
 
@@ -173,17 +179,19 @@ void expose_batch_integrator_impl(py::module_ &m, const std::string &suffix)
     tab_c
         .def(py::init([tab_ctor_impl](const variant_t &sys, const py::iterable &state, std::optional<py::iterable> time,
                                       std::optional<py::iterable> pars, T tol, bool high_accuracy, bool compact_mode,
-                                      std::vector<t_ev_t> tes, std::vector<nt_ev_t> ntes, bool parallel_mode) {
+                                      std::vector<t_ev_t> tes, std::vector<nt_ev_t> ntes, bool parallel_mode,
+                                      unsigned opt_level, bool force_avx512) {
                  return std::visit(
                      [&](const auto &value) {
                          return tab_ctor_impl(value, state, std::move(time), std::move(pars), tol, high_accuracy,
-                                              compact_mode, std::move(tes), std::move(ntes), parallel_mode);
+                                              compact_mode, std::move(tes), std::move(ntes), parallel_mode, opt_level,
+                                              force_avx512);
                      },
                      sys);
              }),
              "sys"_a, "state"_a, "time"_a = py::none{}, "pars"_a = py::none{}, "tol"_a.noconvert() = static_cast<T>(0),
              "high_accuracy"_a = false, "compact_mode"_a = false, "t_events"_a = py::list{}, "nt_events"_a = py::list{},
-             "parallel_mode"_a = false)
+             "parallel_mode"_a = false, "opt_level"_a.noconvert() = 3, "force_avx512"_a.noconvert() = false)
         .def_property_readonly("decomposition", &hey::taylor_adaptive_batch<T>::get_decomposition)
         .def(
             "step", [](hey::taylor_adaptive_batch<T> &ta, bool wtc) { ta.step(wtc); }, "write_tc"_a = false)

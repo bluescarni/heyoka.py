@@ -475,7 +475,7 @@ void expose_add_cfunc_impl(py::module &m, const char *name)
                 "inputs"_a, "outputs"_a = py::none{}, "pars"_a = py::none{});
         },
         "fn"_a, "vars"_a = py::none{}, "high_accuracy"_a = false, "compact_mode"_a = false, "parallel_mode"_a = false,
-        "opt_level"_a = 3, "force_avx512"_a = false, "batch_size"_a = py::none{});
+        "opt_level"_a.noconvert() = 3, "force_avx512"_a.noconvert() = false, "batch_size"_a = py::none{});
 }
 
 } // namespace

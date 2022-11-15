@@ -157,6 +157,7 @@ PYBIND11_MODULE(core, m)
     py::class_<hey::llvm_state>(m, "llvm_state", py::dynamic_attr{})
         .def("get_ir", &hey::llvm_state::get_ir)
         .def("get_object_code", [](hey::llvm_state &s) { return py::bytes(s.get_object_code()); })
+        .def_property_readonly("opt_level", [](const hey::llvm_state &s) { return s.opt_level(); })
         // Repr.
         .def("__repr__",
              [](const hey::llvm_state &s) {
@@ -401,6 +402,8 @@ PYBIND11_MODULE(core, m)
     heypy::taylor_expose_c_output(m);
 
     // Expose the helpers to get/set the number of threads in use by heyoka.py.
+    // NOTE: these are not thread-safe themselves. Should they be? If not, their
+    // thread unsafety must be highlighted in the docs.
     m.def("set_nthreads", [](std::size_t n) {
         if (n == 0u) {
             heypy::detail::tbb_gc.reset();
