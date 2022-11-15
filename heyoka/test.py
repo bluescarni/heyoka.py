@@ -501,6 +501,22 @@ class taylor_add_jet_test_case(_ut.TestCase):
                 in str(cm.exception)
             )
 
+        # Test that batch mode with long double is not allowed.
+        fp_t = np.longdouble
+
+        init_state = [
+            [fp_t(0.05), fp_t(0.06), fp_t(0.07), fp_t(0.08)],
+            [fp_t(0.025), fp_t(0.026), fp_t(0.027), fp_t(0.028)],
+        ]
+        pars = [[fp_t(-9.8), fp_t(-9.7), fp_t(-9.6), fp_t(-9.5)]]
+
+        with self.assertRaises(ValueError) as cm:
+            taylor_add_jet(sys, 5, fp_type=fp_t, batch_size=2)
+        self.assertTrue(
+            "Batch sizes greater than 1 are not supported for this floating-point type"
+            in str(cm.exception)
+        )
+
 
 class event_classes_test_case(_ut.TestCase):
     def runTest(self):
@@ -4614,6 +4630,21 @@ class cfunc_test_case(_ut.TestCase):
         func = [sin(x + y), x - par[0], x + y + par[1]]
 
         for fp_t in fp_types:
+            with self.assertRaises(ValueError) as cm:
+                make_cfunc(func, vars=[y, x], fp_type=fp_t, batch_size=0)
+            self.assertTrue(
+                "The batch size of a compiled function cannot be zero"
+                in str(cm.exception)
+            )
+
+            if fp_t == np.longdouble:
+                with self.assertRaises(ValueError) as cm:
+                    make_cfunc(func, vars=[y, x], fp_type=fp_t, batch_size=2)
+                self.assertTrue(
+                    "Batch sizes greater than 1 are not supported for this floating-point type"
+                    in str(cm.exception)
+                )
+
             fn = make_cfunc(func, vars=[y, x], fp_type=fp_t)
 
             with self.assertRaises(ValueError) as cm:
