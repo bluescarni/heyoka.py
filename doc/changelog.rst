@@ -6,6 +6,12 @@ Changelog
 0.20.0 (unreleased)
 -------------------
 
+New
+~~~
+
+- Several JIT-related settings can now be tweaked via keyword arguments
+  (`#107 <https://github.com/bluescarni/heyoka.py/pull/107>`__).
+
 Changes
 ~~~~~~~
 
