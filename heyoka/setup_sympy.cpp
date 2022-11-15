@@ -126,7 +126,7 @@ py::object to_sympy_impl(std::unordered_map<const void *, py::object> &, const h
 
 py::object to_sympy_impl(std::unordered_map<const void *, py::object> &func_map, const hy::func &f)
 {
-    const auto f_id = f.get_ptr();
+    const auto *const f_id = f.get_ptr();
 
     if (auto it = func_map.find(f_id); it != func_map.end()) {
         // We already converted the current function, return the
@@ -141,7 +141,7 @@ py::object to_sympy_impl(std::unordered_map<const void *, py::object> &func_map,
     }
 
     py::object retval;
-    if (auto pobj = std::get_if<0>(&it->second)) {
+    if (auto *pobj = std::get_if<0>(&it->second)) {
         // We can use directly a sympy function. Convert
         // the function arguments and invoke the function.
         py::list args;
