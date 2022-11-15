@@ -3,6 +3,16 @@
 Changelog
 =========
 
+0.20.0 (unreleased)
+-------------------
+
+Changes
+~~~~~~~
+
+- heyoka.py now requires at least version 0.20.0 of the
+  heyoka C++ library
+  (`#107 <https://github.com/bluescarni/heyoka.py/pull/107>`__).
+
 0.19.0 (2022-09-19)
 -------------------
 
