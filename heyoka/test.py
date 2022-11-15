@@ -1935,6 +1935,24 @@ class scalar_integrator_test_case(_ut.TestCase):
         self.assertFalse(ta.with_events)
         self.assertTrue(ta.compact_mode)
         self.assertTrue(ta.high_accuracy)
+        self.assertFalse(ta.llvm_state.fast_math)
+        self.assertFalse(ta.llvm_state.force_avx512)
+        self.assertEqual(ta.llvm_state.opt_level, 3)
+
+        # Test the custom llvm_state flags.
+        ta = taylor_adaptive(
+            sys=sys,
+            state=[0.0, 0.25],
+            compact_mode=True,
+            high_accuracy=True,
+            force_avx512=True,
+            fast_math=True,
+            opt_level=0,
+        )
+
+        self.assertTrue(ta.llvm_state.fast_math)
+        self.assertTrue(ta.llvm_state.force_avx512)
+        self.assertEqual(ta.llvm_state.opt_level, 0)
 
         # Test that adding dynattrs to the integrator
         # object via the propagate callback works.
@@ -2478,6 +2496,24 @@ class batch_integrator_test_case(_ut.TestCase):
         self.assertFalse(ta.with_events)
         self.assertTrue(ta.compact_mode)
         self.assertTrue(ta.high_accuracy)
+        self.assertFalse(ta.llvm_state.fast_math)
+        self.assertFalse(ta.llvm_state.force_avx512)
+        self.assertEqual(ta.llvm_state.opt_level, 3)
+
+        # Test the custom llvm_state flags.
+        ta = taylor_adaptive_batch(
+            sys=sys,
+            state=[[0.0, 0.1], [0.25, 0.26]],
+            compact_mode=True,
+            high_accuracy=True,
+            force_avx512=True,
+            fast_math=True,
+            opt_level=0,
+        )
+
+        self.assertTrue(ta.llvm_state.fast_math)
+        self.assertTrue(ta.llvm_state.force_avx512)
+        self.assertEqual(ta.llvm_state.opt_level, 0)
 
     def test_events(self):
         from . import (
