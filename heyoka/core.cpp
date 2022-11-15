@@ -158,6 +158,8 @@ PYBIND11_MODULE(core, m)
         .def("get_ir", &hey::llvm_state::get_ir)
         .def("get_object_code", [](hey::llvm_state &s) { return py::bytes(s.get_object_code()); })
         .def_property_readonly("opt_level", [](const hey::llvm_state &s) { return s.opt_level(); })
+        .def_property_readonly("fast_math", [](const hey::llvm_state &s) { return s.fast_math(); })
+        .def_property_readonly("force_avx512", [](const hey::llvm_state &s) { return s.force_avx512(); })
         // Repr.
         .def("__repr__",
              [](const hey::llvm_state &s) {

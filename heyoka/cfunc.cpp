@@ -70,7 +70,7 @@ void expose_add_cfunc_impl(py::module &m, const char *name)
         name,
         [](const std::vector<hey::expression> &fn, const std::optional<std::vector<hey::expression>> &vars,
            bool high_accuracy, bool compact_mode, bool parallel_mode, unsigned opt_level, bool force_avx512,
-           std::optional<std::uint32_t> batch_size) {
+           std::optional<std::uint32_t> batch_size, bool fast_math) {
             // Compute the SIMD size.
             const auto simd_size = batch_size ? *batch_size : hey::recommended_simd_size<T>();
 
@@ -85,8 +85,9 @@ void expose_add_cfunc_impl(py::module &m, const char *name)
             using ptr_s_t = void (*)(T *, const T *, const T *, std::size_t) noexcept;
             ptr_s_t fptr_scal_s = nullptr, fptr_batch_s = nullptr;
 
-            hey::llvm_state s_scal{kw::opt_level = opt_level, kw::force_avx512 = force_avx512},
-                s_batch{kw::opt_level = opt_level, kw::force_avx512 = force_avx512};
+            hey::llvm_state s_scal{kw::opt_level = opt_level, kw::force_avx512 = force_avx512,
+                                   kw::fast_math = fast_math},
+                s_batch{kw::opt_level = opt_level, kw::force_avx512 = force_avx512, kw::fast_math = fast_math};
 
             {
                 // NOTE: release the GIL during compilation.
@@ -480,7 +481,8 @@ void expose_add_cfunc_impl(py::module &m, const char *name)
                 "inputs"_a, "outputs"_a = py::none{}, "pars"_a = py::none{});
         },
         "fn"_a, "vars"_a = py::none{}, "high_accuracy"_a = false, "compact_mode"_a = false, "parallel_mode"_a = false,
-        "opt_level"_a.noconvert() = 3, "force_avx512"_a.noconvert() = false, "batch_size"_a = py::none{});
+        "opt_level"_a.noconvert() = 3, "force_avx512"_a.noconvert() = false, "batch_size"_a = py::none{},
+        "fast_math"_a.noconvert() = false);
 }
 
 } // namespace
