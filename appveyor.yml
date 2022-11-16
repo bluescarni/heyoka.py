@@ -6,8 +6,7 @@ branches:
 
 environment:
   matrix:
-    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2019
-      BUILD_TYPE: MSVC2019
+    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2022
 
 install:
 - call "C:\\Miniconda37-x64\\Scripts\\activate.bat"
