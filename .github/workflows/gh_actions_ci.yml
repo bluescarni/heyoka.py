@@ -22,15 +22,14 @@ jobs:
       - uses: conda-incubator/setup-miniconda@v2
         with:
           auto-update-conda: true
-          python-version: 3.8
+          python-version: 3.10
           channels: conda-forge
           channel-priority: strict
+          activate-environment: heyoka
       - name: Build
         shell: pwsh
         run: |
-          conda config --set always_yes yes
-          conda create --name heyoka python=3.10 git pybind11 numpy cmake llvmdev=15.0.2 tbb-devel tbb astroquery boost-cpp fmt spdlog sleef sympy cloudpickle zlib libzlib
-          conda activate heyoka
+          conda install -y python=3.10 git pybind11 numpy cmake llvmdev=15.0.2 tbb-devel tbb astroquery boost-cpp fmt spdlog sleef sympy cloudpickle zlib libzlib
           git clone https://github.com/bluescarni/heyoka.git heyoka_cpp
           cd heyoka_cpp
           mkdir build
