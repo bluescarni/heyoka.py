@@ -7,8 +7,8 @@ on:
     branches:
       - main
 jobs:
-  osx_10_15_heyoka_head:
-    runs-on: macos-10.15
+  osx_heyoka_head:
+    runs-on: macos-latest
     steps:
       - uses: actions/checkout@v2
       - name: Build
