@@ -25,7 +25,6 @@ jobs:
           python-version: 3.9
           channels: conda-forge
           channel-priority: strict
-          activate-environment: heyoka
       - name: Build
         shell: pwsh
         run: |
