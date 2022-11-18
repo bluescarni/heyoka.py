@@ -126,7 +126,7 @@ py::object to_sympy_impl(std::unordered_map<const void *, py::object> &, const h
 
 py::object to_sympy_impl(std::unordered_map<const void *, py::object> &func_map, const hy::func &f)
 {
-    const auto f_id = f.get_ptr();
+    const auto *const f_id = f.get_ptr();
 
     if (auto it = func_map.find(f_id); it != func_map.end()) {
         // We already converted the current function, return the
@@ -141,7 +141,7 @@ py::object to_sympy_impl(std::unordered_map<const void *, py::object> &func_map,
     }
 
     py::object retval;
-    if (auto pobj = std::get_if<0>(&it->second)) {
+    if (auto *pobj = std::get_if<0>(&it->second)) {
         // We can use directly a sympy function. Convert
         // the function arguments and invoke the function.
         py::list args;
@@ -290,11 +290,18 @@ void setup_sympy(py::module &m)
         auto sympy_tpoly = py::object(detail::spy->attr("Function")("heyoka_tpoly"));
         detail::fmap[typeid(hy::detail::tpoly_impl)] = sympy_tpoly;
 
-        // pi.
-        detail::fmap[typeid(hy::detail::pi_impl)]
-            = [](std::unordered_map<const void *, py::object> &, const hy::func &) {
-                  return py::object(detail::spy->attr("pi"));
-              };
+        // Constants.
+        detail::fmap[typeid(hy::constant)] = [](std::unordered_map<const void *, py::object> &, const hy::func &f) {
+            const auto *cptr = f.extract<hy::constant>();
+            assert(cptr != nullptr);
+
+            if (cptr->get_str_func_t() == typeid(hy::detail::pi_constant_func)) {
+                return py::object(detail::spy->attr("pi"));
+            }
+
+            // Translate other constants as unevaluated nullary functions.
+            return py::object(detail::spy->attr("Function")(f.get_name().c_str()));
+        };
 
         // Expose the conversion function.
         m.def("to_sympy", &detail::to_sympy);

@@ -1229,7 +1229,7 @@ void expose_real128(py::module_ &m)
     // detail::npy_py_real128_arr_funcs.scalarkind = [](void *) -> int { return NPY_FLOAT_SCALAR; };
 
     // Register the NumPy data type.
-    Py_TYPE(&detail::npy_py_real128_descr) = &PyArrayDescr_Type;
+    Py_SET_TYPE(&detail::npy_py_real128_descr, &PyArrayDescr_Type);
     npy_registered_py_real128 = PyArray_RegisterDataType(&detail::npy_py_real128_descr);
     if (npy_registered_py_real128 < 0) {
         py_throw(PyExc_TypeError, "Could not register the real128 type in NumPy");

@@ -12,6 +12,7 @@
 #include <cassert>
 #include <cstddef>
 #include <functional>
+#include <heyoka/llvm_state.hpp>
 #include <initializer_list>
 #include <limits>
 #include <sstream>
@@ -76,7 +77,8 @@ void expose_taylor_integrator_impl(py::module &m, const std::string &suffix)
 
     py::class_<hey::taylor_adaptive<T>> cl(m, (fmt::format("taylor_adaptive_{}", suffix)).c_str(), py::dynamic_attr{});
     cl.def(py::init([](const sys_t &sys, std::vector<T> state, T time, std::vector<T> pars, T tol, bool high_accuracy,
-                       bool compact_mode, std::vector<t_ev_t> tes, std::vector<nt_ev_t> ntes, bool parallel_mode) {
+                       bool compact_mode, std::vector<t_ev_t> tes, std::vector<nt_ev_t> ntes, bool parallel_mode,
+                       unsigned opt_level, bool force_avx512, bool fast_math) {
                return std::visit(
                    [&](const auto &val) {
                        // NOTE: GIL release is fine here even if the events contain
@@ -94,13 +96,17 @@ void expose_taylor_integrator_impl(py::module &m, const std::string &suffix)
                                                       kw::pars = std::move(pars),
                                                       kw::t_events = std::move(tes),
                                                       kw::nt_events = std::move(ntes),
-                                                      kw::parallel_mode = parallel_mode};
+                                                      kw::parallel_mode = parallel_mode,
+                                                      kw::opt_level = opt_level,
+                                                      kw::force_avx512 = force_avx512,
+                                                      kw::fast_math = fast_math};
                    },
                    sys);
            }),
            "sys"_a, "state"_a.noconvert(), "time"_a.noconvert() = static_cast<T>(0), "pars"_a.noconvert() = py::list{},
            "tol"_a.noconvert() = static_cast<T>(0), "high_accuracy"_a = false, "compact_mode"_a = false,
-           "t_events"_a = py::list{}, "nt_events"_a = py::list{}, "parallel_mode"_a = false)
+           "t_events"_a = py::list{}, "nt_events"_a = py::list{}, "parallel_mode"_a = false,
+           "opt_level"_a.noconvert() = 3, "force_avx512"_a.noconvert() = false, "fast_math"_a.noconvert() = false)
         .def_property_readonly(
             "state",
             [](py::object &o) {

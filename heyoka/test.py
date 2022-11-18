@@ -501,6 +501,22 @@ class taylor_add_jet_test_case(_ut.TestCase):
                 in str(cm.exception)
             )
 
+        # Test that batch mode with long double is not allowed.
+        fp_t = np.longdouble
+
+        init_state = [
+            [fp_t(0.05), fp_t(0.06), fp_t(0.07), fp_t(0.08)],
+            [fp_t(0.025), fp_t(0.026), fp_t(0.027), fp_t(0.028)],
+        ]
+        pars = [[fp_t(-9.8), fp_t(-9.7), fp_t(-9.6), fp_t(-9.5)]]
+
+        with self.assertRaises(ValueError) as cm:
+            taylor_add_jet(sys, 5, fp_type=fp_t, batch_size=2)
+        self.assertTrue(
+            "Batch sizes greater than 1 are not supported for this floating-point type"
+            in str(cm.exception)
+        )
+
 
 class event_classes_test_case(_ut.TestCase):
     def runTest(self):
@@ -1919,6 +1935,24 @@ class scalar_integrator_test_case(_ut.TestCase):
         self.assertFalse(ta.with_events)
         self.assertTrue(ta.compact_mode)
         self.assertTrue(ta.high_accuracy)
+        self.assertFalse(ta.llvm_state.fast_math)
+        self.assertFalse(ta.llvm_state.force_avx512)
+        self.assertEqual(ta.llvm_state.opt_level, 3)
+
+        # Test the custom llvm_state flags.
+        ta = taylor_adaptive(
+            sys=sys,
+            state=[0.0, 0.25],
+            compact_mode=True,
+            high_accuracy=True,
+            force_avx512=True,
+            fast_math=True,
+            opt_level=0,
+        )
+
+        self.assertTrue(ta.llvm_state.fast_math)
+        self.assertTrue(ta.llvm_state.force_avx512)
+        self.assertEqual(ta.llvm_state.opt_level, 0)
 
         # Test that adding dynattrs to the integrator
         # object via the propagate callback works.
@@ -2462,6 +2496,24 @@ class batch_integrator_test_case(_ut.TestCase):
         self.assertFalse(ta.with_events)
         self.assertTrue(ta.compact_mode)
         self.assertTrue(ta.high_accuracy)
+        self.assertFalse(ta.llvm_state.fast_math)
+        self.assertFalse(ta.llvm_state.force_avx512)
+        self.assertEqual(ta.llvm_state.opt_level, 3)
+
+        # Test the custom llvm_state flags.
+        ta = taylor_adaptive_batch(
+            sys=sys,
+            state=[[0.0, 0.1], [0.25, 0.26]],
+            compact_mode=True,
+            high_accuracy=True,
+            force_avx512=True,
+            fast_math=True,
+            opt_level=0,
+        )
+
+        self.assertTrue(ta.llvm_state.fast_math)
+        self.assertTrue(ta.llvm_state.force_avx512)
+        self.assertEqual(ta.llvm_state.opt_level, 0)
 
     def test_events(self):
         from . import (
@@ -4614,6 +4666,21 @@ class cfunc_test_case(_ut.TestCase):
         func = [sin(x + y), x - par[0], x + y + par[1]]
 
         for fp_t in fp_types:
+            with self.assertRaises(ValueError) as cm:
+                make_cfunc(func, vars=[y, x], fp_type=fp_t, batch_size=0)
+            self.assertTrue(
+                "The batch size of a compiled function cannot be zero"
+                in str(cm.exception)
+            )
+
+            if fp_t == np.longdouble:
+                with self.assertRaises(ValueError) as cm:
+                    make_cfunc(func, vars=[y, x], fp_type=fp_t, batch_size=2)
+                self.assertTrue(
+                    "Batch sizes greater than 1 are not supported for this floating-point type"
+                    in str(cm.exception)
+                )
+
             fn = make_cfunc(func, vars=[y, x], fp_type=fp_t)
 
             with self.assertRaises(ValueError) as cm:

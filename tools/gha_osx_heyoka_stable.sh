@@ -13,7 +13,7 @@ export PATH="$HOME/miniconda/bin:$PATH"
 bash miniconda.sh -b -p $HOME/miniconda
 conda create -y -q -p $deps_dir
 source activate $deps_dir
-mamba install -y python=3.8 pybind11 numpy cmake heyoka boost-cpp
+mamba install -y python=3.10 pybind11 numpy cmake heyoka boost-cpp
 
 # Create the build dir and cd into it.
 mkdir build

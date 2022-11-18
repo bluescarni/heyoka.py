@@ -199,10 +199,18 @@ void expose_taylor_add_jet_impl(py::module &m, const char *name)
 {
     using namespace pybind11::literals;
 
+    namespace kw = hey::kw;
+
     m.def(
         name,
         [](const U &sys, std::uint32_t order, std::uint32_t batch_size, bool high_accuracy, bool compact_mode,
-           const std::vector<hey::expression> &sv_funcs, bool parallel_mode) {
+           const std::vector<hey::expression> &sv_funcs, bool parallel_mode, unsigned opt_level, bool force_avx512,
+           bool fast_math) {
+            // Forbid batch sizes > 1 for everything but double.
+            if (!std::is_same_v<T, double> && batch_size > 1u) {
+                py_throw(PyExc_ValueError, "Batch sizes greater than 1 are not supported for this floating-point type");
+            }
+
             // Let's figure out if sys contains params and/or time.
             bool has_time = false;
             std::uint32_t n_params = 0;
@@ -226,7 +234,7 @@ void expose_taylor_add_jet_impl(py::module &m, const char *name)
             // Add the jet function.
             using jptr_t = void (*)(T *, const T *, const T *);
             jptr_t jptr = nullptr;
-            hey::llvm_state s;
+            hey::llvm_state s{kw::opt_level = opt_level, kw::force_avx512 = force_avx512, kw::fast_math = fast_math};
 
             {
                 // NOTE: release the GIL during compilation.
@@ -330,7 +338,8 @@ void expose_taylor_add_jet_impl(py::module &m, const char *name)
                 "state"_a, "pars"_a = py::none{}, "time"_a = py::none{});
         },
         "sys"_a, "order"_a, "batch_size"_a = 1u, "high_accuracy"_a = false, "compact_mode"_a = false,
-        "sv_funcs"_a = py::list{}, "parallel_mode"_a = false);
+        "sv_funcs"_a = py::list{}, "parallel_mode"_a = false, "opt_level"_a.noconvert() = 3,
+        "force_avx512"_a.noconvert() = false, "fast_math"_a.noconvert() = false);
 }
 
 } // namespace
