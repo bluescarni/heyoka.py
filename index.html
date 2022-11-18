@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>heyoka.py &#8212; heyoka.py 0.19.0 documentation</title>
+    <title>heyoka.py &#8212; heyoka.py 0.20.0 documentation</title>
     
   <!-- Loaded before other Sphinx assets -->
   <link href="_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
@@ -22,8 +22,7 @@
 
     <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" href="_static/styles/sphinx-book-theme.css?digest=5115cc725059bd94278eecd172e13a965bf8f5a9" type="text/css" />
-    <link rel="stylesheet" type="text/css" href="_static/mystnb.css" />
-    <link rel="stylesheet" type="text/css" href="_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
     
   <!-- Pre-loaded scripts that we'll load fully later -->
   <link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf">
@@ -32,12 +31,7 @@
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
     <script src="_static/doctools.js"></script>
-    <script>let toggleHintShow = 'Click to show';</script>
-    <script>let toggleHintHide = 'Click to hide';</script>
-    <script>let toggleOpenOnPrint = 'true';</script>
-    <script src="_static/togglebutton.js"></script>
     <script src="_static/scripts/sphinx-book-theme.js?digest=9c920249402e914e316237a7dbc6769907cce411"></script>
-    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Installation" href="install.html" />
@@ -84,7 +78,7 @@
       <img src="_static/white_logo.png" class="logo" alt="logo">
       
       
-      <h1 class="site-logo" id="site-title">heyoka.py 0.19.0 documentation</h1>
+      <h1 class="site-logo" id="site-title">heyoka.py 0.20.0 documentation</h1>
       
     </a>
 </div><form class="bd-search d-flex align-items-center" action="search.html" method="get">
@@ -541,7 +535,8 @@ billions of timesteps,</p></li>
 <li><p>high-precision zero-cost dense output,</p></li>
 <li><p>accurate and reliable event detection,</p></li>
 <li><p>batch mode integration to harness the power of modern
-<a class="reference external" href="https://en.wikipedia.org/wiki/SIMD">SIMD</a> instruction sets,</p></li>
+<a class="reference external" href="https://en.wikipedia.org/wiki/SIMD">SIMD</a> instruction sets
+(including AVX/AVX2/AVX-512/Neon/VSX),</p></li>
 <li><p>ensemble simulations and automatic parallelisation,</p></li>
 <li><p>interoperability with <a class="reference external" href="https://www.sympy.org/en/index.html">SymPy</a>.</p></li>
 </ul>
@@ -608,24 +603,25 @@ The authors are Francesco Biscani (Max Planck Institute for Astronomy) and Dario
 </li>
 <li class="toctree-l1"><a class="reference internal" href="benchmarks.html">Benchmarks</a></li>
 <li class="toctree-l1"><a class="reference internal" href="changelog.html">Changelog</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="changelog.html#unreleased">0.20.0 (unreleased)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="changelog.html#id2">0.19.0 (2022-09-19)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="changelog.html#id3">0.18.0 (2022-05-11)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="changelog.html#id6">0.17.0 (2022-01-25)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="changelog.html#id10">0.16.0 (2021-11-20)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="changelog.html#id13">0.15.1 (2021-10-10)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="changelog.html#id15">0.15.0 (2021-09-28)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="changelog.html#id19">0.14.0 (2021-08-03)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="changelog.html#id22">0.12.0 (2021-07-23)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="changelog.html#id25">0.11.0 (2021-07-06)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="changelog.html#id28">0.10.0 (2021-06-09)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="changelog.html#id31">0.9.0 (2021-05-25)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="changelog.html#id34">0.8.0 (2021-04-28)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="changelog.html#id37">0.7.0 (2021-04-22)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="changelog.html#id40">0.6.1 (2021-04-08)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="changelog.html#id43">0.6.0 (2021-04-06)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="changelog.html#id47">0.5.0 (2021-02-25)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="changelog.html#id50">0.4.0 (2021-02-20)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="changelog.html#id53">0.3.0 (2021-02-13)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="changelog.html#id5">0.18.0 (2022-05-11)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="changelog.html#id9">0.17.0 (2022-01-25)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="changelog.html#id13">0.16.0 (2021-11-20)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="changelog.html#id16">0.15.1 (2021-10-10)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="changelog.html#id18">0.15.0 (2021-09-28)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="changelog.html#id22">0.14.0 (2021-08-03)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="changelog.html#id25">0.12.0 (2021-07-23)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="changelog.html#id28">0.11.0 (2021-07-06)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="changelog.html#id31">0.10.0 (2021-06-09)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="changelog.html#id34">0.9.0 (2021-05-25)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="changelog.html#id37">0.8.0 (2021-04-28)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="changelog.html#id40">0.7.0 (2021-04-22)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="changelog.html#id43">0.6.1 (2021-04-08)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="changelog.html#id46">0.6.0 (2021-04-06)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="changelog.html#id50">0.5.0 (2021-02-25)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="changelog.html#id53">0.4.0 (2021-02-20)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="changelog.html#id56">0.3.0 (2021-02-13)</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="breaking_changes.html">Breaking changes</a><ul>

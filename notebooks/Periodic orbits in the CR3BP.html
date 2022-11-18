@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>Continuation of Periodic Orbits in the CR3BP &#8212; heyoka.py 0.19.0 documentation</title>
+    <title>Continuation of Periodic Orbits in the CR3BP &#8212; heyoka.py 0.20.0 documentation</title>
     
   <!-- Loaded before other Sphinx assets -->
   <link href="../_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
@@ -22,8 +22,7 @@
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
     <link rel="stylesheet" href="../_static/styles/sphinx-book-theme.css?digest=5115cc725059bd94278eecd172e13a965bf8f5a9" type="text/css" />
-    <link rel="stylesheet" type="text/css" href="../_static/mystnb.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
     
   <!-- Pre-loaded scripts that we'll load fully later -->
   <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf">
@@ -32,12 +31,7 @@
     <script src="../_static/jquery.js"></script>
     <script src="../_static/underscore.js"></script>
     <script src="../_static/doctools.js"></script>
-    <script>let toggleHintShow = 'Click to show';</script>
-    <script>let toggleHintHide = 'Click to hide';</script>
-    <script>let toggleOpenOnPrint = 'true';</script>
-    <script src="../_static/togglebutton.js"></script>
     <script src="../_static/scripts/sphinx-book-theme.js?digest=9c920249402e914e316237a7dbc6769907cce411"></script>
-    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
     <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -87,7 +81,7 @@
       <img src="../_static/white_logo.png" class="logo" alt="logo">
       
       
-      <h1 class="site-logo" id="site-title">heyoka.py 0.19.0 documentation</h1>
+      <h1 class="site-logo" id="site-title">heyoka.py 0.20.0 documentation</h1>
       
     </a>
 </div><form class="bd-search d-flex align-items-center" action="../search.html" method="get">
@@ -855,7 +849,7 @@ title="Print to PDF"
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>--- 6.930987358093262 seconds --- to build the Taylor integrator
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>--- 6.924227714538574 seconds --- to build the Taylor integrator
 </pre></div>
 </div>
 </div>
@@ -886,7 +880,7 @@ title="Print to PDF"
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>--- 0.03676605224609375 seconds --- to propagate
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>--- 0.037055253982543945 seconds --- to propagate
 </pre></div>
 </div>
 </div>
@@ -944,10 +938,10 @@ title="Print to PDF"
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;matplotlib.collections.PathCollection at 0x7f4871ee3dc0&gt;
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;matplotlib.collections.PathCollection at 0x7f3ad60b8e20&gt;
 </pre></div>
 </div>
-<img alt="../_images/9984f96f8dcbfb0d018467ca8480aa0a864a9388dcba728dbf9d8772c0feb5fd.png" src="../_images/9984f96f8dcbfb0d018467ca8480aa0a864a9388dcba728dbf9d8772c0feb5fd.png" />
+<img alt="../_images/801e5441bd425a2d19b403ce7f4eb868d25d6e76cb1476249be51a5ba33ec6cd.png" src="../_images/801e5441bd425a2d19b403ce7f4eb868d25d6e76cb1476249be51a5ba33ec6cd.png" />
 </div>
 </div>
 <p>All fine ….. at least visually! So far we have not made use of the variational equations at all, but this is about to change!</p>
@@ -1053,7 +1047,7 @@ title="Print to PDF"
 <div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(-0.005, 0.005)
 </pre></div>
 </div>
-<img alt="../_images/c8ce63fe55b67654826e57209ae8144f3d9f7b6d91f99823ee30b543f6ed58d1.png" src="../_images/c8ce63fe55b67654826e57209ae8144f3d9f7b6d91f99823ee30b543f6ed58d1.png" />
+<img alt="../_images/0c3d398856c76082d78289c92440ff7a02b8206d6b31cd5730f5c31535bbea71.png" src="../_images/0c3d398856c76082d78289c92440ff7a02b8206d6b31cd5730f5c31535bbea71.png" />
 </div>
 </div>
 <p>The orbit is good but does not close! Let us build an iteration that corrects <span class="math notranslate nohighlight">\(x_0,y_0, z_0, p_{x_0}, p_{y_0}, p_{z_0}, T\)</span> as to close the orbit.</p>
@@ -1115,24 +1109,24 @@ title="Print to PDF"
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>error was: 0.0012972874387777377
-condition number is: 16558416265.031101
-new error is: 0.00112684996530062
-error was: 0.00112684996530062
-condition number is: 112029239.45529251
-new error is: 0.005318388915608793
-error was: 0.005318388915608793
-condition number is: 97382195.70718767
-new error is: 0.0008512521425758036
-error was: 0.0008512521425758036
-condition number is: 208596162.42335454
-new error is: 6.615966512534179e-06
-error was: 6.615966512534179e-06
-condition number is: 33988164.58718771
-new error is: 6.542951377218504e-08
-error was: 6.542951377218504e-08
-condition number is: 5547007342.031426
-new error is: 1.4991365490821767e-12
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>error was: 0.001297287438728906
+condition number is: 16558416263.109829
+new error is: 0.0011268499652033904
+error was: 0.0011268499652033904
+condition number is: 112029239.48815417
+new error is: 0.0053183889146685365
+error was: 0.0053183889146685365
+condition number is: 97382195.70830885
+new error is: 0.0008512521429360928
+error was: 0.0008512521429360928
+condition number is: 208596161.69560128
+new error is: 6.615966550898223e-06
+error was: 6.615966550898223e-06
+condition number is: 33988164.74275685
+new error is: 6.542963051388621e-08
+error was: 6.542963051388621e-08
+condition number is: 5547008566.413345
+new error is: 1.3022470169060403e-12
 </pre></div>
 </div>
 </div>
@@ -1199,11 +1193,11 @@ new error is: 1.4991365490821767e-12
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>mu:  0.01215057
-Initial condition: [-8.3660628428616846e-01, 6.8716712739504539e-05, 0.0000000000000000e+00, -2.3615600465650506e-05, -8.3919863033029862e-01, 0.0000000000000000e+00]
-Period: 2.6915996001656297e+00
+Initial condition: [-8.3660628429413575e-01, 6.8716705930014935e-05, 0.0000000000000000e+00, -2.3615598135144519e-05, -8.3919863027124098e-01, 0.0000000000000000e+00]
+Period: 2.6915996001646740e+00
 </pre></div>
 </div>
-<img alt="../_images/bc3845257a0252a8ee607da29cd567b67f8d0d50a1c8be3f6929fe8b87d2b7c5.png" src="../_images/bc3845257a0252a8ee607da29cd567b67f8d0d50a1c8be3f6929fe8b87d2b7c5.png" />
+<img alt="../_images/44d03bcac4cbf9958378c4f5cc3d58fc36046882fc54b7ae80bc209191339ab5.png" src="../_images/44d03bcac4cbf9958378c4f5cc3d58fc36046882fc54b7ae80bc209191339ab5.png" />
 </div>
 </div>
 </section>
@@ -1259,7 +1253,7 @@ Period: 2.6915996001656297e+00
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[2.67528714e+03+0.j         3.73791652e-04+0.j
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[2.67528714e+03+0.j         3.73791653e-04+0.j
  9.99999893e-01+0.j         1.00000011e+00+0.j
  9.84479860e-01+0.17549759j 9.84479860e-01-0.17549759j]
 </pre></div>
@@ -1359,7 +1353,7 @@ Period: 2.6915996001656297e+00
 <div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(-0.005, 0.005)
 </pre></div>
 </div>
-<img alt="../_images/36d3cac3026631fb31004cc77160cdfb670f4f196175cbdd3e1aea5b2136e4c4.png" src="../_images/36d3cac3026631fb31004cc77160cdfb670f4f196175cbdd3e1aea5b2136e4c4.png" />
+<img alt="../_images/ced69e5071e01dad3b814994109c695a3c3a3f5101c4fc97cd99e2481c7b4bcc.png" src="../_images/ced69e5071e01dad3b814994109c695a3c3a3f5101c4fc97cd99e2481c7b4bcc.png" />
 </div>
 </div>
 <p>It’s nearly closed, but not that well …. it will need a correction … but we can call the same iterations we made previously when we closed the first initial guess, remember?</p>
@@ -1372,15 +1366,15 @@ Period: 2.6915996001656297e+00
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>error was: 0.0002725914374932785
-condition number is: 16030500.62319684
-new error is: 9.16675093605086e-07
-error was: 9.16675093605086e-07
-condition number is: 80577371767.11415
-new error is: 5.59056376288746e-09
-error was: 5.59056376288746e-09
-condition number is: 935155615265.6757
-new error is: 4.1436688803560907e-14
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>error was: 0.00027638685565809873
+condition number is: 15815373.556722537
+new error is: 9.419921997859318e-07
+error was: 9.419921997859318e-07
+condition number is: 79070672100.43153
+new error is: 6.0107665088969454e-09
+error was: 6.0107665088969454e-09
+condition number is: 868817825405.7031
+new error is: 4.0150302677224995e-13
 </pre></div>
 </div>
 </div>
@@ -1446,7 +1440,7 @@ new error is: 4.1436688803560907e-14
 <div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(-0.005, 0.005)
 </pre></div>
 </div>
-<img alt="../_images/ab0bdf6837ef621730723aadc0b3b1a0fecd06b45a1874650fb33aeeac9747e5.png" src="../_images/ab0bdf6837ef621730723aadc0b3b1a0fecd06b45a1874650fb33aeeac9747e5.png" />
+<img alt="../_images/05f4bd30d69871029a5e4ae70ce29b6021bd53f49db88148c867b08ea2c75c1b.png" src="../_images/05f4bd30d69871029a5e4ae70ce29b6021bd53f49db88148c867b08ea2c75c1b.png" />
 </div>
 </div>
 </section>
