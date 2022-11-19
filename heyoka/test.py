@@ -1306,7 +1306,7 @@ class event_detection_test_case(_ut.TestCase):
             nt_events=[nt_event_batch(v * v - 1e-10, cb2)],
         )
 
-        with self.assertRaises(TypeError):
+        with self.assertRaises(RuntimeError):
             ta.propagate_until([4.0, 4.0])
 
         # Terminal events.
@@ -1448,7 +1448,7 @@ class event_detection_test_case(_ut.TestCase):
             t_events=[t_event_batch(v * v - 1e-10, callback=cb2)],
         )
 
-        with self.assertRaises(TypeError):
+        with self.assertRaises(RuntimeError):
             ta.propagate_until([4.0, 4.0])
 
         # Callback with wrong retval.
@@ -1461,7 +1461,7 @@ class event_detection_test_case(_ut.TestCase):
             t_events=[t_event_batch(v * v - 1e-10, callback=cb3)],
         )
 
-        with self.assertRaises(TypeError) as cm:
+        with self.assertRaises(RuntimeError) as cm:
             ta.propagate_until([4.0, 4.0])
         self.assertTrue(
             "in the construction of the return value of an event callback"
