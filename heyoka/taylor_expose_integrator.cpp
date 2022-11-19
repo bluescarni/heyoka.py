@@ -14,7 +14,6 @@
 #include <functional>
 #include <heyoka/llvm_state.hpp>
 #include <initializer_list>
-#include <limits>
 #include <sstream>
 #include <string>
 #include <tuple>
@@ -203,7 +202,7 @@ void expose_taylor_integrator_impl(py::module &m, const std::string &suffix)
                                         kw::callback = cb, kw::write_tc = write_tc, kw::c_output = c_output);
             },
             "delta_t"_a.noconvert(), "max_steps"_a = 0,
-            "max_delta_t"_a.noconvert() = std::numeric_limits<T>::infinity(), "callback"_a = prop_cb_t{},
+            "max_delta_t"_a.noconvert() = hey::detail::taylor_default_max_delta_t<T>(), "callback"_a = prop_cb_t{},
             "write_tc"_a = false, "c_output"_a = false)
         .def(
             "propagate_until",
@@ -216,8 +215,9 @@ void expose_taylor_integrator_impl(py::module &m, const std::string &suffix)
                 return ta.propagate_until(t, kw::max_steps = max_steps, kw::max_delta_t = max_delta_t,
                                           kw::callback = cb, kw::write_tc = write_tc, kw::c_output = c_output);
             },
-            "t"_a.noconvert(), "max_steps"_a = 0, "max_delta_t"_a.noconvert() = std::numeric_limits<T>::infinity(),
-            "callback"_a = prop_cb_t{}, "write_tc"_a = false, "c_output"_a = false)
+            "t"_a.noconvert(), "max_steps"_a = 0,
+            "max_delta_t"_a.noconvert() = hey::detail::taylor_default_max_delta_t<T>(), "callback"_a = prop_cb_t{},
+            "write_tc"_a = false, "c_output"_a = false)
         .def(
             "propagate_grid",
             [](hey::taylor_adaptive<T> &ta, std::vector<T> grid, std::size_t max_steps, T max_delta_t,
@@ -246,8 +246,8 @@ void expose_taylor_integrator_impl(py::module &m, const std::string &suffix)
                 return py::make_tuple(std::get<0>(ret), std::get<1>(ret), std::get<2>(ret), std::get<3>(ret),
                                       std::move(a_ret));
             },
-            "grid"_a.noconvert(), "max_steps"_a = 0, "max_delta_t"_a.noconvert() = std::numeric_limits<T>::infinity(),
-            "callback"_a = prop_cb_t{})
+            "grid"_a.noconvert(), "max_steps"_a = 0,
+            "max_delta_t"_a.noconvert() = hey::detail::taylor_default_max_delta_t<T>(), "callback"_a = prop_cb_t{})
         // Repr.
         .def("__repr__",
              [](const hey::taylor_adaptive<T> &ta) {
