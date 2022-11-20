@@ -82,7 +82,7 @@ bool type_caster<mppp::real128>::load(handle src, bool)
         return false;
     }
 
-    value = *heypy::get_val(src.ptr());
+    value = *heypy::get_real128_val(src.ptr());
 
     return true;
 }

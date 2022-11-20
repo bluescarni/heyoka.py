@@ -111,4 +111,24 @@ bool is_npy_array_carray(const py::array &arr, bool writeable)
     }
 }
 
+namespace detail
+{
+
+bool with_pybind11_eh_impl()
+{
+    auto &local_exception_translators = py::detail::get_local_internals().registered_exception_translators;
+    if (py::detail::apply_exception_translators(local_exception_translators)) {
+        return true;
+    }
+    auto &exception_translators = py::detail::get_internals().registered_exception_translators;
+    if (py::detail::apply_exception_translators(exception_translators)) {
+        return true;
+    }
+
+    PyErr_SetString(PyExc_SystemError, "Exception escaped from default exception translator!");
+    return true;
+}
+
+} // namespace detail
+
 } // namespace heyoka_py

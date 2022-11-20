@@ -15,6 +15,12 @@
 #include <string>
 #include <utility>
 
+#if defined(__GLIBCXX__)
+
+#include <cxxabi.h>
+
+#endif
+
 #include <pybind11/numpy.h>
 #include <pybind11/pybind11.h>
 
@@ -196,6 +202,38 @@ bool may_share_memory(const py::array &a, const py::array &b, const Args &...arg
 // contiguous and with properly aligned storage). The flag signals whether
 // the array must also be writeable or not.
 bool is_npy_array_carray(const py::array &, bool = false);
+
+namespace detail
+{
+
+bool with_pybind11_eh_impl();
+
+} // namespace detail
+
+// This function will invoke the function object f,
+// wrapping its execution in the pybind11 C++ -> Python
+// exception translation logic. If a C++ exception is
+// thrown by the execution of f, the Python error flag is set
+// and true is returned. Otherwise, false will be returned.
+// The return value of f is ignored.
+template <typename F>
+bool with_pybind11_eh(const F &f)
+{
+    try {
+        f();
+
+        return false;
+    } catch (py::error_already_set &e) {
+        e.restore();
+        return true;
+#ifdef __GLIBCXX__
+    } catch (abi::__forced_unwind &) {
+        throw;
+#endif
+    } catch (...) {
+        return detail::with_pybind11_eh_impl();
+    }
+}
 
 } // namespace heyoka_py
 

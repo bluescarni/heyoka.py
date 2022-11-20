@@ -39,7 +39,7 @@ extern PyTypeObject py_real128_type;
 extern int npy_registered_py_real128;
 
 bool py_real128_check(PyObject *);
-mppp::real128 *get_val(PyObject *);
+mppp::real128 *get_real128_val(PyObject *);
 PyObject *pyreal128_from_real128(const mppp::real128 &);
 
 #endif
