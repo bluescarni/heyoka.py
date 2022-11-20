@@ -39,6 +39,12 @@
 
 #endif
 
+#if defined(HEYOKA_HAVE_REAL)
+
+#include <mp++/real.hpp>
+
+#endif
+
 #include <heyoka/celmec/vsop2013.hpp>
 #include <heyoka/exceptions.hpp>
 #include <heyoka/expression.hpp>
@@ -55,6 +61,7 @@
 #include "expose_M2E.hpp"
 #include "expose_batch_integrators.hpp"
 #include "expose_expression.hpp"
+#include "expose_real.hpp"
 #include "expose_real128.hpp"
 #include "logging.hpp"
 #include "pickle_wrappers.hpp"
@@ -123,6 +130,9 @@ PYBIND11_MODULE(core, m)
 
     // Expose the real128 type.
     heypy::expose_real128(m);
+
+    // Expose the real type.
+    heypy::expose_real(m);
 
     // Expose the logging setter functions.
     heypy::expose_logging_setters(m);

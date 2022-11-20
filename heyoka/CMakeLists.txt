@@ -25,6 +25,7 @@ set(_HEYOKA_PY_CORE_SOURCES
     setup_sympy.cpp
     cfunc.cpp
     expose_real128.cpp
+    expose_real.cpp
     dtypes.cpp
     custom_casters.cpp
     expose_expression.cpp
