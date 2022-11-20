@@ -128,7 +128,7 @@ unset(_HEYOKA_PY_MIN_HEYOKA_VERSION)
 # Python.
 
 # Setup the list of Python components we need to locate.
-# NOTE: NumPy is used for both long double and real128 support.
+# NOTE: NumPy is used for long double, real and real128 support.
 set(_HEYOKA_PY_PYTHON3_COMPONENTS Interpreter NumPy)
 
 if(${CMAKE_VERSION} VERSION_LESS "3.18.0")
@@ -170,14 +170,15 @@ if(${pybind11_VERSION} VERSION_LESS "2.10")
 endif()
 
 # Boost.
-find_package(Boost REQUIRED serialization)
+# NOTE: need 1.69 for safe numerics.
+find_package(Boost 1.69 REQUIRED serialization)
 
 # Mandatory dependency on TBB.
 find_package(TBB REQUIRED CONFIG)
 
 # NOTE: we make direct use of the mp++ headers
-# in the heyoka.py source code if real128 support is enabled.
-if(heyoka_WITH_REAL128)
+# in the heyoka.py source code if real/real128 support is enabled.
+if(heyoka_WITH_REAL128 OR heyoka_WITH_REAL)
     find_package(mp++ REQUIRED CONFIG)
 endif()
 
