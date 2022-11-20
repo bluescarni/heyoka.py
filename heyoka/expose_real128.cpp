@@ -27,6 +27,7 @@
 #include <utility>
 
 #include <boost/numeric/conversion/cast.hpp>
+#include <boost/safe_numerics/safe_integer.hpp>
 
 #include <fmt/format.h>
 
@@ -385,14 +386,16 @@ std::optional<mppp::real128> py_int_to_real128(PyObject *arg)
         // We have filled up the mantissa, we just need to adjust the exponent.
         // We still have abs_ob_size * PyLong_SHIFT bits remaining, and we
         // need to shift that much.
-        if (abs_ob_size
-            > static_cast<unsigned long>(std::numeric_limits<long>::max()) / static_cast<unsigned>(PyLong_SHIFT)) {
-            PyErr_SetString(PyExc_OverflowError,
-                            "An overflow condition was detected while converting a Python integer to a real128");
 
+        // NOTE: need C++ exception handling, as safe arithmetics might throw.
+        const auto err = with_pybind11_eh([&]() {
+            using safe_long = boost::safe_numerics::safe<long>;
+            retval = scalbln(retval, safe_long(abs_ob_size) * safe_long(PyLong_SHIFT));
+        });
+
+        if (err) {
             return {};
         }
-        retval = scalbln(retval, static_cast<long>(abs_ob_size * static_cast<unsigned>(PyLong_SHIFT)));
     }
 
     return neg ? -retval : retval;
