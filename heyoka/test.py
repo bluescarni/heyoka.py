@@ -3077,23 +3077,28 @@ class sympy_test_case(_ut.TestCase):
                     to_sympy(expression(np.longdouble("1.1"))),
                     Float("1.1", precision=np.finfo(np.longdouble).nmant + 1),
                 )
-                self.assertEqual(
-                    from_sympy(Float("1.1")), expression(np.longdouble("1.1"))
-                )
 
-                expo = np.finfo(np.longdouble).nmant - 10
-                self.assertEqual(
-                    to_sympy(
-                        expression(
-                            np.longdouble(2**expo + 1) / np.longdouble(2**128)
-                        )
-                    ),
-                    Rational(2**expo + 1, 2**128),
-                )
-                self.assertEqual(
-                    from_sympy(Rational(2**expo + 1, 2**128)),
-                    expression(np.longdouble(2**expo + 1) / np.longdouble(2**128)),
-                )
+                # NOTE: on platforms where long double is not wider than
+                # double (e.g., MSVC), conversion from sympy will produce a double
+                # and these tests will fail.
+                if np.finfo(np.longdouble).nmant > np.finfo(float).nmant:
+                    self.assertEqual(
+                        from_sympy(Float("1.1")), expression(np.longdouble("1.1"))
+                    )
+
+                    expo = np.finfo(np.longdouble).nmant - 10
+                    self.assertEqual(
+                        to_sympy(
+                            expression(
+                                np.longdouble(2**expo + 1) / np.longdouble(2**128)
+                            )
+                        ),
+                        Rational(2**expo + 1, 2**128),
+                    )
+                    self.assertEqual(
+                        from_sympy(Rational(2**expo + 1, 2**128)),
+                        expression(np.longdouble(2**expo + 1) / np.longdouble(2**128)),
+                    )
 
         # Too high precision.
         with self.assertRaises(ValueError) as cm:
