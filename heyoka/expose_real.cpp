@@ -8,7 +8,6 @@
 
 #include <heyoka/config.hpp>
 
-#include <mp++/detail/mpfr.hpp>
 #include <pybind11/pybind11.h>
 
 #if defined(HEYOKA_HAVE_REAL)
