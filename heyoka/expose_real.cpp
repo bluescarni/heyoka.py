@@ -20,6 +20,8 @@
 #include <type_traits>
 #include <utility>
 
+#include <boost/safe_numerics/safe_integer.hpp>
+
 #define NO_IMPORT_ARRAY
 #define NO_IMPORT_UFUNC
 #define PY_ARRAY_UNIQUE_SYMBOL heyoka_py_ARRAY_API
@@ -112,6 +114,10 @@ PyObject *py_real_new([[maybe_unused]] PyTypeObject *type, PyObject *, PyObject 
 // Helper to convert a Python integer to an mp++ real.
 // The precision of the result is inferred from the
 // bit size of the integer.
+// NOTE: for better performance if needed, it would be better
+// to avoid the construction of an intermediate mppp::integer:
+// determine the bit length of arg, and construct directly
+// an mppp::real using the same idea as in py_int_to_real_with_prec().
 std::optional<mppp::real> py_int_to_real(PyObject *arg)
 {
     assert(PyObject_IsInstance(arg, reinterpret_cast<PyObject *>(&PyLong_Type)));
@@ -247,29 +253,27 @@ std::optional<mppp::real> py_int_to_real_with_prec(PyObject *arg, mpfr_prec_t pr
         // - we run out of limbs, or
         // - we have read at least prec bits.
         while (ncdigits < prec && abs_ob_size != 0u) {
+            using safe_mpfr_prec_t = boost::safe_numerics::safe<mpfr_prec_t>;
+
             mppp::mul_2si(ret, ret, PyLong_SHIFT);
-            // TODO explain possible prec change.
+            // NOTE: if prec is small, this addition may increase
+            // the precision of ret. This is ok as long as we run
+            // a final rounding before returning.
             ret += ob_digit[--abs_ob_size];
-            // TODO overflow check
-            ncdigits += PyLong_SHIFT;
+            ncdigits = ncdigits + safe_mpfr_prec_t(PyLong_SHIFT);
         }
 
         if (abs_ob_size != 0u) {
+            using safe_long = boost::safe_numerics::safe<long>;
+
             // We have filled up the mantissa, we just need to adjust the exponent.
             // We still have abs_ob_size * PyLong_SHIFT bits remaining, and we
             // need to shift that much.
-            if (abs_ob_size
-                > static_cast<unsigned long>(std::numeric_limits<long>::max()) / static_cast<unsigned>(PyLong_SHIFT)) {
-                PyErr_SetString(PyExc_OverflowError,
-                                "An overflow condition was detected while converting a Python integer to a real");
-
-                return;
-            }
-
-            mppp::mul_2si(ret, ret, static_cast<long>(abs_ob_size * static_cast<unsigned>(PyLong_SHIFT)));
+            mppp::mul_2si(ret, ret, safe_long(abs_ob_size) * safe_long(PyLong_SHIFT));
         }
 
-        // TODO explain final rounding.
+        // Do a final rounding. This is necessary if prec is very low,
+        // in which case operations on ret might have increased its precision.
         ret.prec_round(prec);
 
         // Negate if necessary.
@@ -339,6 +343,7 @@ int py_real_init(PyObject *self, PyObject *args, PyObject *kwargs)
 
     // Handle the supported types for the input value.
     if (PyFloat_Check(arg)) {
+        // Double.
         const auto d_val = PyFloat_AsDouble(arg);
 
         if (PyErr_Occurred() == nullptr) {
@@ -358,6 +363,7 @@ int py_real_init(PyObject *self, PyObject *args, PyObject *kwargs)
             return -1;
         }
     } else if (PyLong_Check(arg)) {
+        // Int.
         if (auto opt = prec ? py_int_to_real_with_prec(arg, *prec) : py_int_to_real(arg)) {
             // NOTE: it's important to move here, so that we don't have to bother
             // with exception handling.
