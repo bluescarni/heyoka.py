@@ -44,6 +44,12 @@
 #include "custom_casters.hpp"
 #include "expose_real.hpp"
 
+#if defined(HEYOKA_HAVE_REAL128)
+
+#include "expose_real128.hpp"
+
+#endif
+
 namespace heyoka_py
 {
 
@@ -386,6 +392,59 @@ int py_real_init(PyObject *self, PyObject *args, PyObject *kwargs)
         if (err) {
             return -1;
         }
+#if defined(HEYOKA_HAVE_REAL128)
+    } else if (py_real128_check(arg)) {
+        const auto f128_val = *get_real128_val(arg);
+
+        const auto err = with_pybind11_eh([&]() {
+            if (prec) {
+                rval->set_prec(*prec);
+                mppp::set(*rval, f128_val);
+            } else {
+                *rval = f128_val;
+            }
+        });
+
+        if (err) {
+            return -1;
+        }
+#endif
+    } else if (py_real_check(arg)) {
+        auto *rval2 = get_real_val(arg);
+
+        const auto err = with_pybind11_eh([&]() {
+            if (prec) {
+                rval->set_prec(*prec);
+                mppp::set(*rval, *rval2);
+            } else {
+                *rval = *rval2;
+            }
+        });
+
+        if (err) {
+            return -1;
+        }
+    } else if (PyUnicode_Check(arg)) {
+        if (!prec) {
+            PyErr_SetString(PyExc_ValueError, "Cannot construct a real from a string without a precision value");
+
+            return -1;
+        }
+
+        const auto *str = PyUnicode_AsUTF8(arg);
+
+        if (str == nullptr) {
+            return -1;
+        }
+
+        const auto err = with_pybind11_eh([&]() {
+            rval->set_prec(*prec);
+            mppp::set(*rval, str);
+        });
+
+        if (err) {
+            return -1;
+        }
     } else {
         PyErr_Format(PyExc_TypeError, "Cannot construct a real from an object of type \"%s\"", Py_TYPE(arg)->tp_name);
 
@@ -393,45 +452,6 @@ int py_real_init(PyObject *self, PyObject *args, PyObject *kwargs)
     }
 
     return 0;
-#if 0
-
-        auto fp_arg = PyFloat_AsDouble(arg);
-
-        if (PyErr_Occurred() == nullptr) {
-            *get_real128_val(self) = fp_arg;
-        } else {
-            return -1;
-        }
-    } else if (PyLong_Check(arg)) {
-        if (auto opt = py_int_to_real128(arg)) {
-            *get_real128_val(self) = *opt;
-        } else {
-            return -1;
-        }
-#if defined(MPPP_FLOAT128_WITH_LONG_DOUBLE)
-    } else if (PyObject_IsInstance(arg, reinterpret_cast<PyObject *>(&PyLongDoubleArrType_Type)) != 0) {
-        *get_real128_val(self) = reinterpret_cast<PyLongDoubleScalarObject *>(arg)->obval;
-#endif
-    } else if (py_real128_check(arg)) {
-        *get_real128_val(self) = *get_real128_val(arg);
-    } else if (PyUnicode_Check(arg)) {
-        const auto *str = PyUnicode_AsUTF8(arg);
-
-        if (str == nullptr) {
-            return -1;
-        }
-
-        if (with_pybind11_eh([&]() { *get_real128_val(self) = mppp::real128(str); })) {
-            return -1;
-        }
-    } else {
-        PyErr_Format(PyExc_TypeError, "Cannot construct a real128 from an object of type \"%s\"",
-                     Py_TYPE(arg)->tp_name);
-
-        return -1;
-    }
-
-#endif
 }
 
 // __repr__().

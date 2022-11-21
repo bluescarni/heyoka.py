@@ -5269,6 +5269,7 @@ class real_test_case(_ut.TestCase):
 
     def test_ctor(self):
         from . import real
+        from . import core
         import numpy as np
 
         ld = np.longdouble
@@ -5352,6 +5353,63 @@ class real_test_case(_ut.TestCase):
         x = real(-ld("1.1"), 53)
         self.assertEqual(str(x), "-1.1000000000000001")
         self.assertEqual(x.prec, 53)
+
+        # real128.
+        if hasattr(core, "real128"):
+            real128 = core.real128
+
+            x = real(real128("1.1"))
+            self.assertEqual(str(x), "1.10000000000000000000000000000000008")
+            self.assertEqual(x.prec, 113)
+            x = real(real128("-1.1"))
+            self.assertEqual(str(x), "-1.10000000000000000000000000000000008")
+
+            x = real(real128("1.1"), 23)
+            self.assertEqual(str(x), "1.0999999")
+            self.assertEqual(x.prec, 23)
+            x = real(real128("-1.1"), 23)
+            self.assertEqual(str(x), "-1.0999999")
+
+        # From real.
+        x = real(real(1.1))
+        self.assertEqual(str(x), "1.1000000000000001")
+        self.assertEqual(x.prec, np.finfo(float).nmant + 1)
+        x = real(real(-1.1))
+        self.assertEqual(str(x), "-1.1000000000000001")
+
+        x = real(real(1.1, 23))
+        self.assertEqual(str(x), str(real(1.1, 23)))
+        self.assertEqual(x.prec, 23)
+        x = real(real(-1.1, 23))
+        self.assertEqual(str(x), str(real(-1.1, 23)))
+        self.assertEqual(x.prec, 23)
+
+        # Construction from string.
+        x = real("1.1", 123)
+        self.assertEqual("1.09999999999999999999999999999999999992", str(x))
+        x = real("-1.1", 123)
+        self.assertEqual("-1.09999999999999999999999999999999999992", str(x))
+
+        with self.assertRaises(ValueError) as cm:
+            real("1.1")
+        self.assertTrue(
+            "Cannot construct a real from a string without a precision value"
+            in str(cm.exception)
+        )
+
+        with self.assertRaises(ValueError) as cm:
+            real("hello world", prec=233)
+        self.assertTrue(
+            "The string 'hello world' cannot be interpreted as a floating-point value in base 10"
+            in str(cm.exception)
+        )
+
+        # Construction from unsupported type.
+        with self.assertRaises(TypeError) as cm:
+            real([])
+        self.assertTrue(
+            'Cannot construct a real from an object of type "list"' in str(cm.exception)
+        )
 
 
 class real128_test_case(_ut.TestCase):
