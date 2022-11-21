@@ -5258,6 +5258,102 @@ class cfunc_test_case(_ut.TestCase):
             self.assertEqual(eval_arr[0], 3)
 
 
+class real_test_case(_ut.TestCase):
+    def runTest(self):
+        from . import core
+
+        if not hasattr(core, "real"):
+            return
+
+        self.test_ctor()
+
+    def test_ctor(self):
+        from . import real
+        import numpy as np
+
+        ld = np.longdouble
+
+        # Default ctor.
+        self.assertEqual(str(real()), "0.0")
+        self.assertEqual(real().prec, 2)
+
+        # Check error if only the precision argument
+        # is present.
+        with self.assertRaises(ValueError) as cm:
+            real(prec=32)
+        self.assertTrue(
+            "Cannot construct a real from a precision only - a value must also be supplied"
+            in str(cm.exception)
+        )
+
+        # Check that the precision argument must be of the correct type.
+        with self.assertRaises(TypeError) as cm:
+            real(1, prec=[])
+        self.assertTrue(
+            "'list' object cannot be interpreted as an integer" in str(cm.exception)
+        )
+
+        # Constructor from float.
+        x = real(1.1)
+        self.assertEqual(str(x), "1.1000000000000001")
+        self.assertEqual(x.prec, np.finfo(float).nmant + 1)
+        x = real(-1.1)
+        self.assertEqual(str(x), "-1.1000000000000001")
+
+        x = real(1.1, 23)
+        self.assertEqual(str(x), "1.0999999")
+        self.assertEqual(x.prec, 23)
+        x = real(-1.1, 23)
+        self.assertEqual(str(x), "-1.0999999")
+
+        # Constructor from int.
+
+        # Small int, no precision.
+        x = real(1)
+        self.assertTrue("1.000" in str(x))
+
+        # Larger int, no precision.
+        x = real(-(1 << 50))
+        self.assertTrue("125899906842624" in str(x))
+
+        # Int that does not fit in long/long long, no precision.
+        x = real(-(1 << 128))
+        self.assertTrue("40282366920938463463374607431768211456" in str(x))
+
+        # Small int, explicit precision.
+        x = real(1, 12)
+        self.assertEqual("1.0000", str(x))
+        self.assertEqual(x.prec, 12)
+
+        x = real(-1, 23)
+        self.assertEqual("-1.0000000", str(x))
+        self.assertEqual(x.prec, 23)
+
+        # Large int, explicit precision, non-exact.
+        x = real(1 << 345, 47)
+        self.assertEqual("7.167183174968973e+103", str(x))
+        self.assertEqual(x.prec, 47)
+
+        # Large int, explicit precision, exact.
+        x = real(-(1 << 100), 128)
+        self.assertEqual("-1.267650600228229401496703205376000000000e+30", str(x))
+        self.assertEqual(x.prec, 128)
+
+        # Long double.
+        x = real(ld("1.1"))
+        self.assertTrue("1.1000000" in str(x))
+        self.assertEqual(x.prec, np.finfo(ld).nmant + 1)
+        x = real(ld("-1.1"))
+        self.assertTrue("-1.100000" in str(x))
+
+        x = real(ld("1.1"), 53)
+        self.assertEqual(str(x), "1.1000000000000001")
+        self.assertEqual(x.prec, 53)
+        x = real(-ld("1.1"), 53)
+        self.assertEqual(str(x), "-1.1000000000000001")
+        self.assertEqual(x.prec, 53)
+
+
 class real128_test_case(_ut.TestCase):
     def runTest(self):
         from . import core
@@ -5887,6 +5983,7 @@ def run_test_suite():
     retval = 0
 
     suite = _ut.TestLoader().loadTestsFromTestCase(taylor_add_jet_test_case)
+    suite.addTest(real_test_case())
     suite.addTest(real128_test_case())
     suite.addTest(cfunc_test_case())
     suite.addTest(ensemble_test_case())
