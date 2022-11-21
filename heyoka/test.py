@@ -3097,7 +3097,9 @@ class sympy_test_case(_ut.TestCase):
                     )
                     self.assertEqual(
                         from_sympy(Rational(2**expo + 1, 2**128)),
-                        expression(np.longdouble(2**expo + 1) / np.longdouble(2**128)),
+                        expression(
+                            np.longdouble(2**expo + 1) / np.longdouble(2**128)
+                        ),
                     )
 
         # Too high precision.
@@ -5336,6 +5338,22 @@ class real128_test_case(_ut.TestCase):
             real128([])
         self.assertTrue(
             'Cannot construct a real128 from an object of type "list"'
+            in str(cm.exception)
+        )
+
+        # Check that the constructor takes exactly 1 argument.
+        with self.assertRaises(TypeError) as cm:
+            real128(1, prec=7)
+        self.assertTrue("function takes at most 1 argument" in str(cm.exception))
+
+        with self.assertRaises(TypeError) as cm:
+            real128(1, 2)
+        self.assertTrue("function takes at most 1 argument" in str(cm.exception))
+
+        with self.assertRaises(TypeError) as cm:
+            real128(prec=7)
+        self.assertTrue(
+            "'prec' is an invalid keyword argument for this function"
             in str(cm.exception)
         )
 
