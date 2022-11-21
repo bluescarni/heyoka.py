@@ -5307,6 +5307,12 @@ class real_test_case(_ut.TestCase):
         x = real(-1.1, 23)
         self.assertEqual(str(x), "-1.0999999")
 
+        with self.assertRaises(ValueError) as cm:
+            real(1.1, prec=-1)
+        self.assertTrue(
+            "Cannot set the precision of a real to the value -1" in str(cm.exception)
+        )
+
         # Constructor from int.
 
         # Small int, no precision.
@@ -5340,6 +5346,12 @@ class real_test_case(_ut.TestCase):
         self.assertEqual("-1.267650600228229401496703205376000000000e+30", str(x))
         self.assertEqual(x.prec, 128)
 
+        with self.assertRaises(ValueError) as cm:
+            real(1, prec=-1)
+        self.assertTrue(
+            "Cannot init a real with a precision of -1" in str(cm.exception)
+        )
+
         # Long double.
         x = real(ld("1.1"))
         self.assertTrue("1.1000000" in str(x))
@@ -5353,6 +5365,12 @@ class real_test_case(_ut.TestCase):
         x = real(-ld("1.1"), 53)
         self.assertEqual(str(x), "-1.1000000000000001")
         self.assertEqual(x.prec, 53)
+
+        with self.assertRaises(ValueError) as cm:
+            real(ld("1.1"), prec=-1)
+        self.assertTrue(
+            "Cannot set the precision of a real to the value -1" in str(cm.exception)
+        )
 
         # real128.
         if hasattr(core, "real128"):
@@ -5370,6 +5388,13 @@ class real_test_case(_ut.TestCase):
             x = real(real128("-1.1"), 23)
             self.assertEqual(str(x), "-1.0999999")
 
+            with self.assertRaises(ValueError) as cm:
+                real(real128("1.1"), prec=-1)
+            self.assertTrue(
+                "Cannot set the precision of a real to the value -1"
+                in str(cm.exception)
+            )
+
         # From real.
         x = real(real(1.1))
         self.assertEqual(str(x), "1.1000000000000001")
@@ -5383,6 +5408,12 @@ class real_test_case(_ut.TestCase):
         x = real(real(-1.1, 23))
         self.assertEqual(str(x), str(real(-1.1, 23)))
         self.assertEqual(x.prec, 23)
+
+        with self.assertRaises(ValueError) as cm:
+            real(real(1.1), prec=-1)
+        self.assertTrue(
+            "Cannot set the precision of a real to the value -1" in str(cm.exception)
+        )
 
         # Construction from string.
         x = real("1.1", 123)
@@ -5402,6 +5433,12 @@ class real_test_case(_ut.TestCase):
         self.assertTrue(
             "The string 'hello world' cannot be interpreted as a floating-point value in base 10"
             in str(cm.exception)
+        )
+
+        with self.assertRaises(ValueError) as cm:
+            real("hello world", prec=-1)
+        self.assertTrue(
+            "Cannot set the precision of a real to the value -1" in str(cm.exception)
         )
 
         # Construction from unsupported type.
