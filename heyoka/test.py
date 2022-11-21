@@ -5290,9 +5290,6 @@ class real_test_case(_ut.TestCase):
         # Check that the precision argument must be of the correct type.
         with self.assertRaises(TypeError) as cm:
             real(1, prec=[])
-        self.assertTrue(
-            "'list' object cannot be interpreted as an integer" in str(cm.exception)
-        )
 
         # Constructor from float.
         x = real(1.1)
