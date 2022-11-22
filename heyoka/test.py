@@ -5451,8 +5451,8 @@ class real_test_case(_ut.TestCase):
         if hasattr(core, "real128"):
             real128 = core.real128
 
-        self.assertEqual(str(real(2.0, 128) ** real128(3.0)), str(real(8.0, 128)))
-        self.assertEqual(str(real128(2.0) ** real(3.0, 128)), str(real(8.0, 128)))
+            self.assertEqual(str(real(2.0, 128) ** real128(3.0)), str(real(8.0, 128)))
+            self.assertEqual(str(real128(2.0) ** real(3.0, 128)), str(real(8.0, 128)))
 
         with self.assertRaises(TypeError) as cm:
             x ** []
