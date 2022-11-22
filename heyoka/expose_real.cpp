@@ -13,7 +13,9 @@
 #if defined(HEYOKA_HAVE_REAL)
 
 #include <cassert>
+#include <cmath>
 #include <cstddef>
+#include <functional>
 #include <limits>
 #include <new>
 #include <optional>
@@ -79,6 +81,34 @@ namespace
 // for py_real. See:
 // https://en.cppreference.com/w/cpp/types/max_align_t
 static_assert(alignof(py_real) <= alignof(std::max_align_t));
+
+// A few function object to implement basic mathematical
+// operations in a generic fashion.
+const auto identity_func = [](const auto &x) { return x; };
+
+const auto negation_func = [](const auto &x) { return -x; };
+
+const auto abs_func = [](const auto &x) {
+    using std::abs;
+
+    return abs(x);
+};
+
+const auto floor_divide_func = [](const auto &x, const auto &y) {
+    using std::floor;
+
+    return floor(x / y);
+};
+
+const auto pow_func = [](const auto &x, const auto &y) {
+    using std::pow;
+
+    return pow(x, y);
+};
+
+// Methods for the number protocol.
+// NOLINTNEXTLINE(cppcoreguidelines-avoid-non-const-global-variables)
+PyNumberMethods py_real_as_number = {};
 
 // Create a py_real containing an mppp::real
 // constructed from the input set of arguments.
@@ -479,6 +509,52 @@ void py_real_dealloc(PyObject *self)
     Py_TYPE(self)->tp_free(self);
 }
 
+// Helper to construct a real from one of the
+// supported Pythonic numerical types:
+// - int,
+// - float,
+// - long double,
+// - real128.
+// If the conversion is successful, returns {x, true}. If some error
+// is encountered, returns {<empty>, false}. If the type of arg is not
+// supported, returns {<empty>, true}.
+std::pair<std::optional<mppp::real>, bool> real_from_ob(PyObject *arg)
+{
+    std::pair<std::optional<mppp::real>, bool> ret;
+
+    with_pybind11_eh([&]() {
+        if (PyFloat_Check(arg)) {
+            auto fp_arg = PyFloat_AsDouble(arg);
+
+            if (PyErr_Occurred() == nullptr) {
+                ret.first.emplace(fp_arg);
+                ret.second = true;
+            } else {
+                ret.second = false;
+            }
+        } else if (PyLong_Check(arg)) {
+            if (auto opt = py_int_to_real(arg)) {
+                ret.first.emplace(std::move(*opt));
+                ret.second = true;
+            } else {
+                ret.second = false;
+            }
+        } else if (PyObject_IsInstance(arg, reinterpret_cast<PyObject *>(&PyLongDoubleArrType_Type)) != 0) {
+            ret.first.emplace(reinterpret_cast<PyLongDoubleScalarObject *>(arg)->obval);
+            ret.second = true;
+#if defined(HEYOKA_HAVE_REAL128)
+        } else if (py_real128_check(arg)) {
+            ret.first.emplace(*get_real128_val(arg));
+            ret.second = true;
+#endif
+        } else {
+            ret.second = true;
+        }
+    });
+
+    return ret;
+}
+
 // The precision getter.
 PyObject *py_real_prec_getter(PyObject *self, void *)
 {
@@ -491,6 +567,91 @@ PyObject *py_real_prec_getter(PyObject *self, void *)
 // https://docs.python.org/3/c-api/typeobj.html#c.PyTypeObject.tp_getset
 // NOLINTNEXTLINE(cppcoreguidelines-avoid-non-const-global-variables)
 PyGetSetDef py_real_get_set[] = {{"prec", py_real_prec_getter, nullptr, nullptr, nullptr}, {nullptr}};
+
+// Generic implementation of unary operations.
+template <typename F>
+PyObject *py_real_unop(PyObject *a, const F &op)
+{
+    if (py_real_check(a)) {
+        PyObject *ret = nullptr;
+        const auto *x = get_real_val(a);
+
+        // NOTE: if any exception is thrown in the C++ code, ret
+        // will stay (and the function will return null). This is in line
+        // with the requirements of the number protocol functions:
+        // https://docs.python.org/3/c-api/typeobj.html#c.PyNumberMethods
+        with_pybind11_eh([&]() { ret = py_real_from_args(op(*x)); });
+
+        return ret;
+    } else {
+        Py_RETURN_NOTIMPLEMENTED;
+    }
+}
+
+// Generic implementation of binary operations.
+template <typename F>
+PyObject *py_real_binop(PyObject *a, PyObject *b, const F &op)
+{
+    const auto a_is_real = py_real_check(a);
+    const auto b_is_real = py_real_check(b);
+
+    if (a_is_real && b_is_real) {
+        // Both operands are real.
+        const auto *x = get_real_val(a);
+        const auto *y = get_real_val(b);
+
+        PyObject *ret = nullptr;
+
+        with_pybind11_eh([&]() { ret = py_real_from_args(op(*x, *y)); });
+
+        return ret;
+    }
+
+    if (a_is_real) {
+        // a is a real, b is not. Try to convert
+        // b to a real.
+        auto p = real_from_ob(b);
+        auto &r = p.first;
+        auto &flag = p.second;
+
+        if (r) {
+            // The conversion was successful, do the op.
+            PyObject *ret = nullptr;
+            with_pybind11_eh([&]() { ret = py_real_from_args(op(*get_real_val(a), *r)); });
+            return ret;
+        }
+
+        if (flag) {
+            // b's type is not supported.
+            Py_RETURN_NOTIMPLEMENTED;
+        }
+
+        // Attempting to convert b to a real generated an error.
+        return nullptr;
+    }
+
+    if (b_is_real) {
+        // The mirror of the previous case.
+        auto p = real_from_ob(a);
+        auto &r = p.first;
+        auto &flag = p.second;
+
+        if (r) {
+            PyObject *ret = nullptr;
+            with_pybind11_eh([&]() { ret = py_real_from_args(op(*r, *get_real_val(b))); });
+            return ret;
+        }
+
+        if (flag) {
+            Py_RETURN_NOTIMPLEMENTED;
+        }
+
+        return nullptr;
+    }
+
+    // Neither a nor b are real.
+    Py_RETURN_NOTIMPLEMENTED;
+}
 
 } // namespace
 
@@ -522,9 +683,71 @@ void expose_real(py::module_ &m)
     py_real_type.tp_init = detail::py_real_init;
     py_real_type.tp_dealloc = detail::py_real_dealloc;
     py_real_type.tp_repr = detail::py_real_repr;
-    // py_real_type.tp_as_number = &detail::py_real_as_number;
+    py_real_type.tp_as_number = &detail::py_real_as_number;
     // py_real_type.tp_richcompare = &detail::py_real_rcmp;
     py_real_type.tp_getset = detail::py_real_get_set;
+
+    // Fill out the functions for the number protocol. See:
+    // https://docs.python.org/3/c-api/number.html
+    detail::py_real_as_number.nb_negative = [](PyObject *a) { return detail::py_real_unop(a, detail::negation_func); };
+    detail::py_real_as_number.nb_positive = [](PyObject *a) { return detail::py_real_unop(a, detail::identity_func); };
+    detail::py_real_as_number.nb_absolute = [](PyObject *a) { return detail::py_real_unop(a, detail::abs_func); };
+    detail::py_real_as_number.nb_add
+        = [](PyObject *a, PyObject *b) { return detail::py_real_binop(a, b, std::plus{}); };
+    detail::py_real_as_number.nb_subtract
+        = [](PyObject *a, PyObject *b) { return detail::py_real_binop(a, b, std::minus{}); };
+    detail::py_real_as_number.nb_multiply
+        = [](PyObject *a, PyObject *b) { return detail::py_real_binop(a, b, std::multiplies{}); };
+    detail::py_real_as_number.nb_true_divide
+        = [](PyObject *a, PyObject *b) { return detail::py_real_binop(a, b, std::divides{}); };
+    detail::py_real_as_number.nb_floor_divide
+        = [](PyObject *a, PyObject *b) { return detail::py_real_binop(a, b, detail::floor_divide_func); };
+    detail::py_real_as_number.nb_power = [](PyObject *a, PyObject *b, PyObject *mod) -> PyObject * {
+        if (mod != Py_None) {
+            PyErr_SetString(PyExc_ValueError, "Modular exponentiation is not supported for real");
+
+            return nullptr;
+        }
+
+        return detail::py_real_binop(a, b, detail::pow_func);
+    };
+    // NOTE: these conversions can never throw.
+    detail::py_real_as_number.nb_bool
+        = [](PyObject *arg) { return static_cast<int>(static_cast<bool>(*get_real_val(arg))); };
+    detail::py_real_as_number.nb_float
+        = [](PyObject *arg) { return PyFloat_FromDouble(static_cast<double>(*get_real_val(arg))); };
+    // NOTE: for large integers, this goes through a string conversion.
+    // Of course, this can be implemented much faster.
+    detail::py_real_as_number.nb_int = [](PyObject *arg) -> PyObject * {
+        using std::isfinite;
+        using std::isnan;
+
+        const auto &val = *get_real_val(arg);
+
+        if (isnan(val)) {
+            PyErr_SetString(PyExc_ValueError, "Cannot convert real NaN to integer");
+            return nullptr;
+        }
+
+        if (!isfinite(val)) {
+            PyErr_SetString(PyExc_OverflowError, "Cannot convert real infinity to integer");
+            return nullptr;
+        }
+
+        PyObject *retval = nullptr;
+
+        with_pybind11_eh([&]() {
+            const auto val_int = mppp::integer<1>{val};
+            long long candidate = 0;
+            if (val_int.get(candidate)) {
+                retval = PyLong_FromLongLong(candidate);
+            } else {
+                retval = PyLong_FromString(val_int.to_string().c_str(), nullptr, 10);
+            }
+        });
+
+        return retval;
+    };
 
     // Finalize py_real_type.
     if (PyType_Ready(&py_real_type) < 0) {

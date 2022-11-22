@@ -5266,6 +5266,214 @@ class real_test_case(_ut.TestCase):
             return
 
         self.test_ctor()
+        self.test_unary()
+        self.test_binary()
+        self.test_conversions()
+
+    def test_conversions(self):
+        from . import real
+
+        self.assertTrue(bool(real(1)))
+        self.assertFalse(bool(real(0)))
+        self.assertTrue(bool(real("nan", 32)))
+
+        self.assertEqual(1.1, float(real(1.1)))
+
+        self.assertEqual(int(real("1.23", 64)), 1)
+        self.assertEqual(int(real("-1.23", 64)), -1)
+        self.assertEqual(
+            int(real("1.1e100", prec=233)),
+            11000000000000000000000000000000000000000000000000000000000000000000000633825300114114700748351602688,
+        )
+
+        with self.assertRaises(ValueError) as cm:
+            int(real("nan", 32))
+        self.assertTrue("Cannot convert real NaN to integer" in str(cm.exception))
+
+        with self.assertRaises(OverflowError) as cm:
+            int(real("inf", 32))
+        self.assertTrue("Cannot convert real infinity to integer" in str(cm.exception))
+
+    def test_binary(self):
+        from . import real
+        from . import core
+        import numpy as np
+
+        ld = np.longdouble
+
+        # Plus.
+        x = real(1, 128)
+        y = real(-2, 128)
+        self.assertEqual(str(x + y), str(real(-1, 128)))
+
+        self.assertEqual(str(x + -2), str(real(-1, 128)))
+        self.assertEqual(str(1 + y), str(real(-1, 128)))
+
+        self.assertEqual(str(x + -2.0), str(real(-1, 128)))
+        self.assertEqual(str(1.0 + y), str(real(-1, 128)))
+
+        self.assertEqual(str(x + ld(-2.0)), str(real(-1, 128)))
+        # TODO check if this is fixed after we implement numpy support.
+        # self.assertEqual(str(ld(1.0) + y), str(real(-1, 128)))
+
+        # real128.
+        if hasattr(core, "real128"):
+            real128 = core.real128
+
+            self.assertEqual(str(x + real128(-2.0)), str(real(-1, 128)))
+            self.assertEqual(str(real128(1.0) + y), str(real(-1, 128)))
+
+        with self.assertRaises(TypeError) as cm:
+            x + []
+        with self.assertRaises(TypeError) as cm:
+            [] + x
+
+        # Minus.
+        x = real(1, 128)
+        y = real(-2, 128)
+        self.assertEqual(str(x - y), str(real(3, 128)))
+
+        self.assertEqual(str(x - -2), str(real(3, 128)))
+        self.assertEqual(str(1 - y), str(real(3, 128)))
+
+        self.assertEqual(str(x - -2.0), str(real(3, 128)))
+        self.assertEqual(str(1.0 - y), str(real(3, 128)))
+
+        self.assertEqual(str(x - ld(-2.0)), str(real(3, 128)))
+        # TODO check if this is fixed after we implement numpy support.
+        # self.assertEqual(str(ld(1.0) + y), str(real(3, 128)))
+
+        # real128.
+        if hasattr(core, "real128"):
+            real128 = core.real128
+
+            self.assertEqual(str(x - real128(-2.0)), str(real(3, 128)))
+            self.assertEqual(str(real128(1.0) - y), str(real(3, 128)))
+
+        with self.assertRaises(TypeError) as cm:
+            x - []
+        with self.assertRaises(TypeError) as cm:
+            [] - x
+
+        # Times.
+        x = real(1, 128)
+        y = real(-2, 128)
+        self.assertEqual(str(x * y), str(real(-2, 128)))
+
+        self.assertEqual(str(x * -2), str(real(-2, 128)))
+        self.assertEqual(str(1 * y), str(real(-2, 128)))
+
+        self.assertEqual(str(x * -2.0), str(real(-2, 128)))
+        self.assertEqual(str(1.0 * y), str(real(-2, 128)))
+
+        self.assertEqual(str(x * ld(-2.0)), str(real(-2, 128)))
+        # TODO check if this is fixed after we implement numpy support.
+        # self.assertEqual(str(ld(1.0) + y), str(real(-2, 128)))
+
+        # real128.
+        if hasattr(core, "real128"):
+            real128 = core.real128
+
+            self.assertEqual(str(x * real128(-2.0)), str(real(-2, 128)))
+            self.assertEqual(str(real128(1.0) * y), str(real(-2, 128)))
+
+        with self.assertRaises(TypeError) as cm:
+            x * []
+        with self.assertRaises(TypeError) as cm:
+            [] * x
+
+        # Div.
+        x = real(1, 128)
+        y = real(-2, 128)
+        self.assertEqual(str(x / y), str(real(-0.5, 128)))
+
+        self.assertEqual(str(x / -2), str(real(-0.5, 128)))
+        self.assertEqual(str(1 / y), str(real(-0.5, 128)))
+
+        self.assertEqual(str(x / -2.0), str(real(-0.5, 128)))
+        self.assertEqual(str(1.0 / y), str(real(-0.5, 128)))
+
+        self.assertEqual(str(x / ld(-2.0)), str(real(-0.5, 128)))
+        # TODO check if this is fixed after we implement numpy support.
+        # self.assertEqual(str(ld(1.0) + y), str(real(-0.5, 128)))
+
+        # real128.
+        if hasattr(core, "real128"):
+            real128 = core.real128
+
+            self.assertEqual(str(x / real128(-2.0)), str(real(-0.5, 128)))
+            self.assertEqual(str(real128(1.0) / y), str(real(-0.5, 128)))
+
+        with self.assertRaises(TypeError) as cm:
+            x / []
+        with self.assertRaises(TypeError) as cm:
+            [] / x
+
+        # Floor divide.
+        self.assertEqual(str(real(2.1) // real(1.1)), str(real(1.0)))
+
+        self.assertEqual(str(real(2.1, 128) // 1), str(real(2.0, 128)))
+        self.assertEqual(str(1 // real(2.1, 128)), str(real(0.0, 128)))
+
+        self.assertEqual(str(real(2.1, 128) // 1.0), str(real(2.0, 128)))
+        self.assertEqual(str(1.0 // real(2.1, 128)), str(real(0.0, 128)))
+
+        self.assertEqual(str(real(2.1, 128) // ld(1.0)), str(real(2.0, 128)))
+        # TODO check if this is fixed after we implement numpy support.
+        # self.assertEqual(str(ld(1.) // real(2.1, 128)), str(real(0.0, 128)))
+
+        # real128.
+        if hasattr(core, "real128"):
+            real128 = core.real128
+
+            self.assertEqual(str(real(2.1, 128) // real128(1)), str(real(2.0, 128)))
+            self.assertEqual(str(real128(1) // real(2.1, 128)), str(real(0.0, 128)))
+
+        with self.assertRaises(TypeError) as cm:
+            x // []
+        with self.assertRaises(TypeError) as cm:
+            [] // x
+
+        # pow.
+        self.assertEqual(str(real(2.0) ** real(3.0)), str(real(8.0)))
+
+        self.assertEqual(str(real(2.0, 128) ** 3), str(real(8.0, 128)))
+        self.assertEqual(str(2 ** real(3.0, 128)), str(real(8.0, 128)))
+
+        self.assertEqual(str(real(2.0, 128) ** 3.0), str(real(8.0, 128)))
+        self.assertEqual(str(2.0 ** real(3.0, 128)), str(real(8.0, 128)))
+
+        self.assertEqual(str(real(2.0, 128) ** ld(3.0)), str(real(8.0, 128)))
+        # TODO check if this is fixed after we implement numpy support.
+        # self.assertEqual(str(ld(2.0) ** real(3.0, 128)), str(real(8.0, 128)))
+
+        # real128.
+        if hasattr(core, "real128"):
+            real128 = core.real128
+
+        self.assertEqual(str(real(2.0, 128) ** real128(3.0)), str(real(8.0, 128)))
+        self.assertEqual(str(real128(2.0) ** real(3.0, 128)), str(real(8.0, 128)))
+
+        with self.assertRaises(TypeError) as cm:
+            x ** []
+        with self.assertRaises(TypeError) as cm:
+            [] ** x
+
+        with self.assertRaises(ValueError) as cm:
+            pow(real(2.0), real(3.0), mod=real(1.0))
+        self.assertTrue(
+            "Modular exponentiation is not supported for real" in str(cm.exception)
+        )
+
+    def test_unary(self):
+        from . import real
+
+        x = real("1.1", 512)
+        self.assertEqual(str(x), str(+x))
+
+        xm = real("-1.1", 512)
+        self.assertEqual(str(xm), str(-x))
+        self.assertEqual(str(abs(xm)), str(x))
 
     def test_ctor(self):
         from . import real
