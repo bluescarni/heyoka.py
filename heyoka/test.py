@@ -5269,6 +5269,128 @@ class real_test_case(_ut.TestCase):
         self.test_unary()
         self.test_binary()
         self.test_conversions()
+        self.test_comparisons()
+
+    def test_comparisons(self):
+        from . import real
+        from . import core
+        import numpy as np
+
+        ld = np.longdouble
+
+        # Equality
+        self.assertEqual(real(2), real(2))
+
+        self.assertEqual(real(2), 2)
+        self.assertEqual(2, real(2))
+
+        self.assertEqual(real(2), 2.0)
+        self.assertEqual(2.0, real(2))
+
+        self.assertEqual(real(2), ld(2.0))
+        # TODO check if this is fixed after we implement numpy support.
+        # self.assertEqual(ld(2.0), real(2))
+
+        if hasattr(core, "real128"):
+            real128 = core.real128
+
+            self.assertEqual(real(2), real128(2))
+            self.assertEqual(real128(2), real(2))
+
+        # Inquality
+        self.assertNotEqual(real(3), real(2))
+
+        self.assertNotEqual(real(3), 2)
+        self.assertNotEqual(3, real(2))
+
+        self.assertNotEqual(real(3), 2.0)
+        self.assertNotEqual(3.0, real(2))
+
+        self.assertNotEqual(real(3), ld(2.0))
+        # TODO check if this is fixed after we implement numpy support.
+        # self.assertNotEqual(ld(3.0), real(2))
+
+        if hasattr(core, "real128"):
+            real128 = core.real128
+
+            self.assertNotEqual(real(3), real128(2))
+            self.assertNotEqual(real128(2), real(3))
+
+        # Less than.
+        self.assertLess(real(1), real(2))
+
+        self.assertLess(real(1), 2)
+        self.assertLess(1, real(2))
+
+        self.assertLess(real(1), 2.0)
+        self.assertLess(1.0, real(2))
+
+        self.assertLess(real(1), ld(2.0))
+        # TODO check if this is fixed after we implement numpy support.
+        # self.assertLess(ld(1.0), real(2))
+
+        if hasattr(core, "real128"):
+            real128 = core.real128
+
+            self.assertLess(real(1), real128(2))
+            self.assertLess(real128(1), real(3))
+
+        # Less than/equal.
+        self.assertLessEqual(real(1), real(2))
+
+        self.assertLessEqual(real(2), 2)
+        self.assertLessEqual(1, real(2))
+
+        self.assertLessEqual(real(1), 2.0)
+        self.assertLessEqual(2.0, real(2))
+
+        self.assertLessEqual(real(1), ld(2.0))
+        # TODO check if this is fixed after we implement numpy support.
+        # self.assertLessEqual(ld(2.0), real(2))
+
+        if hasattr(core, "real128"):
+            real128 = core.real128
+
+            self.assertLessEqual(real(1), real128(2))
+            self.assertLessEqual(real128(3), real(3))
+
+        # Greater than.
+        self.assertGreater(real(3), real(2))
+
+        self.assertGreater(real(3), 2)
+        self.assertGreater(3, real(2))
+
+        self.assertGreater(real(3), 2.0)
+        self.assertGreater(3.0, real(2))
+
+        self.assertGreater(real(3), ld(2.0))
+        # TODO check if this is fixed after we implement numpy support.
+        # self.assertLess(ld(3.0), real(2))
+
+        if hasattr(core, "real128"):
+            real128 = core.real128
+
+            self.assertGreater(real(3), real128(2))
+            self.assertGreater(real128(3), real(2))
+
+        # Greater than/equal.
+        self.assertGreaterEqual(real(3), real(2))
+
+        self.assertGreaterEqual(real(3), 3)
+        self.assertGreaterEqual(3, real(2))
+
+        self.assertGreaterEqual(real(3), 3.0)
+        self.assertGreaterEqual(3.0, real(2))
+
+        self.assertGreaterEqual(real(3), ld(2.0))
+        # TODO check if this is fixed after we implement numpy support.
+        # self.assertLess(ld(3.0), real(3))
+
+        if hasattr(core, "real128"):
+            real128 = core.real128
+
+            self.assertGreaterEqual(real(3), real128(2))
+            self.assertGreaterEqual(real128(3), real(3))
 
     def test_conversions(self):
         from . import real

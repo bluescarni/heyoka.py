@@ -653,6 +653,91 @@ PyObject *py_real_binop(PyObject *a, PyObject *b, const F &op)
     Py_RETURN_NOTIMPLEMENTED;
 }
 
+// Rich comparison operator.
+// NOLINTNEXTLINE(readability-function-cognitive-complexity)
+PyObject *py_real_rcmp(PyObject *a, PyObject *b, int op)
+{
+    auto impl = [a, b](const auto &func) -> PyObject * {
+        const auto a_is_real = py_real_check(a);
+        const auto b_is_real = py_real_check(b);
+
+        if (a_is_real && b_is_real) {
+            // Both operands are real.
+            const auto *x = get_real_val(a);
+            const auto *y = get_real_val(b);
+
+            // NOTE: the standard comparison operators for mppp::real never throw,
+            // thus we never need to wrap the invocation of func() in the exception
+            // handling mechanism.
+            if (func(*x, *y)) {
+                Py_RETURN_TRUE;
+            } else {
+                Py_RETURN_FALSE;
+            }
+        }
+
+        if (a_is_real) {
+            // a is a real, b is not. Try to convert
+            // b to a real.
+            auto [r, flag] = real_from_ob(b);
+
+            if (r) {
+                // The conversion was successful, do the op.
+                if (func(*get_real_val(a), *r)) {
+                    Py_RETURN_TRUE;
+                } else {
+                    Py_RETURN_FALSE;
+                }
+            }
+
+            if (flag) {
+                // b's type is not supported.
+                Py_RETURN_NOTIMPLEMENTED;
+            }
+
+            // Attempting to convert b to a real generated an error.
+            return nullptr;
+        }
+
+        if (b_is_real) {
+            // The mirror of the previous case.
+            auto [r, flag] = real_from_ob(a);
+
+            if (r) {
+                if (func(*r, *get_real_val(b))) {
+                    Py_RETURN_TRUE;
+                } else {
+                    Py_RETURN_FALSE;
+                }
+            }
+
+            if (flag) {
+                Py_RETURN_NOTIMPLEMENTED;
+            }
+
+            return nullptr;
+        }
+
+        Py_RETURN_NOTIMPLEMENTED;
+    };
+
+    switch (op) {
+        case Py_LT:
+            return impl(std::less{});
+        case Py_LE:
+            return impl(std::less_equal{});
+        case Py_EQ:
+            return impl(std::equal_to{});
+        case Py_NE:
+            return impl(std::not_equal_to{});
+        case Py_GT:
+            return impl(std::greater{});
+        default:
+            assert(op == Py_GE);
+            return impl(std::greater_equal{});
+    }
+}
+
 } // namespace
 
 } // namespace detail
@@ -684,7 +769,7 @@ void expose_real(py::module_ &m)
     py_real_type.tp_dealloc = detail::py_real_dealloc;
     py_real_type.tp_repr = detail::py_real_repr;
     py_real_type.tp_as_number = &detail::py_real_as_number;
-    // py_real_type.tp_richcompare = &detail::py_real_rcmp;
+    py_real_type.tp_richcompare = &detail::py_real_rcmp;
     py_real_type.tp_getset = detail::py_real_get_set;
 
     // Fill out the functions for the number protocol. See:
