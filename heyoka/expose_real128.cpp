@@ -1129,6 +1129,8 @@ void expose_real128(py::module_ &m)
         = [](PyObject *arg) { return static_cast<int>(static_cast<bool>(*get_real128_val(arg))); };
     detail::py_real128_as_number.nb_float
         = [](PyObject *arg) { return PyFloat_FromDouble(static_cast<double>(*get_real128_val(arg))); };
+    // NOTE: for large integers, this goes through a string conversion.
+    // Of course, this can be implemented much faster.
     detail::py_real128_as_number.nb_int = [](PyObject *arg) -> PyObject * {
         using std::isfinite;
         using std::isnan;
