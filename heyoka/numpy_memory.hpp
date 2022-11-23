@@ -21,7 +21,12 @@
 namespace heyoka_py
 {
 
+namespace detail
+{
+
 void numpy_custom_free(void *, void *, std::size_t) noexcept;
+
+} // namespace detail
 
 // Metadata that will be associated to memory buffers
 // allocated and managed by NumPy to store the
@@ -48,7 +53,7 @@ private:
 
     // NOTE: numpy_custom_free requires access to ct_ptr/el_size
     // without having to go through the mutex.
-    friend void numpy_custom_free(void *, void *, std::size_t) noexcept;
+    friend void detail::numpy_custom_free(void *, void *, std::size_t) noexcept;
 
 public:
     // The only meaningful ctor.

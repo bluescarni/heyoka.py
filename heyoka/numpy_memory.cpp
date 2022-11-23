@@ -240,16 +240,14 @@ void *numpy_custom_realloc(void *, void *, std::size_t) noexcept
 
 } // namespace
 
-} // namespace detail
-
 void numpy_custom_free(void *, void *p, std::size_t sz) noexcept
 {
     if (sz != 0u && p != nullptr) {
-        detail::with_locked_memory_map([&](auto &) {
+        with_locked_memory_map([&](auto &) {
             auto *const cptr = reinterpret_cast<unsigned char *>(p);
 
-            auto it = detail::memory_map.find(cptr);
-            assert(it != detail::memory_map.end());
+            auto it = memory_map.find(cptr);
+            assert(it != memory_map.end());
 
             // NOTE: no need to lock to access ct_flags/el_size while freeing
             // the memory area.
@@ -271,7 +269,7 @@ void numpy_custom_free(void *, void *p, std::size_t sz) noexcept
                 std::unique_ptr<bool[]> ct_ptr(it->second.ct_flags);
             }
 
-            detail::memory_map.erase(it);
+            memory_map.erase(it);
         });
     }
 
@@ -279,18 +277,15 @@ void numpy_custom_free(void *, void *p, std::size_t sz) noexcept
     std::free(p);
 }
 
-namespace detail
-{
-
 namespace
 {
 
 // The NumPy custom memory handler.
 // NOLINTNEXTLINE(cppcoreguidelines-avoid-non-const-global-variables)
-PyDataMem_Handler npy_custom_mem_handler = {"npy_custom_allocator",
-                                            1,
-                                            {nullptr, detail::numpy_custom_malloc, detail::numpy_custom_calloc,
-                                             detail::numpy_custom_realloc, numpy_custom_free}};
+PyDataMem_Handler npy_custom_mem_handler
+    = {"npy_custom_allocator",
+       1,
+       {nullptr, numpy_custom_malloc, numpy_custom_calloc, numpy_custom_realloc, numpy_custom_free}};
 
 // Flag to signal if the default NumPy memory handler
 // has been overriden by npy_custom_mem_handler.
