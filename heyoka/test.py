@@ -5270,6 +5270,41 @@ class real_test_case(_ut.TestCase):
         self.test_binary()
         self.test_conversions()
         self.test_comparisons()
+        self.test_numpy_basic()
+
+    def test_numpy_basic(self):
+        from . import real
+        import numpy as np
+
+        arr = np.empty((5,), dtype=real)
+        for val in arr:
+            self.assertEqual(val, 0)
+            self.assertEqual(val.prec, real().prec)
+
+        # NOTE: zeros seems to just zero out the memory,
+        # so that it should be equivalent to empty() for real.
+        arr = np.zeros((5,), dtype=real)
+        for val in arr:
+            self.assertEqual(val, 0)
+            self.assertEqual(val.prec, real().prec)
+
+        arr[3] = real("1.1", 128)
+        self.assertEqual(arr[3], real("1.1", 128))
+        self.assertEqual(arr[3].prec, 128)
+
+        # NOTE: this invokes the copyswap primitive.
+        arr2 = np.copy(arr)
+
+        for _ in range(5):
+            self.assertEqual(arr[_], arr2[_])
+            self.assertEqual(arr[_].prec, arr2[_].prec)
+
+        arr2[3] = real()
+        self.assertNotEqual(arr2[3], arr[3])
+
+        # Test that byteswapping is forbidden.
+        with self.assertRaises(SystemError) as cm:
+            arr2.byteswap()
 
     def test_comparisons(self):
         from . import real
