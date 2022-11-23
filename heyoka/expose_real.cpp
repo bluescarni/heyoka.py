@@ -45,6 +45,7 @@
 
 #include "custom_casters.hpp"
 #include "expose_real.hpp"
+#include "numpy_memory.hpp"
 
 #if defined(HEYOKA_HAVE_REAL128)
 
@@ -70,6 +71,14 @@ namespace py = pybind11;
 // NOTE: more type properties will be filled in when initing the module.
 // NOLINTNEXTLINE(cppcoreguidelines-avoid-non-const-global-variables)
 PyTypeObject py_real_type = {PyVarObject_HEAD_INIT(nullptr, 0)};
+
+// NOTE: this is an integer used to represent the
+// real type *after* it has been registered in the
+// NumPy dtype system. This is needed to expose
+// ufuncs and it will be set up during module
+// initialisation.
+// NOLINTNEXTLINE(cppcoreguidelines-avoid-non-const-global-variables)
+int npy_registered_py_real = 0;
 
 namespace detail
 {
@@ -738,6 +747,141 @@ PyObject *py_real_rcmp(PyObject *a, PyObject *b, int op)
     }
 }
 
+// NumPy array function.
+// NOLINTNEXTLINE(cppcoreguidelines-avoid-non-const-global-variables)
+PyArray_ArrFuncs npy_py_real_arr_funcs = {};
+
+// NumPy type descriptor.
+// NOLINTNEXTLINE(cppcoreguidelines-avoid-non-const-global-variables)
+PyArray_Descr npy_py_real_descr = {PyObject_HEAD_INIT(0) & py_real_type};
+
+// The function used to destroy mppp::real instances
+// in NumPy arrays.
+void npy_real_dtor(unsigned char *ptr) noexcept
+{
+    std::launder(reinterpret_cast<mppp::real *>(ptr))->~real();
+}
+
+// Small helper to check if the input pointer is suitably
+// aligned for mppp::real.
+bool ptr_real_aligned(void *ptr)
+{
+    assert(ptr != nullptr);
+
+    auto space = sizeof(mppp::real);
+
+    return std::align(alignof(mppp::real), sizeof(mppp::real), ptr, space) != nullptr;
+}
+
+// Array getitem.
+PyObject *npy_py_real_getitem(void *data, void *arr)
+{
+    assert(PyArray_Check(reinterpret_cast<PyObject *>(arr)) != 0);
+
+    // NOTE: getitem could be invoked with misaligned data.
+    // Detect such occurrence and error out.
+    if (!ptr_real_aligned(data)) {
+        PyErr_SetString(PyExc_ValueError, "Cannot invoke __getitem__() on misaligned real data");
+        return nullptr;
+    }
+
+    PyObject *ret = nullptr;
+
+    with_pybind11_eh([&]() {
+        if (auto *rptr = numpy_check_cted<mppp::real>(data, npy_real_dtor)) {
+            ret = py_real_from_args(*rptr);
+        } else {
+            ret = py_real_from_args();
+        }
+    });
+
+    return ret;
+}
+
+// Array setitem.
+int npy_py_real_setitem(PyObject *item, void *data, void *arr)
+{
+    assert(PyArray_Check(reinterpret_cast<PyObject *>(arr)) != 0);
+
+    // NOTE: getitem could be invoked with misaligned data.
+    // Detect such occurrence and error out.
+    if (!ptr_real_aligned(data)) {
+        PyErr_SetString(PyExc_ValueError, "Cannot invoke __setitem__() on misaligned real data");
+        return -1;
+    }
+
+    // TODO handle other types.
+    if (!py_real_check(item)) {
+        PyErr_Format(PyExc_TypeError, "Cannot invoke __setitem__() on a real array with an input value of type \"%s\"",
+                     Py_TYPE(item)->tp_name);
+        return -1;
+    }
+
+    const auto &src_val = *get_real_val(item);
+
+    auto ptr_opt = numpy_ensure_cted<mppp::real>(data, npy_real_dtor);
+    if (!ptr_opt) {
+        return -1;
+    }
+
+    const auto err = with_pybind11_eh([&]() { **ptr_opt = src_val; });
+
+    return err ? -1 : 0;
+}
+
+// Copyswap primitive.
+// NOTE: apparently there's no mechanism to directly report an error from this
+// function, as it returns void. As a consequence, in case of errors Python throws
+// a generic SystemError (rather than the exception of our choice) and complains that
+// the function "returned a result with an exception set". This is not optimal,
+// but better than just crashing I guess?
+void npy_py_real_copyswap(void *dst, void *src, int swap, void *arr)
+{
+    assert(PyArray_Check(reinterpret_cast<PyObject *>(arr)) != 0);
+
+    if (swap != 0) {
+        PyErr_SetString(PyExc_ValueError, "Cannot byteswap real arrays");
+        return;
+    }
+
+    if (src == nullptr) {
+        return;
+    }
+
+    assert(dst != nullptr);
+
+    // NOTE: copyswap could be invoked with misaligned data.
+    // Detect such occurrence and error out.
+    if (!ptr_real_aligned(src)) {
+        PyErr_SetString(PyExc_ValueError, "Cannot copyswap() misaligned real data");
+        return;
+    }
+    if (!ptr_real_aligned(dst)) {
+        PyErr_SetString(PyExc_ValueError, "Cannot copyswap() misaligned real data");
+        return;
+    }
+
+    // Ensure that the destination contains a real, first and foremost.
+    auto dst_x_opt = numpy_ensure_cted<mppp::real>(dst, npy_real_dtor);
+    if (!dst_x_opt) {
+        // numpy_ensure_cted generated an error, exit.
+        return;
+    }
+
+    // Check if the source contains a real.
+    auto *src_x = numpy_check_cted<mppp::real>(src, npy_real_dtor);
+
+    // NOTE: if a C++ exception is thrown here, dst is not modified
+    // and an error code will have been set.
+    with_pybind11_eh([&]() {
+        if (src_x != nullptr) {
+            **dst_x_opt = *src_x;
+        } else {
+            **dst_x_opt = mppp::real{};
+        }
+    });
+}
+
 } // namespace
 
 } // namespace detail
@@ -758,6 +902,9 @@ mppp::real *get_real_val(PyObject *self)
 
 void expose_real(py::module_ &m)
 {
+    // Install the custom NumPy memory management functions.
+    install_custom_numpy_mem_handler();
+
     // Fill out the entries of py_real_type.
     py_real_type.tp_base = &PyGenericArrType_Type;
     py_real_type.tp_name = "heyoka.core.real";
@@ -837,6 +984,58 @@ void expose_real(py::module_ &m)
     // Finalize py_real_type.
     if (PyType_Ready(&py_real_type) < 0) {
         py_throw(PyExc_TypeError, "Could not finalise the real type");
+    }
+
+    // Fill out the NumPy descriptor.
+    detail::npy_py_real_descr.kind = 'f';
+    detail::npy_py_real_descr.type = 'r';
+    detail::npy_py_real_descr.byteorder = '=';
+    detail::npy_py_real_descr.flags = NPY_NEEDS_PYAPI | NPY_USE_GETITEM | NPY_USE_SETITEM;
+    detail::npy_py_real_descr.elsize = sizeof(mppp::real);
+    detail::npy_py_real_descr.alignment = alignof(mppp::real);
+    detail::npy_py_real_descr.f = &detail::npy_py_real_arr_funcs;
+
+    // Setup the basic NumPy array functions.
+    // NOTE: not 100% sure PyArray_InitArrFuncs() is needed, as npy_py_real_arr_funcs
+    // is already cleared out on creation.
+    PyArray_InitArrFuncs(&detail::npy_py_real_arr_funcs);
+    detail::npy_py_real_arr_funcs.getitem = detail::npy_py_real_getitem;
+    detail::npy_py_real_arr_funcs.setitem = detail::npy_py_real_setitem;
+    detail::npy_py_real_arr_funcs.copyswap = detail::npy_py_real_copyswap;
+    // NOTE: in recent NumPy versions, there's apparently no need to provide
+    // an implementation for this, as NumPy is capable of synthesising an
+    // implementation based on copyswap. If needed, we could consider
+    // a custom implementation to improve performance.
+    // detail::npy_py_real_arr_funcs.copyswapn = detail::npy_py_real_copyswapn;
+#if 0
+    detail::npy_py_real128_arr_funcs.compare = detail::npy_py_real128_compare;
+    detail::npy_py_real128_arr_funcs.argmin = [](void *data, npy_intp n, npy_intp *max_ind, void *) {
+        return detail::npy_py_real128_argminmax(data, n, max_ind, std::less{});
+    };
+    detail::npy_py_real128_arr_funcs.argmax = [](void *data, npy_intp n, npy_intp *max_ind, void *) {
+        return detail::npy_py_real128_argminmax(data, n, max_ind, std::greater{});
+    };
+    detail::npy_py_real128_arr_funcs.nonzero = detail::npy_py_real128_nonzero;
+    detail::npy_py_real128_arr_funcs.fill = detail::npy_py_real128_fill;
+    detail::npy_py_real128_arr_funcs.fillwithscalar = detail::npy_py_real128_fillwithscalar;
+    detail::npy_py_real128_arr_funcs.dotfunc = detail::npy_py_real128_dot;
+    // NOTE: not sure if this is needed - it does not seem to have
+    // any effect and the online examples of user dtypes do not set it.
+    // Let's leave it commented out at this time.
+    // detail::npy_py_real128_arr_funcs.scalarkind = [](void *) -> int { return NPY_FLOAT_SCALAR; };
+#endif
+
+    // Register the NumPy data type.
+    Py_SET_TYPE(&detail::npy_py_real_descr, &PyArrayDescr_Type);
+    npy_registered_py_real = PyArray_RegisterDataType(&detail::npy_py_real_descr);
+    if (npy_registered_py_real < 0) {
+        py_throw(PyExc_TypeError, "Could not register the real type in NumPy");
+    }
+
+    // Support the dtype(real) syntax.
+    if (PyDict_SetItemString(py_real_type.tp_dict, "dtype", reinterpret_cast<PyObject *>(&detail::npy_py_real_descr))
+        < 0) {
+        py_throw(PyExc_TypeError, "Cannot add the 'dtype' field to the real class");
     }
 
     // Add py_real_type to the module.
