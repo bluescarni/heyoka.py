@@ -39,15 +39,15 @@
 namespace heyoka_py
 {
 
-numpy_mem_metadata::numpy_mem_metadata(std::size_t size) noexcept : tot_size(size)
+numpy_mem_metadata::numpy_mem_metadata(std::size_t size) noexcept : m_tot_size(size)
 {
     // NOTE: metadata not needed/supported for empty buffers.
     assert(size > 0u);
 }
 
 // This function will ensure that this contains an array
-// of construction flags ct_flags for elements of size sz.
-// If it does not, it will create a new array of tot_size / sz
+// of construction flags m_ct_flags for elements of size sz.
+// If it does not, it will create a new array of m_tot_size / sz
 // flags all inited to false. This function can be
 // invoked concurrently from multiple threads.
 // dtor_func is a function that will be invoked to destroy
@@ -55,26 +55,26 @@ numpy_mem_metadata::numpy_mem_metadata(std::size_t size) noexcept : tot_size(siz
 bool *numpy_mem_metadata::ensure_ct_flags_inited_impl(std::size_t sz, dtor_func_t dtor_func) noexcept
 {
     assert(sz > 0u);
-    assert(tot_size > 0u);
-    assert(tot_size % sz == 0u);
+    assert(m_tot_size > 0u);
+    assert(m_tot_size % sz == 0u);
 
-    std::lock_guard lock(mut);
+    std::lock_guard lock(m_mut);
 
-    if (ct_flags == nullptr) {
-        assert(el_size == 0u);
+    if (m_ct_flags == nullptr) {
+        assert(m_el_size == 0u);
         assert(m_dtor_func == nullptr);
 
         // Init a new array of flags.
         // NOTE: this will init all flags to false.
         // NOTE: this could in principle throw, in which case the application will
         // exit - this seems fine as it signals an out of memory condition.
-        auto new_ct_flags = std::make_unique<bool[]>(tot_size / sz);
+        auto new_ct_flags = std::make_unique<bool[]>(m_tot_size / sz);
 
         // Assign the new array of flags.
-        ct_flags = new_ct_flags.release();
+        m_ct_flags = new_ct_flags.release();
 
         // Assign the element size and the dtor.
-        el_size = sz;
+        m_el_size = sz;
         m_dtor_func = dtor_func;
     }
 
@@ -83,9 +83,9 @@ bool *numpy_mem_metadata::ensure_ct_flags_inited_impl(std::size_t sz, dtor_func_
     // wrapped in an inline function and perhaps there's a chance
     // different translation units end up with different function
     // pointers for the same lambda...
-    assert(el_size == sz);
+    assert(m_el_size == sz);
 
-    return ct_flags;
+    return m_ct_flags;
 }
 
 namespace detail
@@ -137,7 +137,7 @@ std::pair<unsigned char *, numpy_mem_metadata *> get_memory_metadata(void *ptr) 
         // using std::greater as comparator, rather than the default std::less).
         auto it = detail::memory_map.lower_bound(cptr);
 
-        if (it == detail::memory_map.end() || !std::less{}(cptr, it->first + it->second.tot_size)) {
+        if (it == detail::memory_map.end() || !std::less{}(cptr, it->first + it->second.m_tot_size)) {
             // ptr does not belong to any memory area managed by NumPy.
             return {nullptr, nullptr};
         } else {
@@ -253,24 +253,24 @@ void numpy_custom_free(void *, void *p, std::size_t sz) noexcept
             auto it = memory_map.find(cptr);
             assert(it != memory_map.end());
 
-            // NOTE: no need to lock to access ct_flags/el_size while freeing
+            // NOTE: no need to lock to access m_ct_flags/m_el_size while freeing
             // the memory area.
-            if (it->second.ct_flags != nullptr) {
-                assert(it->second.el_size != 0u);
-                assert(it->second.tot_size != 0u);
-                assert(it->second.tot_size % it->second.el_size == 0u);
+            if (it->second.m_ct_flags != nullptr) {
+                assert(it->second.m_el_size != 0u);
+                assert(it->second.m_tot_size != 0u);
+                assert(it->second.m_tot_size % it->second.m_el_size == 0u);
                 assert(it->second.m_dtor_func != nullptr);
 
-                const std::size_t n_elems = it->second.tot_size / it->second.el_size;
+                const std::size_t n_elems = it->second.m_tot_size / it->second.m_el_size;
                 for (std::size_t i = 0; i < n_elems; ++i) {
-                    if (it->second.ct_flags[i]) {
-                        auto *cur_ptr = cptr + i * it->second.el_size;
+                    if (it->second.m_ct_flags[i]) {
+                        auto *cur_ptr = cptr + i * it->second.m_el_size;
                         it->second.m_dtor_func(cur_ptr);
                     }
                 }
 
                 // Delete ct_ptr.
-                std::unique_ptr<bool[]> ct_ptr(it->second.ct_flags);
+                std::unique_ptr<bool[]> ct_ptr(it->second.m_ct_flags);
             }
 
             memory_map.erase(it);

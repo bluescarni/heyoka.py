@@ -43,7 +43,7 @@ struct numpy_mem_metadata {
     // Total size in bytes of the memory buffer
     // associated to this metadata instance.
     // NOLINTNEXTLINE(cppcoreguidelines-non-private-member-variables-in-classes,misc-non-private-member-variables-in-classes)
-    const std::size_t tot_size;
+    const std::size_t m_tot_size;
 
 private:
     // The function to be used to destroy the array
@@ -51,12 +51,12 @@ private:
     using dtor_func_t = void (*)(unsigned char *) noexcept;
 
     // Mutex to synchronise access from multiple threads.
-    std::mutex mut;
+    std::mutex m_mut;
     // NOTE: keep these private so we are sure
     // that we always interact with them in a
     // thread-safe manner.
-    bool *ct_flags = nullptr;
-    std::size_t el_size = 0;
+    bool *m_ct_flags = nullptr;
+    std::size_t m_el_size = 0;
     dtor_func_t m_dtor_func = nullptr;
 
     // NOTE: numpy_custom_free requires access to ct_ptr/el_size
