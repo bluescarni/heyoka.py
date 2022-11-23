@@ -875,6 +875,25 @@ void npy_py_real_copyswap(void *dst, void *src, int swap, void *arr)
     });
 }
 
+// Nonzero primitive.
+npy_bool npy_py_real_nonzero(void *data, void *)
+{
+    if (!ptr_real_aligned(data)) {
+        PyErr_SetString(PyExc_ValueError, "Cannot detect nonzero elements in an array of misaligned real data");
+        return NPY_FALSE;
+    }
+
+    // Check if the source contains a real.
+    auto *x_ptr = numpy_check_cted<mppp::real>(data);
+
+    if (x_ptr == nullptr) {
+        return NPY_FALSE;
+    } else {
+        // NOTE: no exceptions are possible here.
+        return x_ptr->zero_p() ? NPY_FALSE : NPY_TRUE;
+    }
+}
+
 } // namespace
 
 } // namespace detail
@@ -992,6 +1011,10 @@ void expose_real(py::module_ &m)
     // NOTE: not 100% sure PyArray_InitArrFuncs() is needed, as npy_py_real_arr_funcs
     // is already cleared out on creation.
     PyArray_InitArrFuncs(&detail::npy_py_real_arr_funcs);
+    // NOTE: get/set item, copyswap and nonzero are the functions that
+    // need to be able to deal with "misbehaved" array:
+    // https://numpy.org/doc/stable/reference/c-api/types-and-structures.html
+    // Hence, we group the together at the beginning.
     detail::npy_py_real_arr_funcs.getitem = detail::npy_py_real_getitem;
     detail::npy_py_real_arr_funcs.setitem = detail::npy_py_real_setitem;
     detail::npy_py_real_arr_funcs.copyswap = detail::npy_py_real_copyswap;
@@ -1000,6 +1023,7 @@ void expose_real(py::module_ &m)
     // implementation based on copyswap. If needed, we could consider
     // a custom implementation to improve performance.
     // detail::npy_py_real_arr_funcs.copyswapn = detail::npy_py_real_copyswapn;
+    detail::npy_py_real_arr_funcs.nonzero = detail::npy_py_real_nonzero;
 #if 0
     detail::npy_py_real128_arr_funcs.compare = detail::npy_py_real128_compare;
     detail::npy_py_real128_arr_funcs.argmin = [](void *data, npy_intp n, npy_intp *max_ind, void *) {
@@ -1008,7 +1032,6 @@ void expose_real(py::module_ &m)
     detail::npy_py_real128_arr_funcs.argmax = [](void *data, npy_intp n, npy_intp *max_ind, void *) {
         return detail::npy_py_real128_argminmax(data, n, max_ind, std::greater{});
     };
-    detail::npy_py_real128_arr_funcs.nonzero = detail::npy_py_real128_nonzero;
     detail::npy_py_real128_arr_funcs.fill = detail::npy_py_real128_fill;
     detail::npy_py_real128_arr_funcs.fillwithscalar = detail::npy_py_real128_fillwithscalar;
     detail::npy_py_real128_arr_funcs.dotfunc = detail::npy_py_real128_dot;

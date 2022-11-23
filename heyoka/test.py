@@ -5306,6 +5306,17 @@ class real_test_case(_ut.TestCase):
         with self.assertRaises(SystemError) as cm:
             arr2.byteswap()
 
+        # Nonzero.
+        arr = np.zeros((5,), dtype=real)
+        nz = arr.nonzero()
+        self.assertEqual(len(nz[0]), 0)
+        arr[3] = real(1.1)
+        nz = arr.nonzero()
+        self.assertTrue(np.all(nz[0] == np.array([3])))
+        arr[0] = real(float("nan"))
+        nz = arr.nonzero()
+        self.assertTrue(np.all(nz[0] == np.array([0, 3])))
+
     def test_comparisons(self):
         from . import real
         from . import core
