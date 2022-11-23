@@ -13,7 +13,7 @@ export PATH="$HOME/miniconda/bin:$PATH"
 bash miniconda.sh -b -p $HOME/miniconda
 conda config --add channels conda-forge
 conda config --set channel_priority strict
-conda create -y -q -p $deps_dir python=3.10 git pybind11 numpy cmake llvmdev tbb-devel tbb astroquery boost-cpp sleef fmt spdlog sympy cloudpickle
+conda create -y -q -p $deps_dir python=3.10 git pybind11 numpy cmake llvmdev tbb-devel tbb astroquery boost-cpp sleef fmt spdlog sympy cloudpickle mppp
 source activate $deps_dir
 
 # Checkout, build and install heyoka's HEAD.
@@ -22,7 +22,7 @@ cd heyoka_cpp
 mkdir build
 cd build
 
-cmake ../ -DCMAKE_INSTALL_PREFIX=$deps_dir -DCMAKE_PREFIX_PATH=$deps_dir -DCMAKE_BUILD_TYPE=Debug -DHEYOKA_WITH_SLEEF=yes -DBoost_NO_BOOST_CMAKE=ON
+cmake ../ -DCMAKE_INSTALL_PREFIX=$deps_dir -DCMAKE_PREFIX_PATH=$deps_dir -DCMAKE_BUILD_TYPE=Debug -DHEYOKA_WITH_SLEEF=yes -DBoost_NO_BOOST_CMAKE=ON -DHEYOKA_WITH_MPPP=yes
 make -j2 VERBOSE=1 install
 
 cd ../../
