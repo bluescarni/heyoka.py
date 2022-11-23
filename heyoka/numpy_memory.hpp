@@ -18,6 +18,14 @@
 
 #include "common_utils.hpp"
 
+#if defined(__GNUC__)
+
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wmissing-field-initializers"
+#pragma GCC diagnostic ignored "-Wcast-align"
+
+#endif
+
 namespace heyoka_py
 {
 
@@ -37,11 +45,11 @@ struct numpy_mem_metadata {
     // NOLINTNEXTLINE(cppcoreguidelines-non-private-member-variables-in-classes,misc-non-private-member-variables-in-classes)
     const std::size_t tot_size;
 
+private:
     // The function to be used to destroy the array
     // elements when the array is garbage collected.
     using dtor_func_t = void (*)(unsigned char *) noexcept;
 
-private:
     // Mutex to synchronise access from multiple threads.
     std::mutex mut;
     // NOTE: keep these private so we are sure
@@ -54,6 +62,8 @@ private:
     // NOTE: numpy_custom_free requires access to ct_ptr/el_size
     // without having to go through the mutex.
     friend void detail::numpy_custom_free(void *, void *, std::size_t) noexcept;
+
+    bool *ensure_ct_flags_inited_impl(std::size_t, dtor_func_t) noexcept;
 
 public:
     // The only meaningful ctor.
@@ -71,7 +81,12 @@ public:
     numpy_mem_metadata &operator=(const numpy_mem_metadata &) = delete;
     numpy_mem_metadata &operator=(numpy_mem_metadata &&) noexcept = delete;
 
-    bool *ensure_ct_flags_inited(std::size_t, dtor_func_t) noexcept;
+    template <typename T>
+    bool *ensure_ct_flags_inited() noexcept
+    {
+        return ensure_ct_flags_inited_impl(
+            sizeof(T), [](unsigned char *ptr) noexcept { std::launder(reinterpret_cast<T *>(ptr))->~T(); });
+    }
 };
 
 std::pair<unsigned char *, numpy_mem_metadata *> get_memory_metadata(void *) noexcept;
@@ -85,10 +100,9 @@ void install_custom_numpy_mem_handler();
 // - returns nullptr in case the memory address contains an uninitialised T.
 //
 // If ptr belongs to a memory area not allocated by NumPy, this function will
-// assume that someone took care of constructing a T in ptr. dtor_func is the function
-// to be used to destroy T values stored in the array.
+// assume that someone took care of constructing a T in ptr.
 template <typename T>
-T *numpy_check_cted(void *ptr, numpy_mem_metadata::dtor_func_t dtor_func) noexcept
+T *numpy_check_cted(void *ptr) noexcept
 {
     assert(ptr != nullptr);
 
@@ -107,7 +121,7 @@ T *numpy_check_cted(void *ptr, numpy_mem_metadata::dtor_func_t dtor_func) noexce
 
     // The memory area is managed by NumPy.
     // Fetch the array of construction flags.
-    const auto *ct_flags = meta_ptr->ensure_ct_flags_inited(sizeof(T), dtor_func);
+    const auto *ct_flags = meta_ptr->ensure_ct_flags_inited<T>();
 
     // Compute the position of ptr in the memory area.
     const auto bytes_idx = reinterpret_cast<unsigned char *>(ptr) - base_ptr;
@@ -132,14 +146,13 @@ T *numpy_check_cted(void *ptr, numpy_mem_metadata::dtor_func_t dtor_func) noexce
 // at the memory address, then ptr will be returned without taking
 // further actions. Otherwise, a T will be default-constructed
 // at the memory address, and ptr will then be returned.
-// dtor_func is the function to be used to destroy T values stored in the array.
 //
 // If ptr belongs to a memory area not allocated by NumPy, this function
 // will assume that someone took care of constructing an T in ptr.
 // If the default construction of a T throws, the error flag will be set
 // and an empty optional will be returned.
 template <typename T, typename... Args>
-std::optional<T *> numpy_ensure_cted(void *ptr, numpy_mem_metadata::dtor_func_t dtor_func, Args &&...args) noexcept
+std::optional<T *> numpy_ensure_cted(void *ptr, Args &&...args) noexcept
 {
     assert(ptr != nullptr);
 
@@ -158,7 +171,7 @@ std::optional<T *> numpy_ensure_cted(void *ptr, numpy_mem_metadata::dtor_func_t 
 
     // The memory area is managed by NumPy.
     // Fetch the array of construction flags.
-    auto *ct_flags = meta_ptr->ensure_ct_flags_inited(sizeof(T), dtor_func);
+    auto *ct_flags = meta_ptr->ensure_ct_flags_inited<T>();
 
     // Compute the position of ptr in the memory area.
     auto bytes_idx = reinterpret_cast<unsigned char *>(ptr) - base_ptr;
@@ -185,5 +198,11 @@ std::optional<T *> numpy_ensure_cted(void *ptr, numpy_mem_metadata::dtor_func_t 
 }
 
 } // namespace heyoka_py
+
+#if defined(__GNUC__)
+
+#pragma GCC diagnostic pop
+
+#endif
 
 #endif

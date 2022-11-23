@@ -755,13 +755,6 @@ PyArray_ArrFuncs npy_py_real_arr_funcs = {};
 // NOLINTNEXTLINE(cppcoreguidelines-avoid-non-const-global-variables)
 PyArray_Descr npy_py_real_descr = {PyObject_HEAD_INIT(0) & py_real_type};
 
-// The function used to destroy mppp::real instances
-// in NumPy arrays.
-void npy_real_dtor(unsigned char *ptr) noexcept
-{
-    std::launder(reinterpret_cast<mppp::real *>(ptr))->~real();
-}
-
 // Small helper to check if the input pointer is suitably
 // aligned for mppp::real.
 bool ptr_real_aligned(void *ptr)
@@ -788,7 +781,7 @@ PyObject *npy_py_real_getitem(void *data, void *arr)
     PyObject *ret = nullptr;
 
     with_pybind11_eh([&]() {
-        if (auto *rptr = numpy_check_cted<mppp::real>(data, npy_real_dtor)) {
+        if (auto *rptr = numpy_check_cted<mppp::real>(data)) {
             ret = py_real_from_args(*rptr);
         } else {
             ret = py_real_from_args();
@@ -819,7 +812,7 @@ int npy_py_real_setitem(PyObject *item, void *data, void *arr)
 
     const auto &src_val = *get_real_val(item);
 
-    auto ptr_opt = numpy_ensure_cted<mppp::real>(data, npy_real_dtor);
+    auto ptr_opt = numpy_ensure_cted<mppp::real>(data);
     if (!ptr_opt) {
         return -1;
     }
@@ -862,14 +855,14 @@ void npy_py_real_copyswap(void *dst, void *src, int swap, void *arr)
     }
 
     // Ensure that the destination contains a real, first and foremost.
-    auto dst_x_opt = numpy_ensure_cted<mppp::real>(dst, npy_real_dtor);
+    auto dst_x_opt = numpy_ensure_cted<mppp::real>(dst);
     if (!dst_x_opt) {
         // numpy_ensure_cted generated an error, exit.
         return;
     }
 
     // Check if the source contains a real.
-    auto *src_x = numpy_check_cted<mppp::real>(src, npy_real_dtor);
+    auto *src_x = numpy_check_cted<mppp::real>(src);
 
     // NOTE: if a C++ exception is thrown here, dst is not modified
     // and an error code will have been set.

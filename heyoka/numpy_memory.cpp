@@ -52,7 +52,7 @@ numpy_mem_metadata::numpy_mem_metadata(std::size_t size) noexcept : tot_size(siz
 // invoked concurrently from multiple threads.
 // dtor_func is a function that will be invoked to destroy
 // the elements allocated in the memory buffer when it is deallocated.
-bool *numpy_mem_metadata::ensure_ct_flags_inited(std::size_t sz, dtor_func_t dtor_func) noexcept
+bool *numpy_mem_metadata::ensure_ct_flags_inited_impl(std::size_t sz, dtor_func_t dtor_func) noexcept
 {
     assert(sz > 0u);
     assert(tot_size > 0u);
@@ -78,8 +78,12 @@ bool *numpy_mem_metadata::ensure_ct_flags_inited(std::size_t sz, dtor_func_t dto
         m_dtor_func = dtor_func;
     }
 
+    // NOTE: not sure if we can assert m_dtor_func == dtor_func
+    // here, since dtor_func is ultimately produced from a lambda
+    // wrapped in an inline function and perhaps there's a chance
+    // different translation units end up with different function
+    // pointers for the same lambda...
     assert(el_size == sz);
-    assert(m_dtor_func == dtor_func);
 
     return ct_flags;
 }
