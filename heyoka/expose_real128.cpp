@@ -1180,10 +1180,15 @@ void expose_real128(py::module_ &m)
     // NOTE: not 100% sure PyArray_InitArrFuncs() is needed, as npy_py_real128_arr_funcs
     // is already cleared out on creation.
     PyArray_InitArrFuncs(&detail::npy_py_real128_arr_funcs);
+    // NOTE: get/set item, copyswap and nonzero are the functions that
+    // need to be able to deal with "misbehaved" array:
+    // https://numpy.org/doc/stable/reference/c-api/types-and-structures.html
+    // Hence, we group the together at the beginning.
     detail::npy_py_real128_arr_funcs.getitem = detail::npy_py_real128_getitem;
     detail::npy_py_real128_arr_funcs.setitem = detail::npy_py_real128_setitem;
     detail::npy_py_real128_arr_funcs.copyswap = detail::npy_py_real128_copyswap;
     detail::npy_py_real128_arr_funcs.copyswapn = detail::npy_py_real128_copyswapn;
+    detail::npy_py_real128_arr_funcs.nonzero = detail::npy_py_real128_nonzero;
     detail::npy_py_real128_arr_funcs.compare = detail::npy_py_real128_compare;
     detail::npy_py_real128_arr_funcs.argmin = [](void *data, npy_intp n, npy_intp *max_ind, void *) {
         return detail::npy_py_real128_argminmax(data, n, max_ind, std::less{});
@@ -1191,7 +1196,6 @@ void expose_real128(py::module_ &m)
     detail::npy_py_real128_arr_funcs.argmax = [](void *data, npy_intp n, npy_intp *max_ind, void *) {
         return detail::npy_py_real128_argminmax(data, n, max_ind, std::greater{});
     };
-    detail::npy_py_real128_arr_funcs.nonzero = detail::npy_py_real128_nonzero;
     detail::npy_py_real128_arr_funcs.fill = detail::npy_py_real128_fill;
     detail::npy_py_real128_arr_funcs.fillwithscalar = detail::npy_py_real128_fillwithscalar;
     detail::npy_py_real128_arr_funcs.dotfunc = detail::npy_py_real128_dot;
