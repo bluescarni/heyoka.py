@@ -14,6 +14,8 @@
 #include <mutex>
 #include <new>
 #include <optional>
+#include <typeindex>
+#include <typeinfo>
 #include <utility>
 
 #include "common_utils.hpp"
@@ -58,12 +60,13 @@ private:
     bool *m_ct_flags = nullptr;
     std::size_t m_el_size = 0;
     dtor_func_t m_dtor_func = nullptr;
+    std::optional<std::type_index> m_type;
 
     // NOTE: numpy_custom_free requires access to ct_ptr/el_size
     // without having to go through the mutex.
     friend void detail::numpy_custom_free(void *, void *, std::size_t) noexcept;
 
-    bool *ensure_ct_flags_inited_impl(std::size_t, dtor_func_t) noexcept;
+    bool *ensure_ct_flags_inited_impl(std::size_t, dtor_func_t, const std::type_index &) noexcept;
 
 public:
     // The only meaningful ctor.
@@ -85,7 +88,7 @@ public:
     bool *ensure_ct_flags_inited() noexcept
     {
         return ensure_ct_flags_inited_impl(
-            sizeof(T), [](unsigned char *ptr) noexcept { std::launder(reinterpret_cast<T *>(ptr))->~T(); });
+            sizeof(T), [](unsigned char *ptr) noexcept { std::launder(reinterpret_cast<T *>(ptr))->~T(); }, typeid(T));
     }
 };
 

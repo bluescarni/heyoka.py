@@ -15,6 +15,7 @@
 #include <mutex>
 #include <new>
 #include <tuple>
+#include <typeindex>
 #include <utility>
 
 #include <boost/safe_numerics/safe_integer.hpp>
@@ -52,7 +53,9 @@ numpy_mem_metadata::numpy_mem_metadata(std::size_t size) noexcept : m_tot_size(s
 // invoked concurrently from multiple threads.
 // dtor_func is a function that will be invoked to destroy
 // the elements allocated in the memory buffer when it is deallocated.
-bool *numpy_mem_metadata::ensure_ct_flags_inited_impl(std::size_t sz, dtor_func_t dtor_func) noexcept
+// tp is the type of the elements stored in the memory buffer.
+bool *numpy_mem_metadata::ensure_ct_flags_inited_impl(std::size_t sz, dtor_func_t dtor_func,
+                                                      const std::type_index &tp) noexcept
 {
     assert(sz > 0u);
     assert(m_tot_size > 0u);
@@ -63,6 +66,7 @@ bool *numpy_mem_metadata::ensure_ct_flags_inited_impl(std::size_t sz, dtor_func_
     if (m_ct_flags == nullptr) {
         assert(m_el_size == 0u);
         assert(m_dtor_func == nullptr);
+        assert(!m_type);
 
         // Init a new array of flags.
         // NOTE: this will init all flags to false.
@@ -73,9 +77,10 @@ bool *numpy_mem_metadata::ensure_ct_flags_inited_impl(std::size_t sz, dtor_func_
         // Assign the new array of flags.
         m_ct_flags = new_ct_flags.release();
 
-        // Assign the element size and the dtor.
+        // Assign the element size, the dtor and the type.
         m_el_size = sz;
         m_dtor_func = dtor_func;
+        m_type.emplace(tp);
     }
 
     // NOTE: not sure if we can assert m_dtor_func == dtor_func
@@ -84,6 +89,11 @@ bool *numpy_mem_metadata::ensure_ct_flags_inited_impl(std::size_t sz, dtor_func_
     // different translation units end up with different function
     // pointers for the same lambda...
     assert(m_el_size == sz);
+
+    // NOTE: should the checks on the type be turned into proper
+    // exceptions, rather than assertions?
+    assert(m_type);
+    assert(*m_type == tp);
 
     return m_ct_flags;
 }
