@@ -137,11 +137,11 @@ auto with_locked_memory_map(const F &f) noexcept
 //
 // Otherwise, it means that ptr belongs to a memory area not managed by NumPy, and
 // {nullptr, nullptr} will be returned.
-std::pair<unsigned char *, numpy_mem_metadata *> get_memory_metadata(void *ptr) noexcept
+std::pair<unsigned char *, numpy_mem_metadata *> get_memory_metadata(const void *ptr) noexcept
 {
     return detail::with_locked_memory_map([&](auto &) -> std::pair<unsigned char *, numpy_mem_metadata *> {
         // Try to locate ptr in the memory map.
-        auto *const cptr = reinterpret_cast<unsigned char *>(ptr);
+        const auto *cptr = reinterpret_cast<const unsigned char *>(ptr);
         // NOTE: lower_bound() here finds the first element in memory_map
         // which is less than or equal to cptr (thanks to the fact that we are
         // using std::greater as comparator, rather than the default std::less).

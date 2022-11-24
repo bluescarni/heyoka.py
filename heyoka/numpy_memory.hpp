@@ -92,7 +92,7 @@ public:
     }
 };
 
-std::pair<unsigned char *, numpy_mem_metadata *> get_memory_metadata(void *) noexcept;
+std::pair<unsigned char *, numpy_mem_metadata *> get_memory_metadata(const void *) noexcept;
 
 void install_custom_numpy_mem_handler();
 
