@@ -105,7 +105,7 @@ void install_custom_numpy_mem_handler();
 // If ptr belongs to a memory area not allocated by NumPy, this function will
 // assume that someone took care of constructing a T in ptr.
 template <typename T>
-T *numpy_check_cted(void *ptr) noexcept
+const T *numpy_check_cted(const void *ptr) noexcept
 {
     assert(ptr != nullptr);
 
@@ -117,7 +117,7 @@ T *numpy_check_cted(void *ptr) noexcept
 
         // The memory area is not managed by NumPy, assume that a T
         // has been constructed in ptr by someone else.
-        return std::launder(reinterpret_cast<T *>(ptr));
+        return std::launder(reinterpret_cast<const T *>(ptr));
     }
 
     assert(meta_ptr != nullptr);
@@ -127,7 +127,7 @@ T *numpy_check_cted(void *ptr) noexcept
     const auto *ct_flags = meta_ptr->ensure_ct_flags_inited<T>();
 
     // Compute the position of ptr in the memory area.
-    const auto bytes_idx = reinterpret_cast<unsigned char *>(ptr) - base_ptr;
+    const auto bytes_idx = reinterpret_cast<const unsigned char *>(ptr) - base_ptr;
     assert(bytes_idx >= 0);
 
     // Compute the position in the array.
@@ -137,7 +137,7 @@ T *numpy_check_cted(void *ptr) noexcept
 
     if (ct_flags[idx]) {
         // A constructed T exists, fetch it.
-        return std::launder(reinterpret_cast<T *>(ptr));
+        return std::launder(reinterpret_cast<const T *>(ptr));
     } else {
         // No constructed T exists.
         return nullptr;
