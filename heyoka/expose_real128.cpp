@@ -52,6 +52,7 @@
 #endif
 
 #include "custom_casters.hpp"
+#include "dtypes.hpp"
 #include "expose_real128.hpp"
 
 namespace heyoka_py
@@ -947,6 +948,9 @@ void npy_py_real128_gufunc_matrix_multiply(char **args, const npy_intp *dimensio
 template <typename From>
 void npy_cast_to_real128(void *from, void *to, npy_intp n, void *, void *)
 {
+    // Sanity check, we don't want to implement real128 -> real128 conversion.
+    static_assert(!std::is_same_v<From, mppp::real128>);
+
     const auto *typed_from = static_cast<const From *>(from);
     auto *typed_to = static_cast<mppp::real128 *>(to);
 
@@ -959,6 +963,9 @@ void npy_cast_to_real128(void *from, void *to, npy_intp n, void *, void *)
 template <typename To>
 void npy_cast_from_real128(void *from, void *to, npy_intp n, void *, void *)
 {
+    // Sanity check, we don't want to implement real128 -> real128 conversion.
+    static_assert(!std::is_same_v<To, mppp::real128>);
+
     const auto *typed_from = static_cast<const mppp::real128 *>(from);
     auto *typed_to = static_cast<To *>(to);
 
@@ -967,57 +974,22 @@ void npy_cast_from_real128(void *from, void *to, npy_intp n, void *, void *)
     }
 }
 
-// Machinery to associate a C++ type to a NumPy type.
-template <typename>
-struct cpp_to_numpy_t {
-};
-
-#define HEYOKA_PY_ASSOC_TY(cpp_tp, npy_tp)                                                                             \
-    template <>                                                                                                        \
-    struct cpp_to_numpy_t<cpp_tp> {                                                                                    \
-        static constexpr int value = npy_tp;                                                                           \
-    }
-
-HEYOKA_PY_ASSOC_TY(float, NPY_FLOAT);
-HEYOKA_PY_ASSOC_TY(double, NPY_DOUBLE);
-
-#if defined(MPPP_FLOAT128_WITH_LONG_DOUBLE)
-
-// NOTE: see below the reasons for commenting this out.
-// HEYOKA_PY_ASSOC_TY(long double, NPY_LONGDOUBLE);
-
-#endif
-
-HEYOKA_PY_ASSOC_TY(npy_int8, NPY_INT8);
-HEYOKA_PY_ASSOC_TY(npy_int16, NPY_INT16);
-HEYOKA_PY_ASSOC_TY(npy_int32, NPY_INT32);
-HEYOKA_PY_ASSOC_TY(npy_int64, NPY_INT64);
-HEYOKA_PY_ASSOC_TY(npy_uint8, NPY_UINT8);
-HEYOKA_PY_ASSOC_TY(npy_uint16, NPY_UINT16);
-HEYOKA_PY_ASSOC_TY(npy_uint32, NPY_UINT32);
-HEYOKA_PY_ASSOC_TY(npy_uint64, NPY_UINT64);
-
-#undef HEYOKA_PY_ASSOC_TY
-
-// Shortcut.
-template <typename T>
-constexpr auto npy_type = cpp_to_numpy_t<T>::value;
-
 // Helper to register NumPy casting functions to/from T.
 template <typename T>
 void npy_register_cast_functions()
 {
-    if (PyArray_RegisterCastFunc(PyArray_DescrFromType(npy_type<T>), npy_registered_py_real128, &npy_cast_to_real128<T>)
+    if (PyArray_RegisterCastFunc(PyArray_DescrFromType(get_dtype<T>()), npy_registered_py_real128,
+                                 &npy_cast_to_real128<T>)
         < 0) {
         py_throw(PyExc_TypeError, "The registration of a NumPy casting function failed");
     }
 
     // NOTE: this is to signal that conversion of any scalar type to real128 is safe.
-    if (PyArray_RegisterCanCast(PyArray_DescrFromType(npy_type<T>), npy_registered_py_real128, NPY_NOSCALAR) < 0) {
+    if (PyArray_RegisterCanCast(PyArray_DescrFromType(get_dtype<T>()), npy_registered_py_real128, NPY_NOSCALAR) < 0) {
         py_throw(PyExc_TypeError, "The registration of a NumPy casting function failed");
     }
 
-    if (PyArray_RegisterCastFunc(&npy_py_real128_descr, npy_type<T>, &npy_cast_from_real128<T>) < 0) {
+    if (PyArray_RegisterCastFunc(&npy_py_real128_descr, get_dtype<T>(), &npy_cast_from_real128<T>) < 0) {
         py_throw(PyExc_TypeError, "The registration of a NumPy casting function failed");
     }
 }

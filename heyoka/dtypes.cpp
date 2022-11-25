@@ -49,30 +49,80 @@
 namespace heyoka_py
 {
 
+namespace detail
+{
+
+namespace
+{
+
+// Machinery to associate C++ builtin types to a NumPy dtype.
+template <typename>
+struct cpp_to_numpy_t {
+};
+
+#define HEYOKA_PY_ASSOC_TY(cpp_tp, npy_tp)                                                                             \
+    template <>                                                                                                        \
+    struct cpp_to_numpy_t<cpp_tp> {                                                                                    \
+        static constexpr int value = npy_tp;                                                                           \
+    }
+
+HEYOKA_PY_ASSOC_TY(float, NPY_FLOAT);
+HEYOKA_PY_ASSOC_TY(double, NPY_DOUBLE);
+HEYOKA_PY_ASSOC_TY(long double, NPY_LONGDOUBLE);
+HEYOKA_PY_ASSOC_TY(npy_int8, NPY_INT8);
+HEYOKA_PY_ASSOC_TY(npy_int16, NPY_INT16);
+HEYOKA_PY_ASSOC_TY(npy_int32, NPY_INT32);
+HEYOKA_PY_ASSOC_TY(npy_int64, NPY_INT64);
+HEYOKA_PY_ASSOC_TY(npy_uint8, NPY_UINT8);
+HEYOKA_PY_ASSOC_TY(npy_uint16, NPY_UINT16);
+HEYOKA_PY_ASSOC_TY(npy_uint32, NPY_UINT32);
+HEYOKA_PY_ASSOC_TY(npy_uint64, NPY_UINT64);
+
+#undef HEYOKA_PY_ASSOC_TY
+
+} // namespace
+
+} // namespace detail
+
 template <typename T>
 int get_dtype()
 {
-    if constexpr (std::is_same_v<T, double>) {
-        return NPY_DOUBLE;
-    } else if constexpr (std::is_same_v<T, long double>) {
-        return NPY_LONGDOUBLE;
 #if defined(HEYOKA_HAVE_REAL128)
-    } else if constexpr (std::is_same_v<T, mppp::real128>) {
+
+    if constexpr (std::is_same_v<T, mppp::real128>) {
         return npy_registered_py_real128;
-#endif
-#if defined(HEYOKA_HAVE_REAL)
-    } else if constexpr (std::is_same_v<T, mppp::real>) {
-        return npy_registered_py_real;
-#endif
-    } else {
-        assert(false);
-        throw;
     }
+
+#endif
+
+#if defined(HEYOKA_HAVE_REAL)
+
+    if constexpr (std::is_same_v<T, mppp::real>) {
+        return npy_registered_py_real;
+    }
+
+#endif
+
+    if constexpr (std::is_arithmetic_v<T>) {
+        return detail::cpp_to_numpy_t<T>::value;
+    }
+
+    assert(false);
+    throw;
 }
 
 // Explicit instantiations.
+template int get_dtype<float>();
 template int get_dtype<double>();
 template int get_dtype<long double>();
+template int get_dtype<npy_int8>();
+template int get_dtype<npy_int16>();
+template int get_dtype<npy_int32>();
+template int get_dtype<npy_int64>();
+template int get_dtype<npy_uint8>();
+template int get_dtype<npy_uint16>();
+template int get_dtype<npy_uint32>();
+template int get_dtype<npy_uint64>();
 
 #if defined(HEYOKA_HAVE_REAL128)
 
