@@ -274,6 +274,18 @@ const auto sign_func = [](auto x) {
     return static_cast<decltype(x)>((0 < x) - (x < 0));
 };
 
+const auto isnan_func = [](auto x) {
+    using std::isnan;
+
+    return isnan(x);
+};
+
+const auto isinf_func = [](auto x) {
+    using std::isinf;
+
+    return isinf(x);
+};
+
 const auto pow_func = [](auto x, auto y) {
     using std::pow;
 
@@ -777,13 +789,24 @@ npy_bool npy_py_real128_nonzero(void *data, void *)
     return q != 0 ? NPY_TRUE : NPY_FALSE;
 }
 
-// Comparison primitive.
+// Comparison primitive, used for sorting.
+// NOTE: use special comparisons to ensure NaNs are put at the end
+// of an array when sorting.
 int npy_py_real128_compare(const void *d0, const void *d1, void *)
 {
     const auto &x = *static_cast<const mppp::real128 *>(d0);
     const auto &y = *static_cast<const mppp::real128 *>(d1);
 
-    return x < y ? -1 : x == y ? 0 : 1;
+    // NOTE: no exceptions are possible in these comparisons.
+    if (mppp::real128_lt(x, y)) {
+        return -1;
+    }
+
+    if (mppp::real128_equal_to(x, y)) {
+        return 0;
+    }
+
+    return 1;
 }
 
 // argmin/argmax implementation.
@@ -1487,12 +1510,6 @@ void expose_real128(py::module_ &m)
         },
         npy_registered_py_real128, npy_registered_py_real128, NPY_BOOL);
     detail::npy_register_ufunc(
-        numpy_mod, "isfinite",
-        [](char **args, const npy_intp *dimensions, const npy_intp *steps, void *data) {
-            detail::py_real128_ufunc_unary<npy_bool>(args, dimensions, steps, data, detail::isfinite_func);
-        },
-        npy_registered_py_real128, NPY_BOOL);
-    detail::npy_register_ufunc(
         numpy_mod, "sign",
         [](char **args, const npy_intp *dimensions, const npy_intp *steps, void *data) {
             detail::py_real128_ufunc_unary(args, dimensions, steps, data, detail::sign_func);
@@ -1510,6 +1527,24 @@ void expose_real128(py::module_ &m)
             detail::py_real128_ufunc_binary(args, dimensions, steps, data, detail::min_func);
         },
         npy_registered_py_real128, npy_registered_py_real128, npy_registered_py_real128);
+    detail::npy_register_ufunc(
+        numpy_mod, "isnan",
+        [](char **args, const npy_intp *dimensions, const npy_intp *steps, void *data) {
+            detail::py_real128_ufunc_unary<npy_bool>(args, dimensions, steps, data, detail::isnan_func);
+        },
+        npy_registered_py_real128, NPY_BOOL);
+    detail::npy_register_ufunc(
+        numpy_mod, "isinf",
+        [](char **args, const npy_intp *dimensions, const npy_intp *steps, void *data) {
+            detail::py_real128_ufunc_unary<npy_bool>(args, dimensions, steps, data, detail::isinf_func);
+        },
+        npy_registered_py_real128, NPY_BOOL);
+    detail::npy_register_ufunc(
+        numpy_mod, "isfinite",
+        [](char **args, const npy_intp *dimensions, const npy_intp *steps, void *data) {
+            detail::py_real128_ufunc_unary<npy_bool>(args, dimensions, steps, data, detail::isfinite_func);
+        },
+        npy_registered_py_real128, NPY_BOOL);
     // Matrix multiplication.
     detail::npy_register_ufunc(numpy_mod, "matmul", detail::npy_py_real128_gufunc_matrix_multiply,
                                npy_registered_py_real128, npy_registered_py_real128, npy_registered_py_real128);

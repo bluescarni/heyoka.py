@@ -6403,6 +6403,13 @@ class real128_test_case(_ut.TestCase):
         self.assertFalse((np.isfinite([real128("1"), real128("nan")]))[1])
         self.assertFalse((np.isfinite([real128("1"), real128("+inf")]))[1])
 
+        # isinf().
+        self.assertEqual((np.isinf(arr1)).dtype, bool)
+        self.assertFalse((np.isinf(arr1))[0])
+        self.assertFalse((np.isinf([real128("1"), real128("nan")]))[0])
+        self.assertTrue((np.isinf([real128("1"), real128("-inf")]))[1])
+        self.assertTrue((np.isinf([real128("1"), real128("+inf")]))[1])
+
         # sign.
         self.assertEqual(np.sign(-real128("1.1")), -1)
         self.assertEqual(np.sign(real128("0")), 0)
@@ -6437,6 +6444,22 @@ class real128_test_case(_ut.TestCase):
 
         self.assertTrue(np.all(arr3[:3] == arr1))
         self.assertTrue(np.all(arr3[3:] == arr2))
+
+        # Sorting (via the compare primitive).
+        arr1 = np.array([real128("3"), real128("1"), real128("2")])
+        arr1_sorted = np.sort(arr1)
+        self.assertTrue(
+            np.all(arr1_sorted == [real128("1"), real128("2"), real128("3")])
+        )
+
+        # Check NaN handling.
+        arr1 = np.array([real128("nan"), real128("1"), real128("nan")])
+        self.assertTrue(all(np.isnan(arr1) == [True, False, True]))
+        arr1_sorted = np.sort(arr1)
+        self.assertEqual(arr1_sorted[0], 1)
+        self.assertFalse(np.isnan(arr1_sorted[0]))
+        self.assertTrue(np.isnan(arr1_sorted[1]))
+        self.assertTrue(np.isnan(arr1_sorted[2]))
 
 
 def run_test_suite():
