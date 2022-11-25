@@ -26,11 +26,23 @@
 
 #endif
 
+#if defined(HEYOKA_HAVE_REAL)
+
+#include <mp++/real.hpp>
+
+#endif
+
 #include "dtypes.hpp"
 
 #if defined(HEYOKA_HAVE_REAL128)
 
 #include "expose_real128.hpp"
+
+#endif
+
+#if defined(HEYOKA_HAVE_REAL)
+
+#include "expose_real.hpp"
 
 #endif
 
@@ -48,6 +60,10 @@ int get_dtype()
     } else if constexpr (std::is_same_v<T, mppp::real128>) {
         return npy_registered_py_real128;
 #endif
+#if defined(HEYOKA_HAVE_REAL)
+    } else if constexpr (std::is_same_v<T, mppp::real>) {
+        return npy_registered_py_real;
+#endif
     } else {
         assert(false);
         throw;
@@ -61,6 +77,12 @@ template int get_dtype<long double>();
 #if defined(HEYOKA_HAVE_REAL128)
 
 template int get_dtype<mppp::real128>();
+
+#endif
+
+#if defined(HEYOKA_HAVE_REAL)
+
+template int get_dtype<mppp::real>();
 
 #endif
 
