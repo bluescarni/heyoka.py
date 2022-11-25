@@ -837,6 +837,11 @@ int npy_py_real128_argminmax(void *data_, npy_intp n, npy_intp *max_ind, const F
 // Fill primitive (e.g., used for arange()).
 int npy_py_real128_fill(void *data_, npy_intp length, void *)
 {
+    // NOTE: not sure if this is possible, let's stay on the safe side.
+    if (length < 2) {
+        return 0;
+    }
+
     auto *data = static_cast<mppp::real128 *>(data_);
     const auto delta = data[1] - data[0];
     auto r = data[1];
