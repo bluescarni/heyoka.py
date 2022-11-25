@@ -5274,10 +5274,19 @@ class real_test_case(_ut.TestCase):
 
     def test_numpy_basic(self):
         from . import real
+        from . import core
         import numpy as np
+
+        make_no = core._make_no_real_array
 
         arr = np.empty((5,), dtype=real)
         for val in arr:
+            self.assertEqual(val, 0)
+            self.assertEqual(val.prec, real().prec)
+
+        self.assertFalse(make_no(arr).flags.owndata)
+
+        for val in make_no(arr):
             self.assertEqual(val, 0)
             self.assertEqual(val.prec, real().prec)
 
@@ -5288,9 +5297,18 @@ class real_test_case(_ut.TestCase):
             self.assertEqual(val, 0)
             self.assertEqual(val.prec, real().prec)
 
+        for val in make_no(arr):
+            self.assertEqual(val, 0)
+            self.assertEqual(val.prec, real().prec)
+
         arr[3] = real("1.1", 128)
         self.assertEqual(arr[3], real("1.1", 128))
         self.assertEqual(arr[3].prec, 128)
+
+        no_arr = make_no(arr)
+        no_arr[3] = real("1.1", 128)
+        self.assertEqual(no_arr[3], real("1.1", 128))
+        self.assertEqual(no_arr[3].prec, 128)
 
         # NOTE: this invokes the copyswap primitive.
         arr2 = np.copy(arr)
@@ -5299,12 +5317,23 @@ class real_test_case(_ut.TestCase):
             self.assertEqual(arr[_], arr2[_])
             self.assertEqual(arr[_].prec, arr2[_].prec)
 
+        no_arr2 = np.copy(no_arr)
+        for _ in range(5):
+            self.assertEqual(no_arr[_], no_arr2[_])
+            self.assertEqual(no_arr[_].prec, no_arr2[_].prec)
+
         arr2[3] = real()
         self.assertNotEqual(arr2[3], arr[3])
+
+        no_arr2[3] = real()
+        self.assertNotEqual(no_arr2[3], no_arr[3])
 
         # Test that byteswapping is forbidden.
         with self.assertRaises(SystemError) as cm:
             arr2.byteswap()
+
+        with self.assertRaises(SystemError) as cm:
+            no_arr2.byteswap()
 
         # Nonzero.
         arr = np.zeros((5,), dtype=real)
@@ -5317,9 +5346,25 @@ class real_test_case(_ut.TestCase):
         nz = arr.nonzero()
         self.assertTrue(np.all(nz[0] == np.array([0, 3])))
 
+        no_arr = make_no(np.zeros((5,), dtype=real))
+        nz = no_arr.nonzero()
+        self.assertEqual(len(nz[0]), 0)
+        no_arr[3] = real(1.1)
+        nz = no_arr.nonzero()
+        self.assertTrue(np.all(nz[0] == np.array([3])))
+        no_arr[0] = real(float("nan"))
+        nz = no_arr.nonzero()
+        self.assertTrue(np.all(nz[0] == np.array([0, 3])))
+
         # Sorting (via the compare primitive).
         arr1 = np.array([real(3), real(1), real(2)])
         arr1_sorted = np.sort(arr1)
+        self.assertEqual(arr1_sorted[0], 1)
+        self.assertEqual(arr1_sorted[1], 2)
+        self.assertEqual(arr1_sorted[2], 3)
+
+        arr1 = make_no(np.array([real(3), real(1), real(2)]))
+        arr1_sorted = make_no(np.sort(arr1))
         self.assertEqual(arr1_sorted[0], 1)
         self.assertEqual(arr1_sorted[1], 2)
         self.assertEqual(arr1_sorted[2], 3)
@@ -5342,6 +5387,20 @@ class real_test_case(_ut.TestCase):
         self.assertEqual(np.argmin(arr), 6)
         self.assertEqual(np.argmax(arr), 1)
         arr = np.array([], dtype=real)
+        with self.assertRaises(ValueError) as cm:
+            np.argmin(arr)
+        with self.assertRaises(ValueError) as cm:
+            np.argmax(arr)
+
+        arr = make_no(
+            np.array(
+                [real(1), real(321), real(54), real(6), real(2), real(6), real(-6)],
+                dtype=real,
+            )
+        )
+        self.assertEqual(np.argmin(arr), 6)
+        self.assertEqual(np.argmax(arr), 1)
+        arr = make_no(np.array([], dtype=real))
         with self.assertRaises(ValueError) as cm:
             np.argmin(arr)
         with self.assertRaises(ValueError) as cm:

@@ -8,7 +8,9 @@
 
 #include <heyoka/config.hpp>
 
+#include <pybind11/numpy.h>
 #include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
 
 #if defined(HEYOKA_HAVE_REAL)
 
@@ -17,11 +19,14 @@
 #include <cstddef>
 #include <functional>
 #include <limits>
+#include <memory>
 #include <new>
 #include <optional>
 #include <type_traits>
 #include <utility>
+#include <vector>
 
+#include <boost/numeric/conversion/cast.hpp>
 #include <boost/safe_numerics/safe_integer.hpp>
 
 #define NO_IMPORT_ARRAY
@@ -1158,6 +1163,26 @@ void expose_real(py::module_ &m)
         Py_DECREF(&py_real_type);
         py_throw(PyExc_TypeError, "Could not add the real type to the module");
     }
+
+    // Expose functions for testing.
+    m.def("_make_no_real_array", [](std::vector<mppp::real> vec) {
+        auto vec_ptr = std::make_unique<std::vector<mppp::real>>(std::move(vec));
+
+        py::capsule vec_caps(vec_ptr.get(), [](void *ptr) {
+            std::unique_ptr<std::vector<mppp::real>> vptr(static_cast<std::vector<mppp::real> *>(ptr));
+        });
+
+        // NOTE: at this point, the capsule has been created successfully (including
+        // the registration of the destructor). We can thus release ownership from vec_ptr,
+        // as now the capsule is responsible for destroying its contents. If the capsule constructor
+        // throws, the destructor function is not registered/invoked, and the destructor
+        // of vec_ptr will take care of cleaning up.
+        auto *ptr = vec_ptr.release();
+
+        return py::array(py::dtype(npy_registered_py_real),
+                         py::array::ShapeContainer{boost::numeric_cast<py::ssize_t>(ptr->size())}, ptr->data(),
+                         std::move(vec_caps));
+    });
 }
 
 #if defined(__GNUC__)
