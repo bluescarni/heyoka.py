@@ -1004,6 +1004,12 @@ mppp::real *get_real_val(PyObject *self)
     return std::launder(reinterpret_cast<mppp::real *>(reinterpret_cast<py_real *>(self)->m_storage));
 }
 
+// Helper to create a pyreal from a real.
+PyObject *pyreal_from_real(const mppp::real &src)
+{
+    return detail::py_real_from_args(src);
+}
+
 void expose_real(py::module_ &m)
 {
     // Install the custom NumPy memory management functions.

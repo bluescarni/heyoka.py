@@ -28,12 +28,24 @@
 
 #endif
 
+#if defined(HEYOKA_HAVE_REAL)
+
+#include <mp++/real.hpp>
+
+#endif
+
 #include "common_utils.hpp"
 #include "custom_casters.hpp"
 
 #if defined(HEYOKA_HAVE_REAL128)
 
 #include "expose_real128.hpp"
+
+#endif
+
+#if defined(HEYOKA_HAVE_REAL)
+
+#include "expose_real.hpp"
 
 #endif
 
@@ -94,6 +106,35 @@ handle type_caster<mppp::real128>::cast(const mppp::real128 &src, return_value_p
     auto *ret_ob = heypy::pyreal128_from_real128(src);
     if (ret_ob == nullptr) {
         heyoka_py::py_throw(PyExc_RuntimeError, "Unable to obtain storage for a real128 object");
+    }
+
+    return ret_ob;
+}
+
+#endif
+
+#if defined(HEYOKA_HAVE_REAL)
+
+bool type_caster<mppp::real>::load(handle src, bool)
+{
+    namespace heypy = heyoka_py;
+
+    if (!heypy::py_real_check(src.ptr())) {
+        return false;
+    }
+
+    value = *heypy::get_real_val(src.ptr());
+
+    return true;
+}
+
+handle type_caster<mppp::real>::cast(const mppp::real &src, return_value_policy, handle)
+{
+    namespace heypy = heyoka_py;
+
+    auto *ret_ob = heypy::pyreal_from_real(src);
+    if (ret_ob == nullptr) {
+        heyoka_py::py_throw(PyExc_RuntimeError, "Unable to obtain storage for a real object");
     }
 
     return ret_ob;
