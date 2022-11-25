@@ -994,6 +994,58 @@ int npy_py_real_argminmax(void *data, npy_intp n, npy_intp *max_ind, const F &cm
     return 0;
 }
 
+// Fill primitive (e.g., used for arange()).
+int npy_py_real_fill(void *data, npy_intp length, void *)
+{
+    // NOTE: not sure if this is possible, let's stay on the safe side.
+    if (length < 2) {
+        return 0;
+    }
+
+    // Try to locate data in the memory map.
+    const auto [base_ptr, meta_ptr] = get_memory_metadata(data);
+
+    // Build/fetch the array of construction flags, if possible.
+    auto *ct_flags = (base_ptr == nullptr) ? nullptr : meta_ptr->ensure_ct_flags_inited<mppp::real>();
+
+    // Fetch a pointer to the global zero const.
+    const auto *zr = &get_zero_real();
+
+    // Fetch the char array version of the memory segment.
+    auto *cdata = reinterpret_cast<char *>(data);
+
+    // Fetch pointers to the first two elements.
+    const auto *el0
+        = (ct_flags == nullptr || ct_flags[0]) ? std::launder(reinterpret_cast<const mppp::real *>(cdata)) : zr;
+    const auto *el1 = (ct_flags == nullptr || ct_flags[1])
+                          ? std::launder(reinterpret_cast<const mppp::real *>(cdata + sizeof(mppp::real)))
+                          : zr;
+
+    const auto err = with_pybind11_eh([&]() {
+        // Compute the delta and init r.
+        const auto delta = *el1 - *el0;
+        auto r = *el1;
+
+        for (npy_intp i = 2; i < length; ++i) {
+            r += delta;
+
+            auto *dst_ptr = cdata + static_cast<std::size_t>(i) * sizeof(mppp::real);
+
+            if (ct_flags == nullptr || ct_flags[i]) {
+                // Existing object, assign.
+                *std::launder(reinterpret_cast<mppp::real *>(dst_ptr)) = r;
+            } else {
+                // Copy-construct new object
+                ::new (dst_ptr) mppp::real{r};
+                // Mark as constructed.
+                ct_flags[i] = true;
+            }
+        }
+    });
+
+    return err ? -1 : 0;
+}
+
 } // namespace
 
 } // namespace detail
@@ -1137,8 +1189,8 @@ void expose_real(py::module_ &m)
     detail::npy_py_real_arr_funcs.argmax = [](void *data, npy_intp n, npy_intp *max_ind, void *) {
         return detail::npy_py_real_argminmax(data, n, max_ind, std::greater{});
     };
+    detail::npy_py_real_arr_funcs.fill = detail::npy_py_real_fill;
 #if 0
-    detail::npy_py_real128_arr_funcs.fill = detail::npy_py_real128_fill;
     detail::npy_py_real128_arr_funcs.fillwithscalar = detail::npy_py_real128_fillwithscalar;
     detail::npy_py_real128_arr_funcs.dotfunc = detail::npy_py_real128_dot;
     // NOTE: not sure if this is needed - it does not seem to have

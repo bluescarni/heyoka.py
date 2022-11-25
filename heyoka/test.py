@@ -5417,6 +5417,25 @@ class real_test_case(_ut.TestCase):
         self.assertEqual(np.argmin(arr), 0)
         self.assertEqual(np.argmax(arr), 0)
 
+        # arange().
+        # TODO remove the explicit types for 0 and 1, check the dtype
+        # after we implement conversions.
+        arr = np.arange(real(0), real(1), real("0.3", 128))
+        # self.assertTrue(
+        #     np.all(
+        #         arr
+        #         == np.array(
+        #             [
+        #                 0,
+        #                 real("0.29999999999999999999999999999999999"),
+        #                 real("0.599999999999999999999999999999999981"),
+        #                 real("0.899999999999999999999999999999999923"),
+        #             ],
+        #             dtype=real,
+        #         )
+        #     )
+        # )
+
     def test_comparisons(self):
         from . import real
         from . import core
