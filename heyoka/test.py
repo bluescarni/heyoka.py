@@ -5821,6 +5821,23 @@ class real_test_case(_ut.TestCase):
             'Cannot construct a real from an object of type "list"' in str(cm.exception)
         )
 
+        # Sorting (via the compare primitive).
+        arr1 = np.array([real(3), real128(1), real128(2)])
+        arr1_sorted = np.sort(arr1)
+        self.assertEqual(arr1_sorted[0], 1)
+        self.assertEqual(arr1_sorted[1], 2)
+        self.assertEqual(arr1_sorted[2], 3)
+
+        # TODO implement once we have isnan()
+        # Check NaN handling.
+        # arr1 = np.array([real128("nan"), real128("1"), real128("nan")])
+        # self.assertTrue(all(np.isnan(arr1) == [True, False, True]))
+        # arr1_sorted = np.sort(arr1)
+        # self.assertEqual(arr1_sorted[0], 1)
+        # self.assertFalse(np.isnan(arr1_sorted[0]))
+        # self.assertTrue(np.isnan(arr1_sorted[1]))
+        # self.assertTrue(np.isnan(arr1_sorted[2]))
+
 
 class real128_test_case(_ut.TestCase):
     def runTest(self):

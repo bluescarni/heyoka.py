@@ -894,6 +894,55 @@ npy_bool npy_py_real_nonzero(void *data, void *)
     }
 }
 
+// Helper to access a global default-constructed real instance.
+// This is used in the NmuPy helpers below when trying to access
+// a not-yet-constructed real in an array.
+const auto &get_zero_real()
+{
+    static const mppp::real zr;
+
+    return zr;
+}
+
+// Helper that, given a memory location in a NumPy array, returns a const
+// reference either to the real value stored in that location, if it exists,
+// or to the value returned by get_zero_real() otherwise.
+const auto &get_real_or_zero(const void *data)
+{
+    const auto *x_ptr = numpy_check_cted<mppp::real>(data);
+
+    if (x_ptr == nullptr) {
+        return get_zero_real();
+    } else {
+        return *x_ptr;
+    }
+}
+
+// Comparison primitive, used for sorting.
+// NOTE: use special comparisons to ensure NaNs are put at the end
+// of an array when sorting.
+// NOTE: this has pretty horrible performance because it needs to
+// look into the memory metadata element by element. We could maybe
+// implement the specialised sorting primitives from here:
+// https://numpy.org/doc/stable/reference/c-api/types-and-structures.html#c.PyArray_ArrFuncs.sort
+// This perhaps allows to fetch the metadata only once.
+int npy_py_real_compare(const void *d0, const void *d1, void *)
+{
+    const auto &x = get_real_or_zero(d0);
+    const auto &y = get_real_or_zero(d1);
+
+    // NOTE: no exceptions are possible in these comparisons.
+    if (mppp::real_lt(x, y)) {
+        return -1;
+    }
+
+    if (mppp::real_equal_to(x, y)) {
+        return 0;
+    }
+
+    return 1;
+}
+
 } // namespace
 
 } // namespace detail
@@ -1024,8 +1073,8 @@ void expose_real(py::module_ &m)
     // a custom implementation to improve performance.
     // detail::npy_py_real_arr_funcs.copyswapn = detail::npy_py_real_copyswapn;
     detail::npy_py_real_arr_funcs.nonzero = detail::npy_py_real_nonzero;
+    detail::npy_py_real_arr_funcs.compare = detail::npy_py_real_compare;
 #if 0
-    detail::npy_py_real128_arr_funcs.compare = detail::npy_py_real128_compare;
     detail::npy_py_real128_arr_funcs.argmin = [](void *data, npy_intp n, npy_intp *max_ind, void *) {
         return detail::npy_py_real128_argminmax(data, n, max_ind, std::less{});
     };
