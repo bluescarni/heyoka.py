@@ -862,7 +862,7 @@ void npy_py_real_copyswap(void *dst, void *src, int swap, void *arr)
     }
 
     // Check if the source contains a real.
-    auto *src_x = numpy_check_cted<mppp::real>(src);
+    const auto *src_x = numpy_check_cted<mppp::real>(src);
 
     // NOTE: if a C++ exception is thrown here, dst is not modified
     // and an error code will have been set.
@@ -884,7 +884,7 @@ npy_bool npy_py_real_nonzero(void *data, void *)
     }
 
     // Check if the source contains a real.
-    auto *x_ptr = numpy_check_cted<mppp::real>(data);
+    const auto *x_ptr = numpy_check_cted<mppp::real>(data);
 
     if (x_ptr == nullptr) {
         return NPY_FALSE;
@@ -941,6 +941,49 @@ int npy_py_real_compare(const void *d0, const void *d1, void *)
     }
 
     return 1;
+}
+
+// argmin/argmax implementation.
+template <typename F>
+int npy_py_real_argminmax(void *data, npy_intp n, npy_intp *max_ind, const F &cmp)
+{
+    if (n == 0) {
+        return 0;
+    }
+
+    // Try to locate data in the memory map.
+    const auto [base_ptr, meta_ptr] = get_memory_metadata(data);
+
+    // Build/fetch the array of construction flags, if possible.
+    const auto *ct_flags = (base_ptr == nullptr) ? nullptr : meta_ptr->ensure_ct_flags_inited<mppp::real>();
+
+    // Fetch a pointer to the global zero const.
+    const auto *zr = &get_zero_real();
+
+    // Fetch the char array version of the memory segment.
+    const auto *cdata = reinterpret_cast<const char *>(data);
+
+    // Init the best index/value with the first index/value.
+    npy_intp best_i = 0;
+    const auto *best_r
+        = (ct_flags == nullptr || ct_flags[0]) ? std::launder(reinterpret_cast<const mppp::real *>(cdata)) : zr;
+
+    for (npy_intp i = 1; i < n; ++i) {
+        const auto *cur_r = (ct_flags == nullptr || ct_flags[i]) ? std::launder(reinterpret_cast<const mppp::real *>(
+                                cdata + static_cast<std::size_t>(i) * sizeof(mppp::real)))
+                                                                 : zr;
+
+        // NOTE: real comparisons never throw, no need
+        // for exception handling.
+        if (cmp(*cur_r, *best_r)) {
+            best_i = i;
+            best_r = cur_r;
+        }
+    }
+
+    *max_ind = best_i;
+
+    return 0;
 }
 
 } // namespace
@@ -1074,13 +1117,13 @@ void expose_real(py::module_ &m)
     // detail::npy_py_real_arr_funcs.copyswapn = detail::npy_py_real_copyswapn;
     detail::npy_py_real_arr_funcs.nonzero = detail::npy_py_real_nonzero;
     detail::npy_py_real_arr_funcs.compare = detail::npy_py_real_compare;
+    detail::npy_py_real_arr_funcs.argmin = [](void *data, npy_intp n, npy_intp *max_ind, void *) {
+        return detail::npy_py_real_argminmax(data, n, max_ind, std::less{});
+    };
+    detail::npy_py_real_arr_funcs.argmax = [](void *data, npy_intp n, npy_intp *max_ind, void *) {
+        return detail::npy_py_real_argminmax(data, n, max_ind, std::greater{});
+    };
 #if 0
-    detail::npy_py_real128_arr_funcs.argmin = [](void *data, npy_intp n, npy_intp *max_ind, void *) {
-        return detail::npy_py_real128_argminmax(data, n, max_ind, std::less{});
-    };
-    detail::npy_py_real128_arr_funcs.argmax = [](void *data, npy_intp n, npy_intp *max_ind, void *) {
-        return detail::npy_py_real128_argminmax(data, n, max_ind, std::greater{});
-    };
     detail::npy_py_real128_arr_funcs.fill = detail::npy_py_real128_fill;
     detail::npy_py_real128_arr_funcs.fillwithscalar = detail::npy_py_real128_fillwithscalar;
     detail::npy_py_real128_arr_funcs.dotfunc = detail::npy_py_real128_dot;

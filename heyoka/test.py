@@ -5334,6 +5334,30 @@ class real_test_case(_ut.TestCase):
         # self.assertTrue(np.isnan(arr1_sorted[1]))
         # self.assertTrue(np.isnan(arr1_sorted[2]))
 
+        # Argmin/argmax.
+        arr = np.array(
+            [real(1), real(321), real(54), real(6), real(2), real(6), real(-6)],
+            dtype=real,
+        )
+        self.assertEqual(np.argmin(arr), 6)
+        self.assertEqual(np.argmax(arr), 1)
+        arr = np.array([], dtype=real)
+        with self.assertRaises(ValueError) as cm:
+            np.argmin(arr)
+        with self.assertRaises(ValueError) as cm:
+            np.argmax(arr)
+
+        # Try array with uninited values.
+        arr = np.empty((7,), dtype=real)
+        arr[1] = real(321)
+        arr[-1] = real(-6)
+        self.assertEqual(np.argmin(arr), 6)
+        self.assertEqual(np.argmax(arr), 1)
+
+        arr = np.empty((7,), dtype=real)
+        self.assertEqual(np.argmin(arr), 0)
+        self.assertEqual(np.argmax(arr), 0)
+
     def test_comparisons(self):
         from . import real
         from . import core
