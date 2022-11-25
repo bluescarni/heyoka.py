@@ -902,7 +902,10 @@ npy_bool npy_py_real_nonzero(void *data, void *)
 // Helper to access a global default-constructed real instance.
 // This is used in the NmuPy helpers below when trying to access
 // a not-yet-constructed real in an array.
-const auto &get_zero_real()
+// NOTE: mark it noexcept as this is equivalent to being unable
+// to construct a global variable, a situation which
+// we don't really need to be able to recover from.
+const auto &get_zero_real() noexcept
 {
     static const mppp::real zr;
 
