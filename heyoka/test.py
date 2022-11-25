@@ -6217,6 +6217,7 @@ class real128_test_case(_ut.TestCase):
                 )
             )
         )
+        self.assertEqual(arr.dtype, real128)
         arr = np.linspace(real128(0), 1, 4)
         self.assertTrue(
             np.all(
@@ -6232,6 +6233,7 @@ class real128_test_case(_ut.TestCase):
                 )
             )
         )
+        self.assertEqual(arr.dtype, real128)
 
         # zeros, ones, full.
         arr = np.zeros((2, 2), dtype=real128)
