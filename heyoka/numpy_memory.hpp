@@ -147,8 +147,9 @@ const T *numpy_check_cted(const void *ptr) noexcept
 // This function accepts in input the memory address of an element
 // in a NumPy array of T. If a constructed T exists
 // at the memory address, then ptr will be returned without taking
-// further actions. Otherwise, a T will be default-constructed
-// at the memory address, and ptr will then be returned.
+// further actions. Otherwise, a T will be init-constructed
+// at the memory address using the input arguments args,
+// and ptr will then be returned.
 //
 // If ptr belongs to a memory area not allocated by NumPy, this function
 // will assume that someone took care of constructing an T in ptr.
