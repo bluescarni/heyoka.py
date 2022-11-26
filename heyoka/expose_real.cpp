@@ -49,6 +49,7 @@
 #endif
 
 #include "custom_casters.hpp"
+#include "dtypes.hpp"
 #include "expose_real.hpp"
 #include "numpy_memory.hpp"
 
@@ -808,23 +809,48 @@ int npy_py_real_setitem(PyObject *item, void *data, void *arr)
         return -1;
     }
 
-    // TODO handle other types.
-    if (!py_real_check(item)) {
+    if (py_real_check(item)) {
+        const auto &src_val = *get_real_val(item);
+
+        auto ptr_opt = numpy_ensure_cted<mppp::real>(data);
+        if (!ptr_opt) {
+            return -1;
+        }
+
+        const auto err = with_pybind11_eh([&]() { **ptr_opt = src_val; });
+
+        return err ? -1 : 0;
+    }
+
+    // item is not a real, but it might be convertible to a real.
+    auto [r, flag] = real_from_ob(item);
+
+    if (r) {
+        // Conversion successful.
+
+        // Make sure we have a real in data.
+        auto ptr_opt = numpy_ensure_cted<mppp::real>(data);
+        if (!ptr_opt) {
+            return -1;
+        }
+
+        // NOTE: move assignment, no need for exception handling.
+        **ptr_opt = std::move(*r);
+
+        return 0;
+    }
+
+    if (flag) {
+        // Cannot convert item to a real because the type of item is not supported.
         PyErr_Format(PyExc_TypeError, "Cannot invoke __setitem__() on a real array with an input value of type \"%s\"",
                      Py_TYPE(item)->tp_name);
         return -1;
     }
 
-    const auto &src_val = *get_real_val(item);
-
-    auto ptr_opt = numpy_ensure_cted<mppp::real>(data);
-    if (!ptr_opt) {
-        return -1;
-    }
-
-    const auto err = with_pybind11_eh([&]() { **ptr_opt = src_val; });
-
-    return err ? -1 : 0;
+    // Attempting a conversion to real generated an error.
+    // The error flag has already been set by real_from_ob(),
+    // just return -1.
+    return -1;
 }
 
 // Copyswap primitive.
@@ -1046,6 +1072,95 @@ int npy_py_real_fill(void *data, npy_intp length, void *)
     return err ? -1 : 0;
 }
 
+// Generic NumPy conversion function to real.
+template <typename From>
+void npy_cast_to_real(void *from, void *to_data, npy_intp n, void *, void *)
+{
+    // Sanity check, we don't want to implement real -> real conversion.
+    static_assert(!std::is_same_v<From, mppp::real>);
+
+    const auto *typed_from = static_cast<const From *>(from);
+
+    // Try to locate to_data in the memory map.
+    const auto [base_ptr, meta_ptr] = get_memory_metadata(to_data);
+
+    // Build/fetch the array of construction flags, if possible.
+    auto *ct_flags = (base_ptr == nullptr) ? nullptr : meta_ptr->ensure_ct_flags_inited<mppp::real>();
+
+    // Fetch the char array version of the memory segment.
+    auto *c_to_data = reinterpret_cast<char *>(to_data);
+
+    // NOTE: we have no way of signalling failure in the casting functions,
+    // but at least we will stop and just return if some exception is raised.
+    with_pybind11_eh([&]() {
+        for (npy_intp i = 0; i < n; ++i) {
+            auto *dst_ptr = c_to_data + static_cast<std::size_t>(i) * sizeof(mppp::real);
+
+            if (ct_flags == nullptr || ct_flags[i]) {
+                // Existing object, assign.
+                *std::launder(reinterpret_cast<mppp::real *>(dst_ptr)) = typed_from[i];
+            } else {
+                // Copy-construct new object
+                ::new (dst_ptr) mppp::real{typed_from[i]};
+                // Mark as constructed.
+                ct_flags[i] = true;
+            }
+        }
+    });
+}
+
+// Generic NumPy conversion function from real.
+template <typename To>
+void npy_cast_from_real(void *from_data, void *to, npy_intp n, void *, void *)
+{
+    // Sanity check, we don't want to implement real -> real conversion.
+    static_assert(!std::is_same_v<To, mppp::real>);
+
+    auto *typed_to = static_cast<To *>(to);
+
+    // Try to locate from_data in the memory map.
+    const auto [base_ptr, meta_ptr] = get_memory_metadata(from_data);
+
+    // Build/fetch the array of construction flags, if possible.
+    const auto *ct_flags = (base_ptr == nullptr) ? nullptr : meta_ptr->ensure_ct_flags_inited<mppp::real>();
+
+    // Fetch the char array version of the memory segment.
+    const auto *c_from_data = reinterpret_cast<const char *>(from_data);
+
+    for (npy_intp i = 0; i < n; ++i) {
+        if (ct_flags == nullptr || ct_flags[i]) {
+            // Existing object.
+            const auto *src_ptr = c_from_data + static_cast<std::size_t>(i) * sizeof(mppp::real);
+            // NOTE: use mppp::get() for the conversion so that we are sure no exceptions are raised.
+            // NOTE: if the conversion fails (e.g., due to overflow or if To is an integral type
+            // and the source real is non-finite), then typed_to[i] will not be modified.
+            mppp::get(typed_to[i], *std::launder(reinterpret_cast<const mppp::real *>(src_ptr)));
+        } else {
+            // No mppp::real exists at src_ptr, just assign zero.
+            typed_to[i] = static_cast<To>(0);
+        }
+    }
+}
+
+// Helper to register NumPy casting functions to/from T.
+template <typename T>
+void npy_register_cast_functions()
+{
+    if (PyArray_RegisterCastFunc(PyArray_DescrFromType(get_dtype<T>()), npy_registered_py_real, &npy_cast_to_real<T>)
+        < 0) {
+        py_throw(PyExc_TypeError, "The registration of a NumPy casting function failed");
+    }
+
+    // NOTE: this is to signal that conversion of any scalar type to real is safe.
+    if (PyArray_RegisterCanCast(PyArray_DescrFromType(get_dtype<T>()), npy_registered_py_real, NPY_NOSCALAR) < 0) {
+        py_throw(PyExc_TypeError, "The registration of a NumPy casting function failed");
+    }
+
+    if (PyArray_RegisterCastFunc(&npy_py_real_descr, get_dtype<T>(), &npy_cast_from_real<T>) < 0) {
+        py_throw(PyExc_TypeError, "The registration of a NumPy casting function failed");
+    }
+}
+
 } // namespace
 
 } // namespace detail
@@ -1211,6 +1326,34 @@ void expose_real(py::module_ &m)
         < 0) {
         py_throw(PyExc_TypeError, "Cannot add the 'dtype' field to the real class");
     }
+
+    // NOTE: casting is currently disabled, as it results into memory errors
+    // due to NumPy bypassing the custom allocation functions in the implementation
+    // of astype().
+
+#if 0
+    // Casting.
+    detail::npy_register_cast_functions<float>();
+    detail::npy_register_cast_functions<double>();
+    // NOTE: registering conversions to/from long double has several
+    // adverse effects on the casting rules. Unclear at this time if
+    // such issues are from our code or NumPy's. Let's leave it commented
+    // at this time.
+    // detail::npy_register_cast_functions<long double>();
+
+    detail::npy_register_cast_functions<npy_int8>();
+    detail::npy_register_cast_functions<npy_int16>();
+    detail::npy_register_cast_functions<npy_int32>();
+    detail::npy_register_cast_functions<npy_int64>();
+
+    detail::npy_register_cast_functions<npy_uint8>();
+    detail::npy_register_cast_functions<npy_uint16>();
+    detail::npy_register_cast_functions<npy_uint32>();
+    detail::npy_register_cast_functions<npy_uint64>();
+
+    // NOTE: bool cast missing, needs to be special-cased
+    // like in real128.
+#endif
 
     // Add py_real_type to the module.
     Py_INCREF(&py_real_type);

@@ -5277,6 +5277,8 @@ class real_test_case(_ut.TestCase):
         from . import core
         import numpy as np
 
+        ld = np.longdouble
+
         make_no = core._make_no_real_array
 
         arr = np.empty((5,), dtype=real)
@@ -5309,6 +5311,32 @@ class real_test_case(_ut.TestCase):
         no_arr[3] = real("1.1", 128)
         self.assertEqual(no_arr[3], real("1.1", 128))
         self.assertEqual(no_arr[3].prec, 128)
+
+        # Setitem witn non-real types.
+        arr[1] = 1
+        self.assertEqual(arr[1], real(1))
+        self.assertEqual(arr[1].prec, real(1).prec)
+        arr[1] = 1.0
+        self.assertEqual(arr[1], real(1.0))
+        self.assertEqual(arr[1].prec, real(1.0).prec)
+
+        # TODO: because real128 is a NumPy registered type,
+        # attempting to assign a real128 into a real array
+        # will end up invoking the casting functions,
+        # which are currently disabled. Same thing for long
+        # double.
+        # if hasattr(core, "real128"):
+        #     real128 = core.real128
+        #     arr[1] = real128(1.0)
+        #     self.assertEqual(arr[1], real(real128(1.0)))
+        #     self.assertEqual(arr[1].prec, real(real128(1.0)).prec)
+
+        with self.assertRaises(TypeError) as cm:
+            arr[1] = []
+        self.assertTrue(
+            "Cannot invoke __setitem__() on a real array with an input value of type"
+            in str(cm.exception)
+        )
 
         # NOTE: this invokes the copyswap primitive.
         arr2 = np.copy(arr)
@@ -5419,7 +5447,8 @@ class real_test_case(_ut.TestCase):
 
         # arange().
         # TODO remove the explicit types for 0 and 1, check the dtype
-        # after we implement conversions.
+        # after we implement conversions. Check also that this returns
+        # an array with dtype real (currently it's object).
         arr = np.arange(real(0), real(1), real("0.3", 128))
         # self.assertTrue(
         #     np.all(
