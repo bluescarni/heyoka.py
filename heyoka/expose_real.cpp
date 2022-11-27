@@ -121,6 +121,10 @@ const auto pow_func = [](const auto &x, const auto &y) {
     return pow(x, y);
 };
 
+// Ternary primitives.
+const auto add3_func = [](mppp::real &ret, const mppp::real &a, const mppp::real &b) { mppp::add(ret, a, b); };
+const auto sub3_func = [](mppp::real &ret, const mppp::real &a, const mppp::real &b) { mppp::sub(ret, a, b); };
+
 // Methods for the number protocol.
 // NOLINTNEXTLINE(cppcoreguidelines-avoid-non-const-global-variables)
 PyNumberMethods py_real_as_number = {};
@@ -1161,6 +1165,105 @@ void npy_register_cast_functions()
     }
 }
 
+// Generic NumPy binary operation.
+// TODO adapt to T != mppp::real.
+template <typename T, typename F2, typename F3>
+void py_real_ufunc_binary(char **args, const npy_intp *dimensions, const npy_intp *steps, void *, const F2 &f2,
+                          const F3 &f3)
+{
+    npy_intp is0 = steps[0], is1 = steps[1], os = steps[2], n = *dimensions;
+    char *i0 = args[0], *i1 = args[1], *o = args[2];
+
+    with_pybind11_eh([&]() {
+        // Try to locate the input/output buffers in the memory map.
+        const auto [base_ptr_i0, meta_ptr_i0] = get_memory_metadata(i0);
+        const auto [base_ptr_i1, meta_ptr_i1] = get_memory_metadata(i1);
+        const auto [base_ptr_o, meta_ptr_o] = get_memory_metadata(o);
+
+        // Build/fetch the arrays of construction flags, if possible.
+        const auto *ct_flags_i0
+            = (base_ptr_i0 == nullptr) ? nullptr : meta_ptr_i0->ensure_ct_flags_inited<mppp::real>();
+        const auto *ct_flags_i1
+            = (base_ptr_i1 == nullptr) ? nullptr : meta_ptr_i1->ensure_ct_flags_inited<mppp::real>();
+        auto *ct_flags_o = (base_ptr_o == nullptr) ? nullptr : meta_ptr_o->ensure_ct_flags_inited<mppp::real>();
+
+        // Fetch a pointer to the global zero const. This will be used in place
+        // of non-constructed input real arguments.
+        const auto *zr = &get_zero_real();
+
+        for (npy_intp k = 0; k < n; ++k) {
+            // Setup the first input operand.
+            const auto idx_a = (ct_flags_i0 == nullptr)
+                                   ? 0u
+                                   : static_cast<std::size_t>(reinterpret_cast<unsigned char *>(i0) - base_ptr_i0)
+                                         / sizeof(mppp::real);
+            const mppp::real *a = (ct_flags_i0 == nullptr || ct_flags_i0[idx_a])
+                                      ? std::launder(reinterpret_cast<const mppp::real *>(i0))
+                                      : zr;
+
+            // Setup the second input operand.
+            const auto idx_b = (ct_flags_i1 == nullptr)
+                                   ? 0u
+                                   : static_cast<std::size_t>(reinterpret_cast<unsigned char *>(i1) - base_ptr_i1)
+                                         / sizeof(mppp::real);
+            const mppp::real *b = (ct_flags_i1 == nullptr || ct_flags_i1[idx_b])
+                                      ? std::launder(reinterpret_cast<const mppp::real *>(i1))
+                                      : zr;
+
+            // Setup the return value.
+            const auto idx_ret = (ct_flags_o == nullptr)
+                                     ? 0u
+                                     : static_cast<std::size_t>(reinterpret_cast<unsigned char *>(o) - base_ptr_o)
+                                           / sizeof(mppp::real);
+            if (ct_flags_o == nullptr || ct_flags_o[idx_ret]) {
+                // The return value is constructed already, use the ternary function.
+                f3(*std::launder(reinterpret_cast<mppp::real *>(o)), *a, *b);
+            } else {
+                // The return value has not been constructed yet. Init it from
+                // the result of the binary operation.
+                ::new (o) mppp::real(f2(*a, *b));
+                // Mark as constructed.
+                ct_flags_o[idx_ret] = true;
+            }
+
+            i0 += is0;
+            i1 += is1;
+            o += os;
+        }
+    });
+}
+
+template <typename F2, typename F3>
+void py_real_ufunc_binary(char **args, const npy_intp *dimensions, const npy_intp *steps, void *p, const F2 &f2,
+                          const F3 &f3)
+{
+    py_real_ufunc_binary<mppp::real>(args, dimensions, steps, p, f2, f3);
+}
+
+// Helper to register a NumPy ufunc.
+template <typename... Types>
+void npy_register_ufunc(py::module_ &numpy, const char *name, PyUFuncGenericFunction func, Types... types_)
+{
+    py::object ufunc_ob = numpy.attr(name);
+    auto *ufunc_ = ufunc_ob.ptr();
+    if (PyObject_IsInstance(ufunc_, reinterpret_cast<PyObject *>(&PyUFunc_Type)) == 0) {
+        py_throw(PyExc_TypeError, fmt::format("The name '{}' in the NumPy module is not a ufunc", name).c_str());
+    }
+    auto *ufunc = reinterpret_cast<PyUFuncObject *>(ufunc_);
+
+    int types[] = {types_...};
+    if (std::size(types) != boost::numeric_cast<std::size_t>(ufunc->nargs)) {
+        py_throw(PyExc_TypeError, fmt::format("Invalid arity for the ufunc '{}': the NumPy function expects {} "
+                                              "arguments, but {} arguments were provided instead",
+                                              name, ufunc->nargs, std::size(types))
+                                      .c_str());
+    }
+
+    if (PyUFunc_RegisterLoopForType(ufunc, npy_registered_py_real, func, types, nullptr) < 0) {
+        py_throw(PyExc_TypeError, fmt::format("The registration of the ufunc '{}' failed", name).c_str());
+    }
+}
+
 } // namespace
 
 } // namespace detail
@@ -1326,6 +1429,23 @@ void expose_real(py::module_ &m)
         < 0) {
         py_throw(PyExc_TypeError, "Cannot add the 'dtype' field to the real class");
     }
+
+    // NOTE: need access to the numpy module to register ufuncs.
+    auto numpy_mod = py::module_::import("numpy");
+
+    // Arithmetics.
+    detail::npy_register_ufunc(
+        numpy_mod, "add",
+        [](char **args, const npy_intp *dimensions, const npy_intp *steps, void *data) {
+            detail::py_real_ufunc_binary(args, dimensions, steps, data, std::plus{}, detail::add3_func);
+        },
+        npy_registered_py_real, npy_registered_py_real, npy_registered_py_real);
+    detail::npy_register_ufunc(
+        numpy_mod, "subtract",
+        [](char **args, const npy_intp *dimensions, const npy_intp *steps, void *data) {
+            detail::py_real_ufunc_binary(args, dimensions, steps, data, std::minus{}, detail::sub3_func);
+        },
+        npy_registered_py_real, npy_registered_py_real, npy_registered_py_real);
 
     // NOTE: casting is currently disabled, as it results into memory errors
     // due to NumPy bypassing the custom allocation functions in the implementation
