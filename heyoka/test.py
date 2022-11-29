@@ -5275,6 +5275,63 @@ class real_test_case(_ut.TestCase):
         self.test_numpy_sub()
         self.test_numpy_mul()
         self.test_numpy_div()
+        self.test_numpy_square()
+
+    def test_numpy_square(self):
+        from . import real
+        from . import core
+        import numpy as np
+
+        make_no = core._make_no_real_array
+
+        # Basic.
+        arr1 = np.array([1, 2, 3], dtype=real)
+        arr2 = np.square(arr1)
+        self.assertEqual(arr2[0], real(1) * real(1))
+        self.assertEqual(arr2[1], real(2) * real(2))
+        self.assertEqual(arr2[2], real(3) * real(3))
+
+        # Holes in the input args.
+        arr1 = np.zeros((3,), dtype=real)
+        arr1[0] = real(2)
+        arr2 = np.square(arr1)
+        self.assertEqual(arr2[0], real(4))
+        self.assertEqual(arr2[1], real(0))
+        self.assertEqual(arr2[2], real(0))
+
+        # Non-contiguous input.
+        arr1 = np.array([1, 0, 2, 0, 3, 0], dtype=real)
+        arr2 = np.square(arr1[::2])
+        self.assertEqual(arr2[0], real(1) * real(1))
+        self.assertEqual(arr2[1], real(2) * real(2))
+        self.assertEqual(arr2[2], real(3) * real(3))
+
+        # With provided output.
+        arr1 = np.array([1, 2, 3], dtype=real)
+        arr2 = np.zeros((3,), dtype=real)
+        arr2[0] = real("1.1", 128)
+        np.square(arr1, out=arr2)
+        self.assertEqual(arr2[0], real(1) * real(1))
+        self.assertEqual(arr2[0].prec, real(1).prec)
+        self.assertEqual(arr2[1], real(2) * real(2))
+        self.assertEqual(arr2[2], real(3) * real(3))
+
+        # Test with non-owning.
+        arr2 = np.zeros((3,), dtype=real)
+        arr2[0] = real("1.1", 128)
+        arr2 = make_no(arr2)
+        np.square(make_no(arr1), out=arr2)
+        self.assertEqual(arr2[0], real(1) * real(1))
+        self.assertEqual(arr2[0].prec, real(1).prec)
+        self.assertEqual(arr2[1], real(2) * real(2))
+        self.assertEqual(arr2[2], real(3) * real(3))
+
+        # Test with overlapping arguments.
+        arr2 = np.array([1, 2, 3], dtype=real)
+        np.square(arr2, out=arr2)
+        self.assertEqual(arr2[0], real(1) * real(1))
+        self.assertEqual(arr2[1], real(2) * real(2))
+        self.assertEqual(arr2[2], real(3) * real(3))
 
     def test_numpy_div(self):
         from . import real

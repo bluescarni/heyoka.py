@@ -15,7 +15,6 @@
 #if defined(HEYOKA_HAVE_REAL)
 
 #include <cassert>
-#include <cmath>
 #include <cstddef>
 #include <cstdint>
 #include <functional>
@@ -100,29 +99,21 @@ static_assert(alignof(py_real) <= alignof(std::max_align_t));
 
 // A few function object to implement basic mathematical
 // operations in a generic fashion.
-const auto identity_func = [](const auto &x) { return x; };
+const auto identity_func = [](const mppp::real &x) { return x; };
 
-const auto negation_func = [](const auto &x) { return -x; };
+const auto negation_func = [](const mppp::real &x) { return -x; };
 
-const auto abs_func = [](const auto &x) {
-    using std::abs;
+const auto abs_func = [](const mppp::real &x) { return mppp::abs(x); };
 
-    return abs(x);
-};
+const auto floor_divide_func = [](const mppp::real &x, const mppp::real &y) { return mppp::floor(x / y); };
 
-const auto floor_divide_func = [](const auto &x, const auto &y) {
-    using std::floor;
+const auto pow_func = [](const mppp::real &x, const mppp::real &y) { return mppp::pow(x, y); };
 
-    return floor(x / y);
-};
+// Squaring.
+const auto square_func = [](const mppp::real &x) { return mppp::sqr(x); };
+const auto square2_func = [](mppp::real &ret, const mppp::real &x) { mppp::sqr(ret, x); };
 
-const auto pow_func = [](const auto &x, const auto &y) {
-    using std::pow;
-
-    return pow(x, y);
-};
-
-// Ternary primitives.
+// Ternary arithmetic primitives.
 const auto add3_func = [](mppp::real &ret, const mppp::real &a, const mppp::real &b) { mppp::add(ret, a, b); };
 const auto sub3_func = [](mppp::real &ret, const mppp::real &a, const mppp::real &b) { mppp::sub(ret, a, b); };
 const auto mul3_func = [](mppp::real &ret, const mppp::real &a, const mppp::real &b) { mppp::mul(ret, a, b); };
@@ -1179,6 +1170,65 @@ void npy_register_cast_functions()
     }
 }
 
+// Generic NumPy unary operation.
+// TODO adapt to T != mppp::real.
+template <typename T, typename F1, typename F2>
+void py_real_ufunc_unary(char **args, const npy_intp *dimensions, const npy_intp *steps, void *, const F1 &f1,
+                         const F2 &f2)
+{
+    npy_intp is1 = steps[0], os1 = steps[1], n = dimensions[0];
+    char *ip1 = args[0], *op1 = args[1];
+
+    with_pybind11_eh([&]() {
+        // Try to locate the input/output buffers in the memory map.
+        const auto [base_ptr_i1, meta_ptr_i1] = get_memory_metadata(ip1);
+        const auto [base_ptr_o, meta_ptr_o] = get_memory_metadata(op1);
+
+        // Build/fetch the arrays of construction flags, if possible.
+        const auto *ct_flags_i1
+            = (base_ptr_i1 == nullptr) ? nullptr : meta_ptr_i1->ensure_ct_flags_inited<mppp::real>();
+        auto *ct_flags_o = (base_ptr_o == nullptr) ? nullptr : meta_ptr_o->ensure_ct_flags_inited<mppp::real>();
+
+        // Fetch a pointer to the global zero const. This will be used in place
+        // of non-constructed input real arguments.
+        const auto *zr = &get_zero_real();
+
+        for (npy_intp i = 0; i < n; ++i, ip1 += is1, op1 += os1) {
+            // Setup the input operand.
+            const auto idx_a = (ct_flags_i1 == nullptr)
+                                   ? 0u
+                                   : static_cast<std::size_t>(reinterpret_cast<unsigned char *>(ip1) - base_ptr_i1)
+                                         / sizeof(mppp::real);
+            const mppp::real *a = (ct_flags_i1 == nullptr || ct_flags_i1[idx_a])
+                                      ? std::launder(reinterpret_cast<const mppp::real *>(ip1))
+                                      : zr;
+
+            // Setup the return value.
+            const auto idx_ret = (ct_flags_o == nullptr)
+                                     ? 0u
+                                     : static_cast<std::size_t>(reinterpret_cast<unsigned char *>(op1) - base_ptr_o)
+                                           / sizeof(mppp::real);
+            if (ct_flags_o == nullptr || ct_flags_o[idx_ret]) {
+                // The return value is constructed already, use the binary function.
+                f2(*std::launder(reinterpret_cast<mppp::real *>(op1)), *a);
+            } else {
+                // The return value has not been constructed yet. Init it from
+                // the result of the unary operation.
+                ::new (op1) mppp::real(f1(*a));
+                // Mark as constructed.
+                ct_flags_o[idx_ret] = true;
+            }
+        };
+    });
+}
+
+template <typename F1, typename F2>
+void py_real_ufunc_unary(char **args, const npy_intp *dimensions, const npy_intp *steps, void *p, const F1 &f1,
+                         const F2 &f2)
+{
+    py_real_ufunc_unary<mppp::real>(args, dimensions, steps, p, f1, f2);
+}
+
 // Generic NumPy binary operation.
 // TODO adapt to T != mppp::real.
 template <typename T, typename F2, typename F3>
@@ -1353,17 +1403,14 @@ void expose_real(py::module_ &m)
     // NOTE: for large integers, this goes through a string conversion.
     // Of course, this can be implemented much faster.
     detail::py_real_as_number.nb_int = [](PyObject *arg) -> PyObject * {
-        using std::isfinite;
-        using std::isnan;
-
         const auto &val = *get_real_val(arg);
 
-        if (isnan(val)) {
+        if (mppp::isnan(val)) {
             PyErr_SetString(PyExc_ValueError, "Cannot convert real NaN to integer");
             return nullptr;
         }
 
-        if (!isfinite(val)) {
+        if (!mppp::isfinite(val)) {
             PyErr_SetString(PyExc_OverflowError, "Cannot convert real infinity to integer");
             return nullptr;
         }
@@ -1473,6 +1520,12 @@ void expose_real(py::module_ &m)
             detail::py_real_ufunc_binary(args, dimensions, steps, data, std::divides{}, detail::div3_func);
         },
         npy_registered_py_real, npy_registered_py_real, npy_registered_py_real);
+    detail::npy_register_ufunc(
+        numpy_mod, "square",
+        [](char **args, const npy_intp *dimensions, const npy_intp *steps, void *data) {
+            detail::py_real_ufunc_unary(args, dimensions, steps, data, detail::square_func, detail::square2_func);
+        },
+        npy_registered_py_real, npy_registered_py_real);
 
     // NOTE: casting is currently disabled, as it results into memory errors
     // due to NumPy bypassing the custom allocation functions in the implementation
