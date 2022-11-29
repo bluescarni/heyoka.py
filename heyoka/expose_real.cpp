@@ -17,6 +17,7 @@
 #include <cassert>
 #include <cmath>
 #include <cstddef>
+#include <cstdint>
 #include <functional>
 #include <limits>
 #include <memory>
@@ -124,6 +125,7 @@ const auto pow_func = [](const auto &x, const auto &y) {
 // Ternary primitives.
 const auto add3_func = [](mppp::real &ret, const mppp::real &a, const mppp::real &b) { mppp::add(ret, a, b); };
 const auto sub3_func = [](mppp::real &ret, const mppp::real &a, const mppp::real &b) { mppp::sub(ret, a, b); };
+const auto mul3_func = [](mppp::real &ret, const mppp::real &a, const mppp::real &b) { mppp::mul(ret, a, b); };
 
 // Methods for the number protocol.
 // NOLINTNEXTLINE(cppcoreguidelines-avoid-non-const-global-variables)
@@ -582,10 +584,21 @@ PyObject *py_real_prec_getter(PyObject *self, void *)
     return PyLong_FromLongLong(static_cast<long long>(get_real_val(self)->get_prec()));
 }
 
+// The limb address getter.
+PyObject *py_real_limb_address_getter(PyObject *self, void *)
+{
+    assert(py_real_check(self));
+
+    return PyLong_FromUnsignedLongLong(
+        static_cast<unsigned long long>(reinterpret_cast<std::uintptr_t>(get_real_val(self)->get_mpfr_t()->_mpfr_d)));
+}
+
 // The array for computed attribute instances. See:
 // https://docs.python.org/3/c-api/typeobj.html#c.PyTypeObject.tp_getset
 // NOLINTNEXTLINE(cppcoreguidelines-avoid-non-const-global-variables)
-PyGetSetDef py_real_get_set[] = {{"prec", py_real_prec_getter, nullptr, nullptr, nullptr}, {nullptr}};
+PyGetSetDef py_real_get_set[] = {{"prec", py_real_prec_getter, nullptr, nullptr, nullptr},
+                                 {"_limb_address", py_real_limb_address_getter, nullptr, nullptr, nullptr},
+                                 {nullptr}};
 
 // Generic implementation of unary operations.
 template <typename F>
@@ -1408,8 +1421,9 @@ void expose_real(py::module_ &m)
         return detail::npy_py_real_argminmax(data, n, max_ind, std::greater{});
     };
     detail::npy_py_real_arr_funcs.fill = detail::npy_py_real_fill;
+    // NOTE: same issue as the casting functions, apparently.
+    // detail::npy_py_real_arr_funcs.fillwithscalar = detail::npy_py_real_fillwithscalar;
 #if 0
-    detail::npy_py_real128_arr_funcs.fillwithscalar = detail::npy_py_real128_fillwithscalar;
     detail::npy_py_real128_arr_funcs.dotfunc = detail::npy_py_real128_dot;
     // NOTE: not sure if this is needed - it does not seem to have
     // any effect and the online examples of user dtypes do not set it.
@@ -1444,6 +1458,12 @@ void expose_real(py::module_ &m)
         numpy_mod, "subtract",
         [](char **args, const npy_intp *dimensions, const npy_intp *steps, void *data) {
             detail::py_real_ufunc_binary(args, dimensions, steps, data, std::minus{}, detail::sub3_func);
+        },
+        npy_registered_py_real, npy_registered_py_real, npy_registered_py_real);
+    detail::npy_register_ufunc(
+        numpy_mod, "multiply",
+        [](char **args, const npy_intp *dimensions, const npy_intp *steps, void *data) {
+            detail::py_real_ufunc_binary(args, dimensions, steps, data, std::multiplies{}, detail::mul3_func);
         },
         npy_registered_py_real, npy_registered_py_real, npy_registered_py_real);
 

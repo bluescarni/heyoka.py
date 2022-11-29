@@ -5273,6 +5273,70 @@ class real_test_case(_ut.TestCase):
         self.test_numpy_basic()
         self.test_numpy_add()
         self.test_numpy_sub()
+        self.test_numpy_mul()
+
+    def test_numpy_mul(self):
+        from . import real
+        from . import core
+        import numpy as np
+
+        make_no = core._make_no_real_array
+
+        # Basic.
+        arr1 = np.array([1, 2, 3], dtype=real)
+        arr2 = np.array([4, 5, 6], dtype=real)
+        arr3 = arr1 * arr2
+        self.assertEqual(arr3[0], real(1) * real(4))
+        self.assertEqual(arr3[1], real(2) * real(5))
+        self.assertEqual(arr3[2], real(3) * real(6))
+
+        # Holes in the input args.
+        arr1 = np.zeros((3,), dtype=real)
+        arr1[0] = real(1)
+        arr1[1] = 1
+        arr2 = np.zeros((3,), dtype=real)
+        arr2[0] = 1
+        arr2[1] = real(5)
+        arr3 = arr1 * arr2
+        self.assertEqual(arr3[0], real(1))
+        self.assertEqual(arr3[1], real(5))
+        self.assertEqual(arr3[2], real(0))
+
+        # Non-contiguous inputs.
+        arr1 = np.array([1, 0, 2, 0, 3, 0], dtype=real)
+        arr2 = np.array([4, 5, 6], dtype=real)
+        arr3 = arr1[::2] * arr2
+        self.assertEqual(arr3[0], real(1) * real(4))
+        self.assertEqual(arr3[1], real(2) * real(5))
+        self.assertEqual(arr3[2], real(3) * real(6))
+
+        # With provided output.
+        arr1 = np.array([1, 2, 3], dtype=real)
+        arr2 = np.array([4, 5, 6], dtype=real)
+        arr3 = np.zeros((3,), dtype=real)
+        arr3[0] = real("1.1", 128)
+        np.multiply(arr1, arr2, out=arr3)
+        self.assertEqual(arr3[0], real(1) * real(4))
+        self.assertEqual(arr3[0].prec, real(1).prec)
+        self.assertEqual(arr3[1], real(2) * real(5))
+        self.assertEqual(arr3[2], real(3) * real(6))
+
+        # Test with non-owning.
+        arr3 = np.zeros((3,), dtype=real)
+        arr3[0] = real("1.1", 128)
+        arr3 = make_no(arr3)
+        np.multiply(make_no(arr1), make_no(arr2), out=arr3)
+        self.assertEqual(arr3[0], real(1) * real(4))
+        self.assertEqual(arr3[0].prec, real(1).prec)
+        self.assertEqual(arr3[1], real(2) * real(5))
+        self.assertEqual(arr3[2], real(3) * real(6))
+
+        # Test with overlapping arguments.
+        arr3 = np.zeros((3,), dtype=real)
+        np.multiply(arr3, arr3, out=arr3)
+        self.assertEqual(arr3[0], 0)
+        self.assertEqual(arr3[1], 0)
+        self.assertEqual(arr3[2], 0)
 
     def test_numpy_add(self):
         from . import real
@@ -6093,6 +6157,11 @@ class real_test_case(_ut.TestCase):
             'Cannot construct a real from an object of type "list"' in str(cm.exception)
         )
 
+        # The limb address getter.
+        x = real("1.1", 123)
+        y = real("1.1", 123)
+        self.assertNotEqual(x._limb_address, y._limb_address)
+
 
 class real128_test_case(_ut.TestCase):
     def runTest(self):
@@ -6362,6 +6431,12 @@ class real128_test_case(_ut.TestCase):
         # Nonzero.
         arr = np.array([1, 0, 3, real128("nan")], dtype=real128)
         self.assertTrue(np.all([0, 2, 3] == np.nonzero(arr)[0]))
+
+        # Fill.
+        arr = np.zeros((10,), dtype=real128)
+        arr.fill(real128("1.1"))
+        for _ in arr:
+            self.assertEqual(_, real128("1.1"))
 
         # Argmin/argmax.
         arr = np.array([1, 321, 54, 6, 2, 6, -6], dtype=real128)
