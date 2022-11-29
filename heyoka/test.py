@@ -5274,6 +5274,71 @@ class real_test_case(_ut.TestCase):
         self.test_numpy_add()
         self.test_numpy_sub()
         self.test_numpy_mul()
+        self.test_numpy_div()
+
+    def test_numpy_div(self):
+        from . import real
+        from . import core
+        import numpy as np
+
+        make_no = core._make_no_real_array
+
+        # Basic.
+        arr1 = np.array([1, 2, 3], dtype=real)
+        arr2 = np.array([4, 5, 6], dtype=real)
+        arr3 = arr1 / arr2
+        self.assertEqual(arr3[0], real(1) / real(4))
+        self.assertEqual(arr3[1], real(2) / real(5))
+        self.assertEqual(arr3[2], real(3) / real(6))
+
+        # Holes in the input args.
+        arr1 = np.zeros((3,), dtype=real)
+        arr1[0] = real(1)
+        arr1[1] = 1
+        arr2 = np.zeros((3,), dtype=real)
+        arr2[0] = 1
+        arr2[1] = real(5)
+        arr2[2] = real(1)
+        arr3 = arr1 / arr2
+        self.assertEqual(arr3[0], real(1))
+        self.assertEqual(arr3[1], real(1) / real(5))
+        self.assertEqual(arr3[2], real(0))
+
+        # Non-contiguous inputs.
+        arr1 = np.array([1, 0, 2, 0, 3, 0], dtype=real)
+        arr2 = np.array([4, 5, 6], dtype=real)
+        arr3 = arr1[::2] / arr2
+        self.assertEqual(arr3[0], real(1) / real(4))
+        self.assertEqual(arr3[1], real(2) / real(5))
+        self.assertEqual(arr3[2], real(3) / real(6))
+
+        # With provided output.
+        arr1 = np.array([1, 2, 3], dtype=real)
+        arr2 = np.array([4, 5, 6], dtype=real)
+        arr3 = np.zeros((3,), dtype=real)
+        arr3[0] = real("1.1", 128)
+        np.divide(arr1, arr2, out=arr3)
+        self.assertEqual(arr3[0], real(1) / real(4))
+        self.assertEqual(arr3[0].prec, real(1).prec)
+        self.assertEqual(arr3[1], real(2) / real(5))
+        self.assertEqual(arr3[2], real(3) / real(6))
+
+        # Test with non-owning.
+        arr3 = np.zeros((3,), dtype=real)
+        arr3[0] = real("1.1", 128)
+        arr3 = make_no(arr3)
+        np.divide(make_no(arr1), make_no(arr2), out=arr3)
+        self.assertEqual(arr3[0], real(1) / real(4))
+        self.assertEqual(arr3[0].prec, real(1).prec)
+        self.assertEqual(arr3[1], real(2) / real(5))
+        self.assertEqual(arr3[2], real(3) / real(6))
+
+        # Test with overlapping arguments.
+        arr3 = np.array([1, 2, 3], dtype=real)
+        np.divide(arr3, arr3, out=arr3)
+        self.assertEqual(arr3[0], 1)
+        self.assertEqual(arr3[1], 1)
+        self.assertEqual(arr3[2], 1)
 
     def test_numpy_mul(self):
         from . import real

@@ -126,6 +126,7 @@ const auto pow_func = [](const auto &x, const auto &y) {
 const auto add3_func = [](mppp::real &ret, const mppp::real &a, const mppp::real &b) { mppp::add(ret, a, b); };
 const auto sub3_func = [](mppp::real &ret, const mppp::real &a, const mppp::real &b) { mppp::sub(ret, a, b); };
 const auto mul3_func = [](mppp::real &ret, const mppp::real &a, const mppp::real &b) { mppp::mul(ret, a, b); };
+const auto div3_func = [](mppp::real &ret, const mppp::real &a, const mppp::real &b) { mppp::div(ret, a, b); };
 
 // Methods for the number protocol.
 // NOLINTNEXTLINE(cppcoreguidelines-avoid-non-const-global-variables)
@@ -1464,6 +1465,12 @@ void expose_real(py::module_ &m)
         numpy_mod, "multiply",
         [](char **args, const npy_intp *dimensions, const npy_intp *steps, void *data) {
             detail::py_real_ufunc_binary(args, dimensions, steps, data, std::multiplies{}, detail::mul3_func);
+        },
+        npy_registered_py_real, npy_registered_py_real, npy_registered_py_real);
+    detail::npy_register_ufunc(
+        numpy_mod, "divide",
+        [](char **args, const npy_intp *dimensions, const npy_intp *steps, void *data) {
+            detail::py_real_ufunc_binary(args, dimensions, steps, data, std::divides{}, detail::div3_func);
         },
         npy_registered_py_real, npy_registered_py_real, npy_registered_py_real);
 
