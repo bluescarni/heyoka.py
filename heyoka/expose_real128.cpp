@@ -1164,7 +1164,8 @@ void expose_real128(py::module_ &m)
 
     // Finalize py_real128_type.
     if (PyType_Ready(&py_real128_type) < 0) {
-        py_throw(PyExc_TypeError, "Could not finalise the real128 type");
+        // NOTE: PyType_Ready() already sets the exception flag.
+        throw py::error_already_set();
     }
 
     // Fill out the NumPy descriptor.
@@ -1208,7 +1209,8 @@ void expose_real128(py::module_ &m)
     Py_SET_TYPE(&detail::npy_py_real128_descr, &PyArrayDescr_Type);
     npy_registered_py_real128 = PyArray_RegisterDataType(&detail::npy_py_real128_descr);
     if (npy_registered_py_real128 < 0) {
-        py_throw(PyExc_TypeError, "Could not register the real128 type in NumPy");
+        // NOTE: PyArray_RegisterDataType() already sets the error flag.
+        throw py::error_already_set();
     }
 
     // Support the dtype(real128) syntax.

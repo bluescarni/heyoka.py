@@ -1483,7 +1483,8 @@ void expose_real(py::module_ &m)
     Py_SET_TYPE(&detail::npy_py_real_descr, &PyArrayDescr_Type);
     npy_registered_py_real = PyArray_RegisterDataType(&detail::npy_py_real_descr);
     if (npy_registered_py_real < 0) {
-        py_throw(PyExc_TypeError, "Could not register the real type in NumPy");
+        // NOTE: PyArray_RegisterDataType() already sets the error flag.
+        throw py::error_already_set();
     }
 
     // Support the dtype(real) syntax.
