@@ -1432,7 +1432,8 @@ void expose_real(py::module_ &m)
 
     // Finalize py_real_type.
     if (PyType_Ready(&py_real_type) < 0) {
-        py_throw(PyExc_TypeError, "Could not finalise the real type");
+        // NOTE: PyType_Ready() already sets the exception flag.
+        throw py::error_already_set();
     }
 
     // Fill out the NumPy descriptor.
