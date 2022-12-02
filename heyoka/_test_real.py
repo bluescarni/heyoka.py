@@ -557,6 +557,19 @@ class real_test_case(_ut.TestCase):
             self.assertEqual(val, real("1.1", 128))
             self.assertEqual(val.prec, 128)
 
+        # linspace().
+        arr = np.linspace(0, 1, 10, dtype=real)
+        self.assertEqual(arr.dtype, real)
+        self.assertEqual(arr[0].prec, real(1.0).prec)
+
+        arr = np.linspace(real(0), real(1), 10, dtype=real)
+        self.assertEqual(arr.dtype, real)
+        self.assertEqual(arr[0].prec, real(1).prec)
+
+        arr = np.linspace(real(0, 128), real(1, 128), 10, dtype=real)
+        self.assertEqual(arr.dtype, real)
+        self.assertEqual(arr[0].prec, 128)
+
     def test_comparisons(self):
         from . import real
         from . import core
