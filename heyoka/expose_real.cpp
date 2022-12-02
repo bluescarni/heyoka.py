@@ -1705,8 +1705,22 @@ void expose_real(py::module_ &m)
     detail::npy_register_cast_functions<npy_uint32>();
     detail::npy_register_cast_functions<npy_uint64>();
 
-    // TODO: bool cast missing, needs to be special-cased
-    // like in real128.
+    // NOTE: need to do bool manually as it typically overlaps
+    // with another C++ type (e.g., uint8).
+    if (PyArray_RegisterCastFunc(PyArray_DescrFromType(NPY_BOOL), npy_registered_py_real,
+                                 &detail::npy_cast_to_real<npy_bool>)
+        < 0) {
+        py_throw(PyExc_TypeError, "The registration of a NumPy casting function failed");
+    }
+
+    // NOTE: this is to signal that conversion of bool to real is safe.
+    if (PyArray_RegisterCanCast(PyArray_DescrFromType(NPY_BOOL), npy_registered_py_real, NPY_NOSCALAR) < 0) {
+        py_throw(PyExc_TypeError, "The registration of a NumPy casting function failed");
+    }
+
+    if (PyArray_RegisterCastFunc(&detail::npy_py_real_descr, NPY_BOOL, &detail::npy_cast_from_real<npy_bool>) < 0) {
+        py_throw(PyExc_TypeError, "The registration of a NumPy casting function failed");
+    }
 
     // Add py_real_type to the module.
     Py_INCREF(&py_real_type);

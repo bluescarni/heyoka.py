@@ -27,6 +27,71 @@ class real_test_case(_ut.TestCase):
         self.test_numpy_mul()
         self.test_numpy_div()
         self.test_numpy_square()
+        self.test_numpy_conversions()
+
+    def test_numpy_conversions(self):
+        from . import real
+        from . import core
+        import numpy as np
+
+        make_no = core._make_no_real_array
+
+        # real -> other.
+
+        # Basic testing.
+        arr = np.array([real("1.1", 128)])
+        self.assertEqual(arr.astype(float)[0], 1.1)
+        self.assertEqual(arr.astype(np.int32)[0], 1)
+        self.assertEqual(arr.astype(bool)[0], True)
+
+        # With uninited values.
+        arr = np.empty((2,), dtype=real)
+        arr[0] = real("1.1", 128)
+        self.assertEqual(arr.astype(float)[0], 1.1)
+        self.assertEqual(arr.astype(float)[1], 0.0)
+        self.assertEqual(arr.astype(np.int32)[0], 1)
+        self.assertEqual(arr.astype(np.int32)[1], 0)
+        self.assertEqual(arr.astype(bool)[0], True)
+        self.assertEqual(arr.astype(bool)[1], False)
+
+        # With holes.
+        arr = np.empty((6,), dtype=real)
+        arr[0] = real("1.1", 128)
+        arr = arr[::3]
+        self.assertEqual(arr.astype(float)[0], 1.1)
+        self.assertEqual(arr.astype(float)[1], 0.0)
+        self.assertEqual(arr.astype(np.int32)[0], 1)
+        self.assertEqual(arr.astype(np.int32)[1], 0)
+        self.assertEqual(arr.astype(bool)[0], True)
+        self.assertEqual(arr.astype(bool)[1], False)
+
+        # With non-owning.
+        arr = np.empty((2,), dtype=real)
+        arr[0] = real("1.1", 128)
+        arr = make_no(arr)
+        self.assertEqual(arr.astype(float)[0], 1.1)
+        self.assertEqual(arr.astype(float)[1], 0.0)
+        self.assertEqual(arr.astype(np.int32)[0], 1)
+        self.assertEqual(arr.astype(np.int32)[1], 0)
+        self.assertEqual(arr.astype(bool)[0], True)
+        self.assertEqual(arr.astype(bool)[1], False)
+
+        # other -> real.
+        arr = np.array([1], dtype=np.int32)
+        self.assertEqual(arr.astype(real)[0], real(1))
+        self.assertEqual(arr.astype(real)[0].prec, 32)
+        self.assertEqual(arr.astype(real, casting="safe")[0], real(1))
+        self.assertEqual(arr.astype(real, casting="safe")[0].prec, 32)
+        arr = np.array([1.1], dtype=float)
+        self.assertEqual(arr.astype(real)[0], real(1.1))
+        self.assertEqual(arr.astype(real)[0].prec, real(1.1).prec)
+        self.assertEqual(arr.astype(real, casting="safe")[0], real(1.1))
+        self.assertEqual(arr.astype(real, casting="safe")[0].prec, real(1.1).prec)
+        arr = np.array([real("1.1", 128)])
+        with self.assertRaises(TypeError) as cm:
+            arr.astype(float, casting="safe")
+        with self.assertRaises(TypeError) as cm:
+            arr.astype(np.int32, casting="safe")
 
     def test_numpy_square(self):
         from . import real
