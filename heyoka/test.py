@@ -5630,16 +5630,11 @@ class real_test_case(_ut.TestCase):
         self.assertEqual(arr[1], real(1.0))
         self.assertEqual(arr[1].prec, real(1.0).prec)
 
-        # TODO: because real128 is a NumPy registered type,
-        # attempting to assign a real128 into a real array
-        # will end up invoking the casting functions,
-        # which are currently disabled. Same thing for long
-        # double.
-        # if hasattr(core, "real128"):
-        #     real128 = core.real128
-        #     arr[1] = real128(1.0)
-        #     self.assertEqual(arr[1], real(real128(1.0)))
-        #     self.assertEqual(arr[1].prec, real(real128(1.0)).prec)
+        if hasattr(core, "real128"):
+            real128 = core.real128
+            arr[1] = real128(1.0)
+            self.assertEqual(arr[1], real(real128(1.0)))
+            self.assertEqual(arr[1].prec, real(real128(1.0)).prec)
 
         with self.assertRaises(TypeError) as cm:
             arr[1] = []
@@ -5759,7 +5754,7 @@ class real_test_case(_ut.TestCase):
         # TODO remove the explicit types for 0 and 1, check the dtype
         # after we implement conversions. Check also that this returns
         # an array with dtype real (currently it's object).
-        arr = np.arange(real(0), real(1), real("0.3", 128))
+        arr = np.arange(0, 1, real("0.3", 128))
         # self.assertTrue(
         #     np.all(
         #         arr
@@ -5792,8 +5787,7 @@ class real_test_case(_ut.TestCase):
         self.assertEqual(2.0, real(2))
 
         self.assertEqual(real(2), ld(2.0))
-        # TODO check if this is fixed after we implement numpy support.
-        # self.assertEqual(ld(2.0), real(2))
+        self.assertEqual(ld(2.0), real(2))
 
         if hasattr(core, "real128"):
             real128 = core.real128
@@ -5811,8 +5805,7 @@ class real_test_case(_ut.TestCase):
         self.assertNotEqual(3.0, real(2))
 
         self.assertNotEqual(real(3), ld(2.0))
-        # TODO check if this is fixed after we implement numpy support.
-        # self.assertNotEqual(ld(3.0), real(2))
+        self.assertNotEqual(ld(3.0), real(2))
 
         if hasattr(core, "real128"):
             real128 = core.real128
@@ -5830,8 +5823,7 @@ class real_test_case(_ut.TestCase):
         self.assertLess(1.0, real(2))
 
         self.assertLess(real(1), ld(2.0))
-        # TODO check if this is fixed after we implement numpy support.
-        # self.assertLess(ld(1.0), real(2))
+        self.assertLess(ld(1.0), real(2))
 
         if hasattr(core, "real128"):
             real128 = core.real128
@@ -5849,8 +5841,7 @@ class real_test_case(_ut.TestCase):
         self.assertLessEqual(2.0, real(2))
 
         self.assertLessEqual(real(1), ld(2.0))
-        # TODO check if this is fixed after we implement numpy support.
-        # self.assertLessEqual(ld(2.0), real(2))
+        self.assertLessEqual(ld(2.0), real(2))
 
         if hasattr(core, "real128"):
             real128 = core.real128
@@ -5868,8 +5859,7 @@ class real_test_case(_ut.TestCase):
         self.assertGreater(3.0, real(2))
 
         self.assertGreater(real(3), ld(2.0))
-        # TODO check if this is fixed after we implement numpy support.
-        # self.assertLess(ld(3.0), real(2))
+        self.assertGreater(ld(3.0), real(2))
 
         if hasattr(core, "real128"):
             real128 = core.real128
@@ -5887,8 +5877,7 @@ class real_test_case(_ut.TestCase):
         self.assertGreaterEqual(3.0, real(2))
 
         self.assertGreaterEqual(real(3), ld(2.0))
-        # TODO check if this is fixed after we implement numpy support.
-        # self.assertLess(ld(3.0), real(3))
+        self.assertGreaterEqual(ld(3.0), real(3))
 
         if hasattr(core, "real128"):
             real128 = core.real128
@@ -5939,8 +5928,7 @@ class real_test_case(_ut.TestCase):
         self.assertEqual(str(1.0 + y), str(real(-1, 128)))
 
         self.assertEqual(str(x + ld(-2.0)), str(real(-1, 128)))
-        # TODO check if this is fixed after we implement numpy support.
-        # self.assertEqual(str(ld(1.0) + y), str(real(-1, 128)))
+        self.assertEqual(str(ld(1.0) + y), str(real(-1, 128)))
 
         # real128.
         if hasattr(core, "real128"):
@@ -5966,8 +5954,7 @@ class real_test_case(_ut.TestCase):
         self.assertEqual(str(1.0 - y), str(real(3, 128)))
 
         self.assertEqual(str(x - ld(-2.0)), str(real(3, 128)))
-        # TODO check if this is fixed after we implement numpy support.
-        # self.assertEqual(str(ld(1.0) + y), str(real(3, 128)))
+        self.assertEqual(str(ld(1.0) - y), str(real(3, 128)))
 
         # real128.
         if hasattr(core, "real128"):
@@ -5993,8 +5980,7 @@ class real_test_case(_ut.TestCase):
         self.assertEqual(str(1.0 * y), str(real(-2, 128)))
 
         self.assertEqual(str(x * ld(-2.0)), str(real(-2, 128)))
-        # TODO check if this is fixed after we implement numpy support.
-        # self.assertEqual(str(ld(1.0) + y), str(real(-2, 128)))
+        self.assertEqual(str(ld(1.0) * y), str(real(-2, 128)))
 
         # real128.
         if hasattr(core, "real128"):
@@ -6020,8 +6006,7 @@ class real_test_case(_ut.TestCase):
         self.assertEqual(str(1.0 / y), str(real(-0.5, 128)))
 
         self.assertEqual(str(x / ld(-2.0)), str(real(-0.5, 128)))
-        # TODO check if this is fixed after we implement numpy support.
-        # self.assertEqual(str(ld(1.0) + y), str(real(-0.5, 128)))
+        self.assertEqual(str(ld(1.0) / y), str(real(-0.5, 128)))
 
         # real128.
         if hasattr(core, "real128"):
@@ -6045,8 +6030,7 @@ class real_test_case(_ut.TestCase):
         self.assertEqual(str(1.0 // real(2.1, 128)), str(real(0.0, 128)))
 
         self.assertEqual(str(real(2.1, 128) // ld(1.0)), str(real(2.0, 128)))
-        # TODO check if this is fixed after we implement numpy support.
-        # self.assertEqual(str(ld(1.) // real(2.1, 128)), str(real(0.0, 128)))
+        self.assertEqual(str(ld(1.0) // real(2.1, 128)), str(real(0.0, 128)))
 
         # real128.
         if hasattr(core, "real128"):
@@ -6070,8 +6054,7 @@ class real_test_case(_ut.TestCase):
         self.assertEqual(str(2.0 ** real(3.0, 128)), str(real(8.0, 128)))
 
         self.assertEqual(str(real(2.0, 128) ** ld(3.0)), str(real(8.0, 128)))
-        # TODO check if this is fixed after we implement numpy support.
-        # self.assertEqual(str(ld(2.0) ** real(3.0, 128)), str(real(8.0, 128)))
+        self.assertEqual(str(ld(2.0) ** real(3.0, 128)), str(real(8.0, 128)))
 
         # real128.
         if hasattr(core, "real128"):

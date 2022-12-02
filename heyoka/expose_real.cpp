@@ -17,6 +17,7 @@
 #include <cassert>
 #include <cstddef>
 #include <cstdint>
+#include <cstring>
 #include <functional>
 #include <limits>
 #include <memory>
@@ -781,8 +782,161 @@ bool ptr_real_aligned(void *ptr)
     return std::align(alignof(mppp::real), sizeof(mppp::real), ptr, space) != nullptr;
 }
 
+// Helper to access a global default-constructed real instance.
+// This is used in several places when trying to access
+// a not-yet-constructed real in an array.
+// NOTE: mark it noexcept as this is equivalent to being unable
+// to construct a global variable, a situation which
+// we don't really need to be able to recover from.
+const auto &get_zero_real() noexcept
+{
+    static const mppp::real zr;
+
+    return zr;
+}
+
+// This helper checks if a valid mppp::real exists at the address ptr by
+// reading from ptr the first member of an MPFR struct, that is,
+// the precision value, which cannot be zero. Coupled to the fact that we
+// specify NPY_NEEDS_INIT when registering the NumPy type (which zeroes out
+// allocated memory buffers before using them within NumPy), this allows
+// us to detect at runtime if NumPy tries to use memory buffers NOT allocated
+// via the NEP 49 functions to store mppp::real instances.
+bool is_valid_real(const void *ptr) noexcept
+{
+    mpfr_prec_t prec = 0;
+    std::memcpy(&prec, ptr, sizeof(mpfr_prec_t));
+
+    return prec != 0;
+}
+
+// This function will return either a const pointer to an mppp::real stored
+// at the memory address ptr, if it exists, or the fallback value.
+//
+// ptr may or may not be located in a memory buffer managed by NEP 49:
+//
+// - if it is, both base_ptr and ct_flags are non-null,
+//   base_ptr is assumed to point to beginning of a NEP 49 memory buffer and ct_flags is the
+//   construction flags metadata associated to the memory buffer. If a constructed mppp::real exists
+//   in ptr, then its address will be returned, otherwise fallback will be returned instead;
+// - otherwise, both base_ptr and ct_flags are nullptr. If ptr contains a valid real
+//   (as detected by is_valid_real()) then it is returned, otherwise fallback will be returned instead.
+const mppp::real *fetch_cted_real(const unsigned char *base_ptr, const bool *ct_flags, const void *ptr,
+                                  const mppp::real *fallback) noexcept
+{
+    assert((base_ptr == nullptr) == (ct_flags == nullptr));
+    assert(fallback != nullptr);
+
+    if (base_ptr == nullptr) {
+        // The memory buffer is not managed by NEP 49, check if a real
+        // has been constructed in ptr by someone else.
+        if (is_valid_real(ptr)) {
+            // A valid real exists in ptr, return it.
+            return std::launder(reinterpret_cast<const mppp::real *>(ptr));
+        } else {
+            // No valid real exists in ptr, return the
+            // fallback pointer.
+            // NOTE: I am not sure this can actually happen - that is,
+            // NumPy allocating buffers outside NEP 49 and then reading
+            // from them without having written anything into them. But
+            // better safe than sorry...
+            return fallback;
+        }
+    }
+
+    // The memory buffer is managed by NEP 49. Compute the position of ptr in the buffer.
+    const auto bytes_idx = reinterpret_cast<const unsigned char *>(ptr) - base_ptr;
+    assert(bytes_idx >= 0);
+
+    // Compute the position in the ct_flags array.
+    auto idx = static_cast<std::size_t>(bytes_idx);
+    assert(idx % sizeof(mppp::real) == 0u);
+    idx /= sizeof(mppp::real);
+
+    if (ct_flags[idx]) {
+        // A constructed mppp::real exists, fetch it.
+        return std::launder(reinterpret_cast<const mppp::real *>(ptr));
+    } else {
+        // No constructed mppp::real exists, return the fallback value.
+        return fallback;
+    }
+}
+
+// This function will return a pointer to the mppp::real stored at the address
+// ptr, if it exists. If it does not, a new mppp::real will
+// be constructed in-place at ptr using the result of the supplied nullary function f.
+//
+// ptr may or may not be located in a memory buffer managed by NEP 49:
+//
+// - if it is, both base_ptr and ct_flags are non-null,
+//   base_ptr is assumed to point to the beginning of a NEP 49 memory buffer and ct_flags is the
+//   construction flags metadata associated to that memory buffer. If a constructed mppp::real exists
+//   in ptr, then its address will be returned, otherwise a new mppp::real will be
+//   constructed in ptr, and its address will be returned;
+// - otherwise, both base_ptr and ct_flags are nullptr. If ptr contains a valid real
+//   (as detected by is_valid_real()) then its address is returned, otherwise a new mppp::real will be
+//   constructed in ptr, and its address will be returned.
+//
+// If the initialisation of a new mppp::real throws, the returned optional will be empty.
+// The second member of the return value is a flag signalling whether the returned pointer is a
+// newly-constructed real (true) or a pointer to an existing real (false).
+template <typename F>
+std::pair<std::optional<mppp::real *>, bool> ensure_cted_real(const unsigned char *base_ptr, bool *ct_flags, void *ptr,
+                                                              const F &f) noexcept
+{
+    assert((base_ptr == nullptr) == (ct_flags == nullptr));
+
+    if (base_ptr == nullptr) {
+        // The memory buffer is not managed by NEP 49, check if a real
+        // has been constructed in ptr by someone else.
+        if (!is_valid_real(ptr)) {
+            // No valid real exists in ptr, construct one.
+            // This should happen only in case of NumPy buffers
+            // not managed by NEP 49 (e.g., within the casting logic).
+            // NOTE: this will lead to memory leaks because
+            // nobody will be destroying this, but I see no other
+            // solution.
+            const auto err = with_pybind11_eh([&]() { ::new (ptr) mppp::real(f()); });
+
+            if (err) {
+                return {};
+            } else {
+                return {std::launder(reinterpret_cast<mppp::real *>(ptr)), true};
+            }
+        } else {
+            return {std::launder(reinterpret_cast<mppp::real *>(ptr)), false};
+        }
+    }
+
+    // The memory buffer is managed by NEP 49. Compute the position of ptr in the buffer.
+    const auto bytes_idx = reinterpret_cast<const unsigned char *>(ptr) - base_ptr;
+    assert(bytes_idx >= 0);
+
+    // Compute the position in the ct_flags array.
+    auto idx = static_cast<std::size_t>(bytes_idx);
+    assert(idx % sizeof(mppp::real) == 0u);
+    idx /= sizeof(mppp::real);
+
+    if (ct_flags[idx]) {
+        // An mppp::real exists, return it.
+        return {std::launder(reinterpret_cast<mppp::real *>(ptr)), false};
+    } else {
+        // No mppp::real exists, construct it.
+        const auto err = with_pybind11_eh([&]() { ::new (ptr) mppp::real(f()); });
+
+        if (err) {
+            return {};
+        } else {
+            // Signal that a new mppp::real was constructed.
+            ct_flags[idx] = true;
+
+            return {std::launder(reinterpret_cast<mppp::real *>(ptr)), true};
+        }
+    }
+}
+
 // Array getitem.
-PyObject *npy_py_real_getitem(void *data, void *arr)
+PyObject *npy_py_real_getitem(void *data, [[maybe_unused]] void *arr)
 {
     assert(PyArray_Check(reinterpret_cast<PyObject *>(arr)) != 0);
 
@@ -796,18 +950,18 @@ PyObject *npy_py_real_getitem(void *data, void *arr)
     PyObject *ret = nullptr;
 
     with_pybind11_eh([&]() {
-        if (auto *rptr = numpy_check_cted<mppp::real>(data)) {
-            ret = py_real_from_args(*rptr);
-        } else {
-            ret = py_real_from_args();
-        }
+        // Try to locate data in the memory map.
+        const auto [base_ptr, meta_ptr] = get_memory_metadata(data);
+        const auto *ct_flags = meta_ptr == nullptr ? nullptr : meta_ptr->ensure_ct_flags_inited<mppp::real>();
+
+        ret = py_real_from_args(*fetch_cted_real(base_ptr, ct_flags, data, &get_zero_real()));
     });
 
     return ret;
 }
 
 // Array setitem.
-int npy_py_real_setitem(PyObject *item, void *data, void *arr)
+int npy_py_real_setitem(PyObject *item, void *data, [[maybe_unused]] void *arr)
 {
     assert(PyArray_Check(reinterpret_cast<PyObject *>(arr)) != 0);
 
@@ -818,17 +972,26 @@ int npy_py_real_setitem(PyObject *item, void *data, void *arr)
         return -1;
     }
 
+    // Try to locate data in the memory map.
+    const auto [base_ptr, meta_ptr] = get_memory_metadata(data);
+    auto *ct_flags = (meta_ptr == nullptr) ? nullptr : meta_ptr->ensure_ct_flags_inited<mppp::real>();
+
     if (py_real_check(item)) {
         const auto &src_val = *get_real_val(item);
 
-        auto ptr_opt = numpy_ensure_cted<mppp::real>(data);
+        auto [ptr_opt, new_real]
+            = ensure_cted_real(base_ptr, ct_flags, data, [&]() -> const mppp::real & { return src_val; });
         if (!ptr_opt) {
             return -1;
         }
 
-        const auto err = with_pybind11_eh([&]() { **ptr_opt = src_val; });
+        if (new_real) {
+            return 0;
+        } else {
+            const auto err = with_pybind11_eh([&src_val, &ptr = *ptr_opt]() { *ptr = src_val; });
 
-        return err ? -1 : 0;
+            return err ? -1 : 0;
+        }
     }
 
     // item is not a real, but it might be convertible to a real.
@@ -838,13 +1001,16 @@ int npy_py_real_setitem(PyObject *item, void *data, void *arr)
         // Conversion successful.
 
         // Make sure we have a real in data.
-        auto ptr_opt = numpy_ensure_cted<mppp::real>(data);
+        auto [ptr_opt, new_real]
+            = ensure_cted_real(base_ptr, ct_flags, data, [&]() -> mppp::real && { return std::move(*r); });
         if (!ptr_opt) {
             return -1;
         }
 
-        // NOTE: move assignment, no need for exception handling.
-        **ptr_opt = std::move(*r);
+        if (!new_real) {
+            // NOTE: move assignment, no need for exception handling.
+            **ptr_opt = std::move(*r);
+        }
 
         return 0;
     }
@@ -868,7 +1034,9 @@ int npy_py_real_setitem(PyObject *item, void *data, void *arr)
 // a generic SystemError (rather than the exception of our choice) and complains that
 // the function "returned a result with an exception set". This is not optimal,
 // but better than just crashing I guess?
-void npy_py_real_copyswap(void *dst, void *src, int swap, void *arr)
+// NOTE: implementing copyswapn() would allow us to avoid peeking in the memory
+// map for every element that is being copied.
+void npy_py_real_copyswap(void *dst, void *src, int swap, [[maybe_unused]] void *arr)
 {
     assert(PyArray_Check(reinterpret_cast<PyObject *>(arr)) != 0);
 
@@ -894,25 +1062,29 @@ void npy_py_real_copyswap(void *dst, void *src, int swap, void *arr)
         return;
     }
 
-    // Ensure that the destination contains a real, first and foremost.
-    auto dst_x_opt = numpy_ensure_cted<mppp::real>(dst);
+    // Try to locate src and dst data in the memory map.
+    const auto [base_ptr_dst, meta_ptr_dst] = get_memory_metadata(dst);
+    auto *ct_flags_dst = (meta_ptr_dst == nullptr) ? nullptr : meta_ptr_dst->ensure_ct_flags_inited<mppp::real>();
+
+    const auto [base_ptr_src, meta_ptr_src] = get_memory_metadata(src);
+    const auto *ct_flags_src = (meta_ptr_src == nullptr) ? nullptr : meta_ptr_src->ensure_ct_flags_inited<mppp::real>();
+
+    // Fetch a constructed real from src.
+    const auto *src_x = fetch_cted_real(base_ptr_src, ct_flags_src, src, &get_zero_real());
+
+    // Write into the destination.
+    auto [dst_x_opt, new_real]
+        = ensure_cted_real(base_ptr_dst, ct_flags_dst, dst, [&]() -> const mppp::real & { return *src_x; });
     if (!dst_x_opt) {
-        // numpy_ensure_cted generated an error, exit.
+        // ensure_cted_real() generated an error, exit.
         return;
     }
 
-    // Check if the source contains a real.
-    const auto *src_x = numpy_check_cted<mppp::real>(src);
-
-    // NOTE: if a C++ exception is thrown here, dst is not modified
-    // and an error code will have been set.
-    with_pybind11_eh([&]() {
-        if (src_x != nullptr) {
-            **dst_x_opt = *src_x;
-        } else {
-            **dst_x_opt = mppp::real{};
-        }
-    });
+    if (!new_real) {
+        // NOTE: if a C++ exception is thrown here, dst is not modified
+        // and an error code will have been set.
+        with_pybind11_eh([&src_x, &dst_ptr = *dst_x_opt]() { *dst_ptr = *src_x; });
+    }
 }
 
 // Nonzero primitive.
@@ -923,42 +1095,15 @@ npy_bool npy_py_real_nonzero(void *data, void *)
         return NPY_FALSE;
     }
 
-    // Check if the source contains a real.
-    const auto *x_ptr = numpy_check_cted<mppp::real>(data);
+    // Try to locate data in the memory map.
+    const auto [base_ptr, meta_ptr] = get_memory_metadata(data);
+    const auto *ct_flags = (meta_ptr == nullptr) ? nullptr : meta_ptr->ensure_ct_flags_inited<mppp::real>();
 
-    if (x_ptr == nullptr) {
-        return NPY_FALSE;
-    } else {
-        // NOTE: no exceptions are possible here.
-        return x_ptr->zero_p() ? NPY_FALSE : NPY_TRUE;
-    }
-}
+    // Fetch a real from data.
+    const auto *x_ptr = fetch_cted_real(base_ptr, ct_flags, data, &get_zero_real());
 
-// Helper to access a global default-constructed real instance.
-// This is used in the NmuPy helpers below when trying to access
-// a not-yet-constructed real in an array.
-// NOTE: mark it noexcept as this is equivalent to being unable
-// to construct a global variable, a situation which
-// we don't really need to be able to recover from.
-const auto &get_zero_real() noexcept
-{
-    static const mppp::real zr;
-
-    return zr;
-}
-
-// Helper that, given a memory location in a NumPy array, returns a const
-// reference either to the real value stored in that location, if it exists,
-// or to the value returned by get_zero_real() otherwise.
-const auto &get_real_or_zero(const void *data)
-{
-    const auto *x_ptr = numpy_check_cted<mppp::real>(data);
-
-    if (x_ptr == nullptr) {
-        return get_zero_real();
-    } else {
-        return *x_ptr;
-    }
+    // NOTE: zero_p() does not throw.
+    return x_ptr->zero_p() ? NPY_FALSE : NPY_TRUE;
 }
 
 // Comparison primitive, used for sorting.
@@ -971,10 +1116,23 @@ const auto &get_real_or_zero(const void *data)
 // This perhaps allows to fetch the metadata only once.
 int npy_py_real_compare(const void *d0, const void *d1, void *)
 {
-    const auto &x = get_real_or_zero(d0);
-    const auto &y = get_real_or_zero(d1);
+    // Try to locate d0 and d1 in the memory map.
+    // NOTE: probably we could assume that d0 and d1 are coming from the same
+    // array/buffer, but better safe than sorry.
+    const auto [base_ptr_0, meta_ptr_0] = get_memory_metadata(d0);
+    const auto *ct_flags_0 = (meta_ptr_0 == nullptr) ? nullptr : meta_ptr_0->ensure_ct_flags_inited<mppp::real>();
 
-    // NOTE: no exceptions are possible in these comparisons.
+    const auto [base_ptr_1, meta_ptr_1] = get_memory_metadata(d1);
+    const auto *ct_flags_1 = (meta_ptr_1 == nullptr) ? nullptr : meta_ptr_1->ensure_ct_flags_inited<mppp::real>();
+
+    // Fetch the zero constant.
+    const auto &zr = get_zero_real();
+
+    // Fetch the real arguments.
+    const auto &x = *fetch_cted_real(base_ptr_0, ct_flags_0, d0, &zr);
+    const auto &y = *fetch_cted_real(base_ptr_1, ct_flags_1, d1, &zr);
+
+    // NOTE: the comparison functions do not throw.
     if (mppp::real_lt(x, y)) {
         return -1;
     }
@@ -996,28 +1154,25 @@ int npy_py_real_argminmax(void *data, npy_intp n, npy_intp *max_ind, const F &cm
 
     // Try to locate data in the memory map.
     const auto [base_ptr, meta_ptr] = get_memory_metadata(data);
-
-    // Build/fetch the array of construction flags, if possible.
     const auto *ct_flags = (base_ptr == nullptr) ? nullptr : meta_ptr->ensure_ct_flags_inited<mppp::real>();
 
-    // Fetch a pointer to the global zero const.
+    // Fetch a pointer to the global zero constant.
     const auto *zr = &get_zero_real();
 
     // Fetch the char array version of the memory segment.
     const auto *cdata = reinterpret_cast<const char *>(data);
 
-    // Init the best index/value with the first index/value.
+    // Init the best index.
     npy_intp best_i = 0;
-    const auto *best_r
-        = (ct_flags == nullptr || ct_flags[0]) ? std::launder(reinterpret_cast<const mppp::real *>(cdata)) : zr;
+
+    // Init the best value.
+    const auto *best_r = fetch_cted_real(base_ptr, ct_flags, cdata, zr);
 
     for (npy_intp i = 1; i < n; ++i) {
-        const auto *cur_r = (ct_flags == nullptr || ct_flags[i]) ? std::launder(reinterpret_cast<const mppp::real *>(
-                                cdata + static_cast<std::size_t>(i) * sizeof(mppp::real)))
-                                                                 : zr;
+        const auto *cur_r
+            = fetch_cted_real(base_ptr, ct_flags, cdata + static_cast<std::size_t>(i) * sizeof(mppp::real), zr);
 
-        // NOTE: real comparisons never throw, no need
-        // for exception handling.
+        // NOTE: the comparison function does not throw.
         if (cmp(*cur_r, *best_r)) {
             best_i = i;
             best_r = cur_r;
@@ -1037,43 +1192,76 @@ int npy_py_real_fill(void *data, npy_intp length, void *)
         return 0;
     }
 
-    // Try to locate data in the memory map.
-    const auto [base_ptr, meta_ptr] = get_memory_metadata(data);
-
-    // Build/fetch the array of construction flags, if possible.
-    auto *ct_flags = (base_ptr == nullptr) ? nullptr : meta_ptr->ensure_ct_flags_inited<mppp::real>();
-
-    // Fetch a pointer to the global zero const.
-    const auto *zr = &get_zero_real();
-
-    // Fetch the char array version of the memory segment.
-    auto *cdata = reinterpret_cast<char *>(data);
-
-    // Fetch pointers to the first two elements.
-    const auto *el0
-        = (ct_flags == nullptr || ct_flags[0]) ? std::launder(reinterpret_cast<const mppp::real *>(cdata)) : zr;
-    const auto *el1 = (ct_flags == nullptr || ct_flags[1])
-                          ? std::launder(reinterpret_cast<const mppp::real *>(cdata + sizeof(mppp::real)))
-                          : zr;
-
     const auto err = with_pybind11_eh([&]() {
+        // Try to locate data in the memory map.
+        const auto [base_ptr, meta_ptr] = get_memory_metadata(data);
+        auto *ct_flags = (base_ptr == nullptr) ? nullptr : meta_ptr->ensure_ct_flags_inited<mppp::real>();
+
+        // Fetch a pointer to the global zero const.
+        const auto *zr = &get_zero_real();
+
+        // Fetch the char array version of the memory segment.
+        auto *cdata = reinterpret_cast<char *>(data);
+
+        // Fetch pointers to the first two elements.
+        const auto *el0 = fetch_cted_real(base_ptr, ct_flags, cdata, zr);
+        const auto *el1 = fetch_cted_real(base_ptr, ct_flags, cdata + sizeof(mppp::real), zr);
+
         // Compute the delta and init r.
         const auto delta = *el1 - *el0;
         auto r = *el1;
 
         for (npy_intp i = 2; i < length; ++i) {
+            // Update r.
             r += delta;
 
+            // Fetch a pointer to the destination value.
             auto *dst_ptr = cdata + static_cast<std::size_t>(i) * sizeof(mppp::real);
+            auto [opt_ptr, new_real]
+                = ensure_cted_real(base_ptr, ct_flags, dst_ptr, [&]() -> const mppp::real & { return r; });
 
-            if (ct_flags == nullptr || ct_flags[i]) {
-                // Existing object, assign.
-                *std::launder(reinterpret_cast<mppp::real *>(dst_ptr)) = r;
-            } else {
-                // Copy-construct new object
-                ::new (dst_ptr) mppp::real{r};
-                // Mark as constructed.
-                ct_flags[i] = true;
+            if (!opt_ptr) {
+                // NOTE: if ensure_cted_real() fails, it will have set the Python
+                // exception already. Thus we throw the special error_already_set
+                // C++ exception so that the error message is propagated outside this scope.
+                throw py::error_already_set();
+            }
+
+            if (!new_real) {
+                **opt_ptr = r;
+            }
+        }
+    });
+
+    return err ? -1 : 0;
+}
+
+// Fill with scalar primitive.
+int npy_py_real_fillwithscalar(void *buffer, npy_intp length, void *value, void *)
+{
+    // Fetch the fill value.
+    const auto &r = *static_cast<mppp::real *>(value);
+
+    const auto err = with_pybind11_eh([&]() {
+        // Try to locate buffer in the memory map.
+        const auto [base_ptr, meta_ptr] = get_memory_metadata(buffer);
+        auto *ct_flags = (base_ptr == nullptr) ? nullptr : meta_ptr->ensure_ct_flags_inited<mppp::real>();
+
+        // Fetch the char array version of the memory segment.
+        auto *cdata = reinterpret_cast<char *>(buffer);
+
+        for (npy_intp i = 0; i < length; ++i) {
+            // Fetch a pointer to the destination value.
+            auto *dst_ptr = cdata + static_cast<std::size_t>(i) * sizeof(mppp::real);
+            auto [opt_ptr, new_real]
+                = ensure_cted_real(base_ptr, ct_flags, dst_ptr, [&]() -> const mppp::real & { return r; });
+
+            if (!opt_ptr) {
+                throw py::error_already_set();
+            }
+
+            if (!new_real) {
+                **opt_ptr = r;
             }
         }
     });
@@ -1090,29 +1278,27 @@ void npy_cast_to_real(void *from, void *to_data, npy_intp n, void *, void *)
 
     const auto *typed_from = static_cast<const From *>(from);
 
-    // Try to locate to_data in the memory map.
-    const auto [base_ptr, meta_ptr] = get_memory_metadata(to_data);
-
-    // Build/fetch the array of construction flags, if possible.
-    auto *ct_flags = (base_ptr == nullptr) ? nullptr : meta_ptr->ensure_ct_flags_inited<mppp::real>();
-
-    // Fetch the char array version of the memory segment.
-    auto *c_to_data = reinterpret_cast<char *>(to_data);
-
-    // NOTE: we have no way of signalling failure in the casting functions,
-    // but at least we will stop and just return if some exception is raised.
     with_pybind11_eh([&]() {
+        // Try to locate to_data in the memory map.
+        const auto [base_ptr, meta_ptr] = get_memory_metadata(to_data);
+        auto *ct_flags = (base_ptr == nullptr) ? nullptr : meta_ptr->ensure_ct_flags_inited<mppp::real>();
+
+        // Fetch the char array version of the memory segment.
+        auto *c_to_data = reinterpret_cast<char *>(to_data);
+
+        // NOTE: we have no way of signalling failure in the casting functions,
+        // but at least we will stop and just return if some exception is raised.
         for (npy_intp i = 0; i < n; ++i) {
             auto *dst_ptr = c_to_data + static_cast<std::size_t>(i) * sizeof(mppp::real);
 
-            if (ct_flags == nullptr || ct_flags[i]) {
-                // Existing object, assign.
-                *std::launder(reinterpret_cast<mppp::real *>(dst_ptr)) = typed_from[i];
-            } else {
-                // Copy-construct new object
-                ::new (dst_ptr) mppp::real{typed_from[i]};
-                // Mark as constructed.
-                ct_flags[i] = true;
+            auto [opt_ptr, new_real] = ensure_cted_real(base_ptr, ct_flags, dst_ptr, [&]() { return typed_from[i]; });
+
+            if (!opt_ptr) {
+                throw py::error_already_set();
+            }
+
+            if (!new_real) {
+                **opt_ptr = typed_from[i];
             }
         }
     });
@@ -1127,28 +1313,22 @@ void npy_cast_from_real(void *from_data, void *to, npy_intp n, void *, void *)
 
     auto *typed_to = static_cast<To *>(to);
 
-    // Try to locate from_data in the memory map.
-    const auto [base_ptr, meta_ptr] = get_memory_metadata(from_data);
+    with_pybind11_eh([&]() {
+        // Try to locate from_data in the memory map.
+        const auto [base_ptr, meta_ptr] = get_memory_metadata(from_data);
+        const auto *ct_flags = (base_ptr == nullptr) ? nullptr : meta_ptr->ensure_ct_flags_inited<mppp::real>();
 
-    // Build/fetch the array of construction flags, if possible.
-    const auto *ct_flags = (base_ptr == nullptr) ? nullptr : meta_ptr->ensure_ct_flags_inited<mppp::real>();
+        // Fetch a pointer to the global zero const.
+        const auto *zr = &get_zero_real();
 
-    // Fetch the char array version of the memory segment.
-    const auto *c_from_data = reinterpret_cast<const char *>(from_data);
+        // Fetch the char array version of the memory segment.
+        const auto *c_from_data = reinterpret_cast<const char *>(from_data);
 
-    for (npy_intp i = 0; i < n; ++i) {
-        if (ct_flags == nullptr || ct_flags[i]) {
-            // Existing object.
+        for (npy_intp i = 0; i < n; ++i) {
             const auto *src_ptr = c_from_data + static_cast<std::size_t>(i) * sizeof(mppp::real);
-            // NOTE: use mppp::get() for the conversion so that we are sure no exceptions are raised.
-            // NOTE: if the conversion fails (e.g., due to overflow or if To is an integral type
-            // and the source real is non-finite), then typed_to[i] will not be modified.
-            mppp::get(typed_to[i], *std::launder(reinterpret_cast<const mppp::real *>(src_ptr)));
-        } else {
-            // No mppp::real exists at src_ptr, just assign zero.
-            typed_to[i] = static_cast<To>(0);
+            typed_to[i] = static_cast<To>(*fetch_cted_real(base_ptr, ct_flags, src_ptr, zr));
         }
-    }
+    });
 }
 
 // Helper to register NumPy casting functions to/from T.
@@ -1182,11 +1362,10 @@ void py_real_ufunc_unary(char **args, const npy_intp *dimensions, const npy_intp
     with_pybind11_eh([&]() {
         // Try to locate the input/output buffers in the memory map.
         const auto [base_ptr_i1, meta_ptr_i1] = get_memory_metadata(ip1);
-        const auto [base_ptr_o, meta_ptr_o] = get_memory_metadata(op1);
-
-        // Build/fetch the arrays of construction flags, if possible.
         const auto *ct_flags_i1
             = (base_ptr_i1 == nullptr) ? nullptr : meta_ptr_i1->ensure_ct_flags_inited<mppp::real>();
+
+        const auto [base_ptr_o, meta_ptr_o] = get_memory_metadata(op1);
         auto *ct_flags_o = (base_ptr_o == nullptr) ? nullptr : meta_ptr_o->ensure_ct_flags_inited<mppp::real>();
 
         // Fetch a pointer to the global zero const. This will be used in place
@@ -1194,29 +1373,20 @@ void py_real_ufunc_unary(char **args, const npy_intp *dimensions, const npy_intp
         const auto *zr = &get_zero_real();
 
         for (npy_intp i = 0; i < n; ++i, ip1 += is1, op1 += os1) {
-            // Setup the input operand.
-            const auto idx_a = (ct_flags_i1 == nullptr)
-                                   ? 0u
-                                   : static_cast<std::size_t>(reinterpret_cast<unsigned char *>(ip1) - base_ptr_i1)
-                                         / sizeof(mppp::real);
-            const mppp::real *a = (ct_flags_i1 == nullptr || ct_flags_i1[idx_a])
-                                      ? std::launder(reinterpret_cast<const mppp::real *>(ip1))
-                                      : zr;
+            // Fetch the input operand.
+            const auto *a = fetch_cted_real(base_ptr_i1, ct_flags_i1, ip1, zr);
 
-            // Setup the return value.
-            const auto idx_ret = (ct_flags_o == nullptr)
-                                     ? 0u
-                                     : static_cast<std::size_t>(reinterpret_cast<unsigned char *>(op1) - base_ptr_o)
-                                           / sizeof(mppp::real);
-            if (ct_flags_o == nullptr || ct_flags_o[idx_ret]) {
-                // The return value is constructed already, use the binary function.
-                f2(*std::launder(reinterpret_cast<mppp::real *>(op1)), *a);
-            } else {
-                // The return value has not been constructed yet. Init it from
-                // the result of the unary operation.
-                ::new (op1) mppp::real(f1(*a));
-                // Mark as constructed.
-                ct_flags_o[idx_ret] = true;
+            // Fetch the output operand, passing in f1 to construct
+            // the result if needed.
+            auto [opt_ptr, new_real] = ensure_cted_real(base_ptr_o, ct_flags_o, op1, [&]() { return f1(*a); });
+
+            if (!opt_ptr) {
+                throw py::error_already_set();
+            }
+
+            // If no new real was constructed, perform the binary operation.
+            if (!new_real) {
+                f2(**opt_ptr, *a);
             }
         };
     });
@@ -1241,14 +1411,14 @@ void py_real_ufunc_binary(char **args, const npy_intp *dimensions, const npy_int
     with_pybind11_eh([&]() {
         // Try to locate the input/output buffers in the memory map.
         const auto [base_ptr_i0, meta_ptr_i0] = get_memory_metadata(i0);
-        const auto [base_ptr_i1, meta_ptr_i1] = get_memory_metadata(i1);
-        const auto [base_ptr_o, meta_ptr_o] = get_memory_metadata(o);
-
-        // Build/fetch the arrays of construction flags, if possible.
         const auto *ct_flags_i0
             = (base_ptr_i0 == nullptr) ? nullptr : meta_ptr_i0->ensure_ct_flags_inited<mppp::real>();
+
+        const auto [base_ptr_i1, meta_ptr_i1] = get_memory_metadata(i1);
         const auto *ct_flags_i1
             = (base_ptr_i1 == nullptr) ? nullptr : meta_ptr_i1->ensure_ct_flags_inited<mppp::real>();
+
+        const auto [base_ptr_o, meta_ptr_o] = get_memory_metadata(o);
         auto *ct_flags_o = (base_ptr_o == nullptr) ? nullptr : meta_ptr_o->ensure_ct_flags_inited<mppp::real>();
 
         // Fetch a pointer to the global zero const. This will be used in place
@@ -1256,38 +1426,21 @@ void py_real_ufunc_binary(char **args, const npy_intp *dimensions, const npy_int
         const auto *zr = &get_zero_real();
 
         for (npy_intp k = 0; k < n; ++k) {
-            // Setup the first input operand.
-            const auto idx_a = (ct_flags_i0 == nullptr)
-                                   ? 0u
-                                   : static_cast<std::size_t>(reinterpret_cast<unsigned char *>(i0) - base_ptr_i0)
-                                         / sizeof(mppp::real);
-            const mppp::real *a = (ct_flags_i0 == nullptr || ct_flags_i0[idx_a])
-                                      ? std::launder(reinterpret_cast<const mppp::real *>(i0))
-                                      : zr;
+            // Fetch the input operands.
+            const auto *a = fetch_cted_real(base_ptr_i0, ct_flags_i0, i0, zr);
+            const auto *b = fetch_cted_real(base_ptr_i1, ct_flags_i1, i1, zr);
 
-            // Setup the second input operand.
-            const auto idx_b = (ct_flags_i1 == nullptr)
-                                   ? 0u
-                                   : static_cast<std::size_t>(reinterpret_cast<unsigned char *>(i1) - base_ptr_i1)
-                                         / sizeof(mppp::real);
-            const mppp::real *b = (ct_flags_i1 == nullptr || ct_flags_i1[idx_b])
-                                      ? std::launder(reinterpret_cast<const mppp::real *>(i1))
-                                      : zr;
+            // Fetch the output operand, passing in f2 to construct
+            // the result if needed.
+            auto [opt_ptr, new_real] = ensure_cted_real(base_ptr_o, ct_flags_o, o, [&]() { return f2(*a, *b); });
 
-            // Setup the return value.
-            const auto idx_ret = (ct_flags_o == nullptr)
-                                     ? 0u
-                                     : static_cast<std::size_t>(reinterpret_cast<unsigned char *>(o) - base_ptr_o)
-                                           / sizeof(mppp::real);
-            if (ct_flags_o == nullptr || ct_flags_o[idx_ret]) {
-                // The return value is constructed already, use the ternary function.
-                f3(*std::launder(reinterpret_cast<mppp::real *>(o)), *a, *b);
-            } else {
-                // The return value has not been constructed yet. Init it from
-                // the result of the binary operation.
-                ::new (o) mppp::real(f2(*a, *b));
-                // Mark as constructed.
-                ct_flags_o[idx_ret] = true;
+            if (!opt_ptr) {
+                throw py::error_already_set();
+            }
+
+            // If no new real was constructed, perform the ternary operation.
+            if (!new_real) {
+                f3(**opt_ptr, *a, *b);
             }
 
             i0 += is0;
@@ -1440,7 +1593,10 @@ void expose_real(py::module_ &m)
     detail::npy_py_real_descr.kind = 'f';
     detail::npy_py_real_descr.type = 'r';
     detail::npy_py_real_descr.byteorder = '=';
-    detail::npy_py_real_descr.flags = NPY_NEEDS_PYAPI | NPY_USE_GETITEM | NPY_USE_SETITEM;
+    // NOTE: NPY_NEEDS_INIT is important because it gives us a way
+    // to detect the use by NumPy of memory buffers not managed
+    // via NEP 49.
+    detail::npy_py_real_descr.flags = NPY_NEEDS_PYAPI | NPY_USE_GETITEM | NPY_USE_SETITEM | NPY_NEEDS_INIT;
     detail::npy_py_real_descr.elsize = sizeof(mppp::real);
     detail::npy_py_real_descr.alignment = alignof(mppp::real);
     detail::npy_py_real_descr.f = &detail::npy_py_real_arr_funcs;
@@ -1470,15 +1626,13 @@ void expose_real(py::module_ &m)
         return detail::npy_py_real_argminmax(data, n, max_ind, std::greater{});
     };
     detail::npy_py_real_arr_funcs.fill = detail::npy_py_real_fill;
-    // NOTE: same issue as the casting functions, apparently.
-    // detail::npy_py_real_arr_funcs.fillwithscalar = detail::npy_py_real_fillwithscalar;
-#if 0
-    detail::npy_py_real128_arr_funcs.dotfunc = detail::npy_py_real128_dot;
+    detail::npy_py_real_arr_funcs.fillwithscalar = detail::npy_py_real_fillwithscalar;
+    // TODO where is this used? Check for real128 too.
+    // detail::npy_py_real_arr_funcs.dotfunc = detail::npy_py_real_dot;
     // NOTE: not sure if this is needed - it does not seem to have
     // any effect and the online examples of user dtypes do not set it.
     // Let's leave it commented out at this time.
-    // detail::npy_py_real128_arr_funcs.scalarkind = [](void *) -> int { return NPY_FLOAT_SCALAR; };
-#endif
+    // detail::npy_py_real_arr_funcs.scalarkind = [](void *) -> int { return NPY_FLOAT_SCALAR; };
 
     // Register the NumPy data type.
     Py_SET_TYPE(&detail::npy_py_real_descr, &PyArrayDescr_Type);
@@ -1529,11 +1683,6 @@ void expose_real(py::module_ &m)
         },
         npy_registered_py_real, npy_registered_py_real);
 
-    // NOTE: casting is currently disabled, as it results into memory errors
-    // due to NumPy bypassing the custom allocation functions in the implementation
-    // of astype().
-
-#if 0
     // Casting.
     detail::npy_register_cast_functions<float>();
     detail::npy_register_cast_functions<double>();
@@ -1542,6 +1691,9 @@ void expose_real(py::module_ &m)
     // such issues are from our code or NumPy's. Let's leave it commented
     // at this time.
     // detail::npy_register_cast_functions<long double>();
+#if defined(HEYOKA_HAVE_REAL128)
+    detail::npy_register_cast_functions<mppp::real128>();
+#endif
 
     detail::npy_register_cast_functions<npy_int8>();
     detail::npy_register_cast_functions<npy_int16>();
@@ -1553,9 +1705,8 @@ void expose_real(py::module_ &m)
     detail::npy_register_cast_functions<npy_uint32>();
     detail::npy_register_cast_functions<npy_uint64>();
 
-    // NOTE: bool cast missing, needs to be special-cased
+    // TODO: bool cast missing, needs to be special-cased
     // like in real128.
-#endif
 
     // Add py_real_type to the module.
     Py_INCREF(&py_real_type);
