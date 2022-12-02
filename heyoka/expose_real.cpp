@@ -72,7 +72,12 @@ namespace py = pybind11;
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wmissing-field-initializers"
 #pragma GCC diagnostic ignored "-Wcast-align"
+
+#if !defined(__clang__)
+
 #pragma GCC diagnostic ignored "-Wcast-function-type"
+
+#endif
 
 #endif
 
