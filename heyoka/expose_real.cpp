@@ -14,19 +14,24 @@
 
 #if defined(HEYOKA_HAVE_REAL)
 
+#include <algorithm>
 #include <cassert>
 #include <cstddef>
 #include <cstdint>
 #include <cstring>
 #include <functional>
+#include <iterator>
 #include <limits>
 #include <memory>
 #include <new>
 #include <optional>
+#include <sstream>
 #include <type_traits>
 #include <utility>
 #include <vector>
 
+#include <boost/archive/binary_iarchive.hpp>
+#include <boost/archive/binary_oarchive.hpp>
 #include <boost/numeric/conversion/cast.hpp>
 #include <boost/safe_numerics/safe_integer.hpp>
 
@@ -604,7 +609,6 @@ PyObject *py_real_set_prec(PyObject *self, PyObject *args)
 {
     long long prec = 0;
 
-    // NOLINTNEXTLINE(cppcoreguidelines-pro-type-const-cast)
     if (PyArg_ParseTuple(args, "L", &prec) == 0) {
         return nullptr;
     }
@@ -622,7 +626,6 @@ PyObject *py_real_prec_round(PyObject *self, PyObject *args)
 {
     long long prec = 0;
 
-    // NOLINTNEXTLINE(cppcoreguidelines-pro-type-const-cast)
     if (PyArg_ParseTuple(args, "L", &prec) == 0) {
         return nullptr;
     }
@@ -666,12 +669,133 @@ PyObject *py_real_deepcopy(PyObject *self, PyObject *args, PyObject *kwargs)
     return retval;
 }
 
+// Get the internal state of a real for serialisation purposes. The internal
+// state is returned as a binary blob.
+PyObject *py_real_getstate(PyObject *self, [[maybe_unused]] PyObject *args)
+{
+    assert(args == nullptr);
+
+    PyObject *retval = nullptr;
+
+    with_pybind11_eh([&]() {
+        std::ostringstream ss;
+
+        {
+            boost::archive::binary_oarchive oa(ss);
+            oa << *get_real_val(self);
+        }
+
+        // NOTE: we might be able to avoid a copy here if we manage to operate
+        // directly on the stringstream.
+        const auto str = ss.str();
+        retval = PyBytes_FromStringAndSize(str.c_str(), boost::numeric_cast<Py_ssize_t>(str.size()));
+    });
+
+    return retval;
+}
+
+// Set the internal state of a real from a binary blob.
+PyObject *py_real_setstate(PyObject *self, PyObject *args)
+{
+    PyBytesObject *bytes_obj = nullptr;
+
+    if (PyArg_ParseTuple(args, "S", &bytes_obj) == 0) {
+        return nullptr;
+    }
+
+    assert(bytes_obj != nullptr);
+    auto *ob_ptr = reinterpret_cast<PyObject *>(bytes_obj);
+
+    const auto err = with_pybind11_eh([&]() {
+        std::stringstream ss;
+
+        std::copy(PyBytes_AsString(ob_ptr), PyBytes_AsString(ob_ptr) + PyBytes_Size(ob_ptr),
+                  std::ostreambuf_iterator<char>(ss));
+
+        boost::archive::binary_iarchive ia(ss);
+        ia >> *get_real_val(self);
+    });
+
+    if (err) {
+        return nullptr;
+    }
+
+    Py_RETURN_NONE;
+}
+
+// Implementation of the reduce protocol. See:
+// https://docs.python.org/3/library/pickle.html#object.__reduce__
+PyObject *py_real_reduce(PyObject *self, [[maybe_unused]] PyObject *args)
+{
+    assert(args == nullptr);
+
+    // Fetch the factory function.
+    auto *hy_mod = PyImport_ImportModule("heyoka");
+    if (hy_mod == nullptr) {
+        return nullptr;
+    }
+
+    auto *fact = PyObject_GetAttrString(hy_mod, "_real_reduce_factory");
+    Py_DECREF(hy_mod);
+    if (fact == nullptr) {
+        return nullptr;
+    }
+
+    // The factory function requires no arguments.
+    auto *fact_args = PyTuple_New(0);
+    if (fact_args == nullptr) {
+        Py_DECREF(fact);
+        return nullptr;
+    }
+
+    // Get the state of self.
+    auto *state = py_real_getstate(self, nullptr);
+    if (state == nullptr) {
+        Py_DECREF(fact);
+        Py_DECREF(fact_args);
+        return nullptr;
+    }
+
+    // Assemble the return value.
+    auto *ret = PyTuple_New(3);
+    if (ret == nullptr) {
+        Py_DECREF(fact);
+        Py_DECREF(fact_args);
+        Py_DECREF(state);
+        return nullptr;
+    }
+
+    PyTuple_SetItem(ret, 0, fact);
+    PyTuple_SetItem(ret, 1, fact_args);
+    PyTuple_SetItem(ret, 2, state);
+
+    return ret;
+}
+
+// Same as py_real_reduce(), but takes in input a protocol version
+// number which we ignore.
+PyObject *py_real_reduce_ex(PyObject *self, PyObject *args)
+{
+    int version = 0;
+
+    if (PyArg_ParseTuple(args, "i", &version) == 0) {
+        return nullptr;
+    }
+
+    return py_real_reduce(self, nullptr);
+}
+
 // NOLINTNEXTLINE(cppcoreguidelines-avoid-non-const-global-variables)
 PyMethodDef py_real_methods[]
     = {{"set_prec", py_real_set_prec, METH_VARARGS, nullptr},
        {"prec_round", py_real_prec_round, METH_VARARGS, nullptr},
        {"__copy__", py_real_copy, METH_NOARGS, nullptr},
        {"__deepcopy__", reinterpret_cast<PyCFunction>(py_real_deepcopy), METH_VARARGS | METH_KEYWORDS, nullptr},
+       // NOTE: for pickling support we need to override the reduce/reduce_ex functions, as they
+       // are implemented in the base NumPy class and they take the precedence over get/set state.
+       {"__setstate__", py_real_setstate, METH_VARARGS, nullptr},
+       {"__reduce__", py_real_reduce, METH_NOARGS, nullptr},
+       {"__reduce_ex__", py_real_reduce_ex, METH_VARARGS, nullptr},
        {nullptr}};
 
 // Generic implementation of unary operations.
@@ -1678,7 +1802,8 @@ void expose_real(py::module_ &m)
     // NOTE: NPY_NEEDS_INIT is important because it gives us a way
     // to detect the use by NumPy of memory buffers not managed
     // via NEP 49.
-    detail::npy_py_real_descr.flags = NPY_NEEDS_PYAPI | NPY_USE_GETITEM | NPY_USE_SETITEM | NPY_NEEDS_INIT;
+    detail::npy_py_real_descr.flags
+        = NPY_NEEDS_PYAPI | NPY_USE_GETITEM | NPY_USE_SETITEM | NPY_NEEDS_INIT | NPY_LIST_PICKLE;
     detail::npy_py_real_descr.elsize = sizeof(mppp::real);
     detail::npy_py_real_descr.alignment = alignof(mppp::real);
     detail::npy_py_real_descr.f = &detail::npy_py_real_arr_funcs;

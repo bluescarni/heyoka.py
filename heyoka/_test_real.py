@@ -29,6 +29,19 @@ class real_test_case(_ut.TestCase):
         self.test_numpy_square()
         self.test_numpy_conversions()
 
+    def test_numpy_pickle(self):
+        # Pickle support.
+        import pickle
+        import numpy as np
+        from . import real
+
+        arr = np.full((10,), real("1.1", 128), dtype=real)
+        arr2 = pickle.loads(pickle.dumps(arr))
+        self.assertEqual(arr.shape, arr2.shape)
+        for i in range(len(arr)):
+            self.assertEqual(arr[i], arr2[i])
+            self.assertEqual(arr2[i].prec, 128)
+
     def test_numpy_conversions(self):
         from . import real
         from . import core
@@ -1182,3 +1195,11 @@ class real_test_case(_ut.TestCase):
         with self.assertRaises(TypeError) as cm:
             x.__deepcopy__(mamo=4)
         self.assertTrue("mamo" in str(cm.exception))
+
+        # Pickle support.
+        import pickle
+
+        x = real("1.1", 128)
+        y = pickle.loads(pickle.dumps(x))
+        self.assertEqual(x, y)
+        self.assertEqual(y.prec, 128)

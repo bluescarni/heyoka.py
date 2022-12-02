@@ -243,6 +243,15 @@ class real128_test_case(_ut.TestCase):
         y = deepcopy(x)
         self.assertEqual(x, y)
 
+        # Pickling.
+        # NOTE: this is provided for free by the
+        # NumPy inheritance.
+        import pickle
+
+        x = real128("1.1")
+        y = pickle.loads(pickle.dumps(x))
+        self.assertEqual(x, y)
+
     def test_numpy(self):
         import numpy as np
         from copy import copy, deepcopy
