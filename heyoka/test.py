@@ -5770,6 +5770,42 @@ class real_test_case(_ut.TestCase):
         #     )
         # )
 
+        # full().
+        arr = np.full((5,), 1.1, dtype=real)
+        for val in arr:
+            self.assertEqual(val, 1.1)
+            self.assertEqual(val.prec, real(1.1).prec)
+
+        arr = np.full((5,), real("1.1", 128), dtype=real)
+        for val in arr:
+            self.assertEqual(val, real("1.1", 128))
+            self.assertEqual(val.prec, 128)
+
+        # fill().
+        arr = np.empty((5,), dtype=real)
+        arr.fill(1.1)
+        for val in arr:
+            self.assertEqual(val, 1.1)
+            self.assertEqual(val.prec, real(1.1).prec)
+
+        arr = np.empty((5,), dtype=real)
+        arr.fill(real("1.1", 128))
+        for val in arr:
+            self.assertEqual(val, real("1.1", 128))
+            self.assertEqual(val.prec, 128)
+
+        arr = np.empty((5,), dtype=real)[::2]
+        arr.fill(real("1.1", 128))
+        for val in arr:
+            self.assertEqual(val, real("1.1", 128))
+            self.assertEqual(val.prec, 128)
+
+        arr = make_no(np.array([1, 2, 3, 4, 5], dtype=real))
+        arr.fill(real("1.1", 128))
+        for val in arr:
+            self.assertEqual(val, real("1.1", 128))
+            self.assertEqual(val.prec, 128)
+
     def test_comparisons(self):
         from . import real
         from . import core
