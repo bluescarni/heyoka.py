@@ -2,7 +2,14 @@
 configure_file("${CMAKE_CURRENT_SOURCE_DIR}/_version.py.in" "${CMAKE_CURRENT_BINARY_DIR}/_version.py" @ONLY)
 
 # The list of heyoka.py's Python files.
-set(HEYOKA_PY_PYTHON_FILES __init__.py test.py _sympy_utils.py _ensemble_impl.py)
+set(HEYOKA_PY_PYTHON_FILES
+    __init__.py
+    test.py
+    _sympy_utils.py
+    _ensemble_impl.py
+    _test_real.py
+    _test_real128.py
+)
 
 # Copy the python files in the current binary dir,
 # so that we can import heyoka from the build dir.
