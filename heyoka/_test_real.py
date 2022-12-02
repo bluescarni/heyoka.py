@@ -1040,6 +1040,10 @@ class real_test_case(_ut.TestCase):
             "Cannot init a real with a precision of -1" in str(cm.exception)
         )
 
+        # Construction from bool.
+        self.assertEqual(real(True), 1)
+        self.assertEqual(real(False), 0)
+
         # Long double.
         x = real(ld("1.1"))
         self.assertTrue("1.1000000" in str(x))

@@ -41,6 +41,10 @@ class real128_test_case(_ut.TestCase):
         self.assertEqual(str(real128(42)), "42")
         self.assertEqual(str(real128(-42)), "-42")
 
+        # Bool.
+        self.assertEqual(real128(True), 1)
+        self.assertEqual(real128(False), 0)
+
         # Large ints, still exactly representable.
         for _ in range(100):
             n = random.randint(-(2**101), 2**101)
