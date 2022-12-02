@@ -67,6 +67,7 @@ namespace py = pybind11;
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wmissing-field-initializers"
 #pragma GCC diagnostic ignored "-Wcast-align"
+#pragma GCC diagnostic ignored "-Wcast-function-type"
 
 #endif
 
@@ -514,6 +515,33 @@ std::pair<std::optional<mppp::real128>, bool> real128_from_ob(PyObject *arg)
         return {{}, true};
     }
 }
+
+PyObject *py_real128_copy(PyObject *self, [[maybe_unused]] PyObject *args)
+{
+    assert(args == nullptr);
+
+    return py_real128_from_args(*get_real128_val(self));
+}
+
+PyObject *py_real128_deepcopy(PyObject *self, PyObject *args, PyObject *kwargs)
+{
+    PyObject *memo_arg = nullptr;
+
+    const char *kwlist[] = {"memo", nullptr};
+
+    // NOLINTNEXTLINE(cppcoreguidelines-pro-type-const-cast)
+    if (PyArg_ParseTupleAndKeywords(args, kwargs, "|O", const_cast<char **>(&kwlist[0]), &memo_arg) == 0) {
+        return nullptr;
+    }
+
+    return py_real128_from_args(*get_real128_val(self));
+}
+
+// NOLINTNEXTLINE(cppcoreguidelines-avoid-non-const-global-variables)
+PyMethodDef py_real128_methods[]
+    = {{"__copy__", py_real128_copy, METH_NOARGS, nullptr},
+       {"__deepcopy__", reinterpret_cast<PyCFunction>(py_real128_deepcopy), METH_VARARGS | METH_KEYWORDS, nullptr},
+       {nullptr}};
 
 // __repr__().
 PyObject *py_real128_repr(PyObject *self)
@@ -1098,6 +1126,7 @@ void expose_real128(py::module_ &m)
     py_real128_type.tp_repr = detail::py_real128_repr;
     py_real128_type.tp_as_number = &detail::py_real128_as_number;
     py_real128_type.tp_richcompare = &detail::py_real128_rcmp;
+    py_real128_type.tp_methods = detail::py_real128_methods;
 
     // Fill out the functions for the number protocol. See:
     // https://docs.python.org/3/c-api/number.html

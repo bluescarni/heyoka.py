@@ -234,6 +234,15 @@ class real128_test_case(_ut.TestCase):
             except:
                 pass
 
+        # Copy/deepcopy.
+        from copy import copy, deepcopy
+
+        x = real128("1.1")
+        y = copy(x)
+        self.assertEqual(x, y)
+        y = deepcopy(x)
+        self.assertEqual(x, y)
+
     def test_numpy(self):
         import numpy as np
         from copy import copy, deepcopy
