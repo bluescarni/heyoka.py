@@ -1955,6 +1955,9 @@ void expose_real(py::module_ &m)
                          py::array::ShapeContainer{boost::numeric_cast<py::ssize_t>(ptr->size())}, ptr->data(),
                          std::move(vec_caps));
     });
+
+    // Function to test the custom caster.
+    m.def("_copy_real", [](const mppp::real &x) { return x; });
 }
 
 #if defined(__GNUC__)

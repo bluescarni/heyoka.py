@@ -1207,3 +1207,8 @@ class real_test_case(_ut.TestCase):
         y = pickle.loads(pickle.dumps(x))
         self.assertEqual(x, y)
         self.assertEqual(y.prec, 128)
+
+        # Custom caster.
+        y = core._copy_real(x)
+        self.assertEqual(x, y)
+        self.assertEqual(y.prec, 128)
