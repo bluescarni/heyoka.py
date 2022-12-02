@@ -1001,8 +1001,8 @@ int npy_py_real_setitem(PyObject *item, void *data, [[maybe_unused]] void *arr)
         // Conversion successful.
 
         // Make sure we have a real in data.
-        auto [ptr_opt, new_real]
-            = ensure_cted_real(base_ptr, ct_flags, data, [&]() -> mppp::real && { return std::move(*r); });
+        auto [ptr_opt, new_real] = ensure_cted_real(base_ptr, ct_flags, data,
+                                                    [&, &r_ref = *r]() -> mppp::real && { return std::move(r_ref); });
         if (!ptr_opt) {
             return -1;
         }
