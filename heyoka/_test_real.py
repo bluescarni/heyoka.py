@@ -627,10 +627,6 @@ class real_test_case(_ut.TestCase):
         self.assertEqual(arr.dtype, real)
         self.assertEqual(arr[0].prec, real(1.0).prec)
 
-        arr = np.linspace(real(0), real(1), 10, dtype=real)
-        self.assertEqual(arr.dtype, real)
-        self.assertEqual(arr[0].prec, real(1).prec)
-
         arr = np.linspace(real(0, 128), real(1, 128), 10, dtype=real)
         self.assertEqual(arr.dtype, real)
         self.assertEqual(arr[0].prec, 128)
