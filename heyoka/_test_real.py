@@ -16,7 +16,7 @@ class real_test_case(_ut.TestCase):
         if not hasattr(core, "real"):
             return
 
-        self.test_ctor()
+        self.test_basic()
         self.test_unary()
         self.test_binary()
         self.test_conversions()
@@ -945,7 +945,7 @@ class real_test_case(_ut.TestCase):
         self.assertEqual(str(xm), str(-x))
         self.assertEqual(str(abs(xm)), str(x))
 
-    def test_ctor(self):
+    def test_basic(self):
         from . import real
         from . import core
         import numpy as np
@@ -1127,3 +1127,58 @@ class real_test_case(_ut.TestCase):
         x = real("1.1", 123)
         y = real("1.1", 123)
         self.assertNotEqual(x._limb_address, y._limb_address)
+
+        # set_prec().
+        x = real("1.1", 123)
+        x.set_prec(10)
+        self.assertEqual(x.prec, 10)
+        self.assertEqual(str(x), "nan")
+        with self.assertRaises(ValueError) as cm:
+            x.set_prec(0)
+        self.assertTrue(
+            "Cannot set the precision of a real to the value 0" in str(cm.exception)
+        )
+        with self.assertRaises(OverflowError) as cm:
+            x.set_prec(1 << 512)
+
+        # prec_round().
+        x = real("1.1", 123)
+        x.prec_round(200)
+        self.assertEqual(x.prec, 200)
+        self.assertEqual(x, real(real("1.1", 123), 200))
+        x.prec_round(123)
+        self.assertEqual(x, real("1.1", 123))
+        self.assertEqual(x.prec, 123)
+        with self.assertRaises(ValueError) as cm:
+            x.prec_round(0)
+        self.assertTrue(
+            "Cannot set the precision of a real to the value 0" in str(cm.exception)
+        )
+        with self.assertRaises(OverflowError) as cm:
+            x.prec_round(1 << 512)
+
+        # copy/deepcopy.
+        from copy import copy, deepcopy
+
+        x = real("1.1", 123)
+        y = copy(x)
+        self.assertEqual(x, y)
+        self.assertEqual(y.prec, 123)
+        self.assertNotEqual(x._limb_address, y._limb_address)
+        with self.assertRaises(TypeError) as cm:
+            x.__copy__(4)
+        with self.assertRaises(TypeError) as cm:
+            x.__copy__(foo=4)
+
+        y = deepcopy(x)
+        self.assertEqual(x, y)
+        self.assertEqual(y.prec, 123)
+        self.assertNotEqual(x._limb_address, y._limb_address)
+
+        # Check direct calls to the method.
+        x.__deepcopy__(4)
+        x.__deepcopy__(memo=4)
+
+        with self.assertRaises(TypeError) as cm:
+            x.__deepcopy__(mamo=4)
+        self.assertTrue("mamo" in str(cm.exception))

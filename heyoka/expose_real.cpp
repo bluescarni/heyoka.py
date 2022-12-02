@@ -72,6 +72,7 @@ namespace py = pybind11;
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wmissing-field-initializers"
 #pragma GCC diagnostic ignored "-Wcast-align"
+#pragma GCC diagnostic ignored "-Wcast-function-type"
 
 #endif
 
@@ -592,6 +593,81 @@ PyObject *py_real_limb_address_getter(PyObject *self, void *)
 PyGetSetDef py_real_get_set[] = {{"prec", py_real_prec_getter, nullptr, nullptr, nullptr},
                                  {"_limb_address", py_real_limb_address_getter, nullptr, nullptr, nullptr},
                                  {nullptr}};
+
+// Implementation of several methods for real.
+PyObject *py_real_set_prec(PyObject *self, PyObject *args)
+{
+    long long prec = 0;
+
+    // NOLINTNEXTLINE(cppcoreguidelines-pro-type-const-cast)
+    if (PyArg_ParseTuple(args, "L", &prec) == 0) {
+        return nullptr;
+    }
+
+    const auto err = with_pybind11_eh([&]() { get_real_val(self)->set_prec(boost::numeric_cast<mpfr_prec_t>(prec)); });
+
+    if (err) {
+        return nullptr;
+    }
+
+    Py_RETURN_NONE;
+}
+
+PyObject *py_real_prec_round(PyObject *self, PyObject *args)
+{
+    long long prec = 0;
+
+    // NOLINTNEXTLINE(cppcoreguidelines-pro-type-const-cast)
+    if (PyArg_ParseTuple(args, "L", &prec) == 0) {
+        return nullptr;
+    }
+
+    const auto err
+        = with_pybind11_eh([&]() { get_real_val(self)->prec_round(boost::numeric_cast<mpfr_prec_t>(prec)); });
+
+    if (err) {
+        return nullptr;
+    }
+
+    Py_RETURN_NONE;
+}
+
+PyObject *py_real_copy(PyObject *self, [[maybe_unused]] PyObject *args)
+{
+    assert(args == nullptr);
+
+    PyObject *retval = nullptr;
+
+    with_pybind11_eh([&]() { retval = py_real_from_args(*get_real_val(self)); });
+
+    return retval;
+}
+
+PyObject *py_real_deepcopy(PyObject *self, PyObject *args, PyObject *kwargs)
+{
+    PyObject *memo_arg = nullptr;
+
+    const char *kwlist[] = {"memo", nullptr};
+
+    // NOLINTNEXTLINE(cppcoreguidelines-pro-type-const-cast)
+    if (PyArg_ParseTupleAndKeywords(args, kwargs, "|O", const_cast<char **>(&kwlist[0]), &memo_arg) == 0) {
+        return nullptr;
+    }
+
+    PyObject *retval = nullptr;
+
+    with_pybind11_eh([&]() { retval = py_real_from_args(*get_real_val(self)); });
+
+    return retval;
+}
+
+// NOLINTNEXTLINE(cppcoreguidelines-avoid-non-const-global-variables)
+PyMethodDef py_real_methods[]
+    = {{"set_prec", py_real_set_prec, METH_VARARGS, nullptr},
+       {"prec_round", py_real_prec_round, METH_VARARGS, nullptr},
+       {"__copy__", py_real_copy, METH_NOARGS, nullptr},
+       {"__deepcopy__", reinterpret_cast<PyCFunction>(py_real_deepcopy), METH_VARARGS | METH_KEYWORDS, nullptr},
+       {nullptr}};
 
 // Generic implementation of unary operations.
 template <typename F>
@@ -1523,6 +1599,7 @@ void expose_real(py::module_ &m)
     py_real_type.tp_as_number = &detail::py_real_as_number;
     py_real_type.tp_richcompare = &detail::py_real_rcmp;
     py_real_type.tp_getset = detail::py_real_get_set;
+    py_real_type.tp_methods = detail::py_real_methods;
 
     // Fill out the functions for the number protocol. See:
     // https://docs.python.org/3/c-api/number.html
