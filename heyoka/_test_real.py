@@ -27,7 +27,107 @@ class real_test_case(_ut.TestCase):
         self.test_numpy_mul()
         self.test_numpy_div()
         self.test_numpy_square()
+        self.test_numpy_binary()
+        self.test_numpy_unary()
         self.test_numpy_conversions()
+        self.test_numpy_comparisons()
+
+    def test_numpy_comparisons(self):
+        from . import real
+        import numpy as np
+        from . import core
+
+        make_no = core._make_no_real_array
+
+        # Basic.
+        arr = np.array([1, 2, 3, 4, 5], dtype=real)
+        self.assertTrue(np.all(arr == arr))
+        self.assertEqual((arr == arr).dtype, bool)
+        arr2 = np.array([1, -2, 3, -4, 5], dtype=real)
+        self.assertTrue(np.all((arr == arr2) == [True, False, True, False, True]))
+
+        # With uninited values.
+        arr2 = np.empty((5,), dtype=real)
+        arr2[0] = 1
+        self.assertTrue(np.all((arr == arr2) == [True, False, False, False, False]))
+
+        # With holes.
+        arr2 = np.array(
+            [1, 0, -2, 0, 3, 0, -4, 0, 5, 0],
+            dtype=real,
+        )
+        self.assertTrue(np.all((arr == arr2[::2]) == [True, False, True, False, True]))
+
+        # Non-owning.
+        self.assertTrue(
+            np.all(
+                (make_no(arr) == make_no(arr2)[::2]) == [True, False, True, False, True]
+            )
+        )
+
+        # Testing for the other comparison operators.
+        self.assertTrue(
+            np.all((make_no(arr) != arr2[::2]) == [False, True, False, True, False])
+        )
+        self.assertTrue(
+            np.all(
+                (np.array([1, 2, 3], dtype=real) < np.array([1, 3, -1], dtype=real))
+                == [False, True, False]
+            )
+        )
+        self.assertTrue(
+            np.all(
+                (np.array([1, 2, 3], dtype=real) <= np.array([1, 3, -1], dtype=real))
+                == [True, True, False]
+            )
+        )
+        self.assertTrue(
+            np.all(
+                (np.array([1, 2, 3], dtype=real) > np.array([1, 3, -1], dtype=real))
+                == [False, False, True]
+            )
+        )
+        self.assertTrue(
+            np.all(
+                (np.array([1, 2, 3], dtype=real) >= np.array([1, 3, -1], dtype=real))
+                == [True, False, True]
+            )
+        )
+
+    def test_numpy_binary(self):
+        from . import real
+        import numpy as np
+
+        arr1 = np.full((10,), real("1.1", 128), dtype=real)
+        arr2 = np.full((10,), real("1", 128), dtype=real)
+        arr3 = arr1 // arr2
+        self.assertTrue(np.all(arr3 == np.full((10,), real("1", 128), dtype=real)))
+        ret = np.empty((10,), dtype=real)
+        np.floor_divide(arr1, arr2, out=ret)
+        self.assertTrue(np.all(arr3 == ret))
+
+        arr1 = np.full((10,), real("1.1", 128), dtype=real)
+        arr2 = np.full((10,), real("-1", 128), dtype=real)
+        arr3 = arr1 // arr2
+        self.assertTrue(np.all(arr3 == np.full((10,), real("-2", 128), dtype=real)))
+        ret = np.empty((10,), dtype=real)
+        np.floor_divide(arr1, arr2, out=ret)
+        self.assertTrue(np.all(arr3 == ret))
+
+    def test_numpy_unary(self):
+        from . import real
+        import numpy as np
+
+        arr1 = np.full((10,), real("-1.1", 128), dtype=real)
+        arr2 = np.absolute(arr1)
+        self.assertTrue(np.all(arr2 == np.full((10,), real("1.1", 128), dtype=real)))
+        arr2 = np.fabs(arr1)
+        self.assertTrue(np.all(arr2 == np.full((10,), real("1.1", 128), dtype=real)))
+        ret = np.empty((10,), dtype=real)
+        np.absolute(arr1, out=ret)
+        self.assertTrue(np.all(arr2 == ret))
+        np.fabs(arr1, out=ret)
+        self.assertTrue(np.all(arr2 == ret))
 
     def test_numpy_pickle(self):
         # Pickle support.

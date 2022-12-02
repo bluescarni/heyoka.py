@@ -116,8 +116,13 @@ const auto identity_func = [](const mppp::real &x) { return x; };
 const auto negation_func = [](const mppp::real &x) { return -x; };
 
 const auto abs_func = [](const mppp::real &x) { return mppp::abs(x); };
+const auto abs_func2 = [](mppp::real &ret, const mppp::real &x) { mppp::abs(ret, x); };
 
 const auto floor_divide_func = [](const mppp::real &x, const mppp::real &y) { return mppp::floor(x / y); };
+const auto floor_divide_func3 = [](mppp::real &ret, const mppp::real &x, const mppp::real &y) {
+    mppp::div(ret, x, y);
+    mppp::floor(ret, ret);
+};
 
 const auto pow_func = [](const mppp::real &x, const mppp::real &y) { return mppp::pow(x, y); };
 
@@ -1555,9 +1560,8 @@ void npy_register_cast_functions()
     }
 }
 
-// Generic NumPy unary operation.
-// TODO adapt to T != mppp::real.
-template <typename T, typename F1, typename F2>
+// Generic NumPy unary operation with real operand and real output.
+template <typename F1, typename F2>
 void py_real_ufunc_unary(char **args, const npy_intp *dimensions, const npy_intp *steps, void *, const F1 &f1,
                          const F2 &f2)
 {
@@ -1597,16 +1601,8 @@ void py_real_ufunc_unary(char **args, const npy_intp *dimensions, const npy_intp
     });
 }
 
-template <typename F1, typename F2>
-void py_real_ufunc_unary(char **args, const npy_intp *dimensions, const npy_intp *steps, void *p, const F1 &f1,
-                         const F2 &f2)
-{
-    py_real_ufunc_unary<mppp::real>(args, dimensions, steps, p, f1, f2);
-}
-
-// Generic NumPy binary operation.
-// TODO adapt to T != mppp::real.
-template <typename T, typename F2, typename F3>
+// Generic NumPy binary operation with real operands and real output.
+template <typename F2, typename F3>
 void py_real_ufunc_binary(char **args, const npy_intp *dimensions, const npy_intp *steps, void *, const F2 &f2,
                           const F3 &f3)
 {
@@ -1655,11 +1651,40 @@ void py_real_ufunc_binary(char **args, const npy_intp *dimensions, const npy_int
     });
 }
 
-template <typename F2, typename F3>
-void py_real_ufunc_binary(char **args, const npy_intp *dimensions, const npy_intp *steps, void *p, const F2 &f2,
-                          const F3 &f3)
+// Generic NumPy binary operation for real comparisons.
+template <typename F>
+void py_real_ufunc_binary_cmp(char **args, const npy_intp *dimensions, const npy_intp *steps, void *, const F &f)
 {
-    py_real_ufunc_binary<mppp::real>(args, dimensions, steps, p, f2, f3);
+    npy_intp is0 = steps[0], is1 = steps[1], os = steps[2], n = *dimensions;
+    char *i0 = args[0], *i1 = args[1], *o = args[2];
+
+    with_pybind11_eh([&]() {
+        // Try to locate the input buffers in the memory map.
+        const auto [base_ptr_i0, meta_ptr_i0] = get_memory_metadata(i0);
+        const auto *ct_flags_i0
+            = (base_ptr_i0 == nullptr) ? nullptr : meta_ptr_i0->ensure_ct_flags_inited<mppp::real>();
+
+        const auto [base_ptr_i1, meta_ptr_i1] = get_memory_metadata(i1);
+        const auto *ct_flags_i1
+            = (base_ptr_i1 == nullptr) ? nullptr : meta_ptr_i1->ensure_ct_flags_inited<mppp::real>();
+
+        // Fetch a pointer to the global zero const. This will be used in place
+        // of non-constructed input real arguments.
+        const auto *zr = &get_zero_real();
+
+        for (npy_intp k = 0; k < n; ++k) {
+            // Fetch the input operands.
+            const auto *a = fetch_cted_real(base_ptr_i0, ct_flags_i0, i0, zr);
+            const auto *b = fetch_cted_real(base_ptr_i1, ct_flags_i1, i1, zr);
+
+            // Run the comparison and write into the output.
+            *reinterpret_cast<npy_bool *>(o) = static_cast<npy_bool>(f(*a, *b));
+
+            i0 += is0;
+            i1 += is1;
+            o += os;
+        }
+    });
 }
 
 // Helper to register a NumPy ufunc.
@@ -1889,6 +1914,61 @@ void expose_real(py::module_ &m)
             detail::py_real_ufunc_unary(args, dimensions, steps, data, detail::square_func, detail::square2_func);
         },
         npy_registered_py_real, npy_registered_py_real);
+    detail::npy_register_ufunc(
+        numpy_mod, "floor_divide",
+        [](char **args, const npy_intp *dimensions, const npy_intp *steps, void *data) {
+            detail::py_real_ufunc_binary(args, dimensions, steps, data, detail::floor_divide_func,
+                                         detail::floor_divide_func3);
+        },
+        npy_registered_py_real, npy_registered_py_real, npy_registered_py_real);
+    detail::npy_register_ufunc(
+        numpy_mod, "absolute",
+        [](char **args, const npy_intp *dimensions, const npy_intp *steps, void *data) {
+            detail::py_real_ufunc_unary(args, dimensions, steps, data, detail::abs_func, detail::abs_func2);
+        },
+        npy_registered_py_real, npy_registered_py_real);
+    detail::npy_register_ufunc(
+        numpy_mod, "fabs",
+        [](char **args, const npy_intp *dimensions, const npy_intp *steps, void *data) {
+            detail::py_real_ufunc_unary(args, dimensions, steps, data, detail::abs_func, detail::abs_func2);
+        },
+        npy_registered_py_real, npy_registered_py_real);
+    detail::npy_register_ufunc(
+        numpy_mod, "equal",
+        [](char **args, const npy_intp *dimensions, const npy_intp *steps, void *data) {
+            detail::py_real_ufunc_binary_cmp(args, dimensions, steps, data, std::equal_to{});
+        },
+        npy_registered_py_real, npy_registered_py_real, NPY_BOOL);
+    detail::npy_register_ufunc(
+        numpy_mod, "not_equal",
+        [](char **args, const npy_intp *dimensions, const npy_intp *steps, void *data) {
+            detail::py_real_ufunc_binary_cmp(args, dimensions, steps, data, std::not_equal_to{});
+        },
+        npy_registered_py_real, npy_registered_py_real, NPY_BOOL);
+    detail::npy_register_ufunc(
+        numpy_mod, "less",
+        [](char **args, const npy_intp *dimensions, const npy_intp *steps, void *data) {
+            detail::py_real_ufunc_binary_cmp(args, dimensions, steps, data, std::less{});
+        },
+        npy_registered_py_real, npy_registered_py_real, NPY_BOOL);
+    detail::npy_register_ufunc(
+        numpy_mod, "less_equal",
+        [](char **args, const npy_intp *dimensions, const npy_intp *steps, void *data) {
+            detail::py_real_ufunc_binary_cmp(args, dimensions, steps, data, std::less_equal{});
+        },
+        npy_registered_py_real, npy_registered_py_real, NPY_BOOL);
+    detail::npy_register_ufunc(
+        numpy_mod, "greater",
+        [](char **args, const npy_intp *dimensions, const npy_intp *steps, void *data) {
+            detail::py_real_ufunc_binary_cmp(args, dimensions, steps, data, std::greater{});
+        },
+        npy_registered_py_real, npy_registered_py_real, NPY_BOOL);
+    detail::npy_register_ufunc(
+        numpy_mod, "greater_equal",
+        [](char **args, const npy_intp *dimensions, const npy_intp *steps, void *data) {
+            detail::py_real_ufunc_binary_cmp(args, dimensions, steps, data, std::greater_equal{});
+        },
+        npy_registered_py_real, npy_registered_py_real, NPY_BOOL);
 
     // Casting.
     detail::npy_register_cast_functions<float>();
