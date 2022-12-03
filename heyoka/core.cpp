@@ -380,6 +380,12 @@ PYBIND11_MODULE(core, m)
 
 #endif
 
+#if defined(HEYOKA_HAVE_REAL)
+
+    heypy::expose_taylor_integrator_real(m);
+
+#endif
+
     // Batch integrators.
     heypy::expose_batch_integrators(m);
 
