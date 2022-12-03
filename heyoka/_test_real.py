@@ -114,6 +114,22 @@ class real_test_case(_ut.TestCase):
         np.floor_divide(arr1, arr2, out=ret)
         self.assertTrue(np.all(arr3 == ret))
 
+        arr1 = np.full((10,), real("1.1", 128), dtype=real)
+        arr2 = np.full((10,), real("-1", 128), dtype=real)
+        arr3 = arr1 ** arr2
+        self.assertTrue(np.all(arr3 == np.full((10,), real("0.90909090909090909090909090909090909090695", 128), dtype=real)))
+        ret = np.empty((10,), dtype=real)
+        np.power(arr1, arr2, out=ret)
+        self.assertTrue(np.all(arr3 == ret))
+
+        arr1 = np.full((10,), real("1.1", 128), dtype=real)
+        arr2 = np.full((10,), real("-1", 128), dtype=real)
+        arr3 = np.arctan2(arr1, arr2)
+        self.assertTrue(np.all(arr3 == np.full((10,), real("2.3086113869153615330449498214431416456855", 128), dtype=real)))
+        ret = np.empty((10,), dtype=real)
+        np.arctan2(arr1, arr2, out=ret)
+        self.assertTrue(np.all(arr3 == ret))
+
     def test_numpy_unary(self):
         from . import real
         import numpy as np
@@ -127,6 +143,118 @@ class real_test_case(_ut.TestCase):
         np.absolute(arr1, out=ret)
         self.assertTrue(np.all(arr2 == ret))
         np.fabs(arr1, out=ret)
+        self.assertTrue(np.all(arr2 == ret))
+
+        arr1 = np.full((10,), real("-1.1", 128), dtype=real)
+        arr2 = +arr1
+        self.assertTrue(np.all(arr2 == np.full((10,), real("-1.1", 128), dtype=real)))
+        ret = np.empty((10,), dtype=real)
+        np.positive(arr1, out=ret)
+        self.assertTrue(np.all(arr2 == ret))
+
+        arr1 = np.full((10,), real("-1.1", 128), dtype=real)
+        arr2 = -arr1
+        self.assertTrue(np.all(arr2 == np.full((10,), real("1.1", 128), dtype=real)))
+        ret = np.empty((10,), dtype=real)
+        np.negative(arr1, out=ret)
+        self.assertTrue(np.all(arr2 == ret))
+
+        arr1 = np.full((10,), real("1.1", 128), dtype=real)
+        arr2 = np.sqrt(arr1)
+        self.assertTrue(np.all(arr2 == np.full((10,), real("1.0488088481701515469914535136799375984778", 128), dtype=real)))
+        ret = np.empty((10,), dtype=real)
+        np.sqrt(arr1, out=ret)
+        self.assertTrue(np.all(arr2 == ret))
+
+        arr1 = np.full((10,), real("1.1", 128), dtype=real)
+        arr2 = np.cbrt(arr1)
+        self.assertTrue(np.all(arr2 == np.full((10,), real("1.0322801154563671592135852250097016117302", 128), dtype=real)))
+        ret = np.empty((10,), dtype=real)
+        np.cbrt(arr1, out=ret)
+        self.assertTrue(np.all(arr2 == ret))
+
+        arr1 = np.full((10,), real("1.1", 128), dtype=real)
+        arr2 = np.sin(arr1)
+        self.assertTrue(np.all(arr2 == np.full((10,), real("0.8912073600614353399518025778717035383202", 128), dtype=real)))
+        ret = np.empty((10,), dtype=real)
+        np.sin(arr1, out=ret)
+        self.assertTrue(np.all(arr2 == ret))
+
+        arr1 = np.full((10,), real("1.1", 128), dtype=real)
+        arr2 = np.cos(arr1)
+        self.assertTrue(np.all(arr2 == np.full((10,), real("0.45359612142557738777137005178471612212109", 128), dtype=real)))
+        ret = np.empty((10,), dtype=real)
+        np.cos(arr1, out=ret)
+        self.assertTrue(np.all(arr2 == ret))
+
+        arr1 = np.full((10,), real("1.1", 128), dtype=real)
+        arr2 = np.tan(arr1)
+        self.assertTrue(np.all(arr2 == np.full((10,), real("1.9647596572486519509309227817793782437226", 128), dtype=real)))
+        ret = np.empty((10,), dtype=real)
+        np.tan(arr1, out=ret)
+        self.assertTrue(np.all(arr2 == ret))
+
+        arr1 = np.full((10,), real("0.1", 128), dtype=real)
+        arr2 = np.arcsin(arr1)
+        self.assertTrue(np.all(arr2 == np.full((10,), real("0.10016742116155979634552317945269331856891", 128), dtype=real)))
+        ret = np.empty((10,), dtype=real)
+        np.arcsin(arr1, out=ret)
+        self.assertTrue(np.all(arr2 == ret))
+
+        arr1 = np.full((10,), real("0.1", 128), dtype=real)
+        arr2 = np.arccos(arr1)
+        self.assertTrue(np.all(arr2 == np.full((10,), real("1.4706289056333368228857985121870581235309", 128), dtype=real)))
+        ret = np.empty((10,), dtype=real)
+        np.arccos(arr1, out=ret)
+        self.assertTrue(np.all(arr2 == ret))
+
+        arr1 = np.full((10,), real("0.1", 128), dtype=real)
+        arr2 = np.arctan(arr1)
+        self.assertTrue(np.all(arr2 == np.full((10,), real("0.099668652491162027378446119878020590243274", 128), dtype=real)))
+        ret = np.empty((10,), dtype=real)
+        np.arctan(arr1, out=ret)
+        self.assertTrue(np.all(arr2 == ret))
+
+        arr1 = np.full((10,), real("1.1", 128), dtype=real)
+        arr2 = np.sinh(arr1)
+        self.assertTrue(np.all(arr2 == np.full((10,), real("1.3356474701241767793847805235786784358374", 128), dtype=real)))
+        ret = np.empty((10,), dtype=real)
+        np.sinh(arr1, out=ret)
+        self.assertTrue(np.all(arr2 == ret))
+
+        arr1 = np.full((10,), real("1.1", 128), dtype=real)
+        arr2 = np.cosh(arr1)
+        self.assertTrue(np.all(arr2 == np.full((10,), real("1.6685185538222563326736274300099939574508", 128), dtype=real)))
+        ret = np.empty((10,), dtype=real)
+        np.cosh(arr1, out=ret)
+        self.assertTrue(np.all(arr2 == ret))
+
+        arr1 = np.full((10,), real("1.1", 128), dtype=real)
+        arr2 = np.tanh(arr1)
+        self.assertTrue(np.all(arr2 == np.full((10,), real("0.80049902176062970601146133060069645804746", 128), dtype=real)))
+        ret = np.empty((10,), dtype=real)
+        np.tanh(arr1, out=ret)
+        self.assertTrue(np.all(arr2 == ret))
+
+        arr1 = np.full((10,), real("0.1", 128), dtype=real)
+        arr2 = np.arcsinh(arr1)
+        self.assertTrue(np.all(arr2 == np.full((10,), real("0.099834078899207563327303124704769443267764", 128), dtype=real)))
+        ret = np.empty((10,), dtype=real)
+        np.arcsinh(arr1, out=ret)
+        self.assertTrue(np.all(arr2 == ret))
+
+        arr1 = np.full((10,), real("1.1", 128), dtype=real)
+        arr2 = np.arccosh(arr1)
+        self.assertTrue(np.all(arr2 == np.full((10,), real("0.44356825438511518913291106635249808665203", 128), dtype=real)))
+        ret = np.empty((10,), dtype=real)
+        np.arccosh(arr1, out=ret)
+        self.assertTrue(np.all(arr2 == ret))
+
+        arr1 = np.full((10,), real("0.1", 128), dtype=real)
+        arr2 = np.arctanh(arr1)
+        self.assertTrue(np.all(arr2 == np.full((10,), real("0.1003353477310755806357265520600389452634", 128), dtype=real)))
+        ret = np.empty((10,), dtype=real)
+        np.arctanh(arr1, out=ret)
         self.assertTrue(np.all(arr2 == ret))
 
     def test_numpy_pickle(self):

@@ -112,8 +112,10 @@ static_assert(alignof(py_real) <= alignof(std::max_align_t));
 // A few function object to implement basic mathematical
 // operations in a generic fashion.
 const auto identity_func = [](const mppp::real &x) { return x; };
+const auto identity_func2 = [](mppp::real &ret, const mppp::real &x) { ret = x; };
 
 const auto negation_func = [](const mppp::real &x) { return -x; };
+const auto negation_func2 = [](mppp::real &ret, const mppp::real &x) { mppp::neg(ret, x); };
 
 const auto abs_func = [](const mppp::real &x) { return mppp::abs(x); };
 const auto abs_func2 = [](mppp::real &ret, const mppp::real &x) { mppp::abs(ret, x); };
@@ -125,6 +127,52 @@ const auto floor_divide_func3 = [](mppp::real &ret, const mppp::real &x, const m
 };
 
 const auto pow_func = [](const mppp::real &x, const mppp::real &y) { return mppp::pow(x, y); };
+const auto pow_func3 = [](mppp::real &ret, const mppp::real &x, const mppp::real &y) { mppp::pow(ret, x, y); };
+
+const auto sqrt_func = [](const mppp::real &x) { return mppp::sqrt(x); };
+const auto sqrt_func2 = [](mppp::real &ret, const mppp::real &x) { mppp::sqrt(ret, x); };
+
+const auto cbrt_func = [](const mppp::real &x) { return mppp::cbrt(x); };
+const auto cbrt_func2 = [](mppp::real &ret, const mppp::real &x) { mppp::cbrt(ret, x); };
+
+const auto sin_func = [](const mppp::real &x) { return mppp::sin(x); };
+const auto sin_func2 = [](mppp::real &ret, const mppp::real &x) { mppp::sin(ret, x); };
+
+const auto cos_func = [](const mppp::real &x) { return mppp::cos(x); };
+const auto cos_func2 = [](mppp::real &ret, const mppp::real &x) { mppp::cos(ret, x); };
+
+const auto tan_func = [](const mppp::real &x) { return mppp::tan(x); };
+const auto tan_func2 = [](mppp::real &ret, const mppp::real &x) { mppp::tan(ret, x); };
+
+const auto asin_func = [](const mppp::real &x) { return mppp::asin(x); };
+const auto asin_func2 = [](mppp::real &ret, const mppp::real &x) { mppp::asin(ret, x); };
+
+const auto acos_func = [](const mppp::real &x) { return mppp::acos(x); };
+const auto acos_func2 = [](mppp::real &ret, const mppp::real &x) { mppp::acos(ret, x); };
+
+const auto atan_func = [](const mppp::real &x) { return mppp::atan(x); };
+const auto atan_func2 = [](mppp::real &ret, const mppp::real &x) { mppp::atan(ret, x); };
+
+const auto atan2_func = [](const mppp::real &x, const mppp::real &y) { return mppp::atan2(x, y); };
+const auto atan2_func3 = [](mppp::real &ret, const mppp::real &x, const mppp::real &y) { mppp::atan2(ret, x, y); };
+
+const auto sinh_func = [](const mppp::real &x) { return mppp::sinh(x); };
+const auto sinh_func2 = [](mppp::real &ret, const mppp::real &x) { mppp::sinh(ret, x); };
+
+const auto cosh_func = [](const mppp::real &x) { return mppp::cosh(x); };
+const auto cosh_func2 = [](mppp::real &ret, const mppp::real &x) { mppp::cosh(ret, x); };
+
+const auto tanh_func = [](const mppp::real &x) { return mppp::tanh(x); };
+const auto tanh_func2 = [](mppp::real &ret, const mppp::real &x) { mppp::tanh(ret, x); };
+
+const auto asinh_func = [](const mppp::real &x) { return mppp::asinh(x); };
+const auto asinh_func2 = [](mppp::real &ret, const mppp::real &x) { mppp::asinh(ret, x); };
+
+const auto acosh_func = [](const mppp::real &x) { return mppp::acosh(x); };
+const auto acosh_func2 = [](mppp::real &ret, const mppp::real &x) { mppp::acosh(ret, x); };
+
+const auto atanh_func = [](const mppp::real &x) { return mppp::atanh(x); };
+const auto atanh_func2 = [](mppp::real &ret, const mppp::real &x) { mppp::atanh(ret, x); };
 
 // Squaring.
 const auto square_func = [](const mppp::real &x) { return mppp::sqr(x); };
@@ -1933,6 +1981,117 @@ void expose_real(py::module_ &m)
             detail::py_real_ufunc_unary(args, dimensions, steps, data, detail::abs_func, detail::abs_func2);
         },
         npy_registered_py_real, npy_registered_py_real);
+    detail::npy_register_ufunc(
+        numpy_mod, "positive",
+        [](char **args, const npy_intp *dimensions, const npy_intp *steps, void *data) {
+            detail::py_real_ufunc_unary(args, dimensions, steps, data, detail::identity_func, detail::identity_func2);
+        },
+        npy_registered_py_real, npy_registered_py_real);
+    detail::npy_register_ufunc(
+        numpy_mod, "negative",
+        [](char **args, const npy_intp *dimensions, const npy_intp *steps, void *data) {
+            detail::py_real_ufunc_unary(args, dimensions, steps, data, detail::negation_func, detail::negation_func2);
+        },
+        npy_registered_py_real, npy_registered_py_real);
+    // Power/roots.
+    detail::npy_register_ufunc(
+        numpy_mod, "power",
+        [](char **args, const npy_intp *dimensions, const npy_intp *steps, void *data) {
+            detail::py_real_ufunc_binary(args, dimensions, steps, data, detail::pow_func, detail::pow_func3);
+        },
+        npy_registered_py_real, npy_registered_py_real, npy_registered_py_real);
+    detail::npy_register_ufunc(
+        numpy_mod, "sqrt",
+        [](char **args, const npy_intp *dimensions, const npy_intp *steps, void *data) {
+            detail::py_real_ufunc_unary(args, dimensions, steps, data, detail::sqrt_func, detail::sqrt_func2);
+        },
+        npy_registered_py_real, npy_registered_py_real);
+    detail::npy_register_ufunc(
+        numpy_mod, "cbrt",
+        [](char **args, const npy_intp *dimensions, const npy_intp *steps, void *data) {
+            detail::py_real_ufunc_unary(args, dimensions, steps, data, detail::cbrt_func, detail::cbrt_func2);
+        },
+        npy_registered_py_real, npy_registered_py_real);
+    // Trigonometry.
+    detail::npy_register_ufunc(
+        numpy_mod, "sin",
+        [](char **args, const npy_intp *dimensions, const npy_intp *steps, void *data) {
+            detail::py_real_ufunc_unary(args, dimensions, steps, data, detail::sin_func, detail::sin_func2);
+        },
+        npy_registered_py_real, npy_registered_py_real);
+    detail::npy_register_ufunc(
+        numpy_mod, "cos",
+        [](char **args, const npy_intp *dimensions, const npy_intp *steps, void *data) {
+            detail::py_real_ufunc_unary(args, dimensions, steps, data, detail::cos_func, detail::cos_func2);
+        },
+        npy_registered_py_real, npy_registered_py_real);
+    detail::npy_register_ufunc(
+        numpy_mod, "tan",
+        [](char **args, const npy_intp *dimensions, const npy_intp *steps, void *data) {
+            detail::py_real_ufunc_unary(args, dimensions, steps, data, detail::tan_func, detail::tan_func2);
+        },
+        npy_registered_py_real, npy_registered_py_real);
+    detail::npy_register_ufunc(
+        numpy_mod, "arcsin",
+        [](char **args, const npy_intp *dimensions, const npy_intp *steps, void *data) {
+            detail::py_real_ufunc_unary(args, dimensions, steps, data, detail::asin_func, detail::asin_func2);
+        },
+        npy_registered_py_real, npy_registered_py_real);
+    detail::npy_register_ufunc(
+        numpy_mod, "arccos",
+        [](char **args, const npy_intp *dimensions, const npy_intp *steps, void *data) {
+            detail::py_real_ufunc_unary(args, dimensions, steps, data, detail::acos_func, detail::acos_func2);
+        },
+        npy_registered_py_real, npy_registered_py_real);
+    detail::npy_register_ufunc(
+        numpy_mod, "arctan",
+        [](char **args, const npy_intp *dimensions, const npy_intp *steps, void *data) {
+            detail::py_real_ufunc_unary(args, dimensions, steps, data, detail::atan_func, detail::atan_func2);
+        },
+        npy_registered_py_real, npy_registered_py_real);
+    detail::npy_register_ufunc(
+        numpy_mod, "arctan2",
+        [](char **args, const npy_intp *dimensions, const npy_intp *steps, void *data) {
+            detail::py_real_ufunc_binary(args, dimensions, steps, data, detail::atan2_func, detail::atan2_func3);
+        },
+        npy_registered_py_real, npy_registered_py_real, npy_registered_py_real);
+    detail::npy_register_ufunc(
+        numpy_mod, "sinh",
+        [](char **args, const npy_intp *dimensions, const npy_intp *steps, void *data) {
+            detail::py_real_ufunc_unary(args, dimensions, steps, data, detail::sinh_func, detail::sinh_func2);
+        },
+        npy_registered_py_real, npy_registered_py_real);
+    detail::npy_register_ufunc(
+        numpy_mod, "cosh",
+        [](char **args, const npy_intp *dimensions, const npy_intp *steps, void *data) {
+            detail::py_real_ufunc_unary(args, dimensions, steps, data, detail::cosh_func, detail::cosh_func2);
+        },
+        npy_registered_py_real, npy_registered_py_real);
+    detail::npy_register_ufunc(
+        numpy_mod, "tanh",
+        [](char **args, const npy_intp *dimensions, const npy_intp *steps, void *data) {
+            detail::py_real_ufunc_unary(args, dimensions, steps, data, detail::tanh_func, detail::tanh_func2);
+        },
+        npy_registered_py_real, npy_registered_py_real);
+    detail::npy_register_ufunc(
+        numpy_mod, "arcsinh",
+        [](char **args, const npy_intp *dimensions, const npy_intp *steps, void *data) {
+            detail::py_real_ufunc_unary(args, dimensions, steps, data, detail::asinh_func, detail::asinh_func2);
+        },
+        npy_registered_py_real, npy_registered_py_real);
+    detail::npy_register_ufunc(
+        numpy_mod, "arccosh",
+        [](char **args, const npy_intp *dimensions, const npy_intp *steps, void *data) {
+            detail::py_real_ufunc_unary(args, dimensions, steps, data, detail::acosh_func, detail::acosh_func2);
+        },
+        npy_registered_py_real, npy_registered_py_real);
+    detail::npy_register_ufunc(
+        numpy_mod, "arctanh",
+        [](char **args, const npy_intp *dimensions, const npy_intp *steps, void *data) {
+            detail::py_real_ufunc_unary(args, dimensions, steps, data, detail::atanh_func, detail::atanh_func2);
+        },
+        npy_registered_py_real, npy_registered_py_real);
+    // Comparisons.
     detail::npy_register_ufunc(
         numpy_mod, "equal",
         [](char **args, const npy_intp *dimensions, const npy_intp *steps, void *data) {
