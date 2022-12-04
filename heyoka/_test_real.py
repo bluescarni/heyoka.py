@@ -257,6 +257,69 @@ class real_test_case(_ut.TestCase):
         np.arctanh(arr1, out=ret)
         self.assertTrue(np.all(arr2 == ret))
 
+        arr1 = np.full((10,), real("0.1", 128), dtype=real)
+        arr2 = np.deg2rad(arr1)
+        self.assertTrue(np.all(arr2 == np.full((10,), real("0.001745329251994329576923690768488612713446", 128), dtype=real)))
+        ret = np.empty((10,), dtype=real)
+        np.radians(arr1, out=ret)
+        self.assertTrue(np.all(arr2 == ret))
+
+        arr1 = np.full((10,), real("0.1", 128), dtype=real)
+        arr2 = np.rad2deg(arr1)
+        self.assertTrue(np.all(arr2 == np.full((10,), real("5.7295779513082320876798154814105170332414", 128), dtype=real)))
+        ret = np.empty((10,), dtype=real)
+        np.degrees(arr1, out=ret)
+        self.assertTrue(np.all(arr2 == ret))
+
+        arr1 = np.full((10,), real("0.1", 128), dtype=real)
+        arr2 = np.exp(arr1)
+        self.assertTrue(np.all(arr2 == np.full((10,), real("1.1051709180756476248117078264902466682234", 128), dtype=real)))
+        ret = np.empty((10,), dtype=real)
+        np.exp(arr1, out=ret)
+        self.assertTrue(np.all(arr2 == ret))
+
+        arr1 = np.full((10,), real("0.1", 128), dtype=real)
+        arr2 = np.exp2(arr1)
+        self.assertTrue(np.all(arr2 == np.full((10,), real("1.0717734625362931642130063250233420229082", 128), dtype=real)))
+        ret = np.empty((10,), dtype=real)
+        np.exp2(arr1, out=ret)
+        self.assertTrue(np.all(arr2 == ret))
+
+        arr1 = np.full((10,), real("0.1", 128), dtype=real)
+        arr2 = np.expm1(arr1)
+        self.assertTrue(np.all(arr2 == np.full((10,), real("0.10517091807564762481170782649024666822453", 128), dtype=real)))
+        ret = np.empty((10,), dtype=real)
+        np.expm1(arr1, out=ret)
+        self.assertTrue(np.all(arr2 == ret))
+
+        arr1 = np.full((10,), real("0.1", 128), dtype=real)
+        arr2 = np.log(arr1)
+        self.assertTrue(np.all(arr2 == np.full((10,), real("-2.3025850929940456840179914546843642076025", 128), dtype=real)))
+        ret = np.empty((10,), dtype=real)
+        np.log(arr1, out=ret)
+        self.assertTrue(np.all(arr2 == ret))
+
+        arr1 = np.full((10,), real("0.1", 128), dtype=real)
+        arr2 = np.log2(arr1)
+        self.assertTrue(np.all(arr2 == np.full((10,), real("-3.3219280948873623478703194294893901758666", 128), dtype=real)))
+        ret = np.empty((10,), dtype=real)
+        np.log2(arr1, out=ret)
+        self.assertTrue(np.all(arr2 == ret))
+
+        arr1 = np.full((10,), real("0.1", 128), dtype=real)
+        arr2 = np.log10(arr1)
+        self.assertTrue(np.all(arr2 == np.full((10,), real("-1", 128), dtype=real)))
+        ret = np.empty((10,), dtype=real)
+        np.log10(arr1, out=ret)
+        self.assertTrue(np.all(arr2 == ret))
+
+        arr1 = np.full((10,), real("0.1", 128), dtype=real)
+        arr2 = np.log1p(arr1)
+        self.assertTrue(np.all(arr2 == np.full((10,), real("0.095310179804324860043952123280765092220842", 128), dtype=real)))
+        ret = np.empty((10,), dtype=real)
+        np.log1p(arr1, out=ret)
+        self.assertTrue(np.all(arr2 == ret))
+
     def test_numpy_pickle(self):
         # Pickle support.
         import pickle

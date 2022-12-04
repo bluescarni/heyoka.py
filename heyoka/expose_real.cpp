@@ -174,6 +174,79 @@ const auto acosh_func2 = [](mppp::real &ret, const mppp::real &x) { mppp::acosh(
 const auto atanh_func = [](const mppp::real &x) { return mppp::atanh(x); };
 const auto atanh_func2 = [](mppp::real &ret, const mppp::real &x) { mppp::atanh(ret, x); };
 
+const auto deg2rad_func = [](const mppp::real &x){
+    using safe_mpfr_prec_t = boost::safe_numerics::safe<mpfr_prec_t>;
+
+    // Compute 2*pi/360 with a few extra bits of precition wrt x.
+    const mpfr_prec_t prec = safe_mpfr_prec_t(x.get_prec()) + 10;
+    auto fact = mppp::real_pi(prec);
+    fact /= 180;
+    fact.prec_round(x.get_prec());
+
+    return x * std::move(fact);
+};
+
+const auto deg2rad_func2 = [](mppp::real &ret, const mppp::real &x){
+    using safe_mpfr_prec_t = boost::safe_numerics::safe<mpfr_prec_t>;
+
+    // Compute 2*pi/360 with a few extra bits of precition wrt x.
+    const mpfr_prec_t prec = safe_mpfr_prec_t(x.get_prec()) + 10;
+    ret.set_prec(prec);
+    mppp::real_pi(ret);
+    ret /= 180;
+    ret.prec_round(x.get_prec());
+
+    ret *= x;
+};
+
+const auto rad2deg_func = [](const mppp::real &x){
+    using safe_mpfr_prec_t = boost::safe_numerics::safe<mpfr_prec_t>;
+
+    // Compute 360/(2*pi) with a few extra bits of precition wrt x.
+    static const mppp::real c180(180);
+    const mpfr_prec_t prec = safe_mpfr_prec_t(x.get_prec()) + 10;
+    auto fact = mppp::real_pi(prec);
+    mppp::div(fact, c180, fact);
+    fact.prec_round(x.get_prec());
+
+    return x * std::move(fact);
+};
+
+const auto rad2deg_func2 = [](mppp::real &ret, const mppp::real &x){
+    using safe_mpfr_prec_t = boost::safe_numerics::safe<mpfr_prec_t>;
+
+    // Compute 360/(2*pi) with a few extra bits of precition wrt x.
+    static const mppp::real c180(180);
+    const mpfr_prec_t prec = safe_mpfr_prec_t(x.get_prec()) + 10;
+    ret.set_prec(prec);
+    mppp::real_pi(ret);
+    mppp::div(ret, c180, ret);
+    ret.prec_round(x.get_prec());
+
+    ret *= x;
+};
+
+const auto exp_func = [](const mppp::real &x) { return mppp::exp(x); };
+const auto exp_func2 = [](mppp::real &ret, const mppp::real &x) { mppp::exp(ret, x); };
+
+const auto exp2_func = [](const mppp::real &x) { return mppp::exp2(x); };
+const auto exp2_func2 = [](mppp::real &ret, const mppp::real &x) { mppp::exp2(ret, x); };
+
+const auto expm1_func = [](const mppp::real &x) { return mppp::expm1(x); };
+const auto expm1_func2 = [](mppp::real &ret, const mppp::real &x) { mppp::expm1(ret, x); };
+
+const auto log_func = [](const mppp::real &x) { return mppp::log(x); };
+const auto log_func2 = [](mppp::real &ret, const mppp::real &x) { mppp::log(ret, x); };
+
+const auto log2_func = [](const mppp::real &x) { return mppp::log2(x); };
+const auto log2_func2 = [](mppp::real &ret, const mppp::real &x) { mppp::log2(ret, x); };
+
+const auto log10_func = [](const mppp::real &x) { return mppp::log10(x); };
+const auto log10_func2 = [](mppp::real &ret, const mppp::real &x) { mppp::log10(ret, x); };
+
+const auto log1p_func = [](const mppp::real &x) { return mppp::log1p(x); };
+const auto log1p_func2 = [](mppp::real &ret, const mppp::real &x) { mppp::log1p(ret, x); };
+
 // Squaring.
 const auto square_func = [](const mppp::real &x) { return mppp::sqr(x); };
 const auto square2_func = [](mppp::real &ret, const mppp::real &x) { mppp::sqr(ret, x); };
@@ -2089,6 +2162,73 @@ void expose_real(py::module_ &m)
         numpy_mod, "arctanh",
         [](char **args, const npy_intp *dimensions, const npy_intp *steps, void *data) {
             detail::py_real_ufunc_unary(args, dimensions, steps, data, detail::atanh_func, detail::atanh_func2);
+        },
+        npy_registered_py_real, npy_registered_py_real);
+    detail::npy_register_ufunc(
+        numpy_mod, "deg2rad",
+        [](char **args, const npy_intp *dimensions, const npy_intp *steps, void *data) {
+            detail::py_real_ufunc_unary(args, dimensions, steps, data, detail::deg2rad_func, detail::deg2rad_func2);
+        },
+        npy_registered_py_real, npy_registered_py_real);
+    detail::npy_register_ufunc(
+        numpy_mod, "radians",
+        [](char **args, const npy_intp *dimensions, const npy_intp *steps, void *data) {
+            detail::py_real_ufunc_unary(args, dimensions, steps, data, detail::deg2rad_func, detail::deg2rad_func2);
+        },
+        npy_registered_py_real, npy_registered_py_real);
+    detail::npy_register_ufunc(
+        numpy_mod, "rad2deg",
+        [](char **args, const npy_intp *dimensions, const npy_intp *steps, void *data) {
+            detail::py_real_ufunc_unary(args, dimensions, steps, data, detail::rad2deg_func, detail::rad2deg_func2);
+        },
+        npy_registered_py_real, npy_registered_py_real);
+    detail::npy_register_ufunc(
+        numpy_mod, "degrees",
+        [](char **args, const npy_intp *dimensions, const npy_intp *steps, void *data) {
+            detail::py_real_ufunc_unary(args, dimensions, steps, data, detail::rad2deg_func, detail::rad2deg_func2);
+        },
+        npy_registered_py_real, npy_registered_py_real);
+    // Exponentials and logarithms.
+    detail::npy_register_ufunc(
+        numpy_mod, "exp",
+        [](char **args, const npy_intp *dimensions, const npy_intp *steps, void *data) {
+            detail::py_real_ufunc_unary(args, dimensions, steps, data, detail::exp_func, detail::exp_func2);
+        },
+        npy_registered_py_real, npy_registered_py_real);
+    detail::npy_register_ufunc(
+        numpy_mod, "exp2",
+        [](char **args, const npy_intp *dimensions, const npy_intp *steps, void *data) {
+            detail::py_real_ufunc_unary(args, dimensions, steps, data, detail::exp2_func, detail::exp2_func2);
+        },
+        npy_registered_py_real, npy_registered_py_real);
+    detail::npy_register_ufunc(
+        numpy_mod, "expm1",
+        [](char **args, const npy_intp *dimensions, const npy_intp *steps, void *data) {
+            detail::py_real_ufunc_unary(args, dimensions, steps, data, detail::expm1_func, detail::expm1_func2);
+        },
+        npy_registered_py_real, npy_registered_py_real);
+    detail::npy_register_ufunc(
+        numpy_mod, "log",
+        [](char **args, const npy_intp *dimensions, const npy_intp *steps, void *data) {
+            detail::py_real_ufunc_unary(args, dimensions, steps, data, detail::log_func, detail::log_func2);
+        },
+        npy_registered_py_real, npy_registered_py_real);
+    detail::npy_register_ufunc(
+        numpy_mod, "log2",
+        [](char **args, const npy_intp *dimensions, const npy_intp *steps, void *data) {
+            detail::py_real_ufunc_unary(args, dimensions, steps, data, detail::log2_func, detail::log2_func2);
+        },
+        npy_registered_py_real, npy_registered_py_real);
+    detail::npy_register_ufunc(
+        numpy_mod, "log10",
+        [](char **args, const npy_intp *dimensions, const npy_intp *steps, void *data) {
+            detail::py_real_ufunc_unary(args, dimensions, steps, data, detail::log10_func, detail::log10_func2);
+        },
+        npy_registered_py_real, npy_registered_py_real);
+    detail::npy_register_ufunc(
+        numpy_mod, "log1p",
+        [](char **args, const npy_intp *dimensions, const npy_intp *steps, void *data) {
+            detail::py_real_ufunc_unary(args, dimensions, steps, data, detail::log1p_func, detail::log1p_func2);
         },
         npy_registered_py_real, npy_registered_py_real);
     // Comparisons.
