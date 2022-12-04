@@ -2192,8 +2192,7 @@ void expose_real(py::module_ &m)
     };
     detail::npy_py_real_arr_funcs.fill = detail::npy_py_real_fill;
     detail::npy_py_real_arr_funcs.fillwithscalar = detail::npy_py_real_fillwithscalar;
-    // TODO where is this used? Check for real128 too.
-    // detail::npy_py_real_arr_funcs.dotfunc = detail::npy_py_real_dot;
+    detail::npy_py_real_arr_funcs.dotfunc = detail::npy_py_real_dot;
     // NOTE: not sure if this is needed - it does not seem to have
     // any effect and the online examples of user dtypes do not set it.
     // Let's leave it commented out at this time.
