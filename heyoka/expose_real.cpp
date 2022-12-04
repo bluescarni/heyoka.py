@@ -1905,10 +1905,8 @@ void npy_register_ufunc(py::module_ &numpy, const char *name, PyUFuncGenericFunc
 
 // Dot product.
 void npy_py_real_dot_impl(void *ip0_, npy_intp is0, void *ip1_, npy_intp is1, void *op, npy_intp n,
-                          const unsigned char *base_ptr_i0, const numpy_mem_metadata *meta_ptr_i0,
-                          const bool *ct_flags_i0, const unsigned char *base_ptr_i1,
-                          const numpy_mem_metadata *meta_ptr_i1, const bool *ct_flags_i1,
-                          const unsigned char *base_ptr_o, const numpy_mem_metadata *meta_ptr_o, bool *ct_flags_o,
+                          const unsigned char *base_ptr_i0, const bool *ct_flags_i0, const unsigned char *base_ptr_i1,
+                          const bool *ct_flags_i1, const unsigned char *base_ptr_o, bool *ct_flags_o,
                           const mppp::real *zr)
 {
     with_pybind11_eh([&]() {
@@ -1961,17 +1959,15 @@ void npy_py_real_dot(void *ip0, npy_intp is0, void *ip1, npy_intp is1, void *op,
     // of non-constructed input real arguments.
     const auto *zr = &get_zero_real();
 
-    npy_py_real_dot_impl(ip0, is0, ip1, is1, op, n, base_ptr_i0, meta_ptr_i0, ct_flags_i0, base_ptr_i1, meta_ptr_i1,
-                         ct_flags_i1, base_ptr_o, meta_ptr_o, ct_flags_o, zr);
+    npy_py_real_dot_impl(ip0, is0, ip1, is1, op, n, base_ptr_i0, ct_flags_i0, base_ptr_i1, ct_flags_i1, base_ptr_o,
+                         ct_flags_o, zr);
 }
 
 // Implementation of matrix multiplication.
 void npy_py_real_matrix_multiply(char **args, const npy_intp *dimensions, const npy_intp *steps,
-                                 const unsigned char *base_ptr_i0, const numpy_mem_metadata *meta_ptr_i0,
-                                 const bool *ct_flags_i0, const unsigned char *base_ptr_i1,
-                                 const numpy_mem_metadata *meta_ptr_i1, const bool *ct_flags_i1,
-                                 const unsigned char *base_ptr_o, const numpy_mem_metadata *meta_ptr_o,
-                                 bool *ct_flags_o, const mppp::real *zr)
+                                 const unsigned char *base_ptr_i0, const bool *ct_flags_i0,
+                                 const unsigned char *base_ptr_i1, const bool *ct_flags_i1,
+                                 const unsigned char *base_ptr_o, bool *ct_flags_o, const mppp::real *zr)
 {
     // Pointers to data for input and output arrays.
     char *ip1 = args[0];
@@ -1995,8 +1991,8 @@ void npy_py_real_matrix_multiply(char **args, const npy_intp *dimensions, const 
     for (npy_intp m = 0; m < dm; ++m) {
         npy_intp p = 0;
         for (; p < dp; ++p) {
-            npy_py_real_dot_impl(ip1, is1_n, ip2, is2_n, op, dn, base_ptr_i0, meta_ptr_i0, ct_flags_i0, base_ptr_i1,
-                                 meta_ptr_i1, ct_flags_i1, base_ptr_o, meta_ptr_o, ct_flags_o, zr);
+            npy_py_real_dot_impl(ip1, is1_n, ip2, is2_n, op, dn, base_ptr_i0, ct_flags_i0, base_ptr_i1, ct_flags_i1,
+                                 base_ptr_o, ct_flags_o, zr);
 
             // Advance to next column of 2nd input array and output array.
             ip2 += is2_p;
@@ -2039,8 +2035,8 @@ void npy_py_real_gufunc_matrix_multiply(char **args, const npy_intp *dimensions,
 
     // Loop through outer dimensions, performing matrix multiply on core dimensions for each loop.
     for (npy_intp N_ = 0; N_ < dN; N_++, args[0] += s0, args[1] += s1, args[2] += s2) {
-        npy_py_real_matrix_multiply(args, dimensions + 1, steps + 3, base_ptr_i0, meta_ptr_i0, ct_flags_i0, base_ptr_i1,
-                                    meta_ptr_i1, ct_flags_i1, base_ptr_o, meta_ptr_o, ct_flags_o, zr);
+        npy_py_real_matrix_multiply(args, dimensions + 1, steps + 3, base_ptr_i0, ct_flags_i0, base_ptr_i1, ct_flags_i1,
+                                    base_ptr_o, ct_flags_o, zr);
     }
 }
 
