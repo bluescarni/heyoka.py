@@ -174,7 +174,7 @@ const auto acosh_func2 = [](mppp::real &ret, const mppp::real &x) { mppp::acosh(
 const auto atanh_func = [](const mppp::real &x) { return mppp::atanh(x); };
 const auto atanh_func2 = [](mppp::real &ret, const mppp::real &x) { mppp::atanh(ret, x); };
 
-const auto deg2rad_func = [](const mppp::real &x){
+const auto deg2rad_func = [](const mppp::real &x) {
     using safe_mpfr_prec_t = boost::safe_numerics::safe<mpfr_prec_t>;
 
     // Compute 2*pi/360 with a few extra bits of precition wrt x.
@@ -186,7 +186,7 @@ const auto deg2rad_func = [](const mppp::real &x){
     return x * std::move(fact);
 };
 
-const auto deg2rad_func2 = [](mppp::real &ret, const mppp::real &x){
+const auto deg2rad_func2 = [](mppp::real &ret, const mppp::real &x) {
     using safe_mpfr_prec_t = boost::safe_numerics::safe<mpfr_prec_t>;
 
     // Compute 2*pi/360 with a few extra bits of precition wrt x.
@@ -199,7 +199,7 @@ const auto deg2rad_func2 = [](mppp::real &ret, const mppp::real &x){
     ret *= x;
 };
 
-const auto rad2deg_func = [](const mppp::real &x){
+const auto rad2deg_func = [](const mppp::real &x) {
     using safe_mpfr_prec_t = boost::safe_numerics::safe<mpfr_prec_t>;
 
     // Compute 360/(2*pi) with a few extra bits of precition wrt x.
@@ -212,7 +212,7 @@ const auto rad2deg_func = [](const mppp::real &x){
     return x * std::move(fact);
 };
 
-const auto rad2deg_func2 = [](mppp::real &ret, const mppp::real &x){
+const auto rad2deg_func2 = [](mppp::real &ret, const mppp::real &x) {
     using safe_mpfr_prec_t = boost::safe_numerics::safe<mpfr_prec_t>;
 
     // Compute 360/(2*pi) with a few extra bits of precition wrt x.
@@ -1903,6 +1903,147 @@ void npy_register_ufunc(py::module_ &numpy, const char *name, PyUFuncGenericFunc
     }
 }
 
+// Dot product.
+void npy_py_real_dot_impl(void *ip0_, npy_intp is0, void *ip1_, npy_intp is1, void *op, npy_intp n,
+                          const unsigned char *base_ptr_i0, const numpy_mem_metadata *meta_ptr_i0,
+                          const bool *ct_flags_i0, const unsigned char *base_ptr_i1,
+                          const numpy_mem_metadata *meta_ptr_i1, const bool *ct_flags_i1,
+                          const unsigned char *base_ptr_o, const numpy_mem_metadata *meta_ptr_o, bool *ct_flags_o,
+                          const mppp::real *zr)
+{
+    with_pybind11_eh([&]() {
+        const auto *ip0 = static_cast<const char *>(ip0_), *ip1 = static_cast<const char *>(ip1_);
+
+        // Return value and temporary storage
+        // for the multiplication.
+        mppp::real ret, tmp;
+
+        for (npy_intp i = 0; i < n; ++i) {
+            // Fetch the input operands.
+            const auto *a = fetch_cted_real(base_ptr_i0, ct_flags_i0, ip0, zr);
+            const auto *b = fetch_cted_real(base_ptr_i1, ct_flags_i1, ip1, zr);
+
+            // NOTE: use fma from MPFR 4 onwards?
+            mppp::mul(tmp, *a, *b);
+            ret += tmp;
+
+            ip0 += is0;
+            ip1 += is1;
+        }
+
+        // Write out the result.
+        auto [opt_ptr, new_real]
+            = ensure_cted_real(base_ptr_o, ct_flags_o, op, [&]() -> mppp::real && { return std::move(ret); });
+
+        if (!opt_ptr) {
+            throw py::error_already_set();
+        }
+
+        if (!new_real) {
+            **opt_ptr = std::move(ret);
+        }
+    });
+}
+
+void npy_py_real_dot(void *ip0, npy_intp is0, void *ip1, npy_intp is1, void *op, npy_intp n, void *)
+{
+    // Try to locate the input/output buffers in the memory map.
+    const auto [base_ptr_i0, meta_ptr_i0] = get_memory_metadata(ip0);
+    const auto *ct_flags_i0 = (base_ptr_i0 == nullptr) ? nullptr : meta_ptr_i0->ensure_ct_flags_inited<mppp::real>();
+
+    const auto [base_ptr_i1, meta_ptr_i1] = get_memory_metadata(ip1);
+    const auto *ct_flags_i1 = (base_ptr_i1 == nullptr) ? nullptr : meta_ptr_i1->ensure_ct_flags_inited<mppp::real>();
+
+    const auto [base_ptr_o, meta_ptr_o] = get_memory_metadata(op);
+    auto *ct_flags_o = (base_ptr_o == nullptr) ? nullptr : meta_ptr_o->ensure_ct_flags_inited<mppp::real>();
+
+    // Fetch a pointer to the global zero const. This will be used in place
+    // of non-constructed input real arguments.
+    const auto *zr = &get_zero_real();
+
+    npy_py_real_dot_impl(ip0, is0, ip1, is1, op, n, base_ptr_i0, meta_ptr_i0, ct_flags_i0, base_ptr_i1, meta_ptr_i1,
+                         ct_flags_i1, base_ptr_o, meta_ptr_o, ct_flags_o, zr);
+}
+
+// Implementation of matrix multiplication.
+void npy_py_real_matrix_multiply(char **args, const npy_intp *dimensions, const npy_intp *steps,
+                                 const unsigned char *base_ptr_i0, const numpy_mem_metadata *meta_ptr_i0,
+                                 const bool *ct_flags_i0, const unsigned char *base_ptr_i1,
+                                 const numpy_mem_metadata *meta_ptr_i1, const bool *ct_flags_i1,
+                                 const unsigned char *base_ptr_o, const numpy_mem_metadata *meta_ptr_o,
+                                 bool *ct_flags_o, const mppp::real *zr)
+{
+    // Pointers to data for input and output arrays.
+    char *ip1 = args[0];
+    char *ip2 = args[1];
+    char *op = args[2];
+
+    // Lengths of core dimensions.
+    npy_intp dm = dimensions[0];
+    npy_intp dn = dimensions[1];
+    npy_intp dp = dimensions[2];
+
+    // Striding over core dimensions.
+    npy_intp is1_m = steps[0];
+    npy_intp is1_n = steps[1];
+    npy_intp is2_n = steps[2];
+    npy_intp is2_p = steps[3];
+    npy_intp os_m = steps[4];
+    npy_intp os_p = steps[5];
+
+    // Calculate dot product for each row/column vector pair.
+    for (npy_intp m = 0; m < dm; ++m) {
+        npy_intp p = 0;
+        for (; p < dp; ++p) {
+            npy_py_real_dot_impl(ip1, is1_n, ip2, is2_n, op, dn, base_ptr_i0, meta_ptr_i0, ct_flags_i0, base_ptr_i1,
+                                 meta_ptr_i1, ct_flags_i1, base_ptr_o, meta_ptr_o, ct_flags_o, zr);
+
+            // Advance to next column of 2nd input array and output array.
+            ip2 += is2_p;
+            op += os_p;
+        }
+
+        // Reset to first column of 2nd input array and output array.
+        ip2 -= is2_p * p;
+        op -= os_p * p;
+
+        // Advance to next row of 1st input array and output array.
+        ip1 += is1_m;
+        op += os_m;
+    }
+}
+
+void npy_py_real_gufunc_matrix_multiply(char **args, const npy_intp *dimensions, const npy_intp *steps, void *)
+{
+    // Length of flattened outer dimensions.
+    npy_intp dN = dimensions[0];
+
+    // Striding over flattened outer dimensions for input and output arrays.
+    npy_intp s0 = steps[0];
+    npy_intp s1 = steps[1];
+    npy_intp s2 = steps[2];
+
+    // Try to locate the input/output buffers in the memory map.
+    const auto [base_ptr_i0, meta_ptr_i0] = get_memory_metadata(args[0]);
+    const auto *ct_flags_i0 = (base_ptr_i0 == nullptr) ? nullptr : meta_ptr_i0->ensure_ct_flags_inited<mppp::real>();
+
+    const auto [base_ptr_i1, meta_ptr_i1] = get_memory_metadata(args[1]);
+    const auto *ct_flags_i1 = (base_ptr_i1 == nullptr) ? nullptr : meta_ptr_i1->ensure_ct_flags_inited<mppp::real>();
+
+    const auto [base_ptr_o, meta_ptr_o] = get_memory_metadata(args[2]);
+    auto *ct_flags_o = (base_ptr_o == nullptr) ? nullptr : meta_ptr_o->ensure_ct_flags_inited<mppp::real>();
+
+    // Fetch a pointer to the global zero const. This will be used in place
+    // of non-constructed input real arguments.
+    const auto *zr = &get_zero_real();
+
+    // Loop through outer dimensions, performing matrix multiply on core dimensions for each loop.
+    for (npy_intp N_ = 0; N_ < dN; N_++, args[0] += s0, args[1] += s1, args[2] += s2) {
+        npy_py_real_matrix_multiply(args, dimensions + 1, steps + 3, base_ptr_i0, meta_ptr_i0, ct_flags_i0, base_ptr_i1,
+                                    meta_ptr_i1, ct_flags_i1, base_ptr_o, meta_ptr_o, ct_flags_o, zr);
+    }
+}
+
 } // namespace
 
 } // namespace detail
@@ -2375,6 +2516,9 @@ void expose_real(py::module_ &m)
             detail::py_real_ufunc_unary_cmp(args, dimensions, steps, data, detail::isfinite_func);
         },
         npy_registered_py_real, NPY_BOOL);
+    // Matrix multiplication.
+    detail::npy_register_ufunc(numpy_mod, "matmul", detail::npy_py_real_gufunc_matrix_multiply, npy_registered_py_real,
+                               npy_registered_py_real, npy_registered_py_real);
 
     // Casting.
     detail::npy_register_cast_functions<float>();

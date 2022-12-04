@@ -31,6 +31,54 @@ class real_test_case(_ut.TestCase):
         self.test_numpy_unary()
         self.test_numpy_conversions()
         self.test_numpy_comparisons()
+        self.test_numpy_matmul()
+
+    def test_numpy_matmul(self):
+        from . import real
+        import numpy as np
+
+        # Matrix multiplication.
+        mat = np.array(
+            [[real("1.1",113), real("1.3",113)], [real("2.1",113), real("2.3",113)]]
+        )
+        self.assertTrue(
+            np.all(
+                mat @ mat
+                == np.array(
+                    [
+                        [
+                            real("3.94000000000000000000000000000000034",113),
+                            real("4.41999999999999999999999999999999994",113),
+                        ],
+                        [
+                            real("7.14000000000000000000000000000000049",113),
+                            real("8.01999999999999999999999999999999963",113),
+                        ],
+                    ]
+                )
+            )
+        )
+
+        # With output.
+        ret = np.empty((2,2), dtype=real)
+        np.matmul(mat, mat, out=ret)
+        self.assertTrue(
+            np.all(
+                ret
+                == np.array(
+                    [
+                        [
+                            real("3.94000000000000000000000000000000034",113),
+                            real("4.41999999999999999999999999999999994",113),
+                        ],
+                        [
+                            real("7.14000000000000000000000000000000049",113),
+                            real("8.01999999999999999999999999999999963",113),
+                        ],
+                    ]
+                )
+            )
+        )
 
     def test_numpy_comparisons(self):
         from . import real
