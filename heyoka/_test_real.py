@@ -80,6 +80,56 @@ class real_test_case(_ut.TestCase):
             )
         )
 
+        # With skipping.
+        mat = np.array(
+            [
+                [real("1.1", 113), 0, real("1.3", 113), 0],
+                [real()] * 4,
+                [real("2.1", 113), 0, real("2.3", 113), 0],
+                [real()] * 4,
+            ]
+        )
+        mat = mat[::2, ::2]
+        self.assertTrue(
+            np.all(
+                mat @ mat
+                == np.array(
+                    [
+                        [
+                            real("3.94000000000000000000000000000000034", 113),
+                            real("4.41999999999999999999999999999999994", 113),
+                        ],
+                        [
+                            real("7.14000000000000000000000000000000049", 113),
+                            real("8.01999999999999999999999999999999963", 113),
+                        ],
+                    ]
+                )
+            )
+        )
+
+        # With uninited values.
+        mat = np.empty((2, 2), dtype=real)
+        mat[0, 0] = real("1.1", 113)
+        mat[1, 1] = real("2.3", 113)
+        self.assertTrue(
+            np.all(
+                mat @ mat
+                == np.array(
+                    [
+                        [
+                            real("1.1", 113) * real("1.1", 113),
+                            0,
+                        ],
+                        [
+                            0,
+                            real("2.3", 113) * real("2.3", 113),
+                        ],
+                    ]
+                )
+            )
+        )
+
     def test_numpy_comparisons(self):
         from . import real
         import numpy as np
