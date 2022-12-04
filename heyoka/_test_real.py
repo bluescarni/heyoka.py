@@ -896,15 +896,14 @@ class real_test_case(_ut.TestCase):
         self.assertEqual(arr1_sorted[1], 2)
         self.assertEqual(arr1_sorted[2], 3)
 
-        # TODO implement once we have isnan()
         # Check NaN handling.
-        # arr1 = np.array([real128("nan"), real128("1"), real128("nan")])
-        # self.assertTrue(all(np.isnan(arr1) == [True, False, True]))
-        # arr1_sorted = np.sort(arr1)
-        # self.assertEqual(arr1_sorted[0], 1)
-        # self.assertFalse(np.isnan(arr1_sorted[0]))
-        # self.assertTrue(np.isnan(arr1_sorted[1]))
-        # self.assertTrue(np.isnan(arr1_sorted[2]))
+        arr1 = np.array([real("nan",128), real("1",128), real("nan",128)])
+        self.assertTrue(all(np.isnan(arr1) == [True, False, True]))
+        arr1_sorted = np.sort(arr1)
+        self.assertEqual(arr1_sorted[0], 1)
+        self.assertFalse(np.isnan(arr1_sorted[0]))
+        self.assertTrue(np.isnan(arr1_sorted[1]))
+        self.assertTrue(np.isnan(arr1_sorted[2]))
 
         # Argmin/argmax.
         arr = np.array(
@@ -945,24 +944,22 @@ class real_test_case(_ut.TestCase):
         self.assertEqual(np.argmax(arr), 0)
 
         # arange().
-        # TODO remove the explicit types for 0 and 1, check the dtype
-        # after we implement conversions. Check also that this returns
-        # an array with dtype real (currently it's object).
-        arr = np.arange(0, 1, real("0.3", 128))
-        # self.assertTrue(
-        #     np.all(
-        #         arr
-        #         == np.array(
-        #             [
-        #                 0,
-        #                 real("0.29999999999999999999999999999999999"),
-        #                 real("0.599999999999999999999999999999999981"),
-        #                 real("0.899999999999999999999999999999999923"),
-        #             ],
-        #             dtype=real,
-        #         )
-        #     )
-        # )
+        arr = np.arange(0, 1, real("0.3", 113))
+        self.assertTrue(
+            np.all(
+                arr
+                == np.array(
+                    [
+                        0,
+                        real("0.29999999999999999999999999999999999",113),
+                        real("0.599999999999999999999999999999999981",113),
+                        real("0.899999999999999999999999999999999923",113),
+                    ],
+                    dtype=real,
+                )
+            )
+        )
+        self.assertEqual(arr.dtype, real)
 
         # full().
         arr = np.full((5,), 1.1, dtype=real)
