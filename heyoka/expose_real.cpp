@@ -247,7 +247,51 @@ const auto log10_func2 = [](mppp::real &ret, const mppp::real &x) { mppp::log10(
 const auto log1p_func = [](const mppp::real &x) { return mppp::log1p(x); };
 const auto log1p_func2 = [](mppp::real &ret, const mppp::real &x) { mppp::log1p(ret, x); };
 
-// Squaring.
+const auto sign_func = [](const mppp::real &x) {
+    if (x.nan_p()) {
+        return x;
+    }
+
+    const auto sgn = x.sgn();
+
+    if (sgn == 0) {
+        return mppp::real(0, x.get_prec());
+    }
+
+    if (sgn < 0) {
+        return mppp::real(-1, x.get_prec());
+    }
+
+    return mppp::real(1, x.get_prec());
+};
+
+const auto sign_func2 = [](mppp::real &ret, const mppp::real &x) {
+    // NOTE: this already sets to nan.
+    ret.set_prec(x.get_prec());
+
+    if (!x.nan_p()) {
+        const auto sgn = x.sgn();
+
+        if (sgn == 0) {
+            ret.set_zero();
+        } else if (sgn == -1) {
+            ret.set(-1);
+        } else {
+            ret.set(1);
+        }
+    }
+};
+
+const auto min_func = [](const mppp::real &x, const mppp::real &y) { return std::min(x, y); };
+const auto min_func3 = [](mppp::real &ret, const mppp::real &x, const mppp::real &y) { ret = std::min(x, y); };
+
+const auto max_func = [](const mppp::real &x, const mppp::real &y) { return std::max(x, y); };
+const auto max_func3 = [](mppp::real &ret, const mppp::real &x, const mppp::real &y) { ret = std::max(x, y); };
+
+const auto isnan_func = [](const mppp::real &x) { return mppp::isnan(x); };
+const auto isinf_func = [](const mppp::real &x) { return mppp::isinf(x); };
+const auto isfinite_func = [](const mppp::real &x) { return mppp::isfinite(x); };
+
 const auto square_func = [](const mppp::real &x) { return mppp::sqr(x); };
 const auto square2_func = [](mppp::real &ret, const mppp::real &x) { mppp::sqr(ret, x); };
 
@@ -1722,6 +1766,33 @@ void py_real_ufunc_unary(char **args, const npy_intp *dimensions, const npy_intp
     });
 }
 
+// Generic function for unary comparisons.
+template <typename F>
+void py_real_ufunc_unary_cmp(char **args, const npy_intp *dimensions, const npy_intp *steps, void *, const F &f)
+{
+    npy_intp is1 = steps[0], os1 = steps[1], n = dimensions[0];
+    char *ip1 = args[0], *op1 = args[1];
+
+    with_pybind11_eh([&]() {
+        // Try to locate the input buffer in the memory map.
+        const auto [base_ptr_i1, meta_ptr_i1] = get_memory_metadata(ip1);
+        const auto *ct_flags_i1
+            = (base_ptr_i1 == nullptr) ? nullptr : meta_ptr_i1->ensure_ct_flags_inited<mppp::real>();
+
+        // Fetch a pointer to the global zero const. This will be used in place
+        // of non-constructed input real arguments.
+        const auto *zr = &get_zero_real();
+
+        for (npy_intp i = 0; i < n; ++i, ip1 += is1, op1 += os1) {
+            // Fetch the input operand.
+            const auto *a = fetch_cted_real(base_ptr_i1, ct_flags_i1, ip1, zr);
+
+            // Run the comparison and write into the output.
+            *reinterpret_cast<npy_bool *>(op1) = static_cast<npy_bool>(f(*a));
+        };
+    });
+}
+
 // Generic NumPy binary operation with real operands and real output.
 template <typename F2, typename F3>
 void py_real_ufunc_binary(char **args, const npy_intp *dimensions, const npy_intp *steps, void *, const F2 &f2,
@@ -2268,6 +2339,42 @@ void expose_real(py::module_ &m)
             detail::py_real_ufunc_binary_cmp(args, dimensions, steps, data, std::greater_equal{});
         },
         npy_registered_py_real, npy_registered_py_real, NPY_BOOL);
+    detail::npy_register_ufunc(
+        numpy_mod, "sign",
+        [](char **args, const npy_intp *dimensions, const npy_intp *steps, void *data) {
+            detail::py_real_ufunc_unary(args, dimensions, steps, data, detail::sign_func, detail::sign_func2);
+        },
+        npy_registered_py_real, npy_registered_py_real);
+    detail::npy_register_ufunc(
+        numpy_mod, "maximum",
+        [](char **args, const npy_intp *dimensions, const npy_intp *steps, void *data) {
+            detail::py_real_ufunc_binary(args, dimensions, steps, data, detail::max_func, detail::max_func3);
+        },
+        npy_registered_py_real, npy_registered_py_real, npy_registered_py_real);
+    detail::npy_register_ufunc(
+        numpy_mod, "minimum",
+        [](char **args, const npy_intp *dimensions, const npy_intp *steps, void *data) {
+            detail::py_real_ufunc_binary(args, dimensions, steps, data, detail::min_func, detail::min_func3);
+        },
+        npy_registered_py_real, npy_registered_py_real, npy_registered_py_real);
+    detail::npy_register_ufunc(
+        numpy_mod, "isnan",
+        [](char **args, const npy_intp *dimensions, const npy_intp *steps, void *data) {
+            detail::py_real_ufunc_unary_cmp(args, dimensions, steps, data, detail::isnan_func);
+        },
+        npy_registered_py_real, NPY_BOOL);
+    detail::npy_register_ufunc(
+        numpy_mod, "isinf",
+        [](char **args, const npy_intp *dimensions, const npy_intp *steps, void *data) {
+            detail::py_real_ufunc_unary_cmp(args, dimensions, steps, data, detail::isinf_func);
+        },
+        npy_registered_py_real, NPY_BOOL);
+    detail::npy_register_ufunc(
+        numpy_mod, "isfinite",
+        [](char **args, const npy_intp *dimensions, const npy_intp *steps, void *data) {
+            detail::py_real_ufunc_unary_cmp(args, dimensions, steps, data, detail::isfinite_func);
+        },
+        npy_registered_py_real, NPY_BOOL);
 
     // Casting.
     detail::npy_register_cast_functions<float>();

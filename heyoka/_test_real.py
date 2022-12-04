@@ -94,6 +94,28 @@ class real_test_case(_ut.TestCase):
             )
         )
 
+        # Unary comparisons.
+        arr = np.array([1, float("nan"), 3, float("nan"), 5], dtype=real)
+        self.assertTrue(np.all((np.isnan(arr)) == [False, True, False, True, False]))
+        self.assertEqual(np.isnan(arr).dtype, bool)
+
+        # With uninited values.
+        arr = np.empty((5, ), dtype=real)
+        arr[1] = float("nan")
+        arr[3] = float("nan")
+        self.assertTrue(np.all((np.isnan(arr)) == [False, True, False, True, False]))
+
+        # With holes.
+        arr = np.array([1, 0, float("nan"), 0, 3, 0, float("nan"), 0, 5, 0], dtype=real)
+        self.assertTrue(np.all((np.isnan(arr[::2])) == [False, True, False, True, False]))
+        self.assertEqual(np.isnan(arr[::2]).dtype, bool)
+
+        # Other unary comparisons.
+        arr = np.array([1, float("inf"), 3, float("nan"), 5], dtype=real)
+        self.assertTrue(np.all((np.isinf(arr)) == [False, True, False, False, False]))
+        arr = np.array([1, float("inf"), 3, float("nan"), 5], dtype=real)
+        self.assertTrue(np.all((np.isfinite(arr)) == [True, False, True, False, True]))
+
     def test_numpy_binary(self):
         from . import real
         import numpy as np
@@ -128,6 +150,22 @@ class real_test_case(_ut.TestCase):
         self.assertTrue(np.all(arr3 == np.full((10,), real("2.3086113869153615330449498214431416456855", 128), dtype=real)))
         ret = np.empty((10,), dtype=real)
         np.arctan2(arr1, arr2, out=ret)
+        self.assertTrue(np.all(arr3 == ret))
+
+        arr1 = np.full((10,), real("1.1", 128), dtype=real)
+        arr2 = np.full((10,), real("-1", 128), dtype=real)
+        arr3 = np.minimum(arr1, arr2)
+        self.assertTrue(np.all(arr3 == np.full((10,), real("-1", 128), dtype=real)))
+        ret = np.empty((10,), dtype=real)
+        np.minimum(arr1, arr2, out=ret)
+        self.assertTrue(np.all(arr3 == ret))
+
+        arr1 = np.full((10,), real("1.1", 128), dtype=real)
+        arr2 = np.full((10,), real("-1", 128), dtype=real)
+        arr3 = np.maximum(arr1, arr2)
+        self.assertTrue(np.all(arr3 == np.full((10,), real("1.1", 128), dtype=real)))
+        ret = np.empty((10,), dtype=real)
+        np.maximum(arr1, arr2, out=ret)
         self.assertTrue(np.all(arr3 == ret))
 
     def test_numpy_unary(self):
@@ -319,6 +357,42 @@ class real_test_case(_ut.TestCase):
         ret = np.empty((10,), dtype=real)
         np.log1p(arr1, out=ret)
         self.assertTrue(np.all(arr2 == ret))
+
+        arr1 = np.full((10,), real("0.1", 128), dtype=real)
+        arr2 = np.sign(arr1)
+        self.assertTrue(np.all(arr2 == np.full((10,), real("1", 128), dtype=real)))
+        self.assertTrue(all([_.prec == 128 for _ in arr2]))
+        ret = np.empty((10,), dtype=real)
+        np.sign(arr1, out=ret)
+        self.assertTrue(np.all(arr2 == ret))
+        self.assertTrue(all([_.prec == 128 for _ in ret]))
+
+        arr1 = np.full((10,), real("-0.1", 128), dtype=real)
+        arr2 = np.sign(arr1)
+        self.assertTrue(np.all(arr2 == np.full((10,), real("-1", 128), dtype=real)))
+        self.assertTrue(all([_.prec == 128 for _ in arr2]))
+        ret = np.empty((10,), dtype=real)
+        np.sign(arr1, out=ret)
+        self.assertTrue(np.all(arr2 == ret))
+        self.assertTrue(all([_.prec == 128 for _ in ret]))
+
+        arr1 = np.full((10,), real("-0.", 128), dtype=real)
+        arr2 = np.sign(arr1)
+        self.assertTrue(np.all(arr2 == np.full((10,), real("0", 128), dtype=real)))
+        self.assertTrue(all([_.prec == 128 for _ in arr2]))
+        ret = np.empty((10,), dtype=real)
+        np.sign(arr1, out=ret)
+        self.assertTrue(np.all(arr2 == ret))
+        self.assertTrue(all([_.prec == 128 for _ in ret]))
+
+        arr1 = np.full((10,), real("nan", 128), dtype=real)
+        arr2 = np.sign(arr1)
+        self.assertTrue(np.all(np.isnan(arr2)))
+        self.assertTrue(all([_.prec == 128 for _ in arr2]))
+        ret = np.empty((10,), dtype=real)
+        np.sign(arr1, out=ret)
+        self.assertTrue(np.all(np.isnan(ret)))
+        self.assertTrue(all([_.prec == 128 for _ in ret]))
 
     def test_numpy_pickle(self):
         # Pickle support.
