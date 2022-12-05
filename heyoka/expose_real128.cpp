@@ -16,13 +16,11 @@
 #include <cassert>
 #include <cmath>
 #include <cstddef>
-#include <cstdlib>
-#include <exception>
+#include <cstring>
 #include <functional>
 #include <limits>
 #include <new>
 #include <optional>
-#include <stdexcept>
 #include <type_traits>
 #include <utility>
 
