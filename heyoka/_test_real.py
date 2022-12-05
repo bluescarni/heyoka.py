@@ -32,6 +32,67 @@ class real_test_case(_ut.TestCase):
         self.test_numpy_conversions()
         self.test_numpy_comparisons()
         self.test_numpy_matmul()
+        self.test_numpy_realloc()
+
+    def test_numpy_realloc(self):
+        from . import real
+        import numpy as np
+
+        # Start with a full array,
+        arr = np.full((2,), real("1.1", 128))
+        arr.resize((5,))
+        self.assertTrue(np.all(arr == [real("1.1", 128)] * 2 + [real()] * 3))
+        arr.resize((1,))
+        self.assertTrue(np.all(arr == [real("1.1", 128)]))
+        arr.resize((5,))
+        self.assertTrue(np.all(arr == [real("1.1", 128)] * 1 + [real()] * 4))
+        arr.resize((0,))
+        self.assertEqual(arr.shape, (0,))
+        arr.resize((5,))
+        self.assertTrue(np.all(arr == [real()] * 5))
+
+        # Completely empty.
+        arr = np.empty((2,), dtype=real)
+        arr.resize((5,))
+        self.assertTrue(np.all(arr == [real()] * 5))
+        arr.resize((1,))
+        self.assertTrue(np.all(arr == [real()] * 1))
+        arr.resize((10,))
+        self.assertTrue(np.all(arr == [real()] * 10))
+        arr.resize((0,))
+        self.assertEqual(arr.shape, (0,))
+        arr.resize((5,))
+        self.assertTrue(np.all(arr == [real()] * 5))
+
+        # Some element inited, some not.
+        arr = np.empty((5,), dtype=real)
+        arr[::2] = real("1.1", 128)
+        arr.resize((10,))
+        self.assertTrue(np.all(arr[:5:2] == [real("1.1", 128)] * 3))
+        self.assertTrue(np.all(arr[1:5:2] == [real()] * 2))
+        self.assertTrue(np.all(arr[5:] == [real()] * 5))
+        arr.resize((3,))
+        self.assertTrue(np.all(arr[::2] == [real("1.1", 128)] * 2))
+        arr.resize((0,))
+        self.assertEqual(arr.shape, (0,))
+        arr.resize((5,))
+        self.assertTrue(np.all(arr == [real()] * 5))
+
+        # Resize to same.
+        arr = np.empty((5,), dtype=real)
+        arr[::2] = real("1.1", 128)
+        arr.resize((5,))
+        self.assertTrue(np.all(arr[::2] == [real("1.1", 128)] * 3))
+        self.assertTrue(np.all(arr[1::2] == [real()] * 2))
+
+        # Test with POD types.
+        arr = np.full((2,), 1.1)
+        arr.resize((5,))
+        self.assertTrue(np.all(arr[:2] == [1.1] * 2))
+        arr.resize((1,))
+        self.assertTrue(np.all(arr[:1] == [1.1]))
+        arr.resize((0,))
+        self.assertEqual(arr.shape, (0,))
 
     def test_numpy_matmul(self):
         from . import real

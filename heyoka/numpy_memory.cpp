@@ -9,6 +9,7 @@
 #include <cassert>
 #include <cstddef>
 #include <cstdlib>
+#include <cstring>
 #include <functional>
 #include <map>
 #include <memory>
@@ -62,7 +63,7 @@ numpy_mem_metadata::numpy_mem_metadata(std::size_t size) noexcept : m_tot_size(s
 // dtor_func is a function that will be invoked to destroy
 // the elements allocated in the memory buffer when it is deallocated.
 // tp is the type of the elements stored in the memory buffer.
-bool *numpy_mem_metadata::ensure_ct_flags_inited_impl(std::size_t sz, dtor_func_t dtor_func,
+bool *numpy_mem_metadata::ensure_ct_flags_inited_impl(std::size_t sz, dtor_func_t dtor_func, move_func_t move_func,
                                                       const std::type_index &tp) noexcept
 {
     assert(sz > 0u);
@@ -74,6 +75,7 @@ bool *numpy_mem_metadata::ensure_ct_flags_inited_impl(std::size_t sz, dtor_func_
     if (m_ct_flags == nullptr) {
         assert(m_el_size == 0u);
         assert(m_dtor_func == nullptr);
+        assert(m_move_func == nullptr);
         assert(!m_type);
 
         // Init a new array of flags.
@@ -88,6 +90,7 @@ bool *numpy_mem_metadata::ensure_ct_flags_inited_impl(std::size_t sz, dtor_func_
         // Assign the element size, the dtor and the type.
         m_el_size = sz;
         m_dtor_func = dtor_func;
+        m_move_func = move_func;
         m_type.emplace(tp);
     }
 
@@ -254,19 +257,51 @@ void *numpy_custom_calloc(void *, std::size_t nelem, std::size_t elsize) noexcep
     return ret;
 }
 
-void *numpy_custom_realloc(void *, void *, std::size_t) noexcept
+} // namespace
+
+// This function will take as input an iterator to an element in
+// the memory map and it will:
+// - destroy all C++ objects constructed in the memory buffer
+//   associated to the iterator,
+// - remove the entry associated to it from the memory map,
+// - call free() on the memory buffer.
+// NOTE: the memory map needs to be locked while calling this function.
+template <typename It>
+void numpy_custom_free_impl(It it) noexcept
 {
-    // FIX.
-    // TODO: can we take a speedy path in case no ct flag array
-    // exists here? Could we invoke realloc directly? But then is
-    // this consistent with the in-place construction of a char array
-    // we do in malloc/calloc? Need also to see what the NumPy requirements
-    // exactly are on this function.
-    // TODO remember overflow checks here as well.
-    std::exit(1);
+    auto *const cptr = it->first;
+
+    // NOTE: no need to lock to access m_ct_flags/m_el_size while freeing
+    // the memory area.
+    if (it->second.m_ct_flags != nullptr) {
+        assert(it->second.m_el_size != 0u);
+        assert(it->second.m_tot_size % it->second.m_el_size == 0u);
+        assert(it->second.m_dtor_func != nullptr);
+        assert(it->second.m_move_func != nullptr);
+        assert(it->second.m_type);
+
+        const std::size_t n_elems = it->second.m_tot_size / it->second.m_el_size;
+        for (std::size_t i = 0; i < n_elems; ++i) {
+            if (it->second.m_ct_flags[i]) {
+                auto *cur_ptr = cptr + i * it->second.m_el_size;
+                it->second.m_dtor_func(cur_ptr);
+            }
+        }
+
+        // Delete ct_ptr.
+        std::unique_ptr<bool[]> ct_ptr(it->second.m_ct_flags);
+    }
+
+    // Remove the element from the memory map.
+    memory_map.erase(it);
+
+    // Free the underlying buffer.
+    // NOLINTNEXTLINE(cppcoreguidelines-owning-memory,hicpp-no-malloc,cppcoreguidelines-no-malloc)
+    std::free(cptr);
 }
 
-} // namespace
+namespace
+{
 
 void numpy_custom_free(void *, void *p, std::size_t sz) noexcept
 {
@@ -276,33 +311,151 @@ void numpy_custom_free(void *, void *p, std::size_t sz) noexcept
 
             auto it = memory_map.find(cptr);
             assert(it != memory_map.end());
+            // NOTE: this assert mostly works, but it fires
+            // when an array is resized to zero via realloc(): it seems like
+            // NumPy avoids calling realloc() with zero (probably
+            // due to the platform-dependent behaviour?), reallocs
+            // to one element instead, and free() is eventually called with a
+            // sz value of 1 (i.e., 1 byte), instead of whatever
+            // the size of the dtype is. Not sure if this is a NumPy bug,
+            // or if I misunderstood the purpose of the sz param here.
+            // assert(it->second.m_tot_size == sz);
 
-            // NOTE: no need to lock to access m_ct_flags/m_el_size while freeing
-            // the memory area.
-            if (it->second.m_ct_flags != nullptr) {
-                assert(it->second.m_el_size != 0u);
-                assert(it->second.m_tot_size != 0u);
-                assert(it->second.m_tot_size % it->second.m_el_size == 0u);
-                assert(it->second.m_dtor_func != nullptr);
-
-                const std::size_t n_elems = it->second.m_tot_size / it->second.m_el_size;
-                for (std::size_t i = 0; i < n_elems; ++i) {
-                    if (it->second.m_ct_flags[i]) {
-                        auto *cur_ptr = cptr + i * it->second.m_el_size;
-                        it->second.m_dtor_func(cur_ptr);
-                    }
-                }
-
-                // Delete ct_ptr.
-                std::unique_ptr<bool[]> ct_ptr(it->second.m_ct_flags);
-            }
-
-            memory_map.erase(it);
+            numpy_custom_free_impl(it);
         });
     }
+}
 
-    // NOLINTNEXTLINE(cppcoreguidelines-owning-memory,hicpp-no-malloc,cppcoreguidelines-no-malloc)
-    std::free(p);
+} // namespace
+
+void *numpy_custom_realloc(void *ctx, void *ptr, std::size_t size) noexcept
+{
+    // Handle the special case ptr == null. This is supposed
+    // to be equivalent to malloc().
+    if (ptr == nullptr) {
+        return numpy_custom_malloc(ctx, size);
+    }
+
+    // NOTE: we need to be able to count the bytes in the buffer
+    // via std::ptrdiff_t, as we will be performing pointer
+    // subtractions. Hence, check that we can represent the size
+    // in bytes of the buffer via std::ptrdiff_t.
+    try {
+        using safe_ptrdiff_t = boost::safe_numerics::safe<std::ptrdiff_t>;
+        (void)static_cast<safe_ptrdiff_t>(size);
+    } catch (...) {
+        return nullptr;
+    }
+
+    // Setup the return value. If not set
+    // from within with_locked_memory_map(), this
+    // will remain null and signal either an error or
+    // the special case size == 0.
+    void *retval = nullptr;
+
+    with_locked_memory_map([&](auto &) {
+        auto *const cptr = reinterpret_cast<unsigned char *>(ptr);
+
+        auto it = memory_map.find(cptr);
+        assert(it != memory_map.end());
+
+        // NOTE: no need to lock to access m_ct_flags/m_el_size while reallocing.
+
+        // Handle the special case size == 0: following the
+        // behaviour on Linux, we will call free() and return
+        // nullptr.
+        if (size == 0u) {
+            numpy_custom_free_impl(it);
+            return;
+        }
+
+        // Fetch the original size.
+        const auto orig_size = it->second.m_tot_size;
+
+        // Allocate the new buffer. Wrap it into a unique_ptr for automatic cleanup.
+        auto free_helper = [](void *p) {
+            // NOLINTNEXTLINE(cppcoreguidelines-owning-memory,hicpp-no-malloc,cppcoreguidelines-no-malloc)
+            std::free(p);
+        };
+        // NOLINTNEXTLINE(cppcoreguidelines-owning-memory,hicpp-no-malloc,cppcoreguidelines-no-malloc)
+        std::unique_ptr<void, decltype(free_helper)> new_ptr(std::malloc(size), free_helper);
+        if (!new_ptr) {
+            // Allocation failed, return nullptr.
+            return;
+        }
+        // Formally construct the storage array.
+        // NOLINTNEXTLINE(cppcoreguidelines-owning-memory)
+        auto *cret = ::new (new_ptr.get()) unsigned char[size];
+
+        // Copy over the elements.
+        std::unique_ptr<bool[]> new_ct_ptr;
+        if (it->second.m_ct_flags == nullptr) {
+            // This memory buffer does not contain constructed C++
+            // objects, which means that either the NumPy array is storing
+            // C objects, or that it is an empty array of C++ objects. To ensure
+            // proper realloc behaviour for the former case, we need
+            // to memcpy().
+            std::memcpy(cret, cptr, std::min(size, orig_size));
+        } else {
+            // This memory buffer may contain constructed
+            // C++ objects, we need to move them over.
+            assert(it->second.m_el_size != 0u);
+            assert(orig_size % it->second.m_el_size == 0u);
+            assert(size % it->second.m_el_size == 0u);
+            assert(it->second.m_dtor_func != nullptr);
+            assert(it->second.m_move_func != nullptr);
+            assert(it->second.m_type);
+
+            // Try to allocate the new ct_flags array.
+            try {
+                new_ct_ptr = std::make_unique<bool[]>(size / it->second.m_el_size);
+            } catch (...) {
+                // Allocation failed, just return nullptr.
+                return;
+            }
+
+            // Move over the existing elements that need
+            // to be preserved.
+            const std::size_t n_ex_elems = std::min(size, orig_size) / it->second.m_el_size;
+            for (std::size_t i = 0; i < n_ex_elems; ++i) {
+                if (it->second.m_ct_flags[i]) {
+                    auto *src_ptr = cptr + i * it->second.m_el_size;
+                    auto *dst_ptr = cret + i * it->second.m_el_size;
+                    it->second.m_move_func(dst_ptr, src_ptr);
+                    // Mark the destination as constructed.
+                    new_ct_ptr[i] = true;
+                }
+            }
+        }
+
+        // Register the new buffer in the map.
+        // NOTE: in case of exceptions, the noexcept nature of ths
+        // function will lead to program termination. This is ok,
+        // as recovering from errors here seems quite hard.
+        const auto [new_it, ins_flag]
+            = memory_map.emplace(std::piecewise_construct, std::make_tuple(cret), std::make_tuple(size));
+        assert(ins_flag);
+
+        // Assign the metadata to the new buffer, if needed.
+        if (it->second.m_ct_flags != nullptr) {
+            // NOTE: ensure we properly release new_ct_ptr here.
+            new_it->second.m_ct_flags = new_ct_ptr.release();
+            new_it->second.m_el_size = it->second.m_el_size;
+            new_it->second.m_dtor_func = it->second.m_dtor_func;
+            new_it->second.m_move_func = it->second.m_move_func;
+            new_it->second.m_type = it->second.m_type;
+        }
+
+        // Free the existing buffer.
+        numpy_custom_free_impl(it);
+
+        // Release new_ptr and assign retval before exiting.
+        // NOTE: new_ct_ptr has either been released above, or
+        // it contains nullptr and thus its dtor has no effect.
+        retval = new_ptr.release();
+    });
+
+    return retval;
 }
 
 namespace
