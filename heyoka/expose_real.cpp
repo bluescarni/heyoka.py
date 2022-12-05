@@ -50,6 +50,12 @@
 #include <mp++/integer.hpp>
 #include <mp++/real.hpp>
 
+#if defined(HEYOKA_HAVE_REAL128)
+
+#include <mp++/real128.hpp>
+
+#endif
+
 #include "common_utils.hpp"
 
 #endif
@@ -2058,10 +2064,15 @@ mppp::real *get_real_val(PyObject *self)
     return std::launder(reinterpret_cast<mppp::real *>(reinterpret_cast<py_real *>(self)->m_storage));
 }
 
-// Helper to create a pyreal from a real.
+// Helpers to create a pyreal from a real.
 PyObject *pyreal_from_real(const mppp::real &src)
 {
     return detail::py_real_from_args(src);
+}
+
+PyObject *pyreal_from_real(mppp::real &&src)
+{
+    return detail::py_real_from_args(std::move(src));
 }
 
 void expose_real(py::module_ &m)

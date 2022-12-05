@@ -41,6 +41,7 @@ extern int npy_registered_py_real;
 bool py_real_check(PyObject *);
 mppp::real *get_real_val(PyObject *);
 PyObject *pyreal_from_real(const mppp::real &);
+PyObject *pyreal_from_real(mppp::real &&);
 
 #endif
 
