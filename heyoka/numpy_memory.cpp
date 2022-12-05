@@ -37,6 +37,14 @@
 #include "common_utils.hpp"
 #include "numpy_memory.hpp"
 
+// NOTE: ideas to improve performance, if ever needed:
+// - reduce the locking, which currently is probably excessive
+//   (but easy to check for safety, so not sure the complexity
+//   is worth it?);
+// - don't allocate separately buffers and ct_flags: do a single
+//   allocation, use chars instead of bools for ct_flags, and
+//   place them at the end of the buffer.
+
 namespace heyoka_py
 {
 
