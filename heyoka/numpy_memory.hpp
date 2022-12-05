@@ -57,6 +57,7 @@ private:
     // NOTE: keep these private so we are sure
     // that we always interact with them in a
     // thread-safe manner.
+    // NOTE: all these data members are always modified together.
     bool *m_ct_flags = nullptr;
     std::size_t m_el_size = 0;
     dtor_func_t m_dtor_func = nullptr;

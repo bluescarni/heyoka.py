@@ -190,6 +190,9 @@ void *numpy_custom_malloc(void *, std::size_t sz) noexcept
         auto sz_tuple = std::make_tuple(sz);
 
         // Register the memory area in the map.
+        // NOTE: in case of exceptions, the noexcept nature of ths
+        // function will lead to program termination. This is ok,
+        // as recovering from errors here seems quite hard.
         with_locked_memory_map([&](auto &) {
             [[maybe_unused]] const auto iret = memory_map.emplace(std::piecewise_construct, cret_tuple, sz_tuple);
             assert(iret.second);
@@ -231,6 +234,9 @@ void *numpy_custom_calloc(void *, std::size_t nelem, std::size_t elsize) noexcep
         auto tot_size_tuple = std::make_tuple(tot_size);
 
         // Register the memory area in the map.
+        // NOTE: in case of exceptions, the noexcept nature of ths
+        // function will lead to program termination. This is ok,
+        // as recovering from errors here seems quite hard.
         with_locked_memory_map([&](auto &) {
             [[maybe_unused]] const auto iret = memory_map.emplace(std::piecewise_construct, cret_tuple, tot_size_tuple);
             assert(iret.second);
