@@ -53,6 +53,12 @@
 #include "dtypes.hpp"
 #include "expose_real128.hpp"
 
+#if defined(HEYOKA_HAVE_REAL)
+
+#include "expose_real.hpp"
+
+#endif
+
 namespace heyoka_py
 {
 
@@ -452,6 +458,11 @@ int py_real128_init(PyObject *self, PyObject *args, PyObject *kwargs)
     } else if (PyObject_IsInstance(arg, reinterpret_cast<PyObject *>(&PyLongDoubleArrType_Type)) != 0) {
         *get_real128_val(self) = reinterpret_cast<PyLongDoubleScalarObject *>(arg)->obval;
 #endif
+#if defined(HEYOKA_HAVE_REAL)
+    } else if (py_real_check(arg)) {
+        // NOTE: conversion of real to real128 cannot throw.
+        *get_real128_val(self) = static_cast<mppp::real128>(*get_real_val(arg));
+#endif
     } else if (py_real128_check(arg)) {
         *get_real128_val(self) = *get_real128_val(arg);
     } else if (PyUnicode_Check(arg)) {
@@ -490,7 +501,8 @@ void py_real128_dealloc(PyObject *self)
 // supported Pythonic numerical types:
 // - int,
 // - float,
-// - long double.
+// - long double,
+// - real.
 // If the conversion is successful, returns {x, true}. If some error
 // is encountered, returns {<empty>, false}. If the type of arg is not
 // supported, returns {<empty>, true}.
@@ -513,6 +525,11 @@ std::pair<std::optional<mppp::real128>, bool> real128_from_ob(PyObject *arg)
 #if defined(MPPP_FLOAT128_WITH_LONG_DOUBLE)
     } else if (PyObject_IsInstance(arg, reinterpret_cast<PyObject *>(&PyLongDoubleArrType_Type)) != 0) {
         return {reinterpret_cast<PyLongDoubleScalarObject *>(arg)->obval, true};
+#endif
+#if defined(HEYOKA_HAVE_REAL)
+    } else if (py_real_check(arg)) {
+        // NOTE: conversion of real to real128 cannot throw.
+        return {static_cast<mppp::real128>(*get_real_val(arg)), true};
 #endif
     } else {
         return {{}, true};
@@ -587,8 +604,21 @@ PyObject *py_real128_binop(PyObject *a, PyObject *b, const F &op)
     }
 
     if (a_is_real128) {
-        // a is a real128, b is not. Try to convert
-        // b to a real128.
+        // a is a real128, b is not.
+
+#if defined(HEYOKA_HAVE_REAL)
+
+        // NOTE: if one of the operands is a real,
+        // the result will be a real too.
+        if (py_real_check(b)) {
+            PyObject *retval = nullptr;
+
+            with_pybind11_eh([&]() { retval = pyreal_from_real(op(*get_real128_val(a), *get_real_val(b))); });
+
+            return retval;
+        }
+
+#endif
         auto [r, flag] = real128_from_ob(b);
 
         if (r) {
@@ -607,6 +637,19 @@ PyObject *py_real128_binop(PyObject *a, PyObject *b, const F &op)
 
     if (b_is_real128) {
         // The mirror of the previous case.
+
+#if defined(HEYOKA_HAVE_REAL)
+
+        if (py_real_check(a)) {
+            PyObject *retval = nullptr;
+
+            with_pybind11_eh([&]() { retval = pyreal_from_real(op(*get_real_val(a), *get_real128_val(b))); });
+
+            return retval;
+        }
+
+#endif
+
         auto [r, flag] = real128_from_ob(a);
 
         if (r) {
@@ -645,8 +688,21 @@ PyObject *py_real128_rcmp(PyObject *a, PyObject *b, int op)
         }
 
         if (a_is_real128) {
-            // a is a real128, b is not. Try to convert
-            // b to a real128.
+            // a is a real128, b is not.
+
+#if defined(HEYOKA_HAVE_REAL)
+
+            if (py_real_check(b)) {
+                // NOTE: comparisons cannot throw.
+                if (func(*get_real128_val(a), *get_real_val(b))) {
+                    Py_RETURN_TRUE;
+                } else {
+                    Py_RETURN_FALSE;
+                }
+            }
+
+#endif
+
             auto [r, flag] = real128_from_ob(b);
 
             if (r) {
@@ -669,6 +725,19 @@ PyObject *py_real128_rcmp(PyObject *a, PyObject *b, int op)
 
         if (b_is_real128) {
             // The mirror of the previous case.
+
+#if defined(HEYOKA_HAVE_REAL)
+
+            if (py_real_check(a)) {
+                if (func(*get_real_val(a), *get_real128_val(b))) {
+                    Py_RETURN_TRUE;
+                } else {
+                    Py_RETURN_FALSE;
+                }
+            }
+
+#endif
+
             auto [r, flag] = real128_from_ob(a);
 
             if (r) {
