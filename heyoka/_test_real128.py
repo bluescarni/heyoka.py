@@ -23,6 +23,7 @@ class real128_test_case(_ut.TestCase):
         import random
         from . import real128
         from .core import _ppc_arch
+        from . import core
 
         if _ppc_arch:
             ld = float
@@ -82,6 +83,13 @@ class real128_test_case(_ut.TestCase):
         self.assertEqual(str(real128("42")), "42")
         self.assertEqual(str(real128("-123")), "-123")
 
+        # Construction from real.
+        if hasattr(core, "real"):
+            real = core.real
+
+            self.assertEqual(real128(real("1.1", 113)), real128("1.1"))
+            self.assertNotEqual(real128(real("1.1", 100)), real128("1.1"))
+
         with self.assertRaises(ValueError) as cm:
             real128("hello world")
         self.assertTrue(
@@ -135,6 +143,16 @@ class real128_test_case(_ut.TestCase):
         self.assertEqual(repr(1 + real128(42)), "43")
         self.assertEqual(repr(1.0 + real128(42)), "43")
         self.assertEqual(repr(ld(1) + real128(42)), "43")
+        if hasattr(core, "real"):
+            real = core.real
+            self.assertTrue(isinstance(real128() + real(), real))
+            self.assertTrue(isinstance(real() + real128(), real))
+            self.assertEqual(
+                real128("1.1") + real("1.1", 100), real("1.1", 113) + real("1.1", 100)
+            )
+            self.assertEqual(
+                real("1.1", 100) + real128("1.1"), real("1.1", 113) + real("1.1", 100)
+            )
         with self.assertRaises(TypeError) as cm:
             real128(1) + []
         with self.assertRaises(TypeError) as cm:
@@ -147,6 +165,16 @@ class real128_test_case(_ut.TestCase):
         self.assertEqual(repr(1 - real128(42)), "-41")
         self.assertEqual(repr(1.0 - real128(42)), "-41")
         self.assertEqual(repr(ld(1) - real128(42)), "-41")
+        if hasattr(core, "real"):
+            real = core.real
+            self.assertTrue(isinstance(real128() - real(), real))
+            self.assertTrue(isinstance(real() - real128(), real))
+            self.assertEqual(
+                real128("1.1") - real("1.1", 100), real("1.1", 113) - real("1.1", 100)
+            )
+            self.assertEqual(
+                real("1.1", 100) - real128("1.1"), real("1.1", 100) - real("1.1", 113)
+            )
         with self.assertRaises(TypeError) as cm:
             real128(1) - []
         with self.assertRaises(TypeError) as cm:
@@ -159,6 +187,16 @@ class real128_test_case(_ut.TestCase):
         self.assertEqual(repr(2 * real128(42)), "84")
         self.assertEqual(repr(2.0 * real128(42)), "84")
         self.assertEqual(repr(ld(2) * real128(42)), "84")
+        if hasattr(core, "real"):
+            real = core.real
+            self.assertTrue(isinstance(real128() * real(), real))
+            self.assertTrue(isinstance(real() * real128(), real))
+            self.assertEqual(
+                real128("1.1") * real("1.1", 100), real("1.1", 113) * real("1.1", 100)
+            )
+            self.assertEqual(
+                real("1.1", 100) * real128("1.1"), real("1.1", 113) * real("1.1", 100)
+            )
         with self.assertRaises(TypeError) as cm:
             real128(1) * []
         with self.assertRaises(TypeError) as cm:
@@ -171,6 +209,16 @@ class real128_test_case(_ut.TestCase):
         self.assertEqual(repr(-42 // real128(9)), "-5")
         self.assertEqual(repr(-42.0 // real128(9)), "-5")
         self.assertEqual(repr(ld(-42) // real128(9)), "-5")
+        if hasattr(core, "real"):
+            real = core.real
+            self.assertTrue(isinstance(real128(1) // real(1), real))
+            self.assertTrue(isinstance(real(1) // real128(1), real))
+            self.assertEqual(
+                real128("1.1") // real("1.1", 100), real("1.1", 113) // real("1.1", 100)
+            )
+            self.assertEqual(
+                real("1.1", 100) // real128("1.1"), real("1.1", 100) // real("1.1", 113)
+            )
         with self.assertRaises(TypeError) as cm:
             real128(1) // []
         with self.assertRaises(TypeError) as cm:
@@ -204,6 +252,13 @@ class real128_test_case(_ut.TestCase):
         self.assertFalse(real128("nan") < 2)
         self.assertFalse(2 < real128("nan"))
         self.assertFalse(real128("nan") < real128("nan"))
+        if hasattr(core, "real"):
+            real = core.real
+
+            self.assertTrue(real(1) < real128(2))
+            self.assertTrue(real128(1) < real(2))
+            self.assertFalse(real(1) > real128(2))
+            self.assertFalse(real128(1) > real(2))
         with self.assertRaises(TypeError) as cm:
             real128(1) < []
         with self.assertRaises(TypeError) as cm:
@@ -259,7 +314,7 @@ class real128_test_case(_ut.TestCase):
     def test_numpy(self):
         import numpy as np
         from copy import copy, deepcopy
-        from . import real128
+        from . import real128, core
         from pickle import dumps, loads
 
         # Basic creation/getitem/setitem.
@@ -677,3 +732,11 @@ class real128_test_case(_ut.TestCase):
         self.assertFalse(np.isnan(arr1_sorted[0]))
         self.assertTrue(np.isnan(arr1_sorted[1]))
         self.assertTrue(np.isnan(arr1_sorted[2]))
+
+        # Setitem from real.
+        if hasattr(core, "real"):
+            real = core.real
+
+            arr1 = np.array([1, 2, 3], dtype=real128)
+            arr1[1] = real("1.1", 113)
+            self.assertEqual(arr1[1], real128("1.1"))

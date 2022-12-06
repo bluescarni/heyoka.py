@@ -848,6 +848,19 @@ class real_test_case(_ut.TestCase):
         with self.assertRaises(TypeError) as cm:
             arr.astype(np.int32, casting="safe")
 
+        # real128 interop.
+        if hasattr(core, "real128"):
+            real128 = core.real128
+
+            arr = np.array([1, 2, 3, 4, 5], dtype=real128)
+            self.assertTrue(np.all(arr == arr.astype(real)))
+            self.assertTrue(np.all(arr == arr.astype(real, casting="safe")))
+
+            arr = np.array([1, 2, 3, 4, 5], dtype=real)
+            self.assertTrue(np.all(arr == arr.astype(real128)))
+            with self.assertRaises(TypeError) as cm:
+                self.assertTrue(np.all(arr == arr.astype(real128, casting="safe")))
+
     def test_numpy_square(self):
         from . import real
         from . import core
