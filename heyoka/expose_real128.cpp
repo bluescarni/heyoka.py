@@ -349,6 +349,8 @@ PyObject *py_real128_new([[maybe_unused]] PyTypeObject *type, PyObject *, PyObje
 }
 
 // Helper to convert a Python integer to real128.
+// NOTE: this currently uses a string conversion for
+// large integers.
 std::optional<mppp::real128> py_int_to_real128(PyObject *arg)
 {
     assert(PyObject_IsInstance(arg, reinterpret_cast<PyObject *>(&PyLong_Type)));
@@ -366,62 +368,36 @@ std::optional<mppp::real128> py_int_to_real128(PyObject *arg)
         return candidate;
     }
 
-    // Need to construct a real128 from the limb array.
-    auto *nptr = reinterpret_cast<PyLongObject *>(arg);
+    // Go through a string conversion.
+    std::optional<mppp::real128> retval;
 
-    // Get the signed size of nptr.
-    const auto ob_size = nptr->ob_base.ob_size;
-    assert(ob_size != 0);
-
-    // Get the limbs array.
-    const auto *ob_digit = nptr->ob_digit;
-
-    // Is it negative?
-    const auto neg = ob_size < 0;
-
-    // Compute the unsigned size.
-    using size_type = std::make_unsigned_t<std::remove_const_t<decltype(ob_size)>>;
-    static_assert(std::is_same_v<size_type, decltype(static_cast<size_type>(0) + static_cast<size_type>(0))>);
-    auto abs_ob_size = neg ? -static_cast<size_type>(ob_size) : static_cast<size_type>(ob_size);
-
-    // Init the retval with the first (most significant) limb. The Python integer is nonzero, so this is safe.
-    mppp::real128 retval = ob_digit[--abs_ob_size];
-
-    // Init the number of binary digits consumed so far.
-    // NOTE: this is of course not zero, as we read *some* bits from
-    // the most significant limb. However we don't know exactly how
-    // many bits we read from the top limb, so we err on the safe
-    // side in order to ensure that, when ncdigits reaches the bit width
-    // of real128, we have indeed consumed *at least* that many bits.
-    auto ncdigits = 0;
-
-    // Keep on reading limbs until either:
-    // - we run out of limbs, or
-    // - we have read at least as many bits as the bit width of real128.
-    static_assert(std::numeric_limits<mppp::real128>::digits < std::numeric_limits<int>::max() - PyLong_SHIFT);
-    while (ncdigits < std::numeric_limits<mppp::real128>::digits && abs_ob_size != 0u) {
-        retval = scalbn(retval, PyLong_SHIFT);
-        retval += ob_digit[--abs_ob_size];
-        ncdigits += PyLong_SHIFT;
-    }
-
-    if (abs_ob_size != 0u) {
-        // We have filled up the mantissa, we just need to adjust the exponent.
-        // We still have abs_ob_size * PyLong_SHIFT bits remaining, and we
-        // need to shift that much.
-
-        // NOTE: need C++ exception handling, as safe arithmetics might throw.
-        const auto err = with_pybind11_eh([&]() {
-            using safe_long = boost::safe_numerics::safe<long>;
-            retval = scalbln(retval, safe_long(abs_ob_size) * safe_long(PyLong_SHIFT));
-        });
-
-        if (err) {
-            return {};
+    with_pybind11_eh([&]() {
+        auto *str_rep = PyObject_Str(arg);
+        if (str_rep == nullptr) {
+            return;
         }
-    }
+        assert(PyUnicode_Check(str_rep) != 0);
 
-    return neg ? -retval : retval;
+        // NOTE: str remains valid as long as str_rep is alive.
+        const auto *str = PyUnicode_AsUTF8(str_rep);
+        if (str == nullptr) {
+            Py_DECREF(str_rep);
+            return;
+        }
+
+        try {
+            retval.emplace(str);
+        } catch (...) {
+            // Ensure proper cleanup of str_rep
+            // before continuing.
+            Py_DECREF(str_rep);
+            throw;
+        }
+
+        Py_DECREF(str_rep);
+    });
+
+    return retval;
 }
 
 // __init__() implementation.

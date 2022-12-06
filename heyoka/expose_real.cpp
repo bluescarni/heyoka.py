@@ -352,9 +352,8 @@ PyObject *py_real_new([[maybe_unused]] PyTypeObject *type, PyObject *, PyObject 
 // The precision of the result is inferred from the
 // bit size of the integer.
 // NOTE: for better performance if needed, it would be better
-// to avoid the construction of an intermediate mppp::integer:
-// determine the bit length of arg, and construct directly
-// an mppp::real using the same idea as in py_int_to_real_with_prec().
+// to avoid the construction of an intermediate mppp::integer
+// (perhaps via determining the bit length of arg beforehand?).
 std::optional<mppp::real> py_int_to_real(PyObject *arg)
 {
     assert(PyObject_IsInstance(arg, reinterpret_cast<PyObject *>(&PyLong_Type)));
@@ -435,6 +434,8 @@ std::optional<mppp::real> py_int_to_real(PyObject *arg)
 
 // Helper to convert a Python integer to an mp++ real.
 // The precision of the result is provided explicitly.
+// NOTE: this currently uses a string conversion for
+// large integers.
 std::optional<mppp::real> py_int_to_real_with_prec(PyObject *arg, mpfr_prec_t prec)
 {
     assert(PyObject_IsInstance(arg, reinterpret_cast<PyObject *>(&PyLong_Type)));
@@ -457,68 +458,30 @@ std::optional<mppp::real> py_int_to_real_with_prec(PyObject *arg, mpfr_prec_t pr
             return;
         }
 
-        // Need to construct a multiprecision integer from the limb array.
-        auto *nptr = reinterpret_cast<PyLongObject *>(arg);
+        // Go through a string conversion.
+        auto *str_rep = PyObject_Str(arg);
+        if (str_rep == nullptr) {
+            return;
+        }
+        assert(PyUnicode_Check(str_rep) != 0);
 
-        // Get the signed size of nptr.
-        const auto ob_size = nptr->ob_base.ob_size;
-        assert(ob_size != 0);
-
-        // Get the limbs array.
-        const auto *ob_digit = nptr->ob_digit;
-
-        // Is it negative?
-        const auto neg = ob_size < 0;
-
-        // Compute the unsigned size.
-        using size_type = std::make_unsigned_t<std::remove_const_t<decltype(ob_size)>>;
-        static_assert(std::is_same_v<size_type, decltype(static_cast<size_type>(0) + static_cast<size_type>(0))>);
-        auto abs_ob_size = neg ? -static_cast<size_type>(ob_size) : static_cast<size_type>(ob_size);
-
-        // Init the retval with the first (most significant) limb. The Python integer is nonzero, so this is safe.
-        mppp::real ret{ob_digit[--abs_ob_size], prec};
-
-        // Init the number of binary digits consumed so far.
-        // NOTE: this is of course not zero, as we read *some* bits from
-        // the most significant limb. However we don't know exactly how
-        // many bits we read from the top limb, so we err on the safe
-        // side in order to ensure that, when ncdigits reaches prec,
-        // we have indeed consumed *at least* that many bits.
-        mpfr_prec_t ncdigits = 0;
-
-        // Keep on reading limbs until either:
-        // - we run out of limbs, or
-        // - we have read at least prec bits.
-        while (ncdigits < prec && abs_ob_size != 0u) {
-            using safe_mpfr_prec_t = boost::safe_numerics::safe<mpfr_prec_t>;
-
-            mppp::mul_2si(ret, ret, PyLong_SHIFT);
-            // NOTE: if prec is small, this addition may increase
-            // the precision of ret. This is ok as long as we run
-            // a final rounding before returning.
-            ret += ob_digit[--abs_ob_size];
-            ncdigits = ncdigits + safe_mpfr_prec_t(PyLong_SHIFT);
+        // NOTE: str remains valid as long as str_rep is alive.
+        const auto *str = PyUnicode_AsUTF8(str_rep);
+        if (str == nullptr) {
+            Py_DECREF(str_rep);
+            return;
         }
 
-        if (abs_ob_size != 0u) {
-            using safe_long = boost::safe_numerics::safe<long>;
-
-            // We have filled up the mantissa, we just need to adjust the exponent.
-            // We still have abs_ob_size * PyLong_SHIFT bits remaining, and we
-            // need to shift that much.
-            mppp::mul_2si(ret, ret, safe_long(abs_ob_size) * safe_long(PyLong_SHIFT));
+        try {
+            retval.emplace(str, prec);
+        } catch (...) {
+            // Ensure proper cleanup of str_rep
+            // before continuing.
+            Py_DECREF(str_rep);
+            throw;
         }
 
-        // Do a final rounding. This is necessary if prec is very low,
-        // in which case operations on ret might have increased its precision.
-        ret.prec_round(prec);
-
-        // Negate if necessary.
-        if (neg) {
-            retval.emplace(-std::move(ret));
-        } else {
-            retval.emplace(std::move(ret));
-        }
+        Py_DECREF(str_rep);
     });
 
     // NOTE: if exceptions are raised in the C++ code,

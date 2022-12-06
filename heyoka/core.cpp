@@ -81,6 +81,7 @@ namespace heyoka_py::detail
 namespace
 {
 
+// NOLINTNEXTLINE(cppcoreguidelines-avoid-non-const-global-variables)
 std::optional<oneapi::tbb::global_control> tbb_gc;
 
 // Helper to import the NumPy API bits.
