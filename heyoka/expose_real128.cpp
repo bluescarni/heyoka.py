@@ -1630,6 +1630,8 @@ void expose_real128(py::module_ &m)
                                npy_registered_py_real128, npy_registered_py_real128, npy_registered_py_real128);
 
     // Casting.
+    // NOTE: casting to/from real is already implemented
+    // in the real exposition.
     detail::npy_register_cast_functions<float>();
     detail::npy_register_cast_functions<double>();
 

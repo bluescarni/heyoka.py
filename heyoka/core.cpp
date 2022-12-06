@@ -129,6 +129,12 @@ PYBIND11_MODULE(core, m)
         ;
 
     // Expose the real128 type.
+    // NOTE: it is *important* this is done
+    // before the exposition of real, since the real
+    // exposition registers NumPy converters to/from
+    // real128, and in order for that to work the NumPy
+    // type descriptor for real128 needs to have been
+    // set up.
     heypy::expose_real128(m);
 
     // Expose the real type.
