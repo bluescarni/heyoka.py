@@ -1939,6 +1939,15 @@ class scalar_integrator_test_case(_ut.TestCase):
         self.assertFalse(ta.llvm_state.force_avx512)
         self.assertEqual(ta.llvm_state.opt_level, 3)
 
+        # Check that certain properties are read-only
+        # arrays and the writeability cannot be changed.
+        self.assertFalse(ta.tc.flags.writeable)
+        with self.assertRaises(ValueError):
+            ta.tc.flags.writeable = True
+        self.assertFalse(ta.d_output.flags.writeable)
+        with self.assertRaises(ValueError):
+            ta.d_output.flags.writeable = True
+
         # Test the custom llvm_state flags.
         ta = taylor_adaptive(
             sys=sys,
