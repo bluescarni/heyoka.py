@@ -364,12 +364,24 @@ PYBIND11_MODULE(core, m)
 
 #endif
 
+#if defined(HEYOKA_HAVE_REAL)
+
+    heypy::expose_taylor_t_event_real(m);
+
+#endif
+
     heypy::expose_taylor_nt_event_dbl(m);
     heypy::expose_taylor_nt_event_ldbl(m);
 
 #if defined(HEYOKA_HAVE_REAL128)
 
     heypy::expose_taylor_nt_event_f128(m);
+
+#endif
+
+#if defined(HEYOKA_HAVE_REAL)
+
+    heypy::expose_taylor_nt_event_real(m);
 
 #endif
 
