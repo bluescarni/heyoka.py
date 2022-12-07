@@ -277,6 +277,18 @@ class real_test_case(_ut.TestCase):
         arr = np.array([1, float("inf"), 3, float("nan"), 5], dtype=real)
         self.assertTrue(np.all((np.isfinite(arr)) == [True, False, True, False, True]))
 
+        # Try comparison wrt scalars too.
+        arr = np.array([1], dtype=real)
+        self.assertTrue(np.all(arr == 1))
+        self.assertTrue(np.all(arr != 0))
+        self.assertTrue(np.all(arr < real(2)))
+        self.assertTrue(np.all(arr > 0))
+        self.assertTrue(np.all(arr <= 3.0))
+        if hasattr(core, "real128"):
+            real128 = core.real128
+
+            self.assertTrue(np.all(arr >= real128(-2.0)))
+
     def test_numpy_binary(self):
         from . import real
         import numpy as np
@@ -1424,6 +1436,14 @@ class real_test_case(_ut.TestCase):
         self.assertEqual(arr2[0], real("1.1", 128) * 2)
         self.assertEqual(arr2[0].prec, 128)
 
+        # Use hstack to check the copyswap implementation.
+        arr1 = np.array([real("1.1", 128), real("1.11", 128), real("1.13", 128)])
+        arr2 = np.array([real("2.1", 128), real("2.11", 128), real("2.13", 128)])
+        arr3 = np.hstack([arr1, arr2])
+
+        self.assertTrue(np.all(arr3[:3] == arr1))
+        self.assertTrue(np.all(arr3[3:] == arr2))
+
     def test_comparisons(self):
         from . import real
         from . import core
@@ -1727,6 +1747,46 @@ class real_test_case(_ut.TestCase):
         self.assertTrue(
             "Modular exponentiation is not supported for real" in str(cm.exception)
         )
+
+        # Comparisons.
+        self.assertTrue(real(1) < real(2))
+        self.assertTrue(real(1) < 2)
+        self.assertTrue(real(1) < 2.0)
+        self.assertTrue(real(1) < ld(2))
+        self.assertTrue(1 < real(2))
+        self.assertTrue(1.0 < real(2))
+        self.assertTrue(ld(1) < real(2))
+        self.assertFalse(real("nan", 10) < 2)
+        self.assertFalse(2 < real("nan", 10))
+        self.assertFalse(real("nan", 10) < real("nan", 10))
+        if hasattr(core, "real128"):
+            real128 = core.real128
+
+            self.assertTrue(real(1) < real128(2))
+            self.assertTrue(real128(1) < real(2))
+            self.assertFalse(real(1) > real128(2))
+            self.assertFalse(real128(1) > real(2))
+        with self.assertRaises(TypeError) as cm:
+            real(1) < []
+        with self.assertRaises(TypeError) as cm:
+            [] < real(1)
+
+        # The codepath for the other comparisons is identical,
+        # let's limit to some light testing.
+        self.assertTrue(real(1) <= real(2))
+        self.assertTrue(real(2) <= real(2))
+        self.assertFalse(real(3) <= real(2))
+        self.assertTrue(real(2) == real(2))
+        self.assertFalse(real(3) == real(2))
+        self.assertFalse(real(3) == real("NaN", 10))
+        self.assertFalse(real(2) != real(2))
+        self.assertTrue(real(3) != real(2))
+        self.assertTrue(real(3) != real("NaN", 10))
+        self.assertTrue(real(3) > real(2))
+        self.assertFalse(real(2) > real(3))
+        self.assertFalse(real(1) >= real(2))
+        self.assertTrue(real(2) >= real(2))
+        self.assertTrue(real(3) >= real(2))
 
     def test_unary(self):
         from . import real
