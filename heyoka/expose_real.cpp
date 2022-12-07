@@ -1282,7 +1282,7 @@ std::pair<std::optional<mppp::real *>, bool> ensure_cted_real(const unsigned cha
 // Array getitem.
 PyObject *npy_py_real_getitem(void *data, [[maybe_unused]] void *arr)
 {
-    assert(PyArray_Check(reinterpret_cast<PyObject *>(arr)) != 0);
+    assert(arr == nullptr || PyArray_Check(reinterpret_cast<PyObject *>(arr)) != 0);
 
     // NOTE: getitem could be invoked with misaligned data.
     // Detect such occurrence and error out.
@@ -1307,7 +1307,7 @@ PyObject *npy_py_real_getitem(void *data, [[maybe_unused]] void *arr)
 // Array setitem.
 int npy_py_real_setitem(PyObject *item, void *data, [[maybe_unused]] void *arr)
 {
-    assert(PyArray_Check(reinterpret_cast<PyObject *>(arr)) != 0);
+    assert(arr == nullptr || PyArray_Check(reinterpret_cast<PyObject *>(arr)) != 0);
 
     // NOTE: getitem could be invoked with misaligned data.
     // Detect such occurrence and error out.
@@ -1382,7 +1382,7 @@ int npy_py_real_setitem(PyObject *item, void *data, [[maybe_unused]] void *arr)
 // map for every element that is being copied.
 void npy_py_real_copyswap(void *dst, void *src, int swap, [[maybe_unused]] void *arr)
 {
-    assert(PyArray_Check(reinterpret_cast<PyObject *>(arr)) != 0);
+    assert(arr == nullptr || PyArray_Check(reinterpret_cast<PyObject *>(arr)) != 0);
 
     if (swap != 0) {
         PyErr_SetString(PyExc_ValueError, "Cannot byteswap real arrays");
