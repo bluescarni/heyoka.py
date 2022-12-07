@@ -7,6 +7,12 @@ on:
     branches:
       - main
 jobs:
+  conda_asan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Build
+        run: bash tools/gha_conda_asan.sh
   osx_heyoka_head:
     runs-on: macos-latest
     steps:
