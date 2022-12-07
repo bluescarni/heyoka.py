@@ -126,7 +126,7 @@ private:
 
         // This gives a null-terminated char * to the internal
         // content of the bytes object.
-        auto ptr = PyBytes_AsString(tmp.ptr());
+        auto *ptr = PyBytes_AsString(tmp.ptr());
         if (!ptr) {
             py_throw(PyExc_TypeError, "The serialization backend's dumps() function did not return a bytes object");
         }
