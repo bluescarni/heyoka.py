@@ -1282,6 +1282,8 @@ std::pair<std::optional<mppp::real *>, bool> ensure_cted_real(const unsigned cha
 // Array getitem.
 PyObject *npy_py_real_getitem(void *data, [[maybe_unused]] void *arr)
 {
+    // NOTE: arr can be null in some situations (e.g., data sometimes is a manually-allocated
+    // memory buffer which does not belong to any array).
     assert(arr == nullptr || PyArray_Check(reinterpret_cast<PyObject *>(arr)) != 0);
 
     // NOTE: getitem could be invoked with misaligned data.

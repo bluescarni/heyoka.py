@@ -1964,3 +1964,20 @@ class real_test_case(_ut.TestCase):
         y = core._copy_real(x)
         self.assertEqual(x, y)
         self.assertEqual(y.prec, 128)
+
+        # Try to invoke all methods of real.
+        # We run this check to make sure that we have
+        # implemented all mandatory methods (e.g., failing
+        # to implement the __int__() method would result
+        # in a segmentation fault).
+        # NOTE: disable this test for the moment due to the
+        # potential missing memset() issue in NumPy.
+        # for s in dir(real):
+        #     try:
+        #         x = real()
+        #         if not s in ["byteswap", "imag"]:
+        #             print("Getting attr: {}".format(s))
+        #             getattr(x, s)()
+        #             print("Gotten attr: {}".format(s))
+        #     except:
+        #         pass
