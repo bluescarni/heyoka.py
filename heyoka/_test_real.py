@@ -1396,6 +1396,34 @@ class real_test_case(_ut.TestCase):
         self.assertEqual(arr.dtype, real)
         self.assertEqual(arr[0].prec, 128)
 
+        # Dot product.
+        arr1 = np.array([real("1.1", 113), real("1.3", 113)])
+        arr2 = np.array([real("2.1", 113), real("2.3", 113)])
+        self.assertEqual(
+            real("1.1", 113) * real("2.1", 113) + real("1.3", 113) * real("2.3", 113),
+            np.dot(arr1, arr2),
+        )
+        arr1 = np.array([], dtype=real)
+        arr2 = np.array([], dtype=real)
+        self.assertEqual(0, np.dot(arr1, arr2))
+
+        # A handful of mixed scalar/array operations.
+        arr = np.array([2], dtype=real)
+        arr2 = real("1.1", 128) * arr
+        self.assertEqual(arr2[0], real("1.1", 128) * 2)
+        self.assertEqual(arr2[0].prec, 128)
+        arr2 = arr * real("1.1", 128)
+        self.assertEqual(arr2[0], real("1.1", 128) * 2)
+        self.assertEqual(arr2[0].prec, 128)
+
+        arr = np.array([real("1.1", 128)])
+        arr2 = 2 * arr
+        self.assertEqual(arr2[0], real("1.1", 128) * 2)
+        self.assertEqual(arr2[0].prec, 128)
+        arr2 = arr * 2
+        self.assertEqual(arr2[0], real("1.1", 128) * 2)
+        self.assertEqual(arr2[0].prec, 128)
+
     def test_comparisons(self):
         from . import real
         from . import core
