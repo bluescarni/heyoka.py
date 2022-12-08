@@ -5268,7 +5268,7 @@ class cfunc_test_case(_ut.TestCase):
 
 
 def run_test_suite():
-    from . import make_nbody_sys, taylor_adaptive, _test_real, _test_real128
+    from . import make_nbody_sys, taylor_adaptive, _test_real, _test_real128, _test_mp
     import numpy as np
 
     sys = make_nbody_sys(2, masses=[1.1, 2.1], Gconst=1)
@@ -5279,6 +5279,7 @@ def run_test_suite():
     retval = 0
 
     suite = _ut.TestLoader().loadTestsFromTestCase(taylor_add_jet_test_case)
+    suite.addTest(_test_mp.mp_test_case())
     suite.addTest(_test_real.real_test_case())
     suite.addTest(_test_real128.real128_test_case())
     suite.addTest(cfunc_test_case())

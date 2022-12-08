@@ -9,6 +9,7 @@ set(HEYOKA_PY_PYTHON_FILES
     _ensemble_impl.py
     _test_real.py
     _test_real128.py
+    _test_mp.py
 )
 
 # Copy the python files in the current binary dir,
