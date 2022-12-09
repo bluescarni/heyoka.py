@@ -15,6 +15,7 @@
 #if defined(HEYOKA_HAVE_REAL)
 
 #include <algorithm>
+#include <array>
 #include <cassert>
 #include <cstddef>
 #include <cstdint>
@@ -26,6 +27,7 @@
 #include <new>
 #include <optional>
 #include <sstream>
+#include <tuple>
 #include <type_traits>
 #include <utility>
 #include <vector>
@@ -34,6 +36,9 @@
 #include <boost/archive/binary_oarchive.hpp>
 #include <boost/numeric/conversion/cast.hpp>
 #include <boost/safe_numerics/safe_integer.hpp>
+
+#include <fmt/format.h>
+#include <fmt/ranges.h>
 
 #define NO_IMPORT_ARRAY
 #define NO_IMPORT_UFUNC
@@ -1154,6 +1159,37 @@ bool is_valid_real(const void *ptr) noexcept
     return prec != 0;
 }
 
+// This function will check if a valid real exists at the memory address ptr.
+//
+// ptr may or may not be located in a memory buffer managed by NEP 49:
+//
+// - if it is, both base_ptr and ct_flags are non-null,
+//   base_ptr is assumed to point to beginning of a NEP 49 memory buffer and ct_flags is the
+//   construction flags metadata associated to the memory buffer;
+// - otherwise, both base_ptr and ct_flags are nullptr. If ptr contains a valid real
+//   (as detected by is_valid_real()), then true will be returned, false otherwise.
+bool check_cted_real(const unsigned char *base_ptr, const bool *ct_flags, const void *ptr) noexcept
+{
+    assert((base_ptr == nullptr) == (ct_flags == nullptr));
+
+    if (base_ptr == nullptr) {
+        // The memory buffer is not managed by NEP 49, check if a real
+        // has been constructed in ptr by someone else.
+        return is_valid_real(ptr);
+    }
+
+    // The memory buffer is managed by NEP 49. Compute the position of ptr in the buffer.
+    const auto bytes_idx = reinterpret_cast<const unsigned char *>(ptr) - base_ptr;
+    assert(bytes_idx >= 0);
+
+    // Compute the position in the ct_flags array.
+    auto idx = static_cast<std::size_t>(bytes_idx);
+    assert(idx % sizeof(mppp::real) == 0u);
+    idx /= sizeof(mppp::real);
+
+    return ct_flags[idx];
+}
+
 // This function will return either a const pointer to an mppp::real stored
 // at the memory address ptr, if it exists, or the fallback value.
 //
@@ -2040,6 +2076,156 @@ PyObject *pyreal_from_real(mppp::real &&src)
     return detail::py_real_from_args(std::move(src));
 }
 
+namespace detail
+{
+
+namespace
+{
+
+template <std::size_t NDim, std::size_t CurDim = 0>
+void pyreal_check_array_impl(std::array<py::ssize_t, NDim> &idxs, const py::array &arr, const unsigned char *base_ptr,
+                             const bool *ct_flags)
+{
+    static_assert(CurDim < NDim);
+
+    const auto cur_size = arr.shape(static_cast<py::ssize_t>(CurDim));
+
+    if constexpr (CurDim == NDim - 1u) {
+        for (idxs[CurDim] = 0; idxs[CurDim] < cur_size; ++idxs[CurDim]) {
+            const auto *ptr = std::apply([&arr](auto... js) { return arr.data(js...); }, idxs);
+
+            if (!check_cted_real(base_ptr, ct_flags, ptr)) {
+                py_throw(
+                    PyExc_ValueError,
+                    fmt::format("A non-constructed/invalid real was detected in a NumPy array at the indices {}", idxs)
+                        .c_str());
+            }
+        }
+    } else {
+        for (idxs[CurDim] = 0; idxs[CurDim] < cur_size; ++idxs[CurDim]) {
+            pyreal_check_array_impl<NDim, CurDim + 1u>(idxs, arr, base_ptr, ct_flags);
+        }
+    }
+}
+
+} // namespace
+
+} // namespace detail
+
+// Helper to check if all the real values in arr have been
+// properly constructed.
+void pyreal_check_array(const py::array &arr)
+{
+    assert(arr.dtype().num() == npy_registered_py_real);
+
+    // Exit immediately if the array does not contain any data.
+    if (arr.size() == 0 || arr.ndim() == 0) {
+        return;
+    }
+
+    // Fetch the base pointer and the metadata.
+    const auto [base_ptr, meta_ptr] = get_memory_metadata(arr.data());
+    const auto *ct_flags = (base_ptr == nullptr) ? nullptr : meta_ptr->ensure_ct_flags_inited<mppp::real>();
+
+    // NOTE: handle 1 and 2 dimensions for now, that's all we need.
+    switch (arr.ndim()) {
+        case 1: {
+            std::array<py::ssize_t, 1> idxs{};
+            detail::pyreal_check_array_impl(idxs, arr, base_ptr, ct_flags);
+            break;
+        }
+        case 2: {
+            std::array<py::ssize_t, 2> idxs{};
+            detail::pyreal_check_array_impl(idxs, arr, base_ptr, ct_flags);
+            break;
+        }
+        default:
+            py_throw(
+                PyExc_ValueError,
+                fmt::format("Cannot call pyreal_check_array() on an array with {} dimensions", arr.ndim()).c_str());
+    }
+}
+
+namespace detail
+{
+
+namespace
+{
+
+template <std::size_t NDim, std::size_t CurDim = 0>
+void pyreal_ensure_array_impl(std::array<py::ssize_t, NDim> &idxs, py::array &arr, const unsigned char *base_ptr,
+                              bool *ct_flags, mpfr_prec_t prec)
+{
+    static_assert(CurDim < NDim);
+
+    const auto cur_size = arr.shape(static_cast<py::ssize_t>(CurDim));
+
+    if constexpr (CurDim == NDim - 1u) {
+        for (idxs[CurDim] = 0; idxs[CurDim] < cur_size; ++idxs[CurDim]) {
+            auto *ptr = std::apply([&arr](auto... js) { return arr.mutable_data(js...); }, idxs);
+
+            // Ensure that ptr contains a constructed real.
+            auto [ptr_opt, new_real] = ensure_cted_real(base_ptr, ct_flags, ptr,
+                                                        [prec]() { return mppp::real(mppp::real_kind::zero, prec); });
+
+            if (!ptr_opt) {
+                // The construction of a new real was attempted but it failed.
+                // In this case, the Python error flag has already been set.
+                throw py::error_already_set();
+            }
+
+            if (!new_real) {
+                // No new real was created, round the existing one.
+                (*ptr_opt)->prec_round(prec);
+            }
+        }
+    } else {
+        for (idxs[CurDim] = 0; idxs[CurDim] < cur_size; ++idxs[CurDim]) {
+            pyreal_ensure_array_impl<NDim, CurDim + 1u>(idxs, arr, base_ptr, ct_flags, prec);
+        }
+    }
+}
+
+} // namespace
+
+} // namespace detail
+
+// Helper to ensure that arr contains properly constructed
+// real values with precision prec. If real values already
+// exist in arr, they will be rounded to precision prec. Otherwise,
+// new reals with value 0 and precision prec will be constructed.
+void pyreal_ensure_array(py::array &arr, mpfr_prec_t prec)
+{
+    assert(arr.dtype().num() == npy_registered_py_real);
+
+    // Exit immediately if the array does not contain any data.
+    if (arr.size() == 0 || arr.ndim() == 0) {
+        return;
+    }
+
+    // Fetch the base pointer and the metadata.
+    const auto [base_ptr, meta_ptr] = get_memory_metadata(arr.data());
+    auto *ct_flags = (base_ptr == nullptr) ? nullptr : meta_ptr->ensure_ct_flags_inited<mppp::real>();
+
+    // NOTE: handle 1 and 2 dimensions for now, that's all we need.
+    switch (arr.ndim()) {
+        case 1: {
+            std::array<py::ssize_t, 1> idxs{};
+            detail::pyreal_ensure_array_impl(idxs, arr, base_ptr, ct_flags, prec);
+            break;
+        }
+        case 2: {
+            std::array<py::ssize_t, 2> idxs{};
+            detail::pyreal_ensure_array_impl(idxs, arr, base_ptr, ct_flags, prec);
+            break;
+        }
+        default:
+            py_throw(
+                PyExc_ValueError,
+                fmt::format("Cannot call pyreal_ensure_array() on an array with {} dimensions", arr.ndim()).c_str());
+    }
+}
+
 void expose_real(py::module_ &m)
 {
     // Install the custom NumPy memory management functions.
@@ -2559,6 +2745,12 @@ void expose_real(py::module_ &m)
 
     // Function to test the custom caster.
     m.def("_copy_real", [](const mppp::real &x) { return x; });
+
+    // Function to test the pyreal_check_array() helper.
+    m.def("_real_check_array", &pyreal_check_array);
+
+    // Function to test the pyreal_ensure_array() helper.
+    m.def("_real_ensure_array", &pyreal_ensure_array);
 }
 
 #if defined(__GNUC__)

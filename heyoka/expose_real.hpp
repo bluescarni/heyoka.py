@@ -15,6 +15,8 @@
 
 #if defined(HEYOKA_HAVE_REAL)
 
+#include <pybind11/numpy.h>
+
 #include <Python.h>
 
 #include <mp++/real.hpp>
@@ -23,6 +25,8 @@
 
 namespace heyoka_py
 {
+
+namespace py = pybind11;
 
 #if defined(HEYOKA_HAVE_REAL)
 
@@ -43,9 +47,10 @@ mppp::real *get_real_val(PyObject *);
 PyObject *pyreal_from_real(const mppp::real &);
 PyObject *pyreal_from_real(mppp::real &&);
 
-#endif
+void pyreal_check_array(const py::array &);
+void pyreal_ensure_array(py::array &, mpfr_prec_t);
 
-namespace py = pybind11;
+#endif
 
 void expose_real(py::module_ &);
 

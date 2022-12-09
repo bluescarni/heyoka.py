@@ -30,6 +30,12 @@
 
 #endif
 
+#if defined(HEYOKA_HAVE_REAL)
+
+#include <mp++/real.hpp>
+
+#endif
+
 #include <heyoka/taylor.hpp>
 
 #include "common_utils.hpp"
@@ -37,6 +43,12 @@
 #include "dtypes.hpp"
 #include "pickle_wrappers.hpp"
 #include "taylor_expose_c_output.hpp"
+
+#if defined(HEYOKA_HAVE_REAL)
+
+#include "expose_real.hpp"
+
+#endif
 
 namespace heyoka_py
 {
@@ -111,6 +123,16 @@ void expose_c_output_impl(py::module &m, const std::string &suffix)
                                  .c_str());
                 }
 
+#if defined(HEYOKA_HAVE_REAL)
+
+                if constexpr (std::is_same_v<T, mppp::real>) {
+                    // Check that the input time array contains correctly
+                    // constructed reals.
+                    pyreal_check_array(tm);
+                }
+
+#endif
+
                 // Compute the number of rows.
                 const auto nrows = tm.shape(0);
 
@@ -119,6 +141,22 @@ void expose_c_output_impl(py::module &m, const std::string &suffix)
 
                 // Prepare the output object.
                 auto ret = py::array(tm.dtype(), py::array::ShapeContainer{nrows, ncols});
+
+#if defined(HEYOKA_HAVE_REAL)
+
+                if constexpr (std::is_same_v<T, mppp::real>) {
+                    // Ensure that ret contains initialised reals with the
+                    // correct precision.
+                    // NOTE: the precision is inferred from the bounds,
+                    // which in turn are constructed from time values
+                    // from within an integrator. Thus, they should be
+                    // guaranteed to have the correct precision value.
+                    // If the c_out object is default constructed,
+                    // the get_bounds() function will throw.
+                    pyreal_ensure_array(ret, c_out->get_bounds().first.get_prec());
+                }
+
+#endif
 
                 // Fetch a pointer for writing.
                 auto *ret_ptr = static_cast<T *>(ret.mutable_data());
@@ -500,6 +538,12 @@ void taylor_expose_c_output(py::module &m)
 #if defined(HEYOKA_HAVE_REAL128)
 
     detail::expose_c_output_impl<mppp::real128>(m, "f128");
+
+#endif
+
+#if defined(HEYOKA_HAVE_REAL)
+
+    detail::expose_c_output_impl<mppp::real>(m, "real");
 
 #endif
 
