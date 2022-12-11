@@ -18,6 +18,29 @@ class mp_test_case(_ut.TestCase):
 
         self.test_basic()
         self.test_c_out()
+        self.test_events()
+
+    def test_events(self):
+        # Basic event testing.
+        from . import make_vars, taylor_adaptive, real, t_event
+
+        x, v = make_vars("x", "v")
+
+        prec = 237
+
+        ta = taylor_adaptive(
+            [(x, v), (v, -x)],
+            [real(0, prec), real(1, prec)],
+            fp_type=real,
+            t_events = [t_event(v, fp_type=real)]
+        )
+
+        ta.propagate_until(real(100))
+
+        self.assertLess(abs(ta.time - real("1.570796326794896619231321691639751442098584699687552910487472296153908199", prec)), 1e-70)
+        self.assertLess(abs(ta.state[0] - 1), 1e-70)
+        self.assertLess(abs(ta.state[1]), 1e-70)
+
 
     def test_c_out(self):
         from . import make_vars, taylor_adaptive, real, core
