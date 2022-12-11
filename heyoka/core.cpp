@@ -58,7 +58,6 @@
 #include "cfunc.hpp"
 #include "custom_casters.hpp"
 #include "dtypes.hpp"
-#include "expose_M2E.hpp"
 #include "expose_batch_integrators.hpp"
 #include "expose_expression.hpp"
 #include "expose_real.hpp"
@@ -193,9 +192,6 @@ PYBIND11_MODULE(core, m)
 
     // Expression.
     heypy::expose_expression(m);
-
-    // M2E.
-    heypy::expose_M2E(m);
 
     // N-body builders.
     m.def(

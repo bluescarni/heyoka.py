@@ -37,7 +37,6 @@ set(_HEYOKA_PY_CORE_SOURCES
     dtypes.cpp
     custom_casters.cpp
     expose_expression.cpp
-    expose_M2E.cpp
     expose_batch_integrators.cpp
     numpy_memory.cpp
 )
