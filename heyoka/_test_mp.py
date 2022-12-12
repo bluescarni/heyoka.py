@@ -20,6 +20,54 @@ class mp_test_case(_ut.TestCase):
         self.test_c_out()
         self.test_events()
         self.test_expression()
+        self.test_sympy()
+
+    def test_sympy(self):
+        try:
+            import sympy
+            from mpmath import mp, pi, workprec
+        except ImportError:
+            return
+
+        from . import to_sympy, from_sympy, real, expression, sum as sum_hy
+
+        with workprec(128):
+            from_spy_ex = from_sympy(pi() + sympy.Symbol("x"))
+            self.assertEqual(
+                sum_hy(
+                    [
+                        expression(
+                            real("3.141592653589793238462643383279502884195", 128)
+                        ),
+                        expression("x"),
+                    ]
+                ),
+                from_spy_ex,
+            )
+
+            self.assertEqual(
+                to_sympy(from_sympy(pi() + sympy.Symbol("x"))),
+                pi() + sympy.Symbol("x", real=True),
+            )
+
+        self.assertEqual(
+            str(from_sympy(sympy.Integer(2**500 + 1))),
+            "3.2733906078961418700131896968275991522166420460430647894832913680961337964046745548832700923259041571508866841275600710092172565458853930533285275893770e+150",
+        )
+
+        self.assertEqual(
+            str(
+                from_sympy(
+                    sympy.Rational(sympy.Integer(2**128 + 1), sympy.Integer(2**500))
+                )
+            ),
+            "1.039540976564489921853040458068190636782e-112",
+        )
+
+        self.assertEqual(
+            from_sympy(sympy.Integer((2 << 128) + 1)),
+            expression(real("680564733841876926926749214863536422913.0", 130)),
+        )
 
     def test_expression(self):
         from . import expression as ex, real, kepE, atan2

@@ -36,6 +36,12 @@
 
 #endif
 
+#if defined(HEYOKA_HAVE_REAL)
+
+#include <mp++/real.hpp>
+
+#endif
+
 #include <heyoka/expression.hpp>
 #include <heyoka/func.hpp>
 #include <heyoka/math.hpp>
@@ -114,12 +120,16 @@ py::object to_sympy_impl(std::unordered_map<const void *, py::object> &, const h
 #if defined(HEYOKA_HAVE_REAL128)
             if constexpr (std::is_same_v<std::remove_cv_t<std::remove_reference_t<decltype(x)>>, mppp::real128>) {
                 return spy->attr("Float")(x.to_string(), py::none{}, std::numeric_limits<mppp::real128>::digits);
-            } else {
-#endif
-                return py::cast(x);
-#if defined(HEYOKA_HAVE_REAL128)
             }
 #endif
+
+#if defined(HEYOKA_HAVE_REAL)
+            if constexpr (std::is_same_v<std::remove_cv_t<std::remove_reference_t<decltype(x)>>, mppp::real>) {
+                return spy->attr("Float")(x.to_string(), py::none{}, x.get_prec());
+            }
+#endif
+
+            return py::cast(x);
         },
         num.value());
 }

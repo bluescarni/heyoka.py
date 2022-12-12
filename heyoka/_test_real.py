@@ -1800,10 +1800,12 @@ class real_test_case(_ut.TestCase):
 
     def test_basic(self):
         from . import real
-        from . import core
+        from . import core, real_prec_min, real_prec_max
         import numpy as np
 
         ld = np.longdouble
+
+        self.assertGreater(real_prec_max(), real_prec_min())
 
         # Default ctor.
         self.assertEqual(str(real()), "0.0")

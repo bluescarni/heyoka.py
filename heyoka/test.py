@@ -2904,9 +2904,10 @@ class sympy_test_case(_ut.TestCase):
                     )
 
         # Too high precision.
-        with self.assertRaises(ValueError) as cm:
-            from_sympy(Integer(2**500 + 1))
-        self.assertTrue("the required precision" in str(cm.exception))
+        if not hasattr(core, "real"):
+            with self.assertRaises(ValueError) as cm:
+                from_sympy(Integer(2**500 + 1))
+            self.assertTrue("the required precision" in str(cm.exception))
 
         if not hasattr(core, "real128") or _ppc_arch:
             return

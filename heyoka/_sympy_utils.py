@@ -112,12 +112,30 @@ def _from_sympy_number(ex):
             raise ValueError(nf_err_msg)
 
         return expression(retval)
-    else:
-        raise ValueError(
-            "Cannot convert the number {} from sympy exactly: the required precision ({}) is too high".format(
-                ex, prec
-            )
+
+    if hasattr(core, "real"):
+        # We have real, we can in principle represent
+        # any number.
+        real = core.real
+
+        # Ensure we are not going to employ
+        # a too-low precision.
+        prec = max(prec, core.real_prec_min())
+
+        retval = (
+            real(ex.p, prec) / real(ex.q, prec) if is_rational else real(str(ex), prec)
         )
+
+        if not np.isfinite(retval):
+            raise ValueError(nf_err_msg)
+
+        return expression(retval)
+
+    raise ValueError(
+        "Cannot convert the number {} from sympy exactly: the required precision ({}) is too high".format(
+            ex, prec
+        )
+    )
 
 
 def _build_fmap():

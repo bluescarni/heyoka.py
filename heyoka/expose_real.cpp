@@ -2723,6 +2723,10 @@ void expose_real(py::module_ &m)
         py_throw(PyExc_TypeError, "Could not add the real type to the module");
     }
 
+    // Min/max prec getters.
+    m.def("real_prec_min", &mppp::real_prec_min);
+    m.def("real_prec_max", &mppp::real_prec_max);
+
     // Expose functions for testing.
     m.def("_make_no_real_array", [](std::vector<mppp::real> vec) {
         auto vec_ptr = std::make_unique<std::vector<mppp::real>>(std::move(vec));
