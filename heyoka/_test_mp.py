@@ -19,6 +19,58 @@ class mp_test_case(_ut.TestCase):
         self.test_basic()
         self.test_c_out()
         self.test_events()
+        self.test_expression()
+
+    def test_expression(self):
+        from . import expression as ex, real, kepE, atan2
+
+        self.assertEqual(
+            str(ex(real("1.1", 128))), "1.100000000000000000000000000000000000001"
+        )
+
+        self.assertEqual(
+            str(1.0 + ex(real("1.1", 128))), "2.099999999999999999999999999999999999995"
+        )
+        self.assertEqual(
+            str(ex(real("1.1", 128)) + 1), "2.099999999999999999999999999999999999995"
+        )
+
+        self.assertEqual(
+            str(1.0 - ex(real("1.1", 128))),
+            "-1.000000000000000000000000000000000000012e-1",
+        )
+        self.assertEqual(
+            str(ex(real("1.1", 128)) - 1),
+            "1.000000000000000000000000000000000000012e-1",
+        )
+
+        self.assertEqual(
+            str(1.0 * ex(real("1.1", 128))),
+            "1.100000000000000000000000000000000000001",
+        )
+        self.assertEqual(
+            str(ex(real("1.1", 128)) * 1),
+            "1.100000000000000000000000000000000000001",
+        )
+
+        self.assertEqual(
+            str(1.0 / ex(real("1.1", 128))),
+            "9.090909090909090909090909090909090909070e-1",
+        )
+        self.assertEqual(
+            str(ex(real("1.1", 128)) / 1),
+            "1.100000000000000000000000000000000000001",
+        )
+
+        # NOTE: just test execution for the time being,
+        # as these currently do not fold.
+        ex(1.1) ** real("1.1", 128)
+
+        kepE(ex("x"), real("1.1", 128))
+        kepE(real("1.1", 128), ex("x"))
+
+        atan2(ex("x"), real("1.1", 128))
+        atan2(real("1.1", 128), ex("x"))
 
     def test_events(self):
         # Basic event testing.
@@ -32,15 +84,23 @@ class mp_test_case(_ut.TestCase):
             [(x, v), (v, -x)],
             [real(0, prec), real(1, prec)],
             fp_type=real,
-            t_events = [t_event(v, fp_type=real)]
+            t_events=[t_event(v, fp_type=real)],
         )
 
         ta.propagate_until(real(100))
 
-        self.assertLess(abs(ta.time - real("1.570796326794896619231321691639751442098584699687552910487472296153908199", prec)), 1e-70)
+        self.assertLess(
+            abs(
+                ta.time
+                - real(
+                    "1.570796326794896619231321691639751442098584699687552910487472296153908199",
+                    prec,
+                )
+            ),
+            1e-70,
+        )
         self.assertLess(abs(ta.state[0] - 1), 1e-70)
         self.assertLess(abs(ta.state[1]), 1e-70)
-
 
     def test_c_out(self):
         from . import make_vars, taylor_adaptive, real, core
