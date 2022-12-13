@@ -274,9 +274,8 @@ void expose_taylor_add_jet_impl(py::module &m, const char *name)
             return py::cpp_function(
                 [s = std::move(s), batch_size, order, has_time, n_params,
                  tot_n_eq = static_cast<std::uint32_t>(n_eq) + static_cast<std::uint32_t>(n_sv_funcs), jptr,
-                 prec = boost::numeric_cast<mpfr_prec_t>(prec)](const py::iterable &state_ob,
-                                                                std::optional<py::iterable> pars_ob,
-                                                                std::optional<py::iterable> time_ob) {
+                 prec](const py::iterable &state_ob, std::optional<py::iterable> pars_ob,
+                       std::optional<py::iterable> time_ob) {
                     (void)prec;
 
                     // Attempt to turn the input objects into arrays.
@@ -360,12 +359,12 @@ void expose_taylor_add_jet_impl(py::module &m, const char *name)
                         // have been initialised with the expected precision.
                         // NOTE: here we will error out even if no pars/time are needed
                         // but the user provided them anyway, uninited or with incorrect precision.
-                        pyreal_check_array(state, prec);
+                        pyreal_check_array(state, boost::numeric_cast<mpfr_prec_t>(prec));
                         if (pars) {
-                            pyreal_check_array(*pars, prec);
+                            pyreal_check_array(*pars, boost::numeric_cast<mpfr_prec_t>(prec));
                         }
                         if (time) {
-                            pyreal_check_array(*time, prec);
+                            pyreal_check_array(*time, boost::numeric_cast<mpfr_prec_t>(prec));
                         }
                     }
 
