@@ -2084,7 +2084,7 @@ namespace
 
 template <std::size_t NDim, std::size_t CurDim = 0>
 void pyreal_check_array_impl(std::array<py::ssize_t, NDim> &idxs, const py::array &arr, const unsigned char *base_ptr,
-                             const bool *ct_flags)
+                             const bool *ct_flags, mpfr_prec_t prec)
 {
     static_assert(CurDim < NDim);
 
@@ -2100,10 +2100,22 @@ void pyreal_check_array_impl(std::array<py::ssize_t, NDim> &idxs, const py::arra
                     fmt::format("A non-constructed/invalid real was detected in a NumPy array at the indices {}", idxs)
                         .c_str());
             }
+
+            if (prec != 0) {
+                const auto cur_prec = std::launder(reinterpret_cast<const mppp::real *>(ptr))->get_prec();
+
+                if (cur_prec != prec) {
+                    py_throw(PyExc_ValueError,
+                             fmt::format("A real with precision {} was detected at the indices {} in an array which "
+                                         "should instead contain elements with a precision of {}",
+                                         cur_prec, idxs, prec)
+                                 .c_str());
+                }
+            }
         }
     } else {
         for (idxs[CurDim] = 0; idxs[CurDim] < cur_size; ++idxs[CurDim]) {
-            pyreal_check_array_impl<NDim, CurDim + 1u>(idxs, arr, base_ptr, ct_flags);
+            pyreal_check_array_impl<NDim, CurDim + 1u>(idxs, arr, base_ptr, ct_flags, prec);
         }
     }
 }
@@ -2113,8 +2125,10 @@ void pyreal_check_array_impl(std::array<py::ssize_t, NDim> &idxs, const py::arra
 } // namespace detail
 
 // Helper to check if all the real values in arr have been
-// properly constructed.
-void pyreal_check_array(const py::array &arr)
+// properly constructed with a precision of prec. If prec == 0,
+// then no check on the precision is performed (i.e., only the
+// check for proper construction is performed).
+void pyreal_check_array(const py::array &arr, mpfr_prec_t prec)
 {
     assert(arr.dtype().num() == npy_registered_py_real);
 
@@ -2131,12 +2145,12 @@ void pyreal_check_array(const py::array &arr)
     switch (arr.ndim()) {
         case 1: {
             std::array<py::ssize_t, 1> idxs{};
-            detail::pyreal_check_array_impl(idxs, arr, base_ptr, ct_flags);
+            detail::pyreal_check_array_impl(idxs, arr, base_ptr, ct_flags, prec);
             break;
         }
         case 2: {
             std::array<py::ssize_t, 2> idxs{};
-            detail::pyreal_check_array_impl(idxs, arr, base_ptr, ct_flags);
+            detail::pyreal_check_array_impl(idxs, arr, base_ptr, ct_flags, prec);
             break;
         }
         default:
@@ -2751,7 +2765,8 @@ void expose_real(py::module_ &m)
     m.def("_copy_real", [](const mppp::real &x) { return x; });
 
     // Function to test the pyreal_check_array() helper.
-    m.def("_real_check_array", &pyreal_check_array);
+    using namespace pybind11::literals;
+    m.def("_real_check_array", &pyreal_check_array, "arr"_a, "prec"_a.noconvert() = 0);
 
     // Function to test the pyreal_ensure_array() helper.
     m.def("_real_ensure_array", &pyreal_ensure_array);

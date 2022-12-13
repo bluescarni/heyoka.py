@@ -335,6 +335,12 @@ PYBIND11_MODULE(core, m)
 
 #endif
 
+#if defined(HEYOKA_HAVE_REAL)
+
+    heypy::expose_taylor_add_jet_real(m);
+
+#endif
+
     // Compiled functions.
     heypy::expose_add_cfunc_dbl(m);
     heypy::expose_add_cfunc_ldbl(m);

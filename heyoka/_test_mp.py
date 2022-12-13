@@ -21,6 +21,137 @@ class mp_test_case(_ut.TestCase):
         self.test_events()
         self.test_expression()
         self.test_sympy()
+        self.test_add_jet()
+
+    def test_add_jet(self):
+        from . import (
+            taylor_add_jet,
+            sin,
+            par,
+            tpoly,
+            make_vars,
+            real,
+            taylor_adaptive,
+            core,
+        )
+        import numpy as np
+
+        x, v = make_vars("x", "v")
+
+        sys = [(x, v), (v, -par[0] * sin(x) + tpoly(par[1], par[6]))]
+
+        prec = 237
+
+        # Check that the jet is consistent
+        # with the Taylor coefficients.
+        init_state = [real(0.05, prec), real(0.025, prec)]
+        pars = [
+            real(-9.8, prec),
+            real(0.01, prec),
+            real(0.02, prec),
+            real(0.03, prec),
+            real(0.04, prec),
+            real(0.05, prec),
+            real(0.06, prec),
+        ]
+
+        with self.assertRaises(ValueError) as cm:
+            jet = taylor_add_jet(sys, 5, fp_type=real, prec=-1)
+        self.assertTrue(
+            "An invalid precision value of -1 was passed to taylor_add_jet()"
+            in str(cm.exception)
+        )
+
+        ta = taylor_adaptive(
+            sys, init_state, fp_type=real, tol=real(1e-9), pars=pars, time=real(0.01)
+        )
+        jet = taylor_add_jet(sys, 5, fp_type=real, prec=prec)
+
+        st = np.full((6, 2), real(0, prec))
+        st[0] = init_state
+        par_arr = np.array(pars)
+        time_arr = np.full((1,), real(0.01, prec))
+
+        ta.step(write_tc=True)
+        jet(st, pars=par_arr, time=time_arr)
+
+        self.assertTrue(np.all(ta.tc[:, :6].transpose() == st))
+
+        # Test non-owning arrays as well.
+        par_no = core._make_no_real_array(par_arr)
+        time_no = core._make_no_real_array(time_arr)
+
+        st[0] = ta.state
+        time_no[0] = ta.time
+        ta.step(write_tc=True)
+        jet(st, pars=par_no, time=time_no)
+
+        self.assertTrue(np.all(ta.tc[:, :6].transpose() == st))
+
+        # Test failure modes.
+        with self.assertRaises(ValueError) as cm:
+            jet(np.empty((6, 2), dtype=real), pars=par_arr, time=time_arr)
+        self.assertTrue("A non-constructed/invalid real" in str(cm.exception))
+        self.assertTrue("0" in str(cm.exception))
+
+        with self.assertRaises(ValueError) as cm:
+            jet(np.full((6, 2), real(0, prec - 1)), pars=par_arr, time=time_arr)
+        self.assertTrue(
+            "A real with precision {} was detected".format(prec - 1)
+            in str(cm.exception)
+        )
+        self.assertTrue(
+            "should instead contain elements with a precision of {}".format(prec)
+            in str(cm.exception)
+        )
+
+        with self.assertRaises(ValueError) as cm:
+            jet(st, pars=np.empty_like(pars), time=time_arr)
+        self.assertTrue("A non-constructed/invalid real" in str(cm.exception))
+        self.assertTrue("0" in str(cm.exception))
+
+        with self.assertRaises(ValueError) as cm:
+            jet(
+                st,
+                pars=[
+                    real(-9.8, prec),
+                    real(0.01, prec - 1),
+                    real(0.02, prec),
+                    real(0.03, prec),
+                    real(0.04, prec),
+                    real(0.05, prec),
+                    real(0.06, prec),
+                ],
+                time=time_arr,
+            )
+        self.assertTrue(
+            "A real with precision {} was detected".format(prec - 1)
+            in str(cm.exception)
+        )
+        self.assertTrue(
+            "should instead contain elements with a precision of {}".format(prec)
+            in str(cm.exception)
+        )
+
+        with self.assertRaises(ValueError) as cm:
+            jet(st, pars=par_arr, time=np.empty_like(time_arr))
+        self.assertTrue("A non-constructed/invalid real" in str(cm.exception))
+        self.assertTrue("0" in str(cm.exception))
+
+        with self.assertRaises(ValueError) as cm:
+            jet(
+                st,
+                pars=par_arr,
+                time=[real(0.01, prec - 1)],
+            )
+        self.assertTrue(
+            "A real with precision {} was detected".format(prec - 1)
+            in str(cm.exception)
+        )
+        self.assertTrue(
+            "should instead contain elements with a precision of {}".format(prec)
+            in str(cm.exception)
+        )
 
     def test_sympy(self):
         try:
@@ -254,6 +385,19 @@ class mp_test_case(_ut.TestCase):
 
         ta.propagate_until(real(10))
         self.assertTrue(np.all(orig_sv == ta.state))
+
+        # Test with bogus precision.
+        with self.assertRaises(ValueError) as cm:
+            taylor_adaptive(
+                [(x, v), (v, -9.8 * sin(x))],
+                [real(-1, prec - 1), real(0, prec + 1)],
+                fp_type=real,
+                prec=-1,
+                compact_mode=False,
+            )
+        self.assertTrue(
+            "Cannot set the precision of a real to the value -1" in str(cm.exception)
+        )
 
         # Testing for the pyreal_check_array() helper.
         arr = np.empty((5,), dtype=real)

@@ -35,10 +35,22 @@
 
 #endif
 
+#if defined(HEYOKA_HAVE_REAL)
+
+#include <mp++/real.hpp>
+
+#endif
+
 #include "common_utils.hpp"
 #include "custom_casters.hpp"
 #include "dtypes.hpp"
 #include "taylor_add_jet.hpp"
+
+#if defined(HEYOKA_HAVE_REAL)
+
+#include "expose_real.hpp"
+
+#endif
 
 namespace heyoka_py
 {
@@ -52,10 +64,19 @@ namespace detail
 namespace
 {
 
+template <typename T>
+constexpr bool default_cm =
+#if defined(HEYOKA_HAVE_REAL)
+    std::is_same_v<T, mppp::real>
+#else
+    false
+#endif
+    ;
+
 // Common helper to check the shapes/dimensions
 // of the arrays used as inputs for the function
 // computing the jet of derivatives.
-template <typename Arr>
+template <typename T, typename Arr>
 void taylor_add_jet_array_check(const Arr &state, const std::optional<Arr> &pars, const std::optional<Arr> &time,
                                 std::uint32_t n_params, std::uint32_t order, std::uint32_t tot_n_eq,
                                 std::uint32_t batch_size)
@@ -205,7 +226,7 @@ void expose_taylor_add_jet_impl(py::module &m, const char *name)
         name,
         [](const U &sys, std::uint32_t order, std::uint32_t batch_size, bool high_accuracy, bool compact_mode,
            const std::vector<hey::expression> &sv_funcs, bool parallel_mode, unsigned opt_level, bool force_avx512,
-           bool fast_math) {
+           bool fast_math, long long prec) {
             // Forbid batch sizes > 1 for everything but double.
             if (!std::is_same_v<T, double> && batch_size > 1u) {
                 py_throw(PyExc_ValueError, "Batch sizes greater than 1 are not supported for this floating-point type");
@@ -240,8 +261,9 @@ void expose_taylor_add_jet_impl(py::module &m, const char *name)
                 // NOTE: release the GIL during compilation.
                 py::gil_scoped_release release;
 
+                // NOTE: this will throw in case of an invalid prec value.
                 hey::taylor_add_jet<T>(s, "jet", sys, order, batch_size, high_accuracy, compact_mode, sv_funcs,
-                                       parallel_mode);
+                                       parallel_mode, prec);
 
                 s.compile();
 
@@ -251,9 +273,12 @@ void expose_taylor_add_jet_impl(py::module &m, const char *name)
             // Build and return the Python wrapper for jptr.
             return py::cpp_function(
                 [s = std::move(s), batch_size, order, has_time, n_params,
-                 tot_n_eq = static_cast<std::uint32_t>(n_eq) + static_cast<std::uint32_t>(n_sv_funcs),
-                 jptr](const py::iterable &state_ob, std::optional<py::iterable> pars_ob,
-                       std::optional<py::iterable> time_ob) {
+                 tot_n_eq = static_cast<std::uint32_t>(n_eq) + static_cast<std::uint32_t>(n_sv_funcs), jptr,
+                 prec = boost::numeric_cast<mpfr_prec_t>(prec)](const py::iterable &state_ob,
+                                                                std::optional<py::iterable> pars_ob,
+                                                                std::optional<py::iterable> time_ob) {
+                    (void)prec;
+
                     // Attempt to turn the input objects into arrays.
                     py::array state = state_ob;
                     std::optional<py::array> pars = pars_ob ? *pars_ob : std::optional<py::array>{};
@@ -326,7 +351,25 @@ void expose_taylor_add_jet_impl(py::module &m, const char *name)
                     }
 
                     // Check the shapes/dims of the input arrays.
-                    taylor_add_jet_array_check(state, pars, time, n_params, order, tot_n_eq, batch_size);
+                    taylor_add_jet_array_check<T>(state, pars, time, n_params, order, tot_n_eq, batch_size);
+
+#if defined(HEYOKA_HAVE_REAL)
+
+                    if constexpr (std::is_same_v<T, mppp::real>) {
+                        // For mppp::real, check that all elements in the provided arrays
+                        // have been initialised with the expected precision.
+                        // NOTE: here we will error out even if no pars/time are needed
+                        // but the user provided them anyway, uninited or with incorrect precision.
+                        pyreal_check_array(state, prec);
+                        if (pars) {
+                            pyreal_check_array(*pars, prec);
+                        }
+                        if (time) {
+                            pyreal_check_array(*time, prec);
+                        }
+                    }
+
+#endif
 
                     // NOTE: here it may be that p_ptr and/or t_ptr are provided
                     // but the system has not time/params. In that case, the pointers
@@ -337,9 +380,9 @@ void expose_taylor_add_jet_impl(py::module &m, const char *name)
                 },
                 "state"_a, "pars"_a = py::none{}, "time"_a = py::none{});
         },
-        "sys"_a, "order"_a, "batch_size"_a = 1u, "high_accuracy"_a = false, "compact_mode"_a = false,
+        "sys"_a, "order"_a, "batch_size"_a = 1u, "high_accuracy"_a = false, "compact_mode"_a = default_cm<T>,
         "sv_funcs"_a = py::list{}, "parallel_mode"_a = false, "opt_level"_a.noconvert() = 3,
-        "force_avx512"_a.noconvert() = false, "fast_math"_a.noconvert() = false);
+        "force_avx512"_a.noconvert() = false, "fast_math"_a.noconvert() = false, "prec"_a.noconvert() = 0);
 }
 
 } // namespace
@@ -367,6 +410,17 @@ void expose_taylor_add_jet_f128(py::module &m)
     detail::expose_taylor_add_jet_impl<mppp::real128, std::vector<std::pair<hey::expression, hey::expression>>>(
         m, "_taylor_add_jet_f128");
     detail::expose_taylor_add_jet_impl<mppp::real128, std::vector<hey::expression>>(m, "_taylor_add_jet_f128");
+}
+
+#endif
+
+#if defined(HEYOKA_HAVE_REAL)
+
+void expose_taylor_add_jet_real(py::module &m)
+{
+    detail::expose_taylor_add_jet_impl<mppp::real, std::vector<std::pair<hey::expression, hey::expression>>>(
+        m, "_taylor_add_jet_real");
+    detail::expose_taylor_add_jet_impl<mppp::real, std::vector<hey::expression>>(m, "_taylor_add_jet_real");
 }
 
 #endif

@@ -47,7 +47,7 @@ mppp::real *get_real_val(PyObject *);
 PyObject *pyreal_from_real(const mppp::real &);
 PyObject *pyreal_from_real(mppp::real &&);
 
-void pyreal_check_array(const py::array &);
+void pyreal_check_array(const py::array &, mpfr_prec_t = 0);
 void pyreal_ensure_array(py::array &, mpfr_prec_t);
 
 #endif
