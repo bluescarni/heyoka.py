@@ -27,6 +27,12 @@ void expose_add_cfunc_f128(py::module &);
 
 #endif
 
+#if defined(HEYOKA_HAVE_REAL)
+
+void expose_add_cfunc_real(py::module &);
+
+#endif
+
 } // namespace heyoka_py
 
 #endif

@@ -42,10 +42,22 @@
 
 #endif
 
+#if defined(HEYOKA_HAVE_REAL)
+
+#include <mp++/real.hpp>
+
+#endif
+
 #include "cfunc.hpp"
 #include "common_utils.hpp"
 #include "custom_casters.hpp"
 #include "dtypes.hpp"
+
+#if defined(HEYOKA_HAVE_REAL)
+
+#include "expose_real.hpp"
+
+#endif
 
 namespace heyoka_py
 {
@@ -61,6 +73,15 @@ namespace
 {
 
 template <typename T>
+constexpr bool default_cm =
+#if defined(HEYOKA_HAVE_REAL)
+    std::is_same_v<T, mppp::real>
+#else
+    false
+#endif
+    ;
+
+template <typename T>
 void expose_add_cfunc_impl(py::module &m, const char *name)
 {
     using namespace pybind11::literals;
@@ -70,7 +91,7 @@ void expose_add_cfunc_impl(py::module &m, const char *name)
         name,
         [](const std::vector<hey::expression> &fn, const std::optional<std::vector<hey::expression>> &vars,
            bool high_accuracy, bool compact_mode, bool parallel_mode, unsigned opt_level, bool force_avx512,
-           std::optional<std::uint32_t> batch_size, bool fast_math) {
+           std::optional<std::uint32_t> batch_size, bool fast_math, long long prec) {
             // Compute the SIMD size.
             const auto simd_size = batch_size ? *batch_size : hey::recommended_simd_size<T>();
 
@@ -98,10 +119,12 @@ void expose_add_cfunc_impl(py::module &m, const char *name)
                         // Scalar.
                         if (vars) {
                             hey::add_cfunc<T>(s_scal, "cfunc", fn, kw::vars = *vars, kw::high_accuracy = high_accuracy,
-                                              kw::compact_mode = compact_mode, kw::parallel_mode = parallel_mode);
+                                              kw::compact_mode = compact_mode, kw::parallel_mode = parallel_mode,
+                                              kw::prec = prec);
                         } else {
                             hey::add_cfunc<T>(s_scal, "cfunc", fn, kw::high_accuracy = high_accuracy,
-                                              kw::compact_mode = compact_mode, kw::parallel_mode = parallel_mode);
+                                              kw::compact_mode = compact_mode, kw::parallel_mode = parallel_mode,
+                                              kw::prec = prec);
                         }
 
                         s_scal.compile();
@@ -114,11 +137,11 @@ void expose_add_cfunc_impl(py::module &m, const char *name)
                         if (vars) {
                             hey::add_cfunc<T>(s_batch, "cfunc", fn, kw::vars = *vars, kw::batch_size = simd_size,
                                               kw::high_accuracy = high_accuracy, kw::compact_mode = compact_mode,
-                                              kw::parallel_mode = parallel_mode);
+                                              kw::parallel_mode = parallel_mode, kw::prec = prec);
                         } else {
                             hey::add_cfunc<T>(s_batch, "cfunc", fn, kw::batch_size = simd_size,
                                               kw::high_accuracy = high_accuracy, kw::compact_mode = compact_mode,
-                                              kw::parallel_mode = parallel_mode);
+                                              kw::parallel_mode = parallel_mode, kw::prec = prec);
                         }
 
                         s_batch.compile();
@@ -170,11 +193,35 @@ void expose_add_cfunc_impl(py::module &m, const char *name)
             buf_out.resize(boost::numeric_cast<decltype(buf_out.size())>(nouts * simd_size));
             buf_pars.resize(boost::numeric_cast<decltype(buf_pars.size())>(nparams * simd_size));
 
+#if defined(HEYOKA_HAVE_REAL)
+
+            if constexpr (std::is_same_v<T, mppp::real>) {
+                // For mppp::real, ensure that all buffers contain
+                // values with the correct precision.
+
+                for (auto &val : buf_in) {
+                    val.set_prec(boost::numeric_cast<mpfr_prec_t>(prec));
+                }
+
+                for (auto &val : buf_out) {
+                    val.set_prec(boost::numeric_cast<mpfr_prec_t>(prec));
+                }
+
+                for (auto &val : buf_pars) {
+                    val.set_prec(boost::numeric_cast<mpfr_prec_t>(prec));
+                }
+            }
+
+#endif
+
             return py::cpp_function(
                 [s_scal = std::move(s_scal), s_batch = std::move(s_batch), simd_size, nparams, nouts, nvars, fptr_scal,
                  fptr_scal_s, fptr_batch, fptr_batch_s, buf_in = std::move(buf_in), buf_out = std::move(buf_out),
-                 buf_pars = std::move(buf_pars)](const py::iterable &inputs_ob, std::optional<py::iterable> outputs_ob,
-                                                 std::optional<py::iterable> pars_ob) mutable {
+                 buf_pars = std::move(buf_pars),
+                 prec](const py::iterable &inputs_ob, std::optional<py::iterable> outputs_ob,
+                       std::optional<py::iterable> pars_ob) mutable {
+                    (void)prec;
+
                     // Attempt to convert the input arguments into arrays.
                     py::array inputs = inputs_ob;
                     std::optional<py::array> outputs_ = outputs_ob ? *outputs_ob : std::optional<py::array>{};
@@ -286,6 +333,17 @@ void expose_add_cfunc_impl(py::module &m, const char *name)
                         }
                     }();
 
+#if defined(HEYOKA_HAVE_REAL)
+
+                    if constexpr (std::is_same_v<T, mppp::real>) {
+                        // For mppp::real, ensure that the output array
+                        // contains constructed values with the correct
+                        // precision.
+                        pyreal_ensure_array(outputs, boost::numeric_cast<mpfr_prec_t>(prec));
+                    }
+
+#endif
+
                     // Check the pars array, if necessary.
                     if (pars) {
                         // Validate the number of dimensions.
@@ -324,6 +382,16 @@ void expose_add_cfunc_impl(py::module &m, const char *name)
                                             pars->shape(1), inputs.shape(1))
                                     .c_str());
                         }
+
+#if defined(HEYOKA_HAVE_REAL)
+
+                        if constexpr (std::is_same_v<T, mppp::real>) {
+                            // For mppp::real, check that the pars array is filled
+                            // with constructed values with the correct precision.
+                            pyreal_check_array(*pars, boost::numeric_cast<mpfr_prec_t>(prec));
+                        }
+
+#endif
                     }
 
                     // Check if we can use a zero-copy implementation. This is enabled
@@ -480,9 +548,9 @@ void expose_add_cfunc_impl(py::module &m, const char *name)
                 },
                 "inputs"_a, "outputs"_a = py::none{}, "pars"_a = py::none{});
         },
-        "fn"_a, "vars"_a = py::none{}, "high_accuracy"_a = false, "compact_mode"_a = false, "parallel_mode"_a = false,
-        "opt_level"_a.noconvert() = 3, "force_avx512"_a.noconvert() = false, "batch_size"_a = py::none{},
-        "fast_math"_a.noconvert() = false);
+        "fn"_a, "vars"_a = py::none{}, "high_accuracy"_a = false, "compact_mode"_a = default_cm<T>,
+        "parallel_mode"_a = false, "opt_level"_a.noconvert() = 3, "force_avx512"_a.noconvert() = false,
+        "batch_size"_a = py::none{}, "fast_math"_a.noconvert() = false, "prec"_a.noconvert() = 0);
 }
 
 } // namespace
@@ -504,6 +572,15 @@ void expose_add_cfunc_ldbl(py::module &m)
 void expose_add_cfunc_f128(py::module &m)
 {
     detail::expose_add_cfunc_impl<mppp::real128>(m, "_add_cfunc_f128");
+}
+
+#endif
+
+#if defined(HEYOKA_HAVE_REAL)
+
+void expose_add_cfunc_real(py::module &m)
+{
+    detail::expose_add_cfunc_impl<mppp::real>(m, "_add_cfunc_real");
 }
 
 #endif

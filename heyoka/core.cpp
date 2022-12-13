@@ -351,6 +351,12 @@ PYBIND11_MODULE(core, m)
 
 #endif
 
+#if defined(HEYOKA_HAVE_REAL)
+
+    heypy::expose_add_cfunc_real(m);
+
+#endif
+
     // Expose the events.
     // NOTE: make sure these are exposed *before* the integrators.
     // Events are used in the integrator API (e.g., ctors), and in order

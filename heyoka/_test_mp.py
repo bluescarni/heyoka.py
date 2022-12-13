@@ -22,6 +22,133 @@ class mp_test_case(_ut.TestCase):
         self.test_expression()
         self.test_sympy()
         self.test_add_jet()
+        self.test_cfunc()
+
+    def test_cfunc(self):
+        from . import real, make_cfunc, make_vars, sin, par
+        import numpy as np
+
+        x, y = make_vars("x", "y")
+        func = [sin(x + y), x - par[0], x + y + par[1]]
+
+        with self.assertRaises(ValueError) as cm:
+            make_cfunc(func, vars=[y, x], fp_type=real, batch_size=2)
+        self.assertTrue(
+            "Batch sizes greater than 1 are not supported for this floating-point type"
+            in str(cm.exception)
+        )
+
+        with self.assertRaises(ValueError) as cm:
+            make_cfunc(func, vars=[y, x], fp_type=real, prec=-1)
+        self.assertTrue(
+            "An invalid precision value of -1 was passed to add_cfunc()"
+            in str(cm.exception)
+        )
+
+        prec = 237
+
+        fn = make_cfunc(func, vars=[y, x], fp_type=real, prec=prec)
+
+        # Initial simple test.
+        inputs = np.array([real(1, prec), real(2, prec)])
+        pars = np.array([real(3, prec), real(4, prec)])
+        out = fn(inputs=inputs, pars=pars)
+        self.assertEqual(out[0], np.sin(inputs[1] + inputs[0]))
+        self.assertEqual(out[1], inputs[1] - pars[0])
+        self.assertEqual(out[2], inputs[1] + inputs[0] + pars[1])
+
+        # With provided empty output.
+        out = fn(inputs=inputs, pars=pars, outputs=np.empty((3,), dtype=real))
+        self.assertEqual(out[0], np.sin(inputs[1] + inputs[0]))
+        self.assertEqual(out[1], inputs[1] - pars[0])
+        self.assertEqual(out[2], inputs[1] + inputs[0] + pars[1])
+
+        # Test with non-owning arrays.
+        out = fn(inputs=inputs[:], pars=pars[:])
+        self.assertEqual(out[0], np.sin(inputs[1] + inputs[0]))
+        self.assertEqual(out[1], inputs[1] - pars[0])
+        self.assertEqual(out[2], inputs[1] + inputs[0] + pars[1])
+
+        # Test with overlapping arrays.
+        out = fn(inputs=inputs, pars=inputs)
+        self.assertEqual(out[0], np.sin(inputs[1] + inputs[0]))
+        self.assertEqual(out[1], inputs[1] - inputs[0])
+        self.assertEqual(out[2], inputs[1] + inputs[0] + inputs[1])
+
+        # Test with non-contiguous arrays.
+        inputs = np.array([real(1, prec), 0, real(2, prec), 0])
+        pars = np.array([real(3, prec), 0, real(4, prec), 0])
+        inputs = inputs[::2]
+        pars = pars[::2]
+        out = fn(inputs=inputs, pars=pars)
+        self.assertEqual(out[0], np.sin(inputs[1] + inputs[0]))
+        self.assertEqual(out[1], inputs[1] - pars[0])
+        self.assertEqual(out[2], inputs[1] + inputs[0] + pars[1])
+
+        # Test multieval too.
+        inputs = np.array(
+            [[real(1, prec), real(-1, prec)], [real(2, prec), real(-2, prec)]]
+        )
+        pars = np.array(
+            [[real(3, prec), real(-3, prec)], [real(4, prec), real(-4, prec)]]
+        )
+        out = fn(inputs=inputs, pars=pars)
+        self.assertEqual(out[0, 0], np.sin(inputs[1, 0] + inputs[0, 0]))
+        self.assertEqual(out[1, 0], inputs[1, 0] - pars[0, 0])
+        self.assertEqual(out[2, 0], inputs[1, 0] + inputs[0, 0] + pars[1, 0])
+        self.assertEqual(out[0, 1], np.sin(inputs[1, 1] + inputs[0, 1]))
+        self.assertEqual(out[1, 1], inputs[1, 1] - pars[0, 1])
+        self.assertEqual(out[2, 1], inputs[1, 1] + inputs[0, 1] + pars[1, 1])
+
+        # With provided empty output.
+        out = fn(inputs=inputs, pars=pars, outputs=np.empty((3, 2), dtype=real))
+        self.assertEqual(out[0, 0], np.sin(inputs[1, 0] + inputs[0, 0]))
+        self.assertEqual(out[1, 0], inputs[1, 0] - pars[0, 0])
+        self.assertEqual(out[2, 0], inputs[1, 0] + inputs[0, 0] + pars[1, 0])
+        self.assertEqual(out[0, 1], np.sin(inputs[1, 1] + inputs[0, 1]))
+        self.assertEqual(out[1, 1], inputs[1, 1] - pars[0, 1])
+        self.assertEqual(out[2, 1], inputs[1, 1] + inputs[0, 1] + pars[1, 1])
+
+        # Non-owning.
+        out = fn(inputs=inputs[:], pars=pars[:])
+        self.assertEqual(out[0, 0], np.sin(inputs[1, 0] + inputs[0, 0]))
+        self.assertEqual(out[1, 0], inputs[1, 0] - pars[0, 0])
+        self.assertEqual(out[2, 0], inputs[1, 0] + inputs[0, 0] + pars[1, 0])
+        self.assertEqual(out[0, 1], np.sin(inputs[1, 1] + inputs[0, 1]))
+        self.assertEqual(out[1, 1], inputs[1, 1] - pars[0, 1])
+        self.assertEqual(out[2, 1], inputs[1, 1] + inputs[0, 1] + pars[1, 1])
+
+        # Non-contiguous.
+        inputs = np.array(
+            [
+                [real(1, prec), 0, real(-1, prec), 0],
+                [real(2, prec), 0, real(-2, prec), 0],
+            ]
+        )
+        pars = np.array(
+            [
+                [real(3, prec), 0, real(-3, prec), 0],
+                [real(4, prec), 0, real(-4, prec), 0],
+            ]
+        )
+        inputs = inputs[:, ::2]
+        pars = pars[:, ::2]
+        out = fn(inputs=inputs[:], pars=pars[:])
+        self.assertEqual(out[0, 0], np.sin(inputs[1, 0] + inputs[0, 0]))
+        self.assertEqual(out[1, 0], inputs[1, 0] - pars[0, 0])
+        self.assertEqual(out[2, 0], inputs[1, 0] + inputs[0, 0] + pars[1, 0])
+        self.assertEqual(out[0, 1], np.sin(inputs[1, 1] + inputs[0, 1]))
+        self.assertEqual(out[1, 1], inputs[1, 1] - pars[0, 1])
+        self.assertEqual(out[2, 1], inputs[1, 1] + inputs[0, 1] + pars[1, 1])
+
+        # Error modes.
+        inputs = np.array([real(1, prec), real(2, prec)])
+        pars = np.array([real(3, prec), real(4, prec - 1)])
+        with self.assertRaises(ValueError) as cm:
+            fn(inputs=inputs, pars=pars)
+        self.assertTrue(
+            "A real with precision 236 was detected at the indices" in str(cm.exception)
+        )
 
     def test_add_jet(self):
         from . import (
@@ -59,6 +186,13 @@ class mp_test_case(_ut.TestCase):
             jet = taylor_add_jet(sys, 5, fp_type=real, prec=-1)
         self.assertTrue(
             "An invalid precision value of -1 was passed to taylor_add_jet()"
+            in str(cm.exception)
+        )
+
+        with self.assertRaises(ValueError) as cm:
+            jet = taylor_add_jet(sys, 5, fp_type=real, prec=10, batch_size=2)
+        self.assertTrue(
+            "Batch sizes greater than 1 are not supported for this floating-point type"
             in str(cm.exception)
         )
 
