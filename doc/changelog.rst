@@ -9,6 +9,8 @@ Changelog
 New
 ~~~
 
+- Implement arbitrary-precision computations
+  (`#108 <https://github.com/bluescarni/heyoka.py/pull/108>`__).
 - Implement the ``isnan()`` and ``isinf()`` NumPy ufuncs for
   ``real128``
   (`#108 <https://github.com/bluescarni/heyoka.py/pull/108>`__).
