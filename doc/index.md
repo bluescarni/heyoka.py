@@ -65,7 +65,7 @@ heyoka.py's novel event detection system is described in the following paper ([a
 ```
 
 heyoka.py is released under the [MPL-2.0](https://www.mozilla.org/en-US/MPL/2.0/FAQ/) license.
-The authors are Francesco Biscani (Max Planck Institute for Astronomy) and Dario Izzo (European Space Agency).
+The authors are Francesco Biscani and Dario Izzo (European Space Agency).
 
 ```{toctree}
 :maxdepth: 2

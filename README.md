@@ -98,7 +98,7 @@ The full documentation can be found [here](https://bluescarni.github.io/heyoka.p
 Authors
 -------
 
-* Francesco Biscani (Max Planck Institute for Astronomy)
+* Francesco Biscani (European Space Agency)
 * Dario Izzo (European Space Agency)
 
 License
