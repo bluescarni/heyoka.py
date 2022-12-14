@@ -171,6 +171,11 @@
     </a>
    </li>
    <li class="toctree-l2">
+    <a class="reference internal" href="arbitrary_precision.html">
+     Computations in arbitrary precision
+    </a>
+   </li>
+   <li class="toctree-l2">
     <a class="reference internal" href="sympy_interop.html">
      Interoperability with SymPy
     </a>
@@ -618,7 +623,7 @@ title="Print to PDF"
 <h1>Optimal Control of the Lotka-Volterra equations<a class="headerlink" href="#optimal-control-of-the-lotka-volterra-equations" title="Permalink to this headline">#</a></h1>
 <p>In this tutorial we study an optimal control problem for the <a class="reference external" href="https://en.wikipedia.org/wiki/Lotka%E2%80%93Volterra_equations">Lotka-Volterra equations</a>.These famous equations are frequently
 used to describe the dynamics of biological systems in which two species interact: a predator (<span class="math notranslate nohighlight">\(y\)</span>) and a prey (<span class="math notranslate nohighlight">\(x\)</span>).</p>
-<p>The dynamics considered, taken from the work of <a class="reference external" href="https://www.tandfonline.com/doi/full/10.1080/17513758.2016.1226435">Aitziber Ibanez</a> is:</p>
+<p>The dynamics considered, taken from the work of Aitziber Ibanez, is:</p>
 <div class="math notranslate nohighlight">
 \[\begin{split}
 (1) \quad \left\{
@@ -870,14 +875,14 @@ solved by a root finder.</p>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Tolerance               : 2.2204460492503131e-16
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Tolerance               : 2.220446049250313e-16
 High accuracy           : false
 Compact mode            : false
 Taylor order            : 20
 Dimension               : 2
-Time                    : 0.0000000000000000
-State                   : [10.000000000000000, 10.000000000000000]
-Parameters              : [1.1000000000000001, 0.20000000000000001, 0.10000000000000001, 0.40000000000000002]
+Time                    : 0
+State                   : [10, 10]
+Parameters              : [1.1, 0.2, 0.1, 0.4]
 </pre></div>
 </div>
 </div>
@@ -977,14 +982,14 @@ Parameters              : [1.1000000000000001, 0.20000000000000001, 0.1000000000
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Tolerance               : 2.2204460492503131e-16
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Tolerance               : 2.220446049250313e-16
 High accuracy           : false
 Compact mode            : false
 Taylor order            : 20
 Dimension               : 4
-Time                    : 0.0000000000000000
-State                   : [10.000000000000000, 10.000000000000000, -1.1050000000000000, -1.6274561403508774]
-Parameters              : [1.1000000000000001, 0.20000000000000001, 0.10000000000000001, 0.40000000000000002, 0.029999999999999999, 0.029999999999999999, 1.0000000000000000]
+Time                    : 0
+State                   : [10, 10, -1.105, -1.6274561403508774]
+Parameters              : [1.1, 0.2, 0.1, 0.4, 0.03, 0.03, 1]
 N of terminal events    : 1
 </pre></div>
 </div>
@@ -1103,14 +1108,14 @@ and it is implemented in the function below:</p>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Tolerance               : 2.2204460492503131e-16
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Tolerance               : 2.220446049250313e-16
 High accuracy           : false
 Compact mode            : false
 Taylor order            : 20
 Dimension               : 4
-Time                    : 0.0000000000000000
-State                   : [10.000000000000000, 10.000000000000000, -1.1050000000000000, -1.6274561403508774]
-Parameters              : [1.1000000000000001, 0.20000000000000001, 0.10000000000000001, 0.40000000000000002, 0.029999999999999999, 0.029999999999999999, 1.0000000000000000]
+Time                    : 0
+State                   : [10, 10, -1.105, -1.6274561403508774]
+Parameters              : [1.1, 0.2, 0.1, 0.4, 0.03, 0.03, 1]
 N of terminal events    : 2
 </pre></div>
 </div>

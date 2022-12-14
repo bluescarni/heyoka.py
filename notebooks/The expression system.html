@@ -171,6 +171,11 @@
     </a>
    </li>
    <li class="toctree-l2">
+    <a class="reference internal" href="arbitrary_precision.html">
+     Computations in arbitrary precision
+    </a>
+   </li>
+   <li class="toctree-l2">
     <a class="reference internal" href="sympy_interop.html">
      Interoperability with SymPy
     </a>
@@ -599,6 +604,10 @@ mathematical notation:</p>
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Extended-precision 1.1: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">hy</span><span class="o">.</span><span class="n">expression</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">longdouble</span><span class="p">(</span><span class="s2">&quot;1.1&quot;</span><span class="p">))))</span>
 
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Quadruple-precision 1.1: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">hy</span><span class="o">.</span><span class="n">expression</span><span class="p">(</span><span class="n">hy</span><span class="o">.</span><span class="n">real128</span><span class="p">(</span><span class="s2">&quot;1.1&quot;</span><span class="p">))))</span>
+
+<span class="c1"># NOTE: octuple precision has a</span>
+<span class="c1"># 237-bit significand.</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Octuple-precision 1.1: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">hy</span><span class="o">.</span><span class="n">expression</span><span class="p">(</span><span class="n">hy</span><span class="o">.</span><span class="n">real</span><span class="p">(</span><span class="s2">&quot;1.1&quot;</span><span class="p">,</span> <span class="mi">237</span><span class="p">))))</span>
 </pre></div>
 </div>
 </div>
@@ -606,17 +615,19 @@ mathematical notation:</p>
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Double-precision 1.1: 1.1000000000000001
 Extended-precision 1.1: 1.10000000000000000002
 Quadruple-precision 1.1: 1.10000000000000000000000000000000008
+Octuple-precision 1.1: 1.100000000000000000000000000000000000000000000000000000000000000000000004
 </pre></div>
 </div>
 </div>
 </div>
-<p>Note that, while double precision is always supported in heyoka.py via the standard <code class="docutils literal notranslate"><span class="pre">float</span></code> Python type, support for extended-precision floating-point types varies depending on the software/hardware platform. Specifically:</p>
+<p>Note that, while double precision is always supported in heyoka.py via the standard <code class="docutils literal notranslate"><span class="pre">float</span></code> Python type, support for <a class="reference internal" href="ext_precision.html"><span class="doc std std-doc">extended-precision</span></a> floating-point types varies depending on the software/hardware platform. Specifically:</p>
 <ul class="simple">
 <li><p>on x86 processors, the NumPy <code class="docutils literal notranslate"><span class="pre">longdouble</span></code> type corresponds to 80-bit extended precision on most platforms (the exception being MSVC on Windows, where <code class="docutils literal notranslate"><span class="pre">longdouble</span> <span class="pre">==</span> <span class="pre">float</span></code>);</p></li>
 <li><p>on some platforms (e.g., Unix ARM 64), the <code class="docutils literal notranslate"><span class="pre">longdouble</span></code> type implements the IEEE <a class="reference external" href="https://en.wikipedia.org/wiki/Quadruple-precision_floating-point_format">quadruple-precision floating-point format</a>;</p></li>
 <li><p>on some platforms where <code class="docutils literal notranslate"><span class="pre">longdouble</span></code> does <strong>not</strong> have quadruple precision, a nonstandard quadruple-precision type is instead available in C/C++ (this is the case, for instance, on x86-64 Linux and on some PowerPC platforms). On such platforms, and if the heyoka C++ library was compiled with support for the <a class="reference external" href="https://github.com/bluescarni/mppp">mp++ library</a>, quadruple precision is supported via the <code class="docutils literal notranslate"><span class="pre">real128</span></code> type (as shown above).</p></li>
 </ul>
 <p>Note that the non-IEEE <code class="docutils literal notranslate"><span class="pre">longdouble</span></code> type available on some PowerPC platforms (which implements a double-length floating-point representation with 106 significant bits) is <strong>not</strong> supported by heyoka.py at this time.</p>
+<p><a class="reference internal" href="arbitrary_precision.html"><span class="doc std std-doc">Arbitrary-precision</span></a> computations are supported by heyoka.py on all platforms via the <code class="docutils literal notranslate"><span class="pre">real</span></code> type, provided that the heyoka C++ library was compiled with support for the <a class="reference external" href="https://github.com/bluescarni/mppp">mp++ library</a>. The <code class="docutils literal notranslate"><span class="pre">real</span></code> type implements a floating-point type whose precision can be set at runtime.</p>
 <p>In addition to the standard mathematical operators, heyoka.py’s expression system
 also supports the following elementary functions (with more to come in the near future):</p>
 <ul class="simple">

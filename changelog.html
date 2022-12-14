@@ -171,6 +171,11 @@
     </a>
    </li>
    <li class="toctree-l2">
+    <a class="reference internal" href="notebooks/arbitrary_precision.html">
+     Computations in arbitrary precision
+    </a>
+   </li>
+   <li class="toctree-l2">
     <a class="reference internal" href="notebooks/sympy_interop.html">
      Interoperability with SymPy
     </a>
@@ -1214,6 +1219,11 @@ title="Print to PDF"
 <section id="new">
 <h3>New<a class="headerlink" href="#new" title="Permalink to this headline">#</a></h3>
 <ul class="simple">
+<li><p>Implement arbitrary-precision computations
+(<a class="reference external" href="https://github.com/bluescarni/heyoka.py/pull/108">#108</a>).</p></li>
+<li><p>Implement the <code class="docutils literal notranslate"><span class="pre">isnan()</span></code> and <code class="docutils literal notranslate"><span class="pre">isinf()</span></code> NumPy ufuncs for
+<code class="docutils literal notranslate"><span class="pre">real128</span></code>
+(<a class="reference external" href="https://github.com/bluescarni/heyoka.py/pull/108">#108</a>).</p></li>
 <li><p>Several JIT-related settings can now be tweaked via keyword arguments
 (<a class="reference external" href="https://github.com/bluescarni/heyoka.py/pull/107">#107</a>).</p></li>
 </ul>
@@ -1229,6 +1239,11 @@ heyoka C++ library
 <section id="fix">
 <h3>Fix<a class="headerlink" href="#fix" title="Permalink to this headline">#</a></h3>
 <ul class="simple">
+<li><p>Fix the <code class="docutils literal notranslate"><span class="pre">real128</span></code> NumPy comparison operator to be consistent
+with <code class="docutils literal notranslate"><span class="pre">float</span></code> with respect to NaN values
+(<a class="reference external" href="https://github.com/bluescarni/heyoka.py/pull/108">#108</a>).</p></li>
+<li><p>Prevent the <code class="docutils literal notranslate"><span class="pre">real128</span></code> constructor from being called with keyword arguments
+(<a class="reference external" href="https://github.com/bluescarni/heyoka.py/pull/108">#108</a>).</p></li>
 <li><p>Fix a build issue with Python 3.11
 (<a class="reference external" href="https://github.com/bluescarni/heyoka.py/pull/107">#107</a>).</p></li>
 </ul>

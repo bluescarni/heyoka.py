@@ -171,6 +171,11 @@
     </a>
    </li>
    <li class="toctree-l2">
+    <a class="reference internal" href="arbitrary_precision.html">
+     Computations in arbitrary precision
+    </a>
+   </li>
+   <li class="toctree-l2">
     <a class="reference internal" href="sympy_interop.html">
      Interoperability with SymPy
     </a>
@@ -652,13 +657,13 @@ element of the state vector has a magnitude greater than 1.</p>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Tolerance               : 1.0000000000000001e-09
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Tolerance               : 1e-09
 High accuracy           : false
 Compact mode            : false
 Taylor order            : 12
 Dimension               : 2
-Time                    : 0.0000000000000000
-State                   : [0.050000000000000003, 0.025000000000000001]
+Time                    : 0
+State                   : [0.05, 0.025]
 </pre></div>
 </div>
 </div>
@@ -678,13 +683,13 @@ integration is reduced with respect to the default tolerance value:</p>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Tolerance               : 1.0000000000000001e-09
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Tolerance               : 1e-09
 High accuracy           : false
 Compact mode            : false
 Taylor order            : 12
 Dimension               : 2
-Time                    : 0.0000000000000000
-State                   : [0.050000000001312848, 0.024999999997558649]
+Time                    : 0
+State                   : [0.05000000000131285, 0.02499999999755865]
 </pre></div>
 </div>
 </div>
@@ -738,8 +743,8 @@ code generation mode:</p>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CPU times: user 6.55 s, sys: 48.4 ms, total: 6.6 s
-Wall time: 6.6 s
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CPU times: user 5.23 s, sys: 68.3 ms, total: 5.29 s
+Wall time: 5.29 s
 </pre></div>
 </div>
 </div>
@@ -754,8 +759,8 @@ keyword argument):</p>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CPU times: user 204 ms, sys: 3.98 ms, total: 208 ms
-Wall time: 207 ms
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CPU times: user 190 ms, sys: 55 µs, total: 191 ms
+Wall time: 190 ms
 </pre></div>
 </div>
 </div>

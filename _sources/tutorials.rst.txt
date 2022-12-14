@@ -48,6 +48,7 @@ Advanced features
   notebooks/ensemble_mode.ipynb
   notebooks/parallel_mode.ipynb
   notebooks/ext_precision.ipynb
+  notebooks/arbitrary_precision.ipynb
   notebooks/sympy_interop.ipynb
   notebooks/compiled_functions.ipynb
   notebooks/pickling.ipynb

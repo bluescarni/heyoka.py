@@ -1,0 +1,1048 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Computations in arbitrary precision &#8212; heyoka.py 0.20.0 documentation</title>
+    
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
+
+    
+  <link rel="stylesheet"
+    href="../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" href="../_static/styles/sphinx-book-theme.css?digest=5115cc725059bd94278eecd172e13a965bf8f5a9" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf">
+
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?digest=9c920249402e914e316237a7dbc6769907cce411"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Interoperability with SymPy" href="sympy_interop.html" />
+    <link rel="prev" title="Computations in extended precision" href="ext_precision.html" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="None">
+    
+
+    <!-- Google Analytics -->
+    
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="60">
+<!-- Checkboxes to toggle the left sidebar -->
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation" aria-label="Toggle navigation sidebar">
+<label class="overlay overlay-navbar" for="__navigation">
+    <div class="visually-hidden">Toggle navigation sidebar</div>
+</label>
+<!-- Checkboxes to toggle the in-page toc -->
+<input type="checkbox" class="sidebar-toggle" name="__page-toc" id="__page-toc" aria-label="Toggle in-page Table of Contents">
+<label class="overlay overlay-pagetoc" for="__page-toc">
+    <div class="visually-hidden">Toggle in-page Table of Contents</div>
+</label>
+<!-- Headers at the top -->
+<div class="announcement header-item noprint"></div>
+<div class="header header-item noprint"></div>
+
+    
+    <div class="container-fluid" id="banner"></div>
+
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+<!-- Sidebar -->
+<div class="bd-sidebar noprint" id="site-navigation">
+    <div class="bd-sidebar__content">
+        <div class="bd-sidebar__top"><div class="navbar-brand-box">
+    <a class="navbar-brand text-wrap" href="../index.html">
+      
+        <!-- `logo` is deprecated in Sphinx 4.0, so remove this when we stop supporting 3 -->
+        
+      
+      
+      <img src="../_static/white_logo.png" class="logo" alt="logo">
+      
+      
+      <h1 class="site-logo" id="site-title">heyoka.py 0.20.0 documentation</h1>
+      
+    </a>
+</div><form class="bd-search d-flex align-items-center" action="../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item active">
+        <p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Contents
+ </span>
+</p>
+<ul class="current nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../install.html">
+   Installation
+  </a>
+ </li>
+ <li class="toctree-l1 current active has-children">
+  <a class="reference internal" href="../tutorials.html">
+   Tutorials
+  </a>
+  <input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/>
+  <label for="toctree-checkbox-1">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul class="current">
+   <li class="toctree-l2">
+    <a class="reference internal" href="../tut_taylor_method.html">
+     Taylor’s method
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="The%20expression%20system.html">
+     The expression system
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="The%20adaptive%20integrator.html">
+     The adaptive integrator
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="Customising%20the%20adaptive%20integrator.html">
+     Customising the adaptive integrator
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="ODEs%20with%20parameters.html">
+     ODEs with parameters
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="Non-autonomous%20systems.html">
+     Non-autonomous systems
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="Dense%20output.html">
+     Dense &amp; continuous output
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="Event%20detection.html">
+     Event detection
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="Batch%20mode%20overview.html">
+     Batch mode
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="ensemble_mode.html">
+     Ensemble propagations
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="parallel_mode.html">
+     Parallel mode
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="ext_precision.html">
+     Computations in extended precision
+    </a>
+   </li>
+   <li class="toctree-l2 current active">
+    <a class="current reference internal" href="#">
+     Computations in arbitrary precision
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="sympy_interop.html">
+     Interoperability with SymPy
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="compiled_functions.html">
+     Compiled functions
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="pickling.html">
+     Pickle support
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="../examples.html">
+   Examples
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/>
+  <label for="toctree-checkbox-2">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="The%20restricted%20three-body%20problem.html">
+     The restricted three-body problem
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="Periodic%20orbits%20in%20the%20CR3BP.html">
+     Continuation of Periodic Orbits in the CR3BP
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="Long%20term%20stability%20of%20Trappist-1.html">
+     Long term stability of N-body simulations: the case of Trappist-1
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="Outer%20Solar%20System.html">
+     Brouwer’s law in the outer Solar System
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="Box%20control%20for%20Formation%20Flying%20Satellites.html">
+     Box control in satellite Formation Flying
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="Comparing%20coordinate%20systems.html">
+     Comparing coordinate systems
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="Inverting%20Kepler%27s%20equation%20in%20ODEs.html">
+     Inverting Kepler’s equation in ODEs
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="Planetary%20embryos.html">
+     Planetary embryos in the inner Solar System
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="mercury_precession.html">
+     Mercury’s relativistic precession
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="ttv.html">
+     Calculating transit timing variations
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="vsop2013.html">
+     Introduction to the VSOP2013 planetary theory
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="tides_spokes.html">
+     Elastic tides
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="Sampling%20events.html">
+     Sampling events
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="Poincar%C3%A9%20sections.html">
+     Poincaré sections
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="second_integral.html">
+     The second integral of motion
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="The%20Keplerian%20billiard.html">
+     The Keplerian billiard
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="The%20two-fixed%20elliptic%20billiard.html">
+     The two-fixed centres elliptic billiard
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="The%20wavy%20ramp.html">
+     The wavy ramp
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="The%20Maxwell-Boltzmann%20distribution.html">
+     The Maxwell-Boltzmann distribution
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="ev_sensitivity.html">
+     Computing event sensitivity
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="ensemble_batch_perf.html">
+     Evaluating the performance of ensemble &amp; batch mode
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="The%20variational%20equations.html">
+     The variational equations
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="Optimal%20Control%20of%20the%20Lotka-Volterra%20equations.html">
+     Optimal Control of the Lotka-Volterra equations
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="definite_integrals.html">
+     Computing definite integrals
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../benchmarks.html">
+   Benchmarks
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../changelog.html">
+   Changelog
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../breaking_changes.html">
+   Breaking changes
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../acknowledgement.html">
+   Acknowledgement
+  </a>
+ </li>
+</ul>
+
+    </div>
+</nav></div>
+        <div class="bd-sidebar__bottom">
+             <!-- To handle the deprecated key -->
+            
+            <div class="navbar_extra_footer">
+            Theme by the <a href="https://ebp.jupyterbook.org">Executable Book Project</a>
+            </div>
+            
+        </div>
+    </div>
+    <div id="rtd-footer-container"></div>
+</div>
+
+
+          
+
+
+          
+<!-- A tiny helper pixel to detect if we've scrolled -->
+<div class="sbt-scroll-pixel-helper"></div>
+<!-- Main content -->
+<div class="col py-0 content-container">
+    
+    <div class="header-article row sticky-top noprint">
+        
+
+
+
+<div class="col py-1 d-flex header-article-main">
+    <div class="header-article__left">
+        
+        <label for="__navigation"
+  class="headerbtn"
+  data-toggle="tooltip"
+data-placement="right"
+title="Toggle navigation"
+>
+  
+
+<span class="headerbtn__icon-container">
+  <i class="fas fa-bars"></i>
+  </span>
+
+</label>
+
+        
+    </div>
+    <div class="header-article__right">
+<div class="menu-dropdown menu-dropdown-launch-buttons">
+  <button class="headerbtn menu-dropdown__trigger"
+      aria-label="Launch interactive content">
+      <i class="fas fa-rocket"></i>
+  </button>
+  <div class="menu-dropdown__content">
+    <ul>
+      <li>
+        <a href="https://mybinder.org/v2/gh/bluescarni/heyoka.py/main?urlpath=lab/tree/doc/notebooks/arbitrary_precision.ipynb"
+   class="headerbtn"
+   data-toggle="tooltip"
+data-placement="left"
+title="Launch on Binder"
+>
+  
+
+<span class="headerbtn__icon-container">
+  
+    <img src="../_static/images/logo_binder.svg">
+  </span>
+<span class="headerbtn__text-container">Binder</span>
+</a>
+
+      </li>
+      
+    </ul>
+  </div>
+</div>
+
+<button onclick="toggleFullScreen()"
+  class="headerbtn"
+  data-toggle="tooltip"
+data-placement="bottom"
+title="Fullscreen mode"
+>
+  
+
+<span class="headerbtn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+<div class="menu-dropdown menu-dropdown-repository-buttons">
+  <button class="headerbtn menu-dropdown__trigger"
+      aria-label="Source repositories">
+      <i class="fab fa-github"></i>
+  </button>
+  <div class="menu-dropdown__content">
+    <ul>
+      <li>
+        <a href="https://github.com/bluescarni/heyoka.py"
+   class="headerbtn"
+   data-toggle="tooltip"
+data-placement="left"
+title="Source repository"
+>
+  
+
+<span class="headerbtn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="headerbtn__text-container">repository</span>
+</a>
+
+      </li>
+      
+      <li>
+        <a href="https://github.com/bluescarni/heyoka.py/issues/new?title=Issue%20on%20page%20%2Fnotebooks/arbitrary_precision.html&body=Your%20issue%20content%20here."
+   class="headerbtn"
+   data-toggle="tooltip"
+data-placement="left"
+title="Open an issue"
+>
+  
+
+<span class="headerbtn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="headerbtn__text-container">open issue</span>
+</a>
+
+      </li>
+      
+    </ul>
+  </div>
+</div>
+
+<div class="menu-dropdown menu-dropdown-download-buttons">
+  <button class="headerbtn menu-dropdown__trigger"
+      aria-label="Download this page">
+      <i class="fas fa-download"></i>
+  </button>
+  <div class="menu-dropdown__content">
+    <ul>
+      <li>
+        <a href="../_sources/notebooks/arbitrary_precision.ipynb.txt"
+   class="headerbtn"
+   data-toggle="tooltip"
+data-placement="left"
+title="Download source file"
+>
+  
+
+<span class="headerbtn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="headerbtn__text-container">.ipynb</span>
+</a>
+
+      </li>
+      
+      <li>
+        
+<button onclick="printPdf(this)"
+  class="headerbtn"
+  data-toggle="tooltip"
+data-placement="left"
+title="Print to PDF"
+>
+  
+
+<span class="headerbtn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="headerbtn__text-container">.pdf</span>
+</button>
+
+      </li>
+      
+    </ul>
+  </div>
+</div>
+<label for="__page-toc"
+  class="headerbtn headerbtn-page-toc"
+  
+>
+  
+
+<span class="headerbtn__icon-container">
+  <i class="fas fa-list"></i>
+  </span>
+
+</label>
+
+    </div>
+</div>
+
+<!-- Table of contents -->
+<div class="col-md-3 bd-toc show noprint">
+    <div class="tocsection onthispage pt-5 pb-3">
+        <i class="fas fa-list"></i> Contents
+    </div>
+    <nav id="bd-toc-nav" aria-label="Page">
+        <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#getting-to-know-your-real-self">
+   Getting to know your real self
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#numerical-integration">
+   Numerical integration
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#compiled-functions">
+   Compiled functions
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#limitations-and-caveats">
+   Limitations and caveats
+  </a>
+ </li>
+</ul>
+
+    </nav>
+</div>
+    </div>
+    <div class="article row">
+        <div class="col pl-md-3 pl-lg-5 content-container">
+            <!-- Table of contents that is only displayed when printing the page -->
+            <div id="jb-print-docs-body" class="onlyprint">
+                <h1>Computations in arbitrary precision</h1>
+                <!-- Table of contents -->
+                <div id="print-main-content">
+                    <div id="jb-print-toc">
+                        
+                        <div>
+                            <h2> Contents </h2>
+                        </div>
+                        <nav aria-label="Page">
+                            <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#getting-to-know-your-real-self">
+   Getting to know your real self
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#numerical-integration">
+   Numerical integration
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#compiled-functions">
+   Compiled functions
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#limitations-and-caveats">
+   Limitations and caveats
+  </a>
+ </li>
+</ul>
+
+                        </nav>
+                    </div>
+                </div>
+            </div>
+            <main id="main-content" role="main">
+                
+              <div>
+                
+  <section class="tex2jax_ignore mathjax_ignore" id="computations-in-arbitrary-precision">
+<h1>Computations in arbitrary precision<a class="headerlink" href="#computations-in-arbitrary-precision" title="Permalink to this headline">#</a></h1>
+<p>As hinted in the <a class="reference internal" href="The%20expression%20system.html"><span class="doc std std-doc">expression system tutorial</span></a>, starting from version 0.20 heyoka.py supports computations in <a class="reference external" href="https://en.wikipedia.org/wiki/Arbitrary-precision_arithmetic">arbitrary precision</a> via the <code class="docutils literal notranslate"><span class="pre">real</span></code> type.</p>
+<p><code class="docutils literal notranslate"><span class="pre">real</span></code> is a Python wrapper for the <a class="reference external" href="https://bluescarni.github.io/mppp/real.html">arbitrary-precision floating-point type</a> from the mp++ library. Before showing how to perform arbitrary-precision computations in heyoka.py, we will go through a quick crash course on the <code class="docutils literal notranslate"><span class="pre">real</span></code> type (more details are available in the mp++ <a class="reference external" href="https://bluescarni.github.io/mppp/tutorial_real.html">tutorial</a> and <a class="reference external" href="https://bluescarni.github.io/mppp/real.html">reference</a>).</p>
+<section id="getting-to-know-your-real-self">
+<h2>Getting to know your real self<a class="headerlink" href="#getting-to-know-your-real-self" title="Permalink to this headline">#</a></h2>
+<p>Let us begin by importing the necessary bits from heyoka.py:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">heyoka</span> <span class="k">as</span> <span class="nn">hy</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="n">real</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">real</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">real</span></code> represents arbitrary-precision values encoded in a binary floating-point format. The number of binary digits in the significand (that is, the <em>precision</em> of a <code class="docutils literal notranslate"><span class="pre">real</span></code>) can be set at runtime and it is in principle limited only by the available memory. The precision of a <code class="docutils literal notranslate"><span class="pre">real</span></code> object can be queried via the <code class="docutils literal notranslate"><span class="pre">prec</span></code> property:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="sa">f</span><span class="s2">&quot;The precision of a default-constructed real is: </span><span class="si">{</span><span class="n">real</span><span class="p">()</span><span class="o">.</span><span class="n">prec</span><span class="si">}</span><span class="s2"> bits&quot;</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&#39;The precision of a default-constructed real is: 2 bits&#39;
+</pre></div>
+</div>
+</div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">real</span></code> objects can be constructed from several other numerical objects. The precision of the constructed <code class="docutils literal notranslate"><span class="pre">real</span></code> is automatically inferred to preserve exactly the original value (if possible):</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Precision deduced from a small int  : </span><span class="si">{</span><span class="n">real</span><span class="p">(</span><span class="mi">42</span><span class="p">)</span><span class="o">.</span><span class="n">prec</span><span class="si">}</span><span class="s2"> bits&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Precision deduced from a large int  : </span><span class="si">{</span><span class="n">real</span><span class="p">(</span><span class="mi">2</span><span class="o">**</span><span class="mi">500</span><span class="p">)</span><span class="o">.</span><span class="n">prec</span><span class="si">}</span><span class="s2"> bits&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Precision deduced from a float      : </span><span class="si">{</span><span class="n">real</span><span class="p">(</span><span class="mf">1.1</span><span class="p">)</span><span class="o">.</span><span class="n">prec</span><span class="si">}</span><span class="s2"> bits&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Precision deduced from a long double: </span><span class="si">{</span><span class="n">real</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">longdouble</span><span class="p">(</span><span class="s1">&#39;1.1&#39;</span><span class="p">))</span><span class="o">.</span><span class="n">prec</span><span class="si">}</span><span class="s2"> bits&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Precision deduced from a real128    : </span><span class="si">{</span><span class="n">real</span><span class="p">(</span><span class="n">hy</span><span class="o">.</span><span class="n">real128</span><span class="p">(</span><span class="s1">&#39;1.1&#39;</span><span class="p">))</span><span class="o">.</span><span class="n">prec</span><span class="si">}</span><span class="s2"> bits&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Precision deduced from a small int  : 64 bits
+Precision deduced from a large int  : 512 bits
+Precision deduced from a float      : 53 bits
+Precision deduced from a long double: 64 bits
+Precision deduced from a real128    : 113 bits
+</pre></div>
+</div>
+</div>
+</div>
+<p>If the automatic deduction is to be avoided, the precision can be specified manually with the <code class="docutils literal notranslate"><span class="pre">prec</span></code> keyword argument during construction:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Precision manually specified from a small int: </span><span class="si">{</span><span class="n">real</span><span class="p">(</span><span class="mi">42</span><span class="p">,</span> <span class="n">prec</span><span class="o">=</span><span class="mi">123</span><span class="p">)</span><span class="o">.</span><span class="n">prec</span><span class="si">}</span><span class="s2"> bits&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Precision manually specified from a float    : </span><span class="si">{</span><span class="n">real</span><span class="p">(</span><span class="mf">1.1</span><span class="p">,</span> <span class="n">prec</span><span class="o">=</span><span class="mi">12</span><span class="p">)</span><span class="o">.</span><span class="n">prec</span><span class="si">}</span><span class="s2"> bits&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Precision manually specified from a small int: 123 bits
+Precision manually specified from a float    : 12 bits
+</pre></div>
+</div>
+</div>
+</div>
+<p>Similarly, construction from string <strong>always</strong> requires a precision value to be provided:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">real</span><span class="p">(</span><span class="s2">&quot;1.1&quot;</span><span class="p">,</span> <span class="n">prec</span><span class="o">=</span><span class="mi">128</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>1.100000000000000000000000000000000000001
+</pre></div>
+</div>
+</div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">real</span></code> supports the basic arithmetic and comparison operators. When <code class="docutils literal notranslate"><span class="pre">real</span></code> values with different precision are involved in a binary operation, the precision of the result is the largest precision among the operands:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="p">(</span><span class="n">real</span><span class="p">(</span><span class="s2">&quot;1.1&quot;</span><span class="p">,</span> <span class="mi">128</span><span class="p">)</span> <span class="o">+</span> <span class="n">real</span><span class="p">(</span><span class="s2">&quot;2.1&quot;</span><span class="p">,</span> <span class="mi">113</span><span class="p">))</span><span class="o">.</span><span class="n">prec</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>128
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="p">(</span><span class="mf">1.1</span><span class="o">**</span><span class="n">real</span><span class="p">(</span><span class="s2">&quot;2.1&quot;</span><span class="p">,</span> <span class="mi">256</span><span class="p">))</span><span class="o">.</span><span class="n">prec</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>256
+</pre></div>
+</div>
+</div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">real</span></code> also supports several elementary functions, which currently need to be invoked from NumPy:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">real</span><span class="p">(</span><span class="s2">&quot;1.1&quot;</span><span class="p">,</span> <span class="mi">128</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>8.912073600614353399518025778717035383202e-1
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">np</span><span class="o">.</span><span class="n">arctan2</span><span class="p">(</span><span class="n">real</span><span class="p">(</span><span class="s2">&quot;1.1&quot;</span><span class="p">,</span> <span class="mi">113</span><span class="p">),</span> <span class="mf">5.6</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>1.93959147259893124733320880625850166e-1
+</pre></div>
+</div>
+</div>
+</div>
+<p>Finally, <code class="docutils literal notranslate"><span class="pre">real</span></code> can also be used as a <a class="reference external" href="https://numpy.org/doc/stable/reference/arrays.dtypes.html">NumPy data type</a>:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">real</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([1.00000000000000000000, 2.00000000000000000000,
+       3.00000000000000000000], dtype=real)
+</pre></div>
+</div>
+</div>
+</div>
+<p>Please be aware that NumPy support is to be considered <strong>experimental</strong> at this time (see the “Limitations and caveats” section below).</p>
+</section>
+<section id="numerical-integration">
+<h2>Numerical integration<a class="headerlink" href="#numerical-integration" title="Permalink to this headline">#</a></h2>
+<p>We are now ready to proceed to our first numerical integration in arbitrary precision. In the heyoka.py tradition, we will be using the pendulum as a simple test case.</p>
+<p>Let us begin with the definition of the dynamical equations:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Create the symbolic variables x and v.</span>
+<span class="n">x</span><span class="p">,</span> <span class="n">v</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">make_vars</span><span class="p">(</span><span class="s2">&quot;x&quot;</span><span class="p">,</span> <span class="s2">&quot;v&quot;</span><span class="p">)</span>
+
+<span class="c1"># Define the dynamical equations.</span>
+<span class="n">sys</span> <span class="o">=</span> <span class="p">[(</span><span class="n">x</span><span class="p">,</span> <span class="n">v</span><span class="p">),</span> <span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="o">-</span><span class="mf">9.8</span> <span class="o">*</span> <span class="n">hy</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">x</span><span class="p">))]</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Second, we introduce a small helper to compute the energy of the system. This will be used to track the accuracy of the integration:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">compute_energy</span><span class="p">(</span><span class="n">sv</span><span class="p">):</span>
+    <span class="kn">from</span> <span class="nn">numpy</span> <span class="kn">import</span> <span class="n">cos</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">sv</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="n">sv</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span><span class="o">/</span><span class="mi">2</span> <span class="o">+</span> <span class="mf">9.8</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">cos</span><span class="p">(</span><span class="n">sv</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>For this specific example, we will be performing an integration in <a class="reference external" href="https://en.wikipedia.org/wiki/Octuple-precision_floating-point_format">octuple precision</a>, which requires 237 bits in the significand:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Store the precision in a constant</span>
+<span class="c1"># for later use.</span>
+<span class="n">prec</span><span class="o">=</span><span class="mi">237</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>We can now construct the integrator in octuple precision:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ta</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">taylor_adaptive</span><span class="p">(</span><span class="n">sys</span><span class="p">,</span>
+                        <span class="c1"># Initial conditions.</span>
+                        <span class="p">[</span><span class="n">real</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">prec</span><span class="p">),</span> <span class="n">real</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">prec</span><span class="p">)],</span>
+                        <span class="c1"># Specify that the integrator must operate</span>
+                        <span class="c1"># in arbitrary precision.</span>
+                        <span class="n">fp_type</span><span class="o">=</span><span class="n">real</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>In order to construct an integrator in arbitrary precision, we need to specify <code class="docutils literal notranslate"><span class="pre">fp_type=real</span></code> as a construction argument. By default, the precision is automatically inferred from the precision of the initial state variables: because we passed <code class="docutils literal notranslate"><span class="pre">[real(-1,</span> <span class="pre">prec),</span> <span class="pre">real(0,</span> <span class="pre">prec)]</span></code> as initial conditions, heyoka.py deduces that the integration needs to be performed with 237 bits of precision.</p>
+<p>As an alternative, the precision can be explicitly passed as a keyword argument:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Alternative - but equivalent - way of</span>
+<span class="c1"># setting up an octuple-precision integration.</span>
+<span class="n">ta</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">taylor_adaptive</span><span class="p">(</span><span class="n">sys</span><span class="p">,</span>
+                        <span class="p">[</span><span class="n">real</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">),</span> <span class="n">real</span><span class="p">(</span><span class="mi">0</span><span class="p">)],</span>
+                        <span class="c1"># Specify that the integrator must operate</span>
+                        <span class="c1"># in arbitrary precision.</span>
+                        <span class="n">fp_type</span><span class="o">=</span><span class="n">real</span><span class="p">,</span>
+                        <span class="c1"># Explicitly specify the precision.</span>
+                        <span class="n">prec</span><span class="o">=</span><span class="n">prec</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Let us print to screen the integrator object:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ta</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Precision               : 237 bits
+Tolerance               : 9.055679078826712367509119290887791780682531198139138189582614889935501319e-72
+High accuracy           : false
+Compact mode            : true
+Taylor order            : 83
+Dimension               : 2
+Time                    : 0.000000000000000000000000000000000000000000000000000000000000000000000000
+State                   : [-1.000000000000000000000000000000000000000000000000000000000000000000000000, 0.000000000000000000000000000000000000000000000000000000000000000000000000]
+</pre></div>
+</div>
+</div>
+</div>
+<p>Like with standard double-precision integrations, the default tolerance value is the epsilon corresponding to the integration precision. Note also how, for arbitrary-precision integrations, compact mode defaults to <code class="docutils literal notranslate"><span class="pre">True</span></code> rather than <code class="docutils literal notranslate"><span class="pre">False</span></code>.
+This change is motivated by the fact that the Taylor order of arbitrary-precision integrators will typically be much higher than in double-precision and extended-precision integrators, which results in very long compilation times even for simple ODEs. Moreover, in arbitrary-precision integrators compact mode does not bring substantial performance improvements due to the fact that most numerical computations are offloaded to the mp++ library (rather than being implemented directly in LLVM).</p>
+<p>Let us now compute and store the initial energy of the system:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">E0</span> <span class="o">=</span> <span class="n">compute_energy</span><span class="p">(</span><span class="n">ta</span><span class="o">.</span><span class="n">state</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Next, let us propagate the system until <code class="docutils literal notranslate"><span class="pre">t=5</span></code>, requesting the continuous output:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">out</span> <span class="o">=</span> <span class="n">ta</span><span class="o">.</span><span class="n">propagate_until</span><span class="p">(</span><span class="n">real</span><span class="p">(</span><span class="mi">5</span><span class="p">),</span> <span class="n">c_output</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>We can now use the continuous output to compute how the energy error evolves throughout the integration:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Define a time grid in octuple precision.</span>
+<span class="n">tgrid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">real</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">prec</span><span class="p">),</span> <span class="n">real</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="n">prec</span><span class="p">),</span> <span class="mi">1000</span><span class="p">)</span>
+
+<span class="c1"># Compute the relative energy error over the time grid.</span>
+<span class="n">Eerr</span> <span class="o">=</span> <span class="p">[</span><span class="nb">abs</span><span class="p">((</span><span class="n">compute_energy</span><span class="p">(</span><span class="n">_</span><span class="p">)</span> <span class="o">-</span> <span class="n">E0</span><span class="p">)</span><span class="o">/</span><span class="n">E0</span><span class="p">)</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">out</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">](</span><span class="n">tgrid</span><span class="p">)]</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Let us plot the energy error:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%</span><span class="k">matplotlib</span> inline
+<span class="kn">from</span> <span class="nn">matplotlib.pylab</span> <span class="kn">import</span> <span class="n">plt</span>
+
+<span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">tgrid</span><span class="p">,</span> <span class="n">Eerr</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;Time&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;Rel. energy error&quot;</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/bbced039c3be5ef2a6b1dd7ae5472c8f09688f5b0a5a52b1eeae50f4e7affd7f.png" src="../_images/bbced039c3be5ef2a6b1dd7ae5472c8f09688f5b0a5a52b1eeae50f4e7affd7f.png" />
+</div>
+</div>
+<p>We can see how indeed energy is preserved at the requested accuracy level.</p>
+<p>All features available in double precision are also available in arbitrary precision. For instance, here’s an example of arbitrary-precision event detection from the <a class="reference internal" href="Event%20detection.html"><span class="doc std std-doc">event detection tutorial</span></a>:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Define a callback for the event.</span>
+<span class="k">def</span> <span class="nf">cb</span><span class="p">(</span><span class="n">ta</span><span class="p">,</span> <span class="n">time</span><span class="p">,</span> <span class="n">d_sgn</span><span class="p">):</span>
+    <span class="c1"># Compute the state of the system when the</span>
+    <span class="c1"># event triggered and print the value of x.</span>
+    <span class="n">ta</span><span class="o">.</span><span class="n">update_d_output</span><span class="p">(</span><span class="n">time</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Value of x when v is zero: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ta</span><span class="o">.</span><span class="n">d_output</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+
+<span class="n">ev</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">nt_event</span><span class="p">(</span>
+        <span class="c1"># The left-hand side of the event equation</span>
+        <span class="n">v</span><span class="p">,</span>
+        <span class="c1"># The callback.</span>
+        <span class="n">callback</span> <span class="o">=</span> <span class="n">cb</span><span class="p">,</span>
+        <span class="c1"># Specify this is an event</span>
+        <span class="c1"># for arbitrary-precision</span>
+        <span class="c1"># integration.</span>
+        <span class="n">fp_type</span> <span class="o">=</span> <span class="n">real</span><span class="p">)</span>
+
+<span class="n">ta</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">taylor_adaptive</span><span class="p">(</span>
+        <span class="c1"># Definition of the ODE system:</span>
+        <span class="c1"># x&#39; = v</span>
+        <span class="c1"># v&#39; = -9.8 * sin(x)</span>
+        <span class="p">((</span><span class="n">x</span><span class="p">,</span> <span class="n">v</span><span class="p">),</span> <span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="o">-</span><span class="mf">9.8</span> <span class="o">*</span> <span class="n">hy</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">x</span><span class="p">))),</span>
+        <span class="c1"># Initial conditions</span>
+        <span class="c1"># for x and v.</span>
+        <span class="p">[</span><span class="n">real</span><span class="p">(</span><span class="s2">&quot;-0.05&quot;</span><span class="p">,</span> <span class="n">prec</span><span class="p">),</span> <span class="n">real</span><span class="p">(</span><span class="mf">0.</span><span class="p">,</span> <span class="n">prec</span><span class="p">)],</span>
+        <span class="c1"># Non-terminal events.</span>
+        <span class="n">nt_events</span> <span class="o">=</span> <span class="p">[</span><span class="n">ev</span><span class="p">],</span>
+        <span class="c1"># Specify this is an</span>
+        <span class="c1"># arbitrary-precision</span>
+        <span class="c1"># integration.</span>
+        <span class="n">fp_type</span> <span class="o">=</span> <span class="n">real</span><span class="p">)</span>
+
+<span class="n">ta</span><span class="o">.</span><span class="n">propagate_until</span><span class="p">(</span><span class="n">real</span><span class="p">(</span><span class="mi">10</span><span class="p">));</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Value of x when v is zero: -5.000000000000000000000000000000000000000000000000000000000000000000000011e-2
+Value of x when v is zero: 5.000000000000000000000000000000000000000000000000000000000000000000000011e-2
+Value of x when v is zero: -4.999999999999999999999999999999999999999999999999999999999999999999999983e-2
+Value of x when v is zero: 5.000000000000000000000000000000000000000000000000000000000000000000000011e-2
+Value of x when v is zero: -5.000000000000000000000000000000000000000000000000000000000000000000000011e-2
+Value of x when v is zero: 5.000000000000000000000000000000000000000000000000000000000000000000000011e-2
+Value of x when v is zero: -5.000000000000000000000000000000000000000000000000000000000000000000000011e-2
+Value of x when v is zero: 5.000000000000000000000000000000000000000000000000000000000000000000000040e-2
+Value of x when v is zero: -5.000000000000000000000000000000000000000000000000000000000000000000000040e-2
+Value of x when v is zero: 5.000000000000000000000000000000000000000000000000000000000000000000000011e-2
+</pre></div>
+</div>
+</div>
+</div>
+<p>In this example, the event is supposed to trigger whenever the pendulum’s bob reaches the maximum amplitude, which corresponds to <span class="math notranslate nohighlight">\(v=0\)</span> and <span class="math notranslate nohighlight">\(\left|x\right|=0.05\)</span>. We can see from the screen output that this is indeed the case.</p>
+</section>
+<section id="compiled-functions">
+<h2>Compiled functions<a class="headerlink" href="#compiled-functions" title="Permalink to this headline">#</a></h2>
+<p><a class="reference internal" href="compiled_functions.html"><span class="doc std std-doc">Compiled functions</span></a> are also available in arbitrary precision. Here’s a simple example:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">x</span><span class="p">,</span><span class="n">y</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">make_vars</span><span class="p">(</span><span class="s2">&quot;x&quot;</span><span class="p">,</span> <span class="s2">&quot;y&quot;</span><span class="p">)</span>
+
+<span class="c1"># Define the function to be compiled.</span>
+<span class="n">sym_func</span> <span class="o">=</span> <span class="n">x</span><span class="o">**</span><span class="mi">2</span><span class="o">-</span><span class="n">y</span><span class="o">**</span><span class="mi">2</span>
+
+<span class="c1"># Compile it.</span>
+<span class="n">cf</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">make_cfunc</span><span class="p">([</span><span class="n">sym_func</span><span class="p">],</span> <span class="n">fp_type</span><span class="o">=</span><span class="n">real</span><span class="p">,</span> <span class="n">prec</span><span class="o">=</span><span class="n">prec</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Note that, in addition to specifying <code class="docutils literal notranslate"><span class="pre">fp_type=real</span></code>, we also <strong>must</strong> explicitly specify the precision of the compiled function. That is, compiled functions cannot automatically determine a precision value from their inputs.</p>
+<p>We can now proceed to the evaluation of the compiled function:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">cf</span><span class="p">([</span><span class="n">real</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">prec</span><span class="p">),</span> <span class="n">real</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">prec</span><span class="p">)])</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([-3.000000000000000000000000000000000000000000000000000000000000000000000000],
+      dtype=real)
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="limitations-and-caveats">
+<h2>Limitations and caveats<a class="headerlink" href="#limitations-and-caveats" title="Permalink to this headline">#</a></h2>
+<p>Similarly to <a class="reference internal" href="ext_precision.html"><span class="doc std std-doc">extended-precision datatypes</span></a>, NumPy support for the <code class="docutils literal notranslate"><span class="pre">real</span></code> dtype is quite limited: while basic features such as array slicing, indexing, arithmetic, special functions and explicit conversions to/from other types are supported and working as intended, more advanced features such as random number generation, nontrivial linear algebra, etc. will not work with <code class="docutils literal notranslate"><span class="pre">real</span></code>.</p>
+<p>Additionally, because <code class="docutils literal notranslate"><span class="pre">real</span></code> wraps a C++ class with nontrivial lifetime management, heyoka.py must (ab)use a <a class="reference external" href="https://numpy.org/neps/nep-0049.html">recently-introduced NumPy memory management feature</a> in order to ensure that <code class="docutils literal notranslate"><span class="pre">real</span></code> objects stored in a NumPy array are properly initialised before access and properly destroyed when the array is garbage collected. There are a couple of known issues in the custom memory management scheme employed by heyoka.py.</p>
+<p>To begin with, under certain circumstances (i.e., typically during the conversion of <code class="docutils literal notranslate"><span class="pre">real</span></code> arrays to/from another dtypes), heyoka.py will be forced to allocate on-the-fly <code class="docutils literal notranslate"><span class="pre">real</span></code> values that are never deallocated until the termination of the program (thus leading to potential memory leaks). See <a class="reference external" href="https://github.com/numpy/numpy/issues/22686">here</a> for more details. Although in practice this behaviour does not seem to create issues in most cases, long-running computations that frequently call into the NumPy API might eventually lead to memory exhaustion.</p>
+<p>Secondly, the fact that heyoka.py overrides the default NumPy memory management functions with custom implementations renders heyoka.py incompatible with other packages which might also be overriding the NumPy memory allocation functions. We are not aware at this time of any widely-used package that overrides the default NumPy memory allocation functions.</p>
+<p>If you encounter issues with NumPy support for the <code class="docutils literal notranslate"><span class="pre">real</span></code> class, please do not hesitate to <a class="reference external" href="https://github.com/bluescarni/heyoka.py/issues/new/choose">open an issue</a>.</p>
+</section>
+</section>
+
+
+              </div>
+              
+            </main>
+            <footer class="footer-article noprint">
+                
+    <!-- Previous / next buttons -->
+<div class='prev-next-area'>
+    <a class='left-prev' id="prev-link" href="ext_precision.html" title="previous page">
+        <i class="fas fa-angle-left"></i>
+        <div class="prev-next-info">
+            <p class="prev-next-subtitle">previous</p>
+            <p class="prev-next-title">Computations in extended precision</p>
+        </div>
+    </a>
+    <a class='right-next' id="next-link" href="sympy_interop.html" title="next page">
+    <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Interoperability with SymPy</p>
+    </div>
+    <i class="fas fa-angle-right"></i>
+    </a>
+</div>
+            </footer>
+        </div>
+    </div>
+    <div class="footer-content row">
+        <footer class="col footer"><p>
+  
+    By Francesco Biscani and Dario Izzo<br/>
+  
+      &copy; Copyright 2020, 2021, 2022, Francesco Biscani and Dario Izzo.<br/>
+</p>
+        </footer>
+    </div>
+    
+</div>
+
+
+      </div>
+    </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf"></script>
+
+
+  </body>
+</html>
