@@ -6,15 +6,20 @@ set -x
 # Exit on error.
 set -e
 
+# Core deps.
+sudo apt-get install wget
+
 # Install conda+deps.
-wget https://repo.anaconda.com/miniconda/Miniconda3-latest-MacOSX-x86_64.sh -O miniconda.sh
+wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh
 export deps_dir=$HOME/local
 export PATH="$HOME/miniconda/bin:$PATH"
 bash miniconda.sh -b -p $HOME/miniconda
 conda config --add channels conda-forge
 conda config --set channel_priority strict
-conda create -y -q -p $deps_dir python=3.10 git pybind11 numpy cmake llvmdev tbb-devel tbb astroquery boost-cpp sleef fmt spdlog sympy cloudpickle mppp
+conda create -y -q -p $deps_dir python=3.10 git pybind11 numpy mpmath cmake llvmdev tbb-devel tbb boost-cpp mppp sleef fmt spdlog sympy cloudpickle c-compiler cxx-compiler
 source activate $deps_dir
+
+export CXXFLAGS="$CXXFLAGS -fsanitize=address"
 
 # Checkout, build and install heyoka's HEAD.
 git clone https://github.com/bluescarni/heyoka.git heyoka_cpp
@@ -22,7 +27,7 @@ cd heyoka_cpp
 mkdir build
 cd build
 
-cmake ../ -DCMAKE_INSTALL_PREFIX=$deps_dir -DCMAKE_PREFIX_PATH=$deps_dir -DCMAKE_BUILD_TYPE=Debug -DHEYOKA_WITH_SLEEF=yes -DBoost_NO_BOOST_CMAKE=ON -DHEYOKA_WITH_MPPP=yes
+cmake ../ -DCMAKE_INSTALL_PREFIX=$deps_dir -DCMAKE_PREFIX_PATH=$deps_dir -DCMAKE_BUILD_TYPE=Debug -DHEYOKA_WITH_MPPP=yes -DHEYOKA_WITH_SLEEF=yes -DBoost_NO_BOOST_CMAKE=ON
 make -j2 VERBOSE=1 install
 
 cd ../../
@@ -36,7 +41,7 @@ make -j2 VERBOSE=1 install
 
 cd
 
-python -c "from heyoka import test; test.run_test_suite()"
+ASAN_OPTIONS=detect_leaks=0 LD_PRELOAD=$CONDA_PREFIX/lib/libasan.so python -c "from heyoka import test; test.run_test_suite()"
 
 set +e
 set +x

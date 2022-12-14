@@ -16,7 +16,8 @@ heyoka.py has several Python and C++ dependencies. On the C++ side, heyoka.py de
 * the `mp++ <https://github.com/bluescarni/mppp>`__ library (**mandatory** if the
   heyoka C++ library was compiled with the ``HEYOKA_WITH_MPPP`` option enabled
   and the mp++ installation supports quadruple-precision computations via
-  the :cpp:class:`mppp::real128` type - see the
+  the :cpp:class:`mppp::real128` type and/or arbitrary-precision computations
+  via the :cpp:class:`mppp::real` type - see the
   :ref:`heyoka <hy:installation>` and :ref:`mp++ <mppp:installation>` installation
   instructions).
 

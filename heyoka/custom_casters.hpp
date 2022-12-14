@@ -19,6 +19,12 @@
 
 #endif
 
+#if defined(HEYOKA_HAVE_REAL)
+
+#include <mp++/real.hpp>
+
+#endif
+
 namespace pybind11::detail
 {
 
@@ -36,6 +42,17 @@ struct type_caster<mppp::real128> {
     PYBIND11_TYPE_CASTER(mppp::real128, _("heyoka.core.real128"));
     bool load(handle, bool);
     static handle cast(const mppp::real128 &, return_value_policy, handle);
+};
+
+#endif
+
+#if defined(HEYOKA_HAVE_REAL)
+
+template <>
+struct type_caster<mppp::real> {
+    PYBIND11_TYPE_CASTER(mppp::real, _("heyoka.core.real"));
+    bool load(handle, bool);
+    static handle cast(const mppp::real &, return_value_policy, handle);
 };
 
 #endif

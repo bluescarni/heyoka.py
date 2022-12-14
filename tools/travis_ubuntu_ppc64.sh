@@ -33,9 +33,15 @@ cd build
 cmake ../ -DCMAKE_INSTALL_PREFIX=$deps_dir -DCMAKE_PREFIX_PATH=$deps_dir -DCMAKE_BUILD_TYPE=Release -DBoost_NO_BOOST_CMAKE=ON
 make VERBOSE=1 install
 
+echo "INSTALL DONE"
+
 cd /
 
+echo "MOVED OUT"
+
 $deps_dir/bin/python -c "from heyoka import test; test.run_test_suite()"
+
+echo "PYTHON RUN"
 
 set +e
 set +x

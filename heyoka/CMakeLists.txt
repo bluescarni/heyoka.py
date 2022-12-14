@@ -2,7 +2,15 @@
 configure_file("${CMAKE_CURRENT_SOURCE_DIR}/_version.py.in" "${CMAKE_CURRENT_BINARY_DIR}/_version.py" @ONLY)
 
 # The list of heyoka.py's Python files.
-set(HEYOKA_PY_PYTHON_FILES __init__.py test.py _sympy_utils.py _ensemble_impl.py)
+set(HEYOKA_PY_PYTHON_FILES
+    __init__.py
+    test.py
+    _sympy_utils.py
+    _ensemble_impl.py
+    _test_real.py
+    _test_real128.py
+    _test_mp.py
+)
 
 # Copy the python files in the current binary dir,
 # so that we can import heyoka from the build dir.
@@ -25,11 +33,12 @@ set(_HEYOKA_PY_CORE_SOURCES
     setup_sympy.cpp
     cfunc.cpp
     expose_real128.cpp
+    expose_real.cpp
     dtypes.cpp
     custom_casters.cpp
     expose_expression.cpp
-    expose_M2E.cpp
     expose_batch_integrators.cpp
+    numpy_memory.cpp
 )
 
 if(${CMAKE_VERSION} VERSION_LESS "3.17.0")
@@ -42,7 +51,7 @@ unset(_HEYOKA_PY_CORE_SOURCES)
 
 target_link_libraries(core PRIVATE heyoka::heyoka fmt::fmt Boost::boost Boost::serialization TBB::tbb Python3::NumPy)
 target_link_libraries(core PRIVATE "${pybind11_LIBRARIES}")
-if(heyoka_WITH_REAL128)
+if(heyoka_WITH_REAL128 OR heyoka_WITH_REAL)
     target_link_libraries(core PRIVATE mp++::mp++)
 endif()
 target_include_directories(core SYSTEM PRIVATE "${pybind11_INCLUDE_DIR}" "${Python3_INCLUDE_DIRS}")

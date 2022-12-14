@@ -28,6 +28,12 @@
 
 #endif
 
+#if defined(HEYOKA_HAVE_REAL)
+
+#include <mp++/real.hpp>
+
+#endif
+
 #include "common_utils.hpp"
 #include "custom_casters.hpp"
 #include "pickle_wrappers.hpp"
@@ -68,12 +74,21 @@ void expose_expression(py::module_ &m)
 #if defined(HEYOKA_HAVE_REAL128)
         .def(py::init<mppp::real128>(), "x"_a.noconvert())
 #endif
+#if defined(HEYOKA_HAVE_REAL)
+        .def(py::init<mppp::real>(), "x"_a.noconvert())
+#endif
         .def(py::init<std::string>(), "x"_a)
         // Unary operators.
         .def(-py::self)
         .def(+py::self)
         // Binary operators.
         .def(py::self + py::self, "x"_a)
+        // NOTE: provide a custom implementation of
+        // these convenience overloads so that
+        // ex + int/int + ex is allowed only if
+        // the int fits 32-bit integers, which
+        // automatically guarantees they are representable
+        // exactly as doubles.
         .def(
             "__add__", [](const hey::expression &ex, std::int32_t x) { return ex + static_cast<double>(x); },
             "x"_a.noconvert())
@@ -87,6 +102,10 @@ void expose_expression(py::module_ &m)
 #if defined(HEYOKA_HAVE_REAL128)
         .def(py::self + mppp::real128(), "x"_a.noconvert())
         .def(mppp::real128() + py::self, "x"_a.noconvert())
+#endif
+#if defined(HEYOKA_HAVE_REAL)
+        .def(py::self + mppp::real(), "x"_a.noconvert())
+        .def(mppp::real() + py::self, "x"_a.noconvert())
 #endif
         // NOLINTNEXTLINE(misc-redundant-expression)
         .def(py::self - py::self, "x"_a)
@@ -104,6 +123,10 @@ void expose_expression(py::module_ &m)
         .def(py::self - mppp::real128(), "x"_a.noconvert())
         .def(mppp::real128() - py::self, "x"_a.noconvert())
 #endif
+#if defined(HEYOKA_HAVE_REAL)
+        .def(py::self - mppp::real(), "x"_a.noconvert())
+        .def(mppp::real() - py::self, "x"_a.noconvert())
+#endif
         .def(py::self * py::self, "x"_a)
         .def(
             "__mul__", [](const hey::expression &ex, std::int32_t x) { return ex * static_cast<double>(x); },
@@ -119,6 +142,10 @@ void expose_expression(py::module_ &m)
         .def(py::self * mppp::real128(), "x"_a.noconvert())
         .def(mppp::real128() * py::self, "x"_a.noconvert())
 #endif
+#if defined(HEYOKA_HAVE_REAL)
+        .def(py::self * mppp::real(), "x"_a.noconvert())
+        .def(mppp::real() * py::self, "x"_a.noconvert())
+#endif
         .def(py::self / py::self, "x"_a)
         .def(
             "__truediv__", [](const hey::expression &ex, std::int32_t x) { return ex / static_cast<double>(x); },
@@ -133,6 +160,10 @@ void expose_expression(py::module_ &m)
 #if defined(HEYOKA_HAVE_REAL128)
         .def(py::self / mppp::real128(), "x"_a.noconvert())
         .def(mppp::real128() / py::self, "x"_a.noconvert())
+#endif
+#if defined(HEYOKA_HAVE_REAL)
+        .def(py::self / mppp::real(), "x"_a.noconvert())
+        .def(mppp::real() / py::self, "x"_a.noconvert())
 #endif
         // Comparisons.
         // NOLINTNEXTLINE(misc-redundant-expression)
@@ -152,6 +183,11 @@ void expose_expression(py::module_ &m)
 #if defined(HEYOKA_HAVE_REAL128)
         .def(
             "__pow__", [](const hey::expression &b, mppp::real128 e) { return hey::pow(b, e); }, "e"_a.noconvert())
+#endif
+#if defined(HEYOKA_HAVE_REAL)
+        .def(
+            "__pow__", [](const hey::expression &b, mppp::real e) { return hey::pow(b, std::move(e)); },
+            "e"_a.noconvert())
 #endif
         // Expression size.
         .def("__len__", [](const hey::expression &e) { return hey::get_n_nodes(e); })
@@ -242,6 +278,11 @@ void expose_expression(py::module_ &m)
         "kepE", [](mppp::real128 e, hey::expression M) { return hey::kepE(e, std::move(M)); }, "e"_a.noconvert(),
         "M"_a);
 #endif
+#if defined(HEYOKA_HAVE_REAL)
+    m.def(
+        "kepE", [](mppp::real e, hey::expression M) { return hey::kepE(std::move(e), std::move(M)); },
+        "e"_a.noconvert(), "M"_a);
+#endif
 
     m.def(
         "kepE", [](hey::expression e, double M) { return hey::kepE(std::move(e), M); }, "e"_a, "M"_a.noconvert());
@@ -250,6 +291,11 @@ void expose_expression(py::module_ &m)
 #if defined(HEYOKA_HAVE_REAL128)
     m.def(
         "kepE", [](hey::expression e, mppp::real128 M) { return hey::kepE(std::move(e), M); }, "e"_a,
+        "M"_a.noconvert());
+#endif
+#if defined(HEYOKA_HAVE_REAL)
+    m.def(
+        "kepE", [](hey::expression e, mppp::real M) { return hey::kepE(std::move(e), std::move(M)); }, "e"_a,
         "M"_a.noconvert());
 #endif
 
@@ -268,6 +314,11 @@ void expose_expression(py::module_ &m)
         "atan2", [](mppp::real128 y, hey::expression x) { return hey::atan2(y, std::move(x)); }, "y"_a.noconvert(),
         "x"_a);
 #endif
+#if defined(HEYOKA_HAVE_REAL)
+    m.def(
+        "atan2", [](mppp::real y, hey::expression x) { return hey::atan2(std::move(y), std::move(x)); },
+        "y"_a.noconvert(), "x"_a);
+#endif
 
     m.def(
         "atan2", [](hey::expression y, double x) { return hey::atan2(std::move(y), x); }, "y"_a, "x"_a.noconvert());
@@ -277,6 +328,11 @@ void expose_expression(py::module_ &m)
 #if defined(HEYOKA_HAVE_REAL128)
     m.def(
         "atan2", [](hey::expression y, mppp::real128 x) { return hey::atan2(std::move(y), x); }, "y"_a,
+        "x"_a.noconvert());
+#endif
+#if defined(HEYOKA_HAVE_REAL)
+    m.def(
+        "atan2", [](hey::expression y, mppp::real x) { return hey::atan2(std::move(y), std::move(x)); }, "y"_a,
         "x"_a.noconvert());
 #endif
 

@@ -34,6 +34,12 @@
 
 #endif
 
+#if defined(HEYOKA_HAVE_REAL)
+
+#include <mp++/real.hpp>
+
+#endif
+
 #include <heyoka/callable.hpp>
 #include <heyoka/s11n.hpp>
 #include <heyoka/taylor.hpp>
@@ -126,7 +132,7 @@ private:
 
         // This gives a null-terminated char * to the internal
         // content of the bytes object.
-        auto ptr = PyBytes_AsString(tmp.ptr());
+        auto *ptr = PyBytes_AsString(tmp.ptr());
         if (!ptr) {
             py_throw(PyExc_TypeError, "The serialization backend's dumps() function did not return a bytes object");
         }
@@ -330,6 +336,15 @@ void expose_taylor_t_event_f128(py::module &m)
 
 #endif
 
+#if defined(HEYOKA_HAVE_REAL)
+
+void expose_taylor_t_event_real(py::module &m)
+{
+    detail::expose_taylor_t_event_impl<mppp::real, false>(m, "real");
+}
+
+#endif
+
 void expose_taylor_nt_event_dbl(py::module &m)
 {
     detail::expose_taylor_nt_event_impl<double, false>(m, "dbl");
@@ -345,6 +360,15 @@ void expose_taylor_nt_event_ldbl(py::module &m)
 void expose_taylor_nt_event_f128(py::module &m)
 {
     detail::expose_taylor_nt_event_impl<mppp::real128, false>(m, "f128");
+}
+
+#endif
+
+#if defined(HEYOKA_HAVE_REAL)
+
+void expose_taylor_nt_event_real(py::module &m)
+{
+    detail::expose_taylor_nt_event_impl<mppp::real, false>(m, "real");
 }
 
 #endif
@@ -371,12 +395,24 @@ using nt_cb_f128 = detail::ev_callback<void, heyoka::taylor_adaptive<mppp::real1
 
 #endif
 
+#if defined(HEYOKA_HAVE_REAL)
+
+using nt_cb_real = detail::ev_callback<void, heyoka::taylor_adaptive<mppp::real> &, mppp::real, int>;
+
+#endif
+
 using t_cb_dbl = detail::ev_callback<bool, heyoka::taylor_adaptive<double> &, bool, int>;
 using t_cb_ldbl = detail::ev_callback<bool, heyoka::taylor_adaptive<long double> &, bool, int>;
 
 #if defined(HEYOKA_HAVE_REAL128)
 
 using t_cb_f128 = detail::ev_callback<bool, heyoka::taylor_adaptive<mppp::real128> &, bool, int>;
+
+#endif
+
+#if defined(HEYOKA_HAVE_REAL)
+
+using t_cb_real = detail::ev_callback<bool, heyoka::taylor_adaptive<mppp::real> &, bool, int>;
 
 #endif
 
@@ -397,12 +433,24 @@ HEYOKA_S11N_CALLABLE_EXPORT(heyoka_py::nt_cb_f128, void, heyoka::taylor_adaptive
 
 #endif
 
+#if defined(HEYOKA_HAVE_REAL)
+
+HEYOKA_S11N_CALLABLE_EXPORT(heyoka_py::nt_cb_real, void, heyoka::taylor_adaptive<mppp::real> &, mppp::real, int)
+
+#endif
+
 HEYOKA_S11N_CALLABLE_EXPORT(heyoka_py::t_cb_dbl, bool, heyoka::taylor_adaptive<double> &, bool, int)
 HEYOKA_S11N_CALLABLE_EXPORT(heyoka_py::t_cb_ldbl, bool, heyoka::taylor_adaptive<long double> &, bool, int)
 
 #if defined(HEYOKA_HAVE_REAL128)
 
 HEYOKA_S11N_CALLABLE_EXPORT(heyoka_py::t_cb_f128, bool, heyoka::taylor_adaptive<mppp::real128> &, bool, int)
+
+#endif
+
+#if defined(HEYOKA_HAVE_REAL)
+
+HEYOKA_S11N_CALLABLE_EXPORT(heyoka_py::t_cb_real, bool, heyoka::taylor_adaptive<mppp::real> &, bool, int)
 
 #endif
 

@@ -16,23 +16,16 @@
 #include <cassert>
 #include <cmath>
 #include <cstddef>
-#include <cstdlib>
-#include <exception>
+#include <cstring>
 #include <functional>
 #include <limits>
 #include <new>
 #include <optional>
-#include <stdexcept>
 #include <type_traits>
 #include <utility>
 
-#if defined(__GLIBCXX__)
-
-#include <cxxabi.h>
-
-#endif
-
 #include <boost/numeric/conversion/cast.hpp>
+#include <boost/safe_numerics/safe_integer.hpp>
 
 #include <fmt/format.h>
 
@@ -57,7 +50,14 @@
 #endif
 
 #include "custom_casters.hpp"
+#include "dtypes.hpp"
 #include "expose_real128.hpp"
+
+#if defined(HEYOKA_HAVE_REAL)
+
+#include "expose_real.hpp"
+
+#endif
 
 namespace heyoka_py
 {
@@ -71,6 +71,12 @@ namespace py = pybind11;
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wmissing-field-initializers"
 #pragma GCC diagnostic ignored "-Wcast-align"
+
+#if !defined(__clang__)
+
+#pragma GCC diagnostic ignored "-Wcast-function-type"
+
+#endif
 
 #endif
 
@@ -279,6 +285,18 @@ const auto sign_func = [](auto x) {
     return static_cast<decltype(x)>((0 < x) - (x < 0));
 };
 
+const auto isnan_func = [](auto x) {
+    using std::isnan;
+
+    return isnan(x);
+};
+
+const auto isinf_func = [](auto x) {
+    using std::isinf;
+
+    return isinf(x);
+};
+
 const auto pow_func = [](auto x, auto y) {
     using std::pow;
 
@@ -292,41 +310,6 @@ const auto min_func = [](auto a, auto b) { return std::min(a, b); };
 // Methods for the number protocol.
 // NOLINTNEXTLINE(cppcoreguidelines-avoid-non-const-global-variables)
 PyNumberMethods py_real128_as_number = {};
-
-// This function will invoke the function object f,
-// wrapping its execution in the pybind11 C++ -> Python
-// exception translation logic. If a C++ exception is
-// thrown by the execution of f, the Python error flag is set
-// and true is returned. Otherwise, false will be returned.
-// The return value of f is ignored.
-template <typename F>
-bool with_pybind11_eh(const F &f)
-{
-    try {
-        f();
-
-        return false;
-    } catch (py::error_already_set &e) {
-        e.restore();
-        return true;
-#ifdef __GLIBCXX__
-    } catch (abi::__forced_unwind &) {
-        throw;
-#endif
-    } catch (...) {
-        auto &local_exception_translators = py::detail::get_local_internals().registered_exception_translators;
-        if (py::detail::apply_exception_translators(local_exception_translators)) {
-            return true;
-        }
-        auto &exception_translators = py::detail::get_internals().registered_exception_translators;
-        if (py::detail::apply_exception_translators(exception_translators)) {
-            return true;
-        }
-
-        PyErr_SetString(PyExc_SystemError, "Exception escaped from default exception translator!");
-        return true;
-    }
-}
 
 // Create a py_real128 containing an mppp::real128
 // constructed from the input set of arguments.
@@ -366,80 +349,66 @@ PyObject *py_real128_new([[maybe_unused]] PyTypeObject *type, PyObject *, PyObje
 }
 
 // Helper to convert a Python integer to real128.
+// NOTE: this currently uses a string conversion for
+// large integers.
 std::optional<mppp::real128> py_int_to_real128(PyObject *arg)
 {
     assert(PyObject_IsInstance(arg, reinterpret_cast<PyObject *>(&PyLong_Type)));
 
-    // Try to see if nptr fits in a long long.
+    // Try to see if arg fits in a long long.
     int overflow = 0;
     const auto candidate = PyLong_AsLongLongAndOverflow(arg, &overflow);
+
+    // NOTE: PyLong_AsLongLongAndOverflow() can raise exceptions in principle.
+    if (PyErr_Occurred() != nullptr) {
+        return {};
+    }
 
     if (overflow == 0) {
         return candidate;
     }
 
-    // Need to construct a real128 from the limb array.
-    auto *nptr = reinterpret_cast<PyLongObject *>(arg);
+    // Go through a string conversion.
+    std::optional<mppp::real128> retval;
 
-    // Get the signed size of nptr.
-    const auto ob_size = nptr->ob_base.ob_size;
-    assert(ob_size != 0);
-
-    // Get the limbs array.
-    const auto *ob_digit = nptr->ob_digit;
-
-    // Is it negative?
-    const auto neg = ob_size < 0;
-
-    // Compute the unsigned size.
-    using size_type = std::make_unsigned_t<std::remove_const_t<decltype(ob_size)>>;
-    static_assert(std::is_same_v<size_type, decltype(static_cast<size_type>(0) + static_cast<size_type>(0))>);
-    auto abs_ob_size = neg ? -static_cast<size_type>(ob_size) : static_cast<size_type>(ob_size);
-
-    // Init the retval with the first (most significant) limb. The Python integer is nonzero, so this is safe.
-    mppp::real128 retval = ob_digit[--abs_ob_size];
-
-    // Init the number of binary digits consumed so far.
-    // NOTE: this is of course not zero, as we read *some* bits from
-    // the most significant limb. However we don't know exactly how
-    // many bits we read from the top limb, so we err on the safe
-    // side in order to ensure that, when ncdigits reaches the bit width
-    // of real128, we have indeed consumed *at least* that many bits.
-    auto ncdigits = 0;
-
-    // Keep on reading limbs until either:
-    // - we run out of limbs, or
-    // - we have read as many bits as the bit width of real128.
-    static_assert(std::numeric_limits<mppp::real128>::digits < std::numeric_limits<int>::max() - PyLong_SHIFT);
-    while (ncdigits < std::numeric_limits<mppp::real128>::digits && abs_ob_size != 0u) {
-        retval = scalbn(retval, PyLong_SHIFT);
-        retval += ob_digit[--abs_ob_size];
-        ncdigits += PyLong_SHIFT;
-    }
-
-    if (abs_ob_size != 0u) {
-        // We have filled up the mantissa, we just need to adjust the exponent.
-        // We still have abs_ob_size * PyLong_SHIFT bits remaining, and we
-        // need to shift that much.
-        if (abs_ob_size
-            > static_cast<unsigned long>(std::numeric_limits<long>::max()) / static_cast<unsigned>(PyLong_SHIFT)) {
-            PyErr_SetString(PyExc_OverflowError,
-                            "An overflow condition was detected while converting a Python integer to a real128");
-
-            return {};
+    with_pybind11_eh([&]() {
+        auto *str_rep = PyObject_Str(arg);
+        if (str_rep == nullptr) {
+            return;
         }
-        retval = scalbln(retval, static_cast<long>(abs_ob_size * static_cast<unsigned>(PyLong_SHIFT)));
-    }
+        assert(PyUnicode_Check(str_rep) != 0);
 
-    return neg ? -retval : retval;
+        // NOTE: str remains valid as long as str_rep is alive.
+        const auto *str = PyUnicode_AsUTF8(str_rep);
+        if (str == nullptr) {
+            Py_DECREF(str_rep);
+            return;
+        }
+
+        try {
+            retval.emplace(str);
+        } catch (...) {
+            // Ensure proper cleanup of str_rep
+            // before continuing.
+            Py_DECREF(str_rep);
+            throw;
+        }
+
+        Py_DECREF(str_rep);
+    });
+
+    return retval;
 }
 
 // __init__() implementation.
-int py_real128_init(PyObject *self, PyObject *args, PyObject *)
+int py_real128_init(PyObject *self, PyObject *args, PyObject *kwargs)
 {
     PyObject *arg = nullptr;
 
-    if (PyArg_ParseTuple(args, "|O", &arg) == 0) {
+    const char *kwlist[] = {"value", nullptr};
+
+    // NOLINTNEXTLINE(cppcoreguidelines-pro-type-const-cast)
+    if (PyArg_ParseTupleAndKeywords(args, kwargs, "|O", const_cast<char **>(&kwlist[0]), &arg) == 0) {
         return -1;
     }
 
@@ -451,22 +420,27 @@ int py_real128_init(PyObject *self, PyObject *args, PyObject *)
         auto fp_arg = PyFloat_AsDouble(arg);
 
         if (PyErr_Occurred() == nullptr) {
-            *get_val(self) = fp_arg;
+            *get_real128_val(self) = fp_arg;
         } else {
             return -1;
         }
     } else if (PyLong_Check(arg)) {
         if (auto opt = py_int_to_real128(arg)) {
-            *get_val(self) = *opt;
+            *get_real128_val(self) = *opt;
         } else {
             return -1;
         }
 #if defined(MPPP_FLOAT128_WITH_LONG_DOUBLE)
     } else if (PyObject_IsInstance(arg, reinterpret_cast<PyObject *>(&PyLongDoubleArrType_Type)) != 0) {
-        *get_val(self) = reinterpret_cast<PyLongDoubleScalarObject *>(arg)->obval;
+        *get_real128_val(self) = reinterpret_cast<PyLongDoubleScalarObject *>(arg)->obval;
+#endif
+#if defined(HEYOKA_HAVE_REAL)
+    } else if (py_real_check(arg)) {
+        // NOTE: conversion of real to real128 cannot throw.
+        *get_real128_val(self) = static_cast<mppp::real128>(*get_real_val(arg));
 #endif
     } else if (py_real128_check(arg)) {
-        *get_val(self) = *get_val(arg);
+        *get_real128_val(self) = *get_real128_val(arg);
     } else if (PyUnicode_Check(arg)) {
         const auto *str = PyUnicode_AsUTF8(arg);
 
@@ -474,7 +448,7 @@ int py_real128_init(PyObject *self, PyObject *args, PyObject *)
             return -1;
         }
 
-        if (with_pybind11_eh([&]() { *get_val(self) = mppp::real128(str); })) {
+        if (with_pybind11_eh([&]() { *get_real128_val(self) = mppp::real128(str); })) {
             return -1;
         }
     } else {
@@ -493,7 +467,7 @@ void py_real128_dealloc(PyObject *self)
     assert(py_real128_check(self));
 
     // Invoke the destructor.
-    get_val(self)->~real128();
+    get_real128_val(self)->~real128();
 
     // Free the memory.
     Py_TYPE(self)->tp_free(self);
@@ -503,7 +477,8 @@ void py_real128_dealloc(PyObject *self)
 // supported Pythonic numerical types:
 // - int,
 // - float,
-// - long double.
+// - long double,
+// - real.
 // If the conversion is successful, returns {x, true}. If some error
 // is encountered, returns {<empty>, false}. If the type of arg is not
 // supported, returns {<empty>, true}.
@@ -527,10 +502,42 @@ std::pair<std::optional<mppp::real128>, bool> real128_from_ob(PyObject *arg)
     } else if (PyObject_IsInstance(arg, reinterpret_cast<PyObject *>(&PyLongDoubleArrType_Type)) != 0) {
         return {reinterpret_cast<PyLongDoubleScalarObject *>(arg)->obval, true};
 #endif
+#if defined(HEYOKA_HAVE_REAL)
+    } else if (py_real_check(arg)) {
+        // NOTE: conversion of real to real128 cannot throw.
+        return {static_cast<mppp::real128>(*get_real_val(arg)), true};
+#endif
     } else {
         return {{}, true};
     }
 }
+
+PyObject *py_real128_copy(PyObject *self, [[maybe_unused]] PyObject *args)
+{
+    assert(args == nullptr);
+
+    return py_real128_from_args(*get_real128_val(self));
+}
+
+PyObject *py_real128_deepcopy(PyObject *self, PyObject *args, PyObject *kwargs)
+{
+    PyObject *memo_arg = nullptr;
+
+    const char *kwlist[] = {"memo", nullptr};
+
+    // NOLINTNEXTLINE(cppcoreguidelines-pro-type-const-cast)
+    if (PyArg_ParseTupleAndKeywords(args, kwargs, "|O", const_cast<char **>(&kwlist[0]), &memo_arg) == 0) {
+        return nullptr;
+    }
+
+    return py_real128_from_args(*get_real128_val(self));
+}
+
+// NOLINTNEXTLINE(cppcoreguidelines-avoid-non-const-global-variables)
+PyMethodDef py_real128_methods[]
+    = {{"__copy__", py_real128_copy, METH_NOARGS, nullptr},
+       {"__deepcopy__", reinterpret_cast<PyCFunction>(py_real128_deepcopy), METH_VARARGS | METH_KEYWORDS, nullptr},
+       {nullptr}};
 
 // __repr__().
 PyObject *py_real128_repr(PyObject *self)
@@ -540,7 +547,7 @@ PyObject *py_real128_repr(PyObject *self)
     // NOTE: C++ exceptions here can be thrown only *before*
     // the invocation of PyUnicode_FromString(). Hence, in case of
     // exceptions, retval will remain nullptr.
-    with_pybind11_eh([&]() { retval = PyUnicode_FromString(get_val(self)->to_string().c_str()); });
+    with_pybind11_eh([&]() { retval = PyUnicode_FromString(get_real128_val(self)->to_string().c_str()); });
 
     return retval;
 }
@@ -550,7 +557,7 @@ template <typename F>
 PyObject *py_real128_unop(PyObject *a, const F &op)
 {
     if (py_real128_check(a)) {
-        const auto *x = get_val(a);
+        const auto *x = get_real128_val(a);
         return py_real128_from_args(op(*x));
     } else {
         Py_RETURN_NOTIMPLEMENTED;
@@ -566,20 +573,33 @@ PyObject *py_real128_binop(PyObject *a, PyObject *b, const F &op)
 
     if (a_is_real128 && b_is_real128) {
         // Both operands are real128.
-        const auto *x = get_val(a);
-        const auto *y = get_val(b);
+        const auto *x = get_real128_val(a);
+        const auto *y = get_real128_val(b);
 
         return py_real128_from_args(op(*x, *y));
     }
 
     if (a_is_real128) {
-        // a is a real128, b is not. Try to convert
-        // b to a real128.
+        // a is a real128, b is not.
+
+#if defined(HEYOKA_HAVE_REAL)
+
+        // NOTE: if one of the operands is a real,
+        // the result will be a real too.
+        if (py_real_check(b)) {
+            PyObject *retval = nullptr;
+
+            with_pybind11_eh([&]() { retval = pyreal_from_real(op(*get_real128_val(a), *get_real_val(b))); });
+
+            return retval;
+        }
+
+#endif
         auto [r, flag] = real128_from_ob(b);
 
         if (r) {
             // The conversion was successful, do the op.
-            return py_real128_from_args(op(*get_val(a), *r));
+            return py_real128_from_args(op(*get_real128_val(a), *r));
         }
 
         if (flag) {
@@ -593,10 +613,23 @@ PyObject *py_real128_binop(PyObject *a, PyObject *b, const F &op)
 
     if (b_is_real128) {
         // The mirror of the previous case.
+
+#if defined(HEYOKA_HAVE_REAL)
+
+        if (py_real_check(a)) {
+            PyObject *retval = nullptr;
+
+            with_pybind11_eh([&]() { retval = pyreal_from_real(op(*get_real_val(a), *get_real128_val(b))); });
+
+            return retval;
+        }
+
+#endif
+
         auto [r, flag] = real128_from_ob(a);
 
         if (r) {
-            return py_real128_from_args(op(*r, *get_val(b)));
+            return py_real128_from_args(op(*r, *get_real128_val(b)));
         }
 
         if (flag) {
@@ -620,8 +653,8 @@ PyObject *py_real128_rcmp(PyObject *a, PyObject *b, int op)
 
         if (a_is_real128 && b_is_real128) {
             // Both operands are real128.
-            const auto *x = get_val(a);
-            const auto *y = get_val(b);
+            const auto *x = get_real128_val(a);
+            const auto *y = get_real128_val(b);
 
             if (func(*x, *y)) {
                 Py_RETURN_TRUE;
@@ -631,13 +664,26 @@ PyObject *py_real128_rcmp(PyObject *a, PyObject *b, int op)
         }
 
         if (a_is_real128) {
-            // a is a real128, b is not. Try to convert
-            // b to a real128.
+            // a is a real128, b is not.
+
+#if defined(HEYOKA_HAVE_REAL)
+
+            if (py_real_check(b)) {
+                // NOTE: comparisons cannot throw.
+                if (func(*get_real128_val(a), *get_real_val(b))) {
+                    Py_RETURN_TRUE;
+                } else {
+                    Py_RETURN_FALSE;
+                }
+            }
+
+#endif
+
             auto [r, flag] = real128_from_ob(b);
 
             if (r) {
                 // The conversion was successful, do the op.
-                if (func(*get_val(a), *r)) {
+                if (func(*get_real128_val(a), *r)) {
                     Py_RETURN_TRUE;
                 } else {
                     Py_RETURN_FALSE;
@@ -655,10 +701,23 @@ PyObject *py_real128_rcmp(PyObject *a, PyObject *b, int op)
 
         if (b_is_real128) {
             // The mirror of the previous case.
+
+#if defined(HEYOKA_HAVE_REAL)
+
+            if (py_real_check(a)) {
+                if (func(*get_real_val(a), *get_real128_val(b))) {
+                    Py_RETURN_TRUE;
+                } else {
+                    Py_RETURN_FALSE;
+                }
+            }
+
+#endif
+
             auto [r, flag] = real128_from_ob(a);
 
             if (r) {
-                if (func(*r, *get_val(b))) {
+                if (func(*r, *get_real128_val(b))) {
                     Py_RETURN_TRUE;
                 } else {
                     Py_RETURN_FALSE;
@@ -712,7 +771,7 @@ PyObject *npy_py_real128_getitem(void *data, void *)
 int npy_py_real128_setitem(PyObject *item, void *data, void *)
 {
     if (py_real128_check(item)) {
-        const auto *q = get_val(item);
+        const auto *q = get_real128_val(item);
         std::memcpy(data, q, sizeof(mppp::real128));
         return 0;
     }
@@ -807,13 +866,24 @@ npy_bool npy_py_real128_nonzero(void *data, void *)
     return q != 0 ? NPY_TRUE : NPY_FALSE;
 }
 
-// Comparison primitive.
+// Comparison primitive, used for sorting.
+// NOTE: use special comparisons to ensure NaNs are put at the end
+// of an array when sorting.
 int npy_py_real128_compare(const void *d0, const void *d1, void *)
 {
     const auto &x = *static_cast<const mppp::real128 *>(d0);
     const auto &y = *static_cast<const mppp::real128 *>(d1);
 
-    return x < y ? -1 : x == y ? 0 : 1;
+    // NOTE: no exceptions are possible in these comparisons.
+    if (mppp::real128_lt(x, y)) {
+        return -1;
+    }
+
+    if (mppp::real128_equal_to(x, y)) {
+        return 0;
+    }
+
+    return 1;
 }
 
 // argmin/argmax implementation.
@@ -844,6 +914,11 @@ int npy_py_real128_argminmax(void *data_, npy_intp n, npy_intp *max_ind, const F
 // Fill primitive (e.g., used for arange()).
 int npy_py_real128_fill(void *data_, npy_intp length, void *)
 {
+    // NOTE: not sure if this is possible, let's stay on the safe side.
+    if (length < 2) {
+        return 0;
+    }
+
     auto *data = static_cast<mppp::real128 *>(data_);
     const auto delta = data[1] - data[0];
     auto r = data[1];
@@ -949,6 +1024,9 @@ void npy_py_real128_gufunc_matrix_multiply(char **args, const npy_intp *dimensio
 template <typename From>
 void npy_cast_to_real128(void *from, void *to, npy_intp n, void *, void *)
 {
+    // Sanity check, we don't want to implement real128 -> real128 conversion.
+    static_assert(!std::is_same_v<From, mppp::real128>);
+
     const auto *typed_from = static_cast<const From *>(from);
     auto *typed_to = static_cast<mppp::real128 *>(to);
 
@@ -961,6 +1039,9 @@ void npy_cast_to_real128(void *from, void *to, npy_intp n, void *, void *)
 template <typename To>
 void npy_cast_from_real128(void *from, void *to, npy_intp n, void *, void *)
 {
+    // Sanity check, we don't want to implement real128 -> real128 conversion.
+    static_assert(!std::is_same_v<To, mppp::real128>);
+
     const auto *typed_from = static_cast<const mppp::real128 *>(from);
     auto *typed_to = static_cast<To *>(to);
 
@@ -969,57 +1050,22 @@ void npy_cast_from_real128(void *from, void *to, npy_intp n, void *, void *)
     }
 }
 
-// Machinery to associate a C++ type to a NumPy type.
-template <typename>
-struct cpp_to_numpy_t {
-};
-
-#define HEYOKA_PY_ASSOC_TY(cpp_tp, npy_tp)                                                                             \
-    template <>                                                                                                        \
-    struct cpp_to_numpy_t<cpp_tp> {                                                                                    \
-        static constexpr int value = npy_tp;                                                                           \
-    }
-
-HEYOKA_PY_ASSOC_TY(float, NPY_FLOAT);
-HEYOKA_PY_ASSOC_TY(double, NPY_DOUBLE);
-
-#if defined(MPPP_FLOAT128_WITH_LONG_DOUBLE)
-
-// NOTE: see below the reasons for commenting this out.
-// HEYOKA_PY_ASSOC_TY(long double, NPY_LONGDOUBLE);
-
-#endif
-
-HEYOKA_PY_ASSOC_TY(npy_int8, NPY_INT8);
-HEYOKA_PY_ASSOC_TY(npy_int16, NPY_INT16);
-HEYOKA_PY_ASSOC_TY(npy_int32, NPY_INT32);
-HEYOKA_PY_ASSOC_TY(npy_int64, NPY_INT64);
-HEYOKA_PY_ASSOC_TY(npy_uint8, NPY_UINT8);
-HEYOKA_PY_ASSOC_TY(npy_uint16, NPY_UINT16);
-HEYOKA_PY_ASSOC_TY(npy_uint32, NPY_UINT32);
-HEYOKA_PY_ASSOC_TY(npy_uint64, NPY_UINT64);
-
-#undef HEYOKA_PY_ASSOC_TY
-
-// Shortcut.
-template <typename T>
-constexpr auto npy_type = cpp_to_numpy_t<T>::value;
-
 // Helper to register NumPy casting functions to/from T.
 template <typename T>
 void npy_register_cast_functions()
 {
-    if (PyArray_RegisterCastFunc(PyArray_DescrFromType(npy_type<T>), npy_registered_py_real128, &npy_cast_to_real128<T>)
+    if (PyArray_RegisterCastFunc(PyArray_DescrFromType(get_dtype<T>()), npy_registered_py_real128,
+                                 &npy_cast_to_real128<T>)
         < 0) {
         py_throw(PyExc_TypeError, "The registration of a NumPy casting function failed");
     }
 
     // NOTE: this is to signal that conversion of any scalar type to real128 is safe.
-    if (PyArray_RegisterCanCast(PyArray_DescrFromType(npy_type<T>), npy_registered_py_real128, NPY_NOSCALAR) < 0) {
+    if (PyArray_RegisterCanCast(PyArray_DescrFromType(get_dtype<T>()), npy_registered_py_real128, NPY_NOSCALAR) < 0) {
         py_throw(PyExc_TypeError, "The registration of a NumPy casting function failed");
     }
 
-    if (PyArray_RegisterCastFunc(&npy_py_real128_descr, npy_type<T>, &npy_cast_from_real128<T>) < 0) {
+    if (PyArray_RegisterCastFunc(&npy_py_real128_descr, get_dtype<T>(), &npy_cast_from_real128<T>) < 0) {
         py_throw(PyExc_TypeError, "The registration of a NumPy casting function failed");
     }
 }
@@ -1101,7 +1147,7 @@ bool py_real128_check(PyObject *ob)
 }
 
 // Helper to reach the mppp::real128 stored inside a py_real128.
-mppp::real128 *get_val(PyObject *self)
+mppp::real128 *get_real128_val(PyObject *self)
 {
     assert(py_real128_check(self));
 
@@ -1128,6 +1174,7 @@ void expose_real128(py::module_ &m)
     py_real128_type.tp_repr = detail::py_real128_repr;
     py_real128_type.tp_as_number = &detail::py_real128_as_number;
     py_real128_type.tp_richcompare = &detail::py_real128_rcmp;
+    py_real128_type.tp_methods = detail::py_real128_methods;
 
     // Fill out the functions for the number protocol. See:
     // https://docs.python.org/3/c-api/number.html
@@ -1156,14 +1203,16 @@ void expose_real128(py::module_ &m)
         return detail::py_real128_binop(a, b, detail::pow_func);
     };
     detail::py_real128_as_number.nb_bool
-        = [](PyObject *arg) { return static_cast<int>(static_cast<bool>(*get_val(arg))); };
+        = [](PyObject *arg) { return static_cast<int>(static_cast<bool>(*get_real128_val(arg))); };
     detail::py_real128_as_number.nb_float
-        = [](PyObject *arg) { return PyFloat_FromDouble(static_cast<double>(*get_val(arg))); };
+        = [](PyObject *arg) { return PyFloat_FromDouble(static_cast<double>(*get_real128_val(arg))); };
+    // NOTE: for large integers, this goes through a string conversion.
+    // Of course, this can be implemented much faster.
     detail::py_real128_as_number.nb_int = [](PyObject *arg) -> PyObject * {
         using std::isfinite;
         using std::isnan;
 
-        const auto val = *get_val(arg);
+        const auto val = *get_real128_val(arg);
 
         if (isnan(val)) {
             PyErr_SetString(PyExc_ValueError, "Cannot convert real128 NaN to integer");
@@ -1177,7 +1226,7 @@ void expose_real128(py::module_ &m)
 
         PyObject *retval = nullptr;
 
-        detail::with_pybind11_eh([&]() {
+        with_pybind11_eh([&]() {
             const auto val_int = mppp::integer<1>{val};
             long long candidate = 0;
             if (val_int.get(candidate)) {
@@ -1192,7 +1241,8 @@ void expose_real128(py::module_ &m)
 
     // Finalize py_real128_type.
     if (PyType_Ready(&py_real128_type) < 0) {
-        py_throw(PyExc_TypeError, "Could not finalise the real128 type");
+        // NOTE: PyType_Ready() already sets the exception flag.
+        throw py::error_already_set();
     }
 
     // Fill out the NumPy descriptor.
@@ -1208,10 +1258,15 @@ void expose_real128(py::module_ &m)
     // NOTE: not 100% sure PyArray_InitArrFuncs() is needed, as npy_py_real128_arr_funcs
     // is already cleared out on creation.
     PyArray_InitArrFuncs(&detail::npy_py_real128_arr_funcs);
+    // NOTE: get/set item, copyswap and nonzero are the functions that
+    // need to be able to deal with "misbehaved" array:
+    // https://numpy.org/doc/stable/reference/c-api/types-and-structures.html
+    // Hence, we group the together at the beginning.
     detail::npy_py_real128_arr_funcs.getitem = detail::npy_py_real128_getitem;
     detail::npy_py_real128_arr_funcs.setitem = detail::npy_py_real128_setitem;
     detail::npy_py_real128_arr_funcs.copyswap = detail::npy_py_real128_copyswap;
     detail::npy_py_real128_arr_funcs.copyswapn = detail::npy_py_real128_copyswapn;
+    detail::npy_py_real128_arr_funcs.nonzero = detail::npy_py_real128_nonzero;
     detail::npy_py_real128_arr_funcs.compare = detail::npy_py_real128_compare;
     detail::npy_py_real128_arr_funcs.argmin = [](void *data, npy_intp n, npy_intp *max_ind, void *) {
         return detail::npy_py_real128_argminmax(data, n, max_ind, std::less{});
@@ -1219,7 +1274,6 @@ void expose_real128(py::module_ &m)
     detail::npy_py_real128_arr_funcs.argmax = [](void *data, npy_intp n, npy_intp *max_ind, void *) {
         return detail::npy_py_real128_argminmax(data, n, max_ind, std::greater{});
     };
-    detail::npy_py_real128_arr_funcs.nonzero = detail::npy_py_real128_nonzero;
     detail::npy_py_real128_arr_funcs.fill = detail::npy_py_real128_fill;
     detail::npy_py_real128_arr_funcs.fillwithscalar = detail::npy_py_real128_fillwithscalar;
     detail::npy_py_real128_arr_funcs.dotfunc = detail::npy_py_real128_dot;
@@ -1232,7 +1286,8 @@ void expose_real128(py::module_ &m)
     Py_SET_TYPE(&detail::npy_py_real128_descr, &PyArrayDescr_Type);
     npy_registered_py_real128 = PyArray_RegisterDataType(&detail::npy_py_real128_descr);
     if (npy_registered_py_real128 < 0) {
-        py_throw(PyExc_TypeError, "Could not register the real128 type in NumPy");
+        // NOTE: PyArray_RegisterDataType() already sets the error flag.
+        throw py::error_already_set();
     }
 
     // Support the dtype(real128) syntax.
@@ -1511,12 +1566,6 @@ void expose_real128(py::module_ &m)
         },
         npy_registered_py_real128, npy_registered_py_real128, NPY_BOOL);
     detail::npy_register_ufunc(
-        numpy_mod, "isfinite",
-        [](char **args, const npy_intp *dimensions, const npy_intp *steps, void *data) {
-            detail::py_real128_ufunc_unary<npy_bool>(args, dimensions, steps, data, detail::isfinite_func);
-        },
-        npy_registered_py_real128, NPY_BOOL);
-    detail::npy_register_ufunc(
         numpy_mod, "sign",
         [](char **args, const npy_intp *dimensions, const npy_intp *steps, void *data) {
             detail::py_real128_ufunc_unary(args, dimensions, steps, data, detail::sign_func);
@@ -1534,11 +1583,31 @@ void expose_real128(py::module_ &m)
             detail::py_real128_ufunc_binary(args, dimensions, steps, data, detail::min_func);
         },
         npy_registered_py_real128, npy_registered_py_real128, npy_registered_py_real128);
+    detail::npy_register_ufunc(
+        numpy_mod, "isnan",
+        [](char **args, const npy_intp *dimensions, const npy_intp *steps, void *data) {
+            detail::py_real128_ufunc_unary<npy_bool>(args, dimensions, steps, data, detail::isnan_func);
+        },
+        npy_registered_py_real128, NPY_BOOL);
+    detail::npy_register_ufunc(
+        numpy_mod, "isinf",
+        [](char **args, const npy_intp *dimensions, const npy_intp *steps, void *data) {
+            detail::py_real128_ufunc_unary<npy_bool>(args, dimensions, steps, data, detail::isinf_func);
+        },
+        npy_registered_py_real128, NPY_BOOL);
+    detail::npy_register_ufunc(
+        numpy_mod, "isfinite",
+        [](char **args, const npy_intp *dimensions, const npy_intp *steps, void *data) {
+            detail::py_real128_ufunc_unary<npy_bool>(args, dimensions, steps, data, detail::isfinite_func);
+        },
+        npy_registered_py_real128, NPY_BOOL);
     // Matrix multiplication.
     detail::npy_register_ufunc(numpy_mod, "matmul", detail::npy_py_real128_gufunc_matrix_multiply,
                                npy_registered_py_real128, npy_registered_py_real128, npy_registered_py_real128);
 
     // Casting.
+    // NOTE: casting to/from real is already implemented
+    // in the real exposition.
     detail::npy_register_cast_functions<float>();
     detail::npy_register_cast_functions<double>();
 
@@ -1562,7 +1631,7 @@ void expose_real128(py::module_ &m)
     detail::npy_register_cast_functions<npy_uint32>();
     detail::npy_register_cast_functions<npy_uint64>();
 
-    // NOTE: need to to bool manually as it typically overlaps
+    // NOTE: need to do bool manually as it typically overlaps
     // with another C++ type (e.g., uint8).
     if (PyArray_RegisterCastFunc(PyArray_DescrFromType(NPY_BOOL), npy_registered_py_real128,
                                  &detail::npy_cast_to_real128<npy_bool>)
@@ -1570,7 +1639,7 @@ void expose_real128(py::module_ &m)
         py_throw(PyExc_TypeError, "The registration of a NumPy casting function failed");
     }
 
-    // NOTE: this is to signal that conversion of any scalar type to real128 is safe.
+    // NOTE: this is to signal that conversion of bool to real128 is safe.
     if (PyArray_RegisterCanCast(PyArray_DescrFromType(NPY_BOOL), npy_registered_py_real128, NPY_NOSCALAR) < 0) {
         py_throw(PyExc_TypeError, "The registration of a NumPy casting function failed");
     }

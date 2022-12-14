@@ -27,6 +27,12 @@ void expose_taylor_add_jet_f128(py::module &);
 
 #endif
 
+#if defined(HEYOKA_HAVE_REAL)
+
+void expose_taylor_add_jet_real(py::module &);
+
+#endif
+
 } // namespace heyoka_py
 
 #endif

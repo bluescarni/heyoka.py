@@ -39,6 +39,12 @@
 
 #endif
 
+#if defined(HEYOKA_HAVE_REAL)
+
+#include <mp++/real.hpp>
+
+#endif
+
 #include <heyoka/celmec/vsop2013.hpp>
 #include <heyoka/exceptions.hpp>
 #include <heyoka/expression.hpp>
@@ -52,9 +58,9 @@
 #include "cfunc.hpp"
 #include "custom_casters.hpp"
 #include "dtypes.hpp"
-#include "expose_M2E.hpp"
 #include "expose_batch_integrators.hpp"
 #include "expose_expression.hpp"
+#include "expose_real.hpp"
 #include "expose_real128.hpp"
 #include "logging.hpp"
 #include "pickle_wrappers.hpp"
@@ -74,6 +80,7 @@ namespace heyoka_py::detail
 namespace
 {
 
+// NOLINTNEXTLINE(cppcoreguidelines-avoid-non-const-global-variables)
 std::optional<oneapi::tbb::global_control> tbb_gc;
 
 // Helper to import the NumPy API bits.
@@ -122,7 +129,16 @@ PYBIND11_MODULE(core, m)
         ;
 
     // Expose the real128 type.
+    // NOTE: it is *important* this is done
+    // before the exposition of real, since the real
+    // exposition registers NumPy converters to/from
+    // real128, and in order for that to work the NumPy
+    // type descriptor for real128 needs to have been
+    // set up.
     heypy::expose_real128(m);
+
+    // Expose the real type.
+    heypy::expose_real(m);
 
     // Expose the logging setter functions.
     heypy::expose_logging_setters(m);
@@ -176,9 +192,6 @@ PYBIND11_MODULE(core, m)
 
     // Expression.
     heypy::expose_expression(m);
-
-    // M2E.
-    heypy::expose_M2E(m);
 
     // N-body builders.
     m.def(
@@ -322,6 +335,12 @@ PYBIND11_MODULE(core, m)
 
 #endif
 
+#if defined(HEYOKA_HAVE_REAL)
+
+    heypy::expose_taylor_add_jet_real(m);
+
+#endif
+
     // Compiled functions.
     heypy::expose_add_cfunc_dbl(m);
     heypy::expose_add_cfunc_ldbl(m);
@@ -329,6 +348,12 @@ PYBIND11_MODULE(core, m)
 #if defined(HEYOKA_HAVE_REAL128)
 
     heypy::expose_add_cfunc_f128(m);
+
+#endif
+
+#if defined(HEYOKA_HAVE_REAL)
+
+    heypy::expose_add_cfunc_real(m);
 
 #endif
 
@@ -347,12 +372,24 @@ PYBIND11_MODULE(core, m)
 
 #endif
 
+#if defined(HEYOKA_HAVE_REAL)
+
+    heypy::expose_taylor_t_event_real(m);
+
+#endif
+
     heypy::expose_taylor_nt_event_dbl(m);
     heypy::expose_taylor_nt_event_ldbl(m);
 
 #if defined(HEYOKA_HAVE_REAL128)
 
     heypy::expose_taylor_nt_event_f128(m);
+
+#endif
+
+#if defined(HEYOKA_HAVE_REAL)
+
+    heypy::expose_taylor_nt_event_real(m);
 
 #endif
 
@@ -367,6 +404,12 @@ PYBIND11_MODULE(core, m)
 #if defined(HEYOKA_HAVE_REAL128)
 
     heypy::expose_taylor_integrator_f128(m);
+
+#endif
+
+#if defined(HEYOKA_HAVE_REAL)
+
+    heypy::expose_taylor_integrator_real(m);
 
 #endif
 

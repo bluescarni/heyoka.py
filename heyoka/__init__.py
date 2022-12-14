@@ -60,6 +60,13 @@ def _with_real128():
     return hasattr(core, "real128")
 
 
+def _with_real():
+    # Small helper to check if real is available.
+    from . import core
+
+    return hasattr(core, "real")
+
+
 from numpy import longdouble as _ld
 
 _fp_to_suffix_dict = {float: "_dbl", _ld: "_ldbl"}
@@ -68,6 +75,9 @@ del _ld
 
 if _with_real128():
     _fp_to_suffix_dict[real128] = "_f128"
+
+if _with_real():
+    _fp_to_suffix_dict[real] = "_real"
 
 
 def _fp_to_suffix(fp_t):
@@ -356,3 +366,9 @@ def ensemble_propagate_for_batch(ta, delta_t, n_iter, gen, **kwargs):
 
 def ensemble_propagate_grid_batch(ta, grid, n_iter, gen, **kwargs):
     return _ensemble_propagate_generic("grid", ta, grid, n_iter, gen, **kwargs)
+
+
+def _real_reduce_factory():
+    # Internal factory function used in the implementation
+    # of the pickle protocol for real.
+    return real()

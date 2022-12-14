@@ -7,6 +7,12 @@ on:
     branches:
       - main
 jobs:
+  conda_asan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Build
+        run: bash tools/gha_conda_asan.sh
   osx_heyoka_head:
     runs-on: macos-latest
     steps:
@@ -28,12 +34,12 @@ jobs:
       - name: Build
         shell: pwsh
         run: |
-          conda install -y python=3.10 git pybind11 numpy cmake llvmdev=15.0.2 tbb-devel tbb astroquery boost-cpp fmt spdlog sleef cloudpickle zlib libzlib
+          conda install -y python=3.10 git pybind11 numpy cmake llvmdev=15.0.2 tbb-devel tbb astroquery boost-cpp fmt spdlog sleef sympy cloudpickle zlib libzlib mppp
           git clone https://github.com/bluescarni/heyoka.git heyoka_cpp
           cd heyoka_cpp
           mkdir build
           cd build
-          cmake .. -G "Visual Studio 16 2019" -A x64 -DCMAKE_PREFIX_PATH=C:\Miniconda\envs\test\Library -DCMAKE_INSTALL_PREFIX=C:\Miniconda\envs\test\Library -DBoost_NO_BOOST_CMAKE=ON -DHEYOKA_ENABLE_IPO=yes -DHEYOKA_WITH_SLEEF=yes
+          cmake .. -G "Visual Studio 16 2019" -A x64 -DCMAKE_PREFIX_PATH=C:\Miniconda\envs\test\Library -DCMAKE_INSTALL_PREFIX=C:\Miniconda\envs\test\Library -DBoost_NO_BOOST_CMAKE=ON -DHEYOKA_ENABLE_IPO=yes -DHEYOKA_WITH_SLEEF=yes -DHEYOKA_WITH_MPPP=yes
           cmake --build . --config Release --target install
           cd ..
           cd ..

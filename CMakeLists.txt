@@ -128,7 +128,7 @@ unset(_HEYOKA_PY_MIN_HEYOKA_VERSION)
 # Python.
 
 # Setup the list of Python components we need to locate.
-# NOTE: NumPy is used for both long double and real128 support.
+# NOTE: NumPy is used for long double, real and real128 support.
 set(_HEYOKA_PY_PYTHON3_COMPONENTS Interpreter NumPy)
 
 if(${CMAKE_VERSION} VERSION_LESS "3.18.0")
@@ -159,6 +159,10 @@ message(STATUS "Python3 installation directory: ${Python3_SITEARCH}")
 if(${Python3_VERSION_MINOR} LESS 5)
     message(FATAL_ERROR "The minimum supported version of Python is 3.5, but version 3.${Python3_VERSION_MINOR} was found instead")
 endif()
+# NOTE: mppp::real support requires NumPy 1.22 at least.
+if(heyoka_WITH_REAL AND ${Python3_NumPy_VERSION} LESS 1.22)
+    message(FATAL_ERROR "The minimum version of NumPy required for supporting arbitrary-precision computations is 1.22, but version ${Python3_NumPy_VERSION} was found instead")
+endif()
 set(HEYOKA_PY_INSTALL_PATH "" CACHE STRING "heyoka module installation path")
 mark_as_advanced(HEYOKA_PY_INSTALL_PATH)
 unset(_HEYOKA_PY_PYTHON3_COMPONENTS)
@@ -170,15 +174,25 @@ if(${pybind11_VERSION} VERSION_LESS "2.10")
 endif()
 
 # Boost.
-find_package(Boost REQUIRED serialization)
+# NOTE: need 1.69 for safe numerics.
+find_package(Boost 1.69 REQUIRED serialization)
 
 # Mandatory dependency on TBB.
 find_package(TBB REQUIRED CONFIG)
 
 # NOTE: we make direct use of the mp++ headers
-# in the heyoka.py source code if real128 support is enabled.
-if(heyoka_WITH_REAL128)
+# in the heyoka.py source code if real/real128 support is enabled.
+if(heyoka_WITH_REAL128 OR heyoka_WITH_REAL)
     find_package(mp++ REQUIRED CONFIG)
+
+    # NOTE: not sure which minimum version we need here,
+    # for the moment let's just grab the minimal requirement
+    # from current heyoka.
+    set(_HEYOKA_PY_MIN_MPPP_VERSION "0.27")
+    if(${mp++_VERSION} VERSION_LESS ${_HEYOKA_PY_MIN_MPPP_VERSION})
+        message(FATAL_ERROR "mp++ >= ${_HEYOKA_PY_MIN_MPPP_VERSION} is required.")
+    endif()
+    unset(_HEYOKA_PY_MIN_MPPP_VERSION)
 endif()
 
 # Add the module directory.

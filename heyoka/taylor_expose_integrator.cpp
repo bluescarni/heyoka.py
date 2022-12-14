@@ -12,12 +12,11 @@
 #include <cassert>
 #include <cstddef>
 #include <functional>
-#include <heyoka/llvm_state.hpp>
 #include <initializer_list>
-#include <limits>
 #include <sstream>
 #include <string>
 #include <tuple>
+#include <type_traits>
 #include <utility>
 #include <variant>
 #include <vector>
@@ -36,6 +35,12 @@
 #if defined(HEYOKA_HAVE_REAL128)
 
 #include <mp++/real128.hpp>
+
+#endif
+
+#if defined(HEYOKA_HAVE_REAL)
+
+#include <mp++/real.hpp>
 
 #endif
 
@@ -60,6 +65,15 @@ namespace detail
 namespace
 {
 
+template <typename T>
+constexpr bool default_cm =
+#if defined(HEYOKA_HAVE_REAL)
+    std::is_same_v<T, mppp::real>
+#else
+    false
+#endif
+    ;
+
 // Implementation of the exposition of the scalar integrators
 // for double and long double.
 template <typename T>
@@ -78,7 +92,7 @@ void expose_taylor_integrator_impl(py::module &m, const std::string &suffix)
     py::class_<hey::taylor_adaptive<T>> cl(m, (fmt::format("taylor_adaptive_{}", suffix)).c_str(), py::dynamic_attr{});
     cl.def(py::init([](const sys_t &sys, std::vector<T> state, T time, std::vector<T> pars, T tol, bool high_accuracy,
                        bool compact_mode, std::vector<t_ev_t> tes, std::vector<nt_ev_t> ntes, bool parallel_mode,
-                       unsigned opt_level, bool force_avx512, bool fast_math) {
+                       unsigned opt_level, bool force_avx512, bool fast_math, long long prec) {
                return std::visit(
                    [&](const auto &val) {
                        // NOTE: GIL release is fine here even if the events contain
@@ -99,14 +113,16 @@ void expose_taylor_integrator_impl(py::module &m, const std::string &suffix)
                                                       kw::parallel_mode = parallel_mode,
                                                       kw::opt_level = opt_level,
                                                       kw::force_avx512 = force_avx512,
-                                                      kw::fast_math = fast_math};
+                                                      kw::fast_math = fast_math,
+                                                      kw::prec = prec};
                    },
                    sys);
            }),
            "sys"_a, "state"_a.noconvert(), "time"_a.noconvert() = static_cast<T>(0), "pars"_a.noconvert() = py::list{},
-           "tol"_a.noconvert() = static_cast<T>(0), "high_accuracy"_a = false, "compact_mode"_a = false,
+           "tol"_a.noconvert() = static_cast<T>(0), "high_accuracy"_a = false, "compact_mode"_a = default_cm<T>,
            "t_events"_a = py::list{}, "nt_events"_a = py::list{}, "parallel_mode"_a = false,
-           "opt_level"_a.noconvert() = 3, "force_avx512"_a.noconvert() = false, "fast_math"_a.noconvert() = false)
+           "opt_level"_a.noconvert() = 3, "force_avx512"_a.noconvert() = false, "fast_math"_a.noconvert() = false,
+           "prec"_a.noconvert() = 0)
         .def_property_readonly(
             "state",
             [](py::object &o) {
@@ -203,7 +219,7 @@ void expose_taylor_integrator_impl(py::module &m, const std::string &suffix)
                                         kw::callback = cb, kw::write_tc = write_tc, kw::c_output = c_output);
             },
             "delta_t"_a.noconvert(), "max_steps"_a = 0,
-            "max_delta_t"_a.noconvert() = std::numeric_limits<T>::infinity(), "callback"_a = prop_cb_t{},
+            "max_delta_t"_a.noconvert() = hey::detail::taylor_default_max_delta_t<T>(), "callback"_a = prop_cb_t{},
             "write_tc"_a = false, "c_output"_a = false)
         .def(
             "propagate_until",
@@ -216,8 +232,9 @@ void expose_taylor_integrator_impl(py::module &m, const std::string &suffix)
                 return ta.propagate_until(t, kw::max_steps = max_steps, kw::max_delta_t = max_delta_t,
                                           kw::callback = cb, kw::write_tc = write_tc, kw::c_output = c_output);
             },
-            "t"_a.noconvert(), "max_steps"_a = 0, "max_delta_t"_a.noconvert() = std::numeric_limits<T>::infinity(),
-            "callback"_a = prop_cb_t{}, "write_tc"_a = false, "c_output"_a = false)
+            "t"_a.noconvert(), "max_steps"_a = 0,
+            "max_delta_t"_a.noconvert() = hey::detail::taylor_default_max_delta_t<T>(), "callback"_a = prop_cb_t{},
+            "write_tc"_a = false, "c_output"_a = false)
         .def(
             "propagate_grid",
             [](hey::taylor_adaptive<T> &ta, std::vector<T> grid, std::size_t max_steps, T max_delta_t,
@@ -246,8 +263,8 @@ void expose_taylor_integrator_impl(py::module &m, const std::string &suffix)
                 return py::make_tuple(std::get<0>(ret), std::get<1>(ret), std::get<2>(ret), std::get<3>(ret),
                                       std::move(a_ret));
             },
-            "grid"_a.noconvert(), "max_steps"_a = 0, "max_delta_t"_a.noconvert() = std::numeric_limits<T>::infinity(),
-            "callback"_a = prop_cb_t{})
+            "grid"_a.noconvert(), "max_steps"_a = 0,
+            "max_delta_t"_a.noconvert() = hey::detail::taylor_default_max_delta_t<T>(), "callback"_a = prop_cb_t{})
         // Repr.
         .def("__repr__",
              [](const hey::taylor_adaptive<T> &ta) {
@@ -278,6 +295,14 @@ void expose_taylor_integrator_impl(py::module &m, const std::string &suffix)
 
     // Expose the llvm state getter.
     expose_llvm_state_property(cl);
+
+#if defined(HEYOKA_HAVE_REAL)
+
+    if constexpr (std::is_same_v<T, mppp::real>) {
+        cl.def_property_readonly("prec", &hey::taylor_adaptive<T>::get_prec);
+    }
+
+#endif
 }
 
 } // namespace
@@ -299,6 +324,15 @@ void expose_taylor_integrator_ldbl(py::module &m)
 void expose_taylor_integrator_f128(py::module &m)
 {
     detail::expose_taylor_integrator_impl<mppp::real128>(m, "f128");
+}
+
+#endif
+
+#if defined(HEYOKA_HAVE_REAL)
+
+void expose_taylor_integrator_real(py::module &m)
+{
+    detail::expose_taylor_integrator_impl<mppp::real>(m, "real");
 }
 
 #endif

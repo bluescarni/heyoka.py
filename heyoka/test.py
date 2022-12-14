@@ -1306,7 +1306,7 @@ class event_detection_test_case(_ut.TestCase):
             nt_events=[nt_event_batch(v * v - 1e-10, cb2)],
         )
 
-        with self.assertRaises(TypeError):
+        with self.assertRaises(RuntimeError):
             ta.propagate_until([4.0, 4.0])
 
         # Terminal events.
@@ -1448,7 +1448,7 @@ class event_detection_test_case(_ut.TestCase):
             t_events=[t_event_batch(v * v - 1e-10, callback=cb2)],
         )
 
-        with self.assertRaises(TypeError):
+        with self.assertRaises(RuntimeError):
             ta.propagate_until([4.0, 4.0])
 
         # Callback with wrong retval.
@@ -1461,7 +1461,7 @@ class event_detection_test_case(_ut.TestCase):
             t_events=[t_event_batch(v * v - 1e-10, callback=cb3)],
         )
 
-        with self.assertRaises(TypeError) as cm:
+        with self.assertRaises(RuntimeError) as cm:
             ta.propagate_until([4.0, 4.0])
         self.assertTrue(
             "in the construction of the return value of an event callback"
@@ -1938,6 +1938,15 @@ class scalar_integrator_test_case(_ut.TestCase):
         self.assertFalse(ta.llvm_state.fast_math)
         self.assertFalse(ta.llvm_state.force_avx512)
         self.assertEqual(ta.llvm_state.opt_level, 3)
+
+        # Check that certain properties are read-only
+        # arrays and the writeability cannot be changed.
+        self.assertFalse(ta.tc.flags.writeable)
+        with self.assertRaises(ValueError):
+            ta.tc.flags.writeable = True
+        self.assertFalse(ta.d_output.flags.writeable)
+        with self.assertRaises(ValueError):
+            ta.d_output.flags.writeable = True
 
         # Test the custom llvm_state flags.
         ta = taylor_adaptive(
@@ -2743,7 +2752,6 @@ class batch_integrator_test_case(_ut.TestCase):
 class kepE_test_case(_ut.TestCase):
     def runTest(self):
         self.test_expr()
-        self.test_num()
 
     def test_expr(self):
         from . import kepE, diff, make_vars, sin, cos, core
@@ -2779,213 +2787,6 @@ class kepE_test_case(_ut.TestCase):
         self.assertEqual(
             diff(kepE(real128("1.1"), y), y),
             1.0 / (1.0 - real128("1.1") * cos(kepE(real128("1.1"), y))),
-        )
-
-    def test_num(self):
-        from . import M2E, core
-        from .core import _ppc_arch
-        import numpy as np
-
-        # Double.
-        fp_t = float
-
-        e = 0.123
-        M = 5.0
-        E = M2E(e, M)
-
-        self.assertTrue(
-            np.allclose(
-                np.cos(M),
-                np.cos(E - e * np.sin(E)),
-                rtol=np.finfo(fp_t).eps * 10,
-                atol=np.finfo(fp_t).eps * 10,
-            )
-        )
-        self.assertTrue(
-            np.allclose(
-                np.sin(M),
-                np.sin(E - e * np.sin(E)),
-                rtol=np.finfo(fp_t).eps * 10,
-                atol=np.finfo(fp_t).eps * 10,
-            )
-        )
-
-        e = [0.123, 0.124, 0.125, 0.126]
-        M = [5.0, 6.0, 7.0, 8.0]
-        E = M2E(e, M)
-
-        self.assertTrue(
-            np.allclose(
-                np.cos(M),
-                np.cos(E - e * np.sin(E)),
-                rtol=np.finfo(fp_t).eps * 10,
-                atol=np.finfo(fp_t).eps * 10,
-            )
-        )
-        self.assertTrue(
-            np.allclose(
-                np.sin(M),
-                np.sin(E - e * np.sin(E)),
-                rtol=np.finfo(fp_t).eps * 10,
-                atol=np.finfo(fp_t).eps * 10,
-            )
-        )
-
-        e = [0.123, 0.124, 0.125, 0.126, 0.127]
-        M = [5.0, 6.0, 7.0, 8.0, 9.0]
-        E = M2E(e, M)
-
-        self.assertTrue(
-            np.allclose(
-                np.cos(M),
-                np.cos(E - e * np.sin(E)),
-                rtol=np.finfo(fp_t).eps * 10,
-                atol=np.finfo(fp_t).eps * 10,
-            )
-        )
-        self.assertTrue(
-            np.allclose(
-                np.sin(M),
-                np.sin(E - e * np.sin(E)),
-                rtol=np.finfo(fp_t).eps * 10,
-                atol=np.finfo(fp_t).eps * 10,
-            )
-        )
-
-        with self.assertRaises(ValueError) as cm:
-            M2E([[1.0]], [[2.0]])
-        self.assertTrue(
-            "Invalid eccentricity array passed to M2E(): a one-dimensional array is expected, but the input array has 2 dimensions"
-            in str(cm.exception)
-        )
-
-        with self.assertRaises(ValueError) as cm:
-            M2E([1.0], [[2.0]])
-        self.assertTrue(
-            "Invalid mean anomaly array passed to M2E(): a one-dimensional array is expected, but the input array has 2 dimensions"
-            in str(cm.exception)
-        )
-
-        with self.assertRaises(ValueError) as cm:
-            M2E([1.0], [2.0, 3.0])
-        self.assertTrue(
-            "Invalid arrays passed to M2E(): the eccentricity array has a size of 1, but the mean anomaly array has a size of 2 (the sizes must be equal)"
-            in str(cm.exception)
-        )
-
-        with self.assertRaises(TypeError) as cm:
-            M2E([1.0], [2])
-        self.assertTrue(
-            "Inconsistent dtypes detected in the vectorised M2E() implementation: the eccentricity array has dtype"
-            in str(cm.exception)
-        )
-
-        with self.assertRaises(TypeError) as cm:
-            M2E(["a"], ["b"])
-        self.assertTrue('Unsupported dtype "' in str(cm.exception))
-
-        if not _ppc_arch:
-            fp_t = np.longdouble
-
-            e = fp_t(0.123)
-            M = fp_t(5.0)
-            E = M2E(e, M)
-
-            self.assertTrue(
-                np.allclose(
-                    np.cos(M),
-                    np.cos(E - e * np.sin(E)),
-                    rtol=np.finfo(fp_t).eps * 10,
-                    atol=np.finfo(fp_t).eps * 10,
-                )
-            )
-            self.assertTrue(
-                np.allclose(
-                    np.sin(M),
-                    np.sin(E - e * np.sin(E)),
-                    rtol=np.finfo(fp_t).eps * 10,
-                    atol=np.finfo(fp_t).eps * 10,
-                )
-            )
-
-            e = np.array([0.123, 0.124, 0.125, 0.126], dtype=fp_t)
-            M = np.array([5.0, 6.0, 7.0, 8.0], dtype=fp_t)
-            E = M2E(e, M)
-
-            self.assertTrue(
-                np.allclose(
-                    np.cos(M),
-                    np.cos(E - e * np.sin(E)),
-                    rtol=np.finfo(fp_t).eps * 10,
-                    atol=np.finfo(fp_t).eps * 10,
-                )
-            )
-            self.assertTrue(
-                np.allclose(
-                    np.sin(M),
-                    np.sin(E - e * np.sin(E)),
-                    rtol=np.finfo(fp_t).eps * 10,
-                    atol=np.finfo(fp_t).eps * 10,
-                )
-            )
-
-            e = np.array([0.123, 0.124, 0.125, 0.126, 0.127], dtype=fp_t)
-            M = np.array([5.0, 6.0, 7.0, 8.0, 9.0], dtype=fp_t)
-            E = M2E(e, M)
-
-            self.assertTrue(
-                np.allclose(
-                    np.cos(M),
-                    np.cos(E - e * np.sin(E)),
-                    rtol=np.finfo(fp_t).eps * 10,
-                    atol=np.finfo(fp_t).eps * 10,
-                )
-            )
-            self.assertTrue(
-                np.allclose(
-                    np.sin(M),
-                    np.sin(E - e * np.sin(E)),
-                    rtol=np.finfo(fp_t).eps * 10,
-                    atol=np.finfo(fp_t).eps * 10,
-                )
-            )
-
-        if not hasattr(core, "real128"):
-            return
-
-        from .core import real128
-
-        fp_t = real128
-
-        e = fp_t(0.123)
-        M = fp_t(5.0)
-        E = M2E(e, M)
-
-        self.assertTrue(abs(np.cos(M) - np.cos(E - e * np.sin(E))) < 1e-32)
-        self.assertTrue(abs(np.sin(M) - np.sin(E - e * np.sin(E))) < 1e-32)
-
-        e = np.array([0.123, 0.124, 0.125, 0.126, 0.127], dtype=fp_t)
-        M = np.array([5.0, 6.0, 7.0, 8.0, 9.0], dtype=fp_t)
-        E = M2E(e, M)
-
-        self.assertTrue(
-            all(
-                abs(np.cos(M) - np.cos(E - e * np.sin(E))) < 1e-32
-                for e, M, E in zip(e, M, E)
-            )
-        )
-        self.assertTrue(
-            all(
-                abs(np.sin(M) - np.sin(E - e * np.sin(E))) < 1e-32
-                for e, M, E in zip(e, M, E)
-            )
-        )
-
-        with self.assertRaises(ValueError) as cm:
-            M2E([real128(1.0)], [real128(2.0), real128(3.0)])
-        self.assertTrue(
-            "Invalid arrays passed to M2E(): the eccentricity array has a size of 1, but the mean anomaly array has a size of 2 (the sizes must be equal)"
-            in str(cm.exception)
         )
 
 
@@ -3077,28 +2878,36 @@ class sympy_test_case(_ut.TestCase):
                     to_sympy(expression(np.longdouble("1.1"))),
                     Float("1.1", precision=np.finfo(np.longdouble).nmant + 1),
                 )
-                self.assertEqual(
-                    from_sympy(Float("1.1")), expression(np.longdouble("1.1"))
-                )
 
-                expo = np.finfo(np.longdouble).nmant - 10
-                self.assertEqual(
-                    to_sympy(
+                # NOTE: on platforms where long double is not wider than
+                # double (e.g., MSVC), conversion from sympy will produce a double
+                # and these tests will fail.
+                if np.finfo(np.longdouble).nmant > np.finfo(float).nmant:
+                    self.assertEqual(
+                        from_sympy(Float("1.1")), expression(np.longdouble("1.1"))
+                    )
+
+                    expo = np.finfo(np.longdouble).nmant - 10
+                    self.assertEqual(
+                        to_sympy(
+                            expression(
+                                np.longdouble(2**expo + 1) / np.longdouble(2**128)
+                            )
+                        ),
+                        Rational(2**expo + 1, 2**128),
+                    )
+                    self.assertEqual(
+                        from_sympy(Rational(2**expo + 1, 2**128)),
                         expression(
                             np.longdouble(2**expo + 1) / np.longdouble(2**128)
-                        )
-                    ),
-                    Rational(2**expo + 1, 2**128),
-                )
-                self.assertEqual(
-                    from_sympy(Rational(2**expo + 1, 2**128)),
-                    expression(np.longdouble(2**expo + 1) / np.longdouble(2**128)),
-                )
+                        ),
+                    )
 
         # Too high precision.
-        with self.assertRaises(ValueError) as cm:
-            from_sympy(Integer(2**500 + 1))
-        self.assertTrue("the required precision" in str(cm.exception))
+        if not hasattr(core, "real"):
+            with self.assertRaises(ValueError) as cm:
+                from_sympy(Integer(2**500 + 1))
+            self.assertTrue("the required precision" in str(cm.exception))
 
         if not hasattr(core, "real128") or _ppc_arch:
             return
@@ -5251,609 +5060,8 @@ class cfunc_test_case(_ut.TestCase):
             self.assertEqual(eval_arr[0], 3)
 
 
-class real128_test_case(_ut.TestCase):
-    def runTest(self):
-        from . import core
-
-        if not hasattr(core, "real128"):
-            return
-
-        self.test_scalar()
-        self.test_numpy()
-
-    def test_scalar(self):
-        import random
-        from . import real128
-        from .core import _ppc_arch
-
-        if _ppc_arch:
-            ld = float
-        else:
-            from numpy import longdouble as ld
-
-        # Make random testing deterministic.
-        random.seed(42)
-
-        # Constructors.
-        self.assertEqual(str(real128()), "0")
-
-        # Small ints.
-        self.assertEqual(str(real128(1)), "1")
-        self.assertEqual(str(real128(-1)), "-1")
-        self.assertEqual(str(real128(42)), "42")
-        self.assertEqual(str(real128(-42)), "-42")
-
-        # Large ints, still exactly representable.
-        for _ in range(100):
-            n = random.randint(-(2**101), 2**101)
-            self.assertEqual(str(real128(n)), str(n))
-
-        # Ints with bit width around the mantissa bit width.
-        self.assertEqual(str(real128(2**113)), str(2**113))
-        self.assertEqual(str(real128(-(2**113))), str(-(2**113)))
-        self.assertEqual(str(real128(2**113 + 1)), str(2**113))
-        self.assertEqual(str(real128(-(2**113) - 1)), str(-(2**113)))
-        self.assertEqual(str(real128(2**113 - 1)), str(2**113 - 1))
-        self.assertEqual(str(real128(-(2**113) + 1)), str(-(2**113) + 1))
-
-        # Very large ints.
-        for _ in range(100):
-            n = random.randint(-(2**1001), 2**1001)
-            self.assertEqual(str(real128(n)), str(real128(str(n))))
-
-        # Construction from floats.
-        self.assertEqual(str(real128(-0.0)), "-0")
-        self.assertEqual(str(real128(42.0)), "42")
-        self.assertEqual(str(real128(-float("inf"))), "-inf")
-        self.assertEqual(str(real128(float("nan"))), "nan")
-
-        # Construction from long double.
-        self.assertEqual(str(real128(ld(-0.0))), "-0")
-        self.assertEqual(str(real128(ld(42.0))), "42")
-        self.assertEqual(str(real128(ld(-float("inf")))), "-inf")
-        self.assertEqual(str(real128(ld(float("nan")))), "nan")
-
-        # Construction from string.
-        self.assertEqual(str(real128("-0")), "-0")
-        self.assertEqual(str(real128("-inf")), "-inf")
-        self.assertEqual(str(real128("-nan")), "nan")
-        self.assertEqual(str(real128("42")), "42")
-        self.assertEqual(str(real128("-123")), "-123")
-
-        with self.assertRaises(ValueError) as cm:
-            real128("hello world")
-        self.assertTrue(
-            "The string 'hello world' does not represent a valid quadruple-precision floating-point value"
-            in str(cm.exception)
-        )
-
-        with self.assertRaises(TypeError) as cm:
-            real128([])
-        self.assertTrue(
-            'Cannot construct a real128 from an object of type "list"'
-            in str(cm.exception)
-        )
-
-        # Conversion to bool.
-        self.assertTrue(bool(real128(1)))
-        self.assertTrue(bool(real128(-1)))
-        self.assertFalse(bool(real128(0)))
-        self.assertTrue(bool(real128("inf")))
-        self.assertTrue(bool(real128("nan")))
-        self.assertTrue(bool(real128("-inf")))
-
-        # Unary math operations.
-        self.assertEqual(repr(+real128(1)), "1")
-        self.assertEqual(repr(+real128(-1)), "-1")
-        self.assertEqual(repr(-real128(42)), "-42")
-        self.assertEqual(repr(-real128(-42)), "42")
-        self.assertEqual(repr(abs(real128(-42))), "42")
-
-        # Binary math ops.
-        self.assertEqual(repr(real128(42) + real128(1)), "43")
-        self.assertEqual(repr(real128(42) + 1), "43")
-        self.assertEqual(repr(real128(42) + 1.0), "43")
-        self.assertEqual(repr(real128(42) + ld(1)), "43")
-        self.assertEqual(repr(1 + real128(42)), "43")
-        self.assertEqual(repr(1.0 + real128(42)), "43")
-        self.assertEqual(repr(ld(1) + real128(42)), "43")
-        with self.assertRaises(TypeError) as cm:
-            real128(1) + []
-        with self.assertRaises(TypeError) as cm:
-            [] + real128(1)
-
-        self.assertEqual(repr(real128(42) - real128(1)), "41")
-        self.assertEqual(repr(real128(42) - 1), "41")
-        self.assertEqual(repr(real128(42) - 1.0), "41")
-        self.assertEqual(repr(real128(42) - ld(1)), "41")
-        self.assertEqual(repr(1 - real128(42)), "-41")
-        self.assertEqual(repr(1.0 - real128(42)), "-41")
-        self.assertEqual(repr(ld(1) - real128(42)), "-41")
-        with self.assertRaises(TypeError) as cm:
-            real128(1) - []
-        with self.assertRaises(TypeError) as cm:
-            [] - real128(1)
-
-        self.assertEqual(repr(real128(42) * real128(2)), "84")
-        self.assertEqual(repr(real128(42) * 2), "84")
-        self.assertEqual(repr(real128(42) * 2.0), "84")
-        self.assertEqual(repr(real128(42) * ld(2)), "84")
-        self.assertEqual(repr(2 * real128(42)), "84")
-        self.assertEqual(repr(2.0 * real128(42)), "84")
-        self.assertEqual(repr(ld(2) * real128(42)), "84")
-        with self.assertRaises(TypeError) as cm:
-            real128(1) * []
-        with self.assertRaises(TypeError) as cm:
-            [] * real128(1)
-
-        self.assertEqual(repr(real128(42) // real128(9)), "4")
-        self.assertEqual(repr(real128(42) // 9), "4")
-        self.assertEqual(repr(real128(42) // 9.0), "4")
-        self.assertEqual(repr(real128(42) // ld(9)), "4")
-        self.assertEqual(repr(-42 // real128(9)), "-5")
-        self.assertEqual(repr(-42.0 // real128(9)), "-5")
-        self.assertEqual(repr(ld(-42) // real128(9)), "-5")
-        with self.assertRaises(TypeError) as cm:
-            real128(1) // []
-        with self.assertRaises(TypeError) as cm:
-            [] // real128(1)
-
-        self.assertEqual(repr(real128(42) ** real128(2)), "1764")
-        self.assertEqual(repr(real128(42) ** 2), "1764")
-        self.assertEqual(repr(real128(42) ** 2.0), "1764")
-        self.assertEqual(repr(real128(42) ** ld(2)), "1764")
-        self.assertEqual(repr(42 ** real128(2)), "1764")
-        self.assertEqual(repr(42.0 ** real128(2)), "1764")
-        self.assertEqual(repr(ld(42) ** real128(2)), "1764")
-        with self.assertRaises(TypeError) as cm:
-            real128(1) ** []
-        with self.assertRaises(TypeError) as cm:
-            [] ** real128(1)
-        with self.assertRaises(ValueError) as cm:
-            pow(real128(1), 3, mod=4)
-        self.assertTrue(
-            "Modular exponentiation is not supported for real128" in str(cm.exception)
-        )
-
-        # Comparisons.
-        self.assertTrue(real128(1) < real128(2))
-        self.assertTrue(real128(1) < 2)
-        self.assertTrue(real128(1) < 2.0)
-        self.assertTrue(real128(1) < ld(2))
-        self.assertTrue(1 < real128(2))
-        self.assertTrue(1.0 < real128(2))
-        self.assertTrue(ld(1) < real128(2))
-        self.assertFalse(real128("nan") < 2)
-        self.assertFalse(2 < real128("nan"))
-        self.assertFalse(real128("nan") < real128("nan"))
-        with self.assertRaises(TypeError) as cm:
-            real128(1) < []
-        with self.assertRaises(TypeError) as cm:
-            [] < real128(1)
-
-        # The codepath for the other comparisons is identical,
-        # let's limit to some light testing.
-        self.assertTrue(real128(1) <= real128(2))
-        self.assertTrue(real128(2) <= real128(2))
-        self.assertFalse(real128(3) <= real128(2))
-        self.assertTrue(real128(2) == real128(2))
-        self.assertFalse(real128(3) == real128(2))
-        self.assertFalse(real128(3) == real128("NaN"))
-        self.assertFalse(real128(2) != real128(2))
-        self.assertTrue(real128(3) != real128(2))
-        self.assertTrue(real128(3) != real128("NaN"))
-        self.assertTrue(real128(3) > real128(2))
-        self.assertFalse(real128(2) > real128(3))
-        self.assertFalse(real128(1) >= real128(2))
-        self.assertTrue(real128(2) >= real128(2))
-        self.assertTrue(real128(3) >= real128(2))
-
-        # Try to invoke all methods of real128.
-        # We run this check to make sure that we have
-        # implemented all mandatory methods (e.g., failing
-        # to implement the __int__() method would result
-        # in a segmentation fault).
-        for s in dir(real128):
-            try:
-                x = real128()
-                getattr(x, s)()
-            except:
-                pass
-
-    def test_numpy(self):
-        import numpy as np
-        from copy import copy, deepcopy
-        from . import real128
-        from pickle import dumps, loads
-
-        # Basic creation/getitem/setitem.
-        arr = np.array([1, 2, 3], dtype=real128)
-        self.assertEqual(type(arr[0]), real128)
-        self.assertEqual(arr[0], 1)
-        self.assertEqual(arr[1], 2)
-        self.assertEqual(arr[2], 3)
-
-        arr = np.array([real128("1.1")])
-        self.assertEqual(arr.dtype, real128)
-        self.assertEqual(type(arr[0]), real128)
-        self.assertEqual(arr[0], real128("1.1"))
-        arr[0] = real128("1.3")
-        self.assertEqual(arr[0], real128("1.3"))
-        arr[0] = real128(123)
-        self.assertEqual(arr[0], 123)
-        arr[0] = real128(1.1)
-        self.assertEqual(arr[0], real128(1.1))
-
-        with self.assertRaises(TypeError) as cm:
-            arr = np.array(["1.1"], dtype=np.dtype(real128))
-        self.assertTrue(
-            'Cannot invoke __setitem__() on a real128 array with an input value of type "str"'
-            in str(cm.exception)
-        )
-
-        # Copying primitives.
-        arr = np.array([real128("1.1"), real128("1.3")])
-        arr_copy = copy(arr)
-        self.assertTrue(arr_copy[0] == real128("1.1"))
-        self.assertTrue(arr_copy[1] == real128("1.3"))
-        arr_copy = deepcopy(arr)
-        self.assertTrue(arr_copy[0] == real128("1.1"))
-        self.assertTrue(arr_copy[1] == real128("1.3"))
-
-        # Nonzero.
-        arr = np.array([1, 0, 3, real128("nan")], dtype=real128)
-        self.assertTrue(np.all([0, 2, 3] == np.nonzero(arr)[0]))
-
-        # Argmin/argmax.
-        arr = np.array([1, 321, 54, 6, 2, 6, -6], dtype=real128)
-        self.assertEqual(np.argmin(arr), 6)
-        self.assertEqual(np.argmax(arr), 1)
-        arr = np.array([], dtype=real128)
-        with self.assertRaises(ValueError) as cm:
-            np.argmin(arr)
-        with self.assertRaises(ValueError) as cm:
-            np.argmax(arr)
-
-        # arange() and linspace().
-        arr = np.arange(0, 1, real128("0.3"))
-        self.assertTrue(
-            np.all(
-                arr
-                == np.array(
-                    [
-                        0,
-                        real128("0.29999999999999999999999999999999999"),
-                        real128("0.599999999999999999999999999999999981"),
-                        real128("0.899999999999999999999999999999999923"),
-                    ],
-                    dtype=real128,
-                )
-            )
-        )
-        arr = np.linspace(real128(0), 1, 4)
-        self.assertTrue(
-            np.all(
-                arr
-                == np.array(
-                    [
-                        0,
-                        real128("0.333333333333333333333333333333333317"),
-                        real128("0.666666666666666666666666666666666635"),
-                        1,
-                    ],
-                    dtype=real128,
-                )
-            )
-        )
-
-        # zeros, ones, full.
-        arr = np.zeros((2, 2), dtype=real128)
-        self.assertTrue(np.all(arr == np.array([[0, 0], [0, 0]], dtype=real128)))
-        arr = np.ones((2, 2), dtype=real128)
-        self.assertTrue(np.all(arr == np.array([[1, 1], [1, 1]], dtype=real128)))
-        arr = np.full((2, 2), real128("1.1"))
-        self.assertTrue(
-            np.all(
-                arr
-                == np.array(
-                    [[real128("1.1"), real128("1.1")], [real128("1.1"), real128("1.1")]]
-                )
-            )
-        )
-
-        # dot product.
-        arr1 = np.array([real128("1.1"), real128("1.3")])
-        arr2 = np.array([real128("2.1"), real128("2.3")])
-        self.assertEqual(
-            real128("1.1") * real128("2.1") + real128("1.3") * real128("2.3"),
-            np.dot(arr1, arr2),
-        )
-        arr1 = np.array([], dtype=real128)
-        arr2 = np.array([], dtype=real128)
-        self.assertEqual(0, np.dot(arr1, arr2))
-
-        # Matrix multiplication.
-        mat = np.array(
-            [[real128("1.1"), real128("1.3")], [real128("2.1"), real128("2.3")]]
-        )
-        self.assertTrue(
-            np.all(
-                mat @ mat
-                == np.array(
-                    [
-                        [
-                            real128("3.94000000000000000000000000000000034"),
-                            real128("4.41999999999999999999999999999999994"),
-                        ],
-                        [
-                            real128("7.14000000000000000000000000000000049"),
-                            real128("8.01999999999999999999999999999999963"),
-                        ],
-                    ]
-                )
-            )
-        )
-
-        # Conversions.
-        arr = np.array([real128("1.1")])
-        self.assertEqual(arr.astype(float)[0], 1.1)
-        self.assertEqual(arr.astype(np.int32)[0], 1)
-        self.assertEqual(arr.astype(bool)[0], True)
-        arr = np.array([1], dtype=np.int32)
-        self.assertEqual(arr.astype(real128)[0], real128(1))
-        self.assertEqual(arr.astype(real128, casting="safe")[0], real128(1))
-        arr = np.array([1.1], dtype=float)
-        self.assertEqual(arr.astype(real128)[0], real128(1.1))
-        self.assertEqual(arr.astype(real128, casting="safe")[0], real128(1.1))
-        arr = np.array([real128("1.1")])
-        with self.assertRaises(TypeError) as cm:
-            arr.astype(float, casting="safe")
-        with self.assertRaises(TypeError) as cm:
-            arr.astype(np.int32, casting="safe")
-
-        # Arithmetic.
-        a = real128("1.1")
-        b = real128("1.3")
-        c = real128("-.7")
-        intval = 2
-        arr1 = np.array([a])
-        arr2 = np.array([b])
-        arr3 = np.array([c])
-        arrint = np.array([2], dtype=np.int64)
-
-        self.assertEqual((arr1 + arr2)[0], a + b)
-        self.assertEqual((arr1 + arrint)[0], a + intval)
-        self.assertEqual((arrint + arr2)[0], intval + b)
-
-        self.assertEqual((arr1 - arr2)[0], a - b)
-        self.assertEqual((arr1 - arrint)[0], a - intval)
-        self.assertEqual((arrint - arr2)[0], intval - b)
-
-        self.assertEqual((arr1 * arr2)[0], a * b)
-        self.assertEqual((arr1 * arrint)[0], a * intval)
-        self.assertEqual((arrint * arr2)[0], intval * b)
-
-        self.assertEqual((arr1 / arr2)[0], a / b)
-        self.assertEqual((arr1 / arrint)[0], a / intval)
-        self.assertEqual((arrint / arr2)[0], intval / b)
-
-        self.assertEqual(np.square(arr1)[0], a * a)
-
-        self.assertEqual((arr1 // arr2)[0], a // b)
-        self.assertEqual((arr1 // arrint)[0], a // intval)
-        self.assertEqual((arrint // arr2)[0], intval // b)
-
-        self.assertEqual((+arr1)[0], a)
-        self.assertEqual((-arr1)[0], -a)
-
-        self.assertEqual(abs(-arr1)[0], a)
-        self.assertEqual(np.abs(-arr1)[0], a)
-        self.assertEqual(np.fabs(-arr1)[0], a)
-
-        # Power/roots.
-        self.assertEqual((arr1**arr2)[0], a**b)
-        self.assertEqual((arr1**arrint)[0], a**intval)
-        self.assertEqual((arrint**arr2)[0], intval**b)
-
-        self.assertEqual(
-            np.sqrt(arr1)[0], real128("1.04880884817015154699145351367993759")
-        )
-
-        self.assertEqual(
-            np.cbrt(arr1)[0], real128("1.03228011545636715921358522500970152")
-        )
-
-        # Trigonometry.
-        self.assertEqual(
-            np.sin(arr1)[0], real128("0.891207360061435339951802577871703605")
-        )
-
-        self.assertEqual(
-            np.cos(arr1)[0], real128("0.453596121425577387771370051784716053")
-        )
-
-        self.assertEqual(
-            np.tan(arr1)[0], real128("1.96475965724865195093092278177937863")
-        )
-
-        self.assertEqual(
-            np.arcsin(arr3)[0], real128("-0.775397496610753063740353352714987079")
-        )
-
-        self.assertEqual(
-            np.arccos(arr3)[0], real128("2.34619382340564968297167504435473857")
-        )
-
-        self.assertEqual(
-            np.arctan(arr3)[0], real128("-0.610725964389208616543758876490236037")
-        )
-
-        self.assertEqual(
-            np.arctan2(arr1, arr2)[0], real128("0.702256931509007079704992531169094469")
-        )
-
-        self.assertEqual(
-            np.arctan2(arr1, arrint)[0],
-            real128("0.502843210927860827330882029245277632"),
-        )
-        self.assertEqual(
-            np.arctan2(arrint, arr2)[0],
-            real128("0.994421106203712939003751213245981381"),
-        )
-
-        self.assertEqual(
-            np.sinh(arr1)[0], real128("1.33564747012417677938478052357867843")
-        )
-
-        self.assertEqual(
-            np.cosh(arr1)[0], real128("1.6685185538222563326736274300099942")
-        )
-
-        self.assertEqual(
-            np.tanh(arr1)[0], real128("0.800499021760629706011461330600696557")
-        )
-
-        self.assertEqual(
-            np.arcsinh(arr3)[0], real128("-0.652666566082355786808686344109675833")
-        )
-
-        self.assertEqual(
-            np.arccosh(arr1)[0], real128("0.443568254385115189132911066352498299")
-        )
-
-        self.assertEqual(
-            np.arctanh(arr3)[0], real128("-0.867300527694053194427144690475300431")
-        )
-
-        self.assertEqual(
-            np.deg2rad(np.array([1], dtype=real128))[0],
-            real128(
-                "0.01745329251994329576923690768488612713442871888541725456097191440171005"
-            ),
-        )
-
-        self.assertEqual(
-            np.radians(np.array([1], dtype=real128))[0],
-            real128(
-                "0.01745329251994329576923690768488612713442871888541725456097191440171005"
-            ),
-        )
-
-        self.assertEqual(
-            np.rad2deg(np.array([1], dtype=real128))[0],
-            real128(
-                "57.295779513082320876798154814105170332405472466564321549160243861202985"
-            ),
-        )
-
-        self.assertEqual(
-            np.degrees(np.array([1], dtype=real128))[0],
-            real128(
-                "57.295779513082320876798154814105170332405472466564321549160243861202985"
-            ),
-        )
-
-        # Exponentials and logarithms.
-        self.assertEqual(
-            np.exp(arr1)[0], real128("3.00416602394643311205840795358867282")
-        )
-
-        self.assertEqual(
-            np.expm1(arr1)[0], real128("2.00416602394643311205840795358867243")
-        )
-
-        self.assertEqual(
-            np.log(arr1)[0], real128("0.0953101798043248600439521232807651556")
-        )
-
-        self.assertEqual(
-            np.log2(arr1)[0], real128("0.137503523749934908329043617236402896")
-        )
-
-        self.assertEqual(
-            np.log10(arr1)[0], real128("0.0413926851582250407501999712430242757")
-        )
-
-        self.assertEqual(
-            np.log1p(arr1)[0], real128("0.741937344729377312482606525681341284")
-        )
-
-        # Comparisons.
-        self.assertEqual((arr1 < arr2).dtype, bool)
-        self.assertTrue((arr1 < arr2)[0])
-        self.assertEqual((arr1 < arrint).dtype, bool)
-        self.assertTrue((arr1 < arrint)[0])
-
-        self.assertEqual((arr1 <= arr1).dtype, bool)
-        self.assertTrue((arr1 <= arr2)[0])
-        self.assertEqual((arr1 <= arrint).dtype, bool)
-        self.assertTrue((arr1 <= arrint)[0])
-
-        self.assertEqual((arr1 == arr1).dtype, bool)
-        self.assertFalse((arr1 == arr2)[0])
-        self.assertEqual((arr1 == arrint).dtype, bool)
-        self.assertFalse((arr1 == arrint)[0])
-
-        self.assertEqual((arr1 != arr1).dtype, bool)
-        self.assertTrue((arr1 != arr2)[0])
-        self.assertEqual((arr1 != arrint).dtype, bool)
-        self.assertTrue((arr1 != arrint)[0])
-
-        self.assertEqual((arr1 > arr2).dtype, bool)
-        self.assertTrue((arr2 > arr1)[0])
-        self.assertEqual((arrint > arr1).dtype, bool)
-        self.assertTrue((arrint > arr1)[0])
-
-        self.assertEqual((arr1 >= arr1).dtype, bool)
-        self.assertTrue((arr2 >= arr1)[0])
-        self.assertEqual((arrint >= arr1).dtype, bool)
-        self.assertTrue((arrint >= arr1)[0])
-
-        # isfinite().
-        self.assertEqual((np.isfinite(arr1)).dtype, bool)
-        self.assertTrue((np.isfinite(arr1))[0])
-        self.assertTrue((np.isfinite([real128("1"), real128("nan")]))[0])
-        self.assertFalse((np.isfinite([real128("1"), real128("nan")]))[1])
-        self.assertFalse((np.isfinite([real128("1"), real128("+inf")]))[1])
-
-        # sign.
-        self.assertEqual(np.sign(-real128("1.1")), -1)
-        self.assertEqual(np.sign(real128("0")), 0)
-        self.assertEqual(np.sign(real128("1.1")), 1)
-        self.assertEqual((np.sign(arr1)).dtype, real128)
-        self.assertTrue(
-            np.all(np.sign([real128("10"), real128("0"), real128("-10")]) == [1, 0, -1])
-        )
-
-        # maximum/minimum.
-        self.assertTrue(
-            np.all(
-                np.minimum([10, real128("1.1"), 20], [1, real128("1.11"), 25])
-                == [1, real128("1.1"), 20]
-            )
-        )
-        self.assertTrue(
-            np.all(
-                np.maximum([10, real128("1.1"), 20], [1, real128("1.11"), 25])
-                == [10, real128("1.11"), 25]
-            )
-        )
-
-        # Pickling.
-        tmp = np.array([real128("1.1"), real128("1.11"), real128("1.13")])
-        self.assertTrue(np.all(tmp == loads(dumps(tmp))))
-
-        # Use hstack to check the copyswap implementation.
-        arr1 = np.array([real128("1.1"), real128("1.11"), real128("1.13")])
-        arr2 = np.array([real128("2.1"), real128("2.11"), real128("2.13")])
-        arr3 = np.hstack([arr1, arr2])
-
-        self.assertTrue(np.all(arr3[:3] == arr1))
-        self.assertTrue(np.all(arr3[3:] == arr2))
-
-
 def run_test_suite():
-    from . import make_nbody_sys, taylor_adaptive
+    from . import make_nbody_sys, taylor_adaptive, _test_real, _test_real128, _test_mp
     import numpy as np
 
     sys = make_nbody_sys(2, masses=[1.1, 2.1], Gconst=1)
@@ -5864,7 +5072,9 @@ def run_test_suite():
     retval = 0
 
     suite = _ut.TestLoader().loadTestsFromTestCase(taylor_add_jet_test_case)
-    suite.addTest(real128_test_case())
+    suite.addTest(_test_mp.mp_test_case())
+    suite.addTest(_test_real.real_test_case())
+    suite.addTest(_test_real128.real128_test_case())
     suite.addTest(cfunc_test_case())
     suite.addTest(ensemble_test_case())
     suite.addTest(s11n_backend_test_case())

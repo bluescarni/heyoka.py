@@ -9,6 +9,11 @@ Changelog
 New
 ~~~
 
+- Implement arbitrary-precision computations
+  (`#108 <https://github.com/bluescarni/heyoka.py/pull/108>`__).
+- Implement the ``isnan()`` and ``isinf()`` NumPy ufuncs for
+  ``real128``
+  (`#108 <https://github.com/bluescarni/heyoka.py/pull/108>`__).
 - Several JIT-related settings can now be tweaked via keyword arguments
   (`#107 <https://github.com/bluescarni/heyoka.py/pull/107>`__).
 
@@ -22,6 +27,11 @@ Changes
 Fix
 ~~~
 
+- Fix the ``real128`` NumPy comparison operator to be consistent
+  with ``float`` with respect to NaN values
+  (`#108 <https://github.com/bluescarni/heyoka.py/pull/108>`__).
+- Prevent the ``real128`` constructor from being called with keyword arguments
+  (`#108 <https://github.com/bluescarni/heyoka.py/pull/108>`__).
 - Fix a build issue with Python 3.11
   (`#107 <https://github.com/bluescarni/heyoka.py/pull/107>`__).
 
