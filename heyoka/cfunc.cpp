@@ -336,9 +336,11 @@ void expose_add_cfunc_impl(py::module &m, const char *name)
 #if defined(HEYOKA_HAVE_REAL)
 
                     if constexpr (std::is_same_v<T, mppp::real>) {
-                        // For mppp::real, ensure that the output array
-                        // contains constructed values with the correct
-                        // precision.
+                        // For mppp::real:
+                        // - check that the inputs array contains values with the correct precision,
+                        // - ensure that the outputs array contains constructed values with the correct
+                        //   precision.
+                        pyreal_check_array(inputs, boost::numeric_cast<mpfr_prec_t>(prec));
                         pyreal_ensure_array(outputs, boost::numeric_cast<mpfr_prec_t>(prec));
                     }
 

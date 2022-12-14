@@ -150,6 +150,14 @@ class mp_test_case(_ut.TestCase):
             "A real with precision 236 was detected at the indices" in str(cm.exception)
         )
 
+        pars = np.array([real(3, prec), real(4, prec)])
+        with self.assertRaises(ValueError) as cm:
+            fn(inputs=[1, 2], pars=pars)
+        self.assertTrue(
+            "in an array which should instead contain elements with a precision of 237"
+            in str(cm.exception)
+        )
+
     def test_add_jet(self):
         from . import (
             taylor_add_jet,
