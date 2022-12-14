@@ -473,7 +473,7 @@
    "id": "e44b286f-6f0c-4598-b28e-2c7da127f4c4",
    "metadata": {},
    "source": [
-    "Next, let us propagate the system until ``t=5``, requesting the continuous output:"
+    "Next, let us propagate the system until ``t=5``, requesting the [continuous output](<./Dense output.ipynb>):"
    ]
   },
   {
