@@ -41,11 +41,7 @@ set(_HEYOKA_PY_CORE_SOURCES
     numpy_memory.cpp
 )
 
-if(${CMAKE_VERSION} VERSION_LESS "3.17.0")
-    Python3_add_library(core MODULE ${_HEYOKA_PY_CORE_SOURCES})
-else()
-    Python3_add_library(core MODULE WITH_SOABI ${_HEYOKA_PY_CORE_SOURCES})
-endif()
+Python3_add_library(core MODULE WITH_SOABI ${_HEYOKA_PY_CORE_SOURCES})
 
 unset(_HEYOKA_PY_CORE_SOURCES)
 
