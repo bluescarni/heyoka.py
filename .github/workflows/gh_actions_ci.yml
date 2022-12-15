@@ -13,12 +13,24 @@ jobs:
       - uses: actions/checkout@v2
       - name: Build
         run: bash tools/gha_conda_asan.sh
+  conda_static:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Build
+        run: bash tools/gha_conda_static.sh
   osx_heyoka_head:
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v2
       - name: Build
         run: bash tools/gha_osx_heyoka_head.sh
+  osx_heyoka_head_static:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Build
+        run: bash tools/gha_osx_heyoka_head_static.sh
   windows_2019_heyoka_head:
     runs-on: windows-2019
     steps:
@@ -34,7 +46,7 @@ jobs:
       - name: Build
         shell: pwsh
         run: |
-          conda install -y python=3.10 git pybind11 numpy cmake llvmdev=15.0.2 tbb-devel tbb astroquery boost-cpp fmt spdlog sleef sympy cloudpickle zlib libzlib mppp
+          conda install -y python=3.10 git pybind11 numpy cmake llvmdev=15.0.2 tbb-devel tbb astroquery boost-cpp fmt spdlog sleef sympy cloudpickle zlib libzlib mppp numba
           git clone https://github.com/bluescarni/heyoka.git heyoka_cpp
           cd heyoka_cpp
           mkdir build
@@ -48,37 +60,7 @@ jobs:
           cmake .. -G "Visual Studio 16 2019" -A x64 -DCMAKE_PREFIX_PATH=C:\Miniconda\envs\test\Library -DCMAKE_INSTALL_PREFIX=C:\Miniconda\envs\test\Library -DBoost_NO_BOOST_CMAKE=ON -DHEYOKA_PY_ENABLE_IPO=yes
           cmake --build . --config Release --target install
           cd c:\
-          python -c "from heyoka import test; test.run_test_suite()"
-  # osx_10_15_heyoka_stable:
-  #   runs-on: macos-10.15
-  #   steps:
-  #     - uses: actions/checkout@v2
-  #     - name: Build
-  #       run: bash tools/gha_osx_heyoka_stable.sh
-  # windows_2019_stable:
-  #   runs-on: windows-2019
-  #   steps:
-  #     - uses: actions/checkout@v2
-  #     - name: Add msbuild to PATH
-  #       uses: microsoft/setup-msbuild@v1.0.2
-  #     - uses: conda-incubator/setup-miniconda@v2
-  #       with:
-  #         auto-update-conda: true
-  #         python-version: 3.8
-  #         channels: conda-forge
-  #         channel-priority: strict
-  #     - name: Build
-  #       shell: pwsh
-  #       run: |
-  #         conda config --set always_yes yes
-  #         conda create --name heyoka python=3.8 pybind11 numpy cmake heyoka boost-cpp
-  #         conda activate heyoka
-  #         mkdir build
-  #         cd build
-  #         cmake ../ -G "Visual Studio 16 2019" -A x64 -DCMAKE_INSTALL_PREFIX=%CONDA_PREFIX_PATH% -DCMAKE_PREFIX_PATH=%CONDA_PREFIX_PATH% -DHEYOKA_PY_ENABLE_IPO=yes -DBoost_NO_BOOST_CMAKE=ON
-  #         cmake --build . --config Release --target install
-  #         cd c:\
-  #         python -c "from heyoka import test; test.run_test_suite()"
+          python -c "import numba; from heyoka import test; test.run_test_suite()"
   binder_cache:
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
