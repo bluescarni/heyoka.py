@@ -20,6 +20,8 @@ New
 Changes
 ~~~~~~~
 
+- heyoka.py now requires CMake >= 3.18 when building from source
+  (`#109 <https://github.com/bluescarni/heyoka.py/pull/109>`__).
 - heyoka.py now requires at least version 0.20.0 of the
   heyoka C++ library
   (`#107 <https://github.com/bluescarni/heyoka.py/pull/107>`__).
