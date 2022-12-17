@@ -1,4 +1,6 @@
-cmake_minimum_required(VERSION 3.16.0)
+# NOTE: this is the minimum version currently
+# required by heyoka.
+cmake_minimum_required(VERSION 3.18.0)
 
 # Set default build type to "Release".
 # NOTE: this should be done before the project command since the latter can set
@@ -129,27 +131,20 @@ unset(_HEYOKA_PY_MIN_HEYOKA_VERSION)
 
 # Setup the list of Python components we need to locate.
 # NOTE: NumPy is used for long double, real and real128 support.
-set(_HEYOKA_PY_PYTHON3_COMPONENTS Interpreter NumPy)
+set(_HEYOKA_PY_PYTHON3_COMPONENTS Interpreter NumPy Development.Module)
 
-if(${CMAKE_VERSION} VERSION_LESS "3.18.0")
-    # NOTE: before CMake 3.18, there are no separate Development.*
-    # subcomponents.
+# NOTE: strictly speaking, we should need only the Interpreter and Development.Module
+# components to build heyoka.py. However, in certain setups (e.g., skbuild), it looks
+# like if we specify only Development.Module CMake is unable to correctly locate
+# the Python installation. Hence, as a workaround, if the following line fails
+# and Python3 is *not* found, we try again, this time with the full Development
+# component (rather than only Development.Module). This seems to work around the
+# issue, for now at least.
+find_package(Python3 QUIET COMPONENTS ${_HEYOKA_PY_PYTHON3_COMPONENTS})
+
+if(NOT Python3_FOUND)
+    list(POP_BACK _HEYOKA_PY_PYTHON3_COMPONENTS)
     list(APPEND _HEYOKA_PY_PYTHON3_COMPONENTS Development)
-else()
-    list(APPEND _HEYOKA_PY_PYTHON3_COMPONENTS Development.Module)
-    # NOTE: strictly speaking, we should need only the Interpreter and Development.Module
-    # components to build heyoka.py. However, in certain setups (e.g., skbuild), it looks
-    # like if we specify only Development.Module CMake is unable to correctly locate
-    # the Python installation. Hence, as a workaround, if the following line fails
-    # and Python3 is *not* found, we try again, this time with the full Development
-    # component (rather than only Development.Module). This seems to work around the
-    # issue, for now at least.
-    find_package(Python3 QUIET COMPONENTS ${_HEYOKA_PY_PYTHON3_COMPONENTS})
-
-    if(NOT Python3_FOUND)
-        list(POP_BACK _HEYOKA_PY_PYTHON3_COMPONENTS)
-        list(APPEND _HEYOKA_PY_PYTHON3_COMPONENTS Development)
-    endif()
 endif()
 
 find_package(Python3 QUIET REQUIRED COMPONENTS ${_HEYOKA_PY_PYTHON3_COMPONENTS})
