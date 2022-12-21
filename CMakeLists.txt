@@ -190,5 +190,7 @@ if(heyoka_WITH_REAL128 OR heyoka_WITH_REAL)
     unset(_HEYOKA_PY_MIN_MPPP_VERSION)
 endif()
 
+configure_file("pyproject.toml" "pyproject.toml" COPYONLY)
+
 # Add the module directory.
 add_subdirectory(heyoka)

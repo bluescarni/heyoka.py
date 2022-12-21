@@ -145,7 +145,7 @@ Finally, we can install heyoka.py with the command:
 
 .. code-block:: console
 
-   $ cmake  --build . --target install
+   $ pip install .
 
 Verifying the installation
 --------------------------

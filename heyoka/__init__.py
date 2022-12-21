@@ -1,4 +1,9 @@
-# Copyright 2020, 2021, 2022 Francesco Biscani (bluescarni@gmail.com), Dario Izzo (dario.izzo@gmail.com)
+"""
+heyoka.py is a Python library for the integration of ordinary differential equations (ODEs) 
+via Taylor's method, based on automatic differentiation techniques and aggressive 
+just-in-time compilation via LLVM. 
+""" 
+#  Copyright 2020, 2021, 2022 Francesco Biscani (bluescarni@gmail.com), Dario Izzo (dario.izzo@gmail.com)
 #
 # This file is part of the heyoka.py library.
 #

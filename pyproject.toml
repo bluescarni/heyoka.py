@@ -1,0 +1,21 @@
+[build-system]
+requires = ["flit_core >=3.2,<4","wheel"]
+build-backend = "flit_core.buildapi"
+
+[project]
+name = "heyoka"
+authors = [{name = "Francesco Biscani",email="bluescarni@gmail.com"},{name="Dario Izzo",email="dario.izzo@gmail.com"}]
+dynamic = ["version", "description"]
+classifiers = ["Private :: Do Not Upload"]
+dependencies = [
+    "numpy",
+    "cloudpickle"
+]
+[project.optional-dependencies]
+sympy = [
+    "sympy",
+    "mpmath"
+]
+
+[project.urls]
+Home = "https://github.com/bluescarni/heyoka.py"
