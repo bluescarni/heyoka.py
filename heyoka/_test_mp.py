@@ -25,11 +25,11 @@ class mp_test_case(_ut.TestCase):
         self.test_cfunc()
 
     def test_cfunc(self):
-        from . import real, make_cfunc, make_vars, sin, par
+        from . import real, make_cfunc, make_vars, sin, par, time
         import numpy as np
 
         x, y = make_vars("x", "y")
-        func = [sin(x + y), x - par[0], x + y + par[1]]
+        func = [sin(x + y), x - par[0], x + y + par[1] + time]
 
         with self.assertRaises(ValueError) as cm:
             make_cfunc(func, vars=[y, x], fp_type=real, batch_size=2)
@@ -52,38 +52,43 @@ class mp_test_case(_ut.TestCase):
         # Initial simple test.
         inputs = np.array([real(1, prec), real(2, prec)])
         pars = np.array([real(3, prec), real(4, prec)])
-        out = fn(inputs=inputs, pars=pars)
+        out = fn(inputs=inputs, pars=pars, time=real("1.1", prec))
         self.assertEqual(out[0], np.sin(inputs[1] + inputs[0]))
         self.assertEqual(out[1], inputs[1] - pars[0])
-        self.assertEqual(out[2], inputs[1] + inputs[0] + pars[1])
+        self.assertEqual(out[2], inputs[1] + inputs[0] + pars[1] + real("1.1", prec))
 
         # With provided empty output.
-        out = fn(inputs=inputs, pars=pars, outputs=np.empty((3,), dtype=real))
+        out = fn(
+            inputs=inputs,
+            pars=pars,
+            outputs=np.empty((3,), dtype=real),
+            time=real("1.1", prec),
+        )
         self.assertEqual(out[0], np.sin(inputs[1] + inputs[0]))
         self.assertEqual(out[1], inputs[1] - pars[0])
-        self.assertEqual(out[2], inputs[1] + inputs[0] + pars[1])
+        self.assertEqual(out[2], inputs[1] + inputs[0] + pars[1] + real("1.1", prec))
 
         # Test with non-owning arrays.
-        out = fn(inputs=inputs[:], pars=pars[:])
+        out = fn(inputs=inputs[:], pars=pars[:], time=real("1.1", prec))
         self.assertEqual(out[0], np.sin(inputs[1] + inputs[0]))
         self.assertEqual(out[1], inputs[1] - pars[0])
-        self.assertEqual(out[2], inputs[1] + inputs[0] + pars[1])
+        self.assertEqual(out[2], inputs[1] + inputs[0] + pars[1] + real("1.1", prec))
 
         # Test with overlapping arrays.
-        out = fn(inputs=inputs, pars=inputs)
+        out = fn(inputs=inputs, pars=inputs, time=real("1.1", prec))
         self.assertEqual(out[0], np.sin(inputs[1] + inputs[0]))
         self.assertEqual(out[1], inputs[1] - inputs[0])
-        self.assertEqual(out[2], inputs[1] + inputs[0] + inputs[1])
+        self.assertEqual(out[2], inputs[1] + inputs[0] + inputs[1] + real("1.1", prec))
 
         # Test with non-contiguous arrays.
         inputs = np.array([real(1, prec), 0, real(2, prec), 0])
         pars = np.array([real(3, prec), 0, real(4, prec), 0])
         inputs = inputs[::2]
         pars = pars[::2]
-        out = fn(inputs=inputs, pars=pars)
+        out = fn(inputs=inputs, pars=pars, time=real("1.1", prec))
         self.assertEqual(out[0], np.sin(inputs[1] + inputs[0]))
         self.assertEqual(out[1], inputs[1] - pars[0])
-        self.assertEqual(out[2], inputs[1] + inputs[0] + pars[1])
+        self.assertEqual(out[2], inputs[1] + inputs[0] + pars[1] + real("1.1", prec))
 
         # Test multieval too.
         inputs = np.array(
@@ -92,31 +97,34 @@ class mp_test_case(_ut.TestCase):
         pars = np.array(
             [[real(3, prec), real(-3, prec)], [real(4, prec), real(-4, prec)]]
         )
-        out = fn(inputs=inputs, pars=pars)
+        tm = np.array([real("1.1", prec), real("1.3", prec)])
+        out = fn(inputs=inputs, pars=pars, time=tm)
         self.assertEqual(out[0, 0], np.sin(inputs[1, 0] + inputs[0, 0]))
         self.assertEqual(out[1, 0], inputs[1, 0] - pars[0, 0])
-        self.assertEqual(out[2, 0], inputs[1, 0] + inputs[0, 0] + pars[1, 0])
+        self.assertEqual(out[2, 0], inputs[1, 0] + inputs[0, 0] + pars[1, 0] + tm[0])
         self.assertEqual(out[0, 1], np.sin(inputs[1, 1] + inputs[0, 1]))
         self.assertEqual(out[1, 1], inputs[1, 1] - pars[0, 1])
-        self.assertEqual(out[2, 1], inputs[1, 1] + inputs[0, 1] + pars[1, 1])
+        self.assertEqual(out[2, 1], inputs[1, 1] + inputs[0, 1] + pars[1, 1] + tm[1])
 
         # With provided empty output.
-        out = fn(inputs=inputs, pars=pars, outputs=np.empty((3, 2), dtype=real))
+        out = fn(
+            inputs=inputs, pars=pars, outputs=np.empty((3, 2), dtype=real), time=tm
+        )
         self.assertEqual(out[0, 0], np.sin(inputs[1, 0] + inputs[0, 0]))
         self.assertEqual(out[1, 0], inputs[1, 0] - pars[0, 0])
-        self.assertEqual(out[2, 0], inputs[1, 0] + inputs[0, 0] + pars[1, 0])
+        self.assertEqual(out[2, 0], inputs[1, 0] + inputs[0, 0] + pars[1, 0] + tm[0])
         self.assertEqual(out[0, 1], np.sin(inputs[1, 1] + inputs[0, 1]))
         self.assertEqual(out[1, 1], inputs[1, 1] - pars[0, 1])
-        self.assertEqual(out[2, 1], inputs[1, 1] + inputs[0, 1] + pars[1, 1])
+        self.assertEqual(out[2, 1], inputs[1, 1] + inputs[0, 1] + pars[1, 1] + tm[1])
 
         # Non-owning.
-        out = fn(inputs=inputs[:], pars=pars[:])
+        out = fn(inputs=inputs[:], pars=pars[:], time=tm[:])
         self.assertEqual(out[0, 0], np.sin(inputs[1, 0] + inputs[0, 0]))
         self.assertEqual(out[1, 0], inputs[1, 0] - pars[0, 0])
-        self.assertEqual(out[2, 0], inputs[1, 0] + inputs[0, 0] + pars[1, 0])
+        self.assertEqual(out[2, 0], inputs[1, 0] + inputs[0, 0] + pars[1, 0] + tm[0])
         self.assertEqual(out[0, 1], np.sin(inputs[1, 1] + inputs[0, 1]))
         self.assertEqual(out[1, 1], inputs[1, 1] - pars[0, 1])
-        self.assertEqual(out[2, 1], inputs[1, 1] + inputs[0, 1] + pars[1, 1])
+        self.assertEqual(out[2, 1], inputs[1, 1] + inputs[0, 1] + pars[1, 1] + tm[1])
 
         # Non-contiguous.
         inputs = np.array(
@@ -131,28 +139,39 @@ class mp_test_case(_ut.TestCase):
                 [real(4, prec), 0, real(-4, prec), 0],
             ]
         )
+        tm = np.array([real("1.1", prec), 0, real("1.3", prec), 0])
+
         inputs = inputs[:, ::2]
         pars = pars[:, ::2]
-        out = fn(inputs=inputs[:], pars=pars[:])
+        tm = tm[::2]
+        out = fn(inputs=inputs[:], pars=pars[:], time=tm)
         self.assertEqual(out[0, 0], np.sin(inputs[1, 0] + inputs[0, 0]))
         self.assertEqual(out[1, 0], inputs[1, 0] - pars[0, 0])
-        self.assertEqual(out[2, 0], inputs[1, 0] + inputs[0, 0] + pars[1, 0])
+        self.assertEqual(out[2, 0], inputs[1, 0] + inputs[0, 0] + pars[1, 0] + tm[0])
         self.assertEqual(out[0, 1], np.sin(inputs[1, 1] + inputs[0, 1]))
         self.assertEqual(out[1, 1], inputs[1, 1] - pars[0, 1])
-        self.assertEqual(out[2, 1], inputs[1, 1] + inputs[0, 1] + pars[1, 1])
+        self.assertEqual(out[2, 1], inputs[1, 1] + inputs[0, 1] + pars[1, 1] + tm[1])
 
         # Error modes.
         inputs = np.array([real(1, prec), real(2, prec)])
         pars = np.array([real(3, prec), real(4, prec - 1)])
         with self.assertRaises(ValueError) as cm:
-            fn(inputs=inputs, pars=pars)
+            fn(inputs=inputs, pars=pars, time=real(42, prec))
         self.assertTrue(
             "A real with precision 236 was detected at the indices" in str(cm.exception)
         )
 
+        inputs = np.array([real(1, prec), real(2, prec)])
         pars = np.array([real(3, prec), real(4, prec)])
         with self.assertRaises(ValueError) as cm:
-            fn(inputs=[1, 2], pars=pars)
+            fn(inputs=inputs, pars=pars, time=real(42, prec - 2))
+        self.assertTrue(
+            "A real with precision 235 was detected at the indices" in str(cm.exception)
+        )
+
+        pars = np.array([real(3, prec), real(4, prec)])
+        with self.assertRaises(ValueError) as cm:
+            fn(inputs=[1, 2], pars=pars, time=real(42, prec))
         self.assertTrue(
             "in an array which should instead contain elements with a precision of 237"
             in str(cm.exception)
