@@ -546,6 +546,9 @@ void expose_add_cfunc_impl(py::module &m, const char *name)
                             // with input and/or pars arrays of shape (0, nevals). I am not sure what
                             // kind of data pointer NumPy returns in such a case, but if NumPy, e.g.,
                             // returns nullptr, then we are committing UB.
+                            // NOTE: if nevals is zero, then the two for loops below are never
+                            // entered and we never end up doing arithmetics on potentially-null
+                            // pointers.
                             const auto read_inputs = nvars > 0u;
                             const auto read_pars = nparams > 0u;
                             const auto read_time = is_time_dependent;

@@ -4460,7 +4460,7 @@ class cfunc_test_case(_ut.TestCase):
 
     def test_multi(self):
         import numpy as np
-        from . import make_cfunc, make_vars, sin, par, expression, core
+        from . import make_cfunc, make_vars, sin, par, expression, core, time
         from .core import _ppc_arch
 
         if _ppc_arch:
@@ -4472,7 +4472,7 @@ class cfunc_test_case(_ut.TestCase):
             fp_types.append(core.real128)
 
         x, y = make_vars("x", "y")
-        func = [sin(x + y), x - par[0], x + y + par[1]]
+        func = [sin(x + y), x - par[0], x + y + par[1] * time]
 
         for fp_t in fp_types:
             with self.assertRaises(ValueError) as cm:
@@ -4497,6 +4497,7 @@ class cfunc_test_case(_ut.TestCase):
                     np.zeros((2, 5), dtype=fp_t),
                     pars=[fp_t(0)],
                     outputs=np.zeros((3, 1), dtype=fp_t),
+                    time=np.zeros((5,), dtype=fp_t),
                 )
             self.assertTrue(
                 "The size in the second dimension for the output array provided for the evaluation of a compiled function (1) must match the size in the second dimension for the array of inputs (5)"
@@ -4504,7 +4505,14 @@ class cfunc_test_case(_ut.TestCase):
             )
 
             with self.assertRaises(ValueError) as cm:
-                fn(np.zeros((2, 5), dtype=fp_t), pars=np.zeros((2, 4), dtype=fp_t))
+                fn(
+                    np.zeros((2, 5), dtype=fp_t),
+                    pars=np.zeros(
+                        (2, 4),
+                        dtype=fp_t,
+                    ),
+                    time=np.zeros((5,), dtype=fp_t),
+                )
             self.assertTrue(
                 "The size in the second dimension for the array of parameter values provided for the evaluation of a compiled function (4) must match the size in the second dimension for the array of inputs (5)"
                 in str(cm.exception)
@@ -4517,9 +4525,54 @@ class cfunc_test_case(_ut.TestCase):
                     np.zeros((2, 5), dtype=fp_t),
                     outputs=nw_arr,
                     pars=np.zeros((2, 5), dtype=fp_t),
+                    time=np.zeros((5,), dtype=fp_t),
                 )
             self.assertTrue(
                 "The array of outputs provided for the evaluation of a compiled function is not writeable"
+                in str(cm.exception)
+            )
+
+            with self.assertRaises(ValueError) as cm:
+                fn(
+                    np.zeros((2, 5), dtype=fp_t),
+                    outputs=nw_arr,
+                    pars=np.zeros((2, 5), dtype=fp_t),
+                )
+            self.assertTrue(
+                "The compiled function is time-dependent, but no time value(s) were provided for evaluation"
+                in str(cm.exception)
+            )
+
+            with self.assertRaises(ValueError) as cm:
+                fn(
+                    np.zeros((2,), dtype=fp_t),
+                    pars=np.zeros((2,), dtype=fp_t),
+                    time=np.zeros((5,), dtype=fp_t),
+                )
+            self.assertTrue(
+                "When performing a single evaluation of a compiled function, a scalar time value must be provided, but an iterable object was passed instead"
+                in str(cm.exception)
+            )
+
+            with self.assertRaises(ValueError) as cm:
+                fn(
+                    np.zeros((2, 5), dtype=fp_t),
+                    pars=np.zeros((2, 5), dtype=fp_t),
+                    time=np.zeros((5, 5), dtype=fp_t),
+                )
+            self.assertTrue(
+                "An invalid time argument was passed to a compiled function: the time array must be one-dimensional, but instead it has 2 dimensions"
+                in str(cm.exception)
+            )
+
+            with self.assertRaises(ValueError) as cm:
+                fn(
+                    np.zeros((2, 5), dtype=fp_t),
+                    pars=np.zeros((2, 5), dtype=fp_t),
+                    time=np.zeros((6,), dtype=fp_t),
+                )
+            self.assertTrue(
+                "The size of the array of time values provided for the evaluation of a compiled function (6) must match the size in the second dimension for the array of inputs (5)"
                 in str(cm.exception)
             )
 
@@ -4532,8 +4585,9 @@ class cfunc_test_case(_ut.TestCase):
                 # NOTE: long double rng not supported.
                 inputs = rng.random((2, nevals), dtype=float).astype(fp_t)
                 pars = rng.random((2, nevals), dtype=float).astype(fp_t)
+                tm = rng.random((nevals,), dtype=float).astype(fp_t)
 
-                eval_arr = fn(inputs=inputs, pars=pars)
+                eval_arr = fn(inputs=inputs, pars=pars, time=tm)
                 self.assertTrue(
                     _allclose(
                         eval_arr[0],
@@ -4553,7 +4607,7 @@ class cfunc_test_case(_ut.TestCase):
                 self.assertTrue(
                     _allclose(
                         eval_arr[2],
-                        inputs[1, :] + inputs[0, :] + pars[1, :],
+                        inputs[1, :] + inputs[0, :] + pars[1, :] * tm,
                         rtol=_get_eps(fp_t) * 10,
                         atol=_get_eps(fp_t) * 10,
                     )
@@ -4562,7 +4616,7 @@ class cfunc_test_case(_ut.TestCase):
                 # Check that eval_arr actually uses the memory
                 # provided from the outputs argument.
                 out_arr = np.zeros((3, nevals), dtype=fp_t)
-                eval_arr = fn(inputs=inputs, pars=pars, outputs=out_arr)
+                eval_arr = fn(inputs=inputs, pars=pars, outputs=out_arr, time=tm)
                 self.assertEqual(id(eval_arr), id(out_arr))
                 self.assertTrue(
                     _allclose(
@@ -4583,14 +4637,14 @@ class cfunc_test_case(_ut.TestCase):
                 self.assertTrue(
                     _allclose(
                         eval_arr[2],
-                        inputs[1, :] + inputs[0, :] + pars[1, :],
+                        inputs[1, :] + inputs[0, :] + pars[1, :] * tm,
                         rtol=_get_eps(fp_t) * 10,
                         atol=_get_eps(fp_t) * 10,
                     )
                 )
 
                 # Test with non-owning arrays.
-                eval_arr = fn(inputs=inputs[:], pars=pars)
+                eval_arr = fn(inputs=inputs[:], pars=pars, time=tm)
                 self.assertTrue(
                     _allclose(
                         eval_arr[0],
@@ -4610,13 +4664,13 @@ class cfunc_test_case(_ut.TestCase):
                 self.assertTrue(
                     _allclose(
                         eval_arr[2],
-                        inputs[1, :] + inputs[0, :] + pars[1, :],
+                        inputs[1, :] + inputs[0, :] + pars[1, :] * tm,
                         rtol=_get_eps(fp_t) * 10,
                         atol=_get_eps(fp_t) * 10,
                     )
                 )
 
-                eval_arr = fn(inputs=inputs, pars=pars[:])
+                eval_arr = fn(inputs=inputs, pars=pars[:], time=tm)
                 self.assertTrue(
                     _allclose(
                         eval_arr[0],
@@ -4636,14 +4690,40 @@ class cfunc_test_case(_ut.TestCase):
                 self.assertTrue(
                     _allclose(
                         eval_arr[2],
-                        inputs[1, :] + inputs[0, :] + pars[1, :],
+                        inputs[1, :] + inputs[0, :] + pars[1, :] * tm,
+                        rtol=_get_eps(fp_t) * 10,
+                        atol=_get_eps(fp_t) * 10,
+                    )
+                )
+
+                eval_arr = fn(inputs=inputs, pars=pars, time=tm[:])
+                self.assertTrue(
+                    _allclose(
+                        eval_arr[0],
+                        np.sin(inputs[1, :] + inputs[0, :]),
+                        rtol=_get_eps(fp_t) * 10,
+                        atol=_get_eps(fp_t) * 10,
+                    )
+                )
+                self.assertTrue(
+                    _allclose(
+                        eval_arr[1],
+                        inputs[1, :] - pars[0, :],
+                        rtol=_get_eps(fp_t) * 10,
+                        atol=_get_eps(fp_t) * 10,
+                    )
+                )
+                self.assertTrue(
+                    _allclose(
+                        eval_arr[2],
+                        inputs[1, :] + inputs[0, :] + pars[1, :] * tm,
                         rtol=_get_eps(fp_t) * 10,
                         atol=_get_eps(fp_t) * 10,
                     )
                 )
 
                 # Test with non-distinct arrays.
-                eval_arr = fn(inputs=inputs, pars=inputs)
+                eval_arr = fn(inputs=inputs, pars=inputs, time=tm)
                 self.assertTrue(
                     _allclose(
                         eval_arr[0],
@@ -4663,7 +4743,33 @@ class cfunc_test_case(_ut.TestCase):
                 self.assertTrue(
                     _allclose(
                         eval_arr[2],
-                        inputs[1, :] + inputs[0, :] + inputs[1, :],
+                        inputs[1, :] + inputs[0, :] + inputs[1, :] * tm,
+                        rtol=_get_eps(fp_t) * 10,
+                        atol=_get_eps(fp_t) * 10,
+                    )
+                )
+
+                eval_arr = fn(inputs=inputs, pars=pars, time=pars[0, :])
+                self.assertTrue(
+                    _allclose(
+                        eval_arr[0],
+                        np.sin(inputs[1, :] + inputs[0, :]),
+                        rtol=_get_eps(fp_t) * 10,
+                        atol=_get_eps(fp_t) * 10,
+                    )
+                )
+                self.assertTrue(
+                    _allclose(
+                        eval_arr[1],
+                        inputs[1, :] - pars[0, :],
+                        rtol=_get_eps(fp_t) * 10,
+                        atol=_get_eps(fp_t) * 10,
+                    )
+                )
+                self.assertTrue(
+                    _allclose(
+                        eval_arr[2],
+                        inputs[1, :] + inputs[0, :] + pars[1, :] * pars[0, :],
                         rtol=_get_eps(fp_t) * 10,
                         atol=_get_eps(fp_t) * 10,
                     )
@@ -4672,7 +4778,7 @@ class cfunc_test_case(_ut.TestCase):
                 # Test with arrays which are not C style.
                 inputs = rng.random((4, nevals), dtype=float).astype(fp_t)
                 inputs = inputs[::2]
-                eval_arr = fn(inputs=inputs, pars=pars)
+                eval_arr = fn(inputs=inputs, pars=pars, time=tm)
                 self.assertTrue(
                     _allclose(
                         eval_arr[0],
@@ -4692,7 +4798,7 @@ class cfunc_test_case(_ut.TestCase):
                 self.assertTrue(
                     _allclose(
                         eval_arr[2],
-                        inputs[1, :] + inputs[0, :] + pars[1, :],
+                        inputs[1, :] + inputs[0, :] + pars[1, :] * tm,
                         rtol=_get_eps(fp_t) * 10,
                         atol=_get_eps(fp_t) * 10,
                     )
@@ -4700,7 +4806,7 @@ class cfunc_test_case(_ut.TestCase):
 
                 pars = rng.random((4, nevals), dtype=float).astype(fp_t)
                 pars = pars[::2]
-                eval_arr = fn(inputs=inputs, pars=pars)
+                eval_arr = fn(inputs=inputs, pars=pars, time=tm)
                 self.assertTrue(
                     _allclose(
                         eval_arr[0],
@@ -4720,18 +4826,20 @@ class cfunc_test_case(_ut.TestCase):
                 self.assertTrue(
                     _allclose(
                         eval_arr[2],
-                        inputs[1, :] + inputs[0, :] + pars[1, :],
+                        inputs[1, :] + inputs[0, :] + pars[1, :] * tm,
                         rtol=_get_eps(fp_t) * 10,
                         atol=_get_eps(fp_t) * 10,
                     )
                 )
 
                 # Tests with no inputs.
-                fn = make_cfunc([expression(fp_t(3)) + par[1], par[0]], fp_type=fp_t)
+                fn = make_cfunc(
+                    [expression(fp_t(3)) + par[1], par[0] + time], fp_type=fp_t
+                )
 
                 inputs = rng.random((0, nevals), dtype=float).astype(fp_t)
                 pars = rng.random((2, nevals), dtype=float).astype(fp_t)
-                eval_arr = fn(inputs=inputs, pars=pars)
+                eval_arr = fn(inputs=inputs, pars=pars, time=tm)
                 self.assertTrue(
                     _allclose(
                         eval_arr[0],
@@ -4743,13 +4851,13 @@ class cfunc_test_case(_ut.TestCase):
                 self.assertTrue(
                     _allclose(
                         eval_arr[1],
-                        pars[0, :],
+                        pars[0, :] + tm,
                         rtol=_get_eps(fp_t) * 10,
                         atol=_get_eps(fp_t) * 10,
                     )
                 )
 
-                eval_arr = fn(inputs=inputs[:], pars=pars)
+                eval_arr = fn(inputs=inputs[:], pars=pars, time=tm)
                 self.assertTrue(
                     _allclose(
                         eval_arr[0],
@@ -4761,13 +4869,13 @@ class cfunc_test_case(_ut.TestCase):
                 self.assertTrue(
                     _allclose(
                         eval_arr[1],
-                        pars[0, :],
+                        pars[0, :] + tm,
                         rtol=_get_eps(fp_t) * 10,
                         atol=_get_eps(fp_t) * 10,
                     )
                 )
 
-                eval_arr = fn(inputs=inputs, pars=pars[:])
+                eval_arr = fn(inputs=inputs, pars=pars[:], time=tm)
                 self.assertTrue(
                     _allclose(
                         eval_arr[0],
@@ -4779,7 +4887,25 @@ class cfunc_test_case(_ut.TestCase):
                 self.assertTrue(
                     _allclose(
                         eval_arr[1],
-                        pars[0, :],
+                        pars[0, :] + tm,
+                        rtol=_get_eps(fp_t) * 10,
+                        atol=_get_eps(fp_t) * 10,
+                    )
+                )
+
+                eval_arr = fn(inputs=inputs, pars=pars, time=tm[:])
+                self.assertTrue(
+                    _allclose(
+                        eval_arr[0],
+                        3 + pars[1, :],
+                        rtol=_get_eps(fp_t) * 10,
+                        atol=_get_eps(fp_t) * 10,
+                    )
+                )
+                self.assertTrue(
+                    _allclose(
+                        eval_arr[1],
+                        pars[0, :] + tm,
                         rtol=_get_eps(fp_t) * 10,
                         atol=_get_eps(fp_t) * 10,
                     )
@@ -4824,6 +4950,21 @@ class cfunc_test_case(_ut.TestCase):
                     )
                 )
 
+                # Test a case without time but a time array is provided anyway, with
+                # the correct shape.
+                eval_arr = fn(
+                    inputs=inputs, pars=np.zeros((0, nevals), dtype=fp_t), time=tm
+                )
+
+                self.assertTrue(
+                    _allclose(
+                        eval_arr[0],
+                        inputs[0, :] + inputs[1, :],
+                        rtol=_get_eps(fp_t) * 10,
+                        atol=_get_eps(fp_t) * 10,
+                    )
+                )
+
         # Check throwing behaviour with long double on PPC.
         if _ppc_arch:
             with self.assertRaises(NotImplementedError):
@@ -4831,7 +4972,7 @@ class cfunc_test_case(_ut.TestCase):
 
     def test_single(self):
         import numpy as np
-        from . import make_cfunc, make_vars, sin, par, expression, core
+        from . import make_cfunc, make_vars, sin, par, expression, core, time
         from .core import _ppc_arch
 
         if _ppc_arch:
@@ -4843,7 +4984,7 @@ class cfunc_test_case(_ut.TestCase):
             fp_types.append(core.real128)
 
         x, y = make_vars("x", "y")
-        func = [sin(x + y), x - par[0], x + y + par[1]]
+        func = [sin(x + y), x - par[0], x + y + par[1] + time]
 
         # NOTE: perhaps in the future we can add
         # some more testing for high_accuracy, compact_mode,
@@ -4860,14 +5001,14 @@ class cfunc_test_case(_ut.TestCase):
             )
 
             with self.assertRaises(ValueError) as cm:
-                fn(np.zeros((1, 2, 3), dtype=fp_t), pars=[fp_t(0)])
+                fn(np.zeros((1, 2, 3), dtype=fp_t), pars=[fp_t(0)], time=fp_t(0))
             self.assertTrue(
                 "The array of inputs provided for the evaluation of a compiled function has 3 dimensions, but it must have either 1 or 2 dimensions instead"
                 in str(cm.exception)
             )
 
             with self.assertRaises(ValueError) as cm:
-                fn([fp_t(0)], pars=[fp_t(0)])
+                fn([fp_t(0)], pars=[fp_t(0)], time=fp_t(0))
             self.assertTrue(
                 "The array of inputs provided for the evaluation of a compiled function has size 1 in the first dimension, but it must have a size of 2 instead (i.e., the size in the first dimension must be equal to the number of variables)"
                 in str(cm.exception)
@@ -4878,6 +5019,7 @@ class cfunc_test_case(_ut.TestCase):
                     np.zeros((2,), dtype=fp_t),
                     pars=[fp_t(0)],
                     outputs=np.zeros((2,), dtype=fp_t),
+                    time=fp_t(0),
                 )
             self.assertTrue(
                 "The array of outputs provided for the evaluation of a compiled function has size 2 in the first dimension, but it must have a size of 3 instead (i.e., the size in the first dimension must be equal to the number of outputs)"
@@ -4885,20 +5027,34 @@ class cfunc_test_case(_ut.TestCase):
             )
 
             with self.assertRaises(ValueError) as cm:
-                fn(np.zeros((2,), dtype=fp_t), pars=np.zeros((0,), dtype=fp_t))
+                fn(
+                    np.zeros((2,), dtype=fp_t),
+                    pars=np.zeros((0,), dtype=fp_t),
+                    time=fp_t(0),
+                )
             self.assertTrue(
                 "The array of parameter values provided for the evaluation of a compiled function has size 0 in the first dimension, but it must have a size of 2 instead (i.e., the size in the first dimension must be equal to the number of parameters in the function)"
                 in str(cm.exception)
             )
 
-            eval_arr = fn([fp_t(1), fp_t(2)], pars=[fp_t(-5), fp_t(1)])
+            with self.assertRaises(ValueError) as cm:
+                fn(
+                    np.zeros((2,), dtype=fp_t),
+                    pars=np.zeros((2,), dtype=fp_t),
+                )
+            self.assertTrue(
+                "The compiled function is time-dependent, but no time value(s) were provided for evaluation"
+                in str(cm.exception)
+            )
+
+            eval_arr = fn([fp_t(1), fp_t(2)], pars=[fp_t(-5), fp_t(1)], time=fp_t(3))
             self.assertTrue(
                 _allclose(
                     eval_arr,
                     [
                         np.sin(fp_t(1) + fp_t(2)),
                         fp_t(1) - fp_t(-5),
-                        fp_t(1) + fp_t(2) + fp_t(1),
+                        fp_t(1) + fp_t(2) + fp_t(1) + fp_t(3),
                     ],
                     rtol=_get_eps(fp_t) * 10,
                     atol=_get_eps(fp_t) * 10,
@@ -4908,7 +5064,12 @@ class cfunc_test_case(_ut.TestCase):
             # Check that eval_arr actually uses the memory
             # provided from the outputs argument.
             out_arr = np.zeros((3,), dtype=fp_t)
-            eval_arr = fn([fp_t(1), fp_t(2)], pars=[fp_t(-5), fp_t(1)], outputs=out_arr)
+            eval_arr = fn(
+                [fp_t(1), fp_t(2)],
+                pars=[fp_t(-5), fp_t(1)],
+                outputs=out_arr,
+                time=fp_t(3),
+            )
             self.assertTrue(np.shares_memory(eval_arr, out_arr))
             self.assertEqual(id(eval_arr), id(out_arr))
             self.assertTrue(
@@ -4917,7 +5078,7 @@ class cfunc_test_case(_ut.TestCase):
                     [
                         np.sin(fp_t(1) + fp_t(2)),
                         fp_t(1) - fp_t(-5),
-                        fp_t(1) + fp_t(2) + fp_t(1),
+                        fp_t(1) + fp_t(2) + fp_t(1) + fp_t(3),
                     ],
                     rtol=_get_eps(fp_t) * 10,
                     atol=_get_eps(fp_t) * 10,
@@ -4926,14 +5087,14 @@ class cfunc_test_case(_ut.TestCase):
 
             # Test with non-owning arrays.
             inputs = np.array([fp_t(1), fp_t(2)])
-            eval_arr = fn(inputs=inputs[:], pars=[fp_t(-5), fp_t(1)])
+            eval_arr = fn(inputs=inputs[:], pars=[fp_t(-5), fp_t(1)], time=fp_t(3))
             self.assertTrue(
                 _allclose(
                     eval_arr,
                     [
                         np.sin(fp_t(1) + fp_t(2)),
                         fp_t(1) - fp_t(-5),
-                        fp_t(1) + fp_t(2) + fp_t(1),
+                        fp_t(1) + fp_t(2) + fp_t(1) + fp_t(3),
                     ],
                     rtol=_get_eps(fp_t) * 10,
                     atol=_get_eps(fp_t) * 10,
@@ -4941,14 +5102,14 @@ class cfunc_test_case(_ut.TestCase):
             )
 
             pars = np.array([fp_t(-5), fp_t(1)])
-            eval_arr = fn(inputs=inputs, pars=pars[:])
+            eval_arr = fn(inputs=inputs, pars=pars[:], time=fp_t(3))
             self.assertTrue(
                 _allclose(
                     eval_arr,
                     [
                         np.sin(fp_t(1) + fp_t(2)),
                         fp_t(1) - fp_t(-5),
-                        fp_t(1) + fp_t(2) + fp_t(1),
+                        fp_t(1) + fp_t(2) + fp_t(1) + fp_t(3),
                     ],
                     rtol=_get_eps(fp_t) * 10,
                     atol=_get_eps(fp_t) * 10,
@@ -4956,14 +5117,14 @@ class cfunc_test_case(_ut.TestCase):
             )
 
             # Test with non-distinct arrays.
-            eval_arr = fn(inputs=inputs, pars=inputs)
+            eval_arr = fn(inputs=inputs, pars=inputs, time=fp_t(3))
             self.assertTrue(
                 _allclose(
                     eval_arr,
                     [
                         np.sin(fp_t(1) + fp_t(2)),
                         fp_t(1) - fp_t(1),
-                        fp_t(1) + fp_t(2) + fp_t(2),
+                        fp_t(1) + fp_t(2) + fp_t(2) + fp_t(3),
                     ],
                     rtol=_get_eps(fp_t) * 10,
                     atol=_get_eps(fp_t) * 10,
@@ -4973,14 +5134,14 @@ class cfunc_test_case(_ut.TestCase):
             # Test with arrays which are not C style.
             inputs = np.zeros((4,), dtype=fp_t)
             inputs[::2] = [fp_t(1), fp_t(2)]
-            eval_arr = fn(inputs=inputs[::2], pars=pars)
+            eval_arr = fn(inputs=inputs[::2], pars=pars, time=fp_t(3))
             self.assertTrue(
                 _allclose(
                     eval_arr,
                     [
                         np.sin(fp_t(1) + fp_t(2)),
                         fp_t(1) - fp_t(-5),
-                        fp_t(1) + fp_t(2) + fp_t(1),
+                        fp_t(1) + fp_t(2) + fp_t(1) + fp_t(3),
                     ],
                     rtol=_get_eps(fp_t) * 10,
                     atol=_get_eps(fp_t) * 10,
@@ -4990,14 +5151,14 @@ class cfunc_test_case(_ut.TestCase):
             inputs = np.array([fp_t(1), fp_t(2)])
             pars = np.zeros((4,), dtype=fp_t)
             pars[::2] = [fp_t(-5), fp_t(1)]
-            eval_arr = fn(inputs=inputs, pars=pars[::2])
+            eval_arr = fn(inputs=inputs, pars=pars[::2], time=fp_t(3))
             self.assertTrue(
                 _allclose(
                     eval_arr,
                     [
                         np.sin(fp_t(1) + fp_t(2)),
                         fp_t(1) - fp_t(-5),
-                        fp_t(1) + fp_t(2) + fp_t(1),
+                        fp_t(1) + fp_t(2) + fp_t(1) + fp_t(3),
                     ],
                     rtol=_get_eps(fp_t) * 10,
                     atol=_get_eps(fp_t) * 10,
@@ -5005,48 +5166,52 @@ class cfunc_test_case(_ut.TestCase):
             )
 
             # Tests with no inputs.
-            fn = make_cfunc([expression(fp_t(3)) + par[1], par[0]], fp_type=fp_t)
+            fn = make_cfunc([expression(fp_t(3)) + par[1], par[0] + time], fp_type=fp_t)
 
-            eval_arr = fn(inputs=np.zeros((0,), dtype=fp_t), pars=[1, 2])
+            eval_arr = fn(inputs=np.zeros((0,), dtype=fp_t), pars=[1, 2], time=fp_t(3))
             self.assertTrue(
                 _allclose(
                     eval_arr,
-                    [fp_t(3) + 2, fp_t(1)],
+                    [fp_t(3) + 2, fp_t(1) + fp_t(3)],
                     rtol=_get_eps(fp_t) * 10,
                     atol=_get_eps(fp_t) * 10,
                 )
             )
 
             inputs = np.zeros((0,), dtype=fp_t)
-            eval_arr = fn(inputs=inputs[:], pars=[1, 2])
+            eval_arr = fn(inputs=inputs[:], pars=[1, 2], time=fp_t(3))
             self.assertTrue(
                 _allclose(
                     eval_arr,
-                    [fp_t(3) + 2, fp_t(1)],
+                    [fp_t(3) + 2, fp_t(1) + fp_t(3)],
                     rtol=_get_eps(fp_t) * 10,
                     atol=_get_eps(fp_t) * 10,
                 )
             )
 
-            fn = make_cfunc([expression(fp_t(3)), expression(fp_t(4))], fp_type=fp_t)
+            fn = make_cfunc(
+                [expression(fp_t(3)), expression(fp_t(4)) + time], fp_type=fp_t
+            )
 
-            eval_arr = fn(inputs=np.zeros((0,), dtype=fp_t), pars=[])
+            eval_arr = fn(inputs=np.zeros((0,), dtype=fp_t), pars=[], time=fp_t(3))
             self.assertTrue(
                 _allclose(
                     eval_arr,
-                    [fp_t(3), fp_t(4)],
+                    [fp_t(3), fp_t(4) + fp_t(3)],
                     rtol=_get_eps(fp_t) * 10,
                     atol=_get_eps(fp_t) * 10,
                 )
             )
 
             eval_arr = fn(
-                inputs=np.zeros((0,), dtype=fp_t), pars=np.zeros((0,), dtype=fp_t)
+                inputs=np.zeros((0,), dtype=fp_t),
+                pars=np.zeros((0,), dtype=fp_t),
+                time=fp_t(3),
             )
             self.assertTrue(
                 _allclose(
                     eval_arr,
-                    [fp_t(3), fp_t(4)],
+                    [fp_t(3), fp_t(4) + fp_t(3)],
                     rtol=_get_eps(fp_t) * 10,
                     atol=_get_eps(fp_t) * 10,
                 )
@@ -5056,6 +5221,11 @@ class cfunc_test_case(_ut.TestCase):
             # with the correct shape.
             fn = make_cfunc([x + y], fp_type=fp_t)
             eval_arr = fn(inputs=[1, 2], pars=np.zeros((0,), dtype=fp_t))
+
+            self.assertEqual(eval_arr[0], 3)
+
+            # Same but with time.
+            eval_arr = fn(inputs=[1, 2], pars=np.zeros((0,), dtype=fp_t), time=fp_t(3))
 
             self.assertEqual(eval_arr[0], 3)
 
