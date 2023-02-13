@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>Compiled functions &#8212; heyoka.py 0.20.0 documentation</title>
+    <title>Compiled functions &#8212; heyoka.py 0.21.0 documentation</title>
     
   <!-- Loaded before other Sphinx assets -->
   <link href="../_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
@@ -81,7 +81,7 @@
       <img src="../_static/white_logo.png" class="logo" alt="logo">
       
       
-      <h1 class="site-logo" id="site-title">heyoka.py 0.20.0 documentation</h1>
+      <h1 class="site-logo" id="site-title">heyoka.py 0.21.0 documentation</h1>
       
     </a>
 </div><form class="bd-search d-flex align-items-center" action="../search.html" method="get">
@@ -556,6 +556,16 @@ title="Print to PDF"
   </a>
  </li>
  <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#functions-with-parameters">
+   Functions with parameters
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#time-dependent-functions">
+   Time-dependent functions
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
   <a class="reference internal nav-link" href="#batched-evaluations">
    Batched evaluations
   </a>
@@ -604,6 +614,16 @@ title="Print to PDF"
  <li class="toc-h2 nav-item toc-entry">
   <a class="reference internal nav-link" href="#a-simple-example">
    A simple example
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#functions-with-parameters">
+   Functions with parameters
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#time-dependent-functions">
+   Time-dependent functions
   </a>
  </li>
  <li class="toc-h2 nav-item toc-entry">
@@ -736,6 +756,9 @@ f\left(x, y \right) = x^2 - y^2.
 </div>
 </div>
 </div>
+</section>
+<section id="functions-with-parameters">
+<h2>Functions with parameters<a class="headerlink" href="#functions-with-parameters" title="Permalink to this headline">#</a></h2>
 <p>It the compiled function references external parameters, the parameters array will have to be supplied during evaluation via the <code class="docutils literal notranslate"><span class="pre">pars</span></code> keyword argument:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -752,6 +775,31 @@ f\left(x, y \right) = x^2 - y^2.
 </div>
 <div class="cell_output docutils container">
 <div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([46.])
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="time-dependent-functions">
+<h2>Time-dependent functions<a class="headerlink" href="#time-dependent-functions" title="Permalink to this headline">#</a></h2>
+<p>As seen in the tutorial on <a class="reference internal" href="Non-autonomous%20systems.html"><span class="doc std std-doc">non-autonomous ODEs</span></a>, heyoka.py uses a special placeholder variable called <code class="docutils literal notranslate"><span class="pre">heyoka.time</span></code> to represent time (i.e., the independent variable) in ODEs.</p>
+<p>Usually outside the context of ODE solving there are no compelling reasons to use the special <code class="docutils literal notranslate"><span class="pre">heyoka.time</span></code> variable instead of a regular variable. However, it can sometimes be useful to numerically evaluate the right-hand side of ODEs (e.g., for validation/sanity checking). Thus, starting with heyoka.py 0.21, expressions containing <code class="docutils literal notranslate"><span class="pre">heyoka.time</span></code> can also be compiled.</p>
+<p>In a time-dependent compiled function, it is <strong>mandatory</strong> to supply the time value via the <code class="docutils literal notranslate"><span class="pre">time</span></code> keyword argument:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Create a time-dependent function.</span>
+<span class="n">sym_func_tm</span> <span class="o">=</span> <span class="n">x</span><span class="o">**</span><span class="mi">2</span><span class="o">-</span><span class="n">y</span><span class="o">**</span><span class="mi">2</span><span class="o">+</span><span class="n">hy</span><span class="o">.</span><span class="n">time</span>
+
+<span class="c1"># Compile it.</span>
+<span class="n">cf_tm</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">make_cfunc</span><span class="p">([</span><span class="n">sym_func_tm</span><span class="p">])</span>
+
+<span class="c1"># Evaluate for x=1, y=5 and time=6.</span>
+<span class="n">cf_tm</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span><span class="mi">5</span><span class="p">],</span> <span class="n">time</span><span class="o">=</span><span class="mi">6</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([-18.])
 </pre></div>
 </div>
 </div>
@@ -775,6 +823,33 @@ f\left(x, y \right) = x^2 - y^2.
 </div>
 <p>Because we now passed the two-dimensional array <span class="math notranslate nohighlight">\([[1,2,3],[5,6,7]]\)</span> as input argument (rather than a one-dimensional array, like in the previous examples), <code class="docutils literal notranslate"><span class="pre">cf</span></code> will be evaluated for multiple values of <span class="math notranslate nohighlight">\(x\)</span> (<span class="math notranslate nohighlight">\(\left[1,2,3\right]\)</span>) and <span class="math notranslate nohighlight">\(y\)</span> (<span class="math notranslate nohighlight">\(\left[5,6,7\right]\)</span>). The result also consists of a two-dimensional array in which the first dimension is the number of outputs (1 in this case), and the second dimension is the number of evaluation points (3 in this case).</p>
 <p>Because heyoka.py makes extensive use of the <a class="reference external" href="https://en.wikipedia.org/wiki/SIMD">SIMD instructions</a> available in modern processors, a single batched evaluation will perform considerably better than multiple unbatched evaluations.</p>
+<p>Batched evaluations of functions containing parameters and/or time are also supported:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Batched evaluation with parameters.</span>
+<span class="n">cf_par</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">],[</span><span class="mi">5</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">7</span><span class="p">]],</span> <span class="n">pars</span><span class="o">=</span><span class="p">[[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="o">-</span><span class="mf">1.1</span><span class="p">,</span><span class="o">-</span><span class="mf">1.2</span><span class="p">],[</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span><span class="o">-</span><span class="mf">2.1</span><span class="p">,</span><span class="o">-</span><span class="mf">2.2</span><span class="p">],[</span><span class="o">-</span><span class="mi">3</span><span class="p">,</span><span class="o">-</span><span class="mf">3.1</span><span class="p">,</span><span class="o">-</span><span class="mf">3.2</span><span class="p">]])</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([[46. , 68.1, 93.8]])
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Batched evaluation with time.</span>
+<span class="n">cf_tm</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">],[</span><span class="mi">5</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">7</span><span class="p">]],</span> <span class="n">time</span><span class="o">=</span><span class="p">[</span><span class="mi">6</span><span class="p">,</span><span class="mf">6.1</span><span class="p">,</span><span class="mf">6.2</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([[-18. , -25.9, -33.8]])
+</pre></div>
+</div>
+</div>
+</div>
 </section>
 <section id="performance-analysis">
 <h2>Performance analysis<a class="headerlink" href="#performance-analysis" title="Permalink to this headline">#</a></h2>

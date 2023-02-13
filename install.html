@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>Installation &#8212; heyoka.py 0.20.0 documentation</title>
+    <title>Installation &#8212; heyoka.py 0.21.0 documentation</title>
     
   <!-- Loaded before other Sphinx assets -->
   <link href="_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
@@ -79,7 +79,7 @@
       <img src="_static/white_logo.png" class="logo" alt="logo">
       
       
-      <h1 class="site-logo" id="site-title">heyoka.py 0.20.0 documentation</h1>
+      <h1 class="site-logo" id="site-title">heyoka.py 0.21.0 documentation</h1>
       
     </a>
 </div><form class="bd-search d-flex align-items-center" action="search.html" method="get">
@@ -629,7 +629,7 @@ title="Print to PDF"
 <p>heyoka.py has several Python and C++ dependencies. On the C++ side, heyoka.py depends on:</p>
 <ul class="simple">
 <li><p>the <a class="reference external" href="https://github.com/bluescarni/heyoka">heyoka C++ library</a>,
-version 0.20.0 or later (<strong>mandatory</strong>),</p></li>
+version 0.21.0 or later (<strong>mandatory</strong>),</p></li>
 <li><p>the <a class="reference external" href="https://www.boost.org/">Boost</a> C++ libraries (<strong>mandatory</strong>),</p></li>
 <li><p>the <a class="reference external" href="https://fmt.dev/latest/index.html">{fmt}</a> library (<strong>mandatory</strong>),</p></li>
 <li><p>the <a class="reference external" href="https://github.com/oneapi-src/oneTBB">TBB</a> library (<strong>mandatory</strong>),</p></li>
@@ -660,9 +660,9 @@ package manager for Linux, OSX and Windows
 thanks to the infrastructure provided by <a class="reference external" href="https://conda-forge.org/">conda-forge</a>.
 In order to install heyoka.py via conda, you just need to add <code class="docutils literal notranslate"><span class="pre">conda-forge</span></code>
 to the channels, and then we can immediately install heyoka.py:</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>conda config --add channels conda-forge
-<span class="gp">$ </span>conda config --set channel_priority strict
-<span class="gp">$ </span>conda install heyoka.py
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>conda<span class="w"> </span>config<span class="w"> </span>--add<span class="w"> </span>channels<span class="w"> </span>conda-forge
+<span class="gp">$ </span>conda<span class="w"> </span>config<span class="w"> </span>--set<span class="w"> </span>channel_priority<span class="w"> </span>strict
+<span class="gp">$ </span>conda<span class="w"> </span>install<span class="w"> </span>heyoka.py
 </pre></div>
 </div>
 <p>The conda packages for heyoka.py are maintained by the core development team,
@@ -675,7 +675,7 @@ your conda installation.</p>
 <h3>FreeBSD<a class="headerlink" href="#freebsd" title="Permalink to this headline">#</a></h3>
 <p>A community-supported FreeBSD port via <a class="reference external" href="https://www.freebsd.org/doc/handbook/pkgng-intro.html">pkg</a> is available for
 heyoka.py. In order to install heyoka.py using pkg, execute the following command:</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>pkg install py38-heyoka
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>pkg<span class="w"> </span>install<span class="w"> </span>py38-heyoka
 </pre></div>
 </div>
 </section>
@@ -696,7 +696,7 @@ installation from source requires also:</p>
 <li><p><a class="reference external" href="https://github.com/pybind/pybind11">pybind11</a> (version &gt;= 2.10),</p></li>
 <li><p><a class="reference external" href="https://cmake.org/">CMake</a>, version 3.18 or later.</p></li>
 </ul>
-<p>Note that heyoka.py makes use of the <a class="reference external" href="https://numpy.org/doc/stable/reference/c-api/index.html#c-api" title="(in NumPy v1.23)"><span class="xref std std-ref">NumPy C API</span></a>
+<p>Note that heyoka.py makes use of the <a class="reference external" href="https://numpy.org/doc/stable/reference/c-api/index.html#c-api" title="(in NumPy v1.24)"><span class="xref std std-ref">NumPy C API</span></a>
 and thus NumPy must be installed <strong>before</strong> compiling heyoka.py from source.
 The other Python dependencies need not to be installed at compilation time.</p>
 <p>After making sure the dependencies are installed on your system, you can
@@ -704,7 +704,7 @@ download the heyoka.py source code from the
 <a class="reference external" href="https://github.com/bluescarni/heyoka.py/releases">GitHub release page</a>. Alternatively,
 and if you like living on the bleeding edge, you can get the very latest
 version of heyoka.py via <code class="docutils literal notranslate"><span class="pre">git</span></code>:</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>git clone https://github.com/bluescarni/heyoka.py.git
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/bluescarni/heyoka.py.git
 </pre></div>
 </div>
 <p>We follow the usual PR-based development workflow, thus heyoka.py’s <code class="docutils literal notranslate"><span class="pre">main</span></code>
@@ -713,9 +713,9 @@ branch is normally kept in a working state.</p>
 source code, go to heyoka.py’s
 source tree, create a <code class="docutils literal notranslate"><span class="pre">build</span></code> directory and <code class="docutils literal notranslate"><span class="pre">cd</span></code> into it. E.g.,
 on a Unix-like system:</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span><span class="nb">cd</span> /path/to/heyoka.py
-<span class="gp">$ </span>mkdir build
-<span class="gp">$ </span><span class="nb">cd</span> build
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span><span class="nb">cd</span><span class="w"> </span>/path/to/heyoka.py
+<span class="gp">$ </span>mkdir<span class="w"> </span>build
+<span class="gp">$ </span><span class="nb">cd</span><span class="w"> </span>build
 </pre></div>
 </div>
 <p>Once you are in the <code class="docutils literal notranslate"><span class="pre">build</span></code> directory, you must configure your build
@@ -741,11 +741,11 @@ a good idea), you can set this variable to the output of
 <code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">-m</span> <span class="pre">site</span> <span class="pre">--user-site</span></code>.</p>
 <p>After configuring the build with CMake, we can then proceed to actually
 building heyoka.py:</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>cmake --build .
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>cmake<span class="w"> </span>--build<span class="w"> </span>.
 </pre></div>
 </div>
 <p>Finally, we can install heyoka.py with the command:</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>cmake  --build . --target install
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>cmake<span class="w">  </span>--build<span class="w"> </span>.<span class="w"> </span>--target<span class="w"> </span>install
 </pre></div>
 </div>
 </section>
@@ -753,7 +753,7 @@ building heyoka.py:</p>
 <h2>Verifying the installation<a class="headerlink" href="#verifying-the-installation" title="Permalink to this headline">#</a></h2>
 <p>You can verify that heyoka.py was successfully compiled and
 installed by running the test suite with the following command:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ python -c <span class="s2">&quot;import heyoka; heyoka.test.run_test_suite();&quot;</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>python<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;import heyoka; heyoka.test.run_test_suite();&quot;</span>
 </pre></div>
 </div>
 <p>If this command executes without any error, then

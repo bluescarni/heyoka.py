@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>Continuation of Periodic Orbits in the CR3BP &#8212; heyoka.py 0.20.0 documentation</title>
+    <title>Continuation of Periodic Orbits in the CR3BP &#8212; heyoka.py 0.21.0 documentation</title>
     
   <!-- Loaded before other Sphinx assets -->
   <link href="../_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
@@ -81,7 +81,7 @@
       <img src="../_static/white_logo.png" class="logo" alt="logo">
       
       
-      <h1 class="site-logo" id="site-title">heyoka.py 0.20.0 documentation</h1>
+      <h1 class="site-logo" id="site-title">heyoka.py 0.21.0 documentation</h1>
       
     </a>
 </div><form class="bd-search d-flex align-items-center" action="../search.html" method="get">
@@ -651,7 +651,7 @@ title="Print to PDF"
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">compute_L_points</span><span class="p">(</span><span class="n">mu</span><span class="p">,</span> <span class="n">f</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Computes The exact position of the Lagrangian points. To do so it finds the zeros of the</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Computes The exact position of the Lagrangian points. To do so it finds the zeros of the</span>
 <span class="sd">    the dynamics equation for px.</span>
 <span class="sd">    </span>
 <span class="sd">        Args:</span>
@@ -678,7 +678,7 @@ title="Print to PDF"
     <span class="k">return</span> <span class="n">xL1</span><span class="p">,</span> <span class="n">xL2</span><span class="p">,</span> <span class="n">xL3</span><span class="p">,</span> <span class="n">xL45</span><span class="p">,</span> <span class="n">yL45</span>
 
 <span class="k">def</span> <span class="nf">potential_function</span><span class="p">(</span><span class="n">position</span><span class="p">,</span><span class="n">mu</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Computes the system potential</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Computes the system potential</span>
 <span class="sd">        Args:</span>
 <span class="sd">            position (array-like): The position in Cartesian coordinates</span>
 <span class="sd">            mu (float): The value of the mu parameter.</span>
@@ -693,7 +693,7 @@ title="Print to PDF"
     <span class="k">return</span> <span class="n">Omega</span>
 
 <span class="k">def</span> <span class="nf">jacobi_constant</span><span class="p">(</span><span class="n">state</span><span class="p">,</span><span class="n">mu</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Computes the system Jacobi constant</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Computes the system Jacobi constant</span>
 <span class="sd">        Args:</span>
 <span class="sd">            state (array-like): The system state (x,y,z,px,py,pz)</span>
 <span class="sd">            mu (float): The value of the mu parameter.</span>
@@ -854,7 +854,7 @@ title="Print to PDF"
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>--- 6.830746650695801 seconds --- to build the Taylor integrator
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>--- 7.977682113647461 seconds --- to build the Taylor integrator
 </pre></div>
 </div>
 </div>
@@ -885,7 +885,7 @@ title="Print to PDF"
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>--- 0.03577470779418945 seconds --- to propagate
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>--- 0.035800933837890625 seconds --- to propagate
 </pre></div>
 </div>
 </div>
@@ -943,10 +943,10 @@ title="Print to PDF"
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;matplotlib.collections.PathCollection at 0x7f4a2b38d3c0&gt;
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;matplotlib.collections.PathCollection at 0x7f0ceb17f430&gt;
 </pre></div>
 </div>
-<img alt="../_images/801e5441bd425a2d19b403ce7f4eb868d25d6e76cb1476249be51a5ba33ec6cd.png" src="../_images/801e5441bd425a2d19b403ce7f4eb868d25d6e76cb1476249be51a5ba33ec6cd.png" />
+<img alt="../_images/0f104675a1963baa26392da3ccdfeb7abe8da169088c04f2a0c51c147be1577f.png" src="../_images/0f104675a1963baa26392da3ccdfeb7abe8da169088c04f2a0c51c147be1577f.png" />
 </div>
 </div>
 <p>All fine ….. at least visually! So far we have not made use of the variational equations at all, but this is about to change!</p>
@@ -1052,14 +1052,14 @@ title="Print to PDF"
 <div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(-0.005, 0.005)
 </pre></div>
 </div>
-<img alt="../_images/0c3d398856c76082d78289c92440ff7a02b8206d6b31cd5730f5c31535bbea71.png" src="../_images/0c3d398856c76082d78289c92440ff7a02b8206d6b31cd5730f5c31535bbea71.png" />
+<img alt="../_images/bd1329e8285d06401a95fe23c281dd9877fd98fc6eef1f2565630f8ea54f0eee.png" src="../_images/bd1329e8285d06401a95fe23c281dd9877fd98fc6eef1f2565630f8ea54f0eee.png" />
 </div>
 </div>
 <p>The orbit is good but does not close! Let us build an iteration that corrects <span class="math notranslate nohighlight">\(x_0,y_0, z_0, p_{x_0}, p_{y_0}, p_{z_0}, T\)</span> as to close the orbit.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">corrector</span><span class="p">(</span><span class="n">ta</span><span class="p">,</span> <span class="n">x0</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Performs and logs a step of a corrector algorithm that takes a numerical integration from x0 -&gt; T -&gt; xf. The result</span>
 <span class="sd">    is a new tentative x0 that should result in a closed orbit.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -1202,7 +1202,7 @@ Initial condition: [-8.3660628429413575e-01, 6.8716705930014935e-05, 0.000000000
 Period: 2.6915996001646740e+00
 </pre></div>
 </div>
-<img alt="../_images/44d03bcac4cbf9958378c4f5cc3d58fc36046882fc54b7ae80bc209191339ab5.png" src="../_images/44d03bcac4cbf9958378c4f5cc3d58fc36046882fc54b7ae80bc209191339ab5.png" />
+<img alt="../_images/0ff979a4f1e079a691e839ce4dc60d3394e8cea292827cce02b09a2e5af430ce.png" src="../_images/0ff979a4f1e079a691e839ce4dc60d3394e8cea292827cce02b09a2e5af430ce.png" />
 </div>
 </div>
 </section>
@@ -1358,7 +1358,7 @@ Period: 2.6915996001646740e+00
 <div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(-0.005, 0.005)
 </pre></div>
 </div>
-<img alt="../_images/ced69e5071e01dad3b814994109c695a3c3a3f5101c4fc97cd99e2481c7b4bcc.png" src="../_images/ced69e5071e01dad3b814994109c695a3c3a3f5101c4fc97cd99e2481c7b4bcc.png" />
+<img alt="../_images/3a00683b2348084e3a0e8576b7710d26dcb5b34b213986b5738f689d20c26145.png" src="../_images/3a00683b2348084e3a0e8576b7710d26dcb5b34b213986b5738f689d20c26145.png" />
 </div>
 </div>
 <p>It’s nearly closed, but not that well …. it will need a correction … but we can call the same iterations we made previously when we closed the first initial guess, remember?</p>
@@ -1445,7 +1445,7 @@ new error is: 4.0150302677224995e-13
 <div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(-0.005, 0.005)
 </pre></div>
 </div>
-<img alt="../_images/05f4bd30d69871029a5e4ae70ce29b6021bd53f49db88148c867b08ea2c75c1b.png" src="../_images/05f4bd30d69871029a5e4ae70ce29b6021bd53f49db88148c867b08ea2c75c1b.png" />
+<img alt="../_images/4a85a345fe2d532ecf43a91b4798365ffba965a3eef6d35638f28703e63f3753.png" src="../_images/4a85a345fe2d532ecf43a91b4798365ffba965a3eef6d35638f28703e63f3753.png" />
 </div>
 </div>
 </section>

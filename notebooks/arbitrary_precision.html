@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>Computations in arbitrary precision &#8212; heyoka.py 0.20.0 documentation</title>
+    <title>Computations in arbitrary precision &#8212; heyoka.py 0.21.0 documentation</title>
     
   <!-- Loaded before other Sphinx assets -->
   <link href="../_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
@@ -81,7 +81,7 @@
       <img src="../_static/white_logo.png" class="logo" alt="logo">
       
       
-      <h1 class="site-logo" id="site-title">heyoka.py 0.20.0 documentation</h1>
+      <h1 class="site-logo" id="site-title">heyoka.py 0.21.0 documentation</h1>
       
     </a>
 </div><form class="bd-search d-flex align-items-center" action="../search.html" method="get">
@@ -672,8 +672,8 @@ Precision deduced from a real128    : 113 bits
 <p>If the automatic deduction is to be avoided, the precision can be specified manually with the <code class="docutils literal notranslate"><span class="pre">prec</span></code> keyword argument during construction:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Precision manually specified from a small int: </span><span class="si">{</span><span class="n">real</span><span class="p">(</span><span class="mi">42</span><span class="p">,</span> <span class="n">prec</span><span class="o">=</span><span class="mi">123</span><span class="p">)</span><span class="o">.</span><span class="n">prec</span><span class="si">}</span><span class="s2"> bits&quot;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Precision manually specified from a float    : </span><span class="si">{</span><span class="n">real</span><span class="p">(</span><span class="mf">1.1</span><span class="p">,</span> <span class="n">prec</span><span class="o">=</span><span class="mi">12</span><span class="p">)</span><span class="o">.</span><span class="n">prec</span><span class="si">}</span><span class="s2"> bits&quot;</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Precision manually specified from a small int: </span><span class="si">{</span><span class="n">real</span><span class="p">(</span><span class="mi">42</span><span class="p">,</span><span class="w"> </span><span class="n">prec</span><span class="o">=</span><span class="mi">123</span><span class="p">)</span><span class="o">.</span><span class="n">prec</span><span class="si">}</span><span class="s2"> bits&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Precision manually specified from a float    : </span><span class="si">{</span><span class="n">real</span><span class="p">(</span><span class="mf">1.1</span><span class="p">,</span><span class="w"> </span><span class="n">prec</span><span class="o">=</span><span class="mi">12</span><span class="p">)</span><span class="o">.</span><span class="n">prec</span><span class="si">}</span><span class="s2"> bits&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -896,7 +896,7 @@ This change is motivated by the fact that the Taylor order of arbitrary-precisio
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/bbced039c3be5ef2a6b1dd7ae5472c8f09688f5b0a5a52b1eeae50f4e7affd7f.png" src="../_images/bbced039c3be5ef2a6b1dd7ae5472c8f09688f5b0a5a52b1eeae50f4e7affd7f.png" />
+<img alt="../_images/0cee746816c614753b54cd65e7c1a4802e0a52a5ecd296ddc200f46933db120c.png" src="../_images/0cee746816c614753b54cd65e7c1a4802e0a52a5ecd296ddc200f46933db120c.png" />
 </div>
 </div>
 <p>We can see how indeed energy is preserved at the requested accuracy level.</p>
