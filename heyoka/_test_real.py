@@ -10,30 +10,6 @@ import unittest as _ut
 
 
 class real_test_case(_ut.TestCase):
-    def runTest(self):
-        from . import core
-
-        if not hasattr(core, "real"):
-            return
-
-        self.test_basic()
-        self.test_unary()
-        self.test_binary()
-        self.test_conversions()
-        self.test_comparisons()
-        self.test_numpy_basic()
-        self.test_numpy_add()
-        self.test_numpy_sub()
-        self.test_numpy_mul()
-        self.test_numpy_div()
-        self.test_numpy_square()
-        self.test_numpy_binary()
-        self.test_numpy_unary()
-        self.test_numpy_conversions()
-        self.test_numpy_comparisons()
-        self.test_numpy_matmul()
-        self.test_numpy_realloc()
-
     def test_numpy_realloc(self):
         from . import core
 

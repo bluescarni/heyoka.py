@@ -10,21 +10,12 @@ import unittest as _ut
 
 
 class mp_test_case(_ut.TestCase):
-    def runTest(self):
+    def test_cfunc(self):
         from . import core
 
         if not hasattr(core, "real"):
             return
 
-        self.test_basic()
-        self.test_c_out()
-        self.test_events()
-        self.test_expression()
-        self.test_sympy()
-        self.test_add_jet()
-        self.test_cfunc()
-
-    def test_cfunc(self):
         from . import real, make_cfunc, make_vars, sin, par, time
         import numpy as np
 
@@ -178,6 +169,11 @@ class mp_test_case(_ut.TestCase):
         )
 
     def test_add_jet(self):
+        from . import core
+
+        if not hasattr(core, "real"):
+            return
+
         from . import (
             taylor_add_jet,
             sin,
@@ -315,6 +311,11 @@ class mp_test_case(_ut.TestCase):
         )
 
     def test_sympy(self):
+        from . import core
+
+        if not hasattr(core, "real"):
+            return
+
         try:
             import sympy
             from mpmath import mp, pi, workprec
@@ -362,6 +363,11 @@ class mp_test_case(_ut.TestCase):
         )
 
     def test_expression(self):
+        from . import core
+
+        if not hasattr(core, "real"):
+            return
+
         from . import expression as ex, real, kepE, atan2
 
         self.assertEqual(
@@ -413,6 +419,11 @@ class mp_test_case(_ut.TestCase):
         atan2(real("1.1", 128), ex("x"))
 
     def test_events(self):
+        from . import core
+
+        if not hasattr(core, "real"):
+            return
+
         # Basic event testing.
         from . import make_vars, taylor_adaptive, real, t_event
 
@@ -443,6 +454,11 @@ class mp_test_case(_ut.TestCase):
         self.assertLess(abs(ta.state[1]), 1e-70)
 
     def test_c_out(self):
+        from . import core
+
+        if not hasattr(core, "real"):
+            return
+
         from . import make_vars, taylor_adaptive, real, core
         import numpy as np
         from copy import deepcopy
@@ -494,6 +510,11 @@ class mp_test_case(_ut.TestCase):
         self.assertTrue("1" in str(cm.exception))
 
     def test_basic(self):
+        from . import core
+
+        if not hasattr(core, "real"):
+            return
+
         from . import make_vars, taylor_adaptive, sin, real, core
         import numpy as np
 

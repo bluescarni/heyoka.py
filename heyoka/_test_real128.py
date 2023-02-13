@@ -10,15 +10,6 @@ import unittest as _ut
 
 
 class real128_test_case(_ut.TestCase):
-    def runTest(self):
-        from . import core
-
-        if not hasattr(core, "real128"):
-            return
-
-        self.test_scalar()
-        self.test_numpy()
-
     def test_scalar(self):
         from . import core
 

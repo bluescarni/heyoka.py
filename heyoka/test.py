@@ -66,7 +66,7 @@ def _allclose(a, b, rtol, atol):
 
 
 class taylor_add_jet_test_case(_ut.TestCase):
-    def runTest(self):
+    def test_basic(self):
         from . import (
             taylor_add_jet,
             make_vars,
@@ -519,7 +519,7 @@ class taylor_add_jet_test_case(_ut.TestCase):
 
 
 class event_classes_test_case(_ut.TestCase):
-    def runTest(self):
+    def test_basic(self):
         from . import (
             t_event,
             nt_event,
@@ -1156,10 +1156,6 @@ class event_classes_test_case(_ut.TestCase):
 
 
 class event_detection_test_case(_ut.TestCase):
-    def runTest(self):
-        self.test_scalar()
-        self.test_batch()
-
     def test_batch(self):
         from . import (
             t_event_batch,
@@ -1798,7 +1794,7 @@ class event_detection_test_case(_ut.TestCase):
 
 
 class expression_eval_test_case(_ut.TestCase):
-    def runTest(self):
+    def test_basic(self):
         from . import make_vars, eval, core
         from .core import _ppc_arch
         import numpy as np
@@ -1826,14 +1822,6 @@ class expression_eval_test_case(_ut.TestCase):
 
 
 class scalar_integrator_test_case(_ut.TestCase):
-    def runTest(self):
-        self.test_basic()
-        self.test_s11n()
-        self.test_events()
-        self.test_copy()
-        self.test_dtime()
-        self.test_type_conversions()
-
     def test_type_conversions(self):
         # Test to check automatic conversions of std::vector<T>
         # in the integrator's constructor.
@@ -2135,19 +2123,6 @@ class scalar_integrator_test_case(_ut.TestCase):
 
 
 class batch_integrator_test_case(_ut.TestCase):
-    def runTest(self):
-        self.test_basic()
-        self.test_propagate_for()
-        self.test_propagate_until()
-        self.test_propagate_grid()
-        self.test_s11n()
-        self.test_events()
-        self.test_set_time()
-        self.test_dtime()
-        self.test_update_d_output()
-        self.test_copy()
-        self.test_type_conversions()
-
     def test_type_conversions(self):
         # Test to check automatic conversions of std::vector<T>
         # in the integrator's constructor.
@@ -2750,9 +2725,6 @@ class batch_integrator_test_case(_ut.TestCase):
 
 
 class kepE_test_case(_ut.TestCase):
-    def runTest(self):
-        self.test_expr()
-
     def test_expr(self):
         from . import kepE, diff, make_vars, sin, cos, core
         from .core import _ppc_arch
@@ -2791,15 +2763,11 @@ class kepE_test_case(_ut.TestCase):
 
 
 class sympy_test_case(_ut.TestCase):
-    def runTest(self):
+    def test_basic(self):
         try:
             import sympy
         except ImportError:
             return
-
-        self.test_number_conversion()
-        self.test_sympar_conversion()
-        self.test_func_conversion()
 
         from . import from_sympy, make_vars, sum as hsum
 
@@ -2838,6 +2806,11 @@ class sympy_test_case(_ut.TestCase):
         )
 
     def test_number_conversion(self):
+        try:
+            import sympy
+        except ImportError:
+            return
+
         from . import to_sympy, from_sympy, expression, core
         from .core import _ppc_arch
         from sympy import Float, Rational, Integer
@@ -2932,6 +2905,11 @@ class sympy_test_case(_ut.TestCase):
             )
 
     def test_sympar_conversion(self):
+        try:
+            import sympy
+        except ImportError:
+            return
+
         from . import to_sympy, from_sympy, expression, par
         from sympy import Symbol
 
@@ -2952,6 +2930,11 @@ class sympy_test_case(_ut.TestCase):
         self.assertEqual(from_sympy(Symbol("par[]")), expression("par[]"))
 
     def test_func_conversion(self):
+        try:
+            import sympy
+        except ImportError:
+            return
+
         import sympy as spy
 
         # NOTE: if we ever change in heyoka addition to return a sum(),
@@ -3108,7 +3091,7 @@ class sympy_test_case(_ut.TestCase):
 
 
 class zero_division_error_test_case(_ut.TestCase):
-    def runTest(self):
+    def test_basic(self):
         from . import make_vars
 
         (x,) = make_vars("x")
@@ -3119,13 +3102,6 @@ class zero_division_error_test_case(_ut.TestCase):
 
 
 class expression_test_case(_ut.TestCase):
-    def runTest(self):
-        self.test_basic()
-        self.test_s11n()
-        self.test_len()
-        self.test_diff()
-        self.test_copy()
-
     def test_basic(self):
         from . import expression as ex, core
         import numpy as np
@@ -3386,10 +3362,6 @@ class expression_test_case(_ut.TestCase):
 
 
 class llvm_state_test_case(_ut.TestCase):
-    def runTest(self):
-        self.test_s11n()
-        self.test_copy()
-
     def test_copy(self):
         from . import make_vars, sin, taylor_adaptive
         from copy import copy, deepcopy
@@ -3438,10 +3410,6 @@ class llvm_state_test_case(_ut.TestCase):
 
 
 class c_output_test_case(_ut.TestCase):
-    def runTest(self):
-        self.test_scalar()
-        self.test_batch()
-
     def test_batch(self):
         from copy import copy, deepcopy
         from . import (
@@ -4044,7 +4012,7 @@ class c_output_test_case(_ut.TestCase):
 
 
 class recommended_simd_size_test_case(_ut.TestCase):
-    def runTest(self):
+    def test_basic(self):
         from . import recommended_simd_size
 
         self.assertTrue(recommended_simd_size() >= 1)
@@ -4052,7 +4020,7 @@ class recommended_simd_size_test_case(_ut.TestCase):
 
 
 class s11n_backend_test_case(_ut.TestCase):
-    def runTest(self):
+    def test_basic(self):
         from . import set_serialization_backend, get_serialization_backend
         import cloudpickle as cp
         import pickle as pk
@@ -4081,10 +4049,6 @@ class s11n_backend_test_case(_ut.TestCase):
 
 
 class ensemble_test_case(_ut.TestCase):
-    def runTest(self):
-        self.test_scalar()
-        self.test_batch()
-
     def test_batch(self):
         from . import (
             ensemble_propagate_until_batch,

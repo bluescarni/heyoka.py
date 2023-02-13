@@ -11,10 +11,6 @@ import unittest as _ut
 
 
 class cfunc_test_case(_ut.TestCase):
-    def runTest(self):
-        self.test_single()
-        self.test_multi()
-
     def test_multi(self):
         import numpy as np
         from . import make_cfunc, make_vars, sin, par, expression, core, time
