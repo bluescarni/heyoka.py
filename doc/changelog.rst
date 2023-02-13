@@ -12,6 +12,13 @@ New
 - Time-dependent functions can now be compiled
   (`#113 <https://github.com/bluescarni/heyoka.py/pull/113>`__).
 
+Changes
+~~~~~~~
+
+- heyoka.py now requires at least version 0.21.0 of the
+  heyoka C++ library
+  (`#113 <https://github.com/bluescarni/heyoka.py/pull/113>`__).
+
 0.20.0 (2022-12-18)
 -------------------
 
