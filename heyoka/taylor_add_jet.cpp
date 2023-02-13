@@ -233,17 +233,17 @@ void expose_taylor_add_jet_impl(py::module &m, const char *name)
             }
 
             // Let's figure out if sys contains params and/or time.
-            bool has_time = false;
+            bool is_time_dependent = false;
             std::uint32_t n_params = 0;
 
             if constexpr (std::is_same_v<U, std::vector<std::pair<hey::expression, hey::expression>>>) {
                 for (const auto &[_, ex] : sys) {
-                    has_time = has_time || hey::has_time(ex);
+                    is_time_dependent = is_time_dependent || hey::is_time_dependent(ex);
                     n_params = std::max<std::uint32_t>(n_params, hey::get_param_size(ex));
                 }
             } else {
                 for (const auto &ex : sys) {
-                    has_time = has_time || hey::has_time(ex);
+                    is_time_dependent = is_time_dependent || hey::is_time_dependent(ex);
                     n_params = std::max<std::uint32_t>(n_params, hey::get_param_size(ex));
                 }
             }
@@ -272,7 +272,7 @@ void expose_taylor_add_jet_impl(py::module &m, const char *name)
 
             // Build and return the Python wrapper for jptr.
             return py::cpp_function(
-                [s = std::move(s), batch_size, order, has_time, n_params,
+                [s = std::move(s), batch_size, order, is_time_dependent, n_params,
                  tot_n_eq = static_cast<std::uint32_t>(n_eq) + static_cast<std::uint32_t>(n_sv_funcs), jptr,
                  prec](const py::iterable &state_ob, std::optional<py::iterable> pars_ob,
                        std::optional<py::iterable> time_ob) {
@@ -342,7 +342,7 @@ void expose_taylor_add_jet_impl(py::module &m, const char *name)
                                  "passed as input argument");
                     }
 
-                    if (has_time && t_ptr == nullptr) {
+                    if (is_time_dependent && t_ptr == nullptr) {
                         py_throw(PyExc_ValueError,
                                  "Invalid vectors passed to a function for the computation of the jet of "
                                  "Taylor derivatives: the ODE system is non-autonomous, but no time array was "

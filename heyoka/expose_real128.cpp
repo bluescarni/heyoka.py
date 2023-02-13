@@ -25,7 +25,6 @@
 #include <utility>
 
 #include <boost/numeric/conversion/cast.hpp>
-#include <boost/safe_numerics/safe_integer.hpp>
 
 #include <fmt/format.h>
 

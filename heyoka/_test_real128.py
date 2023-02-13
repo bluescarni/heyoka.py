@@ -10,20 +10,15 @@ import unittest as _ut
 
 
 class real128_test_case(_ut.TestCase):
-    def runTest(self):
+    def test_scalar(self):
         from . import core
 
         if not hasattr(core, "real128"):
             return
 
-        self.test_scalar()
-        self.test_numpy()
-
-    def test_scalar(self):
         import random
         from . import real128
         from .core import _ppc_arch
-        from . import core
 
         if _ppc_arch:
             ld = float
@@ -312,9 +307,14 @@ class real128_test_case(_ut.TestCase):
         self.assertEqual(x, y)
 
     def test_numpy(self):
+        from . import core
+
+        if not hasattr(core, "real128"):
+            return
+
         import numpy as np
         from copy import copy, deepcopy
-        from . import real128, core
+        from . import real128
         from pickle import dumps, loads
 
         # Basic creation/getitem/setitem.

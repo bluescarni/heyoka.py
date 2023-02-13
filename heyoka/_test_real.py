@@ -10,31 +10,12 @@ import unittest as _ut
 
 
 class real_test_case(_ut.TestCase):
-    def runTest(self):
+    def test_numpy_realloc(self):
         from . import core
 
         if not hasattr(core, "real"):
             return
 
-        self.test_basic()
-        self.test_unary()
-        self.test_binary()
-        self.test_conversions()
-        self.test_comparisons()
-        self.test_numpy_basic()
-        self.test_numpy_add()
-        self.test_numpy_sub()
-        self.test_numpy_mul()
-        self.test_numpy_div()
-        self.test_numpy_square()
-        self.test_numpy_binary()
-        self.test_numpy_unary()
-        self.test_numpy_conversions()
-        self.test_numpy_comparisons()
-        self.test_numpy_matmul()
-        self.test_numpy_realloc()
-
-    def test_numpy_realloc(self):
         from . import real
         import numpy as np
 
@@ -95,6 +76,11 @@ class real_test_case(_ut.TestCase):
         self.assertEqual(arr.shape, (0,))
 
     def test_numpy_matmul(self):
+        from . import core
+
+        if not hasattr(core, "real"):
+            return
+
         from . import real
         import numpy as np
 
@@ -192,6 +178,11 @@ class real_test_case(_ut.TestCase):
         )
 
     def test_numpy_comparisons(self):
+        from . import core
+
+        if not hasattr(core, "real"):
+            return
+
         from . import real
         import numpy as np
         from . import core
@@ -290,6 +281,11 @@ class real_test_case(_ut.TestCase):
             self.assertTrue(np.all(arr >= real128(-2.0)))
 
     def test_numpy_binary(self):
+        from . import core
+
+        if not hasattr(core, "real"):
+            return
+
         from . import real
         import numpy as np
 
@@ -360,6 +356,11 @@ class real_test_case(_ut.TestCase):
         self.assertTrue(np.all(arr3 == ret))
 
     def test_numpy_unary(self):
+        from . import core
+
+        if not hasattr(core, "real"):
+            return
+
         from . import real
         import numpy as np
 
@@ -784,6 +785,11 @@ class real_test_case(_ut.TestCase):
         self.assertTrue(all([_.prec == 128 for _ in ret]))
 
     def test_numpy_pickle(self):
+        from . import core
+
+        if not hasattr(core, "real"):
+            return
+
         # Pickle support.
         import pickle
         import numpy as np
@@ -797,6 +803,11 @@ class real_test_case(_ut.TestCase):
             self.assertEqual(arr2[i].prec, 128)
 
     def test_numpy_conversions(self):
+        from . import core
+
+        if not hasattr(core, "real"):
+            return
+
         from . import real
         from . import core
         import numpy as np
@@ -874,6 +885,11 @@ class real_test_case(_ut.TestCase):
                 self.assertTrue(np.all(arr == arr.astype(real128, casting="safe")))
 
     def test_numpy_square(self):
+        from . import core
+
+        if not hasattr(core, "real"):
+            return
+
         from . import real
         from . import core
         import numpy as np
@@ -930,6 +946,11 @@ class real_test_case(_ut.TestCase):
         self.assertEqual(arr2[2], real(3) * real(3))
 
     def test_numpy_div(self):
+        from . import core
+
+        if not hasattr(core, "real"):
+            return
+
         from . import real
         from . import core
         import numpy as np
@@ -994,6 +1015,11 @@ class real_test_case(_ut.TestCase):
         self.assertEqual(arr3[2], 1)
 
     def test_numpy_mul(self):
+        from . import core
+
+        if not hasattr(core, "real"):
+            return
+
         from . import real
         from . import core
         import numpy as np
@@ -1057,6 +1083,11 @@ class real_test_case(_ut.TestCase):
         self.assertEqual(arr3[2], 0)
 
     def test_numpy_add(self):
+        from . import core
+
+        if not hasattr(core, "real"):
+            return
+
         from . import real
         from . import core
         import numpy as np
@@ -1118,6 +1149,11 @@ class real_test_case(_ut.TestCase):
         self.assertEqual(arr3[2], 0)
 
     def test_numpy_sub(self):
+        from . import core
+
+        if not hasattr(core, "real"):
+            return
+
         from . import real
         from . import core
         import numpy as np
@@ -1179,6 +1215,11 @@ class real_test_case(_ut.TestCase):
         self.assertEqual(arr3[2], 0)
 
     def test_numpy_basic(self):
+        from . import core
+
+        if not hasattr(core, "real"):
+            return
+
         from . import real
         from . import core
         import numpy as np
@@ -1445,6 +1486,11 @@ class real_test_case(_ut.TestCase):
         self.assertTrue(np.all(arr3[3:] == arr2))
 
     def test_comparisons(self):
+        from . import core
+
+        if not hasattr(core, "real"):
+            return
+
         from . import real
         from . import core
         import numpy as np
@@ -1560,6 +1606,11 @@ class real_test_case(_ut.TestCase):
             self.assertGreaterEqual(real128(3), real(3))
 
     def test_conversions(self):
+        from . import core
+
+        if not hasattr(core, "real"):
+            return
+
         from . import real
 
         self.assertTrue(bool(real(1)))
@@ -1584,6 +1635,11 @@ class real_test_case(_ut.TestCase):
         self.assertTrue("Cannot convert real infinity to integer" in str(cm.exception))
 
     def test_binary(self):
+        from . import core
+
+        if not hasattr(core, "real"):
+            return
+
         from . import real
         from . import core
         import numpy as np
@@ -1789,6 +1845,11 @@ class real_test_case(_ut.TestCase):
         self.assertTrue(real(3) >= real(2))
 
     def test_unary(self):
+        from . import core
+
+        if not hasattr(core, "real"):
+            return
+
         from . import real
 
         x = real("1.1", 512)
@@ -1799,6 +1860,11 @@ class real_test_case(_ut.TestCase):
         self.assertEqual(str(abs(xm)), str(x))
 
     def test_basic(self):
+        from . import core
+
+        if not hasattr(core, "real"):
+            return
+
         from . import real
         from . import core, real_prec_min, real_prec_max
         import numpy as np

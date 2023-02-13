@@ -10,33 +10,33 @@ jobs:
   conda_asan:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Build
         run: bash tools/gha_conda_asan.sh
   conda_static:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Build
         run: bash tools/gha_conda_static.sh
   osx_heyoka_head:
     runs-on: macos-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Build
         run: bash tools/gha_osx_heyoka_head.sh
   osx_heyoka_head_static:
     runs-on: macos-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Build
         run: bash tools/gha_osx_heyoka_head_static.sh
   windows_2019_heyoka_head:
     runs-on: windows-2019
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Add msbuild to PATH
-        uses: microsoft/setup-msbuild@v1.0.2
+        uses: microsoft/setup-msbuild@v1.1
       - uses: conda-incubator/setup-miniconda@v2
         with:
           auto-update-conda: true
