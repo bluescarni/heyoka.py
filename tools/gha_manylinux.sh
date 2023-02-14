@@ -68,7 +68,7 @@ cmake -DBoost_NO_BOOST_CMAKE=ON \
 	-DCMAKE_BUILD_TYPE=Release \
 	-DHEYOKA_PY_ENABLE_IPO=ON \
 	-DPython3_EXECUTABLE=/opt/python/${PYTHON_DIR}/bin/python ../;
-make -j2 install
+make -j4 install
 
 # Making the wheel and installing it
 cd wheel
