@@ -56,10 +56,8 @@ cd build
 cmake -DBoost_NO_BOOST_CMAKE=ON \
     -DHEYOKA_WITH_MPPP=yes \
     -DHEYOKA_WITH_SLEEF=yes \
-    -DHEYOKA_FORCE_STATIC_LLVM=yes \
-    -DHEYOKA_HIDE_LLVM_SYMBOLS=yes \
-	-DHEYOKA_ENABLE_IPO=ON \
-	-DCMAKE_BUILD_TYPE=Release ../;
+    -DHEYOKA_ENABLE_IPO=ON \
+    -DCMAKE_BUILD_TYPE=Release ../;
 make -j4 install
 
 # Install heyoka.py.
@@ -74,8 +72,7 @@ make -j2 install
 
 # Making the wheel and installing it
 cd wheel
-# Copy the installed heyoka.py files, wherever they might be in /usr/local,
-# into the current dir.
+# Copy the installed heyoka.py files into the current dir.
 cp -r `/opt/python/${PYTHON_DIR}/bin/python -c 'import site; print(site.getsitepackages()[0])'`/heyoka ./
 # Create the wheel and repair it.
 /opt/python/${PYTHON_DIR}/bin/python setup.py bdist_wheel
