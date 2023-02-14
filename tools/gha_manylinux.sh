@@ -77,6 +77,9 @@ cd wheel
 # Copy the installed heyoka.py files into the current dir.
 cp -r `/opt/python/${PYTHON_DIR}/bin/python -c 'import site; print(site.getsitepackages()[0])'`/heyoka ./
 # Create the wheel and repair it.
+# NOTE: this is temporary because some libraries in the docker
+# image are installed in lib64 rather than lib and they are
+# not picked up properly by the linker.
 export LD_LIBRARY_PATH="/usr/local/lib64:/usr/local/lib"
 /opt/python/${PYTHON_DIR}/bin/python setup.py bdist_wheel
 auditwheel repair dist/heyoka* -w ./dist2
