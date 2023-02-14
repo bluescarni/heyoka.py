@@ -57,6 +57,8 @@ cmake -DBoost_NO_BOOST_CMAKE=ON \
     -DHEYOKA_WITH_MPPP=yes \
     -DHEYOKA_WITH_SLEEF=yes \
     -DHEYOKA_ENABLE_IPO=ON \
+    -DHEYOKA_FORCE_STATIC_LLVM=yes \
+    -DHEYOKA_HIDE_LLVM_SYMBOLS=yes \
     -DCMAKE_BUILD_TYPE=Release ../;
 make -j4 install
 

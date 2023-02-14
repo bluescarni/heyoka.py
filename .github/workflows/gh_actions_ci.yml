@@ -35,7 +35,7 @@ jobs:
      runs-on: ubuntu-latest
      container:
       image: pagmo2/manylinux228_x86_64_with_deps:latest
-      env: 
+      env:
         HEYOKA_PY_BUILD_TYPE: "Python311"
         # TWINE_USERNAME: ${{ secrets.TWINE_USERNAME }}
         # TWINE_PASSWORD: ${{ secrets.TWINE_PASSWORD }}
