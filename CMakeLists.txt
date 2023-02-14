@@ -158,6 +158,10 @@ endif()
 if(heyoka_WITH_REAL AND ${Python3_NumPy_VERSION} LESS 1.22)
     message(FATAL_ERROR "The minimum version of NumPy required for supporting arbitrary-precision computations is 1.22, but version ${Python3_NumPy_VERSION} was found instead")
 endif()
+# Extract the major.minor version of NumPy for use in the wheel configuration.
+string(REGEX MATCH "([0-9]+)\.([0-9]+)" _HEYOKA_PY_NPY_MAJOR_MINOR ${Python3_NumPy_VERSION})
+message(STATUS "NumPy major.minor version: ${_HEYOKA_PY_NPY_MAJOR_MINOR}")
+
 set(HEYOKA_PY_INSTALL_PATH "" CACHE STRING "heyoka module installation path")
 mark_as_advanced(HEYOKA_PY_INSTALL_PATH)
 unset(_HEYOKA_PY_PYTHON3_COMPONENTS)
@@ -192,3 +196,6 @@ endif()
 
 # Add the module directory.
 add_subdirectory(heyoka)
+
+# Cleanup.
+unset(_HEYOKA_PY_NPY_MAJOR_MINOR)
