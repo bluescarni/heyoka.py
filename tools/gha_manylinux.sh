@@ -77,6 +77,7 @@ cd wheel
 # Copy the installed heyoka.py files into the current dir.
 cp -r `/opt/python/${PYTHON_DIR}/bin/python -c 'import site; print(site.getsitepackages()[0])'`/heyoka ./
 # Create the wheel and repair it.
+export LD_LIBRARY_PATH="/usr/local/lib64:/usr/local/lib"
 /opt/python/${PYTHON_DIR}/bin/python setup.py bdist_wheel
 auditwheel repair dist/heyoka* -w ./dist2
 # Try to install it and run the tests.
