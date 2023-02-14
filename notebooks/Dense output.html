@@ -645,12 +645,12 @@ support for dense output comes at essentially no extra
 cost. Additionally, because the dense output is computed via the
 Taylor series of the solution of the ODE system, its accuracy
 is guaranteed to respect the error tolerance set in the integrator.</p>
-<p>Dense output can be used either from a low-level API, which gives direct access to
+<p>Dense output can be used either from a <a class="reference internal" href="#dense-output-low-level"><span class="std std-ref">low-level API</span></a>, which gives direct access to
 the coefficients of the Taylor polynomials of the solution within a timestep,
-or from a higher-level API, which facilitates the common use case of using the coefficients
+or from a <a class="reference internal" href="#dense-output-hi-level"><span class="std std-ref">higher-level API</span></a>, which facilitates the common use case of using the coefficients
 of the Taylor polynomials to compute the continuous extension of the solution.
 If you are interested only in the latter, you can skip the next sections and jump
-directly to the continuous output section.</p>
+directly to the <a class="reference internal" href="#dense-output-hi-level"><span class="std std-ref">continuous output section</span></a>.</p>
 <p>In order to illustrate how to use dense output in heyoka.py,
 we will keep things simple and consider a simple harmonic oscillator:</p>
 <div class="math notranslate nohighlight">
@@ -677,7 +677,7 @@ we will keep things simple and consider a simple harmonic oscillator:</p>
    \end{cases}.
 \end{split}\]</div>
 <section id="dense-output-for-the-step-methods">
-<h2>Dense output for the <code class="docutils literal notranslate"><span class="pre">step()</span></code> methods<a class="headerlink" href="#dense-output-for-the-step-methods" title="Permalink to this headline">#</a></h2>
+<span id="dense-output-low-level"></span><h2>Dense output for the <code class="docutils literal notranslate"><span class="pre">step()</span></code> methods<a class="headerlink" href="#dense-output-for-the-step-methods" title="Permalink to this headline">#</a></h2>
 <p>Let’s start by setting up the integrator:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -753,11 +753,15 @@ via the <code class="docutils literal notranslate"><span class="pre">tc</span></
 </div>
 <p>Indeed, the zero-order Taylor coefficients for the state variables are nothing but
 the initial conditions at the beginning of the timestep that was just taken.</p>
-<blockquote>
-<div><p><strong>NOTE:</strong> This last point is important and needs to be stressed again: the Taylor
-coefficients always refer to the <strong>last</strong> step taken and <strong>not</strong> to the next
+<p>This brings us to a very important point:</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>The Taylor coefficients stored in an integrator object
+always refer to the <strong>last</strong> step taken and <strong>not</strong> to the next
 step that the integrator might take.</p>
-</div></blockquote>
+<p>It is <strong>very</strong> important to keep this in mind, as this is a frequent source of confusion
+and subtle bugs.</p>
+</div>
 <p>We are now ready to ask the integrator to compute the value of the solution at some
 arbitrary time. Let’s pick <span class="math notranslate nohighlight">\(t = 0.5\)</span>,
 which is about halfway through the timestep that was just taken:</p>
@@ -795,7 +799,6 @@ by passing <code class="docutils literal notranslate"><span class="pre">rel_time
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">matplotlib.pylab</span> <span class="kn">import</span> <span class="n">plt</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s2">&quot;figure.figsize&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">12</span><span class="p">,</span><span class="mi">6</span><span class="p">)</span>
 
 <span class="c1"># Construct a time grid from t=0 to t=1.</span>
 <span class="n">t_grid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
@@ -805,6 +808,7 @@ by passing <code class="docutils literal notranslate"><span class="pre">rel_time
 <span class="n">x_d_out</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">ta</span><span class="o">.</span><span class="n">update_d_output</span><span class="p">(</span><span class="n">t</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">t_grid</span><span class="p">])</span>
 
 <span class="c1"># Compare it to the exact solution.</span>
+<span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">t_grid</span><span class="p">,</span> <span class="p">(</span><span class="n">x_d_out</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">t_grid</span><span class="p">)))</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;Time&quot;</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;Absolute error&quot;</span><span class="p">);</span>
@@ -833,21 +837,23 @@ by passing <code class="docutils literal notranslate"><span class="pre">rel_time
 matches the current state of the system to machine precision.</p>
 <p>Before concluding, we need to highlight a couple of caveats regarding the
 use of dense output.</p>
-<blockquote>
-<div><p><strong>NOTE</strong>: first, it is the user’s responsibility to ensure that the array of Taylor
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>It is the user’s responsibility to ensure that the array of Taylor
 coefficients contains up-to-date values. In other words, the user needs to remember
 to invoke the <code class="docutils literal notranslate"><span class="pre">step()</span></code> methods with the extra boolean argument <code class="docutils literal notranslate"><span class="pre">write_tc</span> <span class="pre">=</span> <span class="pre">True</span></code>
 before invoking <code class="docutils literal notranslate"><span class="pre">update_d_output()</span></code>.
 Failure to do so will result in <code class="docutils literal notranslate"><span class="pre">update_d_output()</span></code> producing incorrect values.</p>
-</div></blockquote>
-<blockquote>
-<div><p><strong>NOTE</strong>: second, the accuracy of dense output is guaranteed to match the integrator’s
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The accuracy of dense output is guaranteed to match the integrator’s
 accuracy only if the time coordinate falls within the last step taken. Note that heyoka.py will
 <strong>not</strong> prevent the invocation of <code class="docutils literal notranslate"><span class="pre">update_d_output()</span></code> with time coordinates outside the
 guaranteed accuracy range - it is the user’s responsibility to be aware
 that doing so will produce results whose accuracy does not match the integrator’s
 error tolerance.</p>
-</div></blockquote>
+</div>
 <p>The second point can be better appreciated if we try to compute the dense output past the end of the last timestep taken:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -859,6 +865,7 @@ error tolerance.</p>
 <span class="n">x_d_out</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">ta</span><span class="o">.</span><span class="n">update_d_output</span><span class="p">(</span><span class="n">t</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">t_grid</span><span class="p">])</span>
 
 <span class="c1"># Compare it to the exact solution.</span>
+<span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">semilogy</span><span class="p">(</span><span class="n">t_grid</span><span class="p">,</span> <span class="nb">abs</span><span class="p">((</span><span class="n">x_d_out</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">t_grid</span><span class="p">))</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">t_grid</span><span class="p">)))</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;Time&quot;</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;Relative error&quot;</span><span class="p">);</span>
@@ -885,7 +892,7 @@ optional callback that can be passed to the <code class="docutils literal notran
 at the end of each timestep, and thus using the <code class="docutils literal notranslate"><span class="pre">write_tc</span></code> argument is not necessary.</p>
 </section>
 <section id="continuous-output">
-<h2>Continuous output<a class="headerlink" href="#continuous-output" title="Permalink to this headline">#</a></h2>
+<span id="dense-output-hi-level"></span><h2>Continuous output<a class="headerlink" href="#continuous-output" title="Permalink to this headline">#</a></h2>
 <p>Starting with heyoka.py 0.16,
 the <code class="docutils literal notranslate"><span class="pre">propagate_for()</span></code> and <code class="docutils literal notranslate"><span class="pre">propagate_until()</span></code> methods can optionally return a function object
 providing continuous output in the integration interval. That is, this function object can be used
@@ -963,6 +970,7 @@ State vectors at t=[1,2,3,4,5]:
 <span class="n">x_c_out</span> <span class="o">=</span> <span class="n">c_out</span><span class="p">(</span><span class="n">t_grid</span><span class="p">)</span>
 
 <span class="c1"># Compare it to the exact solution.</span>
+<span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">semilogy</span><span class="p">(</span><span class="n">t_grid</span><span class="p">,</span> <span class="nb">abs</span><span class="p">(</span><span class="n">x_c_out</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">t_grid</span><span class="p">)))</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;Time&quot;</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;Absolute error&quot;</span><span class="p">);</span>
@@ -977,20 +985,22 @@ State vectors at t=[1,2,3,4,5]:
 <p>Continuous output is somewhat similar to <code class="docutils literal notranslate"><span class="pre">propagate_grid()</span></code>, in the sense that both allow to compute the value of the solution at arbitrary time points. <code class="docutils literal notranslate"><span class="pre">propagate_grid()</span></code> is computationally more efficient, but it requires to specify up-front the list of times at which the solution should be computed. Continuous output, on the other hand, is not bound to a predetermined time grid, and it can thus be helpful if time coordinates of interest can be identified only after the solution has been computed.</p>
 <p>Before concluding, we need to highlight a couple of caveats regarding the
 use of continuous output.</p>
-<blockquote>
-<div><p><strong>NOTE</strong>: the <code class="docutils literal notranslate"><span class="pre">continuous_output</span></code> function object stores internally the time
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">continuous_output</span></code> function object stores internally the time
 coordinate and Taylor coefficients at the end of each step taken during the integration interval.
 This means that the memory usage of a <code class="docutils literal notranslate"><span class="pre">continuous_output</span></code> object scales linearly
 with the number of timesteps taken during the integration interval. Thus, for a sufficiently
 long integration interval, the <code class="docutils literal notranslate"><span class="pre">continuous_output</span></code> object might end up exhausting the available memory.</p>
-</div></blockquote>
-<blockquote>
-<div><p><strong>NOTE</strong>: like for dense output, the accuracy of <code class="docutils literal notranslate"><span class="pre">continuous_output</span></code> is guaranteed to
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Like for dense output, the accuracy of <code class="docutils literal notranslate"><span class="pre">continuous_output</span></code> is guaranteed to
 match the integrator’s accuracy only if the time coordinate falls within the integration interval.
 Note that heyoka.py will not prevent the use of a <code class="docutils literal notranslate"><span class="pre">continuous_output</span></code> object outside the
 guaranteed accuracy range - it is the user’s responsibility to be aware that doing so will
 produce results whose accuracy does not match the integrator’s error tolerance.</p>
-</div></blockquote>
+</div>
 <p>Note that, like the other main classes in heyoka.py, <code class="docutils literal notranslate"><span class="pre">continuous_output</span></code> supports <a class="reference internal" href="pickling.html"><span class="doc std std-doc">serialisation</span></a>.</p>
 </section>
 </section>
@@ -1026,7 +1036,7 @@ produce results whose accuracy does not match the integrator’s error tolerance
   
     By Francesco Biscani and Dario Izzo<br/>
   
-      &copy; Copyright 2020, 2021, 2022, Francesco Biscani and Dario Izzo.<br/>
+      &copy; Copyright 2020, 2021, 2022, 2023, Francesco Biscani and Dario Izzo.<br/>
 </p>
         </footer>
     </div>

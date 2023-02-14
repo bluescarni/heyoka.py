@@ -34,8 +34,8 @@
     "to achieve optimal performance, however, $n$ should match the SIMD width of the\n",
     "processor in use. Because at this time the most widespread SIMD instruction set is\n",
     "[AVX](https://en.wikipedia.org/wiki/Advanced_Vector_Extensions) (available on\n",
-    "most x86 processors sold since 2011), in this tutorial we will be using a\n",
-    "batch size $n=4$.\n",
+    "most x86 processors sold since 2011), and AVX has a SIMD width of 4 for double precision,\n",
+    "in this tutorial we will be using a batch size $n=4$.\n",
     "\n",
     "Starting from heyoka.py 0.17, a function is available to determine the recommended\n",
     "SIMD width for the CPU currently in use:"
@@ -1316,7 +1316,7 @@
    "name": "python",
    "nbconvert_exporter": "python",
    "pygments_lexer": "ipython3",
-   "version": "3.8.13"
+   "version": "3.10.6"
   }
  },
  "nbformat": 4,

@@ -674,8 +674,8 @@ standard <code class="docutils literal notranslate"><span class="pre">double</sp
 to achieve optimal performance, however, <span class="math notranslate nohighlight">\(n\)</span> should match the SIMD width of the
 processor in use. Because at this time the most widespread SIMD instruction set is
 <a class="reference external" href="https://en.wikipedia.org/wiki/Advanced_Vector_Extensions">AVX</a> (available on
-most x86 processors sold since 2011), in this tutorial we will be using a
-batch size <span class="math notranslate nohighlight">\(n=4\)</span>.</p>
+most x86 processors sold since 2011), and AVX has a SIMD width of 4 for double precision,
+in this tutorial we will be using a batch size <span class="math notranslate nohighlight">\(n=4\)</span>.</p>
 <p>Starting from heyoka.py 0.17, a function is available to determine the recommended
 SIMD width for the CPU currently in use:</p>
 <div class="cell docutils container">
@@ -1525,7 +1525,7 @@ We begin with the definition of the dynamical equations and of the template inte
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/18020029421284e70cad8c7956001065e96aef2d1a66803911e53a3b789397c3.png" src="../_images/18020029421284e70cad8c7956001065e96aef2d1a66803911e53a3b789397c3.png" />
+<img alt="../_images/7da314e175efe65c88fb1ef9a8bb906a410e7593fb93fda293e6abd662d2bf44.png" src="../_images/7da314e175efe65c88fb1ef9a8bb906a410e7593fb93fda293e6abd662d2bf44.png" />
 </div>
 </div>
 </section>
@@ -1562,7 +1562,7 @@ We begin with the definition of the dynamical equations and of the template inte
   
     By Francesco Biscani and Dario Izzo<br/>
   
-      &copy; Copyright 2020, 2021, 2022, Francesco Biscani and Dario Izzo.<br/>
+      &copy; Copyright 2020, 2021, 2022, 2023, Francesco Biscani and Dario Izzo.<br/>
 </p>
         </footer>
     </div>

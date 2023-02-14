@@ -766,15 +766,24 @@ side of the event equation, which in this case is simply <span class="math notra
 The second mandatory construction argument is a callback function that will be invoked when the event is detected.
 The callback function can be a lambda, a regular function, or a function object - the only requirement is that the
 callback is a callable object. The callback will be invoked with a reference to the integrator object as first argument,
-the absolute time at which the event was detected as second argument, and the sign of the derivative
+the absolute time at which the event was detected (i.e., the trigger time) as second argument, and the sign of the derivative
 of the event equation at the trigger time as third argument (-1 for negative derivative, 1 for positive derivative and 0 for
 zero derivative).</p>
 <p>Because non-terminal event detection is performed at the end of an integration step,
 when the callback is invoked the state and time of the integrator object are those <em>at the end</em> of the integration
-step in which the event was detected. Note that when integrating an ODE system with events, the <code class="docutils literal notranslate"><span class="pre">taylor_adaptive</span></code>
+step in which the event was detected. This bears repeating, as it is often a source of confusion
+and bugs when implementing callbacks for non-terminal events:</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>When the callback of a non-terminal event is invoked, the state and time
+of the integrator object are those <em>at the end</em> of the integration
+step in which the event was detected.</p>
+</div>
+<p>When integrating an ODE system with events, the <code class="docutils literal notranslate"><span class="pre">taylor_adaptive</span></code>
 class ensures that the Taylor coefficients are always kept up to date (as explained in the tutorial about
 <a class="reference internal" href="Dense%20output.html"><span class="doc std std-doc">dense output</span></a>), and thus in the callback function it is always possible to use the <code class="docutils literal notranslate"><span class="pre">update_d_output()</span></code>
-function to compute the dense output at any time within the last timestep that was taken.</p>
+function to compute the dense output at any time within the last timestep that was taken (including the event
+trigger time).</p>
 <p>In this example, we perform two actions in the callback <code class="docutils literal notranslate"><span class="pre">cb</span></code>:</p>
 <ul class="simple">
 <li><p>first, we compute the dense output at the event trigger time and print
@@ -808,7 +817,6 @@ together with the times at which the event triggers:</p>
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">matplotlib.pylab</span> <span class="kn">import</span> <span class="n">plt</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s2">&quot;figure.figsize&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">12</span><span class="p">,</span><span class="mi">6</span><span class="p">)</span>
 
 <span class="c1"># Construct a time grid from t=0 to t=5.</span>
 <span class="n">t_grid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">1000</span><span class="p">)</span>
@@ -817,6 +825,7 @@ together with the times at which the event triggers:</p>
 <span class="n">x_hist</span> <span class="o">=</span> <span class="n">ta</span><span class="o">.</span><span class="n">propagate_grid</span><span class="p">(</span><span class="n">t_grid</span><span class="p">)[</span><span class="mi">4</span><span class="p">][:,</span><span class="mi">0</span><span class="p">]</span>
 
 <span class="c1"># Display the time evolution for the x variable.</span>
+<span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">t_grid</span><span class="p">,</span> <span class="n">x_hist</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;Time&quot;</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;x&quot;</span><span class="p">)</span>
@@ -900,6 +909,7 @@ Let us take a look at the plot:</p>
 <span class="n">x_hist</span> <span class="o">=</span> <span class="n">ta</span><span class="o">.</span><span class="n">propagate_grid</span><span class="p">(</span><span class="n">t_grid</span><span class="p">)[</span><span class="mi">4</span><span class="p">][:,</span><span class="mi">0</span><span class="p">]</span>
 
 <span class="c1"># Display the time evolution for the x variable.</span>
+<span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">t_grid</span><span class="p">,</span> <span class="n">x_hist</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;Time&quot;</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;x&quot;</span><span class="p">)</span>
@@ -1159,6 +1169,7 @@ execution of the callback:</p>
 <span class="n">x_hist</span> <span class="o">=</span> <span class="n">ta</span><span class="o">.</span><span class="n">propagate_grid</span><span class="p">(</span><span class="n">t_grid</span><span class="p">)[</span><span class="mi">4</span><span class="p">][:,</span><span class="mi">0</span><span class="p">]</span>
 
 <span class="c1"># Display the time evolution for the x variable.</span>
+<span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">t_grid</span><span class="p">,</span> <span class="n">x_hist</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;Time&quot;</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;x&quot;</span><span class="p">)</span>
@@ -1281,7 +1292,7 @@ to an integration without event detection.</p>
   
     By Francesco Biscani and Dario Izzo<br/>
   
-      &copy; Copyright 2020, 2021, 2022, Francesco Biscani and Dario Izzo.<br/>
+      &copy; Copyright 2020, 2021, 2022, 2023, Francesco Biscani and Dario Izzo.<br/>
 </p>
         </footer>
     </div>
