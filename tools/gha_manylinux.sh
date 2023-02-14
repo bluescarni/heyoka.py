@@ -36,7 +36,7 @@ fi
 echo "PYTHON_DIR: ${PYTHON_DIR}"
 
 # The numpy version heyoka.py will be built against.
-export NUMPY_VERSION="1.24.2"
+export NUMPY_VERSION="1.24.*"
 
 # Python mandatory deps.
 /opt/python/${PYTHON_DIR}/bin/pip install numpy==${NUMPY_VERSION} cloudpickle
@@ -72,32 +72,32 @@ cmake -DBoost_NO_BOOST_CMAKE=ON \
 	-DPython3_EXECUTABLE=/opt/python/${PYTHON_DIR}/bin/python ../;
 make -j2 install
 
-echo `/opt/python/${PYTHON_DIR}/bin/python -c 'import site; print(site.getsitepackages()[0])'`
-
 # Making the wheel and installing it
 cd wheel
-# Copy the installed pygmo files, wherever they might be in /usr/local,
+# Copy the installed heyoka.py files, wherever they might be in /usr/local,
 # into the current dir.
-cp -r ../pygmo ./
+cp -r `/opt/python/${PYTHON_DIR}/bin/python -c 'import site; print(site.getsitepackages()[0])'`/heyoka ./
 # Create the wheel and repair it.
 /opt/python/${PYTHON_DIR}/bin/python setup.py bdist_wheel
-auditwheel repair dist/pygmo* -w ./dist2
+auditwheel repair dist/heyoka* -w ./dist2
 # Try to install it and run the tests.
 cd /
-/opt/python/${PYTHON_DIR}/bin/pip install ${GITHUB_WORKSPACE}/build/wheel/dist2/pygmo*
-/opt/python/${PYTHON_DIR}/bin/ipcluster start --daemonize=True
-sleep 20
-/opt/python/${PYTHON_DIR}/bin/python -c "import pygmo; pygmo.test.run_test_suite(1); pygmo.mp_island.shutdown_pool(); pygmo.mp_bfe.shutdown_pool()"
+/opt/python/${PYTHON_DIR}/bin/pip install ${GITHUB_WORKSPACE}/build/wheel/dist2/heyoka*
+/opt/python/${PYTHON_DIR}/bin/python -c "import heyoka; heyoka.test.run_test_suite();"
 
 # Upload to pypi. This variable will contain something if this is a tagged build (vx.y.z), otherwise it will be empty.
-if [[ "${PYGMO_RELEASE_VERSION}" != "" ]]; then
-	echo "Release build detected, creating the source code archive."
-	cd ${GITHUB_WORKSPACE}
-	TARBALL_NAME=${GITHUB_WORKSPACE}/build/wheel/dist2/pygmo-${PYGMO_RELEASE_VERSION}.tar
-	git archive --format=tar --prefix=pygmo2/ -o ${TARBALL_NAME} ${BRANCH_NAME}
-	tar -rf ${TARBALL_NAME} --transform "s,^build/wheel/pygmo.egg-info,pygmo2," build/wheel/pygmo.egg-info/PKG-INFO
-	gzip -9 ${TARBALL_NAME}
-	echo "... uploading all to PyPi."
-	/opt/python/${PYTHON_DIR}/bin/pip install twine
-	/opt/python/${PYTHON_DIR}/bin/twine upload -u ci4esa ${GITHUB_WORKSPACE}/build/wheel/dist2/pygmo*
-fi
+# if [[ "${PYGMO_RELEASE_VERSION}" != "" ]]; then
+# 	echo "Release build detected, creating the source code archive."
+# 	cd ${GITHUB_WORKSPACE}
+# 	TARBALL_NAME=${GITHUB_WORKSPACE}/build/wheel/dist2/pygmo-${PYGMO_RELEASE_VERSION}.tar
+# 	git archive --format=tar --prefix=pygmo2/ -o ${TARBALL_NAME} ${BRANCH_NAME}
+# 	tar -rf ${TARBALL_NAME} --transform "s,^build/wheel/pygmo.egg-info,pygmo2," build/wheel/pygmo.egg-info/PKG-INFO
+# 	gzip -9 ${TARBALL_NAME}
+# 	echo "... uploading all to PyPi."
+# 	/opt/python/${PYTHON_DIR}/bin/pip install twine
+# 	/opt/python/${PYTHON_DIR}/bin/twine upload -u ci4esa ${GITHUB_WORKSPACE}/build/wheel/dist2/pygmo*
+# fi
+
+set +e
+set +x
+

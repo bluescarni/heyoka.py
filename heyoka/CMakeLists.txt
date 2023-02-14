@@ -1,6 +1,13 @@
 # Configure the version file.
 configure_file("${CMAKE_CURRENT_SOURCE_DIR}/_version.py.in" "${CMAKE_CURRENT_BINARY_DIR}/_version.py" @ONLY)
 
+# Configure the files needed to make the python wheels (for PyPi packages).
+if(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
+    message(STATUS "Creating the files for the generation of a binary wheel.")
+    configure_file("${CMAKE_CURRENT_SOURCE_DIR}/../tools/wheel_setup.py" "${CMAKE_CURRENT_BINARY_DIR}/../wheel/setup.py" @ONLY)
+    configure_file("${CMAKE_CURRENT_SOURCE_DIR}/../tools/wheel_setup.cfg" "${CMAKE_CURRENT_BINARY_DIR}/../wheel/setup.cfg" @ONLY)
+endif()
+
 # The list of heyoka.py's Python files.
 set(HEYOKA_PY_PYTHON_FILES
     __init__.py
