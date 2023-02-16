@@ -38,6 +38,12 @@ echo "PYTHON_DIR: ${PYTHON_DIR}"
 # The numpy version heyoka.py will be built against.
 export NUMPY_VERSION="1.24.*"
 
+# The heyoka version to be used for releases.
+export HEYOKA_VERSION_RELEASE="0.21.0"
+
+# Check if this is a release build.
+if [[ $GITHUB_REF =~ 'ref/tags/v[0-9]+\.[0-9]+.*' ]]; then export HEYOKA_PY_RELEASE_BUILD="yes"; fi
+
 # Python mandatory deps.
 /opt/python/${PYTHON_DIR}/bin/pip install numpy==${NUMPY_VERSION} cloudpickle
 # Python optional deps.
@@ -48,8 +54,13 @@ export NUMPY_VERSION="1.24.*"
 cd /root/install
 
 # Install heyoka.
-git clone https://github.com/bluescarni/heyoka.git
-cd heyoka
+if [[ "${HEYOKA_PY_RELEASE_BUILD}" == "yes" ]]; then
+	wget https://github.com/bluescarni/heyoka/archive/refs/tags/v${HEYOKA_VERSION_RELEASE}.tar.gz -O heyoka.tar.gz
+	cd heyoka-${HEYOKA_VERSION_RELEASE}
+else
+	git clone https://github.com/bluescarni/heyoka.git
+	cd heyoka
+fi
 
 mkdir build
 cd build
@@ -88,19 +99,11 @@ cd /
 /opt/python/${PYTHON_DIR}/bin/pip install ${GITHUB_WORKSPACE}/build/wheel/dist2/heyoka*
 /opt/python/${PYTHON_DIR}/bin/python -c "import heyoka; heyoka.test.run_test_suite();"
 
-# Upload to pypi. This variable will contain something if this is a tagged build (vx.y.z), otherwise it will be empty.
-# if [[ "${PYGMO_RELEASE_VERSION}" != "" ]]; then
-# 	echo "Release build detected, creating the source code archive."
-# 	cd ${GITHUB_WORKSPACE}
-# 	TARBALL_NAME=${GITHUB_WORKSPACE}/build/wheel/dist2/pygmo-${PYGMO_RELEASE_VERSION}.tar
-# 	git archive --format=tar --prefix=pygmo2/ -o ${TARBALL_NAME} ${BRANCH_NAME}
-# 	tar -rf ${TARBALL_NAME} --transform "s,^build/wheel/pygmo.egg-info,pygmo2," build/wheel/pygmo.egg-info/PKG-INFO
-# 	gzip -9 ${TARBALL_NAME}
-# 	echo "... uploading all to PyPi."
-# 	/opt/python/${PYTHON_DIR}/bin/pip install twine
-# 	/opt/python/${PYTHON_DIR}/bin/twine upload -u ci4esa ${GITHUB_WORKSPACE}/build/wheel/dist2/pygmo*
-# fi
+# Upload to PyPI.
+if [[ "${HEYOKA_PY_RELEASE_BUILD}" == "yes" ]]; then
+	/opt/python/${PYTHON_DIR}/bin/pip install twine
+	/opt/python/${PYTHON_DIR}/bin/twine upload -u __token__ ${GITHUB_WORKSPACE}/build/wheel/dist2/heyoka*
+fi
 
 set +e
 set +x
-
