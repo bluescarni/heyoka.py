@@ -15,11 +15,7 @@ git config --global --add safe.directory ${GITHUB_WORKSPACE}
 BRANCH_NAME=`git rev-parse --abbrev-ref HEAD`
 echo "BRANCH_NAME: ${BRANCH_NAME}"
 
-if [[ ${TWINE_PASSWORD} != "" ]]; then
-	echo "TWINE_PASSWORD is set"
-fi
-
-# 1 - We read for what python wheels have to be built.
+# Read for what python wheels have to be built.
 if [[ ${HEYOKA_PY_BUILD_TYPE} == *38* ]]; then
 	PYTHON_DIR="cp38-cp38"
 elif [[ ${HEYOKA_PY_BUILD_TYPE} == *39* ]]; then
@@ -45,7 +41,7 @@ export NUMPY_VERSION="1.24.*"
 export HEYOKA_VERSION_RELEASE="0.21.0"
 
 # Check if this is a release build.
-if [[ $GITHUB_REF =~ 'ref/tags/v[0-9]+\.[0-9]+.*' ]]; then export HEYOKA_PY_RELEASE_BUILD="yes"; fi
+if [[ $GITHUB_REF =~ 'refs/tags/v[0-9]+\.[0-9]+\.[0-9]+' ]]; then export HEYOKA_PY_RELEASE_BUILD="yes"; fi
 
 # Python mandatory deps.
 /opt/python/${PYTHON_DIR}/bin/pip install numpy==${NUMPY_VERSION} cloudpickle
