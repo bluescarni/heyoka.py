@@ -5,6 +5,7 @@ heyoka.py
 [![Build Status](https://img.shields.io/github/actions/workflow/status/bluescarni/heyoka.py/gh_actions_ci.yml?branch=main&style=for-the-badge)](https://github.com/bluescarni/heyoka.py/actions?query=workflow%3A%22GitHub+CI%22)
 
 [![Anaconda-Server Badge](https://img.shields.io/conda/vn/conda-forge/heyoka.py.svg?style=for-the-badge)](https://anaconda.org/conda-forge/heyoka.py)
+[![PyPI](https://img.shields.io/pypi/v/heyoka.svg?style=for-the-badge)](https://pypi.python.org/pypi/heyoka)
 
 <!-- PROJECT LOGO -->
 <br />
