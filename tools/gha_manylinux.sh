@@ -59,7 +59,8 @@ cd /root/install
 
 # Install heyoka.
 if [[ "${HEYOKA_PY_RELEASE_BUILD}" == "yes" ]]; then
-	wget https://github.com/bluescarni/heyoka/archive/refs/tags/v${HEYOKA_VERSION_RELEASE}.tar.gz -O heyoka.tar.gz
+	curl -o heyoka.tar.gz https://github.com/bluescarni/heyoka/archive/refs/tags/v${HEYOKA_VERSION_RELEASE}.tar.gz
+	tar xzf heyoka.tar.gz
 	cd heyoka-${HEYOKA_VERSION_RELEASE}
 else
 	git clone https://github.com/bluescarni/heyoka.git
