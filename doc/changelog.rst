@@ -3,12 +3,14 @@
 Changelog
 =========
 
-0.21.0 (2023-02-16)
+0.21.7 (2023-02-16)
 -------------------
 
 New
 ~~~
 
+- Add support for installation via ``pip`` on linux
+  (`#115 <https://github.com/bluescarni/heyoka.py/pull/115>`__).
 - Time-dependent functions can now be compiled
   (`#113 <https://github.com/bluescarni/heyoka.py/pull/113>`__).
 
