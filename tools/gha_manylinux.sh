@@ -15,6 +15,9 @@ git config --global --add safe.directory ${GITHUB_WORKSPACE}
 BRANCH_NAME=`git rev-parse --abbrev-ref HEAD`
 echo "BRANCH_NAME: ${BRANCH_NAME}"
 
+if [[ ${TWINE_PASSWORD} != ""]]; then
+	echo "TWINE_PASSWORD is set"
+fi
 
 # 1 - We read for what python wheels have to be built.
 if [[ ${HEYOKA_PY_BUILD_TYPE} == *38* ]]; then
