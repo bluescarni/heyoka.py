@@ -15,7 +15,7 @@ git config --global --add safe.directory ${GITHUB_WORKSPACE}
 BRANCH_NAME=`git rev-parse --abbrev-ref HEAD`
 echo "BRANCH_NAME: ${BRANCH_NAME}"
 
-if [[ ${TWINE_PASSWORD} != ""]]; then
+if [[ ${TWINE_PASSWORD} != "" ]]; then
 	echo "TWINE_PASSWORD is set"
 fi
 
