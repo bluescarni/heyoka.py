@@ -41,7 +41,12 @@ export NUMPY_VERSION="1.24.*"
 export HEYOKA_VERSION_RELEASE="0.21.0"
 
 # Check if this is a release build.
-if [[ $GITHUB_REF =~ 'refs/tags/v[0-9]+\.[0-9]+\.[0-9]+' ]]; then export HEYOKA_PY_RELEASE_BUILD="yes"; fi
+if [[ $GITHUB_REF =~ 'refs/tags/v[0-9]+\.[0-9]+\.[0-9]+' ]]; then
+    echo "Tag build detected"
+	export HEYOKA_PY_RELEASE_BUILD="yes"
+else
+	echo "Non-tag build detected"
+fi
 
 # Python mandatory deps.
 /opt/python/${PYTHON_DIR}/bin/pip install numpy==${NUMPY_VERSION} cloudpickle
