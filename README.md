@@ -91,6 +91,21 @@ heyoka.py's novel event detection system is described in the following paper ([a
 }
 ```
 
+Installation
+------------
+
+Via pip:
+
+```console
+$ pip install heyoka
+```
+
+Via conda + [conda-forge](https://conda-forge.org/):
+
+```console
+$ conda install heyoka.py
+```
+
 Documentation
 -------------
 

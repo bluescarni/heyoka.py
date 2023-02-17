@@ -56,6 +56,25 @@ Please refer to the `conda documentation <https://docs.conda.io/en/latest/>`__
 for instructions on how to setup and manage
 your conda installation.
 
+pip
+^^^
+
+A heyoka.py package for x86-64 Linux is available on `PyPI <https://pypi.org/project/heyoka/>`__.
+You can install it via ``pip``:
+
+.. code-block:: console
+
+   $ pip install heyoka
+
+.. warning::
+
+   heyoka.py relies on a stack of C++ dependencies which are bundled in the ``pip`` package.
+   There is a non-negligible chance of conflicts with other packages which might also depend on and bundle
+   the same C++ libraries, which can lead to unpredictable runtime errors and hard-to-diagnose
+   issues.
+
+   We encourage users to install heyoka.py via conda rather than ``pip`` whenever possible.
+
 FreeBSD
 ^^^^^^^
 
@@ -64,7 +83,7 @@ heyoka.py. In order to install heyoka.py using pkg, execute the following comman
 
 .. code-block:: console
 
-   $ pkg install py38-heyoka
+   $ pkg install py39-heyoka
 
 Installation from source
 ------------------------
@@ -159,6 +178,9 @@ installed by running the test suite with the following command:
 
 If this command executes without any error, then
 your heyoka.py installation is ready for use.
+
+Note that the test suite makes use of the optional dependencies, thus if they
+are not installed some tests will fail.
 
 Getting help
 ------------
