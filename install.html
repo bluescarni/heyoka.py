@@ -535,6 +535,11 @@ title="Print to PDF"
     </a>
    </li>
    <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#pip">
+     pip
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
     <a class="reference internal nav-link" href="#freebsd">
      FreeBSD
     </a>
@@ -588,6 +593,11 @@ title="Print to PDF"
    <li class="toc-h3 nav-item toc-entry">
     <a class="reference internal nav-link" href="#conda">
      Conda
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#pip">
+     pip
     </a>
    </li>
    <li class="toc-h3 nav-item toc-entry">
@@ -671,11 +681,27 @@ and they are regularly updated when new heyoka.py versions are released.</p>
 for instructions on how to setup and manage
 your conda installation.</p>
 </section>
+<section id="pip">
+<h3>pip<a class="headerlink" href="#pip" title="Permalink to this headline">#</a></h3>
+<p>A heyoka.py package for x86-64 Linux is available on <a class="reference external" href="https://pypi.org/project/heyoka/">PyPI</a>.
+You can install it via <code class="docutils literal notranslate"><span class="pre">pip</span></code>:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>pip<span class="w"> </span>install<span class="w"> </span>heyoka
+</pre></div>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>heyoka.py relies on a stack of C++ dependencies which are bundled in the <code class="docutils literal notranslate"><span class="pre">pip</span></code> package.
+There is a non-negligible chance of conflicts with other packages which might also depend on and bundle
+the same C++ libraries, which can lead to unpredictable runtime errors and hard-to-diagnose
+issues.</p>
+<p>We encourage users to install heyoka.py via conda rather than <code class="docutils literal notranslate"><span class="pre">pip</span></code> whenever possible.</p>
+</div>
+</section>
 <section id="freebsd">
 <h3>FreeBSD<a class="headerlink" href="#freebsd" title="Permalink to this headline">#</a></h3>
 <p>A community-supported FreeBSD port via <a class="reference external" href="https://www.freebsd.org/doc/handbook/pkgng-intro.html">pkg</a> is available for
 heyoka.py. In order to install heyoka.py using pkg, execute the following command:</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>pkg<span class="w"> </span>install<span class="w"> </span>py38-heyoka
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>pkg<span class="w"> </span>install<span class="w"> </span>py39-heyoka
 </pre></div>
 </div>
 </section>
@@ -758,6 +784,8 @@ installed by running the test suite with the following command:</p>
 </div>
 <p>If this command executes without any error, then
 your heyoka.py installation is ready for use.</p>
+<p>Note that the test suite makes use of the optional dependencies, thus if they
+are not installed some tests will fail.</p>
 </section>
 <section id="getting-help">
 <h2>Getting help<a class="headerlink" href="#getting-help" title="Permalink to this headline">#</a></h2>
