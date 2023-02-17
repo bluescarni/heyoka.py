@@ -34,7 +34,7 @@ The tested and supported CPU architectures at this time are x86-64, 64-bit ARM a
 Packages
 --------
 
-Conda
+conda
 ^^^^^
 
 heyoka.py is available via the `conda <https://docs.conda.io/en/latest/>`__
