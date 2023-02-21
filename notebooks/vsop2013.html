@@ -712,8 +712,8 @@ Mars&#39; semi-major axis solution, threshold = 6e-5, time rescaled by a factor 
 <span class="n">plt</span><span class="o">.</span><span class="n">xscale</span><span class="p">(</span><span class="s1">&#39;log&#39;</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">yscale</span><span class="p">(</span><span class="s1">&#39;log&#39;</span><span class="p">)</span>
 
-<span class="c1"># Create the heyoka variables.</span>
-<span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">tm</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">make_vars</span><span class="p">(</span><span class="s2">&quot;x&quot;</span><span class="p">,</span> <span class="s2">&quot;y&quot;</span><span class="p">,</span> <span class="s2">&quot;z&quot;</span><span class="p">,</span> <span class="s2">&quot;tm&quot;</span><span class="p">)</span>
+<span class="c1"># Create a heyoka variable for representing time.</span>
+<span class="n">tm</span><span class="p">,</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">make_vars</span><span class="p">(</span><span class="s2">&quot;tm&quot;</span><span class="p">)</span>
 
 <span class="c1"># Threshold levels at which we will be computing</span>
 <span class="c1"># the VSOP2013 solution.</span>
@@ -768,7 +768,7 @@ Mars&#39; semi-major axis solution, threshold = 6e-5, time rescaled by a factor 
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/9a42670b6580c85224007bd8a7f8907b0fc3b7cf2f060d76f37befb55b12ae82.png" src="../_images/9a42670b6580c85224007bd8a7f8907b0fc3b7cf2f060d76f37befb55b12ae82.png" />
+<img alt="../_images/c0c968aeb3f467152f78b6e00662a7eda77375b6b94f186825a72672e2e3dfe5.png" src="../_images/c0c968aeb3f467152f78b6e00662a7eda77375b6b94f186825a72672e2e3dfe5.png" />
 </div>
 </div>
 <p>We can see how VSOP2013 matches up well with respect to HORIZONS, and how lower truncation levels indeed increase the precision of the VSOP2013 solution (up to an error of hundreds of meters for a threshold of <span class="math notranslate nohighlight">\(10^{-10}\)</span>).</p>

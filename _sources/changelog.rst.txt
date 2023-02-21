@@ -9,7 +9,7 @@ Changelog
 New
 ~~~
 
-- Add support for installation via ``pip`` on linux
+- Add support for installation via ``pip`` on Linux
   (`#115 <https://github.com/bluescarni/heyoka.py/pull/115>`__).
 - Time-dependent functions can now be compiled
   (`#113 <https://github.com/bluescarni/heyoka.py/pull/113>`__).
