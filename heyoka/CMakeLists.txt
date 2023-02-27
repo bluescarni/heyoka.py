@@ -47,6 +47,7 @@ set(_HEYOKA_PY_CORE_SOURCES
     expose_expression.cpp
     expose_batch_integrators.cpp
     numpy_memory.cpp
+    expose_models.cpp
 )
 
 Python3_add_library(core MODULE WITH_SOABI ${_HEYOKA_PY_CORE_SOURCES})

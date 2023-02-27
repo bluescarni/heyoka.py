@@ -51,7 +51,6 @@
 #include <heyoka/llvm_state.hpp>
 #include <heyoka/mascon.hpp>
 #include <heyoka/math.hpp>
-#include <heyoka/nbody.hpp>
 #include <heyoka/number.hpp>
 #include <heyoka/taylor.hpp>
 
@@ -60,6 +59,7 @@
 #include "dtypes.hpp"
 #include "expose_batch_integrators.hpp"
 #include "expose_expression.hpp"
+#include "expose_models.hpp"
 #include "expose_real.hpp"
 #include "expose_real128.hpp"
 #include "logging.hpp"
@@ -193,60 +193,8 @@ PYBIND11_MODULE(core, m)
     // Expression.
     heypy::expose_expression(m);
 
-    // N-body builders.
-    m.def(
-        "make_nbody_sys",
-        [](std::uint32_t n, const py::object &Gconst, std::optional<py::iterable> masses) {
-            const auto G = heypy::to_number(Gconst);
-
-            std::vector<hey::number> m_vec;
-            if (masses) {
-                for (auto ms : *masses) {
-                    m_vec.push_back(heypy::to_number(ms));
-                }
-            } else {
-                // If masses are not provided, all masses are 1.
-                m_vec.resize(static_cast<decltype(m_vec.size())>(n), hey::number{1.});
-            }
-
-            return hey::make_nbody_sys(n, kw::Gconst = G, kw::masses = m_vec);
-        },
-        "n"_a, "Gconst"_a = 1., "masses"_a = py::none{});
-
-    m.def(
-        "make_np1body_sys",
-        [](std::uint32_t n, const py::object &Gconst, std::optional<py::iterable> masses) {
-            const auto G = heypy::to_number(Gconst);
-
-            std::vector<hey::number> m_vec;
-            if (masses) {
-                for (auto ms : *masses) {
-                    m_vec.push_back(heypy::to_number(ms));
-                }
-            } else {
-                // If masses are not provided, all masses are 1.
-                // NOTE: instead of computing n+1 here, do it in two
-                // steps to avoid potential overflow issues.
-                m_vec.resize(static_cast<decltype(m_vec.size())>(n), hey::number{1.});
-                m_vec.emplace_back(1.);
-            }
-
-            return hey::make_np1body_sys(n, kw::Gconst = G, kw::masses = m_vec);
-        },
-        "n"_a, "Gconst"_a = 1., "masses"_a = py::none{});
-
-    m.def(
-        "make_nbody_par_sys",
-        [](std::uint32_t n, const py::object &Gconst, std::optional<std::uint32_t> n_massive) {
-            const auto G = heypy::to_number(Gconst);
-
-            if (n_massive) {
-                return hey::make_nbody_par_sys(n, kw::Gconst = G, kw::n_massive = *n_massive);
-            } else {
-                return hey::make_nbody_par_sys(n, kw::Gconst = G);
-            }
-        },
-        "n"_a, "Gconst"_a = 1., "n_massive"_a = py::none{});
+    // Models.
+    heypy::expose_models(m);
 
     // mascon dynamics builder
     m.def(
