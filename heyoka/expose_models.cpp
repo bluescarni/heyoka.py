@@ -8,7 +8,6 @@
 
 #include <heyoka/config.hpp>
 
-#include <heyoka/model/nbody.hpp>
 #include <optional>
 #include <string>
 #include <variant>

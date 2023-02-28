@@ -18,6 +18,7 @@ set(HEYOKA_PY_PYTHON_FILES
     _test_real128.py
     _test_mp.py
     _test_cfunc.py
+    model/__init__.py
 )
 
 # Copy the python files in the current binary dir,
@@ -101,7 +102,10 @@ install(TARGETS core
 )
 
 # Add the Python files.
-install(FILES ${HEYOKA_PY_PYTHON_FILES} "${CMAKE_CURRENT_BINARY_DIR}/_version.py"
-    DESTINATION ${_HEYOKA_PY_INSTALL_DIR})
+install(FILES "${CMAKE_CURRENT_BINARY_DIR}/_version.py" DESTINATION ${_HEYOKA_PY_INSTALL_DIR})
+foreach(_HEYOKA_PY_CUR_FILE ${HEYOKA_PY_PYTHON_FILES})
+    get_filename_component(_HEYOKA_PY_CUR_DIR ${_HEYOKA_PY_CUR_FILE} DIRECTORY)
+    install(FILES ${_HEYOKA_PY_CUR_FILE} DESTINATION "${_HEYOKA_PY_INSTALL_DIR}/${_HEYOKA_PY_CUR_DIR}")
+endforeach()
 
 unset(_HEYOKA_PY_INSTALL_DIR)
