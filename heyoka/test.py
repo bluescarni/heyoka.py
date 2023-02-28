@@ -8,10 +8,9 @@
 
 import unittest as _ut
 
-# Small helper to get the epsilon of a floating-point type.
-
 
 def _get_eps(fp_t):
+    # Small helper to get the epsilon of a floating-point type.
     import numpy as np
 
     if fp_t == float or fp_t == np.longdouble:
@@ -25,9 +24,6 @@ def _get_eps(fp_t):
     raise TypeError(
         'Cannot compute the epsilon of the floating-point type "{}"'.format(fp_t)
     )
-
-
-# Reimplementation of several NumPy functions which do not work correctly with real128.
 
 
 def _isclose(a, b, rtol, atol):
