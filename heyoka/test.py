@@ -2947,8 +2947,9 @@ class sympy_test_case(_ut.TestCase):
             pi,
             sum as hsum,
             sum_sq,
-            make_nbody_sys,
         )
+
+        from .model import nbody
 
         x, y, z, a, b, c = spy.symbols("x y z a b c", real=True)
         hx, hy, hz, ha, hb, hc = make_vars("x", "y", "z", "a", "b", "c")
@@ -3085,9 +3086,9 @@ class sympy_test_case(_ut.TestCase):
         self.assertEqual(to_sympy(from_sympy(spy.pi)), spy.pi)
 
         # nbody helper.
-        [to_sympy(_[1]) for _ in make_nbody_sys(2)]
-        [to_sympy(_[1]) for _ in make_nbody_sys(4)]
-        [to_sympy(_[1]) for _ in make_nbody_sys(10)]
+        [to_sympy(_[1]) for _ in nbody(2)]
+        [to_sympy(_[1]) for _ in nbody(4)]
+        [to_sympy(_[1]) for _ in nbody(10)]
 
 
 class zero_division_error_test_case(_ut.TestCase):
@@ -4419,7 +4420,6 @@ class ensemble_test_case(_ut.TestCase):
 
 def run_test_suite():
     from . import (
-        make_nbody_sys,
         taylor_adaptive,
         _test_real,
         _test_real128,
@@ -4427,8 +4427,9 @@ def run_test_suite():
         _test_cfunc,
     )
     import numpy as np
+    from .model import nbody
 
-    sys = make_nbody_sys(2, masses=[1.1, 2.1], Gconst=1)
+    sys = nbody(2, masses=[1.1, 2.1], Gconst=1)
     ta = taylor_adaptive(
         sys, np.array([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12], dtype=float)
     )
