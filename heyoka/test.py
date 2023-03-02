@@ -4425,7 +4425,7 @@ def run_test_suite():
     import numpy as np
     from .model import nbody
 
-    sys = nbody(2, masses=[1.1, 2.1], Gconst=1)
+    sys = nbody(2, masses=[1.1, 2.1], Gconst=1.0)
     ta = taylor_adaptive(
         sys, np.array([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12], dtype=float)
     )

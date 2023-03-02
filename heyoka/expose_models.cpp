@@ -43,8 +43,28 @@ namespace detail
 namespace
 {
 
-// Small helper to turn v into an expression.
-constexpr auto make_ex = [](const auto &v) { return heyoka::expression(v); };
+// Common logic to expose N-body helpers.
+template <typename Op, typename V>
+auto nbody_impl(const Op &op, std::uint32_t n, const V &Gconst, const std::optional<std::vector<V>> &masses)
+{
+    namespace hy = heyoka;
+
+    // Small helper to turn v into an expression.
+    constexpr auto make_ex = [](const auto &v) { return hy::expression(v); };
+
+    const auto Gval = std::visit(make_ex, Gconst);
+
+    if (masses) {
+        std::vector<hy::expression> masses_vec;
+        for (const auto &mass : *masses) {
+            masses_vec.push_back(std::visit(make_ex, mass));
+        }
+
+        return op(n, hy::kw::Gconst = Gval, hy::kw::masses = masses_vec);
+    } else {
+        return op(n, hy::kw::Gconst = Gval);
+    }
+}
 
 } // namespace
 
@@ -74,20 +94,27 @@ void expose_models(py::module_ &m)
     m.def(
         "_model_nbody",
         [](std::uint32_t n, const vex_t &Gconst, const std::optional<std::vector<vex_t>> &masses) {
-            const auto Gval = std::visit(detail::make_ex, Gconst);
-
-            if (masses) {
-                std::vector<hy::expression> masses_vec;
-                for (const auto &mass : *masses) {
-                    masses_vec.push_back(std::visit(detail::make_ex, mass));
-                }
-
-                return hy::model::nbody(n, hy::kw::Gconst = Gval, hy::kw::masses = masses_vec);
-            } else {
-                return hy::model::nbody(n, hy::kw::Gconst = Gval);
-            }
+            return detail::nbody_impl(hy::model::nbody, n, Gconst, masses);
         },
-        "n"_a, "Gconst"_a = 1., "masses"_a = py::none{});
+        "n"_a.noconvert(), "Gconst"_a.noconvert() = 1., "masses"_a.noconvert() = py::none{});
+    m.def(
+        "_model_nbody_energy",
+        [](std::uint32_t n, const vex_t &Gconst, const std::optional<std::vector<vex_t>> &masses) {
+            return detail::nbody_impl(hy::model::nbody_energy, n, Gconst, masses);
+        },
+        "n"_a.noconvert(), "Gconst"_a.noconvert() = 1., "masses"_a.noconvert() = py::none{});
+    m.def(
+        "_model_np1body",
+        [](std::uint32_t n, const vex_t &Gconst, const std::optional<std::vector<vex_t>> &masses) {
+            return detail::nbody_impl(hy::model::np1body, n, Gconst, masses);
+        },
+        "n"_a.noconvert(), "Gconst"_a.noconvert() = 1., "masses"_a.noconvert() = py::none{});
+    m.def(
+        "_model_np1body_energy",
+        [](std::uint32_t n, const vex_t &Gconst, const std::optional<std::vector<vex_t>> &masses) {
+            return detail::nbody_impl(hy::model::np1body_energy, n, Gconst, masses);
+        },
+        "n"_a.noconvert(), "Gconst"_a.noconvert() = 1., "masses"_a.noconvert() = py::none{});
 }
 
 } // namespace heyoka_py

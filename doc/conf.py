@@ -39,6 +39,7 @@ intersphinx_mapping = {
     "mppp": ("https://bluescarni.github.io/mppp", None),
     "numpy": ("https://numpy.org/doc/stable/", None),
     "python": ("https://docs.python.org/3", None),
+    "scipy": ("https://docs.scipy.org/doc/scipy/", None),
 }
 
 # Add any paths that contain templates here, relative to this directory.

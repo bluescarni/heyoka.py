@@ -6,4 +6,13 @@
 # Public License v. 2.0. If a copy of the MPL was not distributed
 # with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-from ..core import _model_nbody as nbody
+from .. import core as _core
+
+_lst = list(filter(lambda name: name.startswith("_model_"), dir(_core)))
+
+for _name in _lst:
+    exec(f"from ..core import {_name} as {_name[7:]}")
+
+del _core
+del _lst
+del _name

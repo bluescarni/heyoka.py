@@ -305,6 +305,13 @@ PYBIND11_MODULE(core, m)
 
 #endif
 
+    // Expose the continuous output function objects.
+    // NOTE: do it *before* the integrators so that
+    // the type name of the continuous output function
+    // objects shows up correctly in the signature of the
+    // propagate_*() functions.
+    heypy::taylor_expose_c_output(m);
+
     // Expose the events.
     // NOTE: make sure these are exposed *before* the integrators.
     // Events are used in the integrator API (e.g., ctors), and in order
@@ -390,9 +397,6 @@ PYBIND11_MODULE(core, m)
         },
         "pl_idx"_a, "time"_a = hey::time, "thresh"_a.noconvert() = 1e-9);
     m.def("get_vsop2013_mus", &hey::get_vsop2013_mus);
-
-    // Expose the continuous output function objects.
-    heypy::taylor_expose_c_output(m);
 
     // Expose the helpers to get/set the number of threads in use by heyoka.py.
     // NOTE: these are not thread-safe themselves. Should they be? If not, their
