@@ -8,10 +8,9 @@
 
 import unittest as _ut
 
-# Small helper to get the epsilon of a floating-point type.
-
 
 def _get_eps(fp_t):
+    # Small helper to get the epsilon of a floating-point type.
     import numpy as np
 
     if fp_t == float or fp_t == np.longdouble:
@@ -25,9 +24,6 @@ def _get_eps(fp_t):
     raise TypeError(
         'Cannot compute the epsilon of the floating-point type "{}"'.format(fp_t)
     )
-
-
-# Reimplementation of several NumPy functions which do not work correctly with real128.
 
 
 def _isclose(a, b, rtol, atol):
@@ -2947,8 +2943,9 @@ class sympy_test_case(_ut.TestCase):
             pi,
             sum as hsum,
             sum_sq,
-            make_nbody_sys,
         )
+
+        from .model import nbody
 
         x, y, z, a, b, c = spy.symbols("x y z a b c", real=True)
         hx, hy, hz, ha, hb, hc = make_vars("x", "y", "z", "a", "b", "c")
@@ -3085,9 +3082,9 @@ class sympy_test_case(_ut.TestCase):
         self.assertEqual(to_sympy(from_sympy(spy.pi)), spy.pi)
 
         # nbody helper.
-        [to_sympy(_[1]) for _ in make_nbody_sys(2)]
-        [to_sympy(_[1]) for _ in make_nbody_sys(4)]
-        [to_sympy(_[1]) for _ in make_nbody_sys(10)]
+        [to_sympy(_[1]) for _ in nbody(2)]
+        [to_sympy(_[1]) for _ in nbody(4)]
+        [to_sympy(_[1]) for _ in nbody(10)]
 
 
 class zero_division_error_test_case(_ut.TestCase):
@@ -4419,16 +4416,17 @@ class ensemble_test_case(_ut.TestCase):
 
 def run_test_suite():
     from . import (
-        make_nbody_sys,
         taylor_adaptive,
         _test_real,
         _test_real128,
         _test_mp,
         _test_cfunc,
+        _test_model,
     )
     import numpy as np
+    from .model import nbody
 
-    sys = make_nbody_sys(2, masses=[1.1, 2.1], Gconst=1)
+    sys = nbody(2, masses=[1.1, 2.1], Gconst=1.0)
     ta = taylor_adaptive(
         sys, np.array([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12], dtype=float)
     )
@@ -4437,6 +4435,7 @@ def run_test_suite():
 
     suite = _ut.TestLoader().loadTestsFromTestCase(taylor_add_jet_test_case)
     suite.addTest(_ut.makeSuite(_test_mp.mp_test_case))
+    suite.addTest(_ut.makeSuite(_test_model.model_test_case))
     suite.addTest(_ut.makeSuite(_test_real.real_test_case))
     suite.addTest(_ut.makeSuite(_test_real128.real128_test_case))
     suite.addTest(_ut.makeSuite(_test_cfunc.cfunc_test_case))

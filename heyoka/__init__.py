@@ -6,9 +6,6 @@
 # Public License v. 2.0. If a copy of the MPL was not distributed
 # with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-# Explicitly import the test submodule
-from . import test
-
 # Version setup.
 from ._version import __version__
 
@@ -51,6 +48,12 @@ else:
     from .core import *
 
 del _os
+
+# Explicitly import the submodules
+# NOTE: it is *important* that the import is performed
+# here, *after* the initial import of core. Otherwise,
+# we would get missing symbols on POSIX platforms.
+from . import test, model
 
 
 def _with_real128():
@@ -222,6 +225,7 @@ def from_sympy(ex, s_dict={}):
 
 
 # Machinery for the setup of the serialization backend.
+
 
 # Helper to create dicts mapping a name to a serialization backend
 # and vice-versa.

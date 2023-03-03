@@ -33,6 +33,7 @@ Celestial mechanics and astrodynamics
   notebooks/Periodic orbits in the CR3BP
   notebooks/Long term stability of Trappist-1
   notebooks/Outer Solar System
+  notebooks/projection
   notebooks/Box control for Formation Flying Satellites
   notebooks/Comparing coordinate systems
   notebooks/Inverting Kepler's equation in ODEs

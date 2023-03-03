@@ -11,7 +11,7 @@ if(NOT CMAKE_BUILD_TYPE)
 	FORCE)
 endif()
 
-project(heyoka.py VERSION 0.21.7 LANGUAGES CXX C)
+project(heyoka.py VERSION 0.22.0 LANGUAGES CXX C)
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake" "${CMAKE_CURRENT_SOURCE_DIR}/cmake/yacma")
 
@@ -120,7 +120,7 @@ message(STATUS "fmt version: ${fmt_VERSION}")
 # heyoka.
 # NOTE: put the minimum version in a variable
 # so that we can re-use it below.
-set(_HEYOKA_PY_MIN_HEYOKA_VERSION 0.21.0)
+set(_HEYOKA_PY_MIN_HEYOKA_VERSION 0.22.0)
 find_package(heyoka REQUIRED CONFIG)
 if(${heyoka_VERSION} VERSION_LESS ${_HEYOKA_PY_MIN_HEYOKA_VERSION})
     message(FATAL_ERROR "The minimum heyoka version required by heyoka.py is ${_HEYOKA_PY_MIN_HEYOKA_VERSION}, but version ${heyoka_VERSION} was found instead.")
