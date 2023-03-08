@@ -46,7 +46,6 @@ namespace py = pybind11;
 void expose_expression(py::module_ &m)
 {
     namespace hey = heyoka;
-    namespace heypy = heyoka_py;
     // NOLINTNEXTLINE(google-build-using-namespace)
     using namespace pybind11::literals;
 
@@ -199,13 +198,12 @@ void expose_expression(py::module_ &m)
                  return oss.str();
              })
         // Copy/deepcopy.
-        .def("__copy__", heypy::copy_wrapper<hey::expression, ex_copy_func>)
-        .def("__deepcopy__", heypy::deepcopy_wrapper<hey::expression, ex_copy_func>, "memo"_a)
+        .def("__copy__", copy_wrapper<hey::expression, ex_copy_func>)
+        .def("__deepcopy__", deepcopy_wrapper<hey::expression, ex_copy_func>, "memo"_a)
         // Hashing.
         .def("__hash__", [](const heyoka::expression &e) { return heyoka::hash(e); })
         // Pickle support.
-        .def(py::pickle(&heypy::pickle_getstate_wrapper<hey::expression>,
-                        &heypy::pickle_setstate_wrapper<hey::expression>));
+        .def(py::pickle(&pickle_getstate_wrapper<hey::expression>, &pickle_setstate_wrapper<hey::expression>));
 
     // Eval
     m.def("_eval_dbl", [](const hey::expression &e, const std::unordered_map<std::string, double> &map,

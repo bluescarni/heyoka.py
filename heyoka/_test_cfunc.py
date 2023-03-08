@@ -11,6 +11,26 @@ import unittest as _ut
 
 
 class cfunc_test_case(_ut.TestCase):
+    def test_basic(self):
+        from . import make_cfunc, make_vars, cfunc_dbl
+        import pickle
+        from copy import copy, deepcopy
+
+        def_cted = cfunc_dbl()
+
+        with self.assertRaises(ValueError) as cm:
+            def_cted([])
+        self.assertTrue(
+            "Cannot invoke a default-constructed compiled function" in str(cm.exception)
+        )
+
+        x, y, z = make_vars("x", "y", "z")
+        cf = make_cfunc([y * (x + z)])
+
+        self.assertEqual(cf([1, 2, 3]), copy(cf)([1, 2, 3]))
+        self.assertEqual(cf([1, 2, 3]), deepcopy(cf)([1, 2, 3]))
+        self.assertEqual(cf([1, 2, 3]), pickle.loads(pickle.dumps(cf))([1, 2, 3]))
+
     def test_multi(self):
         import numpy as np
         from . import make_cfunc, make_vars, sin, par, expression, core, time

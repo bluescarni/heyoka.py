@@ -23,6 +23,7 @@
 #include <vector>
 
 #include <boost/numeric/conversion/cast.hpp>
+#include <boost/serialization/split_member.hpp>
 
 #include <fmt/format.h>
 
@@ -53,6 +54,7 @@
 #include "common_utils.hpp"
 #include "custom_casters.hpp"
 #include "dtypes.hpp"
+#include "pickle_wrappers.hpp"
 
 #if defined(HEYOKA_HAVE_REAL)
 
@@ -65,7 +67,6 @@ namespace heyoka_py
 
 namespace py = pybind11;
 namespace hey = heyoka;
-namespace heypy = heyoka_py;
 
 namespace detail
 {
@@ -96,16 +97,105 @@ struct cfunc {
     using ptr_s_t = cfunc_ptr_s_t<T>;
 
     hey::llvm_state s_scal, s_batch;
-    std::uint32_t simd_size, nparams, nouts, nvars;
-    bool is_time_dependent;
-    ptr_t fptr_scal, fptr_batch;
-    ptr_s_t fptr_scal_s, fptr_batch_s;
+    std::uint32_t simd_size = 0, nparams = 0, nouts = 0, nvars = 0;
+    bool is_time_dependent = false;
+    ptr_t fptr_scal = nullptr, fptr_batch = nullptr;
+    ptr_s_t fptr_scal_s = nullptr, fptr_batch_s = nullptr;
     std::vector<T> buf_in, buf_out, buf_pars, buf_time;
-    long long prec;
+    long long prec = 0;
+
+    template <typename Archive>
+    void save(Archive &ar, unsigned) const
+    {
+        ar << s_scal;
+        ar << s_batch;
+        ar << simd_size;
+        ar << nparams;
+        ar << nouts;
+        ar << nvars;
+        ar << is_time_dependent;
+        ar << buf_in;
+        ar << buf_out;
+        ar << buf_pars;
+        ar << buf_time;
+        ar << prec;
+    }
+    template <typename Archive>
+    void load(Archive &ar, unsigned)
+    {
+        // NOTE: make a copy of this for exception safety.
+        auto copy_this = *this;
+
+        try {
+            ar >> s_scal;
+            ar >> s_batch;
+            ar >> simd_size;
+            ar >> nparams;
+            ar >> nouts;
+            ar >> nvars;
+            ar >> is_time_dependent;
+            ar >> buf_in;
+            ar >> buf_out;
+            ar >> buf_pars;
+            ar >> buf_time;
+            ar >> prec;
+
+            fptr_scal = reinterpret_cast<ptr_t>(s_scal.jit_lookup("cfunc"));
+            fptr_batch = reinterpret_cast<ptr_t>(s_batch.jit_lookup("cfunc"));
+            fptr_scal_s = reinterpret_cast<ptr_s_t>(s_scal.jit_lookup("cfunc.strided"));
+            fptr_batch_s = reinterpret_cast<ptr_s_t>(s_batch.jit_lookup("cfunc.strided"));
+        } catch (...) {
+            // Restore before rethrowing.
+            *this = std::move(copy_this);
+
+            throw;
+        }
+    }
+    BOOST_SERIALIZATION_SPLIT_MEMBER()
+
+    cfunc() = default;
+    explicit cfunc(hey::llvm_state s_scal, hey::llvm_state s_batch, std::uint32_t simd_size, std::uint32_t nparams,
+                   std::uint32_t nouts, std::uint32_t nvars, bool is_time_dependent, ptr_t fptr_scal, ptr_t fptr_batch,
+                   ptr_s_t fptr_scal_s, ptr_s_t fptr_batch_s, std::vector<T> buf_in, std::vector<T> buf_out,
+                   std::vector<T> buf_pars, std::vector<T> buf_time, long long prec)
+        : s_scal(std::move(s_scal)), s_batch(std::move(s_batch)), simd_size(simd_size), nparams(nparams), nouts(nouts),
+          nvars(nvars), is_time_dependent(is_time_dependent), fptr_scal(fptr_scal), fptr_batch(fptr_batch),
+          fptr_scal_s(fptr_scal_s), fptr_batch_s(fptr_batch_s), buf_in(std::move(buf_in)), buf_out(std::move(buf_out)),
+          buf_pars(std::move(buf_pars)), buf_time(std::move(buf_time)), prec(prec)
+    {
+    }
+    cfunc(const cfunc &other)
+        : s_scal(other.s_scal), s_batch(other.s_batch), simd_size(other.simd_size), nparams(other.nparams),
+          nouts(other.nouts), nvars(other.nvars), is_time_dependent(other.is_time_dependent), buf_in(other.buf_in),
+          buf_out(other.buf_out), buf_pars(other.buf_pars), buf_time(other.buf_time), prec(prec)
+    {
+        // NOTE: don't lookup the pointers if we are copying a def-cted cfunc,
+        // just leave them null.
+        if (other.fptr_scal != nullptr) {
+            fptr_scal = reinterpret_cast<ptr_t>(s_scal.jit_lookup("cfunc"));
+            fptr_batch = reinterpret_cast<ptr_t>(s_batch.jit_lookup("cfunc"));
+            fptr_scal_s = reinterpret_cast<ptr_s_t>(s_scal.jit_lookup("cfunc.strided"));
+            fptr_batch_s = reinterpret_cast<ptr_s_t>(s_batch.jit_lookup("cfunc.strided"));
+        }
+    }
+    cfunc(cfunc &&) noexcept = default;
+    cfunc &operator=(const cfunc &other)
+    {
+        if (this != &other) {
+            *this = cfunc(other);
+        }
+        return *this;
+    }
+    cfunc &operator=(cfunc &&) noexcept = default;
+    ~cfunc() = default;
 
     auto operator()(const py::iterable &inputs_ob, std::optional<py::iterable> outputs_ob,
                     std::optional<py::iterable> pars_ob, std::optional<std::variant<T, py::iterable>> time_ob)
     {
+        if (fptr_scal == nullptr) {
+            py_throw(PyExc_ValueError, "Cannot invoke a default-constructed compiled function");
+        }
+
         using namespace pybind11::literals;
 
         // Fetch the dtype corresponding to T.
@@ -150,38 +240,36 @@ struct cfunc {
         // If we have params in the function, we must be provided
         // with an array of parameter values.
         if (nparams > 0u && !pars) {
-            heypy::py_throw(PyExc_ValueError,
-                            fmt::format("The compiled function contains {} parameter(s), but no array "
-                                        "of parameter values was provided for evaluation",
-                                        nparams)
-                                .c_str());
+            py_throw(PyExc_ValueError, fmt::format("The compiled function contains {} parameter(s), but no array "
+                                                   "of parameter values was provided for evaluation",
+                                                   nparams)
+                                           .c_str());
         }
 
         // If the function is time-dependent, we must be provided
         // with an array of time values.
         if (is_time_dependent && !time) {
-            heypy::py_throw(PyExc_ValueError, "The compiled function is time-dependent, but no "
-                                              "time value(s) were provided for evaluation");
+            py_throw(PyExc_ValueError, "The compiled function is time-dependent, but no "
+                                       "time value(s) were provided for evaluation");
         }
 
         // Validate the number of dimensions for the inputs.
         if (inputs.ndim() != 1 && inputs.ndim() != 2) {
-            heypy::py_throw(PyExc_ValueError, fmt::format("The array of inputs provided for the evaluation "
-                                                          "of a compiled function has {} dimensions, "
-                                                          "but it must have either 1 or 2 dimensions instead",
-                                                          inputs.ndim())
-                                                  .c_str());
+            py_throw(PyExc_ValueError, fmt::format("The array of inputs provided for the evaluation "
+                                                   "of a compiled function has {} dimensions, "
+                                                   "but it must have either 1 or 2 dimensions instead",
+                                                   inputs.ndim())
+                                           .c_str());
         }
 
         // Check the number of inputs.
         if (boost::numeric_cast<std::uint32_t>(inputs.shape(0)) != nvars) {
-            heypy::py_throw(PyExc_ValueError,
-                            fmt::format("The array of inputs provided for the evaluation "
-                                        "of a compiled function has size {} in the first dimension, "
-                                        "but it must have a size of {} instead (i.e., the size in the "
-                                        "first dimension must be equal to the number of variables)",
-                                        inputs.shape(0), nvars)
-                                .c_str());
+            py_throw(PyExc_ValueError, fmt::format("The array of inputs provided for the evaluation "
+                                                   "of a compiled function has size {} in the first dimension, "
+                                                   "but it must have a size of {} instead (i.e., the size in the "
+                                                   "first dimension must be equal to the number of variables)",
+                                                   inputs.shape(0), nvars)
+                                           .c_str());
         }
 
         // Determine if we are running one or more evaluations.
@@ -190,9 +278,8 @@ struct cfunc {
         // Check that if we are doing a single evaluation, a scalar
         // time value was passed.
         if (time && !multi_eval && !std::holds_alternative<T>(*time_ob)) {
-            heypy::py_throw(PyExc_ValueError,
-                            "When performing a single evaluation of a compiled function, a scalar time "
-                            "value must be provided, but an iterable object was passed instead");
+            py_throw(PyExc_ValueError, "When performing a single evaluation of a compiled function, a scalar time "
+                                       "value must be provided, but an iterable object was passed instead");
         }
 
         // Prepare the array of outputs.
@@ -202,41 +289,40 @@ struct cfunc {
 
                 // Check if we can write to the outputs.
                 if (!outputs_->writeable()) {
-                    heypy::py_throw(PyExc_ValueError, "The array of outputs provided for the evaluation "
-                                                      "of a compiled function is not writeable");
+                    py_throw(PyExc_ValueError, "The array of outputs provided for the evaluation "
+                                               "of a compiled function is not writeable");
                 }
 
                 // Validate the number of dimensions for the outputs.
                 if (outputs_->ndim() != inputs.ndim()) {
-                    heypy::py_throw(PyExc_ValueError,
-                                    fmt::format("The array of outputs provided for the evaluation "
-                                                "of a compiled function has {} dimension(s), "
-                                                "but it must have {} dimension(s) instead (i.e., the same "
-                                                "number of dimensions as the array of inputs)",
-                                                outputs_->ndim(), inputs.ndim())
-                                        .c_str());
+                    py_throw(PyExc_ValueError, fmt::format("The array of outputs provided for the evaluation "
+                                                           "of a compiled function has {} dimension(s), "
+                                                           "but it must have {} dimension(s) instead (i.e., the same "
+                                                           "number of dimensions as the array of inputs)",
+                                                           outputs_->ndim(), inputs.ndim())
+                                                   .c_str());
                 }
 
                 // Check the number of outputs.
                 if (boost::numeric_cast<std::uint32_t>(outputs_->shape(0)) != nouts) {
-                    heypy::py_throw(PyExc_ValueError,
-                                    fmt::format("The array of outputs provided for the evaluation "
-                                                "of a compiled function has size {} in the first dimension, "
-                                                "but it must have a size of {} instead (i.e., the size in the "
-                                                "first dimension must be equal to the number of outputs)",
-                                                outputs_->shape(0), nouts)
-                                        .c_str());
+                    py_throw(PyExc_ValueError,
+                             fmt::format("The array of outputs provided for the evaluation "
+                                         "of a compiled function has size {} in the first dimension, "
+                                         "but it must have a size of {} instead (i.e., the size in the "
+                                         "first dimension must be equal to the number of outputs)",
+                                         outputs_->shape(0), nouts)
+                                 .c_str());
                 }
 
                 // If we are running multiple evaluations, the number must
                 // be consistent between inputs and outputs.
                 if (multi_eval && outputs_->shape(1) != inputs.shape(1)) {
-                    heypy::py_throw(PyExc_ValueError,
-                                    fmt::format("The size in the second dimension for the output array provided for "
-                                                "the evaluation of a compiled function ({}) must match the size in the "
-                                                "second dimension for the array of inputs ({})",
-                                                outputs_->shape(1), inputs.shape(1))
-                                        .c_str());
+                    py_throw(PyExc_ValueError,
+                             fmt::format("The size in the second dimension for the output array provided for "
+                                         "the evaluation of a compiled function ({}) must match the size in the "
+                                         "second dimension for the array of inputs ({})",
+                                         outputs_->shape(1), inputs.shape(1))
+                                 .c_str());
                 }
 
                 return std::move(*outputs_);
@@ -269,37 +355,35 @@ struct cfunc {
         if (pars) {
             // Validate the number of dimensions.
             if (pars->ndim() != inputs.ndim()) {
-                heypy::py_throw(PyExc_ValueError,
-                                fmt::format("The array of parameter values provided for the evaluation "
-                                            "of a compiled function has {} dimension(s), "
-                                            "but it must have {} dimension(s) instead (i.e., the same "
-                                            "number of dimensions as the array of inputs)",
-                                            pars->ndim(), inputs.ndim())
-                                    .c_str());
+                py_throw(PyExc_ValueError, fmt::format("The array of parameter values provided for the evaluation "
+                                                       "of a compiled function has {} dimension(s), "
+                                                       "but it must have {} dimension(s) instead (i.e., the same "
+                                                       "number of dimensions as the array of inputs)",
+                                                       pars->ndim(), inputs.ndim())
+                                               .c_str());
             }
 
             // Check the number of pars.
             if (boost::numeric_cast<std::uint32_t>(pars->shape(0)) != nparams) {
-                heypy::py_throw(
-                    PyExc_ValueError,
-                    fmt::format("The array of parameter values provided for the evaluation "
-                                "of a compiled function has size {} in the first dimension, "
-                                "but it must have a size of {} instead (i.e., the size in the "
-                                "first dimension must be equal to the number of parameters in the function)",
-                                pars->shape(0), nparams)
-                        .c_str());
+                py_throw(PyExc_ValueError,
+                         fmt::format("The array of parameter values provided for the evaluation "
+                                     "of a compiled function has size {} in the first dimension, "
+                                     "but it must have a size of {} instead (i.e., the size in the "
+                                     "first dimension must be equal to the number of parameters in the function)",
+                                     pars->shape(0), nparams)
+                             .c_str());
             }
 
             // If we are running multiple evaluations, the number must
             // be consistent between inputs and pars.
             if (multi_eval && pars->shape(1) != inputs.shape(1)) {
-                heypy::py_throw(PyExc_ValueError,
-                                fmt::format("The size in the second dimension for the array of parameter values "
-                                            "provided for "
-                                            "the evaluation of a compiled function ({}) must match the size in the "
-                                            "second dimension for the array of inputs ({})",
-                                            pars->shape(1), inputs.shape(1))
-                                    .c_str());
+                py_throw(PyExc_ValueError,
+                         fmt::format("The size in the second dimension for the array of parameter values "
+                                     "provided for "
+                                     "the evaluation of a compiled function ({}) must match the size in the "
+                                     "second dimension for the array of inputs ({})",
+                                     pars->shape(1), inputs.shape(1))
+                             .c_str());
             }
 
 #if defined(HEYOKA_HAVE_REAL)
@@ -321,22 +405,22 @@ struct cfunc {
             // into an array. In the latter case, we must ensure the user did not
             // provide a multi-dimensional array in input.
             if (time->ndim() != 1) {
-                heypy::py_throw(PyExc_ValueError,
-                                fmt::format("An invalid time argument was passed to a compiled function: the time "
-                                            "array must be one-dimensional, but instead it has {} dimensions",
-                                            time->ndim())
-                                    .c_str());
+                py_throw(PyExc_ValueError,
+                         fmt::format("An invalid time argument was passed to a compiled function: the time "
+                                     "array must be one-dimensional, but instead it has {} dimensions",
+                                     time->ndim())
+                             .c_str());
             }
 
             // If we are running multiple evaluations, the number must
             // be consistent between inputs and time.
             if (multi_eval && time->shape(0) != inputs.shape(1)) {
-                heypy::py_throw(PyExc_ValueError,
-                                fmt::format("The size of the array of time values provided for "
-                                            "the evaluation of a compiled function ({}) must match the size in the "
-                                            "second dimension for the array of inputs ({})",
-                                            time->shape(0), inputs.shape(1))
-                                    .c_str());
+                py_throw(PyExc_ValueError,
+                         fmt::format("The size of the array of time values provided for "
+                                     "the evaluation of a compiled function ({}) must match the size in the "
+                                     "second dimension for the array of inputs ({})",
+                                     time->shape(0), inputs.shape(1))
+                             .c_str());
             }
 
             if (!multi_eval) {
@@ -560,12 +644,18 @@ void expose_add_cfunc_impl(py::module &m, const char *suffix)
     namespace kw = hey::kw;
 
     py::class_<cfunc<T>> cfunc_inst(m, fmt::format("cfunc_{}", suffix).c_str(), py::dynamic_attr{});
+    cfunc_inst.def(py::init<>());
     cfunc_inst.def("__call__", &cfunc<T>::operator(), "inputs"_a, "outputs"_a = py::none{}, "pars"_a = py::none{},
                    "time"_a = py::none{});
     cfunc_inst.def_property_readonly("llvm_state_scalar",
                                      [](const cfunc<T> &cf) -> const hey::llvm_state & { return cf.s_scal; });
     cfunc_inst.def_property_readonly("llvm_state_batch",
                                      [](const cfunc<T> &cf) -> const hey::llvm_state & { return cf.s_batch; });
+    // Copy/deepcopy.
+    cfunc_inst.def("__copy__", copy_wrapper<cfunc<T>>);
+    cfunc_inst.def("__deepcopy__", deepcopy_wrapper<cfunc<T>>, "memo"_a);
+    // Pickle support.
+    cfunc_inst.def(py::pickle(&pickle_getstate_wrapper<cfunc<T>>, &pickle_setstate_wrapper<cfunc<T>>));
 
     m.def(
         fmt::format("_add_cfunc_{}", suffix).c_str(),
@@ -718,9 +808,10 @@ void expose_add_cfunc_impl(py::module &m, const char *suffix)
                             std::move(buf_time),
                             prec};
         },
-        "fn"_a, "vars"_a = py::none{}, "high_accuracy"_a = false, "compact_mode"_a = default_cm<T>,
-        "parallel_mode"_a = false, "opt_level"_a.noconvert() = 3, "force_avx512"_a.noconvert() = false,
-        "batch_size"_a = py::none{}, "fast_math"_a.noconvert() = false, "prec"_a.noconvert() = 0);
+        "fn"_a, "vars"_a = py::none{}, "high_accuracy"_a.noconvert() = false,
+        "compact_mode"_a.noconvert() = default_cm<T>, "parallel_mode"_a.noconvert() = false,
+        "opt_level"_a.noconvert() = 3, "force_avx512"_a.noconvert() = false, "batch_size"_a.noconvert() = py::none{},
+        "fast_math"_a.noconvert() = false, "prec"_a.noconvert() = 0);
 }
 
 } // namespace
