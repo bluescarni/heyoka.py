@@ -114,7 +114,7 @@ py::object to_sympy_impl(std::unordered_map<const void *, py::object> &, const h
             // NOTE: forbid conversion if the value is not finite.
             if (!isfinite(x)) {
                 py_throw(PyExc_ValueError,
-                         (fmt::format("Cannot convert to sympy the nonfinite number {}", num)).c_str());
+                         (fmt::format("Cannot convert to sympy the nonfinite number {}", hy::expression{num})).c_str());
             }
 
 #if defined(HEYOKA_HAVE_REAL128)
@@ -147,7 +147,8 @@ py::object to_sympy_impl(std::unordered_map<const void *, py::object> &func_map,
     auto it = fmap.find(f.get_type_index());
 
     if (it == fmap.end()) {
-        py_throw(PyExc_TypeError, (fmt::format("Cannot convert to sympy the heyoka function {}", f)).c_str());
+        py_throw(PyExc_TypeError,
+                 (fmt::format("Cannot convert to sympy the heyoka function {}", hy::expression{f})).c_str());
     }
 
     py::object retval;

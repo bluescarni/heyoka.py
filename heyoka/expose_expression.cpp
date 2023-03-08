@@ -201,6 +201,8 @@ void expose_expression(py::module_ &m)
         // Copy/deepcopy.
         .def("__copy__", heypy::copy_wrapper<hey::expression, ex_copy_func>)
         .def("__deepcopy__", heypy::deepcopy_wrapper<hey::expression, ex_copy_func>, "memo"_a)
+        // Hashing.
+        .def("__hash__", [](const heyoka::expression &e) { return heyoka::hash(e); })
         // Pickle support.
         .def(py::pickle(&heypy::pickle_getstate_wrapper<hey::expression>,
                         &heypy::pickle_setstate_wrapper<hey::expression>));
