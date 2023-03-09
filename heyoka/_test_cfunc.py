@@ -12,11 +12,19 @@ import unittest as _ut
 
 class cfunc_test_case(_ut.TestCase):
     def test_basic(self):
-        from . import make_cfunc, make_vars, cfunc_dbl
+        from . import make_cfunc, make_vars, cfunc_dbl, core
         import pickle
         from copy import copy, deepcopy
 
         def_cted = cfunc_dbl()
+
+        with self.assertRaises(ValueError) as cm:
+            def_cted([])
+        self.assertTrue(
+            "Cannot invoke a default-constructed compiled function" in str(cm.exception)
+        )
+
+        def_cted = deepcopy(def_cted)
 
         with self.assertRaises(ValueError) as cm:
             def_cted([])
@@ -30,6 +38,31 @@ class cfunc_test_case(_ut.TestCase):
         self.assertEqual(cf([1, 2, 3]), copy(cf)([1, 2, 3]))
         self.assertEqual(cf([1, 2, 3]), deepcopy(cf)([1, 2, 3]))
         self.assertEqual(cf([1, 2, 3]), pickle.loads(pickle.dumps(cf))([1, 2, 3]))
+
+        self.assertEqual(cf.list_var, ["x", "y", "z"])
+        self.assertEqual(cf.fn, [y * (x + z)])
+        self.assertEqual(deepcopy(cf).list_var, ["x", "y", "z"])
+        self.assertEqual(deepcopy(cf).fn, [y * (x + z)])
+        self.assertEqual(pickle.loads(pickle.dumps(cf)).list_var, ["x", "y", "z"])
+        self.assertEqual(pickle.loads(pickle.dumps(cf)).fn, [y * (x + z)])
+
+        # NOTE: test for a bug in the multiprecision
+        # implementation where the precision is not
+        # correctly copied.
+        if not hasattr(core, "real"):
+            return
+
+        real = core.real
+
+        cf = make_cfunc([y * (x + z)], fp_type=real, prec=128)
+        self.assertEqual(
+            cf([real(1, 128), real(2, 128), real(3, 128)]),
+            copy(cf)([real(1, 128), real(2, 128), real(3, 128)]),
+        )
+
+        self.assertEqual(cf.prec, 128)
+        self.assertEqual(deepcopy(cf).prec, 128)
+        self.assertEqual(pickle.loads(pickle.dumps(cf)).prec, 128)
 
     def test_multi(self):
         import numpy as np

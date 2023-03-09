@@ -13,9 +13,12 @@
 #include <cstddef>
 #include <cstdint>
 #include <initializer_list>
+#include <iterator>
 #include <limits>
 #include <optional>
+#include <ostream>
 #include <set>
+#include <sstream>
 #include <string>
 #include <type_traits>
 #include <utility>
@@ -24,8 +27,11 @@
 
 #include <boost/numeric/conversion/cast.hpp>
 #include <boost/serialization/split_member.hpp>
+#include <boost/serialization/string.hpp>
+#include <boost/serialization/vector.hpp>
 
-#include <fmt/format.h>
+#include <fmt/core.h>
+#include <fmt/ranges.h>
 
 #include <oneapi/tbb/parallel_invoke.h>
 
@@ -37,6 +43,7 @@
 
 #include <heyoka/expression.hpp>
 #include <heyoka/llvm_state.hpp>
+#include <heyoka/variable.hpp>
 
 #if defined(HEYOKA_HAVE_REAL128)
 
@@ -103,6 +110,8 @@ struct cfunc {
     ptr_s_t fptr_scal_s = nullptr, fptr_batch_s = nullptr;
     std::vector<T> buf_in, buf_out, buf_pars, buf_time;
     long long prec = 0;
+    std::vector<std::string> list_var;
+    std::vector<hey::expression> fn;
 
     template <typename Archive>
     void save(Archive &ar, unsigned) const
@@ -119,6 +128,8 @@ struct cfunc {
         ar << buf_pars;
         ar << buf_time;
         ar << prec;
+        ar << list_var;
+        ar << fn;
     }
     template <typename Archive>
     void load(Archive &ar, unsigned)
@@ -139,6 +150,8 @@ struct cfunc {
             ar >> buf_pars;
             ar >> buf_time;
             ar >> prec;
+            ar >> list_var;
+            ar >> fn;
 
             fptr_scal = reinterpret_cast<ptr_t>(s_scal.jit_lookup("cfunc"));
             fptr_batch = reinterpret_cast<ptr_t>(s_batch.jit_lookup("cfunc"));
@@ -157,17 +170,20 @@ struct cfunc {
     explicit cfunc(hey::llvm_state s_scal, hey::llvm_state s_batch, std::uint32_t simd_size, std::uint32_t nparams,
                    std::uint32_t nouts, std::uint32_t nvars, bool is_time_dependent, ptr_t fptr_scal, ptr_t fptr_batch,
                    ptr_s_t fptr_scal_s, ptr_s_t fptr_batch_s, std::vector<T> buf_in, std::vector<T> buf_out,
-                   std::vector<T> buf_pars, std::vector<T> buf_time, long long prec)
+                   std::vector<T> buf_pars, std::vector<T> buf_time, long long prec, std::vector<std::string> list_var,
+                   std::vector<hey::expression> fn)
         : s_scal(std::move(s_scal)), s_batch(std::move(s_batch)), simd_size(simd_size), nparams(nparams), nouts(nouts),
           nvars(nvars), is_time_dependent(is_time_dependent), fptr_scal(fptr_scal), fptr_batch(fptr_batch),
           fptr_scal_s(fptr_scal_s), fptr_batch_s(fptr_batch_s), buf_in(std::move(buf_in)), buf_out(std::move(buf_out)),
-          buf_pars(std::move(buf_pars)), buf_time(std::move(buf_time)), prec(prec)
+          buf_pars(std::move(buf_pars)), buf_time(std::move(buf_time)), prec(prec), list_var(std::move(list_var)),
+          fn(std::move(fn))
     {
     }
     cfunc(const cfunc &other)
         : s_scal(other.s_scal), s_batch(other.s_batch), simd_size(other.simd_size), nparams(other.nparams),
           nouts(other.nouts), nvars(other.nvars), is_time_dependent(other.is_time_dependent), buf_in(other.buf_in),
-          buf_out(other.buf_out), buf_pars(other.buf_pars), buf_time(other.buf_time), prec(prec)
+          buf_out(other.buf_out), buf_pars(other.buf_pars), buf_time(other.buf_time), prec(other.prec),
+          list_var(other.list_var), fn(other.fn)
     {
         // NOTE: don't lookup the pointers if we are copying a def-cted cfunc,
         // just leave them null.
@@ -638,6 +654,26 @@ struct cfunc {
 };
 
 template <typename T>
+std::ostream &operator<<(std::ostream &os, const cfunc<T> &cf)
+{
+#if defined(HEYOKA_HAVE_REAL)
+
+    if constexpr (std::is_same_v<T, mppp::real>) {
+        os << fmt::format("Precision: {}\n", cf.prec);
+    }
+
+#endif
+
+    os << fmt::format("Variables: {}\n", cf.list_var);
+
+    for (decltype(cf.fn.size()) i = 0; i < cf.fn.size(); ++i) {
+        os << fmt::format("Output #{}: {}\n", i, cf.fn[i]);
+    }
+
+    return os;
+}
+
+template <typename T>
 void expose_add_cfunc_impl(py::module &m, const char *suffix)
 {
     using namespace pybind11::literals;
@@ -651,6 +687,19 @@ void expose_add_cfunc_impl(py::module &m, const char *suffix)
                                      [](const cfunc<T> &cf) -> const hey::llvm_state & { return cf.s_scal; });
     cfunc_inst.def_property_readonly("llvm_state_batch",
                                      [](const cfunc<T> &cf) -> const hey::llvm_state & { return cf.s_batch; });
+    cfunc_inst.def_property_readonly("list_var", [](const cfunc<T> &cf) { return cf.list_var; });
+    cfunc_inst.def_property_readonly("fn", [](const cfunc<T> &cf) { return cf.fn; });
+#if defined(HEYOKA_HAVE_REAL)
+    if constexpr (std::is_same_v<T, mppp::real>) {
+        cfunc_inst.def_property_readonly("prec", [](const cfunc<T> &cf) { return cf.prec; });
+    }
+#endif
+    // Repr.
+    cfunc_inst.def("__repr__", [](const cfunc<T> &cf) {
+        std::ostringstream oss;
+        oss << cf;
+        return oss.str();
+    });
     // Copy/deepcopy.
     cfunc_inst.def("__copy__", copy_wrapper<cfunc<T>>);
     cfunc_inst.def("__deepcopy__", deepcopy_wrapper<cfunc<T>>, "memo"_a);
@@ -659,8 +708,8 @@ void expose_add_cfunc_impl(py::module &m, const char *suffix)
 
     m.def(
         fmt::format("_add_cfunc_{}", suffix).c_str(),
-        [](const std::vector<hey::expression> &fn, const std::optional<std::vector<hey::expression>> &vars,
-           bool high_accuracy, bool compact_mode, bool parallel_mode, unsigned opt_level, bool force_avx512,
+        [](std::vector<hey::expression> fn, const std::optional<std::vector<hey::expression>> &vars, bool high_accuracy,
+           bool compact_mode, bool parallel_mode, unsigned opt_level, bool force_avx512,
            std::optional<std::uint32_t> batch_size, bool fast_math, long long prec) {
             // Compute the SIMD size.
             const auto simd_size = batch_size ? *batch_size : hey::recommended_simd_size<T>();
@@ -735,9 +784,16 @@ void expose_add_cfunc_impl(py::module &m, const char *suffix)
             // fits in a 32-bit int.
             const auto nouts = static_cast<std::uint32_t>(fn.size());
 
+            // NOTE: save as well the list of variables, so
+            // that we can pass it to the cfunc ctor.
+            std::vector<std::string> list_var;
+
             std::uint32_t nvars = 0;
             if (vars) {
                 nvars = static_cast<std::uint32_t>(vars->size());
+
+                std::transform(vars->begin(), vars->end(), std::back_inserter(list_var),
+                               [](const auto &ex) { return std::get<hey::variable>(ex.value()).name(); });
             } else {
                 // NOTE: this is a bit of repetition from add_cfunc().
                 // If this becomes an issue, we can consider in the
@@ -751,6 +807,8 @@ void expose_add_cfunc_impl(py::module &m, const char *suffix)
                 }
 
                 nvars = static_cast<std::uint32_t>(dvars.size());
+
+                list_var.assign(dvars.begin(), dvars.end());
             }
 
             // Prepare local buffers to store inputs, outputs, pars and time
@@ -806,7 +864,9 @@ void expose_add_cfunc_impl(py::module &m, const char *suffix)
                             std::move(buf_out),
                             std::move(buf_pars),
                             std::move(buf_time),
-                            prec};
+                            prec,
+                            std::move(list_var),
+                            std::move(fn)};
         },
         "fn"_a, "vars"_a = py::none{}, "high_accuracy"_a.noconvert() = false,
         "compact_mode"_a.noconvert() = default_cm<T>, "parallel_mode"_a.noconvert() = false,
