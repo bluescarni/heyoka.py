@@ -16,6 +16,8 @@ class cfunc_test_case(_ut.TestCase):
         import pickle
         from copy import copy, deepcopy
 
+        self.assertRaises(ValueError, lambda: make_cfunc([]))
+
         def_cted = cfunc_dbl()
 
         with self.assertRaises(ValueError) as cm:
@@ -39,12 +41,34 @@ class cfunc_test_case(_ut.TestCase):
         self.assertEqual(cf([1, 2, 3]), deepcopy(cf)([1, 2, 3]))
         self.assertEqual(cf([1, 2, 3]), pickle.loads(pickle.dumps(cf))([1, 2, 3]))
 
-        self.assertEqual(cf.list_var, ["x", "y", "z"])
+        self.assertEqual(cf.list_var, [x, y, z])
         self.assertEqual(cf.fn, [y * (x + z)])
-        self.assertEqual(deepcopy(cf).list_var, ["x", "y", "z"])
+        self.assertEqual(len(cf.decomposition), 6)
+        self.assertNotEqual(len(cf.llvm_state_scalar.get_ir()), 0)
+        self.assertNotEqual(len(cf.llvm_state_batch.get_ir()), 0)
+        self.assertEqual(deepcopy(cf).list_var, [x, y, z])
         self.assertEqual(deepcopy(cf).fn, [y * (x + z)])
-        self.assertEqual(pickle.loads(pickle.dumps(cf)).list_var, ["x", "y", "z"])
+        self.assertEqual(deepcopy(cf).decomposition, cf.decomposition)
+        self.assertEqual(
+            deepcopy(cf).llvm_state_scalar.get_ir(), cf.llvm_state_scalar.get_ir()
+        )
+        self.assertEqual(
+            deepcopy(cf).llvm_state_batch.get_ir(), cf.llvm_state_batch.get_ir()
+        )
+        self.assertEqual(pickle.loads(pickle.dumps(cf)).list_var, [x, y, z])
         self.assertEqual(pickle.loads(pickle.dumps(cf)).fn, [y * (x + z)])
+        self.assertEqual(pickle.loads(pickle.dumps(cf)).decomposition, cf.decomposition)
+        self.assertEqual(
+            pickle.loads(pickle.dumps(cf)).llvm_state_scalar.get_ir(),
+            cf.llvm_state_scalar.get_ir(),
+        )
+        self.assertEqual(
+            pickle.loads(pickle.dumps(cf)).llvm_state_batch.get_ir(),
+            cf.llvm_state_batch.get_ir(),
+        )
+
+        cf = make_cfunc([y * (x + z)], vars=[y, z, x])
+        self.assertEqual(cf.list_var, [y, z, x])
 
         # NOTE: test for a bug in the multiprecision
         # implementation where the precision is not

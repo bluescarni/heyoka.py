@@ -110,8 +110,7 @@ struct cfunc {
     ptr_s_t fptr_scal_s = nullptr, fptr_batch_s = nullptr;
     std::vector<T> buf_in, buf_out, buf_pars, buf_time;
     long long prec = 0;
-    std::vector<std::string> list_var;
-    std::vector<hey::expression> fn;
+    std::vector<hey::expression> list_var, fn, dc;
 
     template <typename Archive>
     void save(Archive &ar, unsigned) const
@@ -130,6 +129,7 @@ struct cfunc {
         ar << prec;
         ar << list_var;
         ar << fn;
+        ar << dc;
     }
     template <typename Archive>
     void load(Archive &ar, unsigned)
@@ -152,6 +152,7 @@ struct cfunc {
             ar >> prec;
             ar >> list_var;
             ar >> fn;
+            ar >> dc;
 
             fptr_scal = reinterpret_cast<ptr_t>(s_scal.jit_lookup("cfunc"));
             fptr_batch = reinterpret_cast<ptr_t>(s_batch.jit_lookup("cfunc"));
@@ -170,20 +171,21 @@ struct cfunc {
     explicit cfunc(hey::llvm_state s_scal, hey::llvm_state s_batch, std::uint32_t simd_size, std::uint32_t nparams,
                    std::uint32_t nouts, std::uint32_t nvars, bool is_time_dependent, ptr_t fptr_scal, ptr_t fptr_batch,
                    ptr_s_t fptr_scal_s, ptr_s_t fptr_batch_s, std::vector<T> buf_in, std::vector<T> buf_out,
-                   std::vector<T> buf_pars, std::vector<T> buf_time, long long prec, std::vector<std::string> list_var,
-                   std::vector<hey::expression> fn)
+                   std::vector<T> buf_pars, std::vector<T> buf_time, long long prec,
+                   std::vector<hey::expression> list_var, std::vector<hey::expression> fn,
+                   std::vector<hey::expression> dc)
         : s_scal(std::move(s_scal)), s_batch(std::move(s_batch)), simd_size(simd_size), nparams(nparams), nouts(nouts),
           nvars(nvars), is_time_dependent(is_time_dependent), fptr_scal(fptr_scal), fptr_batch(fptr_batch),
           fptr_scal_s(fptr_scal_s), fptr_batch_s(fptr_batch_s), buf_in(std::move(buf_in)), buf_out(std::move(buf_out)),
           buf_pars(std::move(buf_pars)), buf_time(std::move(buf_time)), prec(prec), list_var(std::move(list_var)),
-          fn(std::move(fn))
+          fn(std::move(fn)), dc(std::move(dc))
     {
     }
     cfunc(const cfunc &other)
         : s_scal(other.s_scal), s_batch(other.s_batch), simd_size(other.simd_size), nparams(other.nparams),
           nouts(other.nouts), nvars(other.nvars), is_time_dependent(other.is_time_dependent), buf_in(other.buf_in),
           buf_out(other.buf_out), buf_pars(other.buf_pars), buf_time(other.buf_time), prec(other.prec),
-          list_var(other.list_var), fn(other.fn)
+          list_var(other.list_var), fn(other.fn), dc(other.dc)
     {
         // NOTE: don't lookup the pointers if we are copying a def-cted cfunc,
         // just leave them null.
@@ -689,6 +691,7 @@ void expose_add_cfunc_impl(py::module &m, const char *suffix)
                                      [](const cfunc<T> &cf) -> const hey::llvm_state & { return cf.s_batch; });
     cfunc_inst.def_property_readonly("list_var", [](const cfunc<T> &cf) { return cf.list_var; });
     cfunc_inst.def_property_readonly("fn", [](const cfunc<T> &cf) { return cf.fn; });
+    cfunc_inst.def_property_readonly("decomposition", [](const cfunc<T> &cf) { return cf.dc; });
 #if defined(HEYOKA_HAVE_REAL)
     if constexpr (std::is_same_v<T, mppp::real>) {
         cfunc_inst.def_property_readonly("prec", [](const cfunc<T> &cf) { return cf.prec; });
@@ -708,7 +711,7 @@ void expose_add_cfunc_impl(py::module &m, const char *suffix)
 
     m.def(
         fmt::format("_add_cfunc_{}", suffix).c_str(),
-        [](std::vector<hey::expression> fn, const std::optional<std::vector<hey::expression>> &vars, bool high_accuracy,
+        [](std::vector<hey::expression> fn, std::optional<std::vector<hey::expression>> vars, bool high_accuracy,
            bool compact_mode, bool parallel_mode, unsigned opt_level, bool force_avx512,
            std::optional<std::uint32_t> batch_size, bool fast_math, long long prec) {
             // Compute the SIMD size.
@@ -729,6 +732,9 @@ void expose_add_cfunc_impl(py::module &m, const char *suffix)
                                    kw::fast_math = fast_math},
                 s_batch{kw::opt_level = opt_level, kw::force_avx512 = force_avx512, kw::fast_math = fast_math};
 
+            // Variable to store the decomposition.
+            std::vector<hey::expression> dc;
+
             {
                 // NOTE: release the GIL during compilation.
                 py::gil_scoped_release release;
@@ -736,14 +742,16 @@ void expose_add_cfunc_impl(py::module &m, const char *suffix)
                 oneapi::tbb::parallel_invoke(
                     [&]() {
                         // Scalar.
+                        // NOTE: we fetch the decomposition from the scalar invocation
+                        // of add_cfunc().
                         if (vars) {
-                            hey::add_cfunc<T>(s_scal, "cfunc", fn, kw::vars = *vars, kw::high_accuracy = high_accuracy,
-                                              kw::compact_mode = compact_mode, kw::parallel_mode = parallel_mode,
-                                              kw::prec = prec);
+                            dc = hey::add_cfunc<T>(s_scal, "cfunc", fn, kw::vars = *vars,
+                                                   kw::high_accuracy = high_accuracy, kw::compact_mode = compact_mode,
+                                                   kw::parallel_mode = parallel_mode, kw::prec = prec);
                         } else {
-                            hey::add_cfunc<T>(s_scal, "cfunc", fn, kw::high_accuracy = high_accuracy,
-                                              kw::compact_mode = compact_mode, kw::parallel_mode = parallel_mode,
-                                              kw::prec = prec);
+                            dc = hey::add_cfunc<T>(s_scal, "cfunc", fn, kw::high_accuracy = high_accuracy,
+                                                   kw::compact_mode = compact_mode, kw::parallel_mode = parallel_mode,
+                                                   kw::prec = prec);
                         }
 
                         s_scal.compile();
@@ -786,14 +794,13 @@ void expose_add_cfunc_impl(py::module &m, const char *suffix)
 
             // NOTE: save as well the list of variables, so
             // that we can pass it to the cfunc ctor.
-            std::vector<std::string> list_var;
+            std::vector<hey::expression> list_var;
 
             std::uint32_t nvars = 0;
             if (vars) {
                 nvars = static_cast<std::uint32_t>(vars->size());
 
-                std::transform(vars->begin(), vars->end(), std::back_inserter(list_var),
-                               [](const auto &ex) { return std::get<hey::variable>(ex.value()).name(); });
+                list_var = std::move(*vars);
             } else {
                 // NOTE: this is a bit of repetition from add_cfunc().
                 // If this becomes an issue, we can consider in the
@@ -808,7 +815,8 @@ void expose_add_cfunc_impl(py::module &m, const char *suffix)
 
                 nvars = static_cast<std::uint32_t>(dvars.size());
 
-                list_var.assign(dvars.begin(), dvars.end());
+                std::transform(dvars.begin(), dvars.end(), std::back_inserter(list_var),
+                               [](const auto &str) { return hey::expression{str}; });
             }
 
             // Prepare local buffers to store inputs, outputs, pars and time
@@ -866,7 +874,8 @@ void expose_add_cfunc_impl(py::module &m, const char *suffix)
                             std::move(buf_time),
                             prec,
                             std::move(list_var),
-                            std::move(fn)};
+                            std::move(fn),
+                            std::move(dc)};
         },
         "fn"_a, "vars"_a = py::none{}, "high_accuracy"_a.noconvert() = false,
         "compact_mode"_a.noconvert() = default_cm<T>, "parallel_mode"_a.noconvert() = false,
