@@ -22,13 +22,13 @@ New
 Changes
 ~~~~~~~
 
-- **BREAKING**: the ``make_nbody_sys()`` helper has been replaced by an equivalent
-  function in the new ``model`` submodule
-  (`#119 <https://github.com/bluescarni/heyoka.py/pull/119>`__).
   This is a :ref:`breaking change <bchanges_0_22_0>`.
 - heyoka.py now requires at least version 0.22.0 of the
   heyoka C++ library
   (`#120 <https://github.com/bluescarni/heyoka.py/pull/120>`__).
+- **BREAKING**: the ``make_nbody_sys()`` helper has been replaced by an equivalent
+  function in the new ``model`` submodule
+  (`#119 <https://github.com/bluescarni/heyoka.py/pull/119>`__).
 
 0.21.7 (2023-02-16)
 -------------------
