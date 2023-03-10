@@ -19,6 +19,7 @@ set(HEYOKA_PY_PYTHON_FILES
     _test_mp.py
     _test_cfunc.py
     _test_model.py
+    _test_expression.py
     model/__init__.py
 )
 
