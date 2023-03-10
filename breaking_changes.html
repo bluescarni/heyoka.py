@@ -378,6 +378,7 @@ document.write(`
             </div>
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#bchanges-0-22-0">0.22.0</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#bchanges-0-19-0">0.19.0</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#bchanges-0-16-0">0.16.0</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#bchanges-0-10-0">0.10.0</a></li>
@@ -395,8 +396,15 @@ document.write(`
                   
   <section id="breaking-changes">
 <span id="id1"></span><h1>Breaking changes<a class="headerlink" href="#breaking-changes" title="Permalink to this heading">#</a></h1>
+<section id="bchanges-0-22-0">
+<span id="id2"></span><h2>0.22.0<a class="headerlink" href="#bchanges-0-22-0" title="Permalink to this heading">#</a></h2>
+<ul class="simple">
+<li><p>The <code class="docutils literal notranslate"><span class="pre">make_nbody_sys()</span></code> function has been replaced by
+the <code class="docutils literal notranslate"><span class="pre">model.nbody()</span></code> function, with identical semantics.</p></li>
+</ul>
+</section>
 <section id="bchanges-0-19-0">
-<span id="id2"></span><h2>0.19.0<a class="headerlink" href="#bchanges-0-19-0" title="Permalink to this heading">#</a></h2>
+<span id="id3"></span><h2>0.19.0<a class="headerlink" href="#bchanges-0-19-0" title="Permalink to this heading">#</a></h2>
 <ul>
 <li><p>Quadruple-precision computations via the <code class="docutils literal notranslate"><span class="pre">real128</span></code> type now
 use the same API as the other supported floating-point types
@@ -431,7 +439,7 @@ are expected).</p>
 </ul>
 </section>
 <section id="bchanges-0-16-0">
-<span id="id3"></span><h2>0.16.0<a class="headerlink" href="#bchanges-0-16-0" title="Permalink to this heading">#</a></h2>
+<span id="id4"></span><h2>0.16.0<a class="headerlink" href="#bchanges-0-16-0" title="Permalink to this heading">#</a></h2>
 <ul>
 <li><p>The tuple returned by the <code class="docutils literal notranslate"><span class="pre">propagate_for/until()</span></code> methods
 in a scalar integrator has now 5 elements, rather than 4.
@@ -453,7 +461,7 @@ function object (if requested).</p>
 </ul>
 </section>
 <section id="bchanges-0-10-0">
-<span id="id4"></span><h2>0.10.0<a class="headerlink" href="#bchanges-0-10-0" title="Permalink to this heading">#</a></h2>
+<span id="id5"></span><h2>0.10.0<a class="headerlink" href="#bchanges-0-10-0" title="Permalink to this heading">#</a></h2>
 <ul class="simple">
 <li><p>The callback that can (optionally) be passed to
 the <code class="docutils literal notranslate"><span class="pre">propagate_*()</span></code> methods must now return
@@ -462,7 +470,7 @@ continue or not. The callback used to return <code class="docutils literal notra
 </ul>
 </section>
 <section id="bchanges-0-8-0">
-<span id="id5"></span><h2>0.8.0<a class="headerlink" href="#bchanges-0-8-0" title="Permalink to this heading">#</a></h2>
+<span id="id6"></span><h2>0.8.0<a class="headerlink" href="#bchanges-0-8-0" title="Permalink to this heading">#</a></h2>
 <ul class="simple">
 <li><p>An <code class="docutils literal notranslate"><span class="pre">int</span></code> argument has been appended to the signature of
 the events’ callbacks. This new argument represents the sign
@@ -515,6 +523,7 @@ time, and its value will be -1 for negative derivative,
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#bchanges-0-22-0">0.22.0</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#bchanges-0-19-0">0.19.0</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#bchanges-0-16-0">0.16.0</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#bchanges-0-10-0">0.10.0</a></li>

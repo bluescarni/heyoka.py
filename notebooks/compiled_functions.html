@@ -433,7 +433,7 @@ document.write(`
                 <article class="bd-article" role="main">
                   
   <section class="tex2jax_ignore mathjax_ignore" id="compiled-functions">
-<h1>Compiled functions<a class="headerlink" href="#compiled-functions" title="Permalink to this heading">#</a></h1>
+<span id="cfunc-tut"></span><h1>Compiled functions<a class="headerlink" href="#compiled-functions" title="Permalink to this heading">#</a></h1>
 <p>Starting from version 0.19, heyoka.py can compile just-in-time (JIT) multivariate vector functions defined via the <a class="reference internal" href="The%20expression%20system.html"><span class="doc std std-doc">expression system</span></a>. On the one hand, JIT compilation can greatly increase the performance of function evaluation with respect to a Python implementation of the same function. On the other hand, the JIT compilation process is computationally expensive and thus JIT compilation is most useful when a function needs to be evaluated repeatedly with different input values (so that the initial overhead of JIT compilation can be absorbed by the evaluation performance increase).</p>
 <section id="a-simple-example">
 <h2>A simple example<a class="headerlink" href="#a-simple-example" title="Permalink to this heading">#</a></h2>
@@ -483,7 +483,21 @@ f\left(x, y \right) = x^2 - y^2.
 </div>
 </div>
 <p>The value returned by <code class="docutils literal notranslate"><span class="pre">cf</span></code> is also a NumPy array containing the outputs of the compiled function. In this specific case, we have a single output and thus an array with a single element is returned.</p>
-<p>Because when we created <code class="docutils literal notranslate"><span class="pre">cf</span></code> we passed only the list of output expressions to <code class="docutils literal notranslate"><span class="pre">make_cfunc()</span></code>, heyoka.py used lexicographic ordering to infer the order of the input variables during evaluation: <span class="math notranslate nohighlight">\(x\)</span> is the first variable, <span class="math notranslate nohighlight">\(y\)</span> is the second. If you don’t want to rely on the default lexicographic ordering, you can pass to <code class="docutils literal notranslate"><span class="pre">make_cfunc()</span></code> an explicit ordering for the input variables:</p>
+<p>Because when we created <code class="docutils literal notranslate"><span class="pre">cf</span></code> we passed only the list of output expressions to <code class="docutils literal notranslate"><span class="pre">make_cfunc()</span></code>, heyoka.py used lexicographic ordering to infer the order of the input variables during evaluation: <span class="math notranslate nohighlight">\(x\)</span> is the first variable, <span class="math notranslate nohighlight">\(y\)</span> is the second. This can be confirmed by examining the screen output of the <code class="docutils literal notranslate"><span class="pre">cf</span></code> object:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">cf</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Variables: [x, y]
+Output #0: (x**2 - y**2)
+</pre></div>
+</div>
+</div>
+</div>
+<p>If you don’t want to rely on the default lexicographic ordering, you can pass to <code class="docutils literal notranslate"><span class="pre">make_cfunc()</span></code> an explicit ordering for the input variables:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Explicitly specify the order of the input variables:</span>
@@ -501,8 +515,22 @@ f\left(x, y \right) = x^2 - y^2.
 </div>
 </div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">make_cfunc</span></code> accepts additional keyword arguments, the most important of which is the boolean flag <code class="docutils literal notranslate"><span class="pre">compact_mode</span></code> (defaulting to <code class="docutils literal notranslate"><span class="pre">False</span></code>). Similarly to the <a class="reference internal" href="Customising%20the%20adaptive%20integrator.html"><span class="doc std std-doc">adaptive Taylor integrators</span></a>, you should enable <code class="docutils literal notranslate"><span class="pre">compact_mode</span></code> if you want to compile extremely large symbolic expressions that result in excessively long compilation times. The downside of <code class="docutils literal notranslate"><span class="pre">compact_mode</span></code> is a slight performance degradation due to the different code generation model adopted during the JIT compilation process.</p>
-<p>The function object returned by <code class="docutils literal notranslate"><span class="pre">make_cfunc</span></code> also accepts several optional keyword arguments. It is possible, for instance, to pass as <code class="docutils literal notranslate"><span class="pre">outputs</span></code> argument a pre-allocated NumPy array into which the result of the evaluation will be written. This is useful to avoid the overhead of allocating new memory for the return value, if such memory is already available:</p>
+<p>Let’s inspect the cf2 object:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">cf2</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Variables: [y, x]
+Output #0: (x**2 - y**2)
+</pre></div>
+</div>
+</div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">make_cfunc()</span></code> accepts additional keyword arguments, the most important of which is the boolean flag <code class="docutils literal notranslate"><span class="pre">compact_mode</span></code> (defaulting to <code class="docutils literal notranslate"><span class="pre">False</span></code>). Similarly to the <a class="reference internal" href="Customising%20the%20adaptive%20integrator.html"><span class="doc std std-doc">adaptive Taylor integrators</span></a>, you should enable <code class="docutils literal notranslate"><span class="pre">compact_mode</span></code> if you want to compile extremely large symbolic expressions that result in excessively long compilation times. The downside of <code class="docutils literal notranslate"><span class="pre">compact_mode</span></code> is a slight performance degradation due to the different code generation model adopted during the JIT compilation process.</p>
+<p>The function object returned by <code class="docutils literal notranslate"><span class="pre">make_cfunc()</span></code> also accepts several optional keyword arguments. It is possible, for instance, to pass as <code class="docutils literal notranslate"><span class="pre">outputs</span></code> argument a pre-allocated NumPy array into which the result of the evaluation will be written. This is useful to avoid the overhead of allocating new memory for the return value, if such memory is already available:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
