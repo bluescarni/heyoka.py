@@ -49,7 +49,6 @@
 #include <heyoka/exceptions.hpp>
 #include <heyoka/expression.hpp>
 #include <heyoka/llvm_state.hpp>
-#include <heyoka/mascon.hpp>
 #include <heyoka/math.hpp>
 #include <heyoka/number.hpp>
 #include <heyoka/taylor.hpp>
@@ -195,69 +194,6 @@ PYBIND11_MODULE(core, m)
 
     // Models.
     heypy::expose_models(m);
-
-    // mascon dynamics builder
-    m.def(
-        "make_mascon_system",
-        [](py::object Gconst, py::iterable points, py::iterable masses, py::iterable omega) {
-            const auto G = heypy::to_number(Gconst);
-
-            std::vector<std::vector<hey::expression>> points_vec;
-            for (auto p : points) {
-                std::vector<hey::expression> tmp;
-                for (auto el : py::cast<py::iterable>(p)) {
-                    tmp.emplace_back(heypy::to_number(el));
-                }
-                points_vec.emplace_back(tmp);
-            }
-
-            std::vector<hey::expression> mass_vec;
-            for (auto ms : masses) {
-                mass_vec.emplace_back(heypy::to_number(ms));
-            }
-            std::vector<hey::expression> omega_vec;
-            for (auto w : omega) {
-                omega_vec.emplace_back(heypy::to_number(w));
-            }
-
-            return hey::make_mascon_system(kw::Gconst = G, kw::points = points_vec, kw::masses = mass_vec,
-                                           kw::omega = omega_vec);
-        },
-        "Gconst"_a, "points"_a, "masses"_a, "omega"_a);
-
-    m.def(
-        "energy_mascon_system",
-        [](py::object Gconst, py::iterable state, py::iterable points, py::iterable masses, py::iterable omega) {
-            const auto G = heypy::to_number(Gconst);
-
-            std::vector<hey::expression> state_vec;
-            for (auto s : state) {
-                state_vec.emplace_back(heypy::to_number(s));
-            }
-
-            std::vector<std::vector<hey::expression>> points_vec;
-            for (auto p : points) {
-                std::vector<hey::expression> tmp;
-                for (auto el : py::cast<py::iterable>(p)) {
-                    tmp.emplace_back(heypy::to_number(el));
-                }
-                points_vec.emplace_back(tmp);
-            }
-
-            std::vector<hey::expression> mass_vec;
-            for (auto ms : masses) {
-                mass_vec.emplace_back(heypy::to_number(ms));
-            }
-
-            std::vector<hey::expression> omega_vec;
-            for (auto w : omega) {
-                omega_vec.emplace_back(heypy::to_number(w));
-            }
-
-            return hey::energy_mascon_system(kw::Gconst = G, kw::state = state_vec, kw::points = points_vec,
-                                             kw::masses = mass_vec, kw::omega = omega_vec);
-        },
-        "Gconst"_a, "state"_a, "points"_a, "masses"_a, "omega"_a);
 
     // taylor_outcome enum.
     py::enum_<hey::taylor_outcome>(m, "taylor_outcome", py::arithmetic())

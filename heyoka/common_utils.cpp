@@ -61,30 +61,6 @@ void py_throw(PyObject *type, const char *msg)
     throw py::error_already_set();
 }
 
-heyoka::number to_number(const py::handle &o)
-{
-    // NOTE: investigate if these try/catch
-    // blocks can be replaced by something more
-    // efficient.
-    // NOTE: the real128/long double casters
-    // will fail if o is not exactly of type
-    // real128/long double. The caster to double
-    // will be more tolerant.
-#if defined(HEYOKA_HAVE_REAL128)
-    try {
-        return heyoka::number{py::cast<mppp::real128>(o)};
-    } catch (const py::cast_error &) {
-    }
-#endif
-
-    try {
-        return heyoka::number{py::cast<long double>(o)};
-    } catch (const py::cast_error &) {
-    }
-
-    return heyoka::number{py::cast<double>(o)};
-}
-
 // Detect if o is a callable object.
 bool callable(const py::handle &o)
 {

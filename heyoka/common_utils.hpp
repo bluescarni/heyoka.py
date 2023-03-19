@@ -54,8 +54,6 @@ std::string str(const py::handle &);
 
 [[noreturn]] void py_throw(PyObject *, const char *);
 
-heyoka::number to_number(const py::handle &);
-
 bool callable(const py::handle &);
 
 // Helper to expose the llvm_state getter
