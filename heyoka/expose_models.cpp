@@ -88,9 +88,13 @@ auto pendulum_impl(const Op &op, const V &gconst, const V &l)
 
 // Common logic to expose fixed centres helpers.
 template <typename Op, typename V>
-auto fixed_centres_impl(const Op &op, const V &Gconst, const std::vector<V> &masses, const py::array &positions)
+auto fixed_centres_impl(const Op &op, const V &Gconst, const std::vector<V> &masses, const py::iterable &positions_)
 {
     namespace hy = heyoka;
+
+    // Attempt to convert the input position argument into
+    // a NumPy array.
+    py::array positions = positions_;
 
     // Check the shape of positions.
     if (positions.ndim() != 2) {
@@ -205,21 +209,21 @@ void expose_models(py::module_ &m)
     // Fixed centres.
     m.def(
         "_model_fixed_centres",
-        [](const vex_t &Gconst, const std::vector<vex_t> &masses, const py::array &positions) {
+        [](const vex_t &Gconst, const std::vector<vex_t> &masses, const py::iterable &positions) {
             return detail::fixed_centres_impl(hy::model::fixed_centres, Gconst, masses, positions);
         },
         "Gconst"_a.noconvert() = 1., "masses"_a.noconvert() = py::list{},
         "positions"_a = py::array{py::dtype(get_dtype<double>()), py::array::ShapeContainer{0, 3}});
     m.def(
         "_model_fixed_centres_energy",
-        [](const vex_t &Gconst, const std::vector<vex_t> &masses, const py::array &positions) {
+        [](const vex_t &Gconst, const std::vector<vex_t> &masses, const py::iterable &positions) {
             return detail::fixed_centres_impl(hy::model::fixed_centres_energy, Gconst, masses, positions);
         },
         "Gconst"_a.noconvert() = 1., "masses"_a.noconvert() = py::list{},
         "positions"_a = py::array{py::dtype(get_dtype<double>()), py::array::ShapeContainer{0, 3}});
     m.def(
         "_model_fixed_centres_potential",
-        [](const vex_t &Gconst, const std::vector<vex_t> &masses, const py::array &positions) {
+        [](const vex_t &Gconst, const std::vector<vex_t> &masses, const py::iterable &positions) {
             return detail::fixed_centres_impl(hy::model::fixed_centres_potential, Gconst, masses, positions);
         },
         "Gconst"_a.noconvert() = 1., "masses"_a.noconvert() = py::list{},
