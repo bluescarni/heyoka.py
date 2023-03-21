@@ -245,8 +245,7 @@ void expose_expression(py::module_ &m)
     });
 
     // Math functions.
-    m.def("square", &hey::square);
-    m.def("sqrt", &hey::sqrt);
+    m.def("sqrt", static_cast<hey::expression (*)(hey::expression)>(&hey::sqrt));
     m.def("log", &hey::log);
     m.def("exp", [](hey::expression e) { return hey::exp(std::move(e)); });
     m.def("sin", &hey::sin);
