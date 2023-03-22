@@ -7,14 +7,14 @@ set -x
 set -e
 
 # Core deps.
-sudo apt-get install build-essential wget
+sudo apt-get install wget
 
 # Install conda+deps.
-wget https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-Linux-aarch64.sh -O miniconda.sh
+wget https://github.com/conda-forge/miniforge/releases/latest/download/Mambaforge-Linux-aarch64.sh -O mambaforge.sh
 export deps_dir=$HOME/local
-export PATH="$HOME/miniconda/bin:$PATH"
-bash miniconda.sh -b -p $HOME/miniconda
-conda create -y -q -p $deps_dir cxx-compiler c-compiler cmake llvmdev tbb-devel tbb astroquery boost-cpp sleef fmt spdlog python=3.10 pybind11 numpy mpmath sympy scipy cloudpickle sphinx myst-nb matplotlib sphinx-book-theme mppp
+export PATH="$HOME/mambaforge/bin:$PATH"
+bash mambaforge.sh -b -p $HOME/mambaforge
+mamba create -y -q -p $deps_dir cxx-compiler c-compiler cmake llvmdev tbb-devel tbb astroquery boost-cpp sleef fmt spdlog python=3.10 pybind11 numpy mpmath sympy scipy cloudpickle sphinx myst-nb matplotlib sphinx-book-theme mppp
 source activate $deps_dir
 
 # Checkout, build and install heyoka's HEAD.

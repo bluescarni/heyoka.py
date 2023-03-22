@@ -82,6 +82,8 @@ py::object to_sympy_impl(std::unordered_map<const void *, py::object> &, const h
 // Implementation of the conversion functions for the node types.
 py::object to_sympy_impl(std::unordered_map<const void *, py::object> &, const hy::variable &var)
 {
+    assert(spy);
+
     // NOTE: heyoka symbols can assume only
     // real values.
     py::kwargs kwa;
@@ -92,6 +94,8 @@ py::object to_sympy_impl(std::unordered_map<const void *, py::object> &, const h
 
 py::object to_sympy_impl(std::unordered_map<const void *, py::object> &, const hy::param &par)
 {
+    assert(spy);
+
     // NOTE: params are converted to symbolic variables
     // following a naming convention.
 

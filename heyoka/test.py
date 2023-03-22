@@ -3044,8 +3044,6 @@ class sympy_test_case(_ut.TestCase):
 
         self.assertEqual(to_sympy(core.sigmoid(hx + hy)), 1.0 / (1.0 + spy.exp(-x - y)))
 
-        self.assertEqual(core.square(hx + hy), (hx + hy) * (hx + hy))
-
         self.assertEqual(core.time, from_sympy(spy.Function("heyoka_time")()))
         self.assertEqual(to_sympy(core.time), spy.Function("heyoka_time")())
 

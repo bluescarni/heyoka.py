@@ -8,14 +8,22 @@
 
 #include <heyoka/config.hpp>
 
-#include <heyoka/model/pendulum.hpp>
+#include <algorithm>
+#include <iterator>
 #include <optional>
 #include <string>
+#include <tuple>
+#include <utility>
 #include <variant>
 #include <vector>
 
+#include <fmt/core.h>
+
+#include <pybind11/numpy.h>
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
+
+#include <Python.h>
 
 #if defined(HEYOKA_HAVE_REAL128)
 
@@ -32,7 +40,9 @@
 #include <heyoka/expression.hpp>
 #include <heyoka/models.hpp>
 
+#include "common_utils.hpp"
 #include "custom_casters.hpp"
+#include "dtypes.hpp"
 #include "expose_models.hpp"
 
 namespace heyoka_py
@@ -44,8 +54,9 @@ namespace detail
 namespace
 {
 
-// Small helper to turn v into an expression.
-constexpr auto make_ex = [](const auto &v) { return heyoka::expression(v); };
+// Small helper to turn the variant v into an expression.
+constexpr auto ex_from_variant
+    = [](const auto &v) { return std::visit([](const auto &v) { return heyoka::expression(v); }, v); };
 
 // Common logic to expose N-body helpers.
 template <typename Op, typename V>
@@ -53,13 +64,11 @@ auto nbody_impl(const Op &op, std::uint32_t n, const V &Gconst, const std::optio
 {
     namespace hy = heyoka;
 
-    const auto Gval = std::visit(make_ex, Gconst);
+    const auto Gval = ex_from_variant(Gconst);
 
     if (masses) {
         std::vector<hy::expression> masses_vec;
-        for (const auto &mass : *masses) {
-            masses_vec.push_back(std::visit(make_ex, mass));
-        }
+        std::transform(masses->begin(), masses->end(), std::back_inserter(masses_vec), ex_from_variant);
 
         return op(n, hy::kw::Gconst = Gval, hy::kw::masses = masses_vec);
     } else {
@@ -73,10 +82,101 @@ auto pendulum_impl(const Op &op, const V &gconst, const V &l)
 {
     namespace hy = heyoka;
 
-    const auto gval = std::visit(make_ex, gconst);
-    const auto lval = std::visit(make_ex, l);
+    const auto gval = ex_from_variant(gconst);
+    const auto lval = ex_from_variant(l);
 
     return op(hy::kw::gconst = gval, hy::kw::l = lval);
+}
+
+// Common logic to expose rotating rf helpers.
+template <typename Op, typename V>
+auto rotating_impl(const Op &op, const std::vector<V> &omega)
+{
+    namespace hy = heyoka;
+
+    // Build the argument for the C++ function.
+    std::vector<hy::expression> omega_vec;
+    std::transform(omega.begin(), omega.end(), std::back_inserter(omega_vec), ex_from_variant);
+
+    return op(hy::kw::omega = omega_vec);
+}
+
+// Common logic for building arguments to the fixed centres and mascon models.
+template <typename V>
+auto mascon_fc_common_args(const char *name, const V &Gconst, const std::vector<V> &masses,
+                           const py::iterable &positions_)
+{
+    namespace hy = heyoka;
+
+    // Attempt to convert the input position argument into
+    // a NumPy array.
+    py::array positions = positions_;
+
+    // Check the shape of positions.
+    if (positions.ndim() != 2) {
+        py_throw(PyExc_ValueError, fmt::format("Invalid positions array in a {} model: the number of "
+                                               "dimensions must be 2, but it is {} instead",
+                                               name, positions.ndim())
+                                       .c_str());
+    }
+
+    if (positions.shape(1) != 3) {
+        py_throw(PyExc_ValueError, fmt::format("Invalid positions array in a {} model: the number of "
+                                               "columns must be 3, but it is {} instead",
+                                               name, positions.shape(1))
+                                       .c_str());
+    }
+
+    // Flatten out postions into a list and convert to a vector of variants.
+    py::list pflat = positions.attr("flatten")();
+    std::vector<V> pvec;
+    try {
+        pvec = pflat.cast<std::vector<V>>();
+    } catch (const py::cast_error &) {
+        py_throw(
+            PyExc_TypeError,
+            fmt::format(
+                "The positions array in a {} model could not be converted into an array "
+                "of expressions - please make sure that the array's values can be converted into heyoka expressions",
+                name)
+                .c_str());
+    }
+
+    // Build the arguments for the C++ function.
+    auto Gval = ex_from_variant(Gconst);
+    std::vector<hy::expression> masses_vec, positions_vec;
+    std::transform(masses.begin(), masses.end(), std::back_inserter(masses_vec), ex_from_variant);
+    std::transform(pvec.begin(), pvec.end(), std::back_inserter(positions_vec), ex_from_variant);
+
+    return std::tuple{std::move(Gval), std::move(masses_vec), std::move(positions_vec)};
+}
+
+// Common logic to expose fixed centres helpers.
+template <typename Op, typename V>
+auto fixed_centres_impl(const Op &op, const V &Gconst, const std::vector<V> &masses, const py::iterable &positions)
+{
+    namespace hy = heyoka;
+
+    const auto [Gval, masses_vec, positions_vec] = mascon_fc_common_args("fixed centres", Gconst, masses, positions);
+
+    return op(hy::kw::Gconst = Gval, hy::kw::masses = masses_vec, hy::kw::positions = positions_vec);
+}
+
+// Common logic to expose mascon helpers.
+template <typename Op, typename V>
+auto mascon_impl(const Op &op, const V &Gconst, const std::vector<V> &masses, const py::iterable &positions,
+                 const std::vector<V> &omega)
+{
+    namespace hy = heyoka;
+
+    const auto [Gval, masses_vec, positions_vec] = mascon_fc_common_args("mascon", Gconst, masses, positions);
+
+    // Build the omega argument.
+    std::vector<hy::expression> omega_vec;
+    std::transform(omega.begin(), omega.end(), std::back_inserter(omega_vec), ex_from_variant);
+
+    return op(hy::kw::Gconst = Gval, hy::kw::masses = masses_vec, hy::kw::positions = positions_vec,
+              hy::kw::omega = omega_vec);
 }
 
 } // namespace
@@ -118,6 +218,12 @@ void expose_models(py::module_ &m)
         },
         "n"_a.noconvert(), "Gconst"_a.noconvert() = 1., "masses"_a.noconvert() = py::none{});
     m.def(
+        "_model_nbody_potential",
+        [](std::uint32_t n, const vex_t &Gconst, const std::optional<std::vector<vex_t>> &masses) {
+            return detail::nbody_impl(hy::model::nbody_potential, n, Gconst, masses);
+        },
+        "n"_a.noconvert(), "Gconst"_a.noconvert() = 1., "masses"_a.noconvert() = py::none{});
+    m.def(
         "_model_np1body",
         [](std::uint32_t n, const vex_t &Gconst, const std::optional<std::vector<vex_t>> &masses) {
             return detail::nbody_impl(hy::model::np1body, n, Gconst, masses);
@@ -127,6 +233,12 @@ void expose_models(py::module_ &m)
         "_model_np1body_energy",
         [](std::uint32_t n, const vex_t &Gconst, const std::optional<std::vector<vex_t>> &masses) {
             return detail::nbody_impl(hy::model::np1body_energy, n, Gconst, masses);
+        },
+        "n"_a.noconvert(), "Gconst"_a.noconvert() = 1., "masses"_a.noconvert() = py::none{});
+    m.def(
+        "_model_np1body_potential",
+        [](std::uint32_t n, const vex_t &Gconst, const std::optional<std::vector<vex_t>> &masses) {
+            return detail::nbody_impl(hy::model::np1body_potential, n, Gconst, masses);
         },
         "n"_a.noconvert(), "Gconst"_a.noconvert() = 1., "masses"_a.noconvert() = py::none{});
 
@@ -141,6 +253,72 @@ void expose_models(py::module_ &m)
             return detail::pendulum_impl(hy::model::pendulum_energy, gconst, l);
         },
         "gconst"_a.noconvert() = 1., "l"_a.noconvert() = 1.);
+
+    // Fixed centres.
+    m.def(
+        "_model_fixed_centres",
+        [](const vex_t &Gconst, const std::vector<vex_t> &masses, const py::iterable &positions) {
+            return detail::fixed_centres_impl(hy::model::fixed_centres, Gconst, masses, positions);
+        },
+        "Gconst"_a.noconvert() = 1., "masses"_a.noconvert() = py::list{},
+        "positions"_a = py::array{py::dtype(get_dtype<double>()), py::array::ShapeContainer{0, 3}});
+    m.def(
+        "_model_fixed_centres_energy",
+        [](const vex_t &Gconst, const std::vector<vex_t> &masses, const py::iterable &positions) {
+            return detail::fixed_centres_impl(hy::model::fixed_centres_energy, Gconst, masses, positions);
+        },
+        "Gconst"_a.noconvert() = 1., "masses"_a.noconvert() = py::list{},
+        "positions"_a = py::array{py::dtype(get_dtype<double>()), py::array::ShapeContainer{0, 3}});
+    m.def(
+        "_model_fixed_centres_potential",
+        [](const vex_t &Gconst, const std::vector<vex_t> &masses, const py::iterable &positions) {
+            return detail::fixed_centres_impl(hy::model::fixed_centres_potential, Gconst, masses, positions);
+        },
+        "Gconst"_a.noconvert() = 1., "masses"_a.noconvert() = py::list{},
+        "positions"_a = py::array{py::dtype(get_dtype<double>()), py::array::ShapeContainer{0, 3}});
+
+    // Rotating reference frame.
+    m.def(
+        "_model_rotating",
+        [](const std::vector<vex_t> &omega) { return detail::rotating_impl(hy::model::rotating, omega); },
+        "omega"_a.noconvert() = py::list{});
+    m.def(
+        "_model_rotating_energy",
+        [](const std::vector<vex_t> &omega) { return detail::rotating_impl(hy::model::rotating_energy, omega); },
+        "omega"_a.noconvert() = py::list{});
+    m.def(
+        "_model_rotating_potential",
+        [](const std::vector<vex_t> &omega) { return detail::rotating_impl(hy::model::rotating_potential, omega); },
+        "omega"_a.noconvert() = py::list{});
+
+    // Mascon.
+    m.def(
+        "_model_mascon",
+        [](const vex_t &Gconst, const std::vector<vex_t> &masses, const py::iterable &positions,
+           const std::vector<vex_t> &omega) {
+            return detail::mascon_impl(hy::model::mascon, Gconst, masses, positions, omega);
+        },
+        "Gconst"_a.noconvert() = 1., "masses"_a.noconvert() = py::list{},
+        "positions"_a = py::array{py::dtype(get_dtype<double>()), py::array::ShapeContainer{0, 3}},
+        "omega"_a.noconvert() = py::list{});
+    m.def(
+        "_model_mascon_energy",
+        [](const vex_t &Gconst, const std::vector<vex_t> &masses, const py::iterable &positions,
+           const std::vector<vex_t> &omega) {
+            return detail::mascon_impl(hy::model::mascon_energy, Gconst, masses, positions, omega);
+        },
+        "Gconst"_a.noconvert() = 1., "masses"_a.noconvert() = py::list{},
+        "positions"_a = py::array{py::dtype(get_dtype<double>()), py::array::ShapeContainer{0, 3}},
+        "omega"_a.noconvert() = py::list{});
+    m.def(
+        "_model_mascon_potential",
+        [](const vex_t &Gconst, const std::vector<vex_t> &masses, const py::iterable &positions,
+           const std::vector<vex_t> &omega) {
+            return detail::mascon_impl(hy::model::mascon_potential, Gconst, masses, positions, omega);
+        },
+        "Gconst"_a.noconvert() = 1., "masses"_a.noconvert() = py::list{},
+        "positions"_a = py::array{py::dtype(get_dtype<double>()), py::array::ShapeContainer{0, 3}},
+        "omega"_a.noconvert() = py::list{});
 }
 
 } // namespace heyoka_py
