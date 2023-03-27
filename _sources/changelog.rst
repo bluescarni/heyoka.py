@@ -9,6 +9,10 @@ Changelog
 New
 ~~~
 
+- The state variables and right-hand side of a system of ODEs
+  are now available as read-only properties in the integrator
+  classes
+  (`#122 <https://github.com/bluescarni/heyoka.py/pull/122>`__).
 - Several additions to the :ref:`compiled functions <cfunc_tut>` API:
   compiled functions can now
   be pickled/unpickled, and they expose several information as
