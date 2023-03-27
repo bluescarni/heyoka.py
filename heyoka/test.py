@@ -1911,6 +1911,8 @@ class scalar_integrator_test_case(_ut.TestCase):
         self.assertTrue(ta.with_events)
         self.assertFalse(ta.compact_mode)
         self.assertFalse(ta.high_accuracy)
+        self.assertEqual(ta.state_vars, [x, v])
+        self.assertEqual(ta.rhs, [v, -9.8 * sin(x)])
 
         ta = taylor_adaptive(
             sys=sys, state=[0.0, 0.25], compact_mode=True, high_accuracy=True
@@ -2465,6 +2467,8 @@ class batch_integrator_test_case(_ut.TestCase):
         self.assertTrue(ta.with_events)
         self.assertFalse(ta.compact_mode)
         self.assertFalse(ta.high_accuracy)
+        self.assertEqual(ta.state_vars, [x, v])
+        self.assertEqual(ta.rhs, [v, -9.8 * sin(x)])
 
         ta = taylor_adaptive_batch(
             sys=sys,

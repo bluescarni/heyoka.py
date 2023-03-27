@@ -196,6 +196,8 @@ void expose_batch_integrator_impl(py::module_ &m, const std::string &suffix)
              "parallel_mode"_a = false, "opt_level"_a.noconvert() = 3, "force_avx512"_a.noconvert() = false,
              "fast_math"_a.noconvert() = false)
         .def_property_readonly("decomposition", &hey::taylor_adaptive_batch<T>::get_decomposition)
+        .def_property_readonly("state_vars", &hey::taylor_adaptive_batch<T>::get_state_vars)
+        .def_property_readonly("rhs", &hey::taylor_adaptive_batch<T>::get_rhs)
         .def(
             "step", [](hey::taylor_adaptive_batch<T> &ta, bool wtc) { ta.step(wtc); }, "write_tc"_a = false)
         .def(
@@ -205,7 +207,7 @@ void expose_batch_integrator_impl(py::module_ &m, const std::string &suffix)
             },
             "max_delta_t"_a.noconvert(), "write_tc"_a = false)
         .def("step_backward", &hey::taylor_adaptive_batch<T>::step_backward, "write_tc"_a = false)
-        .def_property_readonly("step_res", [](const hey::taylor_adaptive_batch<T> &ta) { return ta.get_step_res(); })
+        .def_property_readonly("step_res", &hey::taylor_adaptive_batch<T>::get_step_res)
         .def(
             "propagate_for",
             [](hey::taylor_adaptive_batch<T> &ta, const std::variant<T, std::vector<T>> &delta_t, std::size_t max_steps,
@@ -313,8 +315,7 @@ void expose_batch_integrator_impl(py::module_ &m, const std::string &suffix)
                     std::move(max_delta_t));
             },
             "grid"_a, "max_steps"_a = 0, "max_delta_t"_a.noconvert() = std::vector<T>{}, "callback"_a = prop_cb_t{})
-        .def_property_readonly("propagate_res",
-                               [](const hey::taylor_adaptive_batch<T> &ta) { return ta.get_propagate_res(); })
+        .def_property_readonly("propagate_res", &hey::taylor_adaptive_batch<T>::get_propagate_res)
         .def_property_readonly(
             "time",
             [](py::object &o) {
