@@ -44,6 +44,10 @@ jobs:
        - uses: actions/checkout@v3
        - name: Build
          run: bash tools/gha_manylinux.sh
+       - uses: actions/upload-artifact@v3
+         with:
+           name: wheel
+           path: build/wheel/dist2/*.whl
   manylinux228-py310:
      runs-on: ubuntu-latest
      container:
@@ -58,7 +62,7 @@ jobs:
        - uses: actions/upload-artifact@v3
          with:
            name: wheel
-           path: build/wheel/dist2/
+           path: build/wheel/dist2/*.whl
   manylinux228-py39:
      runs-on: ubuntu-latest
      container:
@@ -70,6 +74,10 @@ jobs:
        - uses: actions/checkout@v3
        - name: Build
          run: bash tools/gha_manylinux.sh
+       - uses: actions/upload-artifact@v3
+         with:
+           name: wheel
+           path: build/wheel/dist2/*.whl
   manylinux228-py38:
      runs-on: ubuntu-latest
      container:
@@ -81,6 +89,10 @@ jobs:
        - uses: actions/checkout@v3
        - name: Build
          run: bash tools/gha_manylinux.sh
+       - uses: actions/upload-artifact@v3
+         with:
+           name: wheel
+           path: build/wheel/dist2/*.whl
   windows_2019_heyoka_head:
     runs-on: windows-2019
     steps:
