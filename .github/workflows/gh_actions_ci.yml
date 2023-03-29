@@ -46,7 +46,7 @@ jobs:
          run: bash tools/gha_manylinux.sh
        - uses: actions/upload-artifact@v3
          with:
-           name: wheel
+           name: wheel_311
            path: build/wheel/dist2/*.whl
   manylinux228-py310:
      runs-on: ubuntu-latest
@@ -61,7 +61,7 @@ jobs:
          run: bash tools/gha_manylinux.sh
        - uses: actions/upload-artifact@v3
          with:
-           name: wheel
+           name: wheel_310
            path: build/wheel/dist2/*.whl
   manylinux228-py39:
      runs-on: ubuntu-latest
@@ -76,7 +76,7 @@ jobs:
          run: bash tools/gha_manylinux.sh
        - uses: actions/upload-artifact@v3
          with:
-           name: wheel
+           name: wheel_39
            path: build/wheel/dist2/*.whl
   manylinux228-py38:
      runs-on: ubuntu-latest
@@ -91,7 +91,7 @@ jobs:
          run: bash tools/gha_manylinux.sh
        - uses: actions/upload-artifact@v3
          with:
-           name: wheel
+           name: wheel_38
            path: build/wheel/dist2/*.whl
   windows_2019_heyoka_head:
     runs-on: windows-2019
