@@ -13,6 +13,7 @@
 #include <string>
 #include <unordered_map>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include <pybind11/operators.h>
@@ -145,6 +146,7 @@ void expose_expression(py::module_ &m)
         .def(py::self * mppp::real(), "x"_a.noconvert())
         .def(mppp::real() * py::self, "x"_a.noconvert())
 #endif
+        // NOLINTNEXTLINE(misc-redundant-expression)
         .def(py::self / py::self, "x"_a)
         .def(
             "__truediv__", [](const hey::expression &ex, std::int32_t x) { return ex / static_cast<double>(x); },
@@ -216,24 +218,20 @@ void expose_expression(py::module_ &m)
 #endif
 
     // Sum.
-    m.def(
-        "sum",
-        [](std::vector<hey::expression> terms, std::uint32_t split) { return hey::sum(std::move(terms), split); },
-        "terms"_a, "split"_a = hey::detail::default_sum_split);
+    m.def("sum", &hey::sum, "terms"_a);
 
     // Sum of squares.
-    m.def(
-        "sum_sq",
-        [](std::vector<hey::expression> terms, std::uint32_t split) { return hey::sum_sq(std::move(terms), split); },
-        "terms"_a, "split"_a = hey::detail::default_sum_sq_split);
+    m.def("sum_sq", &hey::sum_sq, "terms"_a);
 
     // Pairwise prod.
     m.def("pairwise_prod", &hey::pairwise_prod, "terms"_a);
 
     // Subs.
-    m.def("subs", [](const hey::expression &e, const std::unordered_map<std::string, hey::expression> &smap) {
-        return hey::subs(e, smap);
-    });
+    m.def("subs",
+          [](const hey::expression &e, const std::variant<std::unordered_map<std::string, hey::expression>,
+                                                          std::unordered_map<hey::expression, hey::expression>> &smap) {
+              return std::visit([&e](const auto &v) { hey::subs(e, v); }, smap);
+          });
 
     // make_vars() helper.
     m.def("make_vars", [](const py::args &v_str) {
