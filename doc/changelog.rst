@@ -3,6 +3,15 @@
 Changelog
 =========
 
+0.21.8 (2023-07-03)
+-------------------
+
+Fix
+~~~
+
+- Fix building against NumPy 1.25
+  (`#125 <https://github.com/bluescarni/heyoka.py/pull/125>`__).
+
 0.21.7 (2023-02-16)
 -------------------
 
