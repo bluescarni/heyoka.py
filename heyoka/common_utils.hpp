@@ -64,16 +64,6 @@ inline void expose_llvm_state_property(py::class_<T> &c)
     c.def_property_readonly("llvm_state", &T::get_llvm_state);
 }
 
-// A functor to perform the copy of a C++
-// object via its copy ctor.
-struct default_cpp_copy {
-    template <typename T>
-    T operator()(const T &arg) const
-    {
-        return arg;
-    }
-};
-
 // NOTE: these are wrappers for the implementation of
 // copy/deepcopy semantics for exposed C++ classes.
 // Doing a simple C++ copy and casting it to Python
@@ -83,7 +73,7 @@ struct default_cpp_copy {
 // a C++ copy of the original object and then attach
 // to it copies of the dynamic attributes that were
 // added to the original object from Python.
-template <typename T, typename CopyF = default_cpp_copy>
+template <typename T>
 py::object copy_wrapper(py::object o)
 {
     // Fetch a pointer to the C++ copy.
@@ -93,7 +83,7 @@ py::object copy_wrapper(py::object o)
     // a Python object.
     // NOTE: no room for GIL unlock here, due
     // to possible copy of Pythonic event callbacks.
-    py::object ret = py::cast(CopyF{}(*o_cpp));
+    py::object ret = py::cast(T(*o_cpp));
 
     // Fetch the list of attributes from the original
     // object and turn it into a set.
@@ -117,7 +107,7 @@ py::object copy_wrapper(py::object o)
     return ret;
 }
 
-template <typename T, typename CopyF = default_cpp_copy>
+template <typename T>
 py::object deepcopy_wrapper(py::object o, py::dict memo)
 {
     // Fetch a pointer to the C++ copy.
@@ -127,7 +117,7 @@ py::object deepcopy_wrapper(py::object o, py::dict memo)
     // a Python object.
     // NOTE: no room for GIL unlock here, due
     // to possible copy of Pythonic event callbacks.
-    py::object ret = py::cast(CopyF{}(*o_cpp));
+    py::object ret = py::cast(T(*o_cpp));
 
     // Fetch the list of attributes from the original
     // object and turn it into a set.
