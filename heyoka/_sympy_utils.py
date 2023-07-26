@@ -172,7 +172,7 @@ def _build_fmap():
     retval[_spy.Add] = add_wrapper
 
     def mul_wrapper(*args):
-        return core.pairwise_prod(args)
+        return core.prod(args)
 
     retval[_spy.Mul] = mul_wrapper
 

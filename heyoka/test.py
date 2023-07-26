@@ -2937,17 +2937,7 @@ class sympy_test_case(_ut.TestCase):
 
         import sympy as spy
 
-        # NOTE: if we ever change in heyoka addition to return a sum(),
-        # we can probably get rid of hsum.
-        from . import (
-            core,
-            make_vars,
-            from_sympy,
-            to_sympy,
-            pi,
-            sum as hsum,
-            sum_sq,
-        )
+        from . import core, make_vars, from_sympy, to_sympy, pi, sum as hsum
 
         from .model import nbody
 
@@ -3021,10 +3011,6 @@ class sympy_test_case(_ut.TestCase):
             to_sympy(hsum([ha, hb, hc, hx, hy, hz])), x + y + z + a + b + c
         )
 
-        self.assertEqual(to_sympy(sum_sq([hx, hy, hz])), x * x + y * y + z * z)
-        self.assertEqual(to_sympy(sum_sq([hx])), x * x)
-        self.assertEqual(to_sympy(sum_sq([])), 0.0)
-
         self.assertEqual(hx * hy * hz, from_sympy(x * y * z))
         self.assertEqual(to_sympy(hx * hy * hz), x * y * z)
         self.assertEqual(
@@ -3087,17 +3073,6 @@ class sympy_test_case(_ut.TestCase):
         [to_sympy(_[1]) for _ in nbody(2)]
         [to_sympy(_[1]) for _ in nbody(4)]
         [to_sympy(_[1]) for _ in nbody(10)]
-
-
-class zero_division_error_test_case(_ut.TestCase):
-    def test_basic(self):
-        from . import make_vars
-
-        (x,) = make_vars("x")
-
-        with self.assertRaises(ZeroDivisionError) as cm:
-            x / 0.0
-        self.assertTrue("Division by zero" in str(cm.exception))
 
 
 class llvm_state_test_case(_ut.TestCase):
@@ -4195,7 +4170,6 @@ def run_test_suite():
     suite.addTest(_ut.makeSuite(scalar_integrator_test_case))
     suite.addTest(_ut.makeSuite(kepE_test_case))
     suite.addTest(_ut.makeSuite(sympy_test_case))
-    suite.addTest(_ut.makeSuite(zero_division_error_test_case))
 
     test_result = _ut.TextTestRunner(verbosity=2).run(suite)
 

@@ -158,16 +158,6 @@ PYBIND11_MODULE(core, m)
         }
     });
 
-    py::register_exception_translator([](std::exception_ptr p) {
-        try {
-            if (p) {
-                std::rethrow_exception(p);
-            }
-        } catch (const hey::zero_division_error &zde) {
-            PyErr_SetString(PyExc_ZeroDivisionError, zde.what());
-        }
-    });
-
     // LLVM state.
     py::class_<hey::llvm_state>(m, "llvm_state", py::dynamic_attr{})
         .def("get_ir", &hey::llvm_state::get_ir)

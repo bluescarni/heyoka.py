@@ -214,11 +214,8 @@ void expose_expression(py::module_ &m)
     // Sum.
     m.def("sum", &hey::sum, "terms"_a);
 
-    // Sum of squares.
-    m.def("sum_sq", &hey::sum_sq, "terms"_a);
-
-    // Pairwise prod.
-    m.def("pairwise_prod", &hey::pairwise_prod, "terms"_a);
+    // Prod.
+    m.def("prod", &hey::prod, "terms"_a);
 
     // Subs.
     m.def("subs",
@@ -254,7 +251,6 @@ void expose_expression(py::module_ &m)
     m.def("atanh", &hey::atanh);
     m.def("sigmoid", &hey::sigmoid);
     m.def("erf", &hey::erf);
-    m.def("powi", &hey::powi);
 
     // kepE().
     m.def(

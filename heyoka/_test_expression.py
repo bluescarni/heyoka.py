@@ -169,9 +169,9 @@ class expression_test_case(_ut.TestCase):
         self.assertNotEqual(ex("x"), ex("y"))
 
         # Exponentiation.
-        self.assertEqual(str(ex("x") ** ex("y")), "pow(x, y)")
-        self.assertEqual(str(ex("x") ** ex(2)), "x**2")
-        self.assertEqual(str(ex("x") ** ex(1.1)), "pow(x, 1.1000000000000001)")
+        self.assertEqual(str(ex("x") ** ex("y")), "x**y")
+        self.assertEqual(str(ex("x") ** ex(2)), "x**2.0000000000000000")
+        self.assertEqual(str(ex("x") ** ex(1.1)), "x**1.1000000000000001")
         with self.assertRaises(TypeError) as cm:
             ex(42) ** (2 << 112)
         if ld_63bit:
@@ -182,12 +182,12 @@ class expression_test_case(_ut.TestCase):
         if ld_63bit:
             self.assertEqual(
                 str(ex("x") ** ex(np.longdouble("1.1"))),
-                "pow(x, 1.10000000000000000002)",
+                "x**1.10000000000000000002",
             )
         if with_real128:
             self.assertEqual(
                 str(ex("x") ** ex(real128("1.1"))),
-                "pow(x, 1.10000000000000000000000000000000008)",
+                "x**1.10000000000000000000000000000000008",
             )
 
         # Copy and deepcopy.
@@ -266,7 +266,7 @@ class expression_test_case(_ut.TestCase):
         x, y, z = make_vars("x", "y", "z")
 
         self.assertEqual(len(x), 1)
-        self.assertEqual(len((x - y - z) + (y * z)), 9)
+        self.assertEqual(len((x - y - z) + (y * z)), 11)
 
     def test_hash(self):
         from . import make_vars
