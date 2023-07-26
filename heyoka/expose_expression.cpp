@@ -58,6 +58,9 @@ void expose_expression(py::module_ &m)
     // exposition of the operators.
     using ld_t = long double;
 
+    // Variant holding either an expression or a list of expressions.
+    using v_ex_t = std::variant<hey::expression, std::vector<hey::expression>>;
+
     py::class_<hey::expression>(m, "expression", py::dynamic_attr{})
         .def(py::init<>())
         .def(py::init([](std::int32_t x) { return hey::expression{static_cast<double>(x)}; }), "x"_a.noconvert())
@@ -199,20 +202,45 @@ void expose_expression(py::module_ &m)
         // Pickle support.
         .def(py::pickle(&pickle_getstate_wrapper<hey::expression>, &pickle_setstate_wrapper<hey::expression>));
 
-    m.def("get_variables", [](const hey::expression &ex) { return hey::get_variables(ex); });
+    // get_variables().
+    m.def(
+        "get_variables",
+        [](const v_ex_t &arg) { return std::visit([](const auto &v) { return hey::get_variables(v); }, arg); },
+        "arg"_a);
 
-    // Sum.
-    m.def("sum", &hey::sum, "terms"_a);
+    // rename_variables().
+    m.def(
+        "rename_variables",
+        [](const v_ex_t &arg, const std::unordered_map<std::string, std::string> &d) {
+            return std::visit([&d](const auto &v) -> v_ex_t { return hey::rename_variables(v, d); }, arg);
+        },
+        "arg"_a, "d"_a);
 
-    // Prod.
-    m.def("prod", &hey::prod, "terms"_a);
+    // subs().
+    m.def(
+        "subs",
+        [](const v_ex_t &arg,
+           const std::variant<std::unordered_map<std::string, hey::expression>,
+                              std::unordered_map<hey::expression, hey::expression>> &smap,
+           bool normalise) {
+            return std::visit(
+                [normalise](const auto &a, const auto &m) -> v_ex_t { return hey::subs(a, m, normalise); }, arg, smap);
+        },
+        "arg"_a, "smap"_a, "normalise"_a = false);
 
-    // Subs.
-    m.def("subs",
-          [](const hey::expression &e, const std::variant<std::unordered_map<std::string, hey::expression>,
-                                                          std::unordered_map<hey::expression, hey::expression>> &smap) {
-              return std::visit([&e](const auto &v) { return hey::subs(e, v); }, smap);
-          });
+    // fix()/unfix().
+    m.def("fix", &hey::fix, "arg"_a);
+    m.def("fix_nn", &hey::fix_nn, "arg"_a);
+    m.def(
+        "unfix",
+        [](const v_ex_t &arg) { return std::visit([](const auto &v) -> v_ex_t { return hey::unfix(v); }, arg); },
+        "arg"_a);
+
+    // normalise().
+    m.def(
+        "normalise",
+        [](const v_ex_t &arg) { return std::visit([](const auto &v) -> v_ex_t { return hey::normalise(v); }, arg); },
+        "arg"_a);
 
     // make_vars() helper.
     m.def("make_vars", [](const py::args &v_str) {
@@ -224,6 +252,13 @@ void expose_expression(py::module_ &m)
     });
 
     // Math functions.
+
+    // Sum.
+    m.def("sum", &hey::sum, "terms"_a);
+
+    // Prod.
+    m.def("prod", &hey::prod, "terms"_a);
+
     m.def("sqrt", static_cast<hey::expression (*)(hey::expression)>(&hey::sqrt));
     m.def("log", &hey::log);
     m.def("exp", [](hey::expression e) { return hey::exp(std::move(e)); });
@@ -324,10 +359,11 @@ void expose_expression(py::module_ &m)
 
     // Diff.
     m.def(
-        "diff", [](const hey::expression &ex, const std::string &s) { return hey::diff(ex, s); }, "ex"_a, "var"_a);
-    m.def(
-        "diff", [](const hey::expression &ex, const hey::expression &var) { return hey::diff(ex, var); }, "ex"_a,
-        "var"_a);
+        "diff",
+        [](const hey::expression &ex, const std::variant<std::string, hey::expression> &var) {
+            return std::visit([&ex](const auto &v) { return hey::diff(ex, v); }, var);
+        },
+        "ex"_a, "var"_a);
 
     // Syntax sugar for creating parameters.
     py::class_<hey::detail::par_impl>(m, "_par_generator").def("__getitem__", &hey::detail::par_impl::operator[]);

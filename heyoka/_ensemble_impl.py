@@ -6,9 +6,10 @@
 # Public License v. 2.0. If a copy of the MPL was not distributed
 # with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-# NOTE: this is a small helper to splat a 1D grid into the
-# appropriate shape for a batch integrator. If ta is a scalar integrator,
-# the original grid will be returned unchanged.
+
+# NOTE: this is a small helper to splat a 1D grid (i.e., a grid for
+# a scalar integrator) into the appropriate shape for a batch integrator.
+# If ta is a scalar integrator, the original grid will be returned unchanged.
 def _splat_grid(arg, ta):
     if hasattr(ta, "batch_size"):
         import numpy as np
