@@ -201,16 +201,6 @@ void expose_expression(py::module_ &m)
 
     m.def("get_variables", [](const hey::expression &ex) { return hey::get_variables(ex); });
 
-    // Eval
-    m.def("_eval_dbl", [](const hey::expression &e, const std::unordered_map<std::string, double> &map,
-                          const std::vector<double> &pars) { return hey::eval<double>(e, map, pars); });
-    m.def("_eval_ldbl", [](const hey::expression &e, const std::unordered_map<std::string, long double> &map,
-                           const std::vector<long double> &pars) { return hey::eval<long double>(e, map, pars); });
-#if defined(HEYOKA_HAVE_REAL128)
-    m.def("_eval_f128", [](const hey::expression &e, const std::unordered_map<std::string, mppp::real128> &map,
-                           const std::vector<mppp::real128> &pars) { return hey::eval<mppp::real128>(e, map, pars); });
-#endif
-
     // Sum.
     m.def("sum", &hey::sum, "terms"_a);
 

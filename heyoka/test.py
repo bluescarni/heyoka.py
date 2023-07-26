@@ -1789,34 +1789,6 @@ class event_detection_test_case(_ut.TestCase):
             )
 
 
-class expression_eval_test_case(_ut.TestCase):
-    def test_basic(self):
-        from . import make_vars, eval, core
-        from .core import _ppc_arch
-        import numpy as np
-        from math import log10
-
-        (x,) = make_vars("x")
-
-        if _ppc_arch:
-            fp_types = [(float, int(-log10(np.finfo(float).eps)) - 1)]
-        else:
-            fp_types = [
-                (float, int(-log10(np.finfo(float).eps)) - 1),
-                (np.longdouble, int(-log10(np.finfo(np.longdouble).eps)) - 1),
-            ]
-
-        if hasattr(core, "real128"):
-            fp_types.append((core.real128, 32))
-
-        for fp_t, places in fp_types:
-            target = fp_t("0.123456789012345678901234567890")
-            a = eval(x, {"x": target}, fp_type=fp_t)
-            self.assertEqual(a, target)
-            a = eval(x**3.1, {"x": target}, fp_type=fp_t)
-            self.assertAlmostEqual(a, target**3.1, places=places)
-
-
 class scalar_integrator_test_case(_ut.TestCase):
     def test_type_conversions(self):
         # Test to check automatic conversions of std::vector<T>
@@ -4165,7 +4137,6 @@ def run_test_suite():
     suite.addTest(_ut.makeSuite(llvm_state_test_case))
     suite.addTest(_ut.makeSuite(event_classes_test_case))
     suite.addTest(_ut.makeSuite(event_detection_test_case))
-    suite.addTest(_ut.makeSuite(expression_eval_test_case))
     suite.addTest(_ut.makeSuite(batch_integrator_test_case))
     suite.addTest(_ut.makeSuite(scalar_integrator_test_case))
     suite.addTest(_ut.makeSuite(kepE_test_case))
