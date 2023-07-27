@@ -221,7 +221,26 @@ py::object to_sympy(const hy::expression &ex)
 {
     std::unordered_map<const void *, py::object> func_map;
 
+    // NOTE: unfix ex so that we don't have to deal with
+    // mapping the fix() function to SymPy.
     return to_sympy_impl(func_map, hy::unfix(ex));
+}
+
+py::list to_sympy(const std::vector<hy::expression> &v_ex_)
+{
+    std::unordered_map<const void *, py::object> func_map;
+
+    py::list retval;
+
+    // NOTE: unfix v_ex_ so that we don't have to deal with
+    // mapping the fix() function to SymPy.
+    const auto v_ex = hy::unfix(v_ex_);
+
+    for (const auto &ex : v_ex) {
+        retval.append(to_sympy_impl(func_map, ex));
+    }
+
+    return retval;
 }
 
 } // namespace
@@ -316,7 +335,10 @@ void setup_sympy(py::module &m)
         };
 
         // Expose the conversion function.
-        m.def("to_sympy", &detail::to_sympy);
+        m.def("to_sympy", [](const std::variant<hy::expression, std::vector<hy::expression>> &arg) {
+            return std::visit([](const auto &v) -> std::variant<py::object, py::list> { return detail::to_sympy(v); },
+                              arg);
+        });
 
         // Register a cleanup function to destroy the global variables at shutdown.
         auto atexit = py::module_::import("atexit");
