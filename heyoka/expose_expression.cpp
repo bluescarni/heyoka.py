@@ -9,6 +9,7 @@
 #include <heyoka/config.hpp>
 
 #include <cstdint>
+#include <iterator>
 #include <optional>
 #include <sstream>
 #include <string>
@@ -16,6 +17,8 @@
 #include <utility>
 #include <variant>
 #include <vector>
+
+#include <boost/numeric/conversion/cast.hpp>
 
 #include <fmt/core.h>
 #include <fmt/ranges.h>
@@ -396,6 +399,18 @@ void expose_expression(py::module_ &m)
         }
 
         return it->second;
+    });
+    dtens_cl.def("__getitem__", [](const hey::dtens &dt, hey::dtens::size_type idx) {
+        if (idx >= dt.size()) {
+            py_throw(PyExc_IndexError,
+                     fmt::format("The derivative at index {} was requested, but the total number of derivatives is {}",
+                                 idx, dt.size())
+                         .c_str());
+        }
+
+        const auto s_idx = boost::numeric_cast<std::iterator_traits<hey::dtens::iterator>::difference_type>(idx);
+
+        return dt.begin()[s_idx];
     });
     dtens_cl.def("__contains__",
                  [](const hey::dtens &dt, const hey::dtens::v_idx_t &v_idx) { return dt.find(v_idx) != dt.end(); });

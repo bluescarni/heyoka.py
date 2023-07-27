@@ -2993,6 +2993,9 @@ class sympy_test_case(_ut.TestCase):
         self.assertEqual(hsum([hx, -1.0 * hy, -1.0 * hz]), from_sympy(x - y - z))
         self.assertEqual(to_sympy(hx - hy - hz), x - y - z)
 
+        # Run a test in the vector form as well.
+        self.assertEqual(to_sympy([hx - hy - hz, hx * hy * hz]), [x - y - z, x * y * z])
+
         self.assertEqual(hx * hz**-1.0, from_sympy(x / z))
         self.assertEqual(to_sympy(hx / hz), x / z)
 
@@ -4112,6 +4115,7 @@ def run_test_suite():
         _test_cfunc,
         _test_model,
         _test_expression,
+        _test_dtens,
     )
     import numpy as np
     from .model import nbody
@@ -4124,6 +4128,7 @@ def run_test_suite():
     retval = 0
 
     suite = _ut.TestLoader().loadTestsFromTestCase(taylor_add_jet_test_case)
+    suite.addTest(_ut.makeSuite(_test_dtens.dtens_test_case))
     suite.addTest(_ut.makeSuite(_test_mp.mp_test_case))
     suite.addTest(_ut.makeSuite(_test_model.model_test_case))
     suite.addTest(_ut.makeSuite(_test_real.real_test_case))
