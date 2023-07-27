@@ -9,6 +9,16 @@ Changelog
 New
 ~~~
 
+- Introduce several vectorised overloads in the expression
+  API. These vectorised overloads allow to perform the same
+  operation on a list of expressions more efficiently
+  than performing the same operation repeatedly on individual
+  expressions
+  (`#127 <https://github.com/bluescarni/heyoka.py/pull/127>`__).
+- New API to compute high-order derivatives
+  (`#127 <https://github.com/bluescarni/heyoka.py/pull/127>`__).
+- Implement substitution of generic subexpressions
+  (`#127 <https://github.com/bluescarni/heyoka.py/pull/127>`__).
 - The state variables and right-hand side of a system of ODEs
   are now available as read-only properties in the integrator
   classes
@@ -26,6 +36,13 @@ New
 Changes
 ~~~~~~~
 
+- Comprehensive overhaul of the expression system, including:
+  enhanced automatic simplification capabilities for sums,
+  products and powers, removal of several specialised primitives
+  (such as ``square()``, ``neg()``, ``sum_sq()``, etc.),
+  re-implementation of division and subtraction as special
+  cases of product and sum, and more
+  (`#127 <https://github.com/bluescarni/heyoka.py/pull/127>`__).
 - heyoka.py now requires at least version 1.0.0 of the
   heyoka C++ library
   (`#127 <https://github.com/bluescarni/heyoka.py/pull/127>`__).
