@@ -434,7 +434,7 @@ void expose_expression(py::module_ &m)
 
             return std::vector(sr.begin(), sr.end());
         },
-        "order"_a, "component"_a = py::none{});
+        "diff_order"_a, "component"_a = py::none{});
     // Copy/deepcopy.
     dtens_cl.def("__copy__", copy_wrapper<hey::dtens>);
     dtens_cl.def("__deepcopy__", deepcopy_wrapper<hey::dtens>, "memo"_a);
