@@ -38,8 +38,8 @@ Basics
   notebooks/Dense output.ipynb
   notebooks/Event detection
 
-Advanced features
------------------
+Advanced
+--------
 
 .. toctree::
   :maxdepth: 1
@@ -51,5 +51,5 @@ Advanced features
   notebooks/arbitrary_precision.ipynb
   notebooks/sympy_interop.ipynb
   notebooks/compiled_functions.ipynb
+  notebooks/ex_system_revisited.ipynb
   notebooks/pickling.ipynb
-
