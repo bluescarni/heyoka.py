@@ -28,6 +28,7 @@
 #define PY_ARRAY_UNIQUE_SYMBOL heyoka_py_ARRAY_API
 #define PY_UFUNC_UNIQUE_SYMBOL heyoka_py_UFUNC_API
 #define NPY_NO_DEPRECATED_API NPY_1_7_API_VERSION
+#define NPY_TARGET_VERSION NPY_1_22_API_VERSION
 
 #include <Python.h>
 #include <numpy/arrayobject.h>
@@ -155,16 +156,6 @@ PYBIND11_MODULE(core, m)
             }
         } catch (const hey::not_implemented_error &nie) {
             PyErr_SetString(PyExc_NotImplementedError, nie.what());
-        }
-    });
-
-    py::register_exception_translator([](std::exception_ptr p) {
-        try {
-            if (p) {
-                std::rethrow_exception(p);
-            }
-        } catch (const hey::zero_division_error &zde) {
-            PyErr_SetString(PyExc_ZeroDivisionError, zde.what());
         }
     });
 

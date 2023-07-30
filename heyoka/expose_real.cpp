@@ -45,6 +45,7 @@
 #define PY_ARRAY_UNIQUE_SYMBOL heyoka_py_ARRAY_API
 #define PY_UFUNC_UNIQUE_SYMBOL heyoka_py_UFUNC_API
 #define NPY_NO_DEPRECATED_API NPY_1_7_API_VERSION
+#define NPY_TARGET_VERSION NPY_1_22_API_VERSION
 
 #include <Python.h>
 #include <numpy/arrayobject.h>

@@ -3,12 +3,22 @@
 Changelog
 =========
 
-0.22.0 (unreleased)
--------------------
+1.0.0 (unreleased)
+------------------
 
 New
 ~~~
 
+- Introduce several vectorised overloads in the expression
+  API. These vectorised overloads allow to perform the same
+  operation on a list of expressions more efficiently
+  than performing the same operation repeatedly on individual
+  expressions
+  (`#127 <https://github.com/bluescarni/heyoka.py/pull/127>`__).
+- New API to compute high-order derivatives
+  (`#127 <https://github.com/bluescarni/heyoka.py/pull/127>`__).
+- Implement substitution of generic subexpressions
+  (`#127 <https://github.com/bluescarni/heyoka.py/pull/127>`__).
 - The state variables and right-hand side of a system of ODEs
   are now available as read-only properties in the integrator
   classes
@@ -26,13 +36,29 @@ New
 Changes
 ~~~~~~~
 
-- heyoka.py now requires at least version 0.22.0 of the
+- Comprehensive overhaul of the expression system, including:
+  enhanced automatic simplification capabilities for sums,
+  products and powers, removal of several specialised primitives
+  (such as ``square()``, ``neg()``, ``sum_sq()``, etc.),
+  re-implementation of division and subtraction as special
+  cases of product and sum, and more
+  (`#127 <https://github.com/bluescarni/heyoka.py/pull/127>`__).
+- heyoka.py now requires at least version 1.0.0 of the
   heyoka C++ library
-  (`#120 <https://github.com/bluescarni/heyoka.py/pull/120>`__).
+  (`#127 <https://github.com/bluescarni/heyoka.py/pull/127>`__).
 - **BREAKING**: the ``make_nbody_sys()`` helper has been replaced by an equivalent
   function in the new ``model`` submodule
   (`#119 <https://github.com/bluescarni/heyoka.py/pull/119>`__).
-  This is a :ref:`breaking change <bchanges_0_22_0>`.
+  This is a :ref:`breaking change <bchanges_1_0_0>`.
+
+0.21.8 (2023-07-03)
+-------------------
+
+Fix
+~~~
+
+- Fix building against NumPy 1.25
+  (`#125 <https://github.com/bluescarni/heyoka.py/pull/125>`__).
 
 0.21.7 (2023-02-16)
 -------------------

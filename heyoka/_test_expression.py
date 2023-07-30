@@ -169,9 +169,9 @@ class expression_test_case(_ut.TestCase):
         self.assertNotEqual(ex("x"), ex("y"))
 
         # Exponentiation.
-        self.assertEqual(str(ex("x") ** ex("y")), "pow(x, y)")
-        self.assertEqual(str(ex("x") ** ex(2)), "x**2")
-        self.assertEqual(str(ex("x") ** ex(1.1)), "pow(x, 1.1000000000000001)")
+        self.assertEqual(str(ex("x") ** ex("y")), "x**y")
+        self.assertEqual(str(ex("x") ** ex(2)), "x**2.0000000000000000")
+        self.assertEqual(str(ex("x") ** ex(1.1)), "x**1.1000000000000001")
         with self.assertRaises(TypeError) as cm:
             ex(42) ** (2 << 112)
         if ld_63bit:
@@ -182,12 +182,12 @@ class expression_test_case(_ut.TestCase):
         if ld_63bit:
             self.assertEqual(
                 str(ex("x") ** ex(np.longdouble("1.1"))),
-                "pow(x, 1.10000000000000000002)",
+                "x**1.10000000000000000002",
             )
         if with_real128:
             self.assertEqual(
                 str(ex("x") ** ex(real128("1.1"))),
-                "pow(x, 1.10000000000000000000000000000000008)",
+                "x**1.10000000000000000000000000000000008",
             )
 
         # Copy and deepcopy.
@@ -266,7 +266,7 @@ class expression_test_case(_ut.TestCase):
         x, y, z = make_vars("x", "y", "z")
 
         self.assertEqual(len(x), 1)
-        self.assertEqual(len((x - y - z) + (y * z)), 9)
+        self.assertEqual(len((x - y - z) + (y * z)), 11)
 
     def test_hash(self):
         from . import make_vars
@@ -279,3 +279,58 @@ class expression_test_case(_ut.TestCase):
         self.assertEqual(hash(z * ex + ex), hash(z * (x + y) + (x + y)))
         ex2 = deepcopy(ex)
         self.assertEqual(hash(z * ex2 + ex2), hash(z * (x + y) + (x + y)))
+
+    def test_get_variables(self):
+        from . import make_vars, get_variables
+
+        x, y, z = make_vars("x", "y", "z")
+        self.assertEqual(get_variables(arg=x + y), ["x", "y"])
+        self.assertEqual(get_variables(arg=[z - y, x + y]), ["x", "y", "z"])
+
+    def test_rename_variables(self):
+        from . import make_vars, rename_variables, normalise
+
+        x, y, a, b = make_vars("x", "y", "a", "b")
+        self.assertEqual(
+            normalise(rename_variables(arg=x + y, d={"x": "b", "y": "a"})), a + b
+        )
+        self.assertEqual(
+            normalise(rename_variables(arg=[x - y, x + y], d={"x": "b", "y": "a"})),
+            [b - a, a + b],
+        )
+
+    def test_subs(self):
+        from . import make_vars, subs
+
+        x, y, a, b = make_vars("x", "y", "a", "b")
+        self.assertEqual(str(subs(arg=x + y, smap={"x": b, "y": a})), "(b + a)")
+        self.assertEqual(
+            str(subs(arg=x + y, smap={"x": b, "y": a}, normalise=True)), "(a + b)"
+        )
+        self.assertEqual(str(subs(arg=x + y, smap={x: b, y: a})), "(b + a)")
+        self.assertEqual(
+            str(subs(arg=x + y, smap={x: b, y: a}, normalise=True)), "(a + b)"
+        )
+        self.assertEqual(
+            str(subs(arg=[x + y, x - y], smap={"x": b, "y": a})[1]), "(b - a)"
+        )
+        self.assertEqual(
+            str(subs(arg=[x + y, x - y], smap={"x": b, "y": a}, normalise=True)[0]),
+            "(a + b)",
+        )
+        self.assertEqual(str(subs(arg=[x + y, x - y], smap={x: b, y: a})[1]), "(b - a)")
+        self.assertEqual(
+            str(subs(arg=[x + y, x - y], smap={x: b, y: a}, normalise=True)[0]),
+            "(a + b)",
+        )
+
+    def test_fix_unfix(self):
+        from . import make_vars, fix, fix_nn, unfix, expression
+
+        x, y, a, b = make_vars("x", "y", "a", "b")
+
+        self.assertEqual(str(fix(arg=x + y)), "{(x + y)}")
+        self.assertEqual(str(fix_nn(x + y)), "{(x + y)}")
+        self.assertEqual(fix_nn(expression(1.1)), expression(1.1))
+        self.assertEqual(unfix(fix(x + y)), x + y)
+        self.assertEqual(unfix(arg=[fix(x + fix(y)), fix(x - fix(y))]), [x + y, x - y])

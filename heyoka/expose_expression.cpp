@@ -9,11 +9,19 @@
 #include <heyoka/config.hpp>
 
 #include <cstdint>
+#include <iterator>
+#include <optional>
 #include <sstream>
 #include <string>
 #include <unordered_map>
 #include <utility>
+#include <variant>
 #include <vector>
+
+#include <boost/numeric/conversion/cast.hpp>
+
+#include <fmt/core.h>
+#include <fmt/ranges.h>
 
 #include <pybind11/operators.h>
 #include <pybind11/pybind11.h>
@@ -53,17 +61,8 @@ void expose_expression(py::module_ &m)
     // exposition of the operators.
     using ld_t = long double;
 
-    // NOTE: this is used in the implementation of
-    // copy/deepcopy for expression. We need this because
-    // in order to perform a true copy of an expression
-    // we need to use an external function, as the copy ctor
-    // performs a shallow copy.
-    struct ex_copy_func {
-        hey::expression operator()(const hey::expression &ex) const
-        {
-            return hey::copy(ex);
-        }
-    };
+    // Variant holding either an expression or a list of expressions.
+    using v_ex_t = std::variant<hey::expression, std::vector<hey::expression>>;
 
     py::class_<hey::expression>(m, "expression", py::dynamic_attr{})
         .def(py::init<>())
@@ -145,6 +144,7 @@ void expose_expression(py::module_ &m)
         .def(py::self * mppp::real(), "x"_a.noconvert())
         .def(mppp::real() * py::self, "x"_a.noconvert())
 #endif
+        // NOLINTNEXTLINE(misc-redundant-expression)
         .def(py::self / py::self, "x"_a)
         .def(
             "__truediv__", [](const hey::expression &ex, std::int32_t x) { return ex / static_cast<double>(x); },
@@ -198,42 +198,52 @@ void expose_expression(py::module_ &m)
                  return oss.str();
              })
         // Copy/deepcopy.
-        .def("__copy__", copy_wrapper<hey::expression, ex_copy_func>)
-        .def("__deepcopy__", deepcopy_wrapper<hey::expression, ex_copy_func>, "memo"_a)
+        .def("__copy__", copy_wrapper<hey::expression>)
+        .def("__deepcopy__", deepcopy_wrapper<hey::expression>, "memo"_a)
         // Hashing.
         .def("__hash__", [](const heyoka::expression &e) { return heyoka::hash(e); })
         // Pickle support.
         .def(py::pickle(&pickle_getstate_wrapper<hey::expression>, &pickle_setstate_wrapper<hey::expression>));
 
-    // Eval
-    m.def("_eval_dbl", [](const hey::expression &e, const std::unordered_map<std::string, double> &map,
-                          const std::vector<double> &pars) { return hey::eval<double>(e, map, pars); });
-    m.def("_eval_ldbl", [](const hey::expression &e, const std::unordered_map<std::string, long double> &map,
-                           const std::vector<long double> &pars) { return hey::eval<long double>(e, map, pars); });
-#if defined(HEYOKA_HAVE_REAL128)
-    m.def("_eval_f128", [](const hey::expression &e, const std::unordered_map<std::string, mppp::real128> &map,
-                           const std::vector<mppp::real128> &pars) { return hey::eval<mppp::real128>(e, map, pars); });
-#endif
-
-    // Sum.
+    // get_variables().
     m.def(
-        "sum",
-        [](std::vector<hey::expression> terms, std::uint32_t split) { return hey::sum(std::move(terms), split); },
-        "terms"_a, "split"_a = hey::detail::default_sum_split);
+        "get_variables",
+        [](const v_ex_t &arg) { return std::visit([](const auto &v) { return hey::get_variables(v); }, arg); },
+        "arg"_a);
 
-    // Sum of squares.
+    // rename_variables().
     m.def(
-        "sum_sq",
-        [](std::vector<hey::expression> terms, std::uint32_t split) { return hey::sum_sq(std::move(terms), split); },
-        "terms"_a, "split"_a = hey::detail::default_sum_sq_split);
+        "rename_variables",
+        [](const v_ex_t &arg, const std::unordered_map<std::string, std::string> &d) {
+            return std::visit([&d](const auto &v) -> v_ex_t { return hey::rename_variables(v, d); }, arg);
+        },
+        "arg"_a, "d"_a);
 
-    // Pairwise prod.
-    m.def("pairwise_prod", &hey::pairwise_prod, "terms"_a);
+    // subs().
+    m.def(
+        "subs",
+        [](const v_ex_t &arg,
+           const std::variant<std::unordered_map<std::string, hey::expression>,
+                              std::unordered_map<hey::expression, hey::expression>> &smap,
+           bool normalise) {
+            return std::visit(
+                [normalise](const auto &a, const auto &m) -> v_ex_t { return hey::subs(a, m, normalise); }, arg, smap);
+        },
+        "arg"_a, "smap"_a, "normalise"_a = false);
 
-    // Subs.
-    m.def("subs", [](const hey::expression &e, const std::unordered_map<std::string, hey::expression> &smap) {
-        return hey::subs(e, smap);
-    });
+    // fix()/unfix().
+    m.def("fix", &hey::fix, "arg"_a);
+    m.def("fix_nn", &hey::fix_nn, "arg"_a);
+    m.def(
+        "unfix",
+        [](const v_ex_t &arg) { return std::visit([](const auto &v) -> v_ex_t { return hey::unfix(v); }, arg); },
+        "arg"_a);
+
+    // normalise().
+    m.def(
+        "normalise",
+        [](const v_ex_t &arg) { return std::visit([](const auto &v) -> v_ex_t { return hey::normalise(v); }, arg); },
+        "arg"_a);
 
     // make_vars() helper.
     m.def("make_vars", [](const py::args &v_str) {
@@ -245,6 +255,13 @@ void expose_expression(py::module_ &m)
     });
 
     // Math functions.
+
+    // Sum.
+    m.def("sum", &hey::sum, "terms"_a);
+
+    // Prod.
+    m.def("prod", &hey::prod, "terms"_a);
+
     m.def("sqrt", static_cast<hey::expression (*)(hey::expression)>(&hey::sqrt));
     m.def("log", &hey::log);
     m.def("exp", [](hey::expression e) { return hey::exp(std::move(e)); });
@@ -262,7 +279,6 @@ void expose_expression(py::module_ &m)
     m.def("atanh", &hey::atanh);
     m.def("sigmoid", &hey::sigmoid);
     m.def("erf", &hey::erf);
-    m.def("powi", &hey::powi);
 
     // kepE().
     m.def(
@@ -346,14 +362,103 @@ void expose_expression(py::module_ &m)
 
     // Diff.
     m.def(
-        "diff", [](const hey::expression &ex, const std::string &s) { return hey::diff(ex, s); }, "ex"_a, "var"_a);
-    m.def(
-        "diff", [](const hey::expression &ex, const hey::expression &var) { return hey::diff(ex, var); }, "ex"_a,
-        "var"_a);
+        "diff",
+        [](const hey::expression &ex, const std::variant<std::string, hey::expression> &var) {
+            return std::visit([&ex](const auto &v) { return hey::diff(ex, v); }, var);
+        },
+        "ex"_a, "var"_a);
 
     // Syntax sugar for creating parameters.
     py::class_<hey::detail::par_impl>(m, "_par_generator").def("__getitem__", &hey::detail::par_impl::operator[]);
     m.attr("par") = hey::detail::par_impl{};
+
+    // dtens.
+    py::class_<hey::dtens> dtens_cl(m, "dtens", py::dynamic_attr{});
+    dtens_cl.def(py::init<>());
+    // Total number of derivatives.
+    dtens_cl.def("__len__", &hey::dtens::size);
+    // Repr.
+    dtens_cl.def("__repr__", [](const hey::dtens &dt) {
+        std::ostringstream oss;
+        oss << dt;
+        return oss.str();
+    });
+    // Read-only properties.
+    dtens_cl.def_property_readonly("order", &hey::dtens::get_order);
+    dtens_cl.def_property_readonly("nvars", &hey::dtens::get_nvars);
+    dtens_cl.def_property_readonly("nouts", &hey::dtens::get_nouts);
+    dtens_cl.def_property_readonly("args", &hey::dtens::get_args);
+    // Lookup/contains.
+    dtens_cl.def("__getitem__", [](const hey::dtens &dt, const hey::dtens::v_idx_t &v_idx) {
+        const auto it = dt.find(v_idx);
+
+        if (it == dt.end()) {
+            py_throw(
+                PyExc_KeyError,
+                fmt::format("Cannot locate the derivative corresponding the the vector of indices {}", v_idx).c_str());
+        }
+
+        return it->second;
+    });
+    dtens_cl.def("__getitem__", [](const hey::dtens &dt, hey::dtens::size_type idx) {
+        if (idx >= dt.size()) {
+            py_throw(PyExc_IndexError,
+                     fmt::format("The derivative at index {} was requested, but the total number of derivatives is {}",
+                                 idx, dt.size())
+                         .c_str());
+        }
+
+        const auto s_idx = boost::numeric_cast<std::iterator_traits<hey::dtens::iterator>::difference_type>(idx);
+
+        return dt.begin()[s_idx];
+    });
+    dtens_cl.def("__contains__",
+                 [](const hey::dtens &dt, const hey::dtens::v_idx_t &v_idx) { return dt.find(v_idx) != dt.end(); });
+    // Iterator.
+    dtens_cl.def(
+        "__iter__", [](const hey::dtens &dt) { return py::make_key_iterator(dt.begin(), dt.end()); },
+        // NOTE: the calling dtens (argument index 1) needs to be kept alive at least until
+        // the return value (argument index 0) is freed by the garbage collector.
+        // This ensures that if we fetch an iterator and then delete the originating dtens object,
+        // the iterator still points to valid data.
+        py::keep_alive<0, 1>{});
+    // index_of().
+    dtens_cl.def(
+        "index_of", [](const hey::dtens &dt, const hey::dtens::v_idx_t &v_idx) { return dt.index_of(v_idx); },
+        "vidx"_a);
+    // get_derivatives().
+    dtens_cl.def(
+        "get_derivatives",
+        [](const hey::dtens &dt, std::uint32_t order, std::optional<std::uint32_t> component) {
+            const auto sr = component ? dt.get_derivatives(*component, order) : dt.get_derivatives(order);
+
+            return std::vector(sr.begin(), sr.end());
+        },
+        "diff_order"_a, "component"_a = py::none{});
+    // Copy/deepcopy.
+    dtens_cl.def("__copy__", copy_wrapper<hey::dtens>);
+    dtens_cl.def("__deepcopy__", deepcopy_wrapper<hey::dtens>, "memo"_a);
+    // Pickle support.
+    dtens_cl.def(py::pickle(&pickle_getstate_wrapper<hey::dtens>, &pickle_setstate_wrapper<hey::dtens>));
+
+    // diff_args enum.
+    py::enum_<hey::diff_args>(m, "diff_args")
+        .value("vars", hey::diff_args::vars)
+        .value("params", hey::diff_args::params)
+        .value("all", hey::diff_args::all);
+
+    // diff_tensors().
+    m.def(
+        "diff_tensors",
+        [](const std::vector<hey::expression> &v_ex,
+           const std::variant<hey::diff_args, std::vector<hey::expression>> &diff_args, std::uint32_t diff_order) {
+            return std::visit(
+                [&v_ex, diff_order](const auto &v) {
+                    return hey::diff_tensors(v_ex, hey::kw::diff_args = v, hey::kw::diff_order = diff_order);
+                },
+                diff_args);
+        },
+        "func"_a, "diff_args"_a = hey::diff_args::vars, "diff_order"_a = static_cast<std::uint32_t>(1));
 }
 
 } // namespace heyoka_py

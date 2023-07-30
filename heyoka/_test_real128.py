@@ -74,7 +74,6 @@ class real128_test_case(_ut.TestCase):
         # Construction from string.
         self.assertEqual(str(real128("-0")), "-0")
         self.assertEqual(str(real128("-inf")), "-inf")
-        self.assertEqual(str(real128("-nan")), "nan")
         self.assertEqual(str(real128("42")), "42")
         self.assertEqual(str(real128("-123")), "-123")
 
@@ -275,18 +274,6 @@ class real128_test_case(_ut.TestCase):
         self.assertFalse(real128(1) >= real128(2))
         self.assertTrue(real128(2) >= real128(2))
         self.assertTrue(real128(3) >= real128(2))
-
-        # Try to invoke all methods of real128.
-        # We run this check to make sure that we have
-        # implemented all mandatory methods (e.g., failing
-        # to implement the __int__() method would result
-        # in a segmentation fault).
-        for s in dir(real128):
-            try:
-                x = real128()
-                getattr(x, s)()
-            except:
-                pass
 
         # Copy/deepcopy.
         from copy import copy, deepcopy

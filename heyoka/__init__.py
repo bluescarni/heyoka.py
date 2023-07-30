@@ -119,15 +119,6 @@ def taylor_adaptive_batch(sys, state, **kwargs):
     )
 
 
-def eval(e, map, pars=[], **kwargs):
-    from . import core
-
-    fp_type = kwargs.pop("fp_type", float)
-    fp_suffix = _fp_to_suffix(fp_type)
-
-    return getattr(core, "_eval{}".format(fp_suffix))(e, map, pars, **kwargs)
-
-
 def recommended_simd_size(fp_type=float):
     from . import core
 
