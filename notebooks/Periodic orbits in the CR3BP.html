@@ -9,7 +9,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
-    <title>Continuation of Periodic Orbits in the CR3BP &#8212; heyoka.py 0.22.0 documentation</title>
+    <title>Continuation of Periodic Orbits in the CR3BP &#8212; heyoka.py 1.0.0 documentation</title>
   
   
   
@@ -19,12 +19,12 @@
   </script>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../_static/styles/theme.css?digest=12da95d707ffb74b382d" rel="stylesheet" />
-<link href="../_static/styles/bootstrap.css?digest=12da95d707ffb74b382d" rel="stylesheet" />
-<link href="../_static/styles/pydata-sphinx-theme.css?digest=12da95d707ffb74b382d" rel="stylesheet" />
+  <link href="../_static/styles/theme.css?digest=e353d410970836974a52" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=e353d410970836974a52" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=e353d410970836974a52" rel="stylesheet" />
 
   
-  <link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=12da95d707ffb74b382d" rel="stylesheet" />
+  <link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=e353d410970836974a52" rel="stylesheet" />
   <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
@@ -34,8 +34,8 @@
     <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=12da95d707ffb74b382d" />
-<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=12da95d707ffb74b382d" />
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=e353d410970836974a52" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=e353d410970836974a52" />
 
     <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
     <script src="../_static/jquery.js"></script>
@@ -152,6 +152,7 @@
 <li class="toctree-l2"><a class="reference internal" href="arbitrary_precision.html">Computations in arbitrary precision</a></li>
 <li class="toctree-l2"><a class="reference internal" href="sympy_interop.html">Interoperability with SymPy</a></li>
 <li class="toctree-l2"><a class="reference internal" href="compiled_functions.html">Compiled functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ex_system_revisited.html">The expression system, revisited</a></li>
 <li class="toctree-l2"><a class="reference internal" href="pickling.html">Pickle support</a></li>
 </ul>
 </li>
@@ -448,34 +449,7 @@ document.write(`
 <p>… and define some functions that will help later on to visualize our trajectories and make nice plots. (ignore them and come back to this later in case you are curious)</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">compute_L_points</span><span class="p">(</span><span class="n">mu</span><span class="p">,</span> <span class="n">f</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Computes The exact position of the Lagrangian points. To do so it finds the zeros of the</span>
-<span class="sd">    the dynamics equation for px.</span>
-<span class="sd">    </span>
-<span class="sd">        Args:</span>
-<span class="sd">            mu (float): The value of the mu parameter.</span>
-<span class="sd">            f (heyoka expression): The px dynamics equation.</span>
-
-<span class="sd">        Returns:</span>
-<span class="sd">            xL1, xL2, xL3, xL45, yL45: The coordinates of the various Lagrangian Points</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="c1"># Position of the lagrangian points approximated</span>
-    <span class="n">xL1</span> <span class="o">=</span> <span class="p">(</span><span class="n">mu</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="n">mu</span><span class="o">/</span><span class="mi">3</span><span class="o">/</span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">mu</span><span class="p">))</span><span class="o">**</span><span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="mi">3</span><span class="p">)</span>
-    <span class="n">xL2</span> <span class="o">=</span> <span class="p">(</span><span class="n">mu</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="o">-</span> <span class="p">(</span><span class="n">mu</span><span class="o">/</span><span class="mi">3</span><span class="o">/</span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">mu</span><span class="p">))</span><span class="o">**</span><span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="mi">3</span><span class="p">)</span>
-    <span class="n">xL3</span> <span class="o">=</span> <span class="o">-</span><span class="p">(</span><span class="n">mu</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="o">-</span> <span class="mi">7</span><span class="o">/</span><span class="mi">12</span> <span class="o">*</span> <span class="n">mu</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">mu</span><span class="p">)</span>
-    <span class="n">yL45</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mi">60</span><span class="o">/</span><span class="mi">180</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span>
-    <span class="n">xL45</span> <span class="o">=</span> <span class="o">-</span><span class="mf">0.5</span> <span class="o">+</span> <span class="n">mu</span>
-
-    <span class="c1"># Solve for the static equilibrium from the approximated solution</span>
-    <span class="k">def</span> <span class="nf">equilibrium</span><span class="p">(</span><span class="n">expr</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">):</span>
-        <span class="n">retval</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">eval</span><span class="p">(</span><span class="n">expr</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;x&quot;</span><span class="p">:</span><span class="n">x</span><span class="p">,</span> <span class="s2">&quot;y&quot;</span><span class="p">:</span><span class="n">y</span><span class="p">,</span> <span class="s2">&quot;z&quot;</span><span class="p">:</span><span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;px&quot;</span><span class="p">:</span><span class="o">-</span><span class="n">y</span><span class="p">,</span> <span class="s2">&quot;py&quot;</span><span class="p">:</span><span class="n">x</span><span class="p">,</span> <span class="s2">&quot;pz&quot;</span><span class="p">:</span><span class="mi">0</span><span class="p">},</span> <span class="p">[</span><span class="n">mu</span><span class="p">])</span>
-        <span class="k">return</span> <span class="n">retval</span>
-    <span class="n">xL1</span> <span class="o">=</span> <span class="n">root_scalar</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">equilibrium</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span><span class="mf">0.</span><span class="p">),</span> <span class="n">x0</span><span class="o">=</span><span class="n">xL1</span><span class="p">,</span><span class="n">x1</span><span class="o">=</span><span class="n">xL1</span><span class="o">-</span><span class="mf">1e-2</span><span class="p">)</span><span class="o">.</span><span class="n">root</span>
-    <span class="n">xL2</span> <span class="o">=</span> <span class="n">root_scalar</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">equilibrium</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span><span class="mf">0.</span><span class="p">),</span> <span class="n">x0</span><span class="o">=</span><span class="n">xL2</span><span class="p">,</span><span class="n">x1</span><span class="o">=</span><span class="n">xL2</span><span class="o">-</span><span class="mf">1e-2</span><span class="p">)</span><span class="o">.</span><span class="n">root</span>
-    <span class="n">xL3</span> <span class="o">=</span> <span class="n">root_scalar</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">equilibrium</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span><span class="mf">0.</span><span class="p">),</span> <span class="n">x0</span><span class="o">=</span><span class="n">xL3</span><span class="p">,</span><span class="n">x1</span><span class="o">=</span><span class="n">xL3</span><span class="o">-</span><span class="mf">1e-2</span><span class="p">)</span><span class="o">.</span><span class="n">root</span><span class="p">;</span>
-    <span class="k">return</span> <span class="n">xL1</span><span class="p">,</span> <span class="n">xL2</span><span class="p">,</span> <span class="n">xL3</span><span class="p">,</span> <span class="n">xL45</span><span class="p">,</span> <span class="n">yL45</span>
-
-<span class="k">def</span> <span class="nf">potential_function</span><span class="p">(</span><span class="n">position</span><span class="p">,</span><span class="n">mu</span><span class="p">):</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">potential_function</span><span class="p">(</span><span class="n">position</span><span class="p">,</span><span class="n">mu</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Computes the system potential</span>
 <span class="sd">        Args:</span>
 <span class="sd">            position (array-like): The position in Cartesian coordinates</span>
@@ -551,6 +525,41 @@ document.write(`
 <span class="n">f</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="o">-</span><span class="n">x</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">-</span><span class="p">((</span><span class="mf">1.</span> <span class="o">-</span> <span class="n">hy</span><span class="o">.</span><span class="n">par</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">*</span> <span class="n">rps_32</span> <span class="o">+</span> <span class="n">hy</span><span class="o">.</span><span class="n">par</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">rpj_32</span><span class="p">)</span> <span class="o">*</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
 <span class="n">f</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="o">-</span><span class="p">((</span><span class="mf">1.</span> <span class="o">-</span> <span class="n">hy</span><span class="o">.</span><span class="n">par</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">*</span> <span class="n">rps_32</span> <span class="o">+</span> <span class="n">hy</span><span class="o">.</span><span class="n">par</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">rpj_32</span><span class="p">)</span> <span class="o">*</span> <span class="n">x</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
 <span class="n">f</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Let us also define a function to compute the position of the Lagrangian points:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Introduce a compiled function for the evaluation</span>
+<span class="c1"># of the dynamics equation for px.</span>
+<span class="n">px_dyn_cf</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">make_cfunc</span><span class="p">([</span><span class="n">f</span><span class="p">[</span><span class="mi">3</span><span class="p">]],</span> <span class="nb">vars</span><span class="o">=</span><span class="n">x</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">compute_L_points</span><span class="p">(</span><span class="n">mu</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Computes The exact position of the Lagrangian points. To do so it finds the zeros of the</span>
+<span class="sd">    the dynamics equation for px.</span>
+<span class="sd">    </span>
+<span class="sd">        Args:</span>
+<span class="sd">            mu (float): The value of the mu parameter.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            xL1, xL2, xL3, xL45, yL45: The coordinates of the various Lagrangian Points</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Position of the lagrangian points approximated</span>
+    <span class="n">xL1</span> <span class="o">=</span> <span class="p">(</span><span class="n">mu</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="n">mu</span><span class="o">/</span><span class="mi">3</span><span class="o">/</span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">mu</span><span class="p">))</span><span class="o">**</span><span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="mi">3</span><span class="p">)</span>
+    <span class="n">xL2</span> <span class="o">=</span> <span class="p">(</span><span class="n">mu</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="o">-</span> <span class="p">(</span><span class="n">mu</span><span class="o">/</span><span class="mi">3</span><span class="o">/</span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">mu</span><span class="p">))</span><span class="o">**</span><span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="mi">3</span><span class="p">)</span>
+    <span class="n">xL3</span> <span class="o">=</span> <span class="o">-</span><span class="p">(</span><span class="n">mu</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="o">-</span> <span class="mi">7</span><span class="o">/</span><span class="mi">12</span> <span class="o">*</span> <span class="n">mu</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">mu</span><span class="p">)</span>
+    <span class="n">yL45</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mi">60</span><span class="o">/</span><span class="mi">180</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span>
+    <span class="n">xL45</span> <span class="o">=</span> <span class="o">-</span><span class="mf">0.5</span> <span class="o">+</span> <span class="n">mu</span>
+
+    <span class="c1"># Solve for the static equilibrium from the approximated solution</span>
+    <span class="k">def</span> <span class="nf">equilibrium</span><span class="p">(</span><span class="n">expr</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">px_dyn_cf</span><span class="p">([</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="mf">0.</span><span class="p">,</span> <span class="o">-</span><span class="n">y</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="mf">0.</span><span class="p">],</span> <span class="n">pars</span><span class="o">=</span><span class="p">[</span><span class="n">mu</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">xL1</span> <span class="o">=</span> <span class="n">root_scalar</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">equilibrium</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span><span class="mf">0.</span><span class="p">),</span> <span class="n">x0</span><span class="o">=</span><span class="n">xL1</span><span class="p">,</span><span class="n">x1</span><span class="o">=</span><span class="n">xL1</span><span class="o">-</span><span class="mf">1e-2</span><span class="p">)</span><span class="o">.</span><span class="n">root</span>
+    <span class="n">xL2</span> <span class="o">=</span> <span class="n">root_scalar</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">equilibrium</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span><span class="mf">0.</span><span class="p">),</span> <span class="n">x0</span><span class="o">=</span><span class="n">xL2</span><span class="p">,</span><span class="n">x1</span><span class="o">=</span><span class="n">xL2</span><span class="o">-</span><span class="mf">1e-2</span><span class="p">)</span><span class="o">.</span><span class="n">root</span>
+    <span class="n">xL3</span> <span class="o">=</span> <span class="n">root_scalar</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">equilibrium</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span><span class="mf">0.</span><span class="p">),</span> <span class="n">x0</span><span class="o">=</span><span class="n">xL3</span><span class="p">,</span><span class="n">x1</span><span class="o">=</span><span class="n">xL3</span><span class="o">-</span><span class="mf">1e-2</span><span class="p">)</span><span class="o">.</span><span class="n">root</span><span class="p">;</span>
+    <span class="k">return</span> <span class="n">xL1</span><span class="p">,</span> <span class="n">xL2</span><span class="p">,</span> <span class="n">xL3</span><span class="p">,</span> <span class="n">xL45</span><span class="p">,</span> <span class="n">yL45</span>
 </pre></div>
 </div>
 </div>
@@ -652,7 +661,7 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>--- 8.550358772277832 seconds --- to build the Taylor integrator
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>--- 10.587355136871338 seconds --- to build the Taylor integrator
 </pre></div>
 </div>
 </div>
@@ -683,7 +692,7 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>--- 0.03666114807128906 seconds --- to propagate
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>--- 0.05619025230407715 seconds --- to propagate
 </pre></div>
 </div>
 </div>
@@ -694,7 +703,7 @@ document.write(`
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">14</span><span class="p">,</span><span class="mi">14</span><span class="p">))</span>
 
 <span class="c1"># Lets find the postiion of the lagrangian points</span>
-<span class="n">xL1</span><span class="p">,</span> <span class="n">xL2</span><span class="p">,</span> <span class="n">xL3</span><span class="p">,</span> <span class="n">xL45</span><span class="p">,</span> <span class="n">yL45</span> <span class="o">=</span> <span class="n">compute_L_points</span><span class="p">(</span><span class="n">mu</span><span class="p">,</span> <span class="n">f</span><span class="p">[</span><span class="mi">3</span><span class="p">])</span>
+<span class="n">xL1</span><span class="p">,</span> <span class="n">xL2</span><span class="p">,</span> <span class="n">xL3</span><span class="p">,</span> <span class="n">xL45</span><span class="p">,</span> <span class="n">yL45</span> <span class="o">=</span> <span class="n">compute_L_points</span><span class="p">(</span><span class="n">mu</span><span class="p">)</span>
 <span class="c1"># We also compute the Jacobi constant</span>
 <span class="n">C_jacobi</span> <span class="o">=</span> <span class="n">jacobi_constant</span><span class="p">(</span><span class="n">ic</span><span class="p">,</span> <span class="n">mu</span><span class="p">)</span>
 
@@ -741,10 +750,10 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;matplotlib.collections.PathCollection at 0x7fb2809d6230&gt;
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;matplotlib.collections.PathCollection at 0x7f8da5b6a8c0&gt;
 </pre></div>
 </div>
-<img alt="../_images/bb0ea0dfae30c4a6496760909d1848a1151d447de42931416807622e4997726a.png" src="../_images/bb0ea0dfae30c4a6496760909d1848a1151d447de42931416807622e4997726a.png" />
+<img alt="../_images/38d7685311d4c0702c894ea7ed3a7c8adce228eb1b7d34e0f04fe4a77277e9da.png" src="../_images/38d7685311d4c0702c894ea7ed3a7c8adce228eb1b7d34e0f04fe4a77277e9da.png" />
 </div>
 </div>
 <p>All fine ….. at least visually! So far we have not made use of the variational equations at all, but this is about to change!</p>
@@ -792,7 +801,7 @@ document.write(`
 <span class="c1"># Initial guess for the integration time (will eventually converge to a period)</span>
 <span class="n">t_final</span> <span class="o">=</span> <span class="mf">3.</span>
 <span class="c1"># We recomupte the lagrangian points</span>
-<span class="n">xL1</span><span class="p">,</span> <span class="n">xL2</span><span class="p">,</span> <span class="n">xL3</span><span class="p">,</span> <span class="n">xL45</span><span class="p">,</span> <span class="n">yL45</span> <span class="o">=</span> <span class="n">compute_L_points</span><span class="p">(</span><span class="n">mu</span><span class="p">,</span> <span class="n">f</span><span class="p">[</span><span class="mi">3</span><span class="p">])</span>
+<span class="n">xL1</span><span class="p">,</span> <span class="n">xL2</span><span class="p">,</span> <span class="n">xL3</span><span class="p">,</span> <span class="n">xL45</span><span class="p">,</span> <span class="n">yL45</span> <span class="o">=</span> <span class="n">compute_L_points</span><span class="p">(</span><span class="n">mu</span><span class="p">)</span>
 
 <span class="c1"># Initial conditions in the cartesian representation x,y,z,vx,vy,vz</span>
 <span class="n">ic_cart</span> <span class="o">=</span> <span class="p">[</span> <span class="o">-</span><span class="mf">8.36809444e-01</span><span class="p">,</span> <span class="mf">0.</span><span class="p">,</span><span class="mf">0.</span><span class="p">,</span><span class="mf">0.</span><span class="p">,</span>  <span class="o">-</span><span class="mf">8.85435468e-04</span><span class="p">,</span> <span class="mf">0.</span><span class="p">]</span>
@@ -842,21 +851,22 @@ document.write(`
 
 
 <span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">(</span><span class="n">xL1</span><span class="o">-</span><span class="n">zoom</span><span class="p">,</span> <span class="n">xL1</span><span class="o">+</span><span class="n">zoom</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">(</span><span class="o">-</span><span class="n">zoom</span><span class="p">,</span> <span class="o">+</span><span class="n">zoom</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">(</span><span class="o">-</span><span class="n">zoom</span><span class="p">,</span> <span class="o">+</span><span class="n">zoom</span><span class="p">);</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(-0.005, 0.005)
-</pre></div>
-</div>
-<img alt="../_images/fa30263ee97cb99a847da065c64e2c12b4cb704b3985db409a03cb35884a50d4.png" src="../_images/fa30263ee97cb99a847da065c64e2c12b4cb704b3985db409a03cb35884a50d4.png" />
+<img alt="../_images/57fda6e2455557cd77b63693130c399d74a92838b8b561ff248bec895b9a543f.png" src="../_images/57fda6e2455557cd77b63693130c399d74a92838b8b561ff248bec895b9a543f.png" />
 </div>
 </div>
 <p>The orbit is good but does not close! Let us build an iteration that corrects <span class="math notranslate nohighlight">\(x_0,y_0, z_0, p_{x_0}, p_{y_0}, p_{z_0}, T\)</span> as to close the orbit.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">corrector</span><span class="p">(</span><span class="n">ta</span><span class="p">,</span> <span class="n">x0</span><span class="p">):</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Introduce a compiled function for the evaluation</span>
+<span class="c1"># of the dynamics equations.</span>
+<span class="n">dyn_cf</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">make_cfunc</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="nb">vars</span><span class="o">=</span><span class="n">x</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">corrector</span><span class="p">(</span><span class="n">ta</span><span class="p">,</span> <span class="n">x0</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Performs and logs a step of a corrector algorithm that takes a numerical integration from x0 -&gt; T -&gt; xf. The result</span>
 <span class="sd">    is a new tentative x0 that should result in a closed orbit.</span>
@@ -866,14 +876,13 @@ document.write(`
     <span class="n">t_final</span> <span class="o">=</span> <span class="n">ta</span><span class="o">.</span><span class="n">time</span>
     
     <span class="n">state_T</span> <span class="o">=</span> <span class="n">ta</span><span class="o">.</span><span class="n">state</span><span class="p">[:</span><span class="mi">6</span><span class="p">]</span>
-    <span class="n">state_T_dict</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;x&quot;</span><span class="p">:</span><span class="n">state_T</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s2">&quot;y&quot;</span><span class="p">:</span><span class="n">state_T</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="s2">&quot;z&quot;</span><span class="p">:</span><span class="n">state_T</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="s2">&quot;px&quot;</span><span class="p">:</span><span class="n">state_T</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span> <span class="s2">&quot;py&quot;</span><span class="p">:</span><span class="n">state_T</span><span class="p">[</span><span class="mi">4</span><span class="p">],</span> <span class="s2">&quot;pz&quot;</span><span class="p">:</span><span class="n">state_T</span><span class="p">[</span><span class="mi">5</span><span class="p">]}</span>
     
     <span class="n">Phi</span> <span class="o">=</span> <span class="n">ta</span><span class="o">.</span><span class="n">state</span><span class="p">[</span><span class="mi">6</span><span class="p">:]</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="mi">6</span><span class="p">,</span><span class="mi">6</span><span class="p">))</span>
-    <span class="n">dynT</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">hy</span><span class="o">.</span><span class="n">eval</span><span class="p">(</span><span class="n">f</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">state_T_dict</span><span class="p">,</span> <span class="p">[</span><span class="n">mu</span><span class="p">])</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">6</span><span class="p">)])</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>
+    <span class="n">dynT</span> <span class="o">=</span> <span class="n">dyn_cf</span><span class="p">(</span><span class="n">state_T</span><span class="p">,</span> <span class="n">pars</span><span class="o">=</span><span class="p">[</span><span class="n">mu</span><span class="p">])</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>
 
     <span class="c1"># We add as last state delta T</span>
     <span class="n">A</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">Phi</span><span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="mi">6</span><span class="p">),</span><span class="n">dynT</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-    <span class="c1"># We add the Poicare phasing condition as a last equation</span>
+    <span class="c1"># We add the Poincare phasing condition as a last equation</span>
     <span class="n">phasing_cond</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">dynT</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">))</span>
 
     <span class="n">A</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">A</span><span class="p">,</span> <span class="n">phasing_cond</span><span class="p">))</span>
@@ -912,24 +921,24 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>error was: 0.001297287438728906
-condition number is: 16558416263.109829
-new error is: 0.0011268499652033904
-error was: 0.0011268499652033904
-condition number is: 112029239.48815417
-new error is: 0.0053183889146685365
-error was: 0.0053183889146685365
-condition number is: 97382195.70830885
-new error is: 0.0008512521429360928
-error was: 0.0008512521429360928
-condition number is: 208596161.69560128
-new error is: 6.615966550898223e-06
-error was: 6.615966550898223e-06
-condition number is: 33988164.74275685
-new error is: 6.542963051388621e-08
-error was: 6.542963051388621e-08
-condition number is: 5547008566.413345
-new error is: 1.3022470169060403e-12
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>error was: 0.0012972874386999722
+condition number is: 16558416262.120907
+new error is: 0.001126849965069169
+error was: 0.001126849965069169
+condition number is: 112029239.50893934
+new error is: 0.005318388912959757
+error was: 0.005318388912959757
+condition number is: 97382195.72485192
+new error is: 0.0008512521425610938
+error was: 0.0008512521425610938
+condition number is: 208596161.6087695
+new error is: 6.615966094672848e-06
+error was: 6.615966094672848e-06
+condition number is: 33988164.67865295
+new error is: 6.542923483972517e-08
+error was: 6.542923483972517e-08
+condition number is: 5547005157.257222
+new error is: 1.844168530369353e-12
 </pre></div>
 </div>
 </div>
@@ -996,11 +1005,11 @@ new error is: 1.3022470169060403e-12
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>mu:  0.01215057
-Initial condition: [-8.3660628429413575e-01, 6.8716705930014935e-05, 0.0000000000000000e+00, -2.3615598135144519e-05, -8.3919863027124098e-01, 0.0000000000000000e+00]
-Period: 2.6915996001646740e+00
+Initial condition: [-8.3660628428124639e-01, 6.8716716925632383e-05, 0.0000000000000000e+00, -2.3615601898389701e-05, -8.3919863036678266e-01, 0.0000000000000000e+00]
+Period: 2.6915996001662497e+00
 </pre></div>
 </div>
-<img alt="../_images/027151b6dd86f99f31b0b78bd73e384bd7b154f11e958bfa6411e8615804889b.png" src="../_images/027151b6dd86f99f31b0b78bd73e384bd7b154f11e958bfa6411e8615804889b.png" />
+<img alt="../_images/216e56ffe609869df572e466073ed50b1512ba58fed37d455d16d6c46e94051a.png" src="../_images/216e56ffe609869df572e466073ed50b1512ba58fed37d455d16d6c46e94051a.png" />
 </div>
 </div>
 </section>
@@ -1056,7 +1065,7 @@ Period: 2.6915996001646740e+00
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[2.67528714e+03+0.j         3.73791653e-04+0.j
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[2.67528714e+03+0.j         3.73791652e-04+0.j
  9.99999893e-01+0.j         1.00000011e+00+0.j
  9.84479860e-01+0.17549759j 9.84479860e-01-0.17549759j]
 </pre></div>
@@ -1072,8 +1081,8 @@ Period: 2.6915996001646740e+00
     <span class="n">Phi</span> <span class="o">=</span> <span class="n">ta</span><span class="o">.</span><span class="n">state</span><span class="p">[</span><span class="mi">6</span><span class="p">:]</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="mi">6</span><span class="p">,</span><span class="mi">6</span><span class="p">))</span>
     <span class="n">state_T</span> <span class="o">=</span> <span class="n">ta</span><span class="o">.</span><span class="n">state</span><span class="p">[:</span><span class="mi">6</span><span class="p">]</span>
     <span class="n">state_T_dict</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;x&quot;</span><span class="p">:</span><span class="n">state_T</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s2">&quot;y&quot;</span><span class="p">:</span><span class="n">state_T</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="s2">&quot;z&quot;</span><span class="p">:</span><span class="n">state_T</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="s2">&quot;px&quot;</span><span class="p">:</span><span class="n">state_T</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span> <span class="s2">&quot;py&quot;</span><span class="p">:</span><span class="n">state_T</span><span class="p">[</span><span class="mi">4</span><span class="p">],</span> <span class="s2">&quot;pz&quot;</span><span class="p">:</span><span class="n">state_T</span><span class="p">[</span><span class="mi">5</span><span class="p">]}</span>
-    <span class="c1"># Using heyoka evaluate to compute the dynamics from its expressions</span>
-    <span class="n">dynT</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">hy</span><span class="o">.</span><span class="n">eval</span><span class="p">(</span><span class="n">f</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">state_T_dict</span><span class="p">,</span> <span class="p">[</span><span class="n">mu</span><span class="p">])</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">6</span><span class="p">)])</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>
+    <span class="c1"># Compute the dynamics from its expressions</span>
+    <span class="n">dynT</span> <span class="o">=</span> <span class="n">dyn_cf</span><span class="p">(</span><span class="n">state_T</span><span class="p">,</span> <span class="n">pars</span><span class="o">=</span><span class="p">[</span><span class="n">mu</span><span class="p">])</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>
     <span class="c1"># Computing the full A</span>
     <span class="n">A</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">Phi</span><span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="mi">6</span><span class="p">),</span> <span class="n">dynT</span><span class="o">.</span><span class="n">T</span><span class="p">))</span>
     <span class="n">fullA</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">A</span><span class="p">,</span><span class="n">np</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">dynT</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">))),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
@@ -1156,7 +1165,7 @@ Period: 2.6915996001646740e+00
 <div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(-0.005, 0.005)
 </pre></div>
 </div>
-<img alt="../_images/069897fe548ee2e9076fb83df7ca781e8cc0acce20bd76e97f5336370b9d22c3.png" src="../_images/069897fe548ee2e9076fb83df7ca781e8cc0acce20bd76e97f5336370b9d22c3.png" />
+<img alt="../_images/8c125e8b0b4345022175cade9739b999048704d2a7e8645a6bc792ca5fd4ae2b.png" src="../_images/8c125e8b0b4345022175cade9739b999048704d2a7e8645a6bc792ca5fd4ae2b.png" />
 </div>
 </div>
 <p>It’s nearly closed, but not that well …. it will need a correction … but we can call the same iterations we made previously when we closed the first initial guess, remember?</p>
@@ -1169,15 +1178,15 @@ Period: 2.6915996001646740e+00
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>error was: 0.00027638685565809873
-condition number is: 15815373.556722537
-new error is: 9.419921997859318e-07
-error was: 9.419921997859318e-07
-condition number is: 79070672100.43153
-new error is: 6.0107665088969454e-09
-error was: 6.0107665088969454e-09
-condition number is: 868817825405.7031
-new error is: 4.0150302677224995e-13
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>error was: 0.00027699803739455515
+condition number is: 15781425.08539112
+new error is: 9.461222658847807e-07
+error was: 9.461222658847807e-07
+condition number is: 78777881309.70691
+new error is: 6.062196318473753e-09
+error was: 6.062196318473753e-09
+condition number is: 861551117697.6293
+new error is: 3.427171981558372e-14
 </pre></div>
 </div>
 </div>
@@ -1235,15 +1244,12 @@ new error is: 4.0150302677224995e-13
 
 
 <span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">(</span><span class="n">xL1</span><span class="o">-</span><span class="n">zoom</span><span class="p">,</span> <span class="n">xL1</span><span class="o">+</span><span class="n">zoom</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">(</span><span class="o">-</span><span class="n">zoom</span><span class="p">,</span> <span class="o">+</span><span class="n">zoom</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">(</span><span class="o">-</span><span class="n">zoom</span><span class="p">,</span> <span class="o">+</span><span class="n">zoom</span><span class="p">);</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(-0.005, 0.005)
-</pre></div>
-</div>
-<img alt="../_images/955ebd569e82aaad23bcd9d1463f4274a2664fa7859b594acb9baae87a509911.png" src="../_images/955ebd569e82aaad23bcd9d1463f4274a2664fa7859b594acb9baae87a509911.png" />
+<img alt="../_images/2ee1b3b1f3f07e99d46cd0b704547c5e58b9dd304e78fe2d3c2acce1ba8536dc.png" src="../_images/2ee1b3b1f3f07e99d46cd0b704547c5e58b9dd304e78fe2d3c2acce1ba8536dc.png" />
 </div>
 </div>
 </section>
@@ -1256,7 +1262,10 @@ new error is: 4.0150302677224995e-13
               
               
                 <footer class="bd-footer-article">
-                  <!-- Previous / next buttons -->
+                  
+<div class="footer-article-items footer-article__inner">
+  
+    <div class="footer-article-item"><!-- Previous / next buttons -->
 <div class="prev-next-area">
     <a class="left-prev"
        href="The%20restricted%20three-body%20problem.html"
@@ -1276,7 +1285,10 @@ new error is: 4.0150302677224995e-13
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
+</div></div>
+  
 </div>
+
                 </footer>
               
             </div>
@@ -1304,7 +1316,7 @@ new error is: 4.0150302677224995e-13
             
           </div>
           <footer class="bd-footer-content">
-            <div class="bd-footer-content__inner">
+            
 <div class="bd-footer-content__inner container">
   
   <div class="footer-item">
@@ -1334,7 +1346,7 @@ By Francesco Biscani and Dario Izzo
     
   </div>
   
-</div></div>
+</div>
           </footer>
         
 
@@ -1343,8 +1355,8 @@ By Francesco Biscani and Dario Izzo
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../_static/scripts/bootstrap.js?digest=12da95d707ffb74b382d"></script>
-<script src="../_static/scripts/pydata-sphinx-theme.js?digest=12da95d707ffb74b382d"></script>
+  <script src="../_static/scripts/bootstrap.js?digest=e353d410970836974a52"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=e353d410970836974a52"></script>
 
   <footer class="bd-footer">
   </footer>

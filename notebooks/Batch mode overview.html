@@ -9,7 +9,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
-    <title>Batch mode &#8212; heyoka.py 0.22.0 documentation</title>
+    <title>Batch mode &#8212; heyoka.py 1.0.0 documentation</title>
   
   
   
@@ -19,12 +19,12 @@
   </script>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../_static/styles/theme.css?digest=12da95d707ffb74b382d" rel="stylesheet" />
-<link href="../_static/styles/bootstrap.css?digest=12da95d707ffb74b382d" rel="stylesheet" />
-<link href="../_static/styles/pydata-sphinx-theme.css?digest=12da95d707ffb74b382d" rel="stylesheet" />
+  <link href="../_static/styles/theme.css?digest=e353d410970836974a52" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=e353d410970836974a52" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=e353d410970836974a52" rel="stylesheet" />
 
   
-  <link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=12da95d707ffb74b382d" rel="stylesheet" />
+  <link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=e353d410970836974a52" rel="stylesheet" />
   <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
@@ -34,8 +34,8 @@
     <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=12da95d707ffb74b382d" />
-<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=12da95d707ffb74b382d" />
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=e353d410970836974a52" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=e353d410970836974a52" />
 
     <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
     <script src="../_static/jquery.js"></script>
@@ -152,6 +152,7 @@
 <li class="toctree-l2"><a class="reference internal" href="arbitrary_precision.html">Computations in arbitrary precision</a></li>
 <li class="toctree-l2"><a class="reference internal" href="sympy_interop.html">Interoperability with SymPy</a></li>
 <li class="toctree-l2"><a class="reference internal" href="compiled_functions.html">Compiled functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ex_system_revisited.html">The expression system, revisited</a></li>
 <li class="toctree-l2"><a class="reference internal" href="pickling.html">Pickle support</a></li>
 </ul>
 </li>
@@ -679,7 +680,7 @@ the result of the integration over a grid of time batches.</p>
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Outcomes:
-[(&lt;taylor_outcome.time_limit: -4294967299&gt;, 0.1970044860947501, 0.42801809235455385, 34), (&lt;taylor_outcome.time_limit: -4294967299&gt;, 0.19146089929527163, 0.4281140304644997, 38), (&lt;taylor_outcome.time_limit: -4294967299&gt;, 0.18762172169221453, 0.4355633488513558, 41), (&lt;taylor_outcome.time_limit: -4294967299&gt;, 0.18423403769248833, 0.4705364610280495, 44)]
+[(&lt;taylor_outcome.time_limit: -4294967299&gt;, 0.1970044860947501, 0.42801809235455385, 34), (&lt;taylor_outcome.time_limit: -4294967299&gt;, 0.1914608992952718, 0.4281140304644989, 38), (&lt;taylor_outcome.time_limit: -4294967299&gt;, 0.18762172169221444, 0.4355633488513558, 41), (&lt;taylor_outcome.time_limit: -4294967299&gt;, 0.18423403769248836, 0.4705364610280492, 44)]
 State:
 [[ 4.6268855   2.73976697  1.1534837   0.23501885]
  [-2.25814471 -1.91965361 -1.77541972 -1.13133003]]
@@ -687,7 +688,7 @@ Time:
 [10.21518102 11.21719731 12.21701653 13.21708394]
 
 Outcomes:
-[(&lt;taylor_outcome.time_limit: -4294967299&gt;, 0.2048473837982105, 0.30806885568024933, 40), (&lt;taylor_outcome.time_limit: -4294967299&gt;, 0.21220873200092316, 0.3203303481721456, 38), (&lt;taylor_outcome.time_limit: -4294967299&gt;, 0.22595995123406573, 0.4129644953875965, 35), (&lt;taylor_outcome.time_limit: -4294967299&gt;, 0.21027114609377706, 0.3717536518626975, 34)]
+[(&lt;taylor_outcome.time_limit: -4294967299&gt;, 0.20484738379821055, 0.3080688556802492, 40), (&lt;taylor_outcome.time_limit: -4294967299&gt;, 0.21220873200092283, 0.32033034817214345, 38), (&lt;taylor_outcome.time_limit: -4294967299&gt;, 0.22595995123406554, 0.412964495387597, 35), (&lt;taylor_outcome.time_limit: -4294967299&gt;, 0.21027114609377734, 0.37175365186269704, 34)]
 State:
 [[1.80080102 2.83619831 3.4747455  6.29634837]
  [1.35919698 0.50159786 0.00737693 0.72663002]]
@@ -725,7 +726,7 @@ Time:
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/d1260e4c4b2e7b8a4a2241dba9c8d43b32d3e0291b8da2a312d45aab9ef65741.png" src="../_images/d1260e4c4b2e7b8a4a2241dba9c8d43b32d3e0291b8da2a312d45aab9ef65741.png" />
+<img alt="../_images/b60e76fc2aa147e56554e0ca2f0ab25a953b9dc3c616cf7a87a9324a9ec01588.png" src="../_images/b60e76fc2aa147e56554e0ca2f0ab25a953b9dc3c616cf7a87a9324a9ec01588.png" />
 </div>
 </div>
 <p>In this example, we chose to propagate all batch elements using the same time grid, but we could have chosen to propagate different batch elements using different time grids.</p>
@@ -739,20 +740,20 @@ Time:
 </div>
 <div class="cell_output docutils container">
 <div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[(&lt;taylor_outcome.time_limit: -4294967299&gt;,
-  0.1771218741465665,
+  0.17712187414656672,
   0.42922678763927685,
   445),
  (&lt;taylor_outcome.time_limit: -4294967299&gt;,
-  0.17864079697444896,
-  0.4311641361512722,
+  0.17864079697444862,
+  0.43116413615127175,
   442),
  (&lt;taylor_outcome.time_limit: -4294967299&gt;,
-  0.1716673001746401,
-  0.48845285378321457,
+  0.17166730017463622,
+  0.48845285378323666,
   370),
  (&lt;taylor_outcome.time_limit: -4294967299&gt;,
-  0.1853603631822091,
-  0.46761939336987696,
+  0.18536036318220903,
+  0.46761939336987596,
   364)]
 </pre></div>
 </div>
@@ -1066,7 +1067,7 @@ v = 0,
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/0a78241bed4a479630db1c238d617dfc6d1edb58eb13046e3680fa99bc6d2710.png" src="../_images/0a78241bed4a479630db1c238d617dfc6d1edb58eb13046e3680fa99bc6d2710.png" />
+<img alt="../_images/1b48a5175295ac169621173ba1fd5881832a679e2b1b0ebce50c3aeacc5b8d6b.png" src="../_images/1b48a5175295ac169621173ba1fd5881832a679e2b1b0ebce50c3aeacc5b8d6b.png" />
 </div>
 </div>
 <p>Here we marked with vertical dashed lines the times of the local maxima, which, as we can see, were all correctly detected.</p>
@@ -1197,7 +1198,7 @@ v = 0,
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/117ad0e6a4bbd1339a93c06fbe610d5b853de8f401aaa802171b270f6e51e4f5.png" src="../_images/117ad0e6a4bbd1339a93c06fbe610d5b853de8f401aaa802171b270f6e51e4f5.png" />
+<img alt="../_images/5d79a9a4f1555125153a8b84f8c40589c1cde93650e8d881627c1a2c49238869.png" src="../_images/5d79a9a4f1555125153a8b84f8c40589c1cde93650e8d881627c1a2c49238869.png" />
 </div>
 </div>
 <p>We can see how setting slightly different drop heights for each batch element soon leads to qualitatively-different trajectories.</p>
@@ -1305,7 +1306,7 @@ We begin with the definition of the dynamical equations and of the template inte
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/4a03a50e665ff396a318d4b72ceab4eda239ffd0443ad6f0c3ff8c1757a02d6c.png" src="../_images/4a03a50e665ff396a318d4b72ceab4eda239ffd0443ad6f0c3ff8c1757a02d6c.png" />
+<img alt="../_images/f4042fa61d65188769c271905fb7ada47835f9a421a955f21fa0d7fcba1b2271.png" src="../_images/f4042fa61d65188769c271905fb7ada47835f9a421a955f21fa0d7fcba1b2271.png" />
 </div>
 </div>
 </section>
@@ -1318,7 +1319,10 @@ We begin with the definition of the dynamical equations and of the template inte
               
               
                 <footer class="bd-footer-article">
-                  <!-- Previous / next buttons -->
+                  
+<div class="footer-article-items footer-article__inner">
+  
+    <div class="footer-article-item"><!-- Previous / next buttons -->
 <div class="prev-next-area">
     <a class="left-prev"
        href="Event%20detection.html"
@@ -1338,7 +1342,10 @@ We begin with the definition of the dynamical equations and of the template inte
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
+</div></div>
+  
 </div>
+
                 </footer>
               
             </div>
@@ -1368,7 +1375,7 @@ We begin with the definition of the dynamical equations and of the template inte
             
           </div>
           <footer class="bd-footer-content">
-            <div class="bd-footer-content__inner">
+            
 <div class="bd-footer-content__inner container">
   
   <div class="footer-item">
@@ -1398,7 +1405,7 @@ By Francesco Biscani and Dario Izzo
     
   </div>
   
-</div></div>
+</div>
           </footer>
         
 
@@ -1407,8 +1414,8 @@ By Francesco Biscani and Dario Izzo
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../_static/scripts/bootstrap.js?digest=12da95d707ffb74b382d"></script>
-<script src="../_static/scripts/pydata-sphinx-theme.js?digest=12da95d707ffb74b382d"></script>
+  <script src="../_static/scripts/bootstrap.js?digest=e353d410970836974a52"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=e353d410970836974a52"></script>
 
   <footer class="bd-footer">
   </footer>

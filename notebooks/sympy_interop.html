@@ -9,7 +9,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
-    <title>Interoperability with SymPy &#8212; heyoka.py 0.22.0 documentation</title>
+    <title>Interoperability with SymPy &#8212; heyoka.py 1.0.0 documentation</title>
   
   
   
@@ -19,12 +19,12 @@
   </script>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../_static/styles/theme.css?digest=12da95d707ffb74b382d" rel="stylesheet" />
-<link href="../_static/styles/bootstrap.css?digest=12da95d707ffb74b382d" rel="stylesheet" />
-<link href="../_static/styles/pydata-sphinx-theme.css?digest=12da95d707ffb74b382d" rel="stylesheet" />
+  <link href="../_static/styles/theme.css?digest=e353d410970836974a52" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=e353d410970836974a52" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=e353d410970836974a52" rel="stylesheet" />
 
   
-  <link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=12da95d707ffb74b382d" rel="stylesheet" />
+  <link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=e353d410970836974a52" rel="stylesheet" />
   <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
@@ -34,8 +34,8 @@
     <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=12da95d707ffb74b382d" />
-<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=12da95d707ffb74b382d" />
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=e353d410970836974a52" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=e353d410970836974a52" />
 
     <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
     <script src="../_static/jquery.js"></script>
@@ -152,6 +152,7 @@
 <li class="toctree-l2"><a class="reference internal" href="arbitrary_precision.html">Computations in arbitrary precision</a></li>
 <li class="toctree-l2 current active"><a class="current reference internal" href="#">Interoperability with SymPy</a></li>
 <li class="toctree-l2"><a class="reference internal" href="compiled_functions.html">Compiled functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ex_system_revisited.html">The expression system, revisited</a></li>
 <li class="toctree-l2"><a class="reference internal" href="pickling.html">Pickle support</a></li>
 </ul>
 </li>
@@ -484,7 +485,7 @@ document.write(`
 </div>
 <div class="cell_output docutils container">
 <div class="output text_latex math notranslate nohighlight">
-\[\displaystyle 0.5 v_{x}^{2} + 0.5 v_{y}^{2} + 0.5 v_{z}^{2} - 2.50378031278086 \cdot 10^{-10} \cdot \left(0.125 v_{x}^{2} + 0.125 v_{y}^{2} + 0.125 v_{z}^{2}\right) \left(v_{x}^{2} + v_{y}^{2} + v_{z}^{2}\right) - \frac{2.50378031278086 \cdot 10^{-10} \cdot \left(59.1343559232718 v_{x}^{2} + 59.1343559232718 v_{y}^{2} + 59.1343559232718 v_{z}^{2}\right)}{\sqrt{x^{2} + y^{2} + z^{2}}} + \frac{3.89128862055816 \cdot 10^{-7}}{2.0 x^{2} + 2.0 y^{2} + 2.0 z^{2}} - \frac{39.4229039488479}{\sqrt{x^{2} + y^{2} + z^{2}}}\]</div>
+\[\displaystyle 0.5 v_{x}^{2} + 0.5 v_{y}^{2} + 0.5 v_{z}^{2} - 2.50378031278086 \cdot 10^{-10} \cdot \left(0.125 v_{x}^{2} + 0.125 v_{y}^{2} + 0.125 v_{z}^{2}\right) \left(v_{x}^{2} + v_{y}^{2} + v_{z}^{2}\right) - \frac{2.50378031278086 \cdot 10^{-10} \cdot \left(59.1343559232718 v_{x}^{2} + 59.1343559232718 v_{y}^{2} + 59.1343559232718 v_{z}^{2}\right)}{\left(x^{2} + y^{2} + z^{2}\right)^{0.5}} - \frac{39.4229039488479}{\left(x^{2} + y^{2} + z^{2}\right)^{0.5}} + \frac{3.89128862055816 \cdot 10^{-7}}{2 x^{2} + 2 y^{2} + 2 z^{2}}\]</div>
 </div>
 </div>
 <p>The SymPy expression can be converted back to heyoka.py using the <code class="docutils literal notranslate"><span class="pre">from_sympy()</span></code> function:</p>
@@ -495,7 +496,7 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>((0.50000000000000000 * v_x**2) + (0.50000000000000000 * v_y**2) + (0.50000000000000000 * v_z**2) + (3.8912886205581639e-07 * pow(((2.0000000000000000 * x**2) + (2.0000000000000000 * y**2) + (2.0000000000000000 * z**2)), -1.0000000000000000)) + (-39.422903948847882 * pow((x**2 + y**2 + z**2), -0.50000000000000000)) + ((-2.5037803127808595e-10 * pow((x**2 + y**2 + z**2), -0.50000000000000000)) * ((59.134355923271826 * v_x**2) + (59.134355923271826 * v_y**2) + (59.134355923271826 * v_z**2))) + ((-2.5037803127808595e-10 * (v_x**2 + v_y**2 + v_z**2)) * ((0.12500000000000000 * v_x**2) + (0.12500000000000000 * v_y**2) + (0.12500000000000000 * v_z**2))))
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>((3.8912886205581639e-07 / ((2.0000000000000000 * x**2.0000000000000000) + (2.0000000000000000 * y**2.0000000000000000) + (2.0000000000000000 * z**2.0000000000000000))) + (0.50000000000000000 * v_x**2.0000000000000000) + (0.50000000000000000 * v_y**2.0000000000000000) + (0.50000000000000000 * v_z**2.0000000000000000) - (39.422903948847882 / (x**2.0000000000000000 + y**2.0000000000000000 + z**2.0000000000000000)**0.50000000000000000) - ((2.5037803127808595e-10 * ((59.134355923271826 * v_x**2.0000000000000000) + (59.134355923271826 * v_y**2.0000000000000000) + (59.134355923271826 * v_z**2.0000000000000000))) / (x**2.0000000000000000 + y**2.0000000000000000 + z**2.0000000000000000)**0.50000000000000000) - (2.5037803127808595e-10 * (v_x**2.0000000000000000 + v_y**2.0000000000000000 + v_z**2.0000000000000000) * ((0.12500000000000000 * v_x**2.0000000000000000) + (0.12500000000000000 * v_y**2.0000000000000000) + (0.12500000000000000 * v_z**2.0000000000000000))))
 </pre></div>
 </div>
 </div>
@@ -530,7 +531,7 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>101
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>68
 </pre></div>
 </div>
 </div>
@@ -572,12 +573,12 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>49
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>46
 </pre></div>
 </div>
 </div>
 </div>
-<p>In other words, thanks to SymPy’s expression simplification capabilities, we reduced by <span class="math notranslate nohighlight">\(\sim 50\%\)</span> the symbolic complexity (i.e., the number of elementary subexpressions) of our ODE system.</p>
+<p>In other words, thanks to SymPy’s expression simplification capabilities, we reduced by <span class="math notranslate nohighlight">\(\sim 30\%\)</span> the symbolic complexity (i.e., the number of elementary subexpressions) of our ODE system.</p>
 <p>What is the performance impact of these simplifications? Let us find out:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -586,14 +587,14 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CPU times: user 2.45 s, sys: 0 ns, total: 2.45 s
-Wall time: 2.45 s
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CPU times: user 2.44 s, sys: 0 ns, total: 2.44 s
+Wall time: 2.44 s
 </pre></div>
 </div>
 <div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(&lt;taylor_outcome.time_limit: -4294967299&gt;,
- 0.006522499652827642,
- 0.017389869710776346,
- 1012008,
+ 3.484957425280681e-06,
+ 0.017389902845583543,
+ 1030387,
  None)
 </pre></div>
 </div>
@@ -606,20 +607,20 @@ Wall time: 2.45 s
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CPU times: user 2.92 s, sys: 0 ns, total: 2.92 s
-Wall time: 2.92 s
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CPU times: user 2.46 s, sys: 0 ns, total: 2.46 s
+Wall time: 2.47 s
 </pre></div>
 </div>
 <div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(&lt;taylor_outcome.time_limit: -4294967299&gt;,
- 0.006522499652827699,
- 0.017389869692863855,
+ 0.006522499652827606,
+ 0.017389869779425565,
  1012008,
  None)
 </pre></div>
 </div>
 </div>
 </div>
-<p>The performance increase is measurable but not as large as the reduction in symbolic complexity. This probably means that SymPy simplified expression whose high-order Taylor derivatives are cheap to compute (e.g., additions, multiplications by a constant, etc.).</p>
+<p>The performance increase is measurable but not as large as the reduction in symbolic complexity.</p>
 <p>As a word of warning, users should be aware that the general-purpose <code class="docutils literal notranslate"><span class="pre">simplify()</span></code> function from SymPy can be quite expensive from a computational point of view, especially for large expressions. SymPy provides various specialised <a class="reference external" href="https://docs.sympy.org/latest/tutorial/simplification.html">simplification primitives</a> that can be considerably more efficient.</p>
 <section id="more-details-on-the-conversion-process">
 <h2>More details on the conversion process<a class="headerlink" href="#more-details-on-the-conversion-process" title="Permalink to this heading">#</a></h2>
@@ -650,7 +651,7 @@ Wall time: 2.92 s
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(x * t)
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(t * x)
 </pre></div>
 </div>
 </div>
@@ -682,7 +683,10 @@ Wall time: 2.92 s
               
               
                 <footer class="bd-footer-article">
-                  <!-- Previous / next buttons -->
+                  
+<div class="footer-article-items footer-article__inner">
+  
+    <div class="footer-article-item"><!-- Previous / next buttons -->
 <div class="prev-next-area">
     <a class="left-prev"
        href="arbitrary_precision.html"
@@ -702,7 +706,10 @@ Wall time: 2.92 s
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
+</div></div>
+  
 </div>
+
                 </footer>
               
             </div>
@@ -727,7 +734,7 @@ Wall time: 2.92 s
             
           </div>
           <footer class="bd-footer-content">
-            <div class="bd-footer-content__inner">
+            
 <div class="bd-footer-content__inner container">
   
   <div class="footer-item">
@@ -757,7 +764,7 @@ By Francesco Biscani and Dario Izzo
     
   </div>
   
-</div></div>
+</div>
           </footer>
         
 
@@ -766,8 +773,8 @@ By Francesco Biscani and Dario Izzo
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../_static/scripts/bootstrap.js?digest=12da95d707ffb74b382d"></script>
-<script src="../_static/scripts/pydata-sphinx-theme.js?digest=12da95d707ffb74b382d"></script>
+  <script src="../_static/scripts/bootstrap.js?digest=e353d410970836974a52"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=e353d410970836974a52"></script>
 
   <footer class="bd-footer">
   </footer>

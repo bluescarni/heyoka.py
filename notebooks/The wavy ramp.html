@@ -9,7 +9,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
-    <title>The wavy ramp &#8212; heyoka.py 0.22.0 documentation</title>
+    <title>The wavy ramp &#8212; heyoka.py 1.0.0 documentation</title>
   
   
   
@@ -19,12 +19,12 @@
   </script>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../_static/styles/theme.css?digest=12da95d707ffb74b382d" rel="stylesheet" />
-<link href="../_static/styles/bootstrap.css?digest=12da95d707ffb74b382d" rel="stylesheet" />
-<link href="../_static/styles/pydata-sphinx-theme.css?digest=12da95d707ffb74b382d" rel="stylesheet" />
+  <link href="../_static/styles/theme.css?digest=e353d410970836974a52" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=e353d410970836974a52" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=e353d410970836974a52" rel="stylesheet" />
 
   
-  <link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=12da95d707ffb74b382d" rel="stylesheet" />
+  <link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=e353d410970836974a52" rel="stylesheet" />
   <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
@@ -34,8 +34,8 @@
     <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=12da95d707ffb74b382d" />
-<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=12da95d707ffb74b382d" />
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=e353d410970836974a52" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=e353d410970836974a52" />
 
     <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
     <script src="../_static/jquery.js"></script>
@@ -152,6 +152,7 @@
 <li class="toctree-l2"><a class="reference internal" href="arbitrary_precision.html">Computations in arbitrary precision</a></li>
 <li class="toctree-l2"><a class="reference internal" href="sympy_interop.html">Interoperability with SymPy</a></li>
 <li class="toctree-l2"><a class="reference internal" href="compiled_functions.html">Compiled functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ex_system_revisited.html">The expression system, revisited</a></li>
 <li class="toctree-l2"><a class="reference internal" href="pickling.html">Pickle support</a></li>
 </ul>
 </li>
@@ -454,7 +455,7 @@ y = 1 - x + 0.05 \cos\left(11 \pi x \right).
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/1bf33f2839b696f7bbaae975270770d4060b6db10efa254accd67f8ba404aeac.png" src="../_images/1bf33f2839b696f7bbaae975270770d4060b6db10efa254accd67f8ba404aeac.png" />
+<img alt="../_images/a16b5711ae166b13087191fe83196cd17a3e63334ae5e1f65b2cda958b59e9eb.png" src="../_images/a16b5711ae166b13087191fe83196cd17a3e63334ae5e1f65b2cda958b59e9eb.png" />
 </div>
 </div>
 <p>We want the particle to bounce off both the wavy ramp and the ground (i.e., <span class="math notranslate nohighlight">\(x\)</span> axis). Thus, we will have to define two different event equations and two different callback functions to implement the bouncing behaviour. Let us begin with the event equations:</p>
@@ -583,7 +584,7 @@ y = 1 - x + 0.05 \cos\left(11 \pi x \right).
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/978a6e611eff6c58bc3a37568c0147e570b85661356060b4e196c47d68fd5b32.png" src="../_images/978a6e611eff6c58bc3a37568c0147e570b85661356060b4e196c47d68fd5b32.png" />
+<img alt="../_images/fab73b4b9df8ee93eb148ded3d101a8f6b42b9ba46368c285a7ea8d546bcf037.png" src="../_images/fab73b4b9df8ee93eb148ded3d101a8f6b42b9ba46368c285a7ea8d546bcf037.png" />
 </div>
 </div>
 <p>We can clearly see the dissipative behaviour of the inelastic collisions at play. Indeed, despite the fact that we asked to integrate the system up to <span class="math notranslate nohighlight">\(t=10\)</span>, the integration was stopped at</p>
@@ -594,7 +595,7 @@ y = 1 - x + 0.05 \cos\left(11 \pi x \right).
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>4.739019126546907
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>4.739019126545606
 </pre></div>
 </div>
 </div>
@@ -636,7 +637,10 @@ Index of the terminal event: 1
               
               
                 <footer class="bd-footer-article">
-                  <!-- Previous / next buttons -->
+                  
+<div class="footer-article-items footer-article__inner">
+  
+    <div class="footer-article-item"><!-- Previous / next buttons -->
 <div class="prev-next-area">
     <a class="left-prev"
        href="The%20two-fixed%20elliptic%20billiard.html"
@@ -656,7 +660,10 @@ Index of the terminal event: 1
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
+</div></div>
+  
 </div>
+
                 </footer>
               
             </div>
@@ -666,7 +673,7 @@ Index of the terminal event: 1
             
           </div>
           <footer class="bd-footer-content">
-            <div class="bd-footer-content__inner">
+            
 <div class="bd-footer-content__inner container">
   
   <div class="footer-item">
@@ -696,7 +703,7 @@ By Francesco Biscani and Dario Izzo
     
   </div>
   
-</div></div>
+</div>
           </footer>
         
 
@@ -705,8 +712,8 @@ By Francesco Biscani and Dario Izzo
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../_static/scripts/bootstrap.js?digest=12da95d707ffb74b382d"></script>
-<script src="../_static/scripts/pydata-sphinx-theme.js?digest=12da95d707ffb74b382d"></script>
+  <script src="../_static/scripts/bootstrap.js?digest=e353d410970836974a52"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=e353d410970836974a52"></script>
 
   <footer class="bd-footer">
   </footer>

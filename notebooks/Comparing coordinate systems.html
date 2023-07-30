@@ -9,7 +9,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
-    <title>Comparing coordinate systems &#8212; heyoka.py 0.22.0 documentation</title>
+    <title>Comparing coordinate systems &#8212; heyoka.py 1.0.0 documentation</title>
   
   
   
@@ -19,12 +19,12 @@
   </script>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../_static/styles/theme.css?digest=12da95d707ffb74b382d" rel="stylesheet" />
-<link href="../_static/styles/bootstrap.css?digest=12da95d707ffb74b382d" rel="stylesheet" />
-<link href="../_static/styles/pydata-sphinx-theme.css?digest=12da95d707ffb74b382d" rel="stylesheet" />
+  <link href="../_static/styles/theme.css?digest=e353d410970836974a52" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=e353d410970836974a52" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=e353d410970836974a52" rel="stylesheet" />
 
   
-  <link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=12da95d707ffb74b382d" rel="stylesheet" />
+  <link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=e353d410970836974a52" rel="stylesheet" />
   <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
@@ -34,8 +34,8 @@
     <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=12da95d707ffb74b382d" />
-<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=12da95d707ffb74b382d" />
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=e353d410970836974a52" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=e353d410970836974a52" />
 
     <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
     <script src="../_static/jquery.js"></script>
@@ -152,6 +152,7 @@
 <li class="toctree-l2"><a class="reference internal" href="arbitrary_precision.html">Computations in arbitrary precision</a></li>
 <li class="toctree-l2"><a class="reference internal" href="sympy_interop.html">Interoperability with SymPy</a></li>
 <li class="toctree-l2"><a class="reference internal" href="compiled_functions.html">Compiled functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ex_system_revisited.html">The expression system, revisited</a></li>
 <li class="toctree-l2"><a class="reference internal" href="pickling.html">Pickle support</a></li>
 </ul>
 </li>
@@ -475,7 +476,7 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(((0.50000000000000000 * ((vx**2 + vy**2) + vz**2)) - pow(((x**2 + y**2) + z**2), -0.50000000000000000)) - (0.0010000000000000000 * z))
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>((0.50000000000000000 * vx**2.0000000000000000) + (0.50000000000000000 * vy**2.0000000000000000) + (0.50000000000000000 * vz**2.0000000000000000) - (x**2.0000000000000000 + y**2.0000000000000000 + z**2.0000000000000000)**-0.50000000000000000 - (0.0010000000000000000 * z))
 </pre></div>
 </div>
 </div>
@@ -534,7 +535,7 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/471e3dd1e3b6fc7a010bf928ad3b34147473ccb396b900dbad30df1eb983006f.png" src="../_images/471e3dd1e3b6fc7a010bf928ad3b34147473ccb396b900dbad30df1eb983006f.png" />
+<img alt="../_images/220a1edf037681038efada7c3ff118b11d5d4e190bff76593eb6e16cc9db8dbb.png" src="../_images/220a1edf037681038efada7c3ff118b11d5d4e190bff76593eb6e16cc9db8dbb.png" />
 </div>
 </div>
 <p>The plot shows how the initially-Keplerian orbit is slowly being deformed by the constant acceleration field.</p>
@@ -564,7 +565,7 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/ae2ddde93a863c2513c7793fcc749edff7199887c5e08b50a397e98145e5ba2d.png" src="../_images/ae2ddde93a863c2513c7793fcc749edff7199887c5e08b50a397e98145e5ba2d.png" />
+<img alt="../_images/a3c891a86ce6cd1d9b9157a499ca561923256daae286f18f793409ee6982d4a0.png" src="../_images/a3c891a86ce6cd1d9b9157a499ca561923256daae286f18f793409ee6982d4a0.png" />
 </div>
 </div>
 <p>Note that the oscillatory behaviour in these plots is a quasi-Keplerian motion driven by the central-force field. The additional constant acceleration has a longer-term secular effect which is however not immediately recognisable in these plots.</p>
@@ -688,7 +689,7 @@ p_\phi &amp; = r^2\dot{\phi}\sin^2\theta, &amp; \phi &amp; = \arctan \frac{y}{x}
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/6ad2a29a73d92a19fa243441a9d3d89630a16014955f84c0711ae4caa7185ae7.png" src="../_images/6ad2a29a73d92a19fa243441a9d3d89630a16014955f84c0711ae4caa7185ae7.png" />
+<img alt="../_images/2be213d140f64fb3700df2192ae4fef3a40ed36cbb028bb5c16f800b5b39dee9.png" src="../_images/2be213d140f64fb3700df2192ae4fef3a40ed36cbb028bb5c16f800b5b39dee9.png" />
 </div>
 </div>
 <p>Comparing these plots with those for the Cartesian coordinates, we can see how the oscillatory quasi-Keplerian behaviour remains. However, the oscillation amplitude is reduced with respect to the Cartesian case, and one of the momenta (<span class="math notranslate nohighlight">\(p_\phi\)</span>, top right panel) has become a constant. This reflects the fact that the <span class="math notranslate nohighlight">\(z\)</span> component of the angular momentum in the Stark problem is a constant of motion.</p>
@@ -892,7 +893,7 @@ z = L\sqrt{1-\frac{H^2}{G^2}}\left[ L\left( \cos E - \sqrt{1-\frac{G^2}{L^2}} \r
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/22ae7dba6d8747832188dcd1a0aade03a5a65cb41787ef4496233d357ac24c09.png" src="../_images/22ae7dba6d8747832188dcd1a0aade03a5a65cb41787ef4496233d357ac24c09.png" />
+<img alt="../_images/353dcbcbf500e7ee448d013ad2be960c3218660f37c5fba57ef01a30473d5d58.png" src="../_images/353dcbcbf500e7ee448d013ad2be960c3218660f37c5fba57ef01a30473d5d58.png" />
 </div>
 </div>
 <p>The plots for <span class="math notranslate nohighlight">\(L\)</span>, <span class="math notranslate nohighlight">\(G\)</span>, <span class="math notranslate nohighlight">\(H\)</span>, <span class="math notranslate nohighlight">\(g\)</span> and <span class="math notranslate nohighlight">\(h\)</span> clearly show how the Keplerian oscillations for these elements have been removed thanks to the use of orbital elements as a coordinate system. These elements would be constant in a perfectly Keplerian orbit, while in the Stark problem they undergo short-term oscillations with amplitude <span class="math notranslate nohighlight">\(\sim\varepsilon\)</span> and long-term evolution with timescale <span class="math notranslate nohighlight">\(\sim 1/\varepsilon\)</span>. We can see the perturbation induced by the constant acceleration field by zooming into, e.g., the plot for the <span class="math notranslate nohighlight">\(g\)</span> angle (the argument of pericentre):</p>
@@ -907,7 +908,7 @@ z = L\sqrt{1-\frac{H^2}{G^2}}\left[ L\left( \cos E - \sqrt{1-\frac{G^2}{L^2}} \r
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/2e1c1e5fce4e3777564cfc268d2222fc55b6130ad4a0cbe04074323e76956c1b.png" src="../_images/2e1c1e5fce4e3777564cfc268d2222fc55b6130ad4a0cbe04074323e76956c1b.png" />
+<img alt="../_images/86b9505020582cfe547360e45a70ac97047335150e0c8582a1730016355ae846.png" src="../_images/86b9505020582cfe547360e45a70ac97047335150e0c8582a1730016355ae846.png" />
 </div>
 </div>
 <p>Let us now zoom into the plot for <span class="math notranslate nohighlight">\(E\)</span>:</p>
@@ -922,7 +923,7 @@ z = L\sqrt{1-\frac{H^2}{G^2}}\left[ L\left( \cos E - \sqrt{1-\frac{G^2}{L^2}} \r
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/08f6e4bab762685b0551f4c5f208c0599daba66f1ffbc8201175b32d0a2d3996.png" src="../_images/08f6e4bab762685b0551f4c5f208c0599daba66f1ffbc8201175b32d0a2d3996.png" />
+<img alt="../_images/7466da7e41de6c208ad9458dfddeea377c0fbd0c8c0b8809d4a82282c2305125.png" src="../_images/7466da7e41de6c208ad9458dfddeea377c0fbd0c8c0b8809d4a82282c2305125.png" />
 </div>
 </div>
 <p>We can see how <span class="math notranslate nohighlight">\(E\)</span> is still subject to Keplerian oscillations. Indeed, even in a perfectly Keplerian orbit, the time evolution of <span class="math notranslate nohighlight">\(E\)</span> is linear only for circular orbits.</p>
@@ -1027,7 +1028,7 @@ r = L^2\left( 1 - \sqrt{1-\frac{G^2}{L^2}}\cos E\right).
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/d3d0e7c695e4e2fa8dca2ea9e9034f1ca2c2a663c0302e8a56bf89264530775f.png" src="../_images/d3d0e7c695e4e2fa8dca2ea9e9034f1ca2c2a663c0302e8a56bf89264530775f.png" />
+<img alt="../_images/afb966415db723f5f3e2dd8d71fdb2912cca670342497bebfa06f8e9a1ff6c2a.png" src="../_images/afb966415db723f5f3e2dd8d71fdb2912cca670342497bebfa06f8e9a1ff6c2a.png" />
 </div>
 </div>
 <p>And let us zoom into the plot for <span class="math notranslate nohighlight">\(E\)</span>:</p>
@@ -1042,7 +1043,7 @@ r = L^2\left( 1 - \sqrt{1-\frac{G^2}{L^2}}\cos E\right).
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/8a643d4c78a28cc2cb973745c4f6acc5dd7e01d4b75473c44976cef75751ced3.png" src="../_images/8a643d4c78a28cc2cb973745c4f6acc5dd7e01d4b75473c44976cef75751ced3.png" />
+<img alt="../_images/90fbb55792412fe5dc6c3d620f8a0729225f056cdc090b4ab181ace9e76fc466.png" src="../_images/90fbb55792412fe5dc6c3d620f8a0729225f056cdc090b4ab181ace9e76fc466.png" />
 </div>
 </div>
 <p>The plot indeed confirms that the Keplerian oscillations for <span class="math notranslate nohighlight">\(E\)</span> are gone.</p>
@@ -1077,7 +1078,7 @@ Number of steps (D + S)    : 388
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/f637969d67f307bbe6ebf00eb685e04099be127ee908d88c8e4e43364b668553.png" src="../_images/f637969d67f307bbe6ebf00eb685e04099be127ee908d88c8e4e43364b668553.png" />
+<img alt="../_images/fd080f467b37abfc9c0171be6309103118edd780630c32d7b441e96ded8431e4.png" src="../_images/fd080f467b37abfc9c0171be6309103118edd780630c32d7b441e96ded8431e4.png" />
 </div>
 </div>
 </section>
@@ -1095,7 +1096,10 @@ Number of steps (D + S)    : 388
               
               
                 <footer class="bd-footer-article">
-                  <!-- Previous / next buttons -->
+                  
+<div class="footer-article-items footer-article__inner">
+  
+    <div class="footer-article-item"><!-- Previous / next buttons -->
 <div class="prev-next-area">
     <a class="left-prev"
        href="Box%20control%20for%20Formation%20Flying%20Satellites.html"
@@ -1115,7 +1119,10 @@ Number of steps (D + S)    : 388
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
+</div></div>
+  
 </div>
+
                 </footer>
               
             </div>
@@ -1143,7 +1150,7 @@ Number of steps (D + S)    : 388
             
           </div>
           <footer class="bd-footer-content">
-            <div class="bd-footer-content__inner">
+            
 <div class="bd-footer-content__inner container">
   
   <div class="footer-item">
@@ -1173,7 +1180,7 @@ By Francesco Biscani and Dario Izzo
     
   </div>
   
-</div></div>
+</div>
           </footer>
         
 
@@ -1182,8 +1189,8 @@ By Francesco Biscani and Dario Izzo
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../_static/scripts/bootstrap.js?digest=12da95d707ffb74b382d"></script>
-<script src="../_static/scripts/pydata-sphinx-theme.js?digest=12da95d707ffb74b382d"></script>
+  <script src="../_static/scripts/bootstrap.js?digest=e353d410970836974a52"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=e353d410970836974a52"></script>
 
   <footer class="bd-footer">
   </footer>

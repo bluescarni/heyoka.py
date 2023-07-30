@@ -9,7 +9,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
-    <title>Optimal Control of the Lotka-Volterra equations &#8212; heyoka.py 0.22.0 documentation</title>
+    <title>Optimal Control of the Lotka-Volterra equations &#8212; heyoka.py 1.0.0 documentation</title>
   
   
   
@@ -19,12 +19,12 @@
   </script>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../_static/styles/theme.css?digest=12da95d707ffb74b382d" rel="stylesheet" />
-<link href="../_static/styles/bootstrap.css?digest=12da95d707ffb74b382d" rel="stylesheet" />
-<link href="../_static/styles/pydata-sphinx-theme.css?digest=12da95d707ffb74b382d" rel="stylesheet" />
+  <link href="../_static/styles/theme.css?digest=e353d410970836974a52" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=e353d410970836974a52" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=e353d410970836974a52" rel="stylesheet" />
 
   
-  <link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=12da95d707ffb74b382d" rel="stylesheet" />
+  <link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=e353d410970836974a52" rel="stylesheet" />
   <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
@@ -34,8 +34,8 @@
     <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=12da95d707ffb74b382d" />
-<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=12da95d707ffb74b382d" />
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=e353d410970836974a52" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=e353d410970836974a52" />
 
     <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
     <script src="../_static/jquery.js"></script>
@@ -152,6 +152,7 @@
 <li class="toctree-l2"><a class="reference internal" href="arbitrary_precision.html">Computations in arbitrary precision</a></li>
 <li class="toctree-l2"><a class="reference internal" href="sympy_interop.html">Interoperability with SymPy</a></li>
 <li class="toctree-l2"><a class="reference internal" href="compiled_functions.html">Compiled functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ex_system_revisited.html">The expression system, revisited</a></li>
 <li class="toctree-l2"><a class="reference internal" href="pickling.html">Pickle support</a></li>
 </ul>
 </li>
@@ -553,12 +554,17 @@ u^*(\mathbf x, \boldsymbol\lambda) =
     <span class="n">vectorized</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vectorize</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">lx</span><span class="p">,</span><span class="n">ly</span><span class="p">:</span> <span class="n">_switching_function</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">lx</span><span class="p">,</span><span class="n">ly</span><span class="p">,</span><span class="n">p</span><span class="p">))</span>
     <span class="k">return</span> <span class="n">vectorized</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">lx</span><span class="p">,</span><span class="n">ly</span><span class="p">)</span>
 
+<span class="c1"># Introduce a compiled function</span>
+<span class="c1"># for the evaluation of the Hamiltonian.</span>
+<span class="n">H_cf</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">make_cfunc</span><span class="p">([</span><span class="n">H</span><span class="p">],</span> <span class="nb">vars</span><span class="o">=</span><span class="p">[</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">lx</span><span class="p">,</span> <span class="n">ly</span><span class="p">,</span> <span class="n">u</span><span class="p">])</span>
+
 <span class="k">def</span> <span class="nf">_hamiltonian</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">lx</span><span class="p">,</span><span class="n">ly</span><span class="p">,</span><span class="n">p</span><span class="p">):</span>
     <span class="n">sw_v</span> <span class="o">=</span> <span class="n">switching_function</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">lx</span><span class="p">,</span><span class="n">ly</span><span class="p">,</span><span class="n">p</span><span class="p">)</span>
     <span class="n">u_opt</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="k">if</span> <span class="n">sw_v</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
         <span class="n">u_opt</span> <span class="o">=</span> <span class="mi">1</span>
-    <span class="k">return</span> <span class="n">hy</span><span class="o">.</span><span class="n">eval</span><span class="p">(</span><span class="n">H</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;x&quot;</span><span class="p">:</span><span class="n">x</span><span class="p">,</span> <span class="s2">&quot;y&quot;</span><span class="p">:</span><span class="n">y</span><span class="p">,</span> <span class="s2">&quot;lambda_x&quot;</span><span class="p">:</span><span class="n">lx</span><span class="p">,</span> <span class="s2">&quot;lambda_y&quot;</span><span class="p">:</span><span class="n">ly</span><span class="p">,</span> <span class="s2">&quot;u&quot;</span><span class="p">:</span><span class="n">u_opt</span><span class="p">},</span> <span class="n">p</span><span class="p">)</span>
+    
+    <span class="k">return</span> <span class="n">H_cf</span><span class="p">([</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">lx</span><span class="p">,</span> <span class="n">ly</span><span class="p">,</span> <span class="n">u_opt</span><span class="p">],</span> <span class="n">pars</span><span class="o">=</span><span class="n">p</span><span class="p">[:</span><span class="mi">6</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
 
 <span class="c1"># Vectorized version</span>
 <span class="k">def</span> <span class="nf">hamiltonian</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">lx</span><span class="p">,</span><span class="n">ly</span><span class="p">,</span><span class="n">p</span><span class="p">):</span>
@@ -727,7 +733,7 @@ Parameters              : [1.1, 0.2, 0.1, 0.4]
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/25be779b1689ba321c2bd0a3a38cce3bd317049ebe63087487ca65a05817eb46.png" src="../_images/25be779b1689ba321c2bd0a3a38cce3bd317049ebe63087487ca65a05817eb46.png" />
+<img alt="../_images/28da4299f7f70e8a2c69e7702e27a886f8f232ec39049ef3b3ccaa698a7f8ea8.png" src="../_images/28da4299f7f70e8a2c69e7702e27a886f8f232ec39049ef3b3ccaa698a7f8ea8.png" />
 </div>
 </div>
 </section>
@@ -853,7 +859,7 @@ N of terminal events    : 1
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/c1b65fe23fa7ea5254bdf24a9edf007b01270b6922680ee5b288dde3e4ac4eb5.png" src="../_images/c1b65fe23fa7ea5254bdf24a9edf007b01270b6922680ee5b288dde3e4ac4eb5.png" />
+<img alt="../_images/e66d723ee5c477e17ddd7e16e7f7601f61c19195f365ebbc89bb71172194383c.png" src="../_images/e66d723ee5c477e17ddd7e16e7f7601f61c19195f365ebbc89bb71172194383c.png" />
 </div>
 </div>
 </section>
@@ -972,7 +978,7 @@ N of terminal events    : 2
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/eeb4b2825c83a42fa20a54f206ce51e6f6bedb15055322edc5831b8cfff56b8c.png" src="../_images/eeb4b2825c83a42fa20a54f206ce51e6f6bedb15055322edc5831b8cfff56b8c.png" />
+<img alt="../_images/b4ff65585f3aed0de3ffe67d1d68a685a335b53de0b2efa1edef643d20ac08e6.png" src="../_images/b4ff65585f3aed0de3ffe67d1d68a685a335b53de0b2efa1edef643d20ac08e6.png" />
 </div>
 </div>
 <p>We are now ready to put everything together into a reduced shooting function that will be zero corresponding to the time optimal trajectory.</p>
@@ -1016,13 +1022,19 @@ N of terminal events    : 2
 </div>
 </div>
 <div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/tmp/ipykernel_10412/2332358995.py:11: DeprecationWarning: Conversion of an array with ndim &gt; 0 to a scalar is deprecated, and will error in future. Ensure you extract a single element from your array before performing this operation. (Deprecated NumPy 1.25.)
+  ta.pars[6] = np.heaviside(switching_function(x_0,y_0,lx_0,ly_0, ps), 1.)
+/tmp/ipykernel_10412/2332358995.py:14: DeprecationWarning: Conversion of an array with ndim &gt; 0 to a scalar is deprecated, and will error in future. Ensure you extract a single element from your array before performing this operation. (Deprecated NumPy 1.25.)
+  ta.state[0] = x_0; ta.state[1] = y_0; ta.state[2] = lx_0; ta.state[3] = ly_0
+</pre></div>
+</div>
 <div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  message: Optimization terminated successfully.
   success: True
    status: 0
-      fun: 1.903057429248689e-15
+      fun: 1.9030911098129813e-15
         x: [-4.791e-01]
       nit: 3
-      jac: [ 3.262e-09]
+      jac: [ 3.257e-09]
  hess_inv: [[ 1.440e-02]]
      nfev: 14
      njev: 7
@@ -1050,6 +1062,12 @@ N of terminal events    : 2
 <span class="n">t_grid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">tf</span><span class="p">,</span><span class="mi">1000</span><span class="p">)</span>
 <span class="c1"># Perform the integration</span>
 <span class="n">outcome</span><span class="p">,</span> <span class="n">min_h</span><span class="p">,</span> <span class="n">max_h</span><span class="p">,</span> <span class="n">steps</span><span class="p">,</span> <span class="n">sol</span> <span class="o">=</span> <span class="n">ta</span><span class="o">.</span><span class="n">propagate_grid</span><span class="p">(</span><span class="n">t_grid</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/tmp/ipykernel_10412/685660463.py:12: DeprecationWarning: Conversion of an array with ndim &gt; 0 to a scalar is deprecated, and will error in future. Ensure you extract a single element from your array before performing this operation. (Deprecated NumPy 1.25.)
+  ta.pars[6] = np.heaviside(switching_function(x_0,y_0,lx_0,ly_0, ps), 1.)
 </pre></div>
 </div>
 </div>
@@ -1097,7 +1115,7 @@ N of terminal events    : 2
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/fe22ab397cb8d7910411fc21860bcb07d50ce09131ef75b1688f568305faef7b.png" src="../_images/fe22ab397cb8d7910411fc21860bcb07d50ce09131ef75b1688f568305faef7b.png" />
+<img alt="../_images/1978e4a3d2b816f99540e8357a60d11d3e2dfa9c01f9bfcaa5227e0044ce3eaa.png" src="../_images/1978e4a3d2b816f99540e8357a60d11d3e2dfa9c01f9bfcaa5227e0044ce3eaa.png" />
 </div>
 </div>
 <p>The time optimal trajectory is thus computed in the blink of an eye, showing us how to control the species dynamics in this example.</p>
@@ -1111,7 +1129,10 @@ N of terminal events    : 2
               
               
                 <footer class="bd-footer-article">
-                  <!-- Previous / next buttons -->
+                  
+<div class="footer-article-items footer-article__inner">
+  
+    <div class="footer-article-item"><!-- Previous / next buttons -->
 <div class="prev-next-area">
     <a class="left-prev"
        href="The%20variational%20equations.html"
@@ -1131,7 +1152,10 @@ N of terminal events    : 2
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
+</div></div>
+  
 </div>
+
                 </footer>
               
             </div>
@@ -1158,7 +1182,7 @@ N of terminal events    : 2
             
           </div>
           <footer class="bd-footer-content">
-            <div class="bd-footer-content__inner">
+            
 <div class="bd-footer-content__inner container">
   
   <div class="footer-item">
@@ -1188,7 +1212,7 @@ By Francesco Biscani and Dario Izzo
     
   </div>
   
-</div></div>
+</div>
           </footer>
         
 
@@ -1197,8 +1221,8 @@ By Francesco Biscani and Dario Izzo
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../_static/scripts/bootstrap.js?digest=12da95d707ffb74b382d"></script>
-<script src="../_static/scripts/pydata-sphinx-theme.js?digest=12da95d707ffb74b382d"></script>
+  <script src="../_static/scripts/bootstrap.js?digest=e353d410970836974a52"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=e353d410970836974a52"></script>
 
   <footer class="bd-footer">
   </footer>

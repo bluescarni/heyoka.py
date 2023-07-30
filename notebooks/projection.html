@@ -9,7 +9,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
-    <title>Conserving first integrals via manifold projection &#8212; heyoka.py 0.22.0 documentation</title>
+    <title>Conserving first integrals via manifold projection &#8212; heyoka.py 1.0.0 documentation</title>
   
   
   
@@ -19,12 +19,12 @@
   </script>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../_static/styles/theme.css?digest=12da95d707ffb74b382d" rel="stylesheet" />
-<link href="../_static/styles/bootstrap.css?digest=12da95d707ffb74b382d" rel="stylesheet" />
-<link href="../_static/styles/pydata-sphinx-theme.css?digest=12da95d707ffb74b382d" rel="stylesheet" />
+  <link href="../_static/styles/theme.css?digest=e353d410970836974a52" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=e353d410970836974a52" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=e353d410970836974a52" rel="stylesheet" />
 
   
-  <link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=12da95d707ffb74b382d" rel="stylesheet" />
+  <link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=e353d410970836974a52" rel="stylesheet" />
   <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
@@ -34,8 +34,8 @@
     <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=12da95d707ffb74b382d" />
-<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=12da95d707ffb74b382d" />
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=e353d410970836974a52" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=e353d410970836974a52" />
 
     <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
     <script src="../_static/jquery.js"></script>
@@ -152,6 +152,7 @@
 <li class="toctree-l2"><a class="reference internal" href="arbitrary_precision.html">Computations in arbitrary precision</a></li>
 <li class="toctree-l2"><a class="reference internal" href="sympy_interop.html">Interoperability with SymPy</a></li>
 <li class="toctree-l2"><a class="reference internal" href="compiled_functions.html">Compiled functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ex_system_revisited.html">The expression system, revisited</a></li>
 <li class="toctree-l2"><a class="reference internal" href="pickling.html">Pickle support</a></li>
 </ul>
 </li>
@@ -554,12 +555,12 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Rel energy error: 1.1480506382380454e-06
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Rel energy error: 1.1480506378333837e-06
 </pre></div>
 </div>
 <div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(&lt;taylor_outcome.cb_stop: -4294967301&gt;,
- 0.7296940138544892,
- 1.058372251981769,
+ 0.7296940138544884,
+ 1.0583722519817704,
  36,
  None)
 </pre></div>
@@ -593,7 +594,7 @@ document.write(`
 </div>
 </div>
 <p>This equality constraint is satisifed if <code class="docutils literal notranslate"><span class="pre">cstr_fun()</span></code> returns zero, that is, if the energy of the updated state vector (<code class="docutils literal notranslate"><span class="pre">x</span></code>) is equal to the initial energy of the system (stored in the callback as <code class="docutils literal notranslate"><span class="pre">cb.E0</span></code>).</p>
-<p>We are now ready to run the optimisation via <a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.minimize.html#scipy.optimize.minimize" title="(in SciPy v1.10.1)"><code class="xref py py-func docutils literal notranslate"><span class="pre">scipy.optimize.minimize()</span></code></a>. Note that we need an optimiser with support for constraints (here we choose <code class="docutils literal notranslate"><span class="pre">'SLSQP'</span></code>):</p>
+<p>We are now ready to run the optimisation via <a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.minimize.html#scipy.optimize.minimize" title="(in SciPy v1.11.1)"><code class="xref py py-func docutils literal notranslate"><span class="pre">scipy.optimize.minimize()</span></code></a>. Note that we need an optimiser with support for constraints (here we choose <code class="docutils literal notranslate"><span class="pre">'SLSQP'</span></code>):</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">scipy.optimize</span> <span class="kn">import</span> <span class="n">minimize</span>
@@ -611,7 +612,7 @@ document.write(`
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span> message: Optimization terminated successfully
  success: True
   status: 0
-     fun: 1.6028684440203444e-12
+     fun: 1.6028684446833196e-12
        x: [ 3.841e-04  4.208e-03 ... -1.215e+00  5.875e-02]
      nit: 2
      jac: [ 3.113e-08 -4.027e-07 ...  7.717e-11  7.411e-11]
@@ -631,8 +632,8 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Original energy error: 1.1480506382380454e-06
-Updated  energy error: 1.3943225305580199e-11
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Original energy error: 1.1480506378333837e-06
+Updated  energy error: 1.3942820643896466e-11
 </pre></div>
 </div>
 </div>
@@ -644,7 +645,7 @@ Updated  energy error: 1.3943225305580199e-11
 <p>Let us begin by defining a symbolic expression representing the square of the distance between the original state vector and the updated state vector. Here, the original state vector will be represented by the symbolic state variables (stored earlier in <code class="docutils literal notranslate"><span class="pre">state_vars</span></code>) and the updated state vector will be passed in the array of <a class="reference internal" href="ODEs%20with%20parameters.html"><span class="doc std std-doc">runtime parameters</span></a>:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">dist2_ex</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">sum_sq</span><span class="p">([</span><span class="n">state_vars</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="n">hy</span><span class="o">.</span><span class="n">par</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">36</span><span class="p">)])</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">dist2_ex</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="nb">list</span><span class="p">((</span><span class="n">state_vars</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="n">hy</span><span class="o">.</span><span class="n">par</span><span class="p">[</span><span class="n">i</span><span class="p">])</span><span class="o">**</span><span class="mi">2</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">36</span><span class="p">)))</span>
 </pre></div>
 </div>
 </div>
@@ -657,7 +658,7 @@ Updated  energy error: 1.3943225305580199e-11
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>((x_0 - p0)**2 + (y_0 - p1)**2 + (z_0 - p2)**2 + (vx_0 - p3)**2 + (vy_0 - p4)**2 + (vz_0 - p5)**2 + (x_1 - p6)**2 + (y_1 - p7)**2 + (z_1 - p8)**2 + (vx_1 - p9)**2 + (vy_1 - p10)**2 + (vz_1 - p11)**2 + (x_2 - p12)**2 + (y_2 - p13)**2 + (z_2 - p14)**2 + (vx_2 - p15)**2 + (vy_2 - p16)**2 + (vz_2 - p17)**2 + (x_3 - p18)**2 + (y_3 - p19)**2 + (z_3 - p20)**2 + (vx_3 - p21)**2 + (vy_3 - p22)**2 + (vz_3 - p23)**2 + (x_4 - p24)**2 + (y_4 - p25)**2 + (z_4 - p26)**2 + (vx_4 - p27)**2 + (vy_4 - p28)**2 + (vz_4 - p29)**2 + (x_5 - p30)**2 + (y_5 - p31)**2 + (z_5 - p32)**2 + (vx_5 - p33)**2 + (vy_5 - p34)**2 + (vz_5 - p35)**2)
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>((vx_0 - p3)**2.0000000000000000 + (vx_1 - p9)**2.0000000000000000 + (vx_2 - p15)**2.0000000000000000 + (vx_3 - p21)**2.0000000000000000 + (vx_4 - p27)**2.0000000000000000 + (vx_5 - p33)**2.0000000000000000 + (vy_0 - p4)**2.0000000000000000 + (vy_1 - p10)**2.0000000000000000 + (vy_2 - p16)**2.0000000000000000 + (vy_3 - p22)**2.0000000000000000 + (vy_4 - p28)**2.0000000000000000 + (vy_5 - p34)**2.0000000000000000 + (vz_0 - p5)**2.0000000000000000 + (vz_1 - p11)**2.0000000000000000 + (vz_2 - p17)**2.0000000000000000 + (vz_3 - p23)**2.0000000000000000 + (vz_4 - p29)**2.0000000000000000 + (vz_5 - p35)**2.0000000000000000 + (x_0 - p0)**2.0000000000000000 + (x_1 - p6)**2.0000000000000000 + (x_2 - p12)**2.0000000000000000 + (x_3 - p18)**2.0000000000000000 + (x_4 - p24)**2.0000000000000000 + (x_5 - p30)**2.0000000000000000 + (y_0 - p1)**2.0000000000000000 + (y_1 - p7)**2.0000000000000000 + (y_2 - p13)**2.0000000000000000 + (y_3 - p19)**2.0000000000000000 + (y_4 - p25)**2.0000000000000000 + (y_5 - ...
 </pre></div>
 </div>
 </div>
@@ -671,42 +672,42 @@ Updated  energy error: 1.3943225305580199e-11
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[(2.0000000000000000 * (x_0 - p0)),
- (2.0000000000000000 * (y_0 - p1)),
- (2.0000000000000000 * (z_0 - p2)),
- (2.0000000000000000 * (vx_0 - p3)),
- (2.0000000000000000 * (vy_0 - p4)),
- (2.0000000000000000 * (vz_0 - p5)),
- (2.0000000000000000 * (x_1 - p6)),
- (2.0000000000000000 * (y_1 - p7)),
- (2.0000000000000000 * (z_1 - p8)),
- (2.0000000000000000 * (vx_1 - p9)),
- (2.0000000000000000 * (vy_1 - p10)),
- (2.0000000000000000 * (vz_1 - p11)),
- (2.0000000000000000 * (x_2 - p12)),
- (2.0000000000000000 * (y_2 - p13)),
- (2.0000000000000000 * (z_2 - p14)),
- (2.0000000000000000 * (vx_2 - p15)),
- (2.0000000000000000 * (vy_2 - p16)),
- (2.0000000000000000 * (vz_2 - p17)),
- (2.0000000000000000 * (x_3 - p18)),
- (2.0000000000000000 * (y_3 - p19)),
- (2.0000000000000000 * (z_3 - p20)),
- (2.0000000000000000 * (vx_3 - p21)),
- (2.0000000000000000 * (vy_3 - p22)),
- (2.0000000000000000 * (vz_3 - p23)),
- (2.0000000000000000 * (x_4 - p24)),
- (2.0000000000000000 * (y_4 - p25)),
- (2.0000000000000000 * (z_4 - p26)),
- (2.0000000000000000 * (vx_4 - p27)),
- (2.0000000000000000 * (vy_4 - p28)),
- (2.0000000000000000 * (vz_4 - p29)),
- (2.0000000000000000 * (x_5 - p30)),
- (2.0000000000000000 * (y_5 - p31)),
- (2.0000000000000000 * (z_5 - p32)),
- (2.0000000000000000 * (vx_5 - p33)),
- (2.0000000000000000 * (vy_5 - p34)),
- (2.0000000000000000 * (vz_5 - p35))]
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[((2.0000000000000000 * x_0) - (2.0000000000000000 * p0)),
+ ((2.0000000000000000 * y_0) - (2.0000000000000000 * p1)),
+ ((2.0000000000000000 * z_0) - (2.0000000000000000 * p2)),
+ ((2.0000000000000000 * vx_0) - (2.0000000000000000 * p3)),
+ ((2.0000000000000000 * vy_0) - (2.0000000000000000 * p4)),
+ ((2.0000000000000000 * vz_0) - (2.0000000000000000 * p5)),
+ ((2.0000000000000000 * x_1) - (2.0000000000000000 * p6)),
+ ((2.0000000000000000 * y_1) - (2.0000000000000000 * p7)),
+ ((2.0000000000000000 * z_1) - (2.0000000000000000 * p8)),
+ ((2.0000000000000000 * vx_1) - (2.0000000000000000 * p9)),
+ ((2.0000000000000000 * vy_1) - (2.0000000000000000 * p10)),
+ ((2.0000000000000000 * vz_1) - (2.0000000000000000 * p11)),
+ ((2.0000000000000000 * x_2) - (2.0000000000000000 * p12)),
+ ((2.0000000000000000 * y_2) - (2.0000000000000000 * p13)),
+ ((2.0000000000000000 * z_2) - (2.0000000000000000 * p14)),
+ ((2.0000000000000000 * vx_2) - (2.0000000000000000 * p15)),
+ ((2.0000000000000000 * vy_2) - (2.0000000000000000 * p16)),
+ ((2.0000000000000000 * vz_2) - (2.0000000000000000 * p17)),
+ ((2.0000000000000000 * x_3) - (2.0000000000000000 * p18)),
+ ((2.0000000000000000 * y_3) - (2.0000000000000000 * p19)),
+ ((2.0000000000000000 * z_3) - (2.0000000000000000 * p20)),
+ ((2.0000000000000000 * vx_3) - (2.0000000000000000 * p21)),
+ ((2.0000000000000000 * vy_3) - (2.0000000000000000 * p22)),
+ ((2.0000000000000000 * vz_3) - (2.0000000000000000 * p23)),
+ ((2.0000000000000000 * x_4) - (2.0000000000000000 * p24)),
+ ((2.0000000000000000 * y_4) - (2.0000000000000000 * p25)),
+ ((2.0000000000000000 * z_4) - (2.0000000000000000 * p26)),
+ ((2.0000000000000000 * vx_4) - (2.0000000000000000 * p27)),
+ ((2.0000000000000000 * vy_4) - (2.0000000000000000 * p28)),
+ ((2.0000000000000000 * vz_4) - (2.0000000000000000 * p29)),
+ ((2.0000000000000000 * x_5) - (2.0000000000000000 * p30)),
+ ((2.0000000000000000 * y_5) - (2.0000000000000000 * p31)),
+ ((2.0000000000000000 * z_5) - (2.0000000000000000 * p32)),
+ ((2.0000000000000000 * vx_5) - (2.0000000000000000 * p33)),
+ ((2.0000000000000000 * vy_5) - (2.0000000000000000 * p34)),
+ ((2.0000000000000000 * vz_5) - (2.0000000000000000 * p35))]
 </pre></div>
 </div>
 </div>
@@ -720,7 +721,7 @@ Updated  energy error: 1.3943225305580199e-11
 </div>
 </div>
 </div>
-<p>Finally, we can define an updated objective function that, in addition to returning the distance square, will return also its gradient vector (in the format required by <a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.minimize.html#scipy.optimize.minimize" title="(in SciPy v1.10.1)"><code class="xref py py-func docutils literal notranslate"><span class="pre">scipy.optimize.minimize()</span></code></a>, i.e., as a tuple of 2 values):</p>
+<p>Finally, we can define an updated objective function that, in addition to returning the distance square, will return also its gradient vector (in the format required by <a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.minimize.html#scipy.optimize.minimize" title="(in SciPy v1.11.1)"><code class="xref py py-func docutils literal notranslate"><span class="pre">scipy.optimize.minimize()</span></code></a>, i.e., as a tuple of 2 values):</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">objfun</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
@@ -750,7 +751,7 @@ Updated  energy error: 1.3943225305580199e-11
 </div>
 </div>
 </div>
-<p>We can now put everything together, and invoke again <a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.minimize.html#scipy.optimize.minimize" title="(in SciPy v1.10.1)"><code class="xref py py-func docutils literal notranslate"><span class="pre">scipy.optimize.minimize()</span></code></a> supplying the gradients:</p>
+<p>We can now put everything together, and invoke again <a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.minimize.html#scipy.optimize.minimize" title="(in SciPy v1.11.1)"><code class="xref py py-func docutils literal notranslate"><span class="pre">scipy.optimize.minimize()</span></code></a> supplying the gradients:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ret</span> <span class="o">=</span> <span class="n">minimize</span><span class="p">(</span><span class="n">objfun</span><span class="p">,</span> <span class="n">ta</span><span class="o">.</span><span class="n">state</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;SLSQP&#39;</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="mf">1e-10</span><span class="p">,</span>
@@ -766,7 +767,7 @@ Updated  energy error: 1.3943225305580199e-11
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span> message: Optimization terminated successfully
  success: True
   status: 0
-     fun: 1.6028685201955344e-12
+     fun: 1.6028685193862723e-12
        x: [ 3.841e-04  4.208e-03 ... -1.215e+00  5.875e-02]
      nit: 2
      jac: [ 3.120e-08 -4.048e-07 ...  2.930e-12 -1.417e-13]
@@ -786,8 +787,8 @@ Updated  energy error: 1.3943225305580199e-11
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Original energy error: 1.1480506382380454e-06
-Updated  energy error: 1.3842059884646701e-11
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Original energy error: 1.1480506378333837e-06
+Updated  energy error: 1.3841857553804836e-11
 </pre></div>
 </div>
 </div>
@@ -893,7 +894,7 @@ Updated  energy error: 1.3842059884646701e-11
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/92aedba82917daa2205d1f817649d22283f91a1fc15175526dfe685d243c2c35.png" src="../_images/92aedba82917daa2205d1f817649d22283f91a1fc15175526dfe685d243c2c35.png" />
+<img alt="../_images/b9cfa49b3f91b19765f30a2e7f6b900d62e213035ce581d64f86de7e6a9b386b.png" src="../_images/b9cfa49b3f91b19765f30a2e7f6b900d62e213035ce581d64f86de7e6a9b386b.png" />
 </div>
 </div>
 <p>We can indeed see how the energy error with projection is kept under the <span class="math notranslate nohighlight">\(10^{-6}\)</span> threshold.</p>
@@ -922,7 +923,10 @@ Number of steps: 108881
               
               
                 <footer class="bd-footer-article">
-                  <!-- Previous / next buttons -->
+                  
+<div class="footer-article-items footer-article__inner">
+  
+    <div class="footer-article-item"><!-- Previous / next buttons -->
 <div class="prev-next-area">
     <a class="left-prev"
        href="Outer%20Solar%20System.html"
@@ -942,7 +946,10 @@ Number of steps: 108881
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
+</div></div>
+  
 </div>
+
                 </footer>
               
             </div>
@@ -969,7 +976,7 @@ Number of steps: 108881
             
           </div>
           <footer class="bd-footer-content">
-            <div class="bd-footer-content__inner">
+            
 <div class="bd-footer-content__inner container">
   
   <div class="footer-item">
@@ -999,7 +1006,7 @@ By Francesco Biscani and Dario Izzo
     
   </div>
   
-</div></div>
+</div>
           </footer>
         
 
@@ -1008,8 +1015,8 @@ By Francesco Biscani and Dario Izzo
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../_static/scripts/bootstrap.js?digest=12da95d707ffb74b382d"></script>
-<script src="../_static/scripts/pydata-sphinx-theme.js?digest=12da95d707ffb74b382d"></script>
+  <script src="../_static/scripts/bootstrap.js?digest=e353d410970836974a52"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=e353d410970836974a52"></script>
 
   <footer class="bd-footer">
   </footer>
