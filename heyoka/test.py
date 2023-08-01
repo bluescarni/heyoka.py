@@ -605,7 +605,7 @@ class event_classes_test_case(_ut.TestCase):
             self.assertEqual(ev.callback.n, 3)
             ev.callback.n = 0
             self.assertEqual(ev.callback.n, 0)
-            self.assertEqual(id(lcb), id(ev.callback))
+            self.assertNotEqual(id(lcb), id(ev.callback))
 
             with self.assertRaises(ValueError) as cm:
                 nt_event(
@@ -759,7 +759,7 @@ class event_classes_test_case(_ut.TestCase):
             self.assertEqual(ev.callback.n, 3)
             ev.callback.n = 0
             self.assertEqual(ev.callback.n, 0)
-            self.assertEqual(id(lcb), id(ev.callback))
+            self.assertNotEqual(id(lcb), id(ev.callback))
 
             ev = t_event(
                 x + v,
@@ -921,7 +921,7 @@ class event_classes_test_case(_ut.TestCase):
         self.assertEqual(ev.callback.n, 3)
         ev.callback.n = 0
         self.assertEqual(ev.callback.n, 0)
-        self.assertEqual(id(lcb), id(ev.callback))
+        self.assertNotEqual(id(lcb), id(ev.callback))
 
         with self.assertRaises(ValueError) as cm:
             nt_event_batch(
@@ -1057,7 +1057,7 @@ class event_classes_test_case(_ut.TestCase):
         self.assertEqual(ev.callback.n, 3)
         ev.callback.n = 0
         self.assertEqual(ev.callback.n, 0)
-        self.assertEqual(id(lcb), id(ev.callback))
+        self.assertNotEqual(id(lcb), id(ev.callback))
 
         ev = t_event_batch(
             x + v, direction=event_direction.positive, cooldown=fp_t(3), callback=None
