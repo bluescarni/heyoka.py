@@ -74,8 +74,7 @@ constexpr bool default_cm =
 #endif
     ;
 
-// Implementation of the exposition of the scalar integrators
-// for double and long double.
+// Implementation of the exposition of the scalar integrators.
 template <typename T>
 void expose_taylor_integrator_impl(py::module &m, const std::string &suffix)
 {
