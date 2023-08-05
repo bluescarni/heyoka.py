@@ -34,7 +34,7 @@
 #include "dtypes.hpp"
 #include "expose_batch_integrators.hpp"
 #include "pickle_wrappers.hpp"
-#include "step_callback.hpp"
+#include "step_cb_wrapper.hpp"
 
 namespace heyoka_py
 {

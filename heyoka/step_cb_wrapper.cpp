@@ -31,7 +31,7 @@
 #include <heyoka/taylor.hpp>
 
 #include "common_utils.hpp"
-#include "step_callback.hpp"
+#include "step_cb_wrapper.hpp"
 
 namespace heyoka_py
 {

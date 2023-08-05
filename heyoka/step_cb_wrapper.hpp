@@ -6,8 +6,8 @@
 // Public License v. 2.0. If a copy of the MPL was not distributed
 // with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-#ifndef HEYOKA_PY_STEP_CALLBACK_HPP
-#define HEYOKA_PY_STEP_CALLBACK_HPP
+#ifndef HEYOKA_PY_STEP_CB_WRAPPER_HPP
+#define HEYOKA_PY_STEP_CB_WRAPPER_HPP
 
 #include <pybind11/pybind11.h>
 

@@ -51,7 +51,7 @@
 #include "custom_casters.hpp"
 #include "dtypes.hpp"
 #include "pickle_wrappers.hpp"
-#include "step_callback.hpp"
+#include "step_cb_wrapper.hpp"
 #include "taylor_expose_integrator.hpp"
 
 namespace heyoka_py
