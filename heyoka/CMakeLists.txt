@@ -23,6 +23,7 @@ set(HEYOKA_PY_PYTHON_FILES
     _test_dtens.py
     _test_scalar_integrator.py
     _test_batch_integrator.py
+    _test_ensemble.py
     model/__init__.py
 )
 

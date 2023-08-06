@@ -22,10 +22,29 @@ def _splat_grid(arg, ta):
 # Thread-based implementation.
 def _ensemble_propagate_thread(tp, ta, arg, n_iter, gen, **kwargs):
     from concurrent.futures import ThreadPoolExecutor
-    from copy import deepcopy
+    from copy import deepcopy, copy
 
     # Pop the multithreading options from kwargs.
     max_workers = kwargs.pop("max_workers", None)
+
+    # Make deep copies of the callback argument, if present.
+    if "callback" in kwargs:
+        kwargs_list = []
+
+        for i in range(n_iter):
+            # Make a shallow copy of the original kwargs.
+            # new_kwargs will be a new dict containing
+            # references to the objects stored in kwargs.
+            new_kwargs = copy(kwargs)
+
+            # Update the callback argument in new_kwargs
+            # with a deep copy of the original callback object in
+            # kwargs.
+            new_kwargs.update(callback=deepcopy(kwargs["callback"]))
+
+            kwargs_list.append(new_kwargs)
+    else:
+        kwargs_list = [kwargs] * n_iter
 
     # The worker function.
     def func(i):
@@ -34,11 +53,11 @@ def _ensemble_propagate_thread(tp, ta, arg, n_iter, gen, **kwargs):
 
         # Run the propagation.
         if tp == "until":
-            loc_ret = local_ta.propagate_until(arg, **kwargs)
+            loc_ret = local_ta.propagate_until(arg, **kwargs_list[i])
         elif tp == "for":
-            loc_ret = local_ta.propagate_for(arg, **kwargs)
+            loc_ret = local_ta.propagate_for(arg, **kwargs_list[i])
         else:
-            loc_ret = local_ta.propagate_grid(_splat_grid(arg, ta), **kwargs)
+            loc_ret = local_ta.propagate_grid(_splat_grid(arg, ta), **kwargs_list[i])
 
         # Return the results.
         # NOTE: in batch mode, loc_ret will be single
