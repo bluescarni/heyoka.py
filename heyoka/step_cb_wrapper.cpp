@@ -64,17 +64,18 @@ bool step_cb_wrapper::operator()(TA &ta)
 
     py::object ret = m_obj(ta_obj);
 
-    // NOTE: check the return type via the Python C API,
-    // since casting ret to bool via pybind11 will work
-    // for basically any return type.
-    if (PyBool_Check(ret.ptr()) == 0) {
-        py_throw(PyExc_TypeError, (fmt::format("The call operator of a step callback is expected to return a boolean, "
-                                               "but a value of type '{}' was returned instead",
+    // NOTE: we want to manually check the conversion
+    // of the return value because if that fails
+    // the pybind11 error message is not very helpful, and thus
+    // we try to provide a more detailed error message.
+    try {
+        return ret.cast<bool>();
+    } catch (const py::cast_error &) {
+        py_throw(PyExc_TypeError, (fmt::format("Unable to convert a Python object of type '{}' to a boolean "
+                                               "in the construction of the return value of a step callback",
                                                str(type(ret))))
                                       .c_str());
     }
-
-    return PyObject_IsTrue(ret.ptr()) != 0;
 }
 
 template <typename TA>
