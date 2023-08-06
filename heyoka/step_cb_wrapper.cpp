@@ -62,17 +62,19 @@ bool step_cb_wrapper::operator()(TA &ta)
     // to the Python object wrapping ta.
     auto ta_obj = py::cast(&ta);
 
-    py::object ret = m_obj(ta_obj);
+    // Attempt to invoke the call operator of the
+    // Pythonic callback.
+    auto ret = m_obj(ta_obj);
 
     // NOTE: we want to manually check the conversion
     // of the return value because if that fails
     // the pybind11 error message is not very helpful, and thus
     // we try to provide a more detailed error message.
     try {
-        return ret.cast<bool>();
+        return py::cast<bool>(ret);
     } catch (const py::cast_error &) {
-        py_throw(PyExc_TypeError, (fmt::format("Unable to convert a Python object of type '{}' to a boolean "
-                                               "in the construction of the return value of a step callback",
+        py_throw(PyExc_TypeError, (fmt::format("The call operator of a step callback is expected to return a boolean, "
+                                               "but a value of type '{}' was returned instead",
                                                str(type(ret))))
                                       .c_str());
     }
