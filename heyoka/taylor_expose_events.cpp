@@ -69,16 +69,18 @@ namespace
 //   performs a deep copy),
 // - ensure the GIL is acquired in the call operator,
 // - provide serialisation capabilities.
-// NOTE: the deep copy behaviour needs to be highlighted
-// in the docs, as it has consequences on how one writes
-// the callbacks.
+// NOTE: the deep copy behaviour can be inconvenient
+// on the Python side, but it is useful as a first line
+// of defense in ensemble propagations. By forcing a copy,
+// we are reducing the chances of data races in stateful
+// callbacks.
 template <typename Ret, typename... Args>
 struct ev_callback {
     py::object m_obj;
 
     ev_callback() = default;
-    explicit ev_callback(py::object o) : m_obj(std::move(o)) {}
-    ev_callback(const ev_callback &c) : m_obj(py::module_::import("copy").attr("deepcopy")(c.m_obj)) {}
+    explicit ev_callback(py::object o) : m_obj(py::module_::import("copy").attr("deepcopy")(o)) {}
+    ev_callback(const ev_callback &c) : ev_callback(c.m_obj) {}
     ev_callback(ev_callback &&) noexcept = default;
     ev_callback &operator=(const ev_callback &c)
     {
@@ -89,6 +91,7 @@ struct ev_callback {
         return *this;
     }
     ev_callback &operator=(ev_callback &&) noexcept = default;
+    ~ev_callback() = default;
 
     Ret operator()(Args... args) const
     {

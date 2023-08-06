@@ -11,8 +11,8 @@
 #include <algorithm>
 #include <cassert>
 #include <cstddef>
-#include <functional>
 #include <initializer_list>
+#include <optional>
 #include <sstream>
 #include <string>
 #include <tuple>
@@ -25,7 +25,6 @@
 
 #include <fmt/format.h>
 
-#include <pybind11/functional.h>
 #include <pybind11/numpy.h>
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
@@ -45,12 +44,14 @@
 #endif
 
 #include <heyoka/expression.hpp>
+#include <heyoka/step_callback.hpp>
 #include <heyoka/taylor.hpp>
 
 #include "common_utils.hpp"
 #include "custom_casters.hpp"
 #include "dtypes.hpp"
 #include "pickle_wrappers.hpp"
+#include "step_cb_wrapper.hpp"
 #include "taylor_expose_integrator.hpp"
 
 namespace heyoka_py
@@ -74,8 +75,7 @@ constexpr bool default_cm =
 #endif
     ;
 
-// Implementation of the exposition of the scalar integrators
-// for double and long double.
+// Implementation of the exposition of the scalar integrators.
 template <typename T>
 void expose_taylor_integrator_impl(py::module &m, const std::string &suffix)
 {
@@ -84,7 +84,6 @@ void expose_taylor_integrator_impl(py::module &m, const std::string &suffix)
 
     using t_ev_t = hey::t_event<T>;
     using nt_ev_t = hey::nt_event<T>;
-    using prop_cb_t = std::function<bool(hey::taylor_adaptive<T> &)>;
 
     // Union of ODE system types, used in the ctor.
     using sys_t = std::variant<std::vector<std::pair<hey::expression, hey::expression>>, std::vector<hey::expression>>;
@@ -206,50 +205,71 @@ void expose_taylor_integrator_impl(py::module &m, const std::string &suffix)
         // propagate_*().
         .def(
             "propagate_for",
-            [](hey::taylor_adaptive<T> &ta, T delta_t, std::size_t max_steps, T max_delta_t, const prop_cb_t &cb_,
-               bool write_tc, bool c_output) {
-                // Create the callback wrapper.
-                auto cb = make_prop_cb(cb_);
+            [](hey::taylor_adaptive<T> &ta, T delta_t, std::size_t max_steps, T max_delta_t,
+               std::optional<py::object> &cb_, bool write_tc, bool c_output) {
+                // NOTE: after releasing the GIL, the only potential
+                // calls into the Python interpreter are when invoking the event or
+                // step callbacks (which are all protected by GIL reacquire).
 
-                // NOTE: after releasing the GIL here, the only potential
-                // calls into the Python interpreter are when invoking cb
-                // or the events' callbacks (which are all protected by GIL reacquire).
-                // Note that copying cb around or destroying it is harmless, as it contains only
-                // a reference to the original callback cb_, or it is an empty callback.
-                py::gil_scoped_release release;
-                return ta.propagate_for(delta_t, kw::max_steps = max_steps, kw::max_delta_t = max_delta_t,
-                                        kw::callback = cb, kw::write_tc = write_tc, kw::c_output = c_output);
+                if (cb_) {
+                    // NOTE: because cb is a step_callback, it will be passed by reference
+                    // into the propagate_for() function. Thus, no copies are made and no
+                    // calling into the Python interpreter takes place (and no need to hold
+                    // the GIL).
+                    // NOTE: because cb is created before the GIL scoped releaser, it will be
+                    // destroyed *after* the GIL has been re-acquired. Thus, the reference
+                    // count decrease associated with the destructor is safe.
+                    auto cb = hey::step_callback<T>(step_cb_wrapper(*cb_));
+
+                    py::gil_scoped_release release;
+                    return ta.propagate_for(delta_t, kw::max_steps = max_steps, kw::max_delta_t = max_delta_t,
+                                            kw::write_tc = write_tc, kw::c_output = c_output, kw::callback = cb);
+                } else {
+                    py::gil_scoped_release release;
+                    return ta.propagate_for(delta_t, kw::max_steps = max_steps, kw::max_delta_t = max_delta_t,
+                                            kw::write_tc = write_tc, kw::c_output = c_output);
+                }
             },
             "delta_t"_a.noconvert(), "max_steps"_a = 0,
-            "max_delta_t"_a.noconvert() = hey::detail::taylor_default_max_delta_t<T>(), "callback"_a = prop_cb_t{},
+            "max_delta_t"_a.noconvert() = hey::detail::taylor_default_max_delta_t<T>(), "callback"_a = py::none{},
             "write_tc"_a = false, "c_output"_a = false)
         .def(
             "propagate_until",
-            [](hey::taylor_adaptive<T> &ta, T t, std::size_t max_steps, T max_delta_t, const prop_cb_t &cb_,
+            [](hey::taylor_adaptive<T> &ta, T t, std::size_t max_steps, T max_delta_t, std::optional<py::object> &cb_,
                bool write_tc, bool c_output) {
-                // Create the callback wrapper.
-                auto cb = make_prop_cb(cb_);
+                if (cb_) {
+                    auto cb = hey::step_callback<T>(step_cb_wrapper(*cb_));
 
-                py::gil_scoped_release release;
-                return ta.propagate_until(t, kw::max_steps = max_steps, kw::max_delta_t = max_delta_t,
-                                          kw::callback = cb, kw::write_tc = write_tc, kw::c_output = c_output);
+                    py::gil_scoped_release release;
+                    return ta.propagate_until(t, kw::max_steps = max_steps, kw::max_delta_t = max_delta_t,
+                                              kw::write_tc = write_tc, kw::c_output = c_output, kw::callback = cb);
+                } else {
+                    py::gil_scoped_release release;
+                    return ta.propagate_until(t, kw::max_steps = max_steps, kw::max_delta_t = max_delta_t,
+                                              kw::write_tc = write_tc, kw::c_output = c_output);
+                }
             },
             "t"_a.noconvert(), "max_steps"_a = 0,
-            "max_delta_t"_a.noconvert() = hey::detail::taylor_default_max_delta_t<T>(), "callback"_a = prop_cb_t{},
+            "max_delta_t"_a.noconvert() = hey::detail::taylor_default_max_delta_t<T>(), "callback"_a = py::none{},
             "write_tc"_a = false, "c_output"_a = false)
         .def(
             "propagate_grid",
             [](hey::taylor_adaptive<T> &ta, std::vector<T> grid, std::size_t max_steps, T max_delta_t,
-               const prop_cb_t &cb_) {
-                // Create the callback wrapper.
-                auto cb = make_prop_cb(cb_);
-
+               std::optional<py::object> &cb_) {
                 decltype(ta.propagate_grid(grid, max_steps)) ret;
 
                 {
-                    py::gil_scoped_release release;
-                    ret = ta.propagate_grid(std::move(grid), kw::max_steps = max_steps, kw::max_delta_t = max_delta_t,
-                                            kw::callback = cb);
+                    if (cb_) {
+                        auto cb = hey::step_callback<T>(step_cb_wrapper(*cb_));
+
+                        py::gil_scoped_release release;
+                        ret = ta.propagate_grid(std::move(grid), kw::max_steps = max_steps,
+                                                kw::max_delta_t = max_delta_t, kw::callback = cb);
+                    } else {
+                        py::gil_scoped_release release;
+                        ret = ta.propagate_grid(std::move(grid), kw::max_steps = max_steps,
+                                                kw::max_delta_t = max_delta_t);
+                    }
                 }
 
                 // Determine the number of state vectors returned
@@ -266,7 +286,7 @@ void expose_taylor_integrator_impl(py::module &m, const std::string &suffix)
                                       std::move(a_ret));
             },
             "grid"_a.noconvert(), "max_steps"_a = 0,
-            "max_delta_t"_a.noconvert() = hey::detail::taylor_default_max_delta_t<T>(), "callback"_a = prop_cb_t{})
+            "max_delta_t"_a.noconvert() = hey::detail::taylor_default_max_delta_t<T>(), "callback"_a = py::none{})
         // Repr.
         .def("__repr__",
              [](const hey::taylor_adaptive<T> &ta) {

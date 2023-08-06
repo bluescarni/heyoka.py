@@ -21,6 +21,9 @@ set(HEYOKA_PY_PYTHON_FILES
     _test_model.py
     _test_expression.py
     _test_dtens.py
+    _test_scalar_integrator.py
+    _test_batch_integrator.py
+    _test_ensemble.py
     model/__init__.py
 )
 
@@ -52,6 +55,7 @@ set(_HEYOKA_PY_CORE_SOURCES
     expose_batch_integrators.cpp
     numpy_memory.cpp
     expose_models.cpp
+    step_cb_wrapper.cpp
 )
 
 Python3_add_library(core MODULE WITH_SOABI ${_HEYOKA_PY_CORE_SOURCES})
