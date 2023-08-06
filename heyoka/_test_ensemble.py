@@ -376,3 +376,25 @@ class ensemble_test_case(_ut.TestCase):
         # in threaded mode.
         with self.assertRaises(TypeError) as cm:
             ensemble_propagate_until(ta, 20.0, 10, gen, chunksize=1)
+
+        # Check that callbacks are deep-copied in thread-based
+        # ensemble propagations.
+
+        class step_cb:
+            def __call__(_, ta):
+                self.assertNotEqual(id(_), _.orig_id)
+
+                return True
+
+        cb = step_cb()
+        cb.orig_id = id(cb)
+
+        def gen(ta, idx):
+            ta.time = 0.0
+            ta.state[:] = ics[idx]
+
+            return ta
+
+        ensemble_propagate_until(
+            ta, 20.0, 10, gen, algorithm="thread", max_workers=8, callback=cb
+        )
