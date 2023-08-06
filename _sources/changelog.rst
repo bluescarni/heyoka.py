@@ -9,6 +9,10 @@ Changelog
 New
 ~~~
 
+- The step callbacks can now optionally implement a ``pre_hook()``
+  method that will be called before the first step
+  is taken by a ``propagate_*()`` function
+  (`#128 <https://github.com/bluescarni/heyoka.py/pull/128>`__).
 - Introduce several vectorised overloads in the expression
   API. These vectorised overloads allow to perform the same
   operation on a list of expressions more efficiently
@@ -36,6 +40,11 @@ New
 Changes
 ~~~~~~~
 
+- The step callbacks are now deep-copied in multithreaded
+  :ref:`ensemble propagations <ensemble_prop>`
+  rather then being shared among threads. The aim of this change
+  is to reduce the likelihood of data races
+  (`#128 <https://github.com/bluescarni/heyoka.py/pull/128>`__).
 - Comprehensive overhaul of the expression system, including:
   enhanced automatic simplification capabilities for sums,
   products and powers, removal of several specialised primitives

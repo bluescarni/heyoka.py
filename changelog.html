@@ -508,6 +508,10 @@ document.write(`
 <section id="new">
 <h3>New<a class="headerlink" href="#new" title="Permalink to this heading">#</a></h3>
 <ul class="simple">
+<li><p>The step callbacks can now optionally implement a <code class="docutils literal notranslate"><span class="pre">pre_hook()</span></code>
+method that will be called before the first step
+is taken by a <code class="docutils literal notranslate"><span class="pre">propagate_*()</span></code> function
+(<a class="reference external" href="https://github.com/bluescarni/heyoka.py/pull/128">#128</a>).</p></li>
 <li><p>Introduce several vectorised overloads in the expression
 API. These vectorised overloads allow to perform the same
 operation on a list of expressions more efficiently
@@ -536,6 +540,11 @@ read-only properties (e.g., list of variables, outputs, etc.)
 <section id="changes">
 <h3>Changes<a class="headerlink" href="#changes" title="Permalink to this heading">#</a></h3>
 <ul class="simple">
+<li><p>The step callbacks are now deep-copied in multithreaded
+<a class="reference internal" href="notebooks/ensemble_mode.html#ensemble-prop"><span class="std std-ref">ensemble propagations</span></a>
+rather then being shared among threads. The aim of this change
+is to reduce the likelihood of data races
+(<a class="reference external" href="https://github.com/bluescarni/heyoka.py/pull/128">#128</a>).</p></li>
 <li><p>Comprehensive overhaul of the expression system, including:
 enhanced automatic simplification capabilities for sums,
 products and powers, removal of several specialised primitives

@@ -1148,8 +1148,8 @@ f\left(x_1, x_2, \ldots, x_n \right) = x_1\cdot x_2 \cdot \ldots \cdot x_n
 <section id="general-guidelines">
 <h3>General guidelines<a class="headerlink" href="#general-guidelines" title="Permalink to this heading">#</a></h3>
 <p>In conclusion, how should one choose whether to use <code class="docutils literal notranslate"><span class="pre">diff()</span></code> or <code class="docutils literal notranslate"><span class="pre">diff_tensors()</span></code> to compute symbolic derivatives in heyoka.py?</p>
-<p><code class="docutils literal notranslate"><span class="pre">diff()</span></code> should be used when the goal is to produce human-readable symbolic expressions, and when one wants to take advantage of heyoka.py’s symbolic simplification capabilities.</p>
-<p>If, however, the goal is to optimise the performance of the numerical evaluation of derivatives, then one should use <code class="docutils literal notranslate"><span class="pre">diff_tensors()</span></code>.</p>
+<p>In general, <code class="docutils literal notranslate"><span class="pre">diff()</span></code> should be used when the goal is to produce human-readable symbolic expressions, and when one wants to take advantage of heyoka.py’s symbolic simplification capabilities.</p>
+<p>If, however, the goal is to optimise the performance of the numerical evaluation of derivatives, then one should consider using <code class="docutils literal notranslate"><span class="pre">diff_tensors()</span></code> instead.</p>
 </section>
 </section>
 </section>

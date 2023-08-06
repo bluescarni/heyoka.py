@@ -426,7 +426,7 @@ document.write(`
                 <article class="bd-article" role="main">
                   
   <section class="tex2jax_ignore mathjax_ignore" id="ensemble-propagations">
-<h1>Ensemble propagations<a class="headerlink" href="#ensemble-propagations" title="Permalink to this heading">#</a></h1>
+<span id="ensemble-prop"></span><h1>Ensemble propagations<a class="headerlink" href="#ensemble-propagations" title="Permalink to this heading">#</a></h1>
 <p>Starting with version 0.17.0, heyoka.py offers support for
 <em>ensemble propagations</em>. In ensemble mode, multiple distinct
 instances of the same ODE system are integrated in parallel,
@@ -561,11 +561,11 @@ requested).</p>
  Taylor order            : 20
  Dimension               : 2
  Time                    : 20
- State                   : [0.03936524177213103, 0.05725025532670728],
+ State                   : [0.04760306011272994, 0.05487222312847258],
  &lt;taylor_outcome.time_limit: -4294967299&gt;,
- 0.20834214903547224,
- 0.22126536596692653,
- 94,
+ 0.20197701082694358,
+ 0.21826551051657198,
+ 97,
  None)
 </pre></div>
 </div>
@@ -574,10 +574,10 @@ requested).</p>
 <p>The first element of the tuple is the integrator object that was used in the invocation of <code class="docutils literal notranslate"><span class="pre">propagate_until()</span></code>. The remaining elements of the tuple are the output of the <code class="docutils literal notranslate"><span class="pre">propagate_until()</span></code> invocation (i.e., integration outcome, min/max timestep, etc., as detailed in the <a class="reference internal" href="The%20adaptive%20integrator.html"><span class="doc std std-doc">adatpive integrator tutorial</span></a>).</p>
 <p>The <code class="docutils literal notranslate"><span class="pre">ensemble_propagate_until()</span></code> function can be invoked with additional optional keyword arguments, beside the mandatory initial 4:</p>
 <ul class="simple">
-<li><p>the <code class="docutils literal notranslate"><span class="pre">algorithm</span></code> keyword argument is a string that specifies the parallelisation algorithm that will be used by <code class="docutils literal notranslate"><span class="pre">ensemble_propagate_until()</span></code>. The supported values are currently <code class="docutils literal notranslate"><span class="pre">&quot;thread&quot;</span></code> (the default) and <code class="docutils literal notranslate"><span class="pre">&quot;process&quot;</span></code> (see below for a discussion of the pros and cons of each method);</p></li>
+<li><p>the <code class="docutils literal notranslate"><span class="pre">algorithm</span></code> keyword argument is a string that specifies the parallelisation algorithm that will be used by <code class="docutils literal notranslate"><span class="pre">ensemble_propagate_until()</span></code>. The supported values are currently <code class="docutils literal notranslate"><span class="pre">&quot;thread&quot;</span></code> (the default) and <code class="docutils literal notranslate"><span class="pre">&quot;process&quot;</span></code> (see <a class="reference internal" href="#ensemble-thread-vs-proc"><span class="std std-ref">below</span></a> for a discussion of the pros and cons of each method);</p></li>
 <li><p>the <code class="docutils literal notranslate"><span class="pre">max_workers</span></code> keyword argument is an integer that specifies how many workers are spawned during parallelisation. Defaults to <code class="docutils literal notranslate"><span class="pre">None</span></code>, see the <a class="reference external" href="https://docs.python.org/3/library/concurrent.futures.html">Python docs</a> for a detailed explanation;</p></li>
 <li><p>the <code class="docutils literal notranslate"><span class="pre">chunksize</span></code> keyword argument is an integer that specifies the size of the tasks that are submitted to the parallel workers. Defaults to 1, see the <a class="reference external" href="https://docs.python.org/3/library/concurrent.futures.html">Python docs</a> for a detailed explanation.
-This keyword argument can be specified only when using the <code class="docutils literal notranslate"><span class="pre">process</span></code> parallelisation method.</p></li>
+This keyword argument applies only to the <code class="docutils literal notranslate"><span class="pre">process</span></code> parallelisation method.</p></li>
 </ul>
 <p>Any other keyword argument passed to <code class="docutils literal notranslate"><span class="pre">ensemble_propagate_until()</span></code> will be forwarded to the <code class="docutils literal notranslate"><span class="pre">propagate_until()</span></code> invocations.</p>
 <p>Let us see a comprehensive example with multiple keyword arguments:</p>
@@ -616,35 +616,33 @@ This keyword argument can be specified only when using the <code class="docutils
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/1d26a18a35e44315afd3815bbb0099864aaafdef3a898fe0a1d2d17402088540.png" src="../_images/1d26a18a35e44315afd3815bbb0099864aaafdef3a898fe0a1d2d17402088540.png" />
+<img alt="../_images/aaf5c630363e5d1a6024f690ed37880df8f2caeb485deb2281d9dd4e810730d3.png" src="../_images/aaf5c630363e5d1a6024f690ed37880df8f2caeb485deb2281d9dd4e810730d3.png" />
 </div>
 </div>
 </section>
 <section id="choosing-between-threads-and-processes">
-<h2>Choosing between threads and processes<a class="headerlink" href="#choosing-between-threads-and-processes" title="Permalink to this heading">#</a></h2>
+<span id="ensemble-thread-vs-proc"></span><h2>Choosing between threads and processes<a class="headerlink" href="#choosing-between-threads-and-processes" title="Permalink to this heading">#</a></h2>
 <p>Ensemble propagations default to using multiple threads of execution for parallelisation. Multithreading usually performs better than multiprocessing, however there are at least two big caveats to keep in mind when using multithreading:</p>
 <ul>
 <li><p>first, it is the user’s responsibility to ensure that the user-provided function objects such as the generator and
 the callbacks (if present) are safe for use in a multithreaded context. In particular, the following actions will be performed
 concurrently by separate threads of execution:</p>
 <ul class="simple">
-<li><p>invocation of the generator’s call operator and of the call operator
-of the callback that can (optionally) be passed to the <code class="docutils literal notranslate"><span class="pre">propagate_*()</span></code>
-functions. In other words, both the generator and the <code class="docutils literal notranslate"><span class="pre">propagate_*()</span></code>
-callback are shared among several threads of execution and used
+<li><p>invocation of the generator’s call operator. That is, the generator
+is shared among several threads of execution and used
 concurrently;</p></li>
 <li><p>deep copy of the events callbacks and invocation of the
 call operator on the copies. That is, each thread of execution
 gets its own copy of the event callbacks thanks to the creation
-of a new integrator object via the generator.</p></li>
+of a new integrator object via the generator;</p></li>
+<li><p>concurrent execution of copies of the step callback, if present.
+That is, before multithreaded execution starts, <code class="docutils literal notranslate"><span class="pre">n_iter</span></code> deep copies
+of the step callback (if present) are made, with each iteration in the ensemble
+propagation using its own exclusive copy of the step callback.</p></li>
 </ul>
 <p>For instance, an event callback which performs write operations
 on a global variable without using some form of synchronisation
-will result in unpredictable behaviour when used in an ensemble propagation.
-Similarly, a <code class="docutils literal notranslate"><span class="pre">propagate_*()</span></code> callback that
-performs write operations into its own data member(s) without
-synchronisation will also result in a data race, because the
-<code class="docutils literal notranslate"><span class="pre">propagate_*()</span></code> callback is shared among several threads;</p>
+will result in unpredictable behaviour when used in an ensemble propagation.</p>
 </li>
 <li><p>second, due to the <a class="reference external" href="https://docs.python.org/3/glossary.html#term-global-interpreter-lock">global interpreter lock (GIL)</a>, Python is typically not able to execute code concurrently from multiple threads.
 Thus, if a considerable portion of the integration time if spent executing user-defined callbacks, ensemble simulations will exhibit poor parallel speedup.</p></li>
