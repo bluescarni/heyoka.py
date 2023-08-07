@@ -35,11 +35,11 @@ make VERBOSE=1 install
 
 echo "INSTALL DONE"
 
-cd /
+cd ../tools
 
 echo "MOVED OUT"
 
-$deps_dir/bin/python -c "from heyoka import test; test.run_test_suite()"
+$deps_dir/bin/python ci_test_runner.py
 
 echo "PYTHON RUN"
 

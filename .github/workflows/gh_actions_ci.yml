@@ -102,7 +102,7 @@ jobs:
       - uses: conda-incubator/setup-miniconda@v2
         with:
           auto-update-conda: true
-          python-version: 3.9
+          python-version: "3.10"
           channels: conda-forge
           channel-priority: strict
       - name: Build
@@ -121,8 +121,9 @@ jobs:
           cd build
           cmake .. -G "Visual Studio 16 2019" -A x64 -DCMAKE_PREFIX_PATH=C:\Miniconda\envs\test\Library -DCMAKE_INSTALL_PREFIX=C:\Miniconda\envs\test\Library -DBoost_NO_BOOST_CMAKE=ON -DHEYOKA_PY_ENABLE_IPO=yes
           cmake --build . --config Release --target install
-          cd c:\
-          python -c "import numba; from heyoka import test; test.run_test_suite()"
+          cd ..
+          cd tools
+          python ci_test_runner.py --with-numba
   binder_cache:
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
