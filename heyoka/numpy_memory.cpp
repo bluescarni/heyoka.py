@@ -11,10 +11,12 @@
 #include <cstdlib>
 #include <cstring>
 #include <functional>
+#include <iostream>
 #include <map>
 #include <memory>
 #include <mutex>
 #include <new>
+#include <optional>
 #include <tuple>
 #include <typeindex>
 #include <utility>
@@ -469,51 +471,83 @@ PyDataMem_Handler npy_custom_mem_handler
        1,
        {nullptr, numpy_custom_malloc, numpy_custom_calloc, numpy_custom_realloc, numpy_custom_free}};
 
-// Flag to signal if the default NumPy memory handler
-// has been overriden by npy_custom_mem_handler.
+// When our custom NumPy memory handler is installed, the original
+// memory handler is saved in this variable.
 // NOLINTNEXTLINE(cppcoreguidelines-avoid-non-const-global-variables)
-bool numpy_mh_overridden = false;
+std::optional<py::object> numpy_orig_mem_handler;
 
 } // namespace
 
 } // namespace detail
 
-// Helper to install the custom memory handling functions.
-// This can be called multiple times, all invocations past the
-// first one are no-ops.
-void install_custom_numpy_mem_handler()
+// Helper to setup the custom memory handling functions.
+// NOTE: these functions are NOT thread safe, this needs
+// to be highlighted in the docs.
+void setup_custom_numpy_mem_handler(py::module_ &m)
 {
-    if (detail::numpy_mh_overridden) {
-        // Don't do anything if we have overridden
-        // the memory management functions already.
-        return;
-    }
+    m.def("install_custom_numpy_mem_handler", []() {
+        if (detail::numpy_orig_mem_handler) {
+            // Don't do anything if we have already overridden
+            // the memory management functions.
+            return;
+        }
 
-    // NOTE: in principle here we could fetch the original memory handling
-    // capsule (which is also called "mem_handler"), and re-use the original
-    // memory functions in our implementations, instead of calling malloc/calloc/etc.
-    // This would make our custom implementations "good citizens", in the sense
-    // that we would respect existing custom memory allocating routines instead of
-    // outright overriding and ignoring them. Probably this is not an immediate concern
-    // as the memory management API is rather new, but it is something we should
-    // keep in mind moving forward.
-    auto *new_mem_handler = PyCapsule_New(&detail::npy_custom_mem_handler, "mem_handler", nullptr);
-    if (new_mem_handler == nullptr) {
-        // NOTE: if PyCapsule_New() fails, it already sets the error flag.
-        throw pybind11::error_already_set();
-    }
+        // NOTE: in principle here we could fetch the original memory handling
+        // capsule (which is also called "mem_handler"), and re-use the original
+        // memory functions in our implementations, instead of calling malloc/calloc/etc.
+        // This would make our custom implementations "good citizens", in the sense
+        // that we would respect existing custom memory allocating routines instead of
+        // outright overriding and ignoring them. Probably this is not an immediate concern
+        // as the memory management API is rather new, but it is something we should
+        // keep in mind moving forward.
+        auto *new_mem_handler = PyCapsule_New(&detail::npy_custom_mem_handler, "mem_handler", nullptr);
+        if (new_mem_handler == nullptr) {
+            // NOTE: if PyCapsule_New() fails, it already sets the error flag.
+            throw pybind11::error_already_set();
+        }
 
-    auto *old = PyDataMem_SetHandler(new_mem_handler);
-    Py_DECREF(new_mem_handler);
-    if (old == nullptr) {
-        // NOTE: if PyDataMem_SetHandler() fails, it already sets the error flag.
-        throw pybind11::error_already_set();
-    }
+        auto *old = PyDataMem_SetHandler(new_mem_handler);
+        Py_DECREF(new_mem_handler);
+        if (old == nullptr) {
+            // NOTE: if PyDataMem_SetHandler() fails, it already sets the error flag.
+            throw pybind11::error_already_set();
+        }
 
-    Py_DECREF(old);
+        // Store the original memory handler.
+        // NOTE: we use reinterpret_steal because PyDataMem_SetHandler() returned a new reference.
+        detail::numpy_orig_mem_handler.emplace(py::reinterpret_steal<py::object>(py::handle(old)));
+    });
 
-    // Set the flag.
-    detail::numpy_mh_overridden = true;
+    m.def("remove_custom_numpy_mem_handler", []() {
+        if (!detail::numpy_orig_mem_handler) {
+            // Don't do anything if we have not overridden
+            // the memory management functions yet.
+            return;
+        }
+
+        // Try to restore the original memory handler.
+        auto *tmp = PyDataMem_SetHandler(detail::numpy_orig_mem_handler->ptr());
+        if (tmp == nullptr) {
+            // NOTE: if PyDataMem_SetHandler() fails, it already sets the error flag.
+            throw pybind11::error_already_set();
+        }
+
+        // The original memory handler was restored successfully. As cleanup actions we need to:
+        // - decrease the refcount of tmp, the handler that we just replaced, and
+        // - destroy the content of numpy_orig_mem_handler (which includes decreasing the refcount).
+        Py_DECREF(tmp);
+        detail::numpy_orig_mem_handler.reset();
+    });
+
+    // NOTE: as usual, ensure that Pythonic global variables
+    // are cleaned up before shutting down the interpreter.
+    auto atexit = py::module_::import("atexit");
+    atexit.attr("register")(py::cpp_function([]() {
+#if !defined(NDEBUG)
+        std::cout << "Cleaning up the custom NumPy memory management data" << std::endl;
+#endif
+        detail::numpy_orig_mem_handler.reset();
+    }));
 }
 
 } // namespace heyoka_py

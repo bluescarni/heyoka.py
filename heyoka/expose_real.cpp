@@ -2243,8 +2243,8 @@ void pyreal_ensure_array(py::array &arr, mpfr_prec_t prec)
 
 void expose_real(py::module_ &m)
 {
-    // Install the custom NumPy memory management functions.
-    install_custom_numpy_mem_handler();
+    // Setup the custom NumPy memory management functions.
+    setup_custom_numpy_mem_handler(m);
 
     // Fill out the entries of py_real_type.
     py_real_type.tp_base = &PyGenericArrType_Type;

@@ -18,6 +18,8 @@
 #include <typeinfo>
 #include <utility>
 
+#include <pybind11/pybind11.h>
+
 #include "common_utils.hpp"
 
 #if defined(__GNUC__)
@@ -107,7 +109,7 @@ public:
 
 std::pair<unsigned char *, numpy_mem_metadata *> get_memory_metadata(const void *) noexcept;
 
-void install_custom_numpy_mem_handler();
+void setup_custom_numpy_mem_handler(pybind11::module_ &);
 
 } // namespace heyoka_py
 

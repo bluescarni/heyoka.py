@@ -103,7 +103,9 @@ auditwheel repair dist/heyoka* -w ./dist2
 unset LD_LIBRARY_PATH
 cd /
 /opt/python/${PYTHON_DIR}/bin/pip install ${GITHUB_WORKSPACE}/build/wheel/dist2/heyoka*
-/opt/python/${PYTHON_DIR}/bin/python -c "import heyoka; heyoka.test.run_test_suite();"
+cd ${GITHUB_WORKSPACE}/tools
+/opt/python/${PYTHON_DIR}/bin/python ci_test_runner.py
+cd /
 
 # Upload to PyPI.
 if [[ "${HEYOKA_PY_RELEASE_BUILD}" == "yes" ]]; then
