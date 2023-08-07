@@ -40,6 +40,9 @@ New
 Changes
 ~~~~~~~
 
+- The custom NumPy memory manager that prevents memory leaks
+  with ``real`` arrays is now disabled by default
+  (`#129 <https://github.com/bluescarni/heyoka.py/pull/129>`__).
 - The step callbacks are now deep-copied in multithreaded
   :ref:`ensemble propagations <ensemble_prop>`
   rather then being shared among threads. The aim of this change
