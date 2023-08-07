@@ -569,7 +569,7 @@ Precision manually specified from a float    : 12 bits
 </div>
 </div>
 </div>
-<p>Please be aware that NumPy support is to be considered <strong>experimental</strong> at this time (see the “Limitations and caveats” section below).</p>
+<p>Please be aware that NumPy support is to be considered <strong>experimental</strong> at this time (see the <a class="reference internal" href="#mp-caveats"><span class="std std-ref">“Limitations and caveats”</span></a> section below).</p>
 </section>
 <section id="numerical-integration">
 <h2>Numerical integration<a class="headerlink" href="#numerical-integration" title="Permalink to this heading">#</a></h2>
@@ -797,11 +797,26 @@ Value of x when v is zero: 5.000000000000000000000000000000000000000000000000000
 </div>
 </section>
 <section id="limitations-and-caveats">
-<h2>Limitations and caveats<a class="headerlink" href="#limitations-and-caveats" title="Permalink to this heading">#</a></h2>
+<span id="mp-caveats"></span><h2>Limitations and caveats<a class="headerlink" href="#limitations-and-caveats" title="Permalink to this heading">#</a></h2>
 <p>Similarly to <a class="reference internal" href="ext_precision.html"><span class="doc std std-doc">extended-precision datatypes</span></a>, NumPy support for the <code class="docutils literal notranslate"><span class="pre">real</span></code> dtype is quite limited: while basic features such as array slicing, indexing, arithmetic, special functions and explicit conversions to/from other types are supported and working as intended, more advanced features such as random number generation, nontrivial linear algebra, etc. will not work with <code class="docutils literal notranslate"><span class="pre">real</span></code>.</p>
-<p>Additionally, because <code class="docutils literal notranslate"><span class="pre">real</span></code> wraps a C++ class with nontrivial lifetime management, heyoka.py must (ab)use a <a class="reference external" href="https://numpy.org/neps/nep-0049.html">recently-introduced NumPy memory management feature</a> in order to ensure that <code class="docutils literal notranslate"><span class="pre">real</span></code> objects stored in a NumPy array are properly initialised before access and properly destroyed when the array is garbage collected. There are a couple of known issues in the custom memory management scheme employed by heyoka.py.</p>
-<p>To begin with, under certain circumstances (i.e., typically during the conversion of <code class="docutils literal notranslate"><span class="pre">real</span></code> arrays to/from another dtypes), heyoka.py will be forced to allocate on-the-fly <code class="docutils literal notranslate"><span class="pre">real</span></code> values that are never deallocated until the termination of the program (thus leading to potential memory leaks). See <a class="reference external" href="https://github.com/numpy/numpy/issues/22686">here</a> for more details. Although in practice this behaviour does not seem to create issues in most cases, long-running computations that frequently call into the NumPy API might eventually lead to memory exhaustion.</p>
-<p>Secondly, the fact that heyoka.py overrides the default NumPy memory management functions with custom implementations renders heyoka.py incompatible with other packages which might also be overriding the NumPy memory allocation functions. We are not aware at this time of any widely-used package that overrides the default NumPy memory allocation functions.</p>
+<p>Additionally, because <code class="docutils literal notranslate"><span class="pre">real</span></code> wraps a C++ class with nontrivial lifetime management, creating and manipulating arrays with <code class="docutils literal notranslate"><span class="pre">real</span></code> dtype will result by default in <strong>memory leaks</strong>. Specifically, when a <code class="docutils literal notranslate"><span class="pre">real</span></code> array is garbage-collected, the memory allocated by the individual <code class="docutils literal notranslate"><span class="pre">real</span></code> objects in the array will <strong>not</strong> be freed.</p>
+<p>This leaky behaviour can be avoided by (ab)using a <a class="reference external" href="https://numpy.org/neps/nep-0049.html">recently-introduced NumPy memory management feature</a>. Specifically, it is possible to invoke the <code class="docutils literal notranslate"><span class="pre">install_custom_numpy_mem_handler()</span></code> function to install a custom memory manager for NumPy arrays that will ensure that all <code class="docutils literal notranslate"><span class="pre">real</span></code> objects are properly destroyed when an array is garbage-collected:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">hy</span><span class="o">.</span><span class="n">install_custom_numpy_mem_handler</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Note, however, that this custom memory manager results in a measurable performance penalty when (de)allocating NumPy arrays for <strong>all</strong> dtypes (and not only <code class="docutils literal notranslate"><span class="pre">real</span></code>). Hence, the custom memory manager is disabled by default.</p>
+<p>Note that the original NumPy memory manager can be restored via the <code class="docutils literal notranslate"><span class="pre">remove_custom_numpy_mem_handler()</span></code> function:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">hy</span><span class="o">.</span><span class="n">remove_custom_numpy_mem_handler</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
 <p>If you encounter issues with NumPy support for the <code class="docutils literal notranslate"><span class="pre">real</span></code> class, please do not hesitate to <a class="reference external" href="https://github.com/bluescarni/heyoka.py/issues/new/choose">open an issue</a>.</p>
 </section>
 </section>

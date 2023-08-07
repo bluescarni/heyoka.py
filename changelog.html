@@ -540,6 +540,9 @@ read-only properties (e.g., list of variables, outputs, etc.)
 <section id="changes">
 <h3>Changes<a class="headerlink" href="#changes" title="Permalink to this heading">#</a></h3>
 <ul class="simple">
+<li><p>The custom NumPy memory manager that prevents memory leaks
+with <code class="docutils literal notranslate"><span class="pre">real</span></code> arrays is now disabled by default
+(<a class="reference external" href="https://github.com/bluescarni/heyoka.py/pull/129">#129</a>).</p></li>
 <li><p>The step callbacks are now deep-copied in multithreaded
 <a class="reference internal" href="notebooks/ensemble_mode.html#ensemble-prop"><span class="std std-ref">ensemble propagations</span></a>
 rather then being shared among threads. The aim of this change
