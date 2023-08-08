@@ -8,6 +8,9 @@ Breaking changes
 1.0.0
 -----
 
+- The VSOP2013 functions have been moved into the
+  ``model`` submodule. The semantics of the functions
+  have not changed.
 - The ``make_nbody_sys()`` function has been replaced by
   the ``model.nbody()`` function, with identical semantics.
 

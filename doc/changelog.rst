@@ -40,6 +40,10 @@ New
 Changes
 ~~~~~~~
 
+- **BREAKING**: the VSOP2013 functions have been moved from the
+  main module to the new ``model`` submodule
+  (`#130 <https://github.com/bluescarni/heyoka.py/pull/130>`__).
+  This is a :ref:`breaking change <bchanges_1_0_0>`.
 - The custom NumPy memory manager that prevents memory leaks
   with ``real`` arrays is now disabled by default
   (`#129 <https://github.com/bluescarni/heyoka.py/pull/129>`__).

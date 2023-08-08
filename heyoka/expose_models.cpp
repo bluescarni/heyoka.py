@@ -9,6 +9,7 @@
 #include <heyoka/config.hpp>
 
 #include <algorithm>
+#include <cstdint>
 #include <iterator>
 #include <optional>
 #include <string>
@@ -319,6 +320,29 @@ void expose_models(py::module_ &m)
         "Gconst"_a.noconvert() = 1., "masses"_a.noconvert() = py::list{},
         "positions"_a = py::array{py::dtype(get_dtype<double>()), py::array::ShapeContainer{0, 3}},
         "omega"_a.noconvert() = py::list{});
+
+    // VSOP2013.
+    m.def(
+        "_model_vsop2013_elliptic",
+        [](std::uint32_t pl_idx, std::uint32_t var_idx, hy::expression t_expr, double thresh) {
+            return hy::model::vsop2013_elliptic(pl_idx, var_idx, hy::kw::time = std::move(t_expr),
+                                                hy::kw::thresh = thresh);
+        },
+        "pl_idx"_a, "var_idx"_a = 0, "time"_a = hy::time, "thresh"_a.noconvert() = 1e-9);
+    m.def(
+        "_model_vsop2013_cartesian",
+        [](std::uint32_t pl_idx, hy::expression t_expr, double thresh) {
+            return hy::model::vsop2013_cartesian(pl_idx, hy::kw::time = std::move(t_expr), hy::kw::thresh = thresh);
+        },
+        "pl_idx"_a, "time"_a = hy::time, "thresh"_a.noconvert() = 1e-9);
+    m.def(
+        "_model_vsop2013_cartesian_icrf",
+        [](std::uint32_t pl_idx, hy::expression t_expr, double thresh) {
+            return hy::model::vsop2013_cartesian_icrf(pl_idx, hy::kw::time = std::move(t_expr),
+                                                      hy::kw::thresh = thresh);
+        },
+        "pl_idx"_a, "time"_a = hy::time, "thresh"_a.noconvert() = 1e-9);
+    m.def("_model_get_vsop2013_mus", &hy::model::get_vsop2013_mus);
 }
 
 } // namespace heyoka_py
