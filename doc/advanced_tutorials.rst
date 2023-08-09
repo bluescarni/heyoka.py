@@ -1,7 +1,7 @@
-.. _tutorials:
+.. _adv_tutorials:
 
-Tutorials
-=========
+Advanced tutorials
+==================
 
 .. only:: html
 
@@ -22,24 +22,6 @@ Tutorials
      notebooks. Please refer to the :ref:`changelog <changelog>` for an overview of
      the features currently
      available only in the development version of heyoka.py.
-
-Basics
--------
-
-.. toctree::
-  :maxdepth: 1
-
-  tut_taylor_method
-  notebooks/The expression system.ipynb
-  notebooks/The adaptive integrator.ipynb
-  notebooks/Customising the adaptive integrator.ipynb
-  notebooks/ODEs with parameters.ipynb
-  notebooks/Non-autonomous systems.ipynb
-  notebooks/Dense output.ipynb
-  notebooks/Event detection
-
-Advanced
---------
 
 .. toctree::
   :maxdepth: 1

@@ -72,7 +72,8 @@ The authors are Francesco Biscani and Dario Izzo (European Space Agency).
 :caption: Contents
 
 install
-tutorials
+basic_tutorials
+advanced_tutorials
 examples
 benchmarks
 changelog
