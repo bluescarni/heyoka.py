@@ -38,7 +38,7 @@ echo "PYTHON_DIR: ${PYTHON_DIR}"
 export NUMPY_VERSION="1.24.*"
 
 # The heyoka version to be used for releases.
-export HEYOKA_VERSION_RELEASE="1.0.0"
+export HEYOKA_VERSION_RELEASE="1.1.0"
 
 # Check if this is a release build.
 if [[ "${GITHUB_REF}" == "refs/tags/v"* ]]; then
