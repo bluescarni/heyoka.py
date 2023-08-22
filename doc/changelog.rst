@@ -3,6 +3,14 @@
 Changelog
 =========
 
+1.1.0 (unlreleased)
+------------------
+
+- Implement an in-memory cache for ``llvm_state``. The cache is used
+  to avoid re-optimising and re-compiling LLVM code which has
+  already been optimised and compiled during the program execution
+  (`#132 <https://github.com/bluescarni/heyoka.py/pull/132>`__).
+
 1.0.0 (2023-08-11)
 ------------------
 
