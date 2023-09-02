@@ -178,9 +178,9 @@ class mp_test_case(_ut.TestCase):
             taylor_add_jet,
             sin,
             par,
-            tpoly,
             make_vars,
             real,
+            time,
             taylor_adaptive,
             core,
         )
@@ -188,7 +188,7 @@ class mp_test_case(_ut.TestCase):
 
         x, v = make_vars("x", "v")
 
-        sys = [(x, v), (v, -par[0] * sin(x) + tpoly(par[1], par[6]))]
+        sys = [(x, v), (v, -par[0] * sin(x) + time * (par[1] + par[6]))]
 
         prec = 237
 

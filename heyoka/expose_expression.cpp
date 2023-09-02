@@ -357,9 +357,6 @@ void expose_expression(py::module_ &m)
     // pi.
     m.attr("pi") = hey::pi;
 
-    // tpoly().
-    m.def("tpoly", &hey::tpoly);
-
     // Diff.
     m.def(
         "diff",

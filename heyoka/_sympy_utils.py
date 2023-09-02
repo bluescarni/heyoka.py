@@ -178,7 +178,6 @@ def _build_fmap():
 
     retval[_spy.Function("heyoka_kepE")] = core.kepE
     retval[_spy.Function("heyoka_time")] = lambda: core.time
-    retval[_spy.Function("heyoka_tpoly")] = core.tpoly
 
     return retval
 

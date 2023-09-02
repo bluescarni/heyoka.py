@@ -71,7 +71,6 @@ class taylor_add_jet_test_case(_ut.TestCase):
             par,
             time,
             taylor_adaptive_batch,
-            tpoly,
             core,
         )
         from .core import _ppc_arch
@@ -82,7 +81,7 @@ class taylor_add_jet_test_case(_ut.TestCase):
         sys = [(x, v), (v, -9.8 * sin(x))]
         sys_par = [(x, v), (v, -par[0] * sin(x))]
         sys_par_t = [(x, v), (v, -par[0] * sin(x) + time)]
-        sys_par_t2 = [(x, v), (v, -par[0] * sin(x) + tpoly(par[1], par[6]))]
+        sys_par_t2 = [(x, v), (v, -par[0] * sin(x) + time * (par[1] + par[6]))]
 
         if _ppc_arch:
             fp_types = [float]
@@ -2104,21 +2103,6 @@ class sympy_test_case(_ut.TestCase):
 
         self.assertEqual(core.time, from_sympy(spy.Function("heyoka_time")()))
         self.assertEqual(to_sympy(core.time), spy.Function("heyoka_time")())
-
-        self.assertEqual(
-            core.tpoly(core.par[0], core.par[10]),
-            from_sympy(
-                spy.Function("heyoka_tpoly")(
-                    spy.Symbol("par[0]"), spy.Symbol("par[10]")
-                )
-            ),
-        )
-        self.assertEqual(
-            to_sympy(core.tpoly(core.par[0], core.par[10])),
-            spy.Function("heyoka_tpoly")(
-                spy.Symbol("par[0]", real=True), spy.Symbol("par[10]", real=True)
-            ),
-        )
 
         with self.assertRaises(TypeError) as cm:
             from_sympy(abs(x))
