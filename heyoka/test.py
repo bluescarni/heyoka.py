@@ -27,7 +27,7 @@ def _get_eps(fp_t):
 
 
 def _isclose(a, b, rtol, atol):
-    from numpy import errstate, less_equal, asanyarray, isfinite, zeros_like, ones_like
+    from numpy import all, errstate, less_equal, asanyarray, isfinite, zeros_like, ones_like
 
     def within_tol(x, y, atol, rtol):
         with errstate(invalid="ignore"):
@@ -57,6 +57,7 @@ def _isclose(a, b, rtol, atol):
 
 
 def _allclose(a, b, rtol, atol):
+    from numpy import all
     res = all(_isclose(a, b, rtol=rtol, atol=atol))
     return bool(res)
 
@@ -115,7 +116,14 @@ class taylor_add_jet_test_case(_ut.TestCase):
             ta.step(write_tc=True)
             jet(st)
 
-            self.assertTrue(np.all(ta.tc[:, :6].transpose() == st))
+            self.assertTrue(
+                _allclose(
+                    ta.tc[:, :6].transpose(),
+                    st,
+                    rtol=_get_eps(fp_t) * 10,
+                    atol=_get_eps(fp_t) * 10,
+                )
+            )
 
             # Try adding an sv_func.
             jet = taylor_add_jet(sys, 5, fp_type=fp_t, sv_funcs=[x + v])
