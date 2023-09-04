@@ -3,7 +3,7 @@
 Changelog
 =========
 
-2.0.0 (unlreleased)
+2.0.0 (unreleased)
 ------------------
 
 New
