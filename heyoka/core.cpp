@@ -164,6 +164,7 @@ PYBIND11_MODULE(core, m)
         .def_property_readonly("opt_level", &hey::llvm_state::get_opt_level)
         .def_property_readonly("fast_math", [](const hey::llvm_state &s) { return s.fast_math(); })
         .def_property_readonly("force_avx512", [](const hey::llvm_state &s) { return s.force_avx512(); })
+        .def_property_readonly("slp_vectorize", &hey::llvm_state::get_slp_vectorize)
         // Repr.
         .def("__repr__",
              [](const hey::llvm_state &s) {

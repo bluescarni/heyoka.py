@@ -712,7 +712,7 @@ void expose_add_cfunc_impl(py::module &m, const char *suffix)
     m.def(
         fmt::format("_add_cfunc_{}", suffix).c_str(),
         [](std::vector<hey::expression> fn, std::optional<std::vector<hey::expression>> vars, bool high_accuracy,
-           bool compact_mode, bool parallel_mode, unsigned opt_level, bool force_avx512,
+           bool compact_mode, bool parallel_mode, unsigned opt_level, bool force_avx512, bool slp_vectorize,
            std::optional<std::uint32_t> batch_size, bool fast_math, long long prec) {
             // Compute the SIMD size.
             const auto simd_size = batch_size ? *batch_size : hey::recommended_simd_size<T>();
@@ -729,8 +729,9 @@ void expose_add_cfunc_impl(py::module &m, const char *suffix)
             ptr_s_t fptr_scal_s = nullptr, fptr_batch_s = nullptr;
 
             hey::llvm_state s_scal{kw::opt_level = opt_level, kw::force_avx512 = force_avx512,
-                                   kw::fast_math = fast_math},
-                s_batch{kw::opt_level = opt_level, kw::force_avx512 = force_avx512, kw::fast_math = fast_math};
+                                   kw::slp_vectorize = slp_vectorize, kw::fast_math = fast_math},
+                s_batch{kw::opt_level = opt_level, kw::force_avx512 = force_avx512, kw::slp_vectorize = slp_vectorize,
+                        kw::fast_math = fast_math};
 
             // Variable to store the decomposition.
             std::vector<hey::expression> dc;
@@ -879,8 +880,8 @@ void expose_add_cfunc_impl(py::module &m, const char *suffix)
         },
         "fn"_a, "vars"_a = py::none{}, "high_accuracy"_a.noconvert() = false,
         "compact_mode"_a.noconvert() = default_cm<T>, "parallel_mode"_a.noconvert() = false,
-        "opt_level"_a.noconvert() = 3, "force_avx512"_a.noconvert() = false, "batch_size"_a.noconvert() = py::none{},
-        "fast_math"_a.noconvert() = false, "prec"_a.noconvert() = 0);
+        "opt_level"_a.noconvert() = 3, "force_avx512"_a.noconvert() = false, "slp_vectorize"_a.noconvert() = false,
+        "batch_size"_a.noconvert() = py::none{}, "fast_math"_a.noconvert() = false, "prec"_a.noconvert() = 0);
 }
 
 } // namespace
