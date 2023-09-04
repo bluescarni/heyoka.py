@@ -9,6 +9,10 @@ Changelog
 New
 ~~~
 
+- The LLVM SLP vectorizer can now be enabled
+  (`#134 <https://github.com/bluescarni/heyoka.py/pull/134>`__).
+  This feature is opt-in due to the fact that enabling it
+  can considerably increase JIT compilation times.
 - Implement an in-memory cache for ``llvm_state``. The cache is used
   to avoid re-optimising and re-compiling LLVM code which has
   already been optimised and compiled during the program execution
