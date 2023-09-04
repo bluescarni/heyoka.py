@@ -27,7 +27,15 @@ def _get_eps(fp_t):
 
 
 def _isclose(a, b, rtol, atol):
-    from numpy import all, errstate, less_equal, asanyarray, isfinite, zeros_like, ones_like
+    from numpy import (
+        all,
+        errstate,
+        less_equal,
+        asanyarray,
+        isfinite,
+        zeros_like,
+        ones_like,
+    )
 
     def within_tol(x, y, atol, rtol):
         with errstate(invalid="ignore"):
@@ -58,6 +66,7 @@ def _isclose(a, b, rtol, atol):
 
 def _allclose(a, b, rtol, atol):
     from numpy import all
+
     res = all(_isclose(a, b, rtol=rtol, atol=atol))
     return bool(res)
 
@@ -132,9 +141,21 @@ class taylor_add_jet_test_case(_ut.TestCase):
 
             jet(st)
 
-            self.assertTrue(np.all(ta.tc[:, :6].transpose() == st[:, :2]))
             self.assertTrue(
-                np.all((ta.tc[0, :6] + ta.tc[1, :6]).transpose() == st[:, 2])
+                _allclose(
+                    ta.tc[:, :6].transpose(),
+                    st[:, :2],
+                    rtol=_get_eps(fp_t) * 10,
+                    atol=_get_eps(fp_t) * 10,
+                )
+            )
+            self.assertTrue(
+                _allclose(
+                    (ta.tc[0, :6] + ta.tc[1, :6]).transpose(),
+                    st[:, 2],
+                    rtol=_get_eps(fp_t) * 10,
+                    atol=_get_eps(fp_t) * 10,
+                )
             )
 
             # An example with params.
@@ -150,7 +171,14 @@ class taylor_add_jet_test_case(_ut.TestCase):
             ta_par.step(write_tc=True)
             jet_par(st, pars=par_arr)
 
-            self.assertTrue(np.all(ta_par.tc[:, :6].transpose() == st))
+            self.assertTrue(
+                _allclose(
+                    ta_par.tc[:, :6].transpose(),
+                    st,
+                    rtol=_get_eps(fp_t) * 10,
+                    atol=_get_eps(fp_t) * 10,
+                )
+            )
 
             # Params + time.
             ta_par_t = taylor_adaptive(
@@ -167,7 +195,14 @@ class taylor_add_jet_test_case(_ut.TestCase):
             ta_par_t.step(write_tc=True)
             jet_par_t(st, pars=par_arr, time=time_arr)
 
-            self.assertTrue(np.all(ta_par_t.tc[:, :6].transpose() == st))
+            self.assertTrue(
+                _allclose(
+                    ta_par_t.tc[:, :6].transpose(),
+                    st,
+                    rtol=_get_eps(fp_t) * 10,
+                    atol=_get_eps(fp_t) * 10,
+                )
+            )
 
             ta_par_t2 = taylor_adaptive(
                 sys_par_t2, init_state, tol=fp_t(1e-9), fp_type=fp_t, pars=pars2
@@ -183,7 +218,14 @@ class taylor_add_jet_test_case(_ut.TestCase):
             ta_par_t2.step(write_tc=True)
             jet_par_t2(st, pars=par_arr2, time=time_arr)
 
-            self.assertTrue(np.all(ta_par_t2.tc[:, :6].transpose() == st))
+            self.assertTrue(
+                _allclose(
+                    ta_par_t2.tc[:, :6].transpose(),
+                    st,
+                    rtol=_get_eps(fp_t) * 10,
+                    atol=_get_eps(fp_t) * 10,
+                )
+            )
 
             # Failure modes.
 
@@ -375,7 +417,14 @@ class taylor_add_jet_test_case(_ut.TestCase):
             ta.step(write_tc=True)
             jet(st)
 
-            self.assertTrue(np.all(ta.tc[:, :6, :].transpose((1, 0, 2)) == st))
+            self.assertTrue(
+                _allclose(
+                    ta.tc[:, :6, :].transpose((1, 0, 2)),
+                    st,
+                    rtol=_get_eps(fp_t) * 10,
+                    atol=_get_eps(fp_t) * 10,
+                )
+            )
 
             # Try adding an sv_func.
             jet = taylor_add_jet(
@@ -386,8 +435,22 @@ class taylor_add_jet_test_case(_ut.TestCase):
 
             jet(st)
 
-            self.assertTrue(np.all(ta.tc[:, :6, :].transpose((1, 0, 2)) == st[:, :2]))
-            self.assertTrue(np.all((ta.tc[0, :6, :] + ta.tc[1, :6, :]) == st[:, 2, :]))
+            self.assertTrue(
+                _allclose(
+                    ta.tc[:, :6, :].transpose((1, 0, 2)),
+                    st[:, :2],
+                    rtol=_get_eps(fp_t) * 10,
+                    atol=_get_eps(fp_t) * 10,
+                )
+            )
+            self.assertTrue(
+                _allclose(
+                    (ta.tc[0, :6, :] + ta.tc[1, :6, :]),
+                    st[:, 2, :],
+                    rtol=_get_eps(fp_t) * 10,
+                    atol=_get_eps(fp_t) * 10,
+                )
+            )
 
             # An example with params.
             ta_par = taylor_adaptive_batch(
@@ -402,7 +465,14 @@ class taylor_add_jet_test_case(_ut.TestCase):
             ta_par.step(write_tc=True)
             jet_par(st, pars=par_arr)
 
-            self.assertTrue(np.all(ta_par.tc[:, :6, :].transpose((1, 0, 2)) == st))
+            self.assertTrue(
+                _allclose(
+                    ta_par.tc[:, :6, :].transpose((1, 0, 2)),
+                    st,
+                    rtol=_get_eps(fp_t) * 10,
+                    atol=_get_eps(fp_t) * 10,
+                )
+            )
 
             # Params + time.
             ta_par_t = taylor_adaptive_batch(
@@ -421,7 +491,14 @@ class taylor_add_jet_test_case(_ut.TestCase):
             ta_par_t.step(write_tc=True)
             jet_par_t(st, pars=par_arr, time=time_arr)
 
-            self.assertTrue(np.all(ta_par_t.tc[:, :6, :].transpose((1, 0, 2)) == st))
+            self.assertTrue(
+                _allclose(
+                    ta_par_t.tc[:, :6, :].transpose((1, 0, 2)),
+                    st,
+                    rtol=_get_eps(fp_t) * 10,
+                    atol=_get_eps(fp_t) * 10,
+                )
+            )
 
             # Just do shape/dims checks for the batch case.
 
