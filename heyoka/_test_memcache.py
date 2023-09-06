@@ -18,5 +18,5 @@ class memcache_test_case(_ut.TestCase):
         self.assertTrue(llvm_state.memcache_size != 0)
         llvm_state.clear_memcache()
         self.assertTrue(llvm_state.memcache_size == 0)
-        llvm_state.memcache_limit = 1024*1024*1024
-        self.assertTrue(llvm_state.memcache_limit == 1024*1024*1024)
+        llvm_state.memcache_limit = 1024 * 1024 * 1024
+        self.assertTrue(llvm_state.memcache_limit == 1024 * 1024 * 1024)
