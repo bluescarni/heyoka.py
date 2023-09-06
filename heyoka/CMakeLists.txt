@@ -24,6 +24,7 @@ set(HEYOKA_PY_PYTHON_FILES
     _test_scalar_integrator.py
     _test_batch_integrator.py
     _test_ensemble.py
+    _test_memcache.py
     model/__init__.py
 )
 

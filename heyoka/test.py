@@ -2912,6 +2912,7 @@ def run_test_suite():
         _test_scalar_integrator,
         _test_batch_integrator,
         _test_ensemble,
+        _test_memcache,
     )
     import numpy as np
     from .model import nbody
@@ -2948,6 +2949,7 @@ def run_test_suite():
     suite.addTest(tl.loadTestsFromTestCase(event_detection_test_case))
     suite.addTest(tl.loadTestsFromTestCase(kepE_test_case))
     suite.addTest(tl.loadTestsFromTestCase(sympy_test_case))
+    suite.addTest(tl.loadTestsFromTestCase(_test_memcache.memcache_test_case))
 
     test_result = _ut.TextTestRunner(verbosity=2).run(suite)
 
