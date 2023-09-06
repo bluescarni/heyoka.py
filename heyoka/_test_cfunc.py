@@ -37,6 +37,12 @@ class cfunc_test_case(_ut.TestCase):
         x, y, z = make_vars("x", "y", "z")
         cf = make_cfunc([y * (x + z)])
 
+        self.assertFalse(cf.llvm_state_scalar.force_avx512)
+        self.assertFalse(cf.llvm_state_scalar.slp_vectorize)
+
+        self.assertFalse(cf.llvm_state_batch.force_avx512)
+        self.assertFalse(cf.llvm_state_batch.slp_vectorize)
+
         self.assertEqual(cf([1, 2, 3]), copy(cf)([1, 2, 3]))
         self.assertEqual(cf([1, 2, 3]), deepcopy(cf)([1, 2, 3]))
         self.assertEqual(cf([1, 2, 3]), pickle.loads(pickle.dumps(cf))([1, 2, 3]))
@@ -67,8 +73,16 @@ class cfunc_test_case(_ut.TestCase):
             cf.llvm_state_batch.get_ir(),
         )
 
-        cf = make_cfunc([y * (x + z)], vars=[y, z, x])
+        cf = make_cfunc(
+            [y * (x + z)], vars=[y, z, x], force_avx512=True, slp_vectorize=True
+        )
         self.assertEqual(cf.list_var, [y, z, x])
+
+        self.assertTrue(cf.llvm_state_scalar.force_avx512)
+        self.assertTrue(cf.llvm_state_scalar.slp_vectorize)
+
+        self.assertTrue(cf.llvm_state_batch.force_avx512)
+        self.assertTrue(cf.llvm_state_batch.slp_vectorize)
 
         # NOTE: test for a bug in the multiprecision
         # implementation where the precision is not
