@@ -158,10 +158,13 @@ PYBIND11_MODULE(core, m)
     // LLVM state.
     py::class_<hey::llvm_state>(m, "llvm_state", py::dynamic_attr{})
         .def("get_ir", &hey::llvm_state::get_ir)
-        .def("get_object_code", [](hey::llvm_state &s) { return py::bytes(s.get_object_code()); })
-        .def_property_readonly("opt_level", [](const hey::llvm_state &s) { return s.opt_level(); })
+        .def("get_bc", [](const hey::llvm_state &s) { return py::bytes(s.get_bc()); })
+        .def("get_object_code", [](const hey::llvm_state &s) { return py::bytes(s.get_object_code()); })
+        // NOTE: make these read-only for the moment.
+        .def_property_readonly("opt_level", &hey::llvm_state::get_opt_level)
         .def_property_readonly("fast_math", [](const hey::llvm_state &s) { return s.fast_math(); })
         .def_property_readonly("force_avx512", [](const hey::llvm_state &s) { return s.force_avx512(); })
+        .def_property_readonly("slp_vectorize", &hey::llvm_state::get_slp_vectorize)
         // Repr.
         .def("__repr__",
              [](const hey::llvm_state &s) {
@@ -174,7 +177,14 @@ PYBIND11_MODULE(core, m)
         .def("__deepcopy__", heypy::deepcopy_wrapper<hey::llvm_state>, "memo"_a)
         // Pickle support.
         .def(py::pickle(&heypy::pickle_getstate_wrapper<hey::llvm_state>,
-                        &heypy::pickle_setstate_wrapper<hey::llvm_state>));
+                        &heypy::pickle_setstate_wrapper<hey::llvm_state>))
+        // Cache management.
+        .def_property_readonly_static("memcache_size",
+                                      [](const py::object &) { return hey::llvm_state::get_memcache_size(); })
+        .def_property_static(
+            "memcache_limit", [](const py::object &) { return hey::llvm_state::get_memcache_limit(); },
+            [](const py::object &, std::size_t limit) { hey::llvm_state::set_memcache_limit(limit); })
+        .def_static("clear_memcache", &hey::llvm_state::clear_memcache);
 
     // Expression.
     heypy::expose_expression(m);

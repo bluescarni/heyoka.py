@@ -316,11 +316,6 @@ void setup_sympy(py::module &m)
         auto sympy_time = py::object(detail::spy->attr("Function")("heyoka_time"));
         detail::fmap[typeid(hy::detail::time_impl)] = sympy_time;
 
-        // tpoly.
-        // NOTE: this will remain an unevaluated binary function.
-        auto sympy_tpoly = py::object(detail::spy->attr("Function")("heyoka_tpoly"));
-        detail::fmap[typeid(hy::detail::tpoly_impl)] = sympy_tpoly;
-
         // Constants.
         detail::fmap[typeid(hy::constant)] = [](std::unordered_map<const void *, py::object> &, const hy::func &f) {
             const auto *cptr = f.extract<hy::constant>();

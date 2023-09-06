@@ -226,7 +226,7 @@ void expose_taylor_add_jet_impl(py::module &m, const char *name)
         name,
         [](const U &sys, std::uint32_t order, std::uint32_t batch_size, bool high_accuracy, bool compact_mode,
            const std::vector<hey::expression> &sv_funcs, bool parallel_mode, unsigned opt_level, bool force_avx512,
-           bool fast_math, long long prec) {
+           bool slp_vectorize, bool fast_math, long long prec) {
             // Forbid batch sizes > 1 for everything but double.
             if (!std::is_same_v<T, double> && batch_size > 1u) {
                 py_throw(PyExc_ValueError, "Batch sizes greater than 1 are not supported for this floating-point type");
@@ -255,7 +255,8 @@ void expose_taylor_add_jet_impl(py::module &m, const char *name)
             // Add the jet function.
             using jptr_t = void (*)(T *, const T *, const T *);
             jptr_t jptr = nullptr;
-            hey::llvm_state s{kw::opt_level = opt_level, kw::force_avx512 = force_avx512, kw::fast_math = fast_math};
+            hey::llvm_state s{kw::opt_level = opt_level, kw::force_avx512 = force_avx512,
+                              kw::slp_vectorize = slp_vectorize, kw::fast_math = fast_math};
 
             {
                 // NOTE: release the GIL during compilation.
@@ -381,7 +382,8 @@ void expose_taylor_add_jet_impl(py::module &m, const char *name)
         },
         "sys"_a, "order"_a, "batch_size"_a = 1u, "high_accuracy"_a = false, "compact_mode"_a = default_cm<T>,
         "sv_funcs"_a = py::list{}, "parallel_mode"_a = false, "opt_level"_a.noconvert() = 3,
-        "force_avx512"_a.noconvert() = false, "fast_math"_a.noconvert() = false, "prec"_a.noconvert() = 0);
+        "force_avx512"_a.noconvert() = false, "slp_vectorize"_a.noconvert() = false, "fast_math"_a.noconvert() = false,
+        "prec"_a.noconvert() = 0);
 }
 
 } // namespace

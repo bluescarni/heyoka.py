@@ -10,6 +10,26 @@ import unittest as _ut
 
 
 class scalar_integrator_test_case(_ut.TestCase):
+    def test_llvm_state_settings(self):
+        # Test to check that the llvm state flags
+        # are correctly propagated through the integrator
+        # constructor.
+
+        from . import taylor_adaptive
+        from .model import pendulum
+
+        ta = taylor_adaptive(pendulum(), [0.0, 0.0])
+
+        self.assertFalse(ta.llvm_state.force_avx512)
+        self.assertFalse(ta.llvm_state.slp_vectorize)
+
+        ta = taylor_adaptive(
+            pendulum(), [0.0, 0.0], force_avx512=True, slp_vectorize=True
+        )
+
+        self.assertTrue(ta.llvm_state.force_avx512)
+        self.assertTrue(ta.llvm_state.slp_vectorize)
+
     def test_type_conversions(self):
         # Test to check automatic conversions of std::vector<T>
         # in the integrator's constructor.
