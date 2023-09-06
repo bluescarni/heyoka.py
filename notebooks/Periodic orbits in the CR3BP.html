@@ -9,7 +9,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
-    <title>Continuation of Periodic Orbits in the CR3BP &#8212; heyoka.py 1.0.0 documentation</title>
+    <title>Continuation of Periodic Orbits in the CR3BP &#8212; heyoka.py 2.0.0 documentation</title>
   
   
   
@@ -157,6 +157,7 @@
 <li class="toctree-l2"><a class="reference internal" href="compiled_functions.html">Compiled functions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="ex_system_revisited.html">Using the expression system effectively</a></li>
 <li class="toctree-l2"><a class="reference internal" href="pickling.html">Pickle support</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jit_caching.html">JIT compilation and caching</a></li>
 </ul>
 </li>
 <li class="toctree-l1 current active has-children"><a class="reference internal" href="../examples.html">Examples</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-3"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
@@ -664,7 +665,7 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>--- 11.906258583068848 seconds --- to build the Taylor integrator
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>--- 12.763405084609985 seconds --- to build the Taylor integrator
 </pre></div>
 </div>
 </div>
@@ -695,7 +696,7 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>--- 0.05465960502624512 seconds --- to propagate
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>--- 0.05174541473388672 seconds --- to propagate
 </pre></div>
 </div>
 </div>
@@ -753,10 +754,10 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;matplotlib.collections.PathCollection at 0x7fbae18fb0d0&gt;
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;matplotlib.collections.PathCollection at 0x7f0d668c6170&gt;
 </pre></div>
 </div>
-<img alt="../_images/38d7685311d4c0702c894ea7ed3a7c8adce228eb1b7d34e0f04fe4a77277e9da.png" src="../_images/38d7685311d4c0702c894ea7ed3a7c8adce228eb1b7d34e0f04fe4a77277e9da.png" />
+<img alt="../_images/ff7ad8868933a94861409ecf2ef7209b4eb179ccbe3b85c0cd973c2a277babc3.png" src="../_images/ff7ad8868933a94861409ecf2ef7209b4eb179ccbe3b85c0cd973c2a277babc3.png" />
 </div>
 </div>
 <p>All fine ….. at least visually! So far we have not made use of the variational equations at all, but this is about to change!</p>

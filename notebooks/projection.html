@@ -9,7 +9,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
-    <title>Conserving first integrals via manifold projection &#8212; heyoka.py 1.0.0 documentation</title>
+    <title>Conserving first integrals via manifold projection &#8212; heyoka.py 2.0.0 documentation</title>
   
   
   
@@ -157,6 +157,7 @@
 <li class="toctree-l2"><a class="reference internal" href="compiled_functions.html">Compiled functions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="ex_system_revisited.html">Using the expression system effectively</a></li>
 <li class="toctree-l2"><a class="reference internal" href="pickling.html">Pickle support</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jit_caching.html">JIT compilation and caching</a></li>
 </ul>
 </li>
 <li class="toctree-l1 current active has-children"><a class="reference internal" href="../examples.html">Examples</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-3"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
@@ -558,12 +559,12 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Rel energy error: 1.1480506378333837e-06
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Rel energy error: 1.1480506370240604e-06
 </pre></div>
 </div>
 <div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(&lt;taylor_outcome.cb_stop: -4294967301&gt;,
  0.7296940138544884,
- 1.0583722519817704,
+ 1.0583722519817735,
  36,
  None)
 </pre></div>
@@ -597,7 +598,7 @@ document.write(`
 </div>
 </div>
 <p>This equality constraint is satisifed if <code class="docutils literal notranslate"><span class="pre">cstr_fun()</span></code> returns zero, that is, if the energy of the updated state vector (<code class="docutils literal notranslate"><span class="pre">x</span></code>) is equal to the initial energy of the system (stored in the callback as <code class="docutils literal notranslate"><span class="pre">cb.E0</span></code>).</p>
-<p>We are now ready to run the optimisation via <a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.minimize.html#scipy.optimize.minimize" title="(in SciPy v1.11.1)"><code class="xref py py-func docutils literal notranslate"><span class="pre">scipy.optimize.minimize()</span></code></a>. Note that we need an optimiser with support for constraints (here we choose <code class="docutils literal notranslate"><span class="pre">'SLSQP'</span></code>):</p>
+<p>We are now ready to run the optimisation via <a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.minimize.html#scipy.optimize.minimize" title="(in SciPy v1.11.2)"><code class="xref py py-func docutils literal notranslate"><span class="pre">scipy.optimize.minimize()</span></code></a>. Note that we need an optimiser with support for constraints (here we choose <code class="docutils literal notranslate"><span class="pre">'SLSQP'</span></code>):</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">scipy.optimize</span> <span class="kn">import</span> <span class="n">minimize</span>
@@ -615,10 +616,10 @@ document.write(`
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span> message: Optimization terminated successfully
  success: True
   status: 0
-     fun: 1.6028684446833196e-12
+     fun: 1.6028683862604742e-12
        x: [ 3.841e-04  4.208e-03 ... -1.215e+00  5.875e-02]
      nit: 2
-     jac: [ 3.113e-08 -4.027e-07 ...  7.717e-11  7.411e-11]
+     jac: [ 3.113e-08 -4.027e-07 ...  7.715e-11  7.409e-11]
     nfev: 76
     njev: 2
 </pre></div>
@@ -635,8 +636,8 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Original energy error: 1.1480506378333837e-06
-Updated  energy error: 1.3942820643896466e-11
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Original energy error: 1.1480506370240604e-06
+Updated  energy error: 1.3963053728083164e-11
 </pre></div>
 </div>
 </div>
@@ -724,7 +725,7 @@ Updated  energy error: 1.3942820643896466e-11
 </div>
 </div>
 </div>
-<p>Finally, we can define an updated objective function that, in addition to returning the distance square, will return also its gradient vector (in the format required by <a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.minimize.html#scipy.optimize.minimize" title="(in SciPy v1.11.1)"><code class="xref py py-func docutils literal notranslate"><span class="pre">scipy.optimize.minimize()</span></code></a>, i.e., as a tuple of 2 values):</p>
+<p>Finally, we can define an updated objective function that, in addition to returning the distance square, will return also its gradient vector (in the format required by <a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.minimize.html#scipy.optimize.minimize" title="(in SciPy v1.11.2)"><code class="xref py py-func docutils literal notranslate"><span class="pre">scipy.optimize.minimize()</span></code></a>, i.e., as a tuple of 2 values):</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">objfun</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
@@ -754,7 +755,7 @@ Updated  energy error: 1.3942820643896466e-11
 </div>
 </div>
 </div>
-<p>We can now put everything together, and invoke again <a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.minimize.html#scipy.optimize.minimize" title="(in SciPy v1.11.1)"><code class="xref py py-func docutils literal notranslate"><span class="pre">scipy.optimize.minimize()</span></code></a> supplying the gradients:</p>
+<p>We can now put everything together, and invoke again <a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.minimize.html#scipy.optimize.minimize" title="(in SciPy v1.11.2)"><code class="xref py py-func docutils literal notranslate"><span class="pre">scipy.optimize.minimize()</span></code></a> supplying the gradients:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ret</span> <span class="o">=</span> <span class="n">minimize</span><span class="p">(</span><span class="n">objfun</span><span class="p">,</span> <span class="n">ta</span><span class="o">.</span><span class="n">state</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;SLSQP&#39;</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="mf">1e-10</span><span class="p">,</span>
@@ -770,7 +771,7 @@ Updated  energy error: 1.3942820643896466e-11
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span> message: Optimization terminated successfully
  success: True
   status: 0
-     fun: 1.6028685193862723e-12
+     fun: 1.6028685167358091e-12
        x: [ 3.841e-04  4.208e-03 ... -1.215e+00  5.875e-02]
      nit: 2
      jac: [ 3.120e-08 -4.048e-07 ...  2.930e-12 -1.417e-13]
@@ -790,8 +791,8 @@ Updated  energy error: 1.3942820643896466e-11
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Original energy error: 1.1480506378333837e-06
-Updated  energy error: 1.3841857553804836e-11
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Original energy error: 1.1480506370240604e-06
+Updated  energy error: 1.3842666877172304e-11
 </pre></div>
 </div>
 </div>
@@ -897,7 +898,7 @@ Updated  energy error: 1.3841857553804836e-11
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/b9cfa49b3f91b19765f30a2e7f6b900d62e213035ce581d64f86de7e6a9b386b.png" src="../_images/b9cfa49b3f91b19765f30a2e7f6b900d62e213035ce581d64f86de7e6a9b386b.png" />
+<img alt="../_images/044eaf44fcdd5b3e19ebe2f0a91a7c7fb2ccff2fd445625ac382258b282f2905.png" src="../_images/044eaf44fcdd5b3e19ebe2f0a91a7c7fb2ccff2fd445625ac382258b282f2905.png" />
 </div>
 </div>
 <p>We can indeed see how the energy error with projection is kept under the <span class="math notranslate nohighlight">\(10^{-6}\)</span> threshold.</p>

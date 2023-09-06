@@ -35,3 +35,4 @@ Advanced tutorials
   notebooks/compiled_functions.ipynb
   notebooks/ex_system_revisited.ipynb
   notebooks/pickling.ipynb
+  notebooks/jit_caching.ipynb
