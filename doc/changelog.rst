@@ -9,6 +9,8 @@ Changelog
 New
 ~~~
 
+- Add model for the circular restricted three-body problem
+  (`#135 <https://github.com/bluescarni/heyoka.py/pull/135>`__).
 - The LLVM SLP vectorizer can now be enabled
   (`#134 <https://github.com/bluescarni/heyoka.py/pull/134>`__).
   This feature is opt-in due to the fact that enabling it
