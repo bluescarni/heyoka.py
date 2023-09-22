@@ -9,6 +9,7 @@
 #include <heyoka/config.hpp>
 
 #include <cstdint>
+#include <functional>
 #include <iterator>
 #include <optional>
 #include <sstream>
@@ -201,7 +202,7 @@ void expose_expression(py::module_ &m)
         .def("__copy__", copy_wrapper<hey::expression>)
         .def("__deepcopy__", deepcopy_wrapper<hey::expression>, "memo"_a)
         // Hashing.
-        .def("__hash__", [](const heyoka::expression &e) { return heyoka::hash(e); })
+        .def("__hash__", [](const heyoka::expression &e) { return std::hash<heyoka::expression>{}(e); })
         // Pickle support.
         .def(py::pickle(&pickle_getstate_wrapper<hey::expression>, &pickle_setstate_wrapper<hey::expression>));
 
