@@ -19,12 +19,12 @@
   </script>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../_static/styles/theme.css?digest=e353d410970836974a52" rel="stylesheet" />
-<link href="../_static/styles/bootstrap.css?digest=e353d410970836974a52" rel="stylesheet" />
-<link href="../_static/styles/pydata-sphinx-theme.css?digest=e353d410970836974a52" rel="stylesheet" />
+  <link href="../_static/styles/theme.css?digest=ac02cc09edc035673794" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=ac02cc09edc035673794" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=ac02cc09edc035673794" rel="stylesheet" />
 
   
-  <link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=e353d410970836974a52" rel="stylesheet" />
+  <link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=ac02cc09edc035673794" rel="stylesheet" />
   <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
@@ -34,8 +34,9 @@
     <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=e353d410970836974a52" />
-<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=e353d410970836974a52" />
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=ac02cc09edc035673794" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=ac02cc09edc035673794" />
+  <script src="../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=ac02cc09edc035673794"></script>
 
     <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
     <script src="../_static/jquery.js"></script>
@@ -61,6 +62,15 @@
   
   
   <a class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>
+    Back to top
+  </button>
+
   
   <input type="checkbox"
           class="sidebar-toggle"
@@ -378,10 +388,10 @@
 
 <script>
 document.write(`
-  <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
-    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
-    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
   </button>
 `);
 </script>
@@ -389,7 +399,7 @@ document.write(`
 <script>
 document.write(`
   <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <i class="fa-solid fa-magnifying-glass"></i>
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
   </button>
 `);
 </script>
@@ -665,7 +675,7 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>--- 12.763405084609985 seconds --- to build the Taylor integrator
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>--- 10.38841199874878 seconds --- to build the Taylor integrator
 </pre></div>
 </div>
 </div>
@@ -696,7 +706,7 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>--- 0.05174541473388672 seconds --- to propagate
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>--- 0.052178144454956055 seconds --- to propagate
 </pre></div>
 </div>
 </div>
@@ -754,10 +764,10 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;matplotlib.collections.PathCollection at 0x7f0d668c6170&gt;
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;matplotlib.collections.PathCollection at 0x7f62a96b69b0&gt;
 </pre></div>
 </div>
-<img alt="../_images/ff7ad8868933a94861409ecf2ef7209b4eb179ccbe3b85c0cd973c2a277babc3.png" src="../_images/ff7ad8868933a94861409ecf2ef7209b4eb179ccbe3b85c0cd973c2a277babc3.png" />
+<img alt="../_images/9980640d13156b473c62a3e3b7e03a3e55926a455c595779849b49a9c3082370.png" src="../_images/9980640d13156b473c62a3e3b7e03a3e55926a455c595779849b49a9c3082370.png" />
 </div>
 </div>
 <p>All fine ….. at least visually! So far we have not made use of the variational equations at all, but this is about to change!</p>
@@ -860,7 +870,7 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/57fda6e2455557cd77b63693130c399d74a92838b8b561ff248bec895b9a543f.png" src="../_images/57fda6e2455557cd77b63693130c399d74a92838b8b561ff248bec895b9a543f.png" />
+<img alt="../_images/b4f2336e042d722f49c09b1ee186079fc83108be132dff0f221cad1525ab2a83.png" src="../_images/b4f2336e042d722f49c09b1ee186079fc83108be132dff0f221cad1525ab2a83.png" />
 </div>
 </div>
 <p>The orbit is good but does not close! Let us build an iteration that corrects <span class="math notranslate nohighlight">\(x_0,y_0, z_0, p_{x_0}, p_{y_0}, p_{z_0}, T\)</span> as to close the orbit.</p>
@@ -1013,7 +1023,7 @@ Initial condition: [-8.3660628428124639e-01, 6.8716716925632383e-05, 0.000000000
 Period: 2.6915996001662497e+00
 </pre></div>
 </div>
-<img alt="../_images/216e56ffe609869df572e466073ed50b1512ba58fed37d455d16d6c46e94051a.png" src="../_images/216e56ffe609869df572e466073ed50b1512ba58fed37d455d16d6c46e94051a.png" />
+<img alt="../_images/aecb13d8a40d7efb19345e6b83775e35c44f5546f47aeba11fafa7ec3e4594ea.png" src="../_images/aecb13d8a40d7efb19345e6b83775e35c44f5546f47aeba11fafa7ec3e4594ea.png" />
 </div>
 </div>
 </section>
@@ -1169,7 +1179,7 @@ Period: 2.6915996001662497e+00
 <div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(-0.005, 0.005)
 </pre></div>
 </div>
-<img alt="../_images/8c125e8b0b4345022175cade9739b999048704d2a7e8645a6bc792ca5fd4ae2b.png" src="../_images/8c125e8b0b4345022175cade9739b999048704d2a7e8645a6bc792ca5fd4ae2b.png" />
+<img alt="../_images/54f237f1eef3fcd52d16900ad6750edd4b8073d0f88a92c467e6d542d7616bf3.png" src="../_images/54f237f1eef3fcd52d16900ad6750edd4b8073d0f88a92c467e6d542d7616bf3.png" />
 </div>
 </div>
 <p>It’s nearly closed, but not that well …. it will need a correction … but we can call the same iterations we made previously when we closed the first initial guess, remember?</p>
@@ -1253,7 +1263,7 @@ new error is: 3.427171981558372e-14
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/2ee1b3b1f3f07e99d46cd0b704547c5e58b9dd304e78fe2d3c2acce1ba8536dc.png" src="../_images/2ee1b3b1f3f07e99d46cd0b704547c5e58b9dd304e78fe2d3c2acce1ba8536dc.png" />
+<img alt="../_images/af4033b272cf1d011105c785b121733d3b7c6e364b4751d7b01483218ffd3c89.png" src="../_images/af4033b272cf1d011105c785b121733d3b7c6e364b4751d7b01483218ffd3c89.png" />
 </div>
 </div>
 </section>
@@ -1265,11 +1275,10 @@ new error is: 3.427171981558372e-14
 
               
               
-                <footer class="bd-footer-article">
-                  
-<div class="footer-article-items footer-article__inner">
-  
-    <div class="footer-article-item"><!-- Previous / next buttons -->
+              
+              
+                <footer class="prev-next-footer">
+                  <!-- Previous / next buttons -->
 <div class="prev-next-area">
     <a class="left-prev"
        href="The%20restricted%20three-body%20problem.html"
@@ -1289,10 +1298,7 @@ new error is: 3.427171981558372e-14
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
-</div></div>
-  
 </div>
-
                 </footer>
               
             </div>
@@ -1359,8 +1365,8 @@ By Francesco Biscani and Dario Izzo
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../_static/scripts/bootstrap.js?digest=e353d410970836974a52"></script>
-<script src="../_static/scripts/pydata-sphinx-theme.js?digest=e353d410970836974a52"></script>
+  <script src="../_static/scripts/bootstrap.js?digest=ac02cc09edc035673794"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=ac02cc09edc035673794"></script>
 
   <footer class="bd-footer">
   </footer>
