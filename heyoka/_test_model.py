@@ -252,3 +252,21 @@ class model_test_case(_ut.TestCase):
                 )
             ),
         )
+
+    def test_cr3bp(self):
+        from . import model, make_vars
+
+        x, px, y = make_vars("x", "px", "y")
+
+        dyn = model.cr3bp()
+        self.assertEqual(dyn[0][0], x)
+        self.assertEqual(dyn[0][1], px + y)
+
+        dyn = model.cr3bp(mu=1.0 / 2**4)
+        self.assertTrue("0.06250000000" in str(dyn[3][1]))
+
+        jac = model.cr3bp_jacobi()
+        self.assertTrue("0.00100000" in str(jac))
+
+        jac = model.cr3bp_jacobi(mu=1.0 / 2**4)
+        self.assertTrue("0.06250000000" in str(jac))

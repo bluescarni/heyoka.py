@@ -180,6 +180,17 @@ auto mascon_impl(const Op &op, const V &Gconst, const std::vector<V> &masses, co
               hy::kw::omega = omega_vec);
 }
 
+// Common logic to expose cr3bp helpers.
+template <typename Op, typename V>
+auto cr3bp_impl(const Op &op, const V &mu)
+{
+    namespace hy = heyoka;
+
+    const auto muval = ex_from_variant(mu);
+
+    return op(hy::kw::mu = muval);
+}
+
 } // namespace
 
 } // namespace detail
@@ -343,6 +354,14 @@ void expose_models(py::module_ &m)
         },
         "pl_idx"_a, "time"_a = hy::time, "thresh"_a.noconvert() = 1e-9);
     m.def("_model_get_vsop2013_mus", &hy::model::get_vsop2013_mus);
+
+    // CR3BP.
+    m.def(
+        "_model_cr3bp", [](const vex_t &mu) { return detail::cr3bp_impl(hy::model::cr3bp, mu); },
+        "mu"_a.noconvert() = 1e-3);
+    m.def(
+        "_model_cr3bp_jacobi", [](const vex_t &mu) { return detail::cr3bp_impl(hy::model::cr3bp_jacobi, mu); },
+        "mu"_a.noconvert() = 1e-3);
 }
 
 } // namespace heyoka_py
