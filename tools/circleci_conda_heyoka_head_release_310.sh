@@ -47,7 +47,14 @@ cd $HEYOKA_PY_PROJECT_DIR
 
 cd doc
 
-make html linkcheck
+# NOTE: do not run linkcheck on the main branch,
+# as we don't want to prevent the docs upload
+# in case of transient network errors.
+if [[ "${CIRCLE_BRANCH}" == "main" ]]; then
+    make html
+else
+    make html linkcheck
+fi
 
 if [[ ! -z "${CI_PULL_REQUEST}" ]]; then
     echo "Testing a pull request, the generated documentation will not be uploaded.";
