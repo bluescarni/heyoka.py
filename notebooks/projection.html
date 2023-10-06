@@ -9,7 +9,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
-    <title>Conserving first integrals via manifold projection &#8212; heyoka.py 2.0.0 documentation</title>
+    <title>Conserving first integrals via manifold projection &#8212; heyoka.py 3.0.0 documentation</title>
   
   
   
@@ -608,7 +608,7 @@ document.write(`
 </div>
 </div>
 <p>This equality constraint is satisifed if <code class="docutils literal notranslate"><span class="pre">cstr_fun()</span></code> returns zero, that is, if the energy of the updated state vector (<code class="docutils literal notranslate"><span class="pre">x</span></code>) is equal to the initial energy of the system (stored in the callback as <code class="docutils literal notranslate"><span class="pre">cb.E0</span></code>).</p>
-<p>We are now ready to run the optimisation via <a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.minimize.html#scipy.optimize.minimize" title="(in SciPy v1.11.2)"><code class="xref py py-func docutils literal notranslate"><span class="pre">scipy.optimize.minimize()</span></code></a>. Note that we need an optimiser with support for constraints (here we choose <code class="docutils literal notranslate"><span class="pre">'SLSQP'</span></code>):</p>
+<p>We are now ready to run the optimisation via <a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.minimize.html#scipy.optimize.minimize" title="(in SciPy v1.11.3)"><code class="xref py py-func docutils literal notranslate"><span class="pre">scipy.optimize.minimize()</span></code></a>. Note that we need an optimiser with support for constraints (here we choose <code class="docutils literal notranslate"><span class="pre">'SLSQP'</span></code>):</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">scipy.optimize</span> <span class="kn">import</span> <span class="n">minimize</span>
@@ -735,7 +735,7 @@ Updated  energy error: 1.3963053728083164e-11
 </div>
 </div>
 </div>
-<p>Finally, we can define an updated objective function that, in addition to returning the distance square, will return also its gradient vector (in the format required by <a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.minimize.html#scipy.optimize.minimize" title="(in SciPy v1.11.2)"><code class="xref py py-func docutils literal notranslate"><span class="pre">scipy.optimize.minimize()</span></code></a>, i.e., as a tuple of 2 values):</p>
+<p>Finally, we can define an updated objective function that, in addition to returning the distance square, will return also its gradient vector (in the format required by <a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.minimize.html#scipy.optimize.minimize" title="(in SciPy v1.11.3)"><code class="xref py py-func docutils literal notranslate"><span class="pre">scipy.optimize.minimize()</span></code></a>, i.e., as a tuple of 2 values):</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">objfun</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
@@ -765,7 +765,7 @@ Updated  energy error: 1.3963053728083164e-11
 </div>
 </div>
 </div>
-<p>We can now put everything together, and invoke again <a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.minimize.html#scipy.optimize.minimize" title="(in SciPy v1.11.2)"><code class="xref py py-func docutils literal notranslate"><span class="pre">scipy.optimize.minimize()</span></code></a> supplying the gradients:</p>
+<p>We can now put everything together, and invoke again <a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.minimize.html#scipy.optimize.minimize" title="(in SciPy v1.11.3)"><code class="xref py py-func docutils literal notranslate"><span class="pre">scipy.optimize.minimize()</span></code></a> supplying the gradients:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ret</span> <span class="o">=</span> <span class="n">minimize</span><span class="p">(</span><span class="n">objfun</span><span class="p">,</span> <span class="n">ta</span><span class="o">.</span><span class="n">state</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;SLSQP&#39;</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="mf">1e-10</span><span class="p">,</span>

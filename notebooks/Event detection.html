@@ -9,7 +9,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
-    <title>Event detection &#8212; heyoka.py 2.0.0 documentation</title>
+    <title>Event detection &#8212; heyoka.py 3.0.0 documentation</title>
   
   
   
@@ -551,10 +551,10 @@ of the event equation at the trigger time as third argument (-1 for negative der
 zero derivative).</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>Callbacks are always <a class="reference external" href="https://docs.python.org/3/library/copy.html#copy.deepcopy" title="(in Python v3.11)"><code class="xref py py-func docutils literal notranslate"><span class="pre">deep-copied</span></code></a> when an event object is created or copied. This behaviour
+<p>Callbacks are always <a class="reference external" href="https://docs.python.org/3/library/copy.html#copy.deepcopy" title="(in Python v3.12)"><code class="xref py py-func docutils literal notranslate"><span class="pre">deep-copied</span></code></a> when an event object is created or copied. This behaviour
 is meant to help preventing data races in stateful callbacks during multi-threaded <a class="reference internal" href="ensemble_mode.html#ensemble-prop"><span class="std std-ref">ensemble propagations</span></a>.
 You can disable the deep-copying behaviour by providing a custom implementation of the <code class="docutils literal notranslate"><span class="pre">__deepcopy__</span></code> method
-for the callback, as explained in the documentation of the <a class="reference external" href="https://docs.python.org/3/library/copy.html#module-copy" title="(in Python v3.11)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">copy</span></code></a> module.</p>
+for the callback, as explained in the documentation of the <a class="reference external" href="https://docs.python.org/3/library/copy.html#module-copy" title="(in Python v3.12)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">copy</span></code></a> module.</p>
 </div>
 <p>Because non-terminal event detection is performed at the end of an integration step,
 when the callback is invoked the state and time of the integrator object are those <em>at the end</em> of the integration
