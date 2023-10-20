@@ -3,6 +3,15 @@
 Changelog
 =========
 
+3.0.1 (unreleased)
+------------------
+
+Fix
+~~~
+
+- Fix building against Python 3.12
+  (`#139 <https://github.com/bluescarni/heyoka.py/pull/139>`__).
+
 3.0.0 (2023-10-07)
 ------------------
 
