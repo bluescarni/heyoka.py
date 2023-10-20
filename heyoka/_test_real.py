@@ -1918,10 +1918,20 @@ class real_test_case(_ut.TestCase):
         # Larger int, no precision.
         x = real(-(1 << 50))
         self.assertTrue("125899906842624" in str(x))
+        self.assertTrue(str(x).startswith("-"))
+
+        x = real(1 << 50)
+        self.assertTrue("125899906842624" in str(x))
+        self.assertFalse(str(x).startswith("-"))
 
         # Int that does not fit in long/long long, no precision.
         x = real(-(1 << 128))
         self.assertTrue("40282366920938463463374607431768211456" in str(x))
+        self.assertTrue(str(x).startswith("-"))
+
+        x = real(1 << 128)
+        self.assertTrue("40282366920938463463374607431768211456" in str(x))
+        self.assertFalse(str(x).startswith("-"))
 
         # Small int, explicit precision.
         x = real(1, 12)
