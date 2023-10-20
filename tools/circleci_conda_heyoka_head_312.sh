@@ -10,13 +10,11 @@ set -e
 sudo apt-get install build-essential wget
 
 # Install conda+deps.
-wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh
+wget https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-Linux-x86_64.sh -O miniforge.sh
 export deps_dir=$HOME/local
-export PATH="$HOME/miniconda/bin:$PATH"
-bash miniconda.sh -b -p $HOME/miniconda
-conda config --add channels conda-forge
-conda config --set channel_priority strict
-conda create -y -q -p $deps_dir python=3.12 git pybind11 numpy mpmath cmake llvmdev tbb-devel tbb astroquery boost-cpp mppp sleef fmt spdlog sphinx myst-nb matplotlib sympy scipy pykep cloudpickle sphinx-book-theme
+export PATH="$HOME/miniforge/bin:$PATH"
+bash miniforge.sh -b -p $HOME/miniforge
+mamba create -y -q -p $deps_dir python=3.12 git pybind11 numpy mpmath cmake llvmdev tbb-devel tbb astroquery boost-cpp mppp sleef fmt spdlog sphinx myst-nb matplotlib sympy scipy pykep cloudpickle sphinx-book-theme
 source activate $deps_dir
 
 export HEYOKA_PY_PROJECT_DIR=`pwd`
