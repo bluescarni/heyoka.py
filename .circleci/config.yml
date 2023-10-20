@@ -21,6 +21,14 @@ jobs:
         command: bash ./tools/circleci_conda_heyoka_head_310.sh
     - store_artifacts:
         path: doc/_build/html
+  conda_heyoka_head_312:
+    docker:
+    - image: cimg/base:current
+    steps:
+    - checkout
+    - run:
+        name: Build and test
+        command: bash ./tools/circleci_conda_heyoka_head_312.sh
   conda_heyoka_head_release_310:
     docker:
     - image: cimg/base:current
@@ -47,5 +55,6 @@ workflows:
     jobs:
     - conda_heyoka_head_38
     - conda_heyoka_head_310
+    - conda_heyoka_head_312
     - conda_heyoka_head_release_310
     - ubuntu_arm64

@@ -354,6 +354,44 @@ PyObject *py_real_new([[maybe_unused]] PyTypeObject *type, PyObject *, PyObject 
     return py_real_from_args();
 }
 
+// Small helper to fetch the number of digits and the sign
+// of a Python integer. The integer must be nonzero.
+auto py_int_size_sign(PyLongObject *nptr)
+{
+
+#if PY_MAJOR_VERSION == 3 && PY_MINOR_VERSION <= 11
+
+    // Fetch the signed size.
+    const auto ob_size = nptr->ob_base.ob_size;
+    assert(ob_size != 0);
+
+    // Is it negative?
+    const auto neg = ob_size < 0;
+
+    // Compute the unsigned size.
+    using size_type = std::make_unsigned_t<std::remove_const_t<decltype(ob_size)>>;
+    static_assert(std::is_same_v<size_type, decltype(static_cast<size_type>(0) + static_cast<size_type>(0))>);
+    auto abs_ob_size = neg ? -static_cast<size_type>(ob_size) : static_cast<size_type>(ob_size);
+
+#else
+
+    // NOTE: these shifts and mask values come from here:
+    // https://github.com/python/cpython/blob/main/Include/internal/pycore_long.h
+    // Not sure if we can rely on this moving on, probably needs to be checked
+    // at every new Python release. Also, note that lv_tag is unsigned, so
+    // here we are always getting directly the absolute value of the size,
+    // unlike in Python<3.12 where we get out a signed size.
+    const auto abs_ob_size = nptr->long_value.lv_tag >> 3;
+    assert(abs_ob_size != 0u);
+
+    // Is it negative?
+    const auto neg = (nptr->long_value.lv_tag & 3) == 2;
+
+#endif
+
+    return std::make_pair(abs_ob_size, neg);
+}
+
 // Helper to convert a Python integer to an mp++ real.
 // The precision of the result is inferred from the
 // bit size of the integer.
@@ -398,20 +436,15 @@ std::optional<mppp::real> py_int_to_real(PyObject *arg)
         // Need to construct a multiprecision integer from the limb array.
         auto *nptr = reinterpret_cast<PyLongObject *>(arg);
 
-        // Get the signed size of nptr.
-        const auto ob_size = nptr->ob_base.ob_size;
-        assert(ob_size != 0);
+        // Get the size and sign of nptr.
+        auto [abs_ob_size, neg] = py_int_size_sign(nptr);
 
         // Get the limbs array.
+#if PY_MAJOR_VERSION == 3 && PY_MINOR_VERSION <= 11
         const auto *ob_digit = nptr->ob_digit;
-
-        // Is it negative?
-        const auto neg = ob_size < 0;
-
-        // Compute the unsigned size.
-        using size_type = std::make_unsigned_t<std::remove_const_t<decltype(ob_size)>>;
-        static_assert(std::is_same_v<size_type, decltype(static_cast<size_type>(0) + static_cast<size_type>(0))>);
-        auto abs_ob_size = neg ? -static_cast<size_type>(ob_size) : static_cast<size_type>(ob_size);
+#else
+        const auto *ob_digit = nptr->long_value.ob_digit;
+#endif
 
         // Init the retval with the first (most significant) limb. The Python integer is nonzero, so this is safe.
         mppp::integer<1> retval_int = ob_digit[--abs_ob_size];
