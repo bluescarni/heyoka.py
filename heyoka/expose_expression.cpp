@@ -14,6 +14,7 @@
 #include <optional>
 #include <sstream>
 #include <string>
+#include <type_traits>
 #include <unordered_map>
 #include <utility>
 #include <variant>
@@ -49,6 +50,19 @@
 
 namespace heyoka_py
 {
+
+namespace detail
+{
+
+namespace
+{
+
+template <typename T>
+using uncvref_t = std::remove_cv_t<std::remove_reference_t<T>>;
+
+} // namespace
+
+} // namespace detail
 
 namespace py = pybind11;
 
@@ -263,9 +277,10 @@ void expose_expression(py::module_ &m)
     // Prod.
     m.def("prod", &hey::prod, "terms"_a);
 
+    // NOTE: need explicit casts for sqrt and exp due to the presence of overloads for number.
     m.def("sqrt", static_cast<hey::expression (*)(hey::expression)>(&hey::sqrt));
+    m.def("exp", static_cast<hey::expression (*)(hey::expression)>(&hey::exp));
     m.def("log", &hey::log);
-    m.def("exp", [](hey::expression e) { return hey::exp(std::move(e)); });
     m.def("sin", &hey::sin);
     m.def("cos", &hey::cos);
     m.def("tan", &hey::tan);
@@ -281,76 +296,134 @@ void expose_expression(py::module_ &m)
     m.def("sigmoid", &hey::sigmoid);
     m.def("erf", &hey::erf);
 
+    // NOTE: when exposing multivariate functions, we want to be able to pass
+    // in numerical arguments for convenience. Thus, we expose such functions taking
+    // in input a union of expression and supported numerical types.
+    using mvf_arg = std::variant<hey::expression, double, long double
+#if defined(HEYOKA_HAVE_REAL128)
+                                 ,
+                                 mppp::real128
+#endif
+#if defined(HEYOKA_HAVE_REAL)
+                                 ,
+                                 mppp::real
+#endif
+                                 >;
+
     // kepE().
     m.def(
-        "kepE", [](hey::expression e, hey::expression M) { return hey::kepE(std::move(e), std::move(M)); }, "e"_a,
-        "M"_a);
-    m.def(
-        "kepE", [](double e, hey::expression M) { return hey::kepE(e, std::move(M)); }, "e"_a.noconvert(), "M"_a);
-    m.def(
-        "kepE", [](long double e, hey::expression M) { return hey::kepE(e, std::move(M)); }, "e"_a.noconvert(), "M"_a);
-#if defined(HEYOKA_HAVE_REAL128)
-    m.def(
-        "kepE", [](mppp::real128 e, hey::expression M) { return hey::kepE(e, std::move(M)); }, "e"_a.noconvert(),
-        "M"_a);
-#endif
-#if defined(HEYOKA_HAVE_REAL)
-    m.def(
-        "kepE", [](mppp::real e, hey::expression M) { return hey::kepE(std::move(e), std::move(M)); },
-        "e"_a.noconvert(), "M"_a);
-#endif
+        "kepE",
+        [](const mvf_arg &e, const mvf_arg &M) {
+            return std::visit(
+                [](const auto &a, const auto &b) -> hey::expression {
+                    using tp1 = detail::uncvref_t<decltype(a)>;
+                    using tp2 = detail::uncvref_t<decltype(b)>;
 
+                    if constexpr (!std::is_same_v<tp1, hey::expression> && !std::is_same_v<tp2, hey::expression>) {
+                        py_throw(PyExc_TypeError, "At least one of the arguments of kepE() must be an expression");
+                    } else {
+                        return hey::kepE(a, b);
+                    }
+                },
+                e, M);
+        },
+        "e"_a, "M"_a);
+
+    // kepF().
     m.def(
-        "kepE", [](hey::expression e, double M) { return hey::kepE(std::move(e), M); }, "e"_a, "M"_a.noconvert());
+        "kepF",
+        [](const mvf_arg &h, const mvf_arg &k, const mvf_arg &lam) {
+            return std::visit(
+                [](const auto &a, const auto &b, const auto &c) -> hey::expression {
+                    using tp1 = detail::uncvref_t<decltype(a)>;
+                    using tp2 = detail::uncvref_t<decltype(b)>;
+                    using tp3 = detail::uncvref_t<decltype(c)>;
+
+                    constexpr auto tp1_num = static_cast<int>(!std::is_same_v<tp1, hey::expression>);
+                    constexpr auto tp2_num = static_cast<int>(!std::is_same_v<tp2, hey::expression>);
+                    constexpr auto tp3_num = static_cast<int>(!std::is_same_v<tp3, hey::expression>);
+
+                    constexpr auto n_num = tp1_num + tp2_num + tp3_num;
+
+                    if constexpr (n_num == 3) {
+                        py_throw(PyExc_TypeError, "At least one of the arguments of kepF() must be an expression");
+                    } else if constexpr (n_num == 2) {
+                        constexpr auto flag = tp1_num + (tp2_num << 1) + (tp3_num << 2);
+
+                        if constexpr (flag == 6 && std::is_same_v<tp3, tp2>) {
+                            return hey::kepF(a, b, c);
+                        } else if constexpr (flag == 5 && std::is_same_v<tp1, tp3>) {
+                            return hey::kepF(a, b, c);
+                        } else if constexpr (flag == 3 && std::is_same_v<tp1, tp2>) {
+                            return hey::kepF(a, b, c);
+                        } else {
+                            py_throw(PyExc_TypeError, "The numerical arguments of kepF() must be all of the same type");
+                        }
+                    } else {
+                        return hey::kepF(a, b, c);
+                    }
+                },
+                h, k, lam);
+        },
+        "h"_a, "k"_a, "lam"_a);
+
+    // kepDE().
     m.def(
-        "kepE", [](hey::expression e, long double M) { return hey::kepE(std::move(e), M); }, "e"_a, "M"_a.noconvert());
-#if defined(HEYOKA_HAVE_REAL128)
-    m.def(
-        "kepE", [](hey::expression e, mppp::real128 M) { return hey::kepE(std::move(e), M); }, "e"_a,
-        "M"_a.noconvert());
-#endif
-#if defined(HEYOKA_HAVE_REAL)
-    m.def(
-        "kepE", [](hey::expression e, mppp::real M) { return hey::kepE(std::move(e), std::move(M)); }, "e"_a,
-        "M"_a.noconvert());
-#endif
+        "kepDE",
+        [](const mvf_arg &s0, const mvf_arg &c0, const mvf_arg &DM) {
+            return std::visit(
+                [](const auto &a, const auto &b, const auto &c) -> hey::expression {
+                    using tp1 = detail::uncvref_t<decltype(a)>;
+                    using tp2 = detail::uncvref_t<decltype(b)>;
+                    using tp3 = detail::uncvref_t<decltype(c)>;
+
+                    constexpr auto tp1_num = static_cast<int>(!std::is_same_v<tp1, hey::expression>);
+                    constexpr auto tp2_num = static_cast<int>(!std::is_same_v<tp2, hey::expression>);
+                    constexpr auto tp3_num = static_cast<int>(!std::is_same_v<tp3, hey::expression>);
+
+                    constexpr auto n_num = tp1_num + tp2_num + tp3_num;
+
+                    if constexpr (n_num == 3) {
+                        py_throw(PyExc_TypeError, "At least one of the arguments of kepDE() must be an expression");
+                    } else if constexpr (n_num == 2) {
+                        constexpr auto flag = tp1_num + (tp2_num << 1) + (tp3_num << 2);
+
+                        if constexpr (flag == 6 && std::is_same_v<tp3, tp2>) {
+                            return hey::kepDE(a, b, c);
+                        } else if constexpr (flag == 5 && std::is_same_v<tp1, tp3>) {
+                            return hey::kepDE(a, b, c);
+                        } else if constexpr (flag == 3 && std::is_same_v<tp1, tp2>) {
+                            return hey::kepDE(a, b, c);
+                        } else {
+                            py_throw(PyExc_TypeError,
+                                     "The numerical arguments of kepDE() must be all of the same type");
+                        }
+                    } else {
+                        return hey::kepDE(a, b, c);
+                    }
+                },
+                s0, c0, DM);
+        },
+        "s0"_a, "c0"_a, "DM"_a);
 
     // atan2().
     m.def(
-        "atan2", [](hey::expression y, hey::expression x) { return hey::atan2(std::move(y), std::move(x)); }, "y"_a,
-        "x"_a);
+        "atan2",
+        [](const mvf_arg &y, const mvf_arg &x) {
+            return std::visit(
+                [](const auto &a, const auto &b) -> hey::expression {
+                    using tp1 = detail::uncvref_t<decltype(a)>;
+                    using tp2 = detail::uncvref_t<decltype(b)>;
 
-    m.def(
-        "atan2", [](double y, hey::expression x) { return hey::atan2(y, std::move(x)); }, "y"_a.noconvert(), "x"_a);
-    m.def(
-        "atan2", [](long double y, hey::expression x) { return hey::atan2(y, std::move(x)); }, "y"_a.noconvert(),
-        "x"_a);
-#if defined(HEYOKA_HAVE_REAL128)
-    m.def(
-        "atan2", [](mppp::real128 y, hey::expression x) { return hey::atan2(y, std::move(x)); }, "y"_a.noconvert(),
-        "x"_a);
-#endif
-#if defined(HEYOKA_HAVE_REAL)
-    m.def(
-        "atan2", [](mppp::real y, hey::expression x) { return hey::atan2(std::move(y), std::move(x)); },
-        "y"_a.noconvert(), "x"_a);
-#endif
-
-    m.def(
-        "atan2", [](hey::expression y, double x) { return hey::atan2(std::move(y), x); }, "y"_a, "x"_a.noconvert());
-    m.def(
-        "atan2", [](hey::expression y, long double x) { return hey::atan2(std::move(y), x); }, "y"_a,
-        "x"_a.noconvert());
-#if defined(HEYOKA_HAVE_REAL128)
-    m.def(
-        "atan2", [](hey::expression y, mppp::real128 x) { return hey::atan2(std::move(y), x); }, "y"_a,
-        "x"_a.noconvert());
-#endif
-#if defined(HEYOKA_HAVE_REAL)
-    m.def(
-        "atan2", [](hey::expression y, mppp::real x) { return hey::atan2(std::move(y), std::move(x)); }, "y"_a,
-        "x"_a.noconvert());
-#endif
+                    if constexpr (!std::is_same_v<tp1, hey::expression> && !std::is_same_v<tp2, hey::expression>) {
+                        py_throw(PyExc_TypeError, "At least one of the arguments of atan2() must be an expression");
+                    } else {
+                        return hey::atan2(a, b);
+                    }
+                },
+                y, x);
+        },
+        "y"_a, "x"_a);
 
     // Time.
     m.attr("time") = hey::time;
