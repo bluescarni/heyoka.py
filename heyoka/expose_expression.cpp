@@ -506,6 +506,15 @@ void expose_expression(py::module_ &m)
             return std::vector(sr.begin(), sr.end());
         },
         "diff_order"_a, "component"_a = py::none{});
+    // Gradient.
+    dtens_cl.def_property_readonly("gradient", &hey::dtens::get_gradient);
+    // Jacobian.
+    dtens_cl.def_property_readonly("jacobian", [](const hey::dtens &dt) {
+        auto jac = py::array(py::cast(dt.get_jacobian()));
+
+        return jac.reshape(py::array::ShapeContainer{boost::numeric_cast<py::ssize_t>(dt.get_nouts()),
+                                                     boost::numeric_cast<py::ssize_t>(dt.get_nvars())});
+    });
     // Copy/deepcopy.
     dtens_cl.def("__copy__", copy_wrapper<hey::dtens>);
     dtens_cl.def("__deepcopy__", deepcopy_wrapper<hey::dtens>, "memo"_a);
