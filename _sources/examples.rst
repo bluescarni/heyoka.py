@@ -42,6 +42,7 @@ Celestial mechanics and astrodynamics
   notebooks/ttv
   notebooks/vsop2013
   notebooks/tides_spokes
+  notebooks/lagrangian_propagator
 
 Event detection
 ---------------

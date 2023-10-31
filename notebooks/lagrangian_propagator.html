@@ -1,0 +1,810 @@
+
+
+<!DOCTYPE html>
+
+
+<html lang="en" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+    <title>Lagrange propagation and the state transition matrix &#8212; heyoka.py 3.1.0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" href="../_static/styles/sphinx-book-theme.css?digest=14f4ca6b54d191a8c7657f6c759bf11a5fb86285" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=365ca57ee442770a23c6" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=365ca57ee442770a23c6" />
+  <script src="../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=365ca57ee442770a23c6"></script>
+
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinx_highlight.js"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?digest=5a5c038af52cf7bc1a1ec88eea08e6366ee68824"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'notebooks/lagrangian_propagator';</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Sampling events" href="Sampling%20events.html" />
+    <link rel="prev" title="Elastic tides" href="tides_spokes.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>
+    Back to top
+  </button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__primary"
+          id="__primary"/>
+  <label class="overlay overlay-primary" for="__primary"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__secondary"
+          id="__secondary"/>
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+  
+    <nav class="bd-header navbar navbar-expand-lg bd-navbar">
+    </nav>
+  
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/white_logo.png" class="logo__image only-light" alt="heyoka.py 3.1.0 documentation - Home"/>
+    <script>document.write(`<img src="../_static/white_logo.png" class="logo__image only-dark" alt="heyoka.py 3.1.0 documentation - Home"/>`);</script>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item"><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Contents</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../install.html">Installation</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../basic_tutorials.html">Basic tutorials</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../tut_taylor_method.html">Taylor’s method</a></li>
+<li class="toctree-l2"><a class="reference internal" href="The%20expression%20system.html">The expression system</a></li>
+<li class="toctree-l2"><a class="reference internal" href="The%20adaptive%20integrator.html">The adaptive integrator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Customising%20the%20adaptive%20integrator.html">Customising the adaptive integrator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ODEs%20with%20parameters.html">ODEs with parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Non-autonomous%20systems.html">Non-autonomous systems</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Dense%20output.html">Dense &amp; continuous output</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Event%20detection.html">Event detection</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../advanced_tutorials.html">Advanced tutorials</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="Batch%20mode%20overview.html">Batch mode</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ensemble_mode.html">Ensemble propagations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="parallel_mode.html">Parallel mode</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ext_precision.html">Computations in extended precision</a></li>
+<li class="toctree-l2"><a class="reference internal" href="arbitrary_precision.html">Computations in arbitrary precision</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sympy_interop.html">Interoperability with SymPy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="compiled_functions.html">Compiled functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ex_system_revisited.html">Using the expression system effectively</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pickling.html">Pickle support</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jit_caching.html">JIT compilation and caching</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="../examples.html">Examples</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-3"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="The%20restricted%20three-body%20problem.html">The restricted three-body problem</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Periodic%20orbits%20in%20the%20CR3BP.html">Continuation of Periodic Orbits in the CR3BP</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Long%20term%20stability%20of%20Trappist-1.html">Long term stability of N-body simulations: the case of Trappist-1</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Outer%20Solar%20System.html">Brouwer’s law in the outer Solar System</a></li>
+<li class="toctree-l2"><a class="reference internal" href="projection.html">Conserving first integrals via manifold projection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Box%20control%20for%20Formation%20Flying%20Satellites.html">Box control in satellite Formation Flying</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Comparing%20coordinate%20systems.html">Comparing coordinate systems</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Inverting%20Kepler%27s%20equation%20in%20ODEs.html">Inverting Kepler’s equation in ODEs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Planetary%20embryos.html">Planetary embryos in the inner Solar System</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mercury_precession.html">Mercury’s relativistic precession</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ttv.html">Calculating transit timing variations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vsop2013.html">Introduction to the VSOP2013 planetary theory</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tides_spokes.html">Elastic tides</a></li>
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">Lagrange propagation and the state transition matrix</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Sampling%20events.html">Sampling events</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Poincar%C3%A9%20sections.html">Poincaré sections</a></li>
+<li class="toctree-l2"><a class="reference internal" href="second_integral.html">The second integral of motion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="The%20Keplerian%20billiard.html">The Keplerian billiard</a></li>
+<li class="toctree-l2"><a class="reference internal" href="The%20two-fixed%20elliptic%20billiard.html">The two-fixed centres elliptic billiard</a></li>
+<li class="toctree-l2"><a class="reference internal" href="The%20wavy%20ramp.html">The wavy ramp</a></li>
+<li class="toctree-l2"><a class="reference internal" href="The%20Maxwell-Boltzmann%20distribution.html">The Maxwell-Boltzmann distribution</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ev_sensitivity.html">Computing event sensitivity</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ensemble_batch_perf.html">Evaluating the performance of ensemble &amp; batch mode</a></li>
+<li class="toctree-l2"><a class="reference internal" href="The%20variational%20equations.html">The variational equations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Optimal%20Control%20of%20the%20Lotka-Volterra%20equations.html">Optimal Control of the Lotka-Volterra equations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="definite_integrals.html">Computing definite integrals</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../benchmarks.html">Benchmarks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../changelog.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../breaking_changes.html">Breaking changes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../acknowledgement.html">Acknowledgement</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><label class="sidebar-toggle primary-toggle btn btn-sm" for="__primary" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</label></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-launch-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Launch interactive content">
+    <i class="fas fa-rocket"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://mybinder.org/v2/gh/bluescarni/heyoka.py/main?urlpath=lab/tree/doc/notebooks/lagrangian_propagator.ipynb" target="_blank"
+   class="btn btn-sm dropdown-item"
+   title="Launch onBinder"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  
+    <img src="../_static/images/logo_binder.svg">
+  </span>
+<span class="btn__text-container">Binder</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://github.com/bluescarni/heyoka.py" target="_blank"
+   class="btn btn-sm btn-source-repository-button dropdown-item"
+   title="Source repository"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="btn__text-container">Repository</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/bluescarni/heyoka.py/issues/new?title=Issue%20on%20page%20%2Fnotebooks/lagrangian_propagator.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button dropdown-item"
+   title="Open an issue"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="btn__text-container">Open issue</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../_sources/notebooks/lagrangian_propagator.ipynb" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.ipynb</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
+  </button>
+`);
+</script>
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<label class="sidebar-toggle secondary-toggle btn btn-sm" for="__secondary"title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</label>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Lagrange propagation and the state transition matrix</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#the-lagrange-propagator">The Lagrange propagator</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#constructing-the-stm">Constructing the STM</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article" role="main">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="lagrange-propagation-and-the-state-transition-matrix">
+<h1>Lagrange propagation and the state transition matrix<a class="headerlink" href="#lagrange-propagation-and-the-state-transition-matrix" title="Permalink to this heading">#</a></h1>
+<p>In the gravitational <a class="reference external" href="https://en.wikipedia.org/wiki/Two-body_problem">two-body problem</a> it is possible to compute the state of the system at an arbitrary time from an initial state <span class="math notranslate nohighlight">\(\left( \boldsymbol{r}_0, \boldsymbol{v}_0 \right)\)</span> via the so-called Lagrange coefficients <span class="math notranslate nohighlight">\(F\)</span>, <span class="math notranslate nohighlight">\(G\)</span>, <span class="math notranslate nohighlight">\(F_t\)</span> and <span class="math notranslate nohighlight">\(G_t\)</span>:</p>
+<div class="amsmath math notranslate nohighlight" id="equation-bc818798-c8a3-4009-bdc1-a22b774296ed">
+<span class="eqno">(1)<a class="headerlink" href="#equation-bc818798-c8a3-4009-bdc1-a22b774296ed" title="Permalink to this equation">#</a></span>\[\begin{equation}
+\begin{cases}
+\boldsymbol{r} &amp; = F \boldsymbol{r}_0 + G \boldsymbol{v}_0 \\
+\boldsymbol{v} &amp; = F_t \boldsymbol{r}_0 + G_t \boldsymbol{v}_0
+\end{cases}.
+\end{equation}\]</div>
+<p>Analytical expressions for these coefficients are available in terms of anomalies differences between the end state and the initial state. The details on these analytical expressions and their derivation can be found, for example, in the seminal book by Richard Battin <a class="reference external" href="https://ui.adsabs.harvard.edu/abs/1987aiaa.rept.....B/abstract">“An introduction to the mathematics and methods of astrodynamics”</a> (section 4.3). See <a class="reference external" href="https://orbital-mechanics.space/time-since-periapsis-and-keplers-equation/the-lagrange-coefficients.html">here</a> for another derivation.</p>
+<p>In this notebook, we will first show how to implement a Lagrange propagator using heyoka.py’s expression system. Because the propagator will be implemented in terms of analytical formulae, we will then be able to differentiate it and effortlessly construct the state transtition matrix (i.e., the Jacobian of the propagator with respect to the initial state).</p>
+<section id="the-lagrange-propagator">
+<h2>The Lagrange propagator<a class="headerlink" href="#the-lagrange-propagator" title="Permalink to this heading">#</a></h2>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The propagator presented here is implemented in terms of eccentric anomalies, and thus it is limited to elliptic orbits.</p>
+</div>
+<p>We begin by introducing the symbolic variables corresponding to the inputs of the propagator:</p>
+<ul class="simple">
+<li><p>the initial Cartesian position <span class="math notranslate nohighlight">\(\boldsymbol{r}_0=\left( x_0, y_0, z_0 \right)\)</span>,</p></li>
+<li><p>the initial Cartesian velocity <span class="math notranslate nohighlight">\(\boldsymbol{v}_0=\left( v_{x0}, v_{y0}, v_{z0} \right)\)</span>,</p></li>
+<li><p>the gravitational parameter of the system <span class="math notranslate nohighlight">\(\mu\)</span>,</p></li>
+<li><p>the propagation time <span class="math notranslate nohighlight">\(t\)</span>.</p></li>
+</ul>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">heyoka</span> <span class="k">as</span> <span class="nn">hy</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="n">x0</span><span class="p">,</span> <span class="n">y0</span><span class="p">,</span> <span class="n">z0</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">make_vars</span><span class="p">(</span><span class="s2">&quot;x0&quot;</span><span class="p">,</span> <span class="s2">&quot;y0&quot;</span><span class="p">,</span> <span class="s2">&quot;z0&quot;</span><span class="p">)</span>
+<span class="n">vx0</span><span class="p">,</span> <span class="n">vy0</span><span class="p">,</span> <span class="n">vz0</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">make_vars</span><span class="p">(</span><span class="s2">&quot;vx0&quot;</span><span class="p">,</span> <span class="s2">&quot;vy0&quot;</span><span class="p">,</span> <span class="s2">&quot;vz0&quot;</span><span class="p">)</span>
+<span class="n">mu</span><span class="p">,</span> <span class="n">tm</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">make_vars</span><span class="p">(</span><span class="s2">&quot;mu&quot;</span><span class="p">,</span> <span class="s2">&quot;t&quot;</span><span class="p">)</span>
+
+<span class="c1"># Package initial position and velocity into</span>
+<span class="c1"># arrays for later use.</span>
+<span class="n">pos_0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">x0</span><span class="p">,</span> <span class="n">y0</span><span class="p">,</span> <span class="n">z0</span><span class="p">])</span>
+<span class="n">vel_0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">vx0</span><span class="p">,</span> <span class="n">vy0</span><span class="p">,</span> <span class="n">vz0</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Next, we compute the semi-major axis <span class="math notranslate nohighlight">\(a\)</span> from the <a class="reference external" href="https://en.wikipedia.org/wiki/Specific_orbital_energy">specific orbital energy</a> <span class="math notranslate nohighlight">\(\epsilon\)</span>:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">v02</span> <span class="o">=</span> <span class="n">vx0</span><span class="o">**</span><span class="mi">2</span><span class="o">+</span><span class="n">vy0</span><span class="o">**</span><span class="mi">2</span><span class="o">+</span><span class="n">vz0</span><span class="o">**</span><span class="mi">2</span>
+<span class="n">r0</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">x0</span><span class="o">**</span><span class="mi">2</span><span class="o">+</span><span class="n">y0</span><span class="o">**</span><span class="mi">2</span><span class="o">+</span><span class="n">z0</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">eps</span> <span class="o">=</span> <span class="n">v02</span> <span class="o">*</span> <span class="mf">0.5</span> <span class="o">-</span> <span class="n">mu</span><span class="o">/</span><span class="n">r0</span>
+<span class="n">a</span> <span class="o">=</span> <span class="o">-</span><span class="n">mu</span><span class="o">/</span><span class="p">(</span><span class="mf">2.</span><span class="o">*</span><span class="n">eps</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Now we compute the quantities <span class="math notranslate nohighlight">\(\sigma_0=\frac{\boldsymbol{r}_0 \cdot \boldsymbol{v}_0}{\sqrt{\mu}}\)</span>, <span class="math notranslate nohighlight">\(s_0=\frac{\sigma_0}{\sqrt{a}}\)</span> and <span class="math notranslate nohighlight">\(c_0=1-\frac{r_0}{a}\)</span>:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sigma0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">pos_0</span><span class="p">,</span> <span class="n">vel_0</span><span class="p">)</span> <span class="o">/</span> <span class="n">hy</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">mu</span><span class="p">)</span>
+<span class="n">s0</span> <span class="o">=</span> <span class="n">sigma0</span> <span class="o">/</span> <span class="n">hy</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+<span class="n">c0</span> <span class="o">=</span> <span class="mf">1.</span> <span class="o">-</span> <span class="n">r0</span> <span class="o">/</span> <span class="n">a</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>We can now calculate the difference in mean anomaly <span class="math notranslate nohighlight">\(\Delta M\)</span> from the mean motion <span class="math notranslate nohighlight">\(n\)</span> and the propagation time <span class="math notranslate nohighlight">\(t\)</span>,</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">n</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">mu</span> <span class="o">/</span> <span class="p">(</span><span class="n">a</span> <span class="o">*</span> <span class="n">a</span> <span class="o">*</span> <span class="n">a</span><span class="p">))</span>
+<span class="n">DM</span> <span class="o">=</span> <span class="n">n</span><span class="o">*</span><span class="n">tm</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>and then proceed to convert it to a difference in eccentric anomaly <span class="math notranslate nohighlight">\(\Delta E\)</span> via the <code class="docutils literal notranslate"><span class="pre">kepDE()</span></code> function:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">DE</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">kepDE</span><span class="p">(</span><span class="n">s0</span><span class="p">,</span> <span class="n">c0</span><span class="p">,</span> <span class="n">DM</span><span class="p">)</span>
+
+<span class="c1"># Compute cos(DE) and sin(DE).</span>
+<span class="n">cDE</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">DE</span><span class="p">)</span>
+<span class="n">sDE</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">DE</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>We can now calculate <span class="math notranslate nohighlight">\(r(t)\)</span>,</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">r</span> <span class="o">=</span> <span class="n">a</span><span class="o">+</span><span class="p">(</span><span class="n">r0</span><span class="o">-</span><span class="n">a</span><span class="p">)</span><span class="o">*</span><span class="n">cDE</span><span class="o">+</span><span class="n">sigma0</span><span class="o">*</span><span class="n">hy</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">a</span><span class="p">)</span><span class="o">*</span><span class="n">sDE</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>and the Lagrange coefficients <span class="math notranslate nohighlight">\(F\)</span>, <span class="math notranslate nohighlight">\(G\)</span>, <span class="math notranslate nohighlight">\(F_t\)</span> and <span class="math notranslate nohighlight">\(G_t\)</span>:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">F</span> <span class="o">=</span> <span class="mf">1.</span> <span class="o">-</span> <span class="n">a</span><span class="o">/</span><span class="n">r0</span><span class="o">*</span><span class="p">(</span><span class="mf">1.</span> <span class="o">-</span> <span class="n">cDE</span><span class="p">)</span>
+<span class="n">G</span> <span class="o">=</span> <span class="n">a</span><span class="o">*</span><span class="n">sigma0</span><span class="o">/</span><span class="n">hy</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">mu</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="mf">1.</span> <span class="o">-</span> <span class="n">cDE</span><span class="p">)</span> <span class="o">+</span> <span class="n">r0</span><span class="o">*</span><span class="n">hy</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">a</span><span class="o">/</span><span class="n">mu</span><span class="p">)</span><span class="o">*</span><span class="n">sDE</span>
+<span class="n">Ft</span> <span class="o">=</span> <span class="o">-</span><span class="n">hy</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">mu</span><span class="o">*</span><span class="n">a</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">r</span><span class="o">*</span><span class="n">r0</span><span class="p">)</span><span class="o">*</span><span class="n">sDE</span>
+<span class="n">Gt</span> <span class="o">=</span> <span class="mi">1</span><span class="o">-</span><span class="n">a</span><span class="o">/</span><span class="n">r</span><span class="o">*</span><span class="p">(</span><span class="mf">1.</span><span class="o">-</span><span class="n">cDE</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Finally, we can calculate the position and velocity vectors at time <span class="math notranslate nohighlight">\(t\)</span>:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pos</span> <span class="o">=</span> <span class="n">F</span><span class="o">*</span><span class="n">pos_0</span> <span class="o">+</span> <span class="n">G</span><span class="o">*</span><span class="n">vel_0</span>
+<span class="n">vel</span> <span class="o">=</span> <span class="n">Ft</span><span class="o">*</span><span class="n">pos_0</span> <span class="o">+</span> <span class="n">Gt</span><span class="o">*</span><span class="n">vel_0</span>
+
+<span class="c1"># Concatenate position and velocity</span>
+<span class="c1"># into a single state vector.</span>
+<span class="n">pos_vel</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">([</span><span class="n">pos</span><span class="p">,</span> <span class="n">vel</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>We can now proceed to create a <a class="reference internal" href="compiled_functions.html"><span class="doc std std-doc">compiled function</span></a> for the evaluation of the state vector at time <span class="math notranslate nohighlight">\(t\)</span>:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">cf</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">make_cfunc</span><span class="p">(</span><span class="n">pos_vel</span><span class="p">,</span>
+                   <span class="c1"># Specify the order in which the input</span>
+                   <span class="c1"># variables are passed to the compiled</span>
+                   <span class="c1"># function.</span>
+                   <span class="nb">vars</span><span class="o">=</span><span class="p">[</span><span class="n">x0</span><span class="p">,</span> <span class="n">y0</span><span class="p">,</span> <span class="n">z0</span><span class="p">,</span> <span class="n">vx0</span><span class="p">,</span> <span class="n">vy0</span><span class="p">,</span> <span class="n">vz0</span><span class="p">,</span> <span class="n">mu</span><span class="p">,</span> <span class="n">tm</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>We can now run a quick test for our propagator. We set up a circular orbit with <span class="math notranslate nohighlight">\(\boldsymbol{r}_0=\left( 1, 0, 0 \right)\)</span>, <span class="math notranslate nohighlight">\(\boldsymbol{v}_0=\left( 0, 1, 0 \right)\)</span> and <span class="math notranslate nohighlight">\(\mu = 1\)</span>, and we ask for the state vector at <span class="math notranslate nohighlight">\(t=\pi\)</span> (i.e., half period):</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">cf</span><span class="p">([</span>
+    <span class="c1"># r0.</span>
+    <span class="mf">1.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">,</span>
+    <span class="c1"># v0.</span>
+    <span class="mf">0.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">,</span>
+    <span class="c1"># mu and t.</span>
+    <span class="mf">1.</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([-1.0000000e+00,  1.2246468e-16,  0.0000000e+00, -1.2246468e-16,
+       -1.0000000e+00, -0.0000000e+00])
+</pre></div>
+</div>
+</div>
+</div>
+<p>Indeed, as expected, <span class="math notranslate nohighlight">\(\boldsymbol{r}\left(\pi\right) = \left( -1, 0, 0 \right)\)</span> and <span class="math notranslate nohighlight">\(\boldsymbol{v}\left(\pi\right) = \left( 0, -1, 0 \right)\)</span> (plus/minus epsilon).</p>
+<p>Recall from the <a class="reference internal" href="compiled_functions.html"><span class="doc std std-doc">compiled functions tutorial</span></a> that the propagator is fully vectorised, and that it takes advantage of SIMD instructions. For instance, on a modern x86 machine we can propagate four different trajectories at the cost of one single propagation by passing in a two-dimensional matrix of initial conditions like this:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">cf</span><span class="p">([</span>
+    <span class="c1"># x0.</span>
+    <span class="p">[</span><span class="mf">1.</span><span class="p">,</span> <span class="mf">1.01</span><span class="p">,</span> <span class="mf">1.02</span><span class="p">,</span> <span class="mf">1.03</span><span class="p">],</span>
+    <span class="c1"># y0.</span>
+    <span class="p">[</span><span class="mf">0.</span><span class="p">,</span> <span class="mf">0.01</span><span class="p">,</span> <span class="mf">0.02</span><span class="p">,</span> <span class="mf">0.03</span><span class="p">],</span>
+    <span class="c1"># z0.</span>
+    <span class="p">[</span><span class="mf">0.</span><span class="p">,</span> <span class="mf">0.01</span><span class="p">,</span> <span class="mf">0.02</span><span class="p">,</span> <span class="mf">0.03</span><span class="p">],</span>
+    <span class="c1"># vx0.</span>
+    <span class="p">[</span><span class="mf">0.</span><span class="p">,</span> <span class="mf">0.01</span><span class="p">,</span> <span class="mf">0.02</span><span class="p">,</span> <span class="mf">0.03</span><span class="p">],</span>
+    <span class="c1"># vy0.</span>
+    <span class="p">[</span><span class="mf">1.</span><span class="p">,</span> <span class="mf">1.01</span><span class="p">,</span> <span class="mf">1.02</span><span class="p">,</span> <span class="mf">1.03</span><span class="p">],</span>
+    <span class="c1"># vz0.</span>
+    <span class="p">[</span><span class="mf">0.</span><span class="p">,</span> <span class="mf">0.01</span><span class="p">,</span> <span class="mf">0.02</span><span class="p">,</span> <span class="mf">0.03</span><span class="p">],</span>
+    <span class="c1"># mu.</span>
+    <span class="p">[</span><span class="mf">1.</span><span class="p">,</span> <span class="mf">1.01</span><span class="p">,</span> <span class="mf">1.02</span><span class="p">,</span> <span class="mf">1.03</span><span class="p">],</span>
+    <span class="c1"># t.</span>
+    <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">+</span><span class="mf">0.01</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">+</span><span class="mf">0.02</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">+</span><span class="mf">0.03</span><span class="p">]])</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([[-1.00000000e+00, -1.03804031e+00, -1.05314825e+00,
+        -1.04768800e+00],
+       [ 1.22464680e-16,  1.88508928e-01,  3.79275881e-01,
+         5.68044550e-01],
+       [ 0.00000000e+00, -8.32873901e-03, -1.29590841e-02,
+        -1.35748147e-02],
+       [-1.22464680e-16, -1.56913323e-01, -2.92251543e-01,
+        -4.03032933e-01],
+       [-1.00000000e+00, -9.54125221e-01, -8.82265186e-01,
+        -7.93231703e-01],
+       [-0.00000000e+00, -1.08925347e-02, -2.25868602e-02,
+        -3.38565463e-02]])
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="constructing-the-stm">
+<h2>Constructing the STM<a class="headerlink" href="#constructing-the-stm" title="Permalink to this heading">#</a></h2>
+<p>We can now proceed to the construction of an analytical expression for the state transition matrix (STM).</p>
+<p>The STM is nothing but the Jacobian of the Lagrange propagator with respect to the initial conditions. In order to compute the derivatives, we employ the <code class="docutils literal notranslate"><span class="pre">diff_tensors()</span></code> function as explained <a class="reference internal" href="ex_system_revisited.html#computing-derivatives"><span class="std std-ref">here</span></a>:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">dt</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">diff_tensors</span><span class="p">(</span><span class="n">pos_vel</span><span class="p">,</span>
+                     <span class="n">diff_args</span><span class="o">=</span><span class="p">[</span><span class="n">x0</span><span class="p">,</span> <span class="n">y0</span><span class="p">,</span> <span class="n">z0</span><span class="p">,</span> <span class="n">vx0</span><span class="p">,</span> <span class="n">vy0</span><span class="p">,</span> <span class="n">vz0</span><span class="p">],</span>
+                     <span class="n">diff_order</span><span class="o">=</span><span class="mi">1</span>
+                    <span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>We can then extract the Jacobian from <code class="docutils literal notranslate"><span class="pre">dt</span></code>,</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">jac</span> <span class="o">=</span> <span class="n">dt</span><span class="o">.</span><span class="n">jacobian</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>and proceed to the creation of a compiled function for the numerical evaluation of the STM:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">cf_stm</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">make_cfunc</span><span class="p">(</span><span class="n">jac</span><span class="o">.</span><span class="n">flatten</span><span class="p">(),</span>
+                       <span class="c1"># Specify the order in which the input</span>
+                       <span class="c1"># variables are passed to the compiled</span>
+                       <span class="c1"># function.</span>
+                       <span class="nb">vars</span><span class="o">=</span><span class="p">[</span><span class="n">x0</span><span class="p">,</span> <span class="n">y0</span><span class="p">,</span> <span class="n">z0</span><span class="p">,</span> <span class="n">vx0</span><span class="p">,</span> <span class="n">vy0</span><span class="p">,</span> <span class="n">vz0</span><span class="p">,</span> <span class="n">mu</span><span class="p">,</span> <span class="n">tm</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Let us take a look at the STM for our test circular orbit:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">cf_stm</span><span class="p">([</span><span class="mf">1.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">])</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="mi">6</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([[-3.00000000e+00,  2.44929360e-16,  0.00000000e+00,
+         3.67394040e-16, -4.00000000e+00,  0.00000000e+00],
+       [ 9.42477796e+00,  3.00000000e+00,  0.00000000e+00,
+         4.00000000e+00,  9.42477796e+00,  0.00000000e+00],
+       [ 0.00000000e+00,  0.00000000e+00, -1.00000000e+00,
+         0.00000000e+00,  0.00000000e+00,  1.22464680e-16],
+       [-9.42477796e+00, -2.00000000e+00,  0.00000000e+00,
+        -3.00000000e+00, -9.42477796e+00,  0.00000000e+00],
+       [ 2.00000000e+00,  3.67394040e-16,  0.00000000e+00,
+         4.89858720e-16,  3.00000000e+00,  0.00000000e+00],
+       [ 0.00000000e+00,  0.00000000e+00, -1.22464680e-16,
+         0.00000000e+00,  0.00000000e+00, -1.00000000e+00]])
+</pre></div>
+</div>
+</div>
+</div>
+<p>We can notice that the top-left element of the STM is the value <span class="math notranslate nohighlight">\(-3\)</span>. If we slightly perturb by <span class="math notranslate nohighlight">\(10^{-5}\)</span> the value of <span class="math notranslate nohighlight">\(x_0\)</span> and re-evaluate the state of the system at <span class="math notranslate nohighlight">\(t=\pi\)</span>,</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">cf</span><span class="p">([</span><span class="mi">1</span> <span class="o">+</span> <span class="mf">1e-5</span><span class="p">,</span> <span class="mf">0.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([-1.00003000e+00,  9.42473082e-05,  0.00000000e+00, -9.42435384e-05,
+       -9.99979996e-01, -0.00000000e+00])
+</pre></div>
+</div>
+</div>
+</div>
+<p>we can indeed see that the the initial perturbation of <span class="math notranslate nohighlight">\(10^{-5}\)</span> has been amplified by a factor of <span class="math notranslate nohighlight">\(3\)</span> in the final state of <span class="math notranslate nohighlight">\(x\)</span> as predicted by the STM.</p>
+<p>Like the Lagrange propagator, the compiled function for the STM is also fully vectorised and SIMD-enabled. Note also that it is also possible via <code class="docutils literal notranslate"><span class="pre">diff_tensors()</span></code> to compute not only the Jacobian, but also higher-order tensors of derivatives (e.g., such as the Hessians).</p>
+</section>
+</section>
+
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer">
+                  <!-- Previous / next buttons -->
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="tides_spokes.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Elastic tides</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="Sampling%20events.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Sampling events</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#the-lagrange-propagator">The Lagrange propagator</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#constructing-the-stm">Constructing the STM</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Francesco Biscani and Dario Izzo
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  <p class="copyright">
+    
+      © Copyright 2020, 2021, 2022, 2023, Francesco Biscani and Dario Izzo.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=365ca57ee442770a23c6"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=365ca57ee442770a23c6"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

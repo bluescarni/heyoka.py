@@ -9,7 +9,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
-    <title>Ensemble propagations &#8212; heyoka.py 3.0.0 documentation</title>
+    <title>Ensemble propagations &#8212; heyoka.py 3.1.0 documentation</title>
   
   
   
@@ -19,12 +19,12 @@
   </script>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../_static/styles/theme.css?digest=ac02cc09edc035673794" rel="stylesheet" />
-<link href="../_static/styles/bootstrap.css?digest=ac02cc09edc035673794" rel="stylesheet" />
-<link href="../_static/styles/pydata-sphinx-theme.css?digest=ac02cc09edc035673794" rel="stylesheet" />
+  <link href="../_static/styles/theme.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
 
   
-  <link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=ac02cc09edc035673794" rel="stylesheet" />
+  <link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
   <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
@@ -34,9 +34,9 @@
     <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=ac02cc09edc035673794" />
-<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=ac02cc09edc035673794" />
-  <script src="../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=ac02cc09edc035673794"></script>
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=365ca57ee442770a23c6" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=365ca57ee442770a23c6" />
+  <script src="../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=365ca57ee442770a23c6"></script>
 
     <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
     <script src="../_static/jquery.js"></script>
@@ -131,13 +131,14 @@
   
   
   
+  
     
     
       
     
     
-    <img src="../_static/white_logo.png" class="logo__image only-light" alt="Logo image"/>
-    <script>document.write(`<img src="../_static/white_logo.png" class="logo__image only-dark" alt="Logo image"/>`);</script>
+    <img src="../_static/white_logo.png" class="logo__image only-light" alt="heyoka.py 3.1.0 documentation - Home"/>
+    <script>document.write(`<img src="../_static/white_logo.png" class="logo__image only-dark" alt="heyoka.py 3.1.0 documentation - Home"/>`);</script>
   
   
 </a></div>
@@ -184,6 +185,7 @@
 <li class="toctree-l2"><a class="reference internal" href="ttv.html">Calculating transit timing variations</a></li>
 <li class="toctree-l2"><a class="reference internal" href="vsop2013.html">Introduction to the VSOP2013 planetary theory</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tides_spokes.html">Elastic tides</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lagrangian_propagator.html">Lagrange propagation and the state transition matrix</a></li>
 <li class="toctree-l2"><a class="reference internal" href="Sampling%20events.html">Sampling events</a></li>
 <li class="toctree-l2"><a class="reference internal" href="Poincar%C3%A9%20sections.html">Poincaré sections</a></li>
 <li class="toctree-l2"><a class="reference internal" href="second_integral.html">The second integral of motion</a></li>
@@ -575,11 +577,11 @@ requested).</p>
  Taylor order            : 20
  Dimension               : 2
  Time                    : 20
- State                   : [0.04033817408663731, 0.04912585974412174],
+ State                   : [0.0475892895779086, 0.05177000900904289],
  &lt;taylor_outcome.time_limit: -4294967299&gt;,
- 0.20846134993777574,
- 0.2209875521521299,
- 94,
+ 0.20227523472704925,
+ 0.21819945185792264,
+ 96,
  None)
 </pre></div>
 </div>
@@ -630,7 +632,7 @@ This keyword argument applies only to the <code class="docutils literal notransl
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/1dfc6ec1d3b3ffed1b2af2d09e554fa19f5980d0d988a584836a564586e0e929.png" src="../_images/1dfc6ec1d3b3ffed1b2af2d09e554fa19f5980d0d988a584836a564586e0e929.png" />
+<img alt="../_images/ba6b75a15dc82a28d4a3b1c421fabe5221771f415fe9da3440251892f1dc9378.png" src="../_images/ba6b75a15dc82a28d4a3b1c421fabe5221771f415fe9da3440251892f1dc9378.png" />
 </div>
 </div>
 </section>
@@ -763,8 +765,8 @@ By Francesco Biscani and Dario Izzo
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../_static/scripts/bootstrap.js?digest=ac02cc09edc035673794"></script>
-<script src="../_static/scripts/pydata-sphinx-theme.js?digest=ac02cc09edc035673794"></script>
+  <script src="../_static/scripts/bootstrap.js?digest=365ca57ee442770a23c6"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=365ca57ee442770a23c6"></script>
 
   <footer class="bd-footer">
   </footer>
