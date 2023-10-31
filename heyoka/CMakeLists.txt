@@ -25,6 +25,8 @@ set(HEYOKA_PY_PYTHON_FILES
     _test_batch_integrator.py
     _test_ensemble.py
     _test_memcache.py
+    _test_celmec.py
+    _test_sympy.py
     model/__init__.py
 )
 

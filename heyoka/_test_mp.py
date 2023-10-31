@@ -368,7 +368,7 @@ class mp_test_case(_ut.TestCase):
         if not hasattr(core, "real"):
             return
 
-        from . import expression as ex, real, kepE, atan2
+        from . import expression as ex, real, kepE, kepF, kepDE, atan2
 
         self.assertEqual(
             str(ex(real("1.1", 128))), "1.100000000000000000000000000000000000001"
@@ -414,6 +414,12 @@ class mp_test_case(_ut.TestCase):
 
         kepE(ex("x"), real("1.1", 128))
         kepE(real("1.1", 128), ex("x"))
+
+        kepF(ex("x"), real("1.1", 128), ex("y"))
+        kepF(real("1.1", 128), ex("y"), ex("x"))
+
+        kepDE(ex("x"), real("1.1", 128), ex("y"))
+        kepDE(real("1.1", 128), ex("y"), ex("x"))
 
         atan2(ex("x"), real("1.1", 128))
         atan2(real("1.1", 128), ex("x"))

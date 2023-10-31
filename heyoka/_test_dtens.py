@@ -10,6 +10,35 @@ import unittest as _ut
 
 
 class dtens_test_case(_ut.TestCase):
+    def test_gradient(self):
+        from . import diff_tensors, make_vars, expression as ex
+
+        x, y = make_vars("x", "y")
+
+        dt = diff_tensors([x - y])
+        self.assertEqual(dt.gradient, [ex(1.0), ex(-1.0)])
+
+    def test_jacobian(self):
+        from . import diff_tensors, make_vars, expression as ex
+        import numpy as np
+
+        x, y = make_vars("x", "y")
+
+        dt = diff_tensors([x - y, -x + y])
+        self.assertTrue(
+            np.all(dt.jacobian == np.array([[ex(1.0), ex(-1.0)], [ex(-1.0), ex(1.0)]]))
+        )
+
+        dt = diff_tensors([x - y, -x + y, -x - y])
+        self.assertTrue(
+            np.all(
+                dt.jacobian
+                == np.array(
+                    [[ex(1.0), ex(-1.0)], [ex(-1.0), ex(1.0)], [ex(-1.0), ex(-1.0)]]
+                )
+            )
+        )
+
     def test_basic(self):
         from . import dtens
         from sys import getrefcount

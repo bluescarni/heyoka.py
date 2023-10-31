@@ -11,7 +11,7 @@ if(NOT CMAKE_BUILD_TYPE)
 	FORCE)
 endif()
 
-project(heyoka.py VERSION 3.0.0 LANGUAGES CXX C)
+project(heyoka.py VERSION 3.1.0 LANGUAGES CXX C)
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake" "${CMAKE_CURRENT_SOURCE_DIR}/cmake/yacma")
 
@@ -118,7 +118,7 @@ find_package(fmt REQUIRED CONFIG)
 message(STATUS "fmt version: ${fmt_VERSION}")
 
 # heyoka.
-find_package(heyoka 3.0.0 REQUIRED CONFIG)
+find_package(heyoka 3.1.0 REQUIRED CONFIG)
 
 # Python.
 

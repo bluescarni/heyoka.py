@@ -297,10 +297,16 @@ void setup_sympy(py::module &m)
             }
         };
 
-        // kepE.
-        // NOTE: this will remain an unevaluated binary function.
+        // kepE, kepF, kepDE.
+        // NOTE: these will remain unevaluated functions.
         auto sympy_kepE = py::object(detail::spy->attr("Function")("heyoka_kepE"));
         detail::fmap[typeid(hy::detail::kepE_impl)] = sympy_kepE;
+
+        auto sympy_kepF = py::object(detail::spy->attr("Function")("heyoka_kepF"));
+        detail::fmap[typeid(hy::detail::kepF_impl)] = sympy_kepF;
+
+        auto sympy_kepDE = py::object(detail::spy->attr("Function")("heyoka_kepDE"));
+        detail::fmap[typeid(hy::detail::kepDE_impl)] = sympy_kepDE;
 
         // sigmoid.
         detail::fmap[typeid(hy::detail::sigmoid_impl)]
