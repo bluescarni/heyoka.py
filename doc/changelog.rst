@@ -6,6 +6,20 @@ Changelog
 3.1.0 (unreleased)
 ------------------
 
+New
+~~~
+
+- Implement the eccentric longitude :math:`F` in the expression
+  system (`#140 <https://github.com/bluescarni/heyoka.py/pull/140>`__).
+- Implement the delta eccentric anomaly :math:`\Delta E` in the expression
+  system (`#140 <https://github.com/bluescarni/heyoka.py/pull/140>`__).
+  Taylor derivatives are not implemented yet.
+- Implement convenience properties to fetch the gradient/Jacobian
+  from a ``dtens`` object
+  (`#140 <https://github.com/bluescarni/heyoka.py/pull/140>`__).
+- New example notebook implementing Lagrange propagation
+  (`#140 <https://github.com/bluescarni/heyoka.py/pull/140>`__).
+
 Changes
 ~~~~~~~
 
