@@ -20,6 +20,7 @@
 
 #include <fmt/core.h>
 
+#include <pybind11/functional.h>
 #include <pybind11/numpy.h>
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
@@ -362,6 +363,25 @@ void expose_models(py::module_ &m)
     m.def(
         "_model_cr3bp_jacobi", [](const vex_t &mu) { return detail::cr3bp_impl(hy::model::cr3bp_jacobi, mu); },
         "mu"_a.noconvert() = 1e-3);
+
+    // FFNN.
+    m.def(
+        "_model_ffnn",
+        [](const std::vector<hy::expression> &inputs, const std::vector<std::uint32_t> &nn_hidden, std::uint32_t n_out,
+           const std::vector<std::function<hy::expression(const hy::expression &)>> &activations,
+           const std::vector<hy::expression> &nn_wb) {
+            return hy::model::ffnn(hy::kw::inputs = inputs, hy::kw::nn_hidden = nn_hidden, hy::kw::n_out = n_out,
+                                   hy::kw::activations = activations, hy::kw::nn_wb = nn_wb);
+        },
+        "inputs"_a, "nn_hidden"_a, "n_out"_a, "activations"_a, "nn_wb"_a);
+    m.def(
+        "_model_ffnn",
+        [](const std::vector<hy::expression> &inputs, const std::vector<std::uint32_t> &nn_hidden, std::uint32_t n_out,
+           const std::vector<std::function<hy::expression(const hy::expression &)>> &activations) {
+            return hy::model::ffnn(hy::kw::inputs = inputs, hy::kw::nn_hidden = nn_hidden, hy::kw::n_out = n_out,
+                                   hy::kw::activations = activations);
+        },
+        "inputs"_a, "nn_hidden"_a, "n_out"_a, "activations"_a);
 }
 
 } // namespace heyoka_py
