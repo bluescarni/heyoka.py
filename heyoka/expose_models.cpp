@@ -369,11 +369,16 @@ void expose_models(py::module_ &m)
         "_model_ffnn",
         [](const std::vector<hy::expression> &inputs, const std::vector<std::uint32_t> &nn_hidden, std::uint32_t n_out,
            const std::vector<std::function<hy::expression(const hy::expression &)>> &activations,
-           const std::vector<hy::expression> &nn_wb) {
-            return hy::model::ffnn(hy::kw::inputs = inputs, hy::kw::nn_hidden = nn_hidden, hy::kw::n_out = n_out,
-                                   hy::kw::activations = activations, hy::kw::nn_wb = nn_wb);
+           const std::variant<std::vector<hy::expression>, std::vector<double>> &nn_wb) {
+            return std::visit(
+                [&](const auto &w) {
+                    return hy::model::ffnn(hy::kw::inputs = inputs, hy::kw::nn_hidden = nn_hidden,
+                                           hy::kw::n_out = n_out, hy::kw::activations = activations, hy::kw::nn_wb = w);
+                },
+                nn_wb);
         },
         "inputs"_a, "nn_hidden"_a, "n_out"_a, "activations"_a, "nn_wb"_a);
+
     m.def(
         "_model_ffnn",
         [](const std::vector<hy::expression> &inputs, const std::vector<std::uint32_t> &nn_hidden, std::uint32_t n_out,

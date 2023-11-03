@@ -282,7 +282,10 @@ class model_test_case(_ut.TestCase):
         self.assertTrue(my_ffnn1[0] == par[1] + (par[0] * x))
         self.assertTrue(my_ffnn2[0] == par[2] + (par[0] * x) + (par[1] * y))
 
-        my_ffnn = model.ffnn([x], [], 1, [linear], [expression(1.2), expression(1.3)])
-        self.assertTrue(my_ffnn[0] == expression(1.3) + (expression(1.2) * x))
+        my_ffnn3 = model.ffnn([x], [], 1, [linear], [expression(1.2), expression(1.3)])
+        self.assertTrue(my_ffnn3[0] == expression(1.3) + (expression(1.2) * x))
+
+        my_ffnn4 = model.ffnn([x], [], 1, [linear], [1.2, 1.3])
+        self.assertTrue(my_ffnn4[0] == expression(1.3) + (expression(1.2) * x))
 
 
