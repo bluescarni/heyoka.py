@@ -308,6 +308,17 @@ void setup_sympy(py::module &m)
         auto sympy_kepDE = py::object(detail::spy->attr("Function")("heyoka_kepDE"));
         detail::fmap[typeid(hy::detail::kepDE_impl)] = sympy_kepDE;
 
+        // relu, relup.
+        // NOTE: these will remain unevaluated functions.
+        // NOTE: it might be possible to implement relu and relup as
+        // piecewise functions:
+        // https://stats.stackexchange.com/questions/540101/how-to-use-sympy-library-to-create-a-leakey-relu-function-for-implementation
+        auto sympy_relu = py::object(detail::spy->attr("Function")("heyoka_relu"));
+        detail::fmap[typeid(hy::detail::relu_impl)] = sympy_relu;
+
+        auto sympy_relup = py::object(detail::spy->attr("Function")("heyoka_relup"));
+        detail::fmap[typeid(hy::detail::relup_impl)] = sympy_relup;
+
         // sigmoid.
         detail::fmap[typeid(hy::detail::sigmoid_impl)]
             = [](std::unordered_map<const void *, py::object> &func_map, const hy::func &f) {

@@ -295,6 +295,8 @@ void expose_expression(py::module_ &m)
     m.def("atanh", &hey::atanh);
     m.def("sigmoid", &hey::sigmoid);
     m.def("erf", &hey::erf);
+    m.def("relu", &hey::relu);
+    m.def("relup", &hey::relup);
 
     // NOTE: when exposing multivariate functions, we want to be able to pass
     // in numerical arguments for convenience. Thus, we expose such functions taking

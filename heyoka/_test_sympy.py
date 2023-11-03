@@ -288,6 +288,20 @@ class sympy_test_case(_ut.TestCase):
         )
 
         self.assertEqual(
+            core.relu(hx), from_sympy(spy.Function("heyoka_relu")(x))
+        )
+        self.assertEqual(
+            to_sympy(core.relu(hx)), spy.Function("heyoka_relu")(x)
+        )
+
+        self.assertEqual(
+            core.relup(hx), from_sympy(spy.Function("heyoka_relup")(x))
+        )
+        self.assertEqual(
+            to_sympy(core.relup(hx)), spy.Function("heyoka_relup")(x)
+        )
+
+        self.assertEqual(
             core.kepDE(hx, hy, hz), from_sympy(spy.Function("heyoka_kepDE")(x, y, z))
         )
         self.assertEqual(
