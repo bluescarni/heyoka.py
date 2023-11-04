@@ -10,13 +10,11 @@ set -e
 sudo apt-get install build-essential wget
 
 # Install conda+deps.
-wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh
+wget https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-Linux-x86_64.sh -O miniforge.sh
 export deps_dir=$HOME/local
-export PATH="$HOME/miniconda/bin:$PATH"
-bash miniconda.sh -b -p $HOME/miniconda
-conda config --add channels conda-forge
-conda config --set channel_priority strict
-conda create -y -q -p $deps_dir python=3.8 git pybind11 numpy mpmath cmake llvmdev tbb-devel tbb astroquery boost-cpp mppp sleef fmt spdlog sphinx myst-nb matplotlib sympy scipy pykep cloudpickle sphinx-book-theme
+export PATH="$HOME/miniforge/bin:$PATH"
+bash miniforge.sh -b -p $HOME/miniforge
+mamba create -y -q -p $deps_dir python=3.10 git pybind11 numpy mpmath cmake llvmdev tbb-devel tbb astroquery boost-cpp mppp sleef fmt spdlog sphinx myst-nb matplotlib sympy scipy pykep cloudpickle sphinx-book-theme
 source activate $deps_dir
 
 export HEYOKA_PY_PROJECT_DIR=`pwd`
@@ -39,15 +37,22 @@ cd build
 cmake ../ -DCMAKE_INSTALL_PREFIX=$deps_dir -DCMAKE_PREFIX_PATH=$deps_dir -DHEYOKA_PY_ENABLE_IPO=yes -DBoost_NO_BOOST_CMAKE=ON
 make -j2 VERBOSE=1 install
 
-cd
+cd ../tools
 
-python -c "from heyoka import test; test.run_test_suite()"
+python ci_test_runner.py
 
 cd $HEYOKA_PY_PROJECT_DIR
 
 cd doc
 
-make html linkcheck
+# NOTE: do not run linkcheck on the main branch,
+# as we don't want to prevent the docs upload
+# in case of transient network errors.
+if [[ "${CIRCLE_BRANCH}" == "main" ]]; then
+    make html
+else
+    make html linkcheck
+fi
 
 if [[ ! -z "${CI_PULL_REQUEST}" ]]; then
     echo "Testing a pull request, the generated documentation will not be uploaded.";

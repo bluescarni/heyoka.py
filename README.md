@@ -2,10 +2,10 @@ heyoka.py
 =========
 
 [![Build Status](https://img.shields.io/circleci/project/github/bluescarni/heyoka.py/main.svg?style=for-the-badge)](https://circleci.com/gh/bluescarni/heyoka.py)
-[![Build Status](https://img.shields.io/appveyor/ci/bluescarni/heyoka-py/main.svg?logo=appveyor&style=for-the-badge)](https://ci.appveyor.com/project/bluescarni/heyoka-py)
-[![Build Status](https://img.shields.io/github/workflow/status/bluescarni/heyoka.py/GitHub%20CI?style=for-the-badge)](https://github.com/bluescarni/heyoka.py/actions?query=workflow%3A%22GitHub+CI%22)
+[![Build Status](https://img.shields.io/github/actions/workflow/status/bluescarni/heyoka.py/gh_actions_ci.yml?branch=main&style=for-the-badge)](https://github.com/bluescarni/heyoka.py/actions?query=workflow%3A%22GitHub+CI%22)
 
 [![Anaconda-Server Badge](https://img.shields.io/conda/vn/conda-forge/heyoka.py.svg?style=for-the-badge)](https://anaconda.org/conda-forge/heyoka.py)
+[![PyPI](https://img.shields.io/pypi/v/heyoka.svg?style=for-the-badge)](https://pypi.python.org/pypi/heyoka)
 
 <!-- PROJECT LOGO -->
 <br />
@@ -34,21 +34,20 @@ heyoka.py
 > people around them.
 
 heyoka.py is a Python library for the integration of ordinary differential equations
-(ODEs) via Taylor's method. Notable features include:
+(ODEs) via Taylor's method, based on automatic differentiation techniques and aggressive just-in-time
+compilation via [LLVM](https://llvm.org/). Notable features include:
 
-* support for both double-precision and extended-precision floating-point types
-  (80-bit and 128-bit),
+* support for double-precision, extended-precision (80-bit and 128-bit),
+  and arbitrary-precision floating-point types,
 * the ability to maintain machine precision accuracy over
   tens of billions of timesteps,
 * high-precision zero-cost dense output,
 * accurate and reliable event detection,
 * batch mode integration to harness the power of modern
-  [SIMD](https://en.wikipedia.org/wiki/SIMD) instruction sets,
+  [SIMD](https://en.wikipedia.org/wiki/SIMD) instruction sets
+  (including AVX/AVX2/AVX-512/Neon/VSX),
 * ensemble simulations and automatic parallelisation,
-* interoperability with [SymPy](https://www.sympy.org/en/index.html),
-* a high-performance implementation of Taylor's method based
-  on automatic differentiation techniques and aggressive just-in-time
-  compilation via [LLVM](https://llvm.org/).
+* interoperability with [SymPy](https://www.sympy.org/en/index.html).
 
 heyoka.py is based on the [heyoka C++ library](https://github.com/bluescarni/heyoka).
 
@@ -73,6 +72,40 @@ to the heyoka.py paper ([arXiv preprint](https://arxiv.org/abs/2105.00800)):
 }
 ```
 
+heyoka.py's novel event detection system is described in the following paper ([arXiv preprint](https://arxiv.org/abs/2204.09948)):
+
+```bibtex
+@article{10.1093/mnras/stac1092,
+    author = {Biscani, Francesco and Izzo, Dario},
+    title = "{Reliable event detection for Taylor methods in astrodynamics}",
+    journal = {Monthly Notices of the Royal Astronomical Society},
+    volume = {513},
+    number = {4},
+    pages = {4833-4844},
+    year = {2022},
+    month = {04},
+    issn = {0035-8711},
+    doi = {10.1093/mnras/stac1092},
+    url = {https://doi.org/10.1093/mnras/stac1092},
+    eprint = {https://academic.oup.com/mnras/article-pdf/513/4/4833/43796551/stac1092.pdf}
+}
+```
+
+Installation
+------------
+
+Via pip:
+
+```console
+$ pip install heyoka
+```
+
+Via conda + [conda-forge](https://conda-forge.org/):
+
+```console
+$ conda install heyoka.py
+```
+
 Documentation
 -------------
 
@@ -81,7 +114,7 @@ The full documentation can be found [here](https://bluescarni.github.io/heyoka.p
 Authors
 -------
 
-* Francesco Biscani (Max Planck Institute for Astronomy)
+* Francesco Biscani (European Space Agency)
 * Dario Izzo (European Space Agency)
 
 License

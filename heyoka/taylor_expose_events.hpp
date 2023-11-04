@@ -1,4 +1,4 @@
-// Copyright 2020, 2021, 2022 Francesco Biscani (bluescarni@gmail.com), Dario Izzo (dario.izzo@gmail.com)
+// Copyright 2020, 2021, 2022, 2023 Francesco Biscani (bluescarni@gmail.com), Dario Izzo (dario.izzo@gmail.com)
 //
 // This file is part of the heyoka.py library.
 //
@@ -27,12 +27,24 @@ void expose_taylor_t_event_f128(py::module &);
 
 #endif
 
+#if defined(HEYOKA_HAVE_REAL)
+
+void expose_taylor_t_event_real(py::module &);
+
+#endif
+
 void expose_taylor_nt_event_dbl(py::module &);
 void expose_taylor_nt_event_ldbl(py::module &);
 
 #if defined(HEYOKA_HAVE_REAL128)
 
 void expose_taylor_nt_event_f128(py::module &);
+
+#endif
+
+#if defined(HEYOKA_HAVE_REAL)
+
+void expose_taylor_nt_event_real(py::module &);
 
 #endif
 

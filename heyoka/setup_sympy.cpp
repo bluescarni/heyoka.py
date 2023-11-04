@@ -1,4 +1,4 @@
-// Copyright 2020, 2021, 2022 Francesco Biscani (bluescarni@gmail.com), Dario Izzo (dario.izzo@gmail.com)
+// Copyright 2020, 2021, 2022, 2023 Francesco Biscani (bluescarni@gmail.com), Dario Izzo (dario.izzo@gmail.com)
 //
 // This file is part of the heyoka.py library.
 //
@@ -10,14 +10,19 @@
 
 #include <cassert>
 #include <cmath>
+#include <cstdint>
 #include <functional>
 #include <iostream>
+#include <limits>
 #include <optional>
 #include <stdexcept>
+#include <type_traits>
 #include <typeindex>
 #include <typeinfo>
 #include <unordered_map>
 #include <variant>
+
+#include <boost/numeric/conversion/cast.hpp>
 
 #include <pybind11/functional.h>
 #include <pybind11/pybind11.h>
@@ -26,12 +31,22 @@
 #include <Python.h>
 
 #include <fmt/format.h>
-#include <fmt/ostream.h>
+
+#if defined(HEYOKA_HAVE_REAL128) || defined(HEYOKA_HAVE_REAL)
+
+#include <mp++/integer.hpp>
+
+#endif
 
 #if defined(HEYOKA_HAVE_REAL128)
 
-#include <mp++/extra/pybind11.hpp>
 #include <mp++/real128.hpp>
+
+#endif
+
+#if defined(HEYOKA_HAVE_REAL)
+
+#include <mp++/real.hpp>
 
 #endif
 
@@ -43,7 +58,7 @@
 #include <heyoka/variable.hpp>
 
 #include "common_utils.hpp"
-#include "long_double_caster.hpp"
+#include "custom_casters.hpp"
 #include "setup_sympy.hpp"
 
 namespace heyoka_py
@@ -75,6 +90,8 @@ py::object to_sympy_impl(std::unordered_map<const void *, py::object> &, const h
 // Implementation of the conversion functions for the node types.
 py::object to_sympy_impl(std::unordered_map<const void *, py::object> &, const hy::variable &var)
 {
+    assert(spy);
+
     // NOTE: heyoka symbols can assume only
     // real values.
     py::kwargs kwa;
@@ -85,30 +102,69 @@ py::object to_sympy_impl(std::unordered_map<const void *, py::object> &, const h
 
 py::object to_sympy_impl(std::unordered_map<const void *, py::object> &, const hy::param &par)
 {
+    assert(spy);
+
     // NOTE: params are converted to symbolic variables
     // following a naming convention.
-    using namespace fmt::literals;
 
     // NOTE: heyoka params can assume only
     // real values.
     py::kwargs kwa;
     kwa["real"] = true;
 
-    return spy->attr("Symbol")("par[{}]"_format(par.idx()), **kwa);
+    return spy->attr("Symbol")(fmt::format("par[{}]", par.idx()), **kwa);
 }
 
 // Number conversion corresponds to casting to python
 // the numerical value.
 py::object to_sympy_impl(std::unordered_map<const void *, py::object> &, const hy::number &num)
 {
+    // NOTE: if num contains an integral value, we want to convert it into a SymPy integer,
+    // since several simplifications are disabled for floating-point constants:
+    // https://github.com/sympy/sympy/issues/23040
+    const auto is_int = hy::is_integer(num);
+
     return std::visit(
-        [](const auto &x) {
+        [&num, is_int](const auto &x) -> py::object {
             using std::isfinite;
 
             // NOTE: forbid conversion if the value is not finite.
             if (!isfinite(x)) {
-                using namespace fmt::literals;
-                py_throw(PyExc_ValueError, ("Cannot convert to sympy the nonfinite number {}"_format(x)).c_str());
+                py_throw(PyExc_ValueError,
+                         (fmt::format("Cannot convert to sympy the nonfinite number {}", hy::expression{num})).c_str());
+            }
+
+#if defined(HEYOKA_HAVE_REAL128)
+            if constexpr (std::is_same_v<std::remove_cv_t<std::remove_reference_t<decltype(x)>>, mppp::real128>) {
+                if (is_int) {
+                    return spy->attr("Integer")(static_cast<mppp::integer<1>>(x).to_string());
+                } else {
+                    return spy->attr("Float")(x.to_string(), py::none{}, std::numeric_limits<mppp::real128>::digits);
+                }
+            }
+#endif
+
+#if defined(HEYOKA_HAVE_REAL)
+            if constexpr (std::is_same_v<std::remove_cv_t<std::remove_reference_t<decltype(x)>>, mppp::real>) {
+                if (is_int) {
+                    return spy->attr("Integer")(static_cast<mppp::integer<1>>(x).to_string());
+                } else {
+                    return spy->attr("Float")(x.to_string(), py::none{}, x.get_prec());
+                }
+            }
+#endif
+
+            if constexpr (std::is_floating_point_v<std::remove_cv_t<std::remove_reference_t<decltype(x)>>>) {
+                if (is_int) {
+#if defined(HEYOKA_HAVE_REAL128) || defined(HEYOKA_HAVE_REAL)
+                    return spy->attr("Integer")(static_cast<mppp::integer<1>>(x).to_string());
+#else
+                    // NOTE: if we cannot leverage mppp::integer for the conversion, let's just
+                    // try with a 64-bit int. Clearly this could overflow and raise an exception,
+                    // if this becomes an issue we will have to find a better solution.
+                    return spy->attr("Integer")(boost::numeric_cast<std::int64_t>(x));
+#endif
+                }
             }
 
             return py::cast(x);
@@ -118,7 +174,7 @@ py::object to_sympy_impl(std::unordered_map<const void *, py::object> &, const h
 
 py::object to_sympy_impl(std::unordered_map<const void *, py::object> &func_map, const hy::func &f)
 {
-    const auto f_id = f.get_ptr();
+    const auto *const f_id = f.get_ptr();
 
     if (auto it = func_map.find(f_id); it != func_map.end()) {
         // We already converted the current function, return the
@@ -129,12 +185,12 @@ py::object to_sympy_impl(std::unordered_map<const void *, py::object> &func_map,
     auto it = fmap.find(f.get_type_index());
 
     if (it == fmap.end()) {
-        using namespace fmt::literals;
-        py_throw(PyExc_TypeError, ("Cannot convert to sympy the heyoka function {}"_format(f)).c_str());
+        py_throw(PyExc_TypeError,
+                 (fmt::format("Cannot convert to sympy the heyoka function {}", hy::expression{f})).c_str());
     }
 
     py::object retval;
-    if (auto pobj = std::get_if<0>(&it->second)) {
+    if (auto *pobj = std::get_if<0>(&it->second)) {
         // We can use directly a sympy function. Convert
         // the function arguments and invoke the function.
         py::list args;
@@ -165,7 +221,26 @@ py::object to_sympy(const hy::expression &ex)
 {
     std::unordered_map<const void *, py::object> func_map;
 
-    return to_sympy_impl(func_map, ex);
+    // NOTE: unfix ex so that we don't have to deal with
+    // mapping the fix() function to SymPy.
+    return to_sympy_impl(func_map, hy::unfix(ex));
+}
+
+py::list to_sympy(const std::vector<hy::expression> &v_ex_)
+{
+    std::unordered_map<const void *, py::object> func_map;
+
+    py::list retval;
+
+    // NOTE: unfix v_ex_ so that we don't have to deal with
+    // mapping the fix() function to SymPy.
+    const auto v_ex = hy::unfix(v_ex_);
+
+    for (const auto &ex : v_ex) {
+        retval.append(to_sympy_impl(func_map, ex));
+    }
+
+    return retval;
 }
 
 } // namespace
@@ -200,60 +275,38 @@ void setup_sympy(py::module &m)
         detail::fmap[typeid(hy::detail::log_impl)] = py::object(detail::spy->attr("log"));
         detail::fmap[typeid(hy::detail::sin_impl)] = py::object(detail::spy->attr("sin"));
         detail::fmap[typeid(hy::detail::sinh_impl)] = py::object(detail::spy->attr("sinh"));
-        detail::fmap[typeid(hy::detail::sqrt_impl)] = py::object(detail::spy->attr("sqrt"));
         detail::fmap[typeid(hy::detail::tan_impl)] = py::object(detail::spy->attr("tan"));
         detail::fmap[typeid(hy::detail::tanh_impl)] = py::object(detail::spy->attr("tanh"));
-        detail::fmap[typeid(hy::detail::pow_impl)] = py::object(detail::spy->attr("Pow"));
         detail::fmap[typeid(hy::detail::sum_impl)] = py::object(detail::spy->attr("Add"));
+        detail::fmap[typeid(hy::detail::prod_impl)] = py::object(detail::spy->attr("Mul"));
 
-        // sum_sq.
-        detail::fmap[typeid(hy::detail::sum_sq_impl)]
-            = [](std::unordered_map<const void *, py::object> &func_map, const hy::func &f) {
-                  // Convert all arguments to Python objects.
-                  py::list py_args;
-                  for (const auto &arg : f.args()) {
-                      auto tmp = detail::to_sympy_impl(func_map, arg);
-                      py_args.append(tmp * tmp);
-                  }
+        // Special case pow() to detect sqrt().
+        detail::fmap[typeid(hy::detail::pow_impl)]
+            = [](std::unordered_map<const void *, py::object> &func_map, const hy::func &f) -> py::object {
+            assert(f.args().size() == 2u);
 
-                  return py::object(detail::spy->attr("Add"))(*py_args);
-              };
+            const auto &base = f.args()[0];
+            const auto &expo = f.args()[1];
 
-        // Binary op.
-        detail::fmap[typeid(hy::detail::binary_op)]
-            = [](std::unordered_map<const void *, py::object> &func_map, const hy::func &f) {
-                  assert(f.args().size() == 2u);
+            if (const auto *num_ptr = std::get_if<hy::number>(&expo.value());
+                num_ptr != nullptr && std::visit([](const auto &v) { return v == .5; }, num_ptr->value())) {
+                return detail::spy->attr("sqrt")(detail::to_sympy_impl(func_map, base));
+            } else {
+                return detail::spy->attr("Pow")(detail::to_sympy_impl(func_map, base),
+                                                detail::to_sympy_impl(func_map, expo));
+            }
+        };
 
-                  auto op0 = detail::to_sympy_impl(func_map, f.args()[0]);
-                  auto op1 = detail::to_sympy_impl(func_map, f.args()[1]);
-
-                  const auto op_type = f.extract<hy::detail::binary_op>()->op();
-
-                  switch (op_type) {
-                      case hy::detail::binary_op::type::add:
-                          return op0 + op1;
-                      case hy::detail::binary_op::type::sub:
-                          return op0 - op1;
-                      case hy::detail::binary_op::type::mul:
-                          return op0 * op1;
-                      default:
-                          assert(op_type == hy::detail::binary_op::type::div);
-                          return op0 / op1;
-                  }
-              };
-
-        // kepE.
-        // NOTE: this will remain an unevaluated binary function.
+        // kepE, kepF, kepDE.
+        // NOTE: these will remain unevaluated functions.
         auto sympy_kepE = py::object(detail::spy->attr("Function")("heyoka_kepE"));
         detail::fmap[typeid(hy::detail::kepE_impl)] = sympy_kepE;
 
-        // neg.
-        detail::fmap[typeid(hy::detail::neg_impl)]
-            = [](std::unordered_map<const void *, py::object> &func_map, const hy::func &f) {
-                  assert(f.args().size() == 1u);
+        auto sympy_kepF = py::object(detail::spy->attr("Function")("heyoka_kepF"));
+        detail::fmap[typeid(hy::detail::kepF_impl)] = sympy_kepF;
 
-                  return -detail::to_sympy_impl(func_map, f.args()[0]);
-              };
+        auto sympy_kepDE = py::object(detail::spy->attr("Function")("heyoka_kepDE"));
+        detail::fmap[typeid(hy::detail::kepDE_impl)] = sympy_kepDE;
 
         // sigmoid.
         detail::fmap[typeid(hy::detail::sigmoid_impl)]
@@ -264,33 +317,29 @@ void setup_sympy(py::module &m)
                          / (py::cast(1.) + detail::spy->attr("exp")(-detail::to_sympy_impl(func_map, f.args()[0])));
               };
 
-        // square.
-        detail::fmap[typeid(hy::detail::square_impl)]
-            = [](std::unordered_map<const void *, py::object> &func_map, const hy::func &f) {
-                  assert(f.args().size() == 1u);
-
-                  auto op = detail::to_sympy_impl(func_map, f.args()[0]);
-                  return op * op;
-              };
-
         // time.
         // NOTE: this will remain an unevaluated nullary function.
         auto sympy_time = py::object(detail::spy->attr("Function")("heyoka_time"));
         detail::fmap[typeid(hy::detail::time_impl)] = sympy_time;
 
-        // tpoly.
-        // NOTE: this will remain an unevaluated binary function.
-        auto sympy_tpoly = py::object(detail::spy->attr("Function")("heyoka_tpoly"));
-        detail::fmap[typeid(hy::detail::tpoly_impl)] = sympy_tpoly;
+        // Constants.
+        detail::fmap[typeid(hy::constant)] = [](std::unordered_map<const void *, py::object> &, const hy::func &f) {
+            const auto *cptr = f.extract<hy::constant>();
+            assert(cptr != nullptr);
 
-        // pi.
-        detail::fmap[typeid(hy::detail::pi_impl)]
-            = [](std::unordered_map<const void *, py::object> &, const hy::func &) {
-                  return py::object(detail::spy->attr("pi"));
-              };
+            if (cptr->get_str_func_t() == typeid(hy::detail::pi_constant_func)) {
+                return py::object(detail::spy->attr("pi"));
+            }
+
+            // Translate other constants as unevaluated nullary functions.
+            return py::object(detail::spy->attr("Function")(f.get_name().c_str()));
+        };
 
         // Expose the conversion function.
-        m.def("to_sympy", &detail::to_sympy);
+        m.def("to_sympy", [](const std::variant<hy::expression, std::vector<hy::expression>> &arg) {
+            return std::visit([](const auto &v) -> std::variant<py::object, py::list> { return detail::to_sympy(v); },
+                              arg);
+        });
 
         // Register a cleanup function to destroy the global variables at shutdown.
         auto atexit = py::module_::import("atexit");
