@@ -34,6 +34,7 @@ Celestial mechanics and astrodynamics
   notebooks/Pseudo arc-length continuation in the CR3BP
   notebooks/Long term stability of Trappist-1
   notebooks/Outer Solar System
+  notebooks/projection
   notebooks/Box control for Formation Flying Satellites
   notebooks/Comparing coordinate systems
   notebooks/Inverting Kepler's equation in ODEs
@@ -42,21 +43,30 @@ Celestial mechanics and astrodynamics
   notebooks/ttv
   notebooks/vsop2013
   notebooks/tides_spokes
+  notebooks/lagrangian_propagator
 
-Dynamical systems
------------------
-
-.. toctree::
-  :maxdepth: 1
-
-  notebooks/second_integral
-
-Others
+Event detection
 ---------------
 
 .. toctree::
   :maxdepth: 1
 
+  notebooks/Sampling events
+  notebooks/Poincaré sections
+  notebooks/second_integral
+  notebooks/The Keplerian billiard
+  notebooks/The two-fixed elliptic billiard
+  notebooks/The wavy ramp
+  notebooks/The Maxwell-Boltzmann distribution
+  notebooks/ev_sensitivity
+
+Others
+------
+
+.. toctree::
+  :maxdepth: 1
+
+  notebooks/ensemble_batch_perf.ipynb
   notebooks/The variational equations
   notebooks/Optimal Control of the Lotka-Volterra equations
   notebooks/definite_integrals

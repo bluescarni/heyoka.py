@@ -1,4 +1,4 @@
-// Copyright 2020, 2021, 2022 Francesco Biscani (bluescarni@gmail.com), Dario Izzo (dario.izzo@gmail.com)
+// Copyright 2020, 2021, 2022, 2023 Francesco Biscani (bluescarni@gmail.com), Dario Izzo (dario.izzo@gmail.com)
 //
 // This file is part of the heyoka.py library.
 //
@@ -8,9 +8,6 @@
 
 #ifndef HEYOKA_PY_TAYLOR_EXPOSE_INTEGRATOR_HPP
 #define HEYOKA_PY_TAYLOR_EXPOSE_INTEGRATOR_HPP
-
-#include <functional>
-#include <utility>
 
 #include <pybind11/pybind11.h>
 
@@ -30,28 +27,11 @@ void expose_taylor_integrator_f128(py::module &);
 
 #endif
 
-// NOTE: this helper wraps a callback for the propagate_*()
-// functions ensuring that the GIL is acquired before invoking the callback.
-// Additionally, the returned wrapper will contain a const reference to the
-// original callback. This ensures that copying the wrapper does not
-// copy the original callback, so that copying the wrapper
-// never ends up calling into the Python interpreter.
-// If cb is an empty callback, a copy of cb will be returned.
-template <typename T>
-inline auto make_prop_cb(const std::function<bool(T &)> &cb)
-{
-    if (cb) {
-        auto ret = [&cb](T &ta) {
-            py::gil_scoped_acquire acquire;
+#if defined(HEYOKA_HAVE_REAL)
 
-            return cb(ta);
-        };
+void expose_taylor_integrator_real(py::module &);
 
-        return std::function<bool(T &)>(std::move(ret));
-    } else {
-        return cb;
-    }
-}
+#endif
 
 } // namespace heyoka_py
 

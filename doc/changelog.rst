@@ -3,6 +3,223 @@
 Changelog
 =========
 
+3.1.0 (unreleased)
+------------------
+
+New
+~~~
+
+- Implement the eccentric longitude :math:`F` in the expression
+  system (`#140 <https://github.com/bluescarni/heyoka.py/pull/140>`__).
+- Implement the delta eccentric anomaly :math:`\Delta E` in the expression
+  system (`#140 <https://github.com/bluescarni/heyoka.py/pull/140>`__).
+  Taylor derivatives are not implemented yet.
+- Implement convenience properties to fetch the gradient/Jacobian
+  from a ``dtens`` object
+  (`#140 <https://github.com/bluescarni/heyoka.py/pull/140>`__).
+- New example notebook implementing Lagrange propagation
+  (`#140 <https://github.com/bluescarni/heyoka.py/pull/140>`__).
+
+Changes
+~~~~~~~
+
+- heyoka.py now requires version 3.1.0 of the
+  heyoka C++ library
+  (`#140 <https://github.com/bluescarni/heyoka.py/pull/140>`__).
+
+Fix
+~~~
+
+- Fix building against Python 3.12
+  (`#139 <https://github.com/bluescarni/heyoka.py/pull/139>`__).
+
+3.0.0 (2023-10-07)
+------------------
+
+Changes
+~~~~~~~
+
+- heyoka.py now requires version 3.0.0 of the
+  heyoka C++ library
+  (`#137 <https://github.com/bluescarni/heyoka.py/pull/137>`__).
+
+2.0.0 (2023-09-22)
+------------------
+
+New
+~~~
+
+- Add model for the circular restricted three-body problem
+  (`#135 <https://github.com/bluescarni/heyoka.py/pull/135>`__).
+- The LLVM SLP vectorizer can now be enabled
+  (`#134 <https://github.com/bluescarni/heyoka.py/pull/134>`__).
+  This feature is opt-in due to the fact that enabling it
+  can considerably increase JIT compilation times.
+- Implement an in-memory cache for ``llvm_state``. The cache is used
+  to avoid re-optimising and re-compiling LLVM code which has
+  already been optimised and compiled during the program execution
+  (`#132 <https://github.com/bluescarni/heyoka.py/pull/132>`__).
+- It is now possible to get the LLVM bitcode of
+  an ``llvm_state``
+  (`#132 <https://github.com/bluescarni/heyoka.py/pull/132>`__).
+
+1.0.0 (2023-08-11)
+------------------
+
+New
+~~~
+
+- The step callbacks can now optionally implement a ``pre_hook()``
+  method that will be called before the first step
+  is taken by a ``propagate_*()`` function
+  (`#128 <https://github.com/bluescarni/heyoka.py/pull/128>`__).
+- Introduce several vectorised overloads in the expression
+  API. These vectorised overloads allow to perform the same
+  operation on a list of expressions more efficiently
+  than performing the same operation repeatedly on individual
+  expressions
+  (`#127 <https://github.com/bluescarni/heyoka.py/pull/127>`__).
+- New API to compute high-order derivatives
+  (`#127 <https://github.com/bluescarni/heyoka.py/pull/127>`__).
+- Implement substitution of generic subexpressions
+  (`#127 <https://github.com/bluescarni/heyoka.py/pull/127>`__).
+- The state variables and right-hand side of a system of ODEs
+  are now available as read-only properties in the integrator
+  classes
+  (`#122 <https://github.com/bluescarni/heyoka.py/pull/122>`__).
+- Several additions to the :ref:`compiled functions <cfunc_tut>` API:
+  compiled functions can now
+  be pickled/unpickled, and they expose several information as
+  read-only properties (e.g., list of variables, outputs, etc.)
+  (`#120 <https://github.com/bluescarni/heyoka.py/pull/120>`__).
+- Expressions now support hashing
+  (`#120 <https://github.com/bluescarni/heyoka.py/pull/120>`__).
+- New ``model`` submodule containing ready-made dynamical models
+  (`#119 <https://github.com/bluescarni/heyoka.py/pull/119>`__).
+
+Changes
+~~~~~~~
+
+- **BREAKING**: the VSOP2013 functions have been moved from the
+  main module to the new ``model`` submodule
+  (`#130 <https://github.com/bluescarni/heyoka.py/pull/130>`__).
+  This is a :ref:`breaking change <bchanges_1_0_0>`.
+- The custom NumPy memory manager that prevents memory leaks
+  with ``real`` arrays is now disabled by default
+  (`#129 <https://github.com/bluescarni/heyoka.py/pull/129>`__).
+- The step callbacks are now deep-copied in multithreaded
+  :ref:`ensemble propagations <ensemble_prop>`
+  rather then being shared among threads. The aim of this change
+  is to reduce the likelihood of data races
+  (`#128 <https://github.com/bluescarni/heyoka.py/pull/128>`__).
+- Comprehensive overhaul of the expression system, including:
+  enhanced automatic simplification capabilities for sums,
+  products and powers, removal of several specialised primitives
+  (such as ``square()``, ``neg()``, ``sum_sq()``, etc.),
+  re-implementation of division and subtraction as special
+  cases of product and sum, and more
+  (`#127 <https://github.com/bluescarni/heyoka.py/pull/127>`__).
+- heyoka.py now requires at least version 1.0.0 of the
+  heyoka C++ library
+  (`#127 <https://github.com/bluescarni/heyoka.py/pull/127>`__).
+- **BREAKING**: the ``make_nbody_sys()`` helper has been replaced by an equivalent
+  function in the new ``model`` submodule
+  (`#119 <https://github.com/bluescarni/heyoka.py/pull/119>`__).
+  This is a :ref:`breaking change <bchanges_1_0_0>`.
+
+0.21.8 (2023-07-03)
+-------------------
+
+Fix
+~~~
+
+- Fix building against NumPy 1.25
+  (`#125 <https://github.com/bluescarni/heyoka.py/pull/125>`__).
+
+0.21.7 (2023-02-16)
+-------------------
+
+New
+~~~
+
+- Add support for installation via ``pip`` on Linux
+  (`#115 <https://github.com/bluescarni/heyoka.py/pull/115>`__).
+- Time-dependent functions can now be compiled
+  (`#113 <https://github.com/bluescarni/heyoka.py/pull/113>`__).
+
+Changes
+~~~~~~~
+
+- heyoka.py now requires at least version 0.21.0 of the
+  heyoka C++ library
+  (`#113 <https://github.com/bluescarni/heyoka.py/pull/113>`__).
+
+0.20.0 (2022-12-18)
+-------------------
+
+New
+~~~
+
+- Implement arbitrary-precision computations
+  (`#108 <https://github.com/bluescarni/heyoka.py/pull/108>`__).
+- Implement the ``isnan()`` and ``isinf()`` NumPy ufuncs for
+  ``real128``
+  (`#108 <https://github.com/bluescarni/heyoka.py/pull/108>`__).
+- Several JIT-related settings can now be tweaked via keyword arguments
+  (`#107 <https://github.com/bluescarni/heyoka.py/pull/107>`__).
+
+Changes
+~~~~~~~
+
+- heyoka.py now requires CMake >= 3.18 when building from source
+  (`#109 <https://github.com/bluescarni/heyoka.py/pull/109>`__).
+- heyoka.py now requires at least version 0.20.0 of the
+  heyoka C++ library
+  (`#107 <https://github.com/bluescarni/heyoka.py/pull/107>`__).
+
+Fix
+~~~
+
+- Fix the ``real128`` NumPy comparison operator to be consistent
+  with ``float`` with respect to NaN values
+  (`#108 <https://github.com/bluescarni/heyoka.py/pull/108>`__).
+- Prevent the ``real128`` constructor from being called with keyword arguments
+  (`#108 <https://github.com/bluescarni/heyoka.py/pull/108>`__).
+- Fix a build issue with Python 3.11
+  (`#107 <https://github.com/bluescarni/heyoka.py/pull/107>`__).
+
+0.19.0 (2022-09-19)
+-------------------
+
+New
+~~~
+
+- Add a tutorial on extended-precision computations
+  (`#99 <https://github.com/bluescarni/heyoka.py/pull/99>`__).
+- The way quadruple-precision computations are supported via ``real128``
+  has been completely overhauled: ``real128`` is now exposed as a
+  NumPy-enabled Python type, meaning that ``real128``
+  can now be used in exactly the same way as ``float`` and
+  ``np.longdouble`` in the heyoka.py API
+  (`#99 <https://github.com/bluescarni/heyoka.py/pull/99>`__,
+  `#98 <https://github.com/bluescarni/heyoka.py/pull/98>`__).
+  This is a :ref:`breaking change <bchanges_0_19_0>`.
+- Add the capability to compile multivariate vector functions at runtime
+  (`#96 <https://github.com/bluescarni/heyoka.py/pull/96>`__).
+
+Changes
+~~~~~~~
+
+- **BREAKING**: heyoka.py is now more strict with respect
+  to type conversions. See the :ref:`breaking changes <bchanges_0_19_0>`
+  section for more details.
+- heyoka.py now compiles without deprecation warnings against
+  the latest fmt versions
+  (`#98 <https://github.com/bluescarni/heyoka.py/pull/98>`__).
+- New version requirements: heyoka>=0.19, CMake>=3.16, pybind11>=2.10
+  (`#98 <https://github.com/bluescarni/heyoka.py/pull/98>`__,
+  `#96 <https://github.com/bluescarni/heyoka.py/pull/96>`__).
+
 0.18.0 (2022-05-11)
 -------------------
 

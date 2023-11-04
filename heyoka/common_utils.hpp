@@ -1,4 +1,4 @@
-// Copyright 2020, 2021, 2022 Francesco Biscani (bluescarni@gmail.com), Dario Izzo (dario.izzo@gmail.com)
+// Copyright 2020, 2021, 2022, 2023 Francesco Biscani (bluescarni@gmail.com), Dario Izzo (dario.izzo@gmail.com)
 //
 // This file is part of the heyoka.py library.
 //
@@ -9,13 +9,35 @@
 #ifndef HEYOKA_PY_COMMON_UTILS_HPP
 #define HEYOKA_PY_COMMON_UTILS_HPP
 
+#include <array>
+#include <cstddef>
 #include <string>
 
+#if defined(__GLIBCXX__)
+
+#include <cxxabi.h>
+
+#endif
+
+#include <pybind11/numpy.h>
 #include <pybind11/pybind11.h>
 
 #include <Python.h>
 
 #include <heyoka/number.hpp>
+
+// NOTE: implementation of Py_SET_TYPE() for Python < 3.9. See:
+// https://docs.python.org/3.11/whatsnew/3.11.html
+
+#if PY_VERSION_HEX < 0x030900A4 && !defined(Py_SET_TYPE)
+
+static inline void _Py_SET_TYPE(PyObject *ob, PyTypeObject *type)
+{
+    ob->ob_type = type;
+}
+#define Py_SET_TYPE(ob, type) _Py_SET_TYPE((PyObject *)(ob), type)
+
+#endif
 
 namespace heyoka_py
 {
@@ -30,19 +52,7 @@ std::string str(const py::handle &);
 
 [[noreturn]] void py_throw(PyObject *, const char *);
 
-heyoka::number to_number(const py::handle &);
-
 bool callable(const py::handle &);
-
-bool mpmath_available();
-
-struct scoped_quadprec_setter {
-    scoped_quadprec_setter();
-    ~scoped_quadprec_setter();
-
-    bool has_mpmath;
-    int orig_prec = 0;
-};
 
 // Helper to expose the llvm_state getter
 // for a generic object.
@@ -51,16 +61,6 @@ inline void expose_llvm_state_property(py::class_<T> &c)
 {
     c.def_property_readonly("llvm_state", &T::get_llvm_state);
 }
-
-// A functor to perform the copy of a C++
-// object via its copy ctor.
-struct default_cpp_copy {
-    template <typename T>
-    T operator()(const T &arg) const
-    {
-        return arg;
-    }
-};
 
 // NOTE: these are wrappers for the implementation of
 // copy/deepcopy semantics for exposed C++ classes.
@@ -71,7 +71,7 @@ struct default_cpp_copy {
 // a C++ copy of the original object and then attach
 // to it copies of the dynamic attributes that were
 // added to the original object from Python.
-template <typename T, typename CopyF = default_cpp_copy>
+template <typename T>
 py::object copy_wrapper(py::object o)
 {
     // Fetch a pointer to the C++ copy.
@@ -81,7 +81,7 @@ py::object copy_wrapper(py::object o)
     // a Python object.
     // NOTE: no room for GIL unlock here, due
     // to possible copy of Pythonic event callbacks.
-    py::object ret = py::cast(CopyF{}(*o_cpp));
+    py::object ret = py::cast(T(*o_cpp));
 
     // Fetch the list of attributes from the original
     // object and turn it into a set.
@@ -105,7 +105,7 @@ py::object copy_wrapper(py::object o)
     return ret;
 }
 
-template <typename T, typename CopyF = default_cpp_copy>
+template <typename T>
 py::object deepcopy_wrapper(py::object o, py::dict memo)
 {
     // Fetch a pointer to the C++ copy.
@@ -115,7 +115,7 @@ py::object deepcopy_wrapper(py::object o, py::dict memo)
     // a Python object.
     // NOTE: no room for GIL unlock here, due
     // to possible copy of Pythonic event callbacks.
-    py::object ret = py::cast(CopyF{}(*o_cpp));
+    py::object ret = py::cast(T(*o_cpp));
 
     // Fetch the list of attributes from the original
     // object and turn it into a set.
@@ -138,6 +138,64 @@ py::object deepcopy_wrapper(py::object o, py::dict memo)
     }
 
     return ret;
+}
+
+// Helper to check if a list of arrays may share any memory with each other.
+// Quadratic complexity.
+bool may_share_memory(const py::array &, const py::array &);
+
+template <typename... Args>
+bool may_share_memory(const py::array &a, const py::array &b, const Args &...args)
+{
+    const std::array args_arr = {std::cref(a), std::cref(b), std::cref(args)...};
+    const auto nargs = args_arr.size();
+
+    for (std::size_t i = 0; i < nargs; ++i) {
+        for (std::size_t j = i + 1u; j < nargs; ++j) {
+            if (may_share_memory(args_arr[i].get(), args_arr[j].get())) {
+                return true;
+            }
+        }
+    }
+
+    return false;
+}
+
+// Helper to check if a numpy array is a NPY_ARRAY_CARRAY (i.e., C-style
+// contiguous and with properly aligned storage). The flag signals whether
+// the array must also be writeable or not.
+bool is_npy_array_carray(const py::array &, bool = false);
+
+namespace detail
+{
+
+bool with_pybind11_eh_impl();
+
+} // namespace detail
+
+// This function will invoke the function object f,
+// wrapping its execution in the pybind11 C++ -> Python
+// exception translation logic. If a C++ exception is
+// thrown by the execution of f, the Python error flag is set
+// and true is returned. Otherwise, false will be returned.
+// The return value of f is ignored.
+template <typename F>
+bool with_pybind11_eh(const F &f)
+{
+    try {
+        f();
+
+        return false;
+    } catch (py::error_already_set &e) {
+        e.restore();
+        return true;
+#ifdef __GLIBCXX__
+    } catch (abi::__forced_unwind &) {
+        throw;
+#endif
+    } catch (...) {
+        return detail::with_pybind11_eh_impl();
+    }
 }
 
 } // namespace heyoka_py

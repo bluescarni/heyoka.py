@@ -1,4 +1,4 @@
-// Copyright 2020, 2021, 2022 Francesco Biscani (bluescarni@gmail.com), Dario Izzo (dario.izzo@gmail.com)
+// Copyright 2020, 2021, 2022, 2023 Francesco Biscani (bluescarni@gmail.com), Dario Izzo (dario.izzo@gmail.com)
 //
 // This file is part of the heyoka.py library.
 //
@@ -49,15 +49,14 @@ inline py::tuple pickle_getstate_wrapper(const py::object &self)
 template <typename T>
 inline std::pair<T, py::dict> pickle_setstate_wrapper(py::tuple state)
 {
-    using namespace fmt::literals;
-
     if (py::len(state) != 2) {
-        py_throw(PyExc_ValueError, ("The state tuple passed to the deserialization wrapper "
-                                    "must have 2 elements, but instead it has {} element(s)"_format(py::len(state)))
+        py_throw(PyExc_ValueError, (fmt::format("The state tuple passed to the deserialization wrapper "
+                                                "must have 2 elements, but instead it has {} element(s)",
+                                                py::len(state)))
                                        .c_str());
     }
 
-    auto ptr = PyBytes_AsString(state[0].ptr());
+    auto *ptr = PyBytes_AsString(state[0].ptr());
     if (!ptr) {
         py_throw(PyExc_TypeError, "A bytes object is needed in the deserialization wrapper");
     }

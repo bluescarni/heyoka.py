@@ -1,4 +1,4 @@
-# Copyright 2020, 2021, 2022 Francesco Biscani (bluescarni@gmail.com), Dario Izzo (dario.izzo@gmail.com)
+# Copyright 2020, 2021, 2022, 2023 Francesco Biscani (bluescarni@gmail.com), Dario Izzo (dario.izzo@gmail.com)
 #
 # This file is part of the heyoka.py library.
 #
@@ -6,9 +6,10 @@
 # Public License v. 2.0. If a copy of the MPL was not distributed
 # with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-# NOTE: this is a small helper to splat a 1D grid into the
-# appropriate shape for a batch integrator. If ta is a scalar integrator,
-# the original grid will be returned unchanged.
+
+# NOTE: this is a small helper to splat a 1D grid (i.e., a grid for
+# a scalar integrator) into the appropriate shape for a batch integrator.
+# If ta is a scalar integrator, the original grid will be returned unchanged.
 def _splat_grid(arg, ta):
     if hasattr(ta, "batch_size"):
         import numpy as np
@@ -21,10 +22,29 @@ def _splat_grid(arg, ta):
 # Thread-based implementation.
 def _ensemble_propagate_thread(tp, ta, arg, n_iter, gen, **kwargs):
     from concurrent.futures import ThreadPoolExecutor
-    from copy import deepcopy
+    from copy import deepcopy, copy
 
     # Pop the multithreading options from kwargs.
     max_workers = kwargs.pop("max_workers", None)
+
+    # Make deep copies of the callback argument, if present.
+    if "callback" in kwargs:
+        kwargs_list = []
+
+        for i in range(n_iter):
+            # Make a shallow copy of the original kwargs.
+            # new_kwargs will be a new dict containing
+            # references to the objects stored in kwargs.
+            new_kwargs = copy(kwargs)
+
+            # Update the callback argument in new_kwargs
+            # with a deep copy of the original callback object in
+            # kwargs.
+            new_kwargs.update(callback=deepcopy(kwargs["callback"]))
+
+            kwargs_list.append(new_kwargs)
+    else:
+        kwargs_list = [kwargs] * n_iter
 
     # The worker function.
     def func(i):
@@ -33,17 +53,17 @@ def _ensemble_propagate_thread(tp, ta, arg, n_iter, gen, **kwargs):
 
         # Run the propagation.
         if tp == "until":
-            loc_ret = local_ta.propagate_until(arg, **kwargs)
+            loc_ret = local_ta.propagate_until(arg, **kwargs_list[i])
         elif tp == "for":
-            loc_ret = local_ta.propagate_for(arg, **kwargs)
+            loc_ret = local_ta.propagate_for(arg, **kwargs_list[i])
         else:
-            loc_ret = local_ta.propagate_grid(_splat_grid(arg, ta), **kwargs)
+            loc_ret = local_ta.propagate_grid(_splat_grid(arg, ta), **kwargs_list[i])
 
         # Return the results.
         # NOTE: in batch mode, loc_ret will be single
         # value rather than a tuple, hence the branch.
         if isinstance(loc_ret, tuple):
-            return (local_ta, ) + loc_ret
+            return (local_ta,) + loc_ret
         else:
             return (local_ta, loc_ret)
 
@@ -83,7 +103,7 @@ def _mp_propagate(tup):
     # NOTE: in batch mode, loc_ret will be single
     # value rather than a tuple, hence the branch.
     if isinstance(loc_ret, tuple):
-        return s11n_be.dumps((local_ta, ) + loc_ret)
+        return s11n_be.dumps((local_ta,) + loc_ret)
     else:
         return s11n_be.dumps((local_ta, loc_ret))
 
@@ -109,10 +129,20 @@ def _ensemble_propagate_process(tp, ta, arg, n_iter, gen, **kwargs):
     chunksize = kwargs.pop("chunksize", 1)
 
     with ProcessPoolExecutor(max_workers=max_workers, mp_context=ctx) as executor:
-        ret = list(executor.map(
-            _mp_propagate, zip([tp]*n_iter, [s11n_be.dumps(ta)]*n_iter, [s11n_be.dumps(gen)]*n_iter,
-                               [arg]*n_iter, [s11n_be.dumps(kwargs)] *
-                               n_iter, range(n_iter),
-                               [s11n_str]*n_iter), chunksize=chunksize))
+        ret = list(
+            executor.map(
+                _mp_propagate,
+                zip(
+                    [tp] * n_iter,
+                    [s11n_be.dumps(ta)] * n_iter,
+                    [s11n_be.dumps(gen)] * n_iter,
+                    [arg] * n_iter,
+                    [s11n_be.dumps(kwargs)] * n_iter,
+                    range(n_iter),
+                    [s11n_str] * n_iter,
+                ),
+                chunksize=chunksize,
+            )
+        )
 
     return [s11n_be.loads(_) for _ in ret]

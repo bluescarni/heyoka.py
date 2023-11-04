@@ -1,4 +1,4 @@
-// Copyright 2020, 2021, 2022 Francesco Biscani (bluescarni@gmail.com), Dario Izzo (dario.izzo@gmail.com)
+// Copyright 2020, 2021, 2022, 2023 Francesco Biscani (bluescarni@gmail.com), Dario Izzo (dario.izzo@gmail.com)
 //
 // This file is part of the heyoka.py library.
 //
@@ -30,8 +30,13 @@
 
 #if defined(HEYOKA_HAVE_REAL128)
 
-#include <mp++/extra/pybind11.hpp>
 #include <mp++/real128.hpp>
+
+#endif
+
+#if defined(HEYOKA_HAVE_REAL)
+
+#include <mp++/real.hpp>
 
 #endif
 
@@ -40,7 +45,7 @@
 #include <heyoka/taylor.hpp>
 
 #include "common_utils.hpp"
-#include "long_double_caster.hpp"
+#include "custom_casters.hpp"
 #include "pickle_wrappers.hpp"
 #include "taylor_expose_events.hpp"
 
@@ -64,16 +69,18 @@ namespace
 //   performs a deep copy),
 // - ensure the GIL is acquired in the call operator,
 // - provide serialisation capabilities.
-// NOTE: the deep copy behaviour needs to be highlighted
-// in the docs, as it has consequences on how one writes
-// the callbacks.
+// NOTE: the deep copy behaviour can be inconvenient
+// on the Python side, but it is useful as a first line
+// of defense in ensemble propagations. By forcing a copy,
+// we are reducing the chances of data races in stateful
+// callbacks.
 template <typename Ret, typename... Args>
 struct ev_callback {
     py::object m_obj;
 
     ev_callback() = default;
-    explicit ev_callback(py::object o) : m_obj(std::move(o)) {}
-    ev_callback(const ev_callback &c) : m_obj(py::module_::import("copy").attr("deepcopy")(c.m_obj)) {}
+    explicit ev_callback(py::object o) : m_obj(py::module_::import("copy").attr("deepcopy")(o)) {}
+    ev_callback(const ev_callback &c) : ev_callback(c.m_obj) {}
     ev_callback(ev_callback &&) noexcept = default;
     ev_callback &operator=(const ev_callback &c)
     {
@@ -84,6 +91,7 @@ struct ev_callback {
         return *this;
     }
     ev_callback &operator=(ev_callback &&) noexcept = default;
+    ~ev_callback() = default;
 
     Ret operator()(Args... args) const
     {
@@ -127,7 +135,7 @@ private:
 
         // This gives a null-terminated char * to the internal
         // content of the bytes object.
-        auto ptr = PyBytes_AsString(tmp.ptr());
+        auto *ptr = PyBytes_AsString(tmp.ptr());
         if (!ptr) {
             py_throw(PyExc_TypeError, "The serialization backend's dumps() function did not return a bytes object");
         }
@@ -171,7 +179,7 @@ void expose_taylor_nt_event_impl(py::module &m, const std::string &suffix)
     using callback_t = std::conditional_t<B, ev_callback<void, hey::taylor_adaptive_batch<T> &, T, int, std::uint32_t>,
                                           ev_callback<void, hey::taylor_adaptive<T> &, T, int>>;
 
-    const auto name = B ? fmt::format("_nt_event_batch_{}", suffix) : fmt::format("_nt_event_{}", suffix);
+    const auto name = B ? fmt::format("nt_event_batch_{}", suffix) : fmt::format("nt_event_{}", suffix);
 
     // NOTE: for events, dynamic attributes do not make much sense
     // because when they are copied inside an integrator object any
@@ -240,7 +248,7 @@ void expose_taylor_t_event_impl(py::module &m, const std::string &suffix)
         = std::conditional_t<B, ev_callback<bool, hey::taylor_adaptive_batch<T> &, bool, int, std::uint32_t>,
                              ev_callback<bool, hey::taylor_adaptive<T> &, bool, int>>;
 
-    const auto name = B ? fmt::format("_t_event_batch_{}", suffix) : fmt::format("_t_event_{}", suffix);
+    const auto name = B ? fmt::format("t_event_batch_{}", suffix) : fmt::format("t_event_{}", suffix);
 
     // NOTE: for events, dynamic attributes do not make much sense
     // because when they are copied inside an integrator object any
@@ -266,7 +274,8 @@ void expose_taylor_t_event_impl(py::module &m, const std::string &suffix)
                                 kw::cooldown = cooldown);
                 }
             }),
-            "expression"_a, "callback"_a = py::none{}, "direction"_a = hey::event_direction::any, "cooldown"_a = T(-1))
+            "expression"_a, "callback"_a = py::none{}, "direction"_a = hey::event_direction::any,
+            "cooldown"_a.noconvert() = static_cast<T>(-1))
         // Repr.
         .def("__repr__",
              [](const ev_t &e) {
@@ -325,13 +334,16 @@ void expose_taylor_t_event_ldbl(py::module &m)
 
 void expose_taylor_t_event_f128(py::module &m)
 {
-    // NOTE: we need to temporarily alter
-    // the precision in mpmath to successfully
-    // construct the default values of the parameters
-    // for the constructor.
-    scoped_quadprec_setter qs;
-
     detail::expose_taylor_t_event_impl<mppp::real128, false>(m, "f128");
+}
+
+#endif
+
+#if defined(HEYOKA_HAVE_REAL)
+
+void expose_taylor_t_event_real(py::module &m)
+{
+    detail::expose_taylor_t_event_impl<mppp::real, false>(m, "real");
 }
 
 #endif
@@ -350,13 +362,16 @@ void expose_taylor_nt_event_ldbl(py::module &m)
 
 void expose_taylor_nt_event_f128(py::module &m)
 {
-    // NOTE: we need to temporarily alter
-    // the precision in mpmath to successfully
-    // construct the default values of the parameters
-    // for the constructor.
-    scoped_quadprec_setter qs;
-
     detail::expose_taylor_nt_event_impl<mppp::real128, false>(m, "f128");
+}
+
+#endif
+
+#if defined(HEYOKA_HAVE_REAL)
+
+void expose_taylor_nt_event_real(py::module &m)
+{
+    detail::expose_taylor_nt_event_impl<mppp::real, false>(m, "real");
 }
 
 #endif
@@ -383,12 +398,24 @@ using nt_cb_f128 = detail::ev_callback<void, heyoka::taylor_adaptive<mppp::real1
 
 #endif
 
+#if defined(HEYOKA_HAVE_REAL)
+
+using nt_cb_real = detail::ev_callback<void, heyoka::taylor_adaptive<mppp::real> &, mppp::real, int>;
+
+#endif
+
 using t_cb_dbl = detail::ev_callback<bool, heyoka::taylor_adaptive<double> &, bool, int>;
 using t_cb_ldbl = detail::ev_callback<bool, heyoka::taylor_adaptive<long double> &, bool, int>;
 
 #if defined(HEYOKA_HAVE_REAL128)
 
 using t_cb_f128 = detail::ev_callback<bool, heyoka::taylor_adaptive<mppp::real128> &, bool, int>;
+
+#endif
+
+#if defined(HEYOKA_HAVE_REAL)
+
+using t_cb_real = detail::ev_callback<bool, heyoka::taylor_adaptive<mppp::real> &, bool, int>;
 
 #endif
 
@@ -409,12 +436,24 @@ HEYOKA_S11N_CALLABLE_EXPORT(heyoka_py::nt_cb_f128, void, heyoka::taylor_adaptive
 
 #endif
 
+#if defined(HEYOKA_HAVE_REAL)
+
+HEYOKA_S11N_CALLABLE_EXPORT(heyoka_py::nt_cb_real, void, heyoka::taylor_adaptive<mppp::real> &, mppp::real, int)
+
+#endif
+
 HEYOKA_S11N_CALLABLE_EXPORT(heyoka_py::t_cb_dbl, bool, heyoka::taylor_adaptive<double> &, bool, int)
 HEYOKA_S11N_CALLABLE_EXPORT(heyoka_py::t_cb_ldbl, bool, heyoka::taylor_adaptive<long double> &, bool, int)
 
 #if defined(HEYOKA_HAVE_REAL128)
 
 HEYOKA_S11N_CALLABLE_EXPORT(heyoka_py::t_cb_f128, bool, heyoka::taylor_adaptive<mppp::real128> &, bool, int)
+
+#endif
+
+#if defined(HEYOKA_HAVE_REAL)
+
+HEYOKA_S11N_CALLABLE_EXPORT(heyoka_py::t_cb_real, bool, heyoka::taylor_adaptive<mppp::real> &, bool, int)
 
 #endif
 

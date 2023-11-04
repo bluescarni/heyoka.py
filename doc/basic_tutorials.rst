@@ -1,7 +1,7 @@
-.. _tutorials:
+.. _basic_tutorials:
 
-Tutorials
-=========
+Basic tutorials
+===============
 
 .. only:: html
 
@@ -23,9 +23,6 @@ Tutorials
      the features currently
      available only in the development version of heyoka.py.
 
-Basics
--------
-
 .. toctree::
   :maxdepth: 1
 
@@ -36,31 +33,4 @@ Basics
   notebooks/ODEs with parameters.ipynb
   notebooks/Non-autonomous systems.ipynb
   notebooks/Dense output.ipynb
-  notebooks/sympy_interop.ipynb
-  notebooks/pickling.ipynb
-
-Advanced features
------------------
-
-.. toctree::
-  :maxdepth: 1
-
-  notebooks/Batch mode overview
-  notebooks/ensemble_mode.ipynb
-  notebooks/ensemble_batch_perf.ipynb
-  notebooks/parallel_mode.ipynb
-
-Event detection
----------------
-
-.. toctree::
-  :maxdepth: 1
-
   notebooks/Event detection
-  notebooks/Sampling events
-  notebooks/Poincaré sections
-  notebooks/The Keplerian billiard
-  notebooks/The two-fixed elliptic billiard
-  notebooks/The wavy ramp
-  notebooks/The Maxwell-Boltzmann distribution
-  notebooks/ev_sensitivity
