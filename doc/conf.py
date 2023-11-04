@@ -79,10 +79,6 @@ html_theme_options = {
     "navigation_with_keys": False,
 }
 
-jupyter_execute_notebooks = "force"
-execution_excludepatterns = ['*Trappist-1*', '*Outer*', '*Maxwell*', '*Keplerian billiard*',
-                             '*embryos*', 'tides_spokes*', 'ensemble_batch_perf*', 'The restricted three-body problem*',
-                             'parallel_mode.ipynb', 'Pseudo arc-length continuation*']
 nb_execution_mode = "force"
 
 nb_execution_excludepatterns = [
@@ -97,6 +93,7 @@ nb_execution_excludepatterns = [
     "parallel_mode.ipynb",
     "vsop2013.ipynb",
     "compiled_functions.ipynb",
+    "Pseudo arc-length continuation*"
 ]
 
 latex_engine = "xelatex"
