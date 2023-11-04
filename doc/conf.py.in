@@ -76,6 +76,6 @@ html_theme_options = {
 jupyter_execute_notebooks = "force"
 execution_excludepatterns = ['*Trappist-1*', '*Outer*', '*Maxwell*', '*Keplerian billiard*',
                              '*embryos*', 'tides_spokes*', 'ensemble_batch_perf*', 'The restricted three-body problem*',
-                             'parallel_mode.ipynb']
+                             'parallel_mode.ipynb', 'Pseudo arc-length continuation*']
 
 latex_engine = 'xelatex'
