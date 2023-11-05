@@ -278,23 +278,34 @@ void expose_expression(py::module_ &m)
     m.def("prod", &hey::prod, "terms"_a);
 
     // NOTE: need explicit casts for sqrt and exp due to the presence of overloads for number.
-    m.def("sqrt", static_cast<hey::expression (*)(hey::expression)>(&hey::sqrt));
-    m.def("exp", static_cast<hey::expression (*)(hey::expression)>(&hey::exp));
-    m.def("log", &hey::log);
-    m.def("sin", &hey::sin);
-    m.def("cos", &hey::cos);
-    m.def("tan", &hey::tan);
-    m.def("asin", &hey::asin);
-    m.def("acos", &hey::acos);
-    m.def("atan", &hey::atan);
-    m.def("sinh", &hey::sinh);
-    m.def("cosh", &hey::cosh);
-    m.def("tanh", &hey::tanh);
-    m.def("asinh", &hey::asinh);
-    m.def("acosh", &hey::acosh);
-    m.def("atanh", &hey::atanh);
-    m.def("sigmoid", &hey::sigmoid);
-    m.def("erf", &hey::erf);
+    m.def("sqrt", static_cast<hey::expression (*)(hey::expression)>(&hey::sqrt), "arg"_a);
+    m.def("exp", static_cast<hey::expression (*)(hey::expression)>(&hey::exp), "arg"_a);
+    m.def("log", &hey::log, "arg"_a);
+    m.def("sin", &hey::sin, "arg"_a);
+    m.def("cos", &hey::cos, "arg"_a);
+    m.def("tan", &hey::tan, "arg"_a);
+    m.def("asin", &hey::asin, "arg"_a);
+    m.def("acos", &hey::acos, "arg"_a);
+    m.def("atan", &hey::atan, "arg"_a);
+    m.def("sinh", &hey::sinh, "arg"_a);
+    m.def("cosh", &hey::cosh, "arg"_a);
+    m.def("tanh", &hey::tanh, "arg"_a);
+    m.def("asinh", &hey::asinh, "arg"_a);
+    m.def("acosh", &hey::acosh, "arg"_a);
+    m.def("atanh", &hey::atanh, "arg"_a);
+    m.def("sigmoid", &hey::sigmoid, "arg"_a);
+    m.def("erf", &hey::erf, "arg"_a);
+    m.def("relu", &hey::relu, "arg"_a, "slope"_a = 0.);
+    m.def("relup", &hey::relup, "arg"_a, "slope"_a = 0.);
+
+    // Leaky relu wrappers.
+    py::class_<hey::leaky_relu> lr_class(m, "leaky_relu", py::dynamic_attr{});
+    lr_class.def(py::init([](double slope) { return hey::leaky_relu(slope); }), "slope"_a);
+    lr_class.def("__call__", &hey::leaky_relu::operator(), "arg"_a);
+
+    py::class_<hey::leaky_relup> lrp_class(m, "leaky_relup", py::dynamic_attr{});
+    lrp_class.def(py::init([](double slope) { return hey::leaky_relup(slope); }), "slope"_a);
+    lrp_class.def("__call__", &hey::leaky_relup::operator(), "arg"_a);
 
     // NOTE: when exposing multivariate functions, we want to be able to pass
     // in numerical arguments for convenience. Thus, we expose such functions taking
