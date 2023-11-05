@@ -1,0 +1,1298 @@
+
+
+<!DOCTYPE html>
+
+
+<html lang="en" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+    <title>Pseudo arc-length continuation in the CR3BP &#8212; heyoka.py 3.1.0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" href="../_static/styles/sphinx-book-theme.css?digest=14f4ca6b54d191a8c7657f6c759bf11a5fb86285" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=365ca57ee442770a23c6" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=365ca57ee442770a23c6" />
+  <script src="../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=365ca57ee442770a23c6"></script>
+
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinx_highlight.js"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?digest=5a5c038af52cf7bc1a1ec88eea08e6366ee68824"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'notebooks/Pseudo arc-length continuation in the CR3BP';</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Long term stability of N-body simulations: the case of Trappist-1" href="Long%20term%20stability%20of%20Trappist-1.html" />
+    <link rel="prev" title="Continuation of Periodic Orbits in the CR3BP" href="Periodic%20orbits%20in%20the%20CR3BP.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>
+    Back to top
+  </button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__primary"
+          id="__primary"/>
+  <label class="overlay overlay-primary" for="__primary"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__secondary"
+          id="__secondary"/>
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+  
+    <nav class="bd-header navbar navbar-expand-lg bd-navbar">
+    </nav>
+  
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/white_logo.png" class="logo__image only-light" alt="heyoka.py 3.1.0 documentation - Home"/>
+    <script>document.write(`<img src="../_static/white_logo.png" class="logo__image only-dark" alt="heyoka.py 3.1.0 documentation - Home"/>`);</script>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item"><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Contents</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../install.html">Installation</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../basic_tutorials.html">Basic tutorials</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../tut_taylor_method.html">Taylor’s method</a></li>
+<li class="toctree-l2"><a class="reference internal" href="The%20expression%20system.html">The expression system</a></li>
+<li class="toctree-l2"><a class="reference internal" href="The%20adaptive%20integrator.html">The adaptive integrator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Customising%20the%20adaptive%20integrator.html">Customising the adaptive integrator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ODEs%20with%20parameters.html">ODEs with parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Non-autonomous%20systems.html">Non-autonomous systems</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Dense%20output.html">Dense &amp; continuous output</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Event%20detection.html">Event detection</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../advanced_tutorials.html">Advanced tutorials</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="Batch%20mode%20overview.html">Batch mode</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ensemble_mode.html">Ensemble propagations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="parallel_mode.html">Parallel mode</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ext_precision.html">Computations in extended precision</a></li>
+<li class="toctree-l2"><a class="reference internal" href="arbitrary_precision.html">Computations in arbitrary precision</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sympy_interop.html">Interoperability with SymPy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="compiled_functions.html">Compiled functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ex_system_revisited.html">Using the expression system effectively</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pickling.html">Pickle support</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jit_caching.html">JIT compilation and caching</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="../examples.html">Examples</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-3"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="The%20restricted%20three-body%20problem.html">The restricted three-body problem</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Periodic%20orbits%20in%20the%20CR3BP.html">Continuation of Periodic Orbits in the CR3BP</a></li>
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">Pseudo arc-length continuation in the CR3BP</a></li>
+
+
+<li class="toctree-l2"><a class="reference internal" href="Long%20term%20stability%20of%20Trappist-1.html">Long term stability of N-body simulations: the case of Trappist-1</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Outer%20Solar%20System.html">Brouwer’s law in the outer Solar System</a></li>
+<li class="toctree-l2"><a class="reference internal" href="projection.html">Conserving first integrals via manifold projection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Box%20control%20for%20Formation%20Flying%20Satellites.html">Box control in satellite Formation Flying</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Comparing%20coordinate%20systems.html">Comparing coordinate systems</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Inverting%20Kepler%27s%20equation%20in%20ODEs.html">Inverting Kepler’s equation in ODEs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Planetary%20embryos.html">Planetary embryos in the inner Solar System</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mercury_precession.html">Mercury’s relativistic precession</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ttv.html">Calculating transit timing variations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vsop2013.html">Introduction to the VSOP2013 planetary theory</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tides_spokes.html">Elastic tides</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lagrangian_propagator.html">Lagrange propagation and the state transition matrix</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Sampling%20events.html">Sampling events</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Poincar%C3%A9%20sections.html">Poincaré sections</a></li>
+<li class="toctree-l2"><a class="reference internal" href="second_integral.html">The second integral of motion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="The%20Keplerian%20billiard.html">The Keplerian billiard</a></li>
+<li class="toctree-l2"><a class="reference internal" href="The%20two-fixed%20elliptic%20billiard.html">The two-fixed centres elliptic billiard</a></li>
+<li class="toctree-l2"><a class="reference internal" href="The%20wavy%20ramp.html">The wavy ramp</a></li>
+<li class="toctree-l2"><a class="reference internal" href="The%20Maxwell-Boltzmann%20distribution.html">The Maxwell-Boltzmann distribution</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ev_sensitivity.html">Computing event sensitivity</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ensemble_batch_perf.html">Evaluating the performance of ensemble &amp; batch mode</a></li>
+<li class="toctree-l2"><a class="reference internal" href="The%20variational%20equations.html">The variational equations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Optimal%20Control%20of%20the%20Lotka-Volterra%20equations.html">Optimal Control of the Lotka-Volterra equations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="definite_integrals.html">Computing definite integrals</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../benchmarks.html">Benchmarks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../changelog.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../breaking_changes.html">Breaking changes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../acknowledgement.html">Acknowledgement</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><label class="sidebar-toggle primary-toggle btn btn-sm" for="__primary" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</label></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-launch-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Launch interactive content">
+    <i class="fas fa-rocket"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://mybinder.org/v2/gh/bluescarni/heyoka.py/main?urlpath=lab/tree/doc/notebooks/Pseudo arc-length continuation in the CR3BP.ipynb" target="_blank"
+   class="btn btn-sm dropdown-item"
+   title="Launch onBinder"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  
+    <img src="../_static/images/logo_binder.svg">
+  </span>
+<span class="btn__text-container">Binder</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://github.com/bluescarni/heyoka.py" target="_blank"
+   class="btn btn-sm btn-source-repository-button dropdown-item"
+   title="Source repository"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="btn__text-container">Repository</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/bluescarni/heyoka.py/issues/new?title=Issue%20on%20page%20%2Fnotebooks/Pseudo arc-length continuation in the CR3BP.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button dropdown-item"
+   title="Open an issue"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="btn__text-container">Open issue</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../_sources/notebooks/Pseudo arc-length continuation in the CR3BP.ipynb" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.ipynb</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
+  </button>
+`);
+</script>
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<label class="sidebar-toggle secondary-toggle btn btn-sm" for="__secondary"title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</label>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Pseudo arc-length continuation in the CR3BP</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#">Pseudo arc-length continuation in the CR3BP</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#preamble">Preamble</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#the-pseudo-arc-length-continuation-method">The Pseudo arc-length continuation method</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#the-case-of-continuing-periodic-orbits">The case of continuing periodic orbits.</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#predictor">Predictor</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#corrector">Corrector</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#producing-the-whole-lyapunov-family">Producing the whole Lyapunov family</a></li>
+</ul>
+
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article" role="main">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="pseudo-arc-length-continuation-in-the-cr3bp">
+<h1>Pseudo arc-length continuation in the CR3BP<a class="headerlink" href="#pseudo-arc-length-continuation-in-the-cr3bp" title="Permalink to this heading">#</a></h1>
+<p>In this example we will refine the basic continuation scheme used in <a class="reference internal" href="Periodic%20orbits%20in%20the%20CR3BP.html"><span class="doc std std-doc">Continuation of Periodic Orbits in the CR3BP</span></a> and use instead, as continuation parameter, the <a class="reference external" href="https://en.wikipedia.org/wiki/Numerical_continuation#Pseudo-arclength_continuation">pseudo arc-length</a> to obtain the family of Lyapunov orbits around L1.</p>
+<p>The resulting numerical scheme allows to follow through folds of the curve implicitly defined by the periodicity condition and the Poincare’ phasing condition.</p>
+<section id="preamble">
+<h2>Preamble<a class="headerlink" href="#preamble" title="Permalink to this heading">#</a></h2>
+<p>As usual, we make some standard imports:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">heyoka</span> <span class="k">as</span> <span class="nn">hy</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">time</span> 
+
+<span class="kn">from</span> <span class="nn">scipy.optimize</span> <span class="kn">import</span> <span class="n">least_squares</span><span class="p">,</span> <span class="n">root_scalar</span>
+<span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">deepcopy</span>
+
+<span class="kn">from</span> <span class="nn">matplotlib.pylab</span> <span class="kn">import</span> <span class="n">plt</span>
+
+<span class="o">%</span><span class="k">matplotlib</span> inline 
+</pre></div>
+</div>
+</div>
+</div>
+<p>… and define some functions that will help later on to visualize our trajectories and make nice plots. (ignore them and come back to this later in case you are curious)</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">compute_L_points</span><span class="p">(</span><span class="n">mu</span><span class="p">,</span> <span class="n">cf_px</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Computes The exact position of the Lagrangian points. To do so it finds the zeros of the</span>
+<span class="sd">    the dynamics equation for px.</span>
+<span class="sd">    </span>
+<span class="sd">        Args:</span>
+<span class="sd">            mu (float): The value of the mu parameter.</span>
+<span class="sd">            cf_px (heyoka compiled function): The px dynamics equation. (will only depend on x,y,z,py)</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            xL1, xL2, xL3, xL45, yL45: The coordinates of the various Lagrangian Points</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Position of the lagrangian points approximated</span>
+    <span class="n">xL1</span> <span class="o">=</span> <span class="p">(</span><span class="n">mu</span><span class="o">-</span><span class="mf">1.</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="n">mu</span><span class="o">/</span><span class="mf">3.</span><span class="o">/</span><span class="p">(</span><span class="mf">1.</span><span class="o">-</span><span class="n">mu</span><span class="p">))</span><span class="o">**</span><span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="mi">3</span><span class="p">)</span>
+    <span class="n">xL2</span> <span class="o">=</span> <span class="p">(</span><span class="n">mu</span><span class="o">-</span><span class="mf">1.</span><span class="p">)</span> <span class="o">-</span> <span class="p">(</span><span class="n">mu</span><span class="o">/</span><span class="mf">3.</span><span class="o">/</span><span class="p">(</span><span class="mf">1.</span><span class="o">-</span><span class="n">mu</span><span class="p">))</span><span class="o">**</span><span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="mi">3</span><span class="p">)</span>
+    <span class="n">xL3</span> <span class="o">=</span> <span class="o">-</span><span class="p">(</span><span class="n">mu</span><span class="o">-</span><span class="mf">1.</span><span class="p">)</span> <span class="o">-</span> <span class="mf">7.</span><span class="o">/</span><span class="mf">12.</span> <span class="o">*</span> <span class="n">mu</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">mu</span><span class="p">)</span>
+    <span class="n">yL45</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mf">60.</span><span class="o">/</span><span class="mf">180.</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span>
+    <span class="n">xL45</span> <span class="o">=</span> <span class="o">-</span><span class="mf">0.5</span> <span class="o">+</span> <span class="n">mu</span>
+
+    <span class="c1"># Solve for the static equilibrium from the approximated solution (x,y,z,py)</span>
+    <span class="k">def</span> <span class="nf">equilibrium</span><span class="p">(</span><span class="n">expr</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">):</span>
+        <span class="n">retval</span> <span class="o">=</span> <span class="n">cf_px</span><span class="p">([</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="n">x</span><span class="p">],</span> <span class="n">pars</span> <span class="o">=</span> <span class="p">[</span><span class="n">mu</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">retval</span>
+
+    <span class="n">xL1</span> <span class="o">=</span> <span class="n">root_scalar</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">equilibrium</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span><span class="mf">0.</span><span class="p">),</span> <span class="n">x0</span><span class="o">=</span><span class="n">xL1</span><span class="p">,</span><span class="n">x1</span><span class="o">=</span><span class="n">xL1</span><span class="o">-</span><span class="mf">1e-2</span><span class="p">)</span><span class="o">.</span><span class="n">root</span>
+    <span class="n">xL2</span> <span class="o">=</span> <span class="n">root_scalar</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">equilibrium</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span><span class="mf">0.</span><span class="p">),</span> <span class="n">x0</span><span class="o">=</span><span class="n">xL2</span><span class="p">,</span><span class="n">x1</span><span class="o">=</span><span class="n">xL2</span><span class="o">-</span><span class="mf">1e-2</span><span class="p">)</span><span class="o">.</span><span class="n">root</span>
+    <span class="n">xL3</span> <span class="o">=</span> <span class="n">root_scalar</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">equilibrium</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span><span class="mf">0.</span><span class="p">),</span> <span class="n">x0</span><span class="o">=</span><span class="n">xL3</span><span class="p">,</span><span class="n">x1</span><span class="o">=</span><span class="n">xL3</span><span class="o">-</span><span class="mf">1e-2</span><span class="p">)</span><span class="o">.</span><span class="n">root</span>
+    <span class="k">return</span> <span class="n">xL1</span><span class="p">,</span> <span class="n">xL2</span><span class="p">,</span> <span class="n">xL3</span><span class="p">,</span> <span class="n">xL45</span><span class="p">,</span> <span class="n">yL45</span>
+
+<span class="k">def</span> <span class="nf">potential_function</span><span class="p">(</span><span class="n">position</span><span class="p">,</span><span class="n">mu</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Computes the system potential</span>
+<span class="sd">        Args:</span>
+<span class="sd">            position (array-like): The position in Cartesian coordinates</span>
+<span class="sd">            mu (float): The value of the mu parameter.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            The potential</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">z</span><span class="o">=</span><span class="n">position</span>
+    <span class="n">r_1</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">((</span><span class="n">x</span><span class="o">-</span><span class="n">mu</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="o">+</span><span class="n">y</span><span class="o">**</span><span class="mi">2</span><span class="o">+</span><span class="n">z</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">r_2</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">((</span><span class="n">x</span><span class="o">-</span><span class="n">mu</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="o">+</span><span class="n">y</span><span class="o">**</span><span class="mi">2</span><span class="o">+</span><span class="n">z</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">Omega</span><span class="o">=</span><span class="mf">1.</span><span class="o">/</span><span class="mf">2.</span><span class="o">*</span><span class="p">(</span><span class="n">x</span><span class="o">**</span><span class="mi">2</span><span class="o">+</span><span class="n">y</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">+</span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">mu</span><span class="p">)</span><span class="o">/</span><span class="n">r_1</span><span class="o">+</span><span class="n">mu</span><span class="o">/</span><span class="n">r_2</span>
+    <span class="k">return</span> <span class="n">Omega</span>
+
+<span class="k">def</span> <span class="nf">jacobi_constant</span><span class="p">(</span><span class="n">state</span><span class="p">,</span><span class="n">mu</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Computes the system Jacobi constant</span>
+<span class="sd">        Args:</span>
+<span class="sd">            state (array-like): The system state (x,y,z,px,py,pz)</span>
+<span class="sd">            mu (float): The value of the mu parameter.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            The Jacobi constant for the state</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">z</span><span class="p">,</span><span class="n">px</span><span class="p">,</span><span class="n">py</span><span class="p">,</span><span class="n">pz</span><span class="o">=</span><span class="n">state</span>
+    <span class="n">vx</span> <span class="o">=</span> <span class="n">px</span> <span class="o">+</span> <span class="n">y</span>
+    <span class="n">vy</span> <span class="o">=</span> <span class="n">py</span> <span class="o">-</span> <span class="n">x</span>
+    <span class="n">vz</span> <span class="o">=</span> <span class="n">pz</span>
+    <span class="n">r_1</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">((</span><span class="n">x</span><span class="o">-</span><span class="n">mu</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="o">+</span><span class="n">y</span><span class="o">**</span><span class="mi">2</span><span class="o">+</span><span class="n">z</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">r_2</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">((</span><span class="n">x</span><span class="o">-</span><span class="n">mu</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="o">+</span><span class="n">y</span><span class="o">**</span><span class="mi">2</span><span class="o">+</span><span class="n">z</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">Omega</span><span class="o">=</span><span class="mi">1</span><span class="o">/</span><span class="mi">2</span><span class="o">*</span><span class="p">(</span><span class="n">x</span><span class="o">**</span><span class="mi">2</span><span class="o">+</span><span class="n">y</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">+</span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">mu</span><span class="p">)</span><span class="o">/</span><span class="n">r_1</span><span class="o">+</span><span class="n">mu</span><span class="o">/</span><span class="n">r_2</span>
+    <span class="n">T</span><span class="o">=</span><span class="mi">1</span><span class="o">/</span><span class="mi">2</span><span class="o">*</span><span class="p">(</span><span class="n">vx</span><span class="o">**</span><span class="mi">2</span><span class="o">+</span><span class="n">vy</span><span class="o">**</span><span class="mi">2</span><span class="o">+</span><span class="n">vz</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">C</span><span class="o">=</span><span class="n">Omega</span><span class="o">-</span><span class="n">T</span>
+    <span class="k">return</span> <span class="n">C</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>We now define the CR3BP equations … (see <a class="reference internal" href="The%20restricted%20three-body%20problem.html"><span class="doc std std-doc">circular restricted three-body problem</span></a>)</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Create the symbolic variables.</span>
+<span class="n">symbols_state</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;x&quot;</span><span class="p">,</span> <span class="s2">&quot;y&quot;</span><span class="p">,</span> <span class="s2">&quot;z&quot;</span><span class="p">,</span> <span class="s2">&quot;px&quot;</span><span class="p">,</span> <span class="s2">&quot;py&quot;</span><span class="p">,</span> <span class="s2">&quot;pz&quot;</span><span class="p">]</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">hy</span><span class="o">.</span><span class="n">make_vars</span><span class="p">(</span><span class="o">*</span><span class="n">symbols_state</span><span class="p">))</span>
+<span class="c1"># This will contain the r.h.s. of the equations</span>
+<span class="n">f</span> <span class="o">=</span> <span class="p">[]</span>
+
+<span class="n">rps_32</span> <span class="o">=</span> <span class="p">((</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">hy</span><span class="o">.</span><span class="n">par</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">x</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">**</span><span class="p">(</span><span class="o">-</span><span class="mi">3</span><span class="o">/</span><span class="mf">2.</span><span class="p">)</span>
+<span class="n">rpj_32</span> <span class="o">=</span> <span class="p">((</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">hy</span><span class="o">.</span><span class="n">par</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>  <span class="o">+</span> <span class="mf">1.</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">x</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">**</span><span class="p">(</span><span class="o">-</span><span class="mi">3</span><span class="o">/</span><span class="mf">2.</span><span class="p">)</span>
+
+<span class="c1"># The r.h.s. of the equations of motion.</span>
+<span class="n">f</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">+</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+<span class="n">f</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span> <span class="o">-</span> <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="n">f</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">5</span><span class="p">])</span>
+<span class="n">f</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span> <span class="o">-</span> <span class="p">(</span><span class="mf">1.</span> <span class="o">-</span> <span class="n">hy</span><span class="o">.</span><span class="n">par</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">*</span> <span class="n">rps_32</span> <span class="o">*</span> <span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">hy</span><span class="o">.</span><span class="n">par</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">-</span> <span class="n">hy</span><span class="o">.</span><span class="n">par</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">rpj_32</span> <span class="o">*</span> <span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">hy</span><span class="o">.</span><span class="n">par</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="mf">1.</span><span class="p">))</span>
+<span class="n">f</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="o">-</span><span class="n">x</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">-</span><span class="p">((</span><span class="mf">1.</span> <span class="o">-</span> <span class="n">hy</span><span class="o">.</span><span class="n">par</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">*</span> <span class="n">rps_32</span> <span class="o">+</span> <span class="n">hy</span><span class="o">.</span><span class="n">par</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">rpj_32</span><span class="p">)</span> <span class="o">*</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+<span class="n">f</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="o">-</span><span class="p">((</span><span class="mf">1.</span> <span class="o">-</span> <span class="n">hy</span><span class="o">.</span><span class="n">par</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">*</span> <span class="n">rps_32</span> <span class="o">+</span> <span class="n">hy</span><span class="o">.</span><span class="n">par</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">rpj_32</span><span class="p">)</span> <span class="o">*</span> <span class="n">x</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+<span class="n">f</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+
+<span class="c1"># We compile the r.h.s. of the dynamics into compiled functions as to later be able to evaluate their numerical values magnitude.</span>
+<span class="n">cf_f</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">make_cfunc</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="nb">vars</span><span class="o">=</span><span class="n">x</span><span class="p">)</span>
+<span class="n">cf_px</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">make_cfunc</span><span class="p">([</span><span class="n">f</span><span class="p">[</span><span class="mi">3</span><span class="p">]],</span> <span class="nb">vars</span><span class="o">=</span><span class="p">[</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="n">x</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span><span class="n">x</span><span class="p">[</span><span class="mi">4</span><span class="p">]])</span> <span class="c1"># x,y,z,py</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>and the corresponding variational equations (see and <a class="reference internal" href="Periodic%20orbits%20in%20the%20CR3BP.html"><span class="doc std std-doc">Continuation of Periodic Orbits in the CR3BP</span></a>), which will be used to compute, in general, the state transition matrix <span class="math notranslate nohighlight">\(\mathbf \Phi\)</span>.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">symbols_phi</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">6</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">6</span><span class="p">):</span>
+        <span class="c1"># Here we define the symbol for the variations</span>
+        <span class="n">symbols_phi</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;phi_&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">j</span><span class="p">))</span>  
+<span class="n">phi</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">hy</span><span class="o">.</span><span class="n">make_vars</span><span class="p">(</span><span class="o">*</span><span class="n">symbols_phi</span><span class="p">))</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="mi">6</span><span class="p">,</span><span class="mi">6</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">dfdx</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">6</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">6</span><span class="p">):</span>
+        <span class="n">dfdx</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">hy</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">f</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="n">x</span><span class="p">[</span><span class="n">j</span><span class="p">]))</span>
+<span class="n">dfdx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">dfdx</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="mi">6</span><span class="p">,</span><span class="mi">6</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># The (variational) equations of motion</span>
+<span class="n">dphidt</span> <span class="o">=</span> <span class="n">dfdx</span><span class="nd">@phi</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Finally, we create the dynamics in the format requested by <em>heyoka</em>, including all 6 + 6x6 = 42 equations:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">dyn</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">state</span><span class="p">,</span> <span class="n">rhs</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">f</span><span class="p">):</span>
+    <span class="n">dyn</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">state</span><span class="p">,</span> <span class="n">rhs</span><span class="p">))</span>
+<span class="k">for</span> <span class="n">state</span><span class="p">,</span> <span class="n">rhs</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">phi</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="mi">36</span><span class="p">,)),</span><span class="n">dphidt</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="mi">36</span><span class="p">,))):</span>
+    <span class="n">dyn</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">state</span><span class="p">,</span> <span class="n">rhs</span><span class="p">))</span>
+<span class="c1"># These are the initial conditions on the variational equations (the identity matrix)</span>
+<span class="n">ic_var</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="mi">6</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="mi">36</span><span class="p">,))</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>and instantiate the Taylor integrator (high accuracy and no compact mode)</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+<span class="n">ta</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">taylor_adaptive</span><span class="p">(</span>
+    <span class="c1"># The ODEs.</span>
+    <span class="n">dyn</span><span class="p">,</span>
+    <span class="c1"># The initial conditions.</span>
+    <span class="p">[</span><span class="o">-</span><span class="mf">0.45</span><span class="p">,</span> <span class="mf">0.80</span><span class="p">,</span> <span class="mf">0.00</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.80</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.45</span><span class="p">,</span> <span class="mf">0.58</span><span class="p">]</span> <span class="o">+</span> <span class="n">ic_var</span><span class="p">,</span>
+    <span class="c1"># Operate below machine precision</span>
+    <span class="c1"># and in high-accuracy mode.</span>
+    <span class="n">tol</span> <span class="o">=</span> <span class="mf">1e-18</span><span class="p">,</span> <span class="n">high_accuracy</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;--- </span><span class="si">%s</span><span class="s2"> seconds --- to build the Taylor integrator&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">start_time</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>--- 4.902195453643799 seconds --- to build the Taylor integrator
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="the-pseudo-arc-length-continuation-method">
+<h2>The Pseudo arc-length continuation method<a class="headerlink" href="#the-pseudo-arc-length-continuation-method" title="Permalink to this heading">#</a></h2>
+<p>In the most general form, and in a nutshell, numerical continuation considers an equation in the form:</p>
+<div class="math notranslate nohighlight">
+\[
+\underline{{\mathbf G}}\left(\underline{ \mathbf x}, \lambda\right) = \underline{\mathbf 0}
+\]</div>
+<p>assumes a solution <span class="math notranslate nohighlight">\(\underline{ \mathbf x}_0, \lambda_0\)</span> is available and seeks a new solution <span class="math notranslate nohighlight">\(\underline{ \mathbf x}_0+\delta\underline{\mathbf{x}}\)</span> corrisponding to <span class="math notranslate nohighlight">\(\lambda_0+\delta \lambda\)</span>. Pretty trivial right? Turns out its not. As <span class="math notranslate nohighlight">\(\lambda\)</span> varies, new solutions may appear, disappear bifurcate, fold, which makes it rather complicated!</p>
+<p>In cases where the solution curve implicitly defined by <span class="math notranslate nohighlight">\(\underline{{\mathbf G}}\)</span> folds with respect to the continuation parameter <span class="math notranslate nohighlight">\(\lambda\)</span>, we need to find a better parametrization. A common solution is to consider a new continuation parameter intrinsically linked to the solution curve geometry: the curve arc-length <span class="math notranslate nohighlight">\(s\)</span>. Assuming as reference <span class="math notranslate nohighlight">\(s=s_0\)</span> in <span class="math notranslate nohighlight">\(\underline{ \mathbf x}_0, \lambda_0\)</span>, the arc-length can be considered as a function of <span class="math notranslate nohighlight">\(\underline{\mathbf{x}}\)</span> and <span class="math notranslate nohighlight">\(\lambda\)</span>. We can then write <span class="math notranslate nohighlight">\(s = \tilde s\left(\underline{ \mathbf x}, \lambda\right)\)</span>.</p>
+<p>Under this idea one can formally write:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+\left\{
+\begin{array}{l}
+\underline{{\mathbf G}}\left(\underline{ \mathbf x}, \lambda\right) = \underline{\mathbf 0} \\
+\tilde s\left(\underline{ \mathbf x}, \lambda\right) - s = 0
+\end{array}
+\right.
+\end{split}\]</div>
+<p>or, equivalently:</p>
+<div class="math notranslate nohighlight">
+\[
+\underline{{\mathbf G}}^*\left(\underline{ \mathbf y}, s\right) = \underline{\mathbf 0}
+\]</div>
+<p>where <span class="math notranslate nohighlight">\(\underline{ \mathbf y} = [\underline{ \mathbf x}, \lambda ]\)</span> and <span class="math notranslate nohighlight">\(\underline{\mathbf G}^*=[\underline{\mathbf G}, \tilde s - s]\)</span>. Starting from the solution <span class="math notranslate nohighlight">\([\underline{ \mathbf x}_0, \lambda_0], s_0\)</span> we have reformulated the problem and may now seek a new solution <span class="math notranslate nohighlight">\([\underline{ \mathbf x}_0+\delta\underline{\mathbf{x}}, \lambda_0+\delta \lambda]\)</span> corresponding to <span class="math notranslate nohighlight">\(s_0+\delta s\)</span>. We obtain (at least formally) a continuation scheme able to follow easily through folds of the <span class="math notranslate nohighlight">\(\underline{ \mathbf x}, \lambda\)</span> curve, since the <span class="math notranslate nohighlight">\(\underline{ \mathbf y}, s\)</span> curve has none! (the arc-length is always uniformly increasing along the solution curve).</p>
+<p>The problem now is that we cannot really compute <span class="math notranslate nohighlight">\(\tilde s\)</span> easily! But we can approximate <span class="math notranslate nohighlight">\(\delta s\)</span> as the projection of <span class="math notranslate nohighlight">\([\delta \underline{ \mathbf x}, \delta \lambda]\)</span> onto the tangent vector <span class="math notranslate nohighlight">\(\mathbf \tau = \left[\frac{d\underline{ \mathbf x}}{ds}, \frac{d\lambda}{ds}\right]\)</span> (hence the name <strong>pseudo</strong> arc-length is used).</p>
+<p>Eventually, the system:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+\left\{
+\begin{array}{l}
+\underline{{\mathbf G}}\left(\underline{ \mathbf x}_0+\delta \underline{ \mathbf x}, \lambda_0+\delta \lambda\right) = \underline{\mathbf 0} \\
+\mathbf \tau \cdot [\delta \underline{ \mathbf x}, \delta \lambda] -  \delta s = 0
+\end{array}
+\right.
+\end{split}\]</div>
+<p>is considered, and for a given increment of the pseudo arc-length <span class="math notranslate nohighlight">\(\delta s\)</span> is solved for <span class="math notranslate nohighlight">\(\delta \underline{ \mathbf x}, \delta \lambda\)</span>.</p>
+<section id="the-case-of-continuing-periodic-orbits">
+<h3>The case of continuing periodic orbits.<a class="headerlink" href="#the-case-of-continuing-periodic-orbits" title="Permalink to this heading">#</a></h3>
+<p>In the case of a search for periodic solutions to the system <span class="math notranslate nohighlight">\(\dot{\underline{\mathbf x}} =\underline{ \mathbf f}(\underline{\mathbf x})\)</span> we indicate the generic solution to this system as <span class="math notranslate nohighlight">\(\underline{ \mathbf x}\left(t; \underline{ \mathbf x}_0\right)\)</span> and may thus write the periodicity condition as:</p>
+<div class="math notranslate nohighlight">
+\[
+(1) \qquad \underline{ \mathbf x}\left(T; \underline{ \mathbf x}_0\right) - \underline{ \mathbf x}_0 = \mathbf 0
+\]</div>
+<p>We thus search for <span class="math notranslate nohighlight">\(\underline{ \mathbf x}_0, T\)</span> roots of the equation above. Assuming we have one such solution, we will slightly abuse the notation and omit a further <span class="math notranslate nohighlight">\(0\)</span> as a subscript in <span class="math notranslate nohighlight">\(\underline{\mathbf x}_0\)</span> indicating such an initial solution simply as as <span class="math notranslate nohighlight">\(\underline{\mathbf x}_0, T_0\)</span>.</p>
+<p>To continue this initial solution we seek <span class="math notranslate nohighlight">\(\delta\underline{\mathbf x}\)</span> and <span class="math notranslate nohighlight">\(\delta T\)</span> so that:</p>
+<div class="math notranslate nohighlight">
+\[
+\underline{ \mathbf x}\left(T_0 + \delta T; \underline{ \mathbf x}_0 + \delta\underline{\mathbf x}\right) - \underline{ \mathbf x}_0 - \delta\underline{\mathbf x}= \mathbf 0
+\]</div>
+<p>In other words we are perturbing our initial condition and period and demand to end up in a new periodic orbit. It is straight forward to see that for any fixed <span class="math notranslate nohighlight">\(\delta T\)</span> there is more than one <span class="math notranslate nohighlight">\(\underline{ \mathbf x}_0\)</span> that would do the trick. Infact any point on the whole new periodic orbit would work! Thus, as we saw also in <a class="reference internal" href="Periodic%20orbits%20in%20the%20CR3BP.html"><span class="doc std std-doc">Continuation of Periodic Orbits in the CR3BP</span></a>, to recover a unique solution, we add the Poincare’ phasing condition and search, instead, for a solution to the system:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+\left\{
+\begin{array}{l}
+\underline{ \mathbf x}\left(T_0 + \delta T; \underline{ \mathbf x}_0 + \delta\underline{\mathbf x}\right) - \underline{ \mathbf x}_0 - \delta\underline{\mathbf x}= \mathbf 0 \\ 
+\delta \underline{\mathbf x} \cdot \underline{\mathbf f} (\underline{ \mathbf x}_0) = 0
+\end{array}
+\right.
+\end{split}\]</div>
+<p>this system of seven equations is our <span class="math notranslate nohighlight">\(\underline{{\mathbf G}} = \underline{\mathbf 0}\)</span> with <span class="math notranslate nohighlight">\(\delta T\)</span> being our continuation parameter.</p>
+<p>We now apply the pseudo arc-length condition to avoid issues when the solution curve folds for increasing periods.</p>
+<p>We get:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+(2) \qquad
+\left\{
+\begin{array}{l}
+\underline{ \mathbf x}\left(T_0 + \delta T; \underline{ \mathbf x}_0 + \delta\underline{\mathbf x}\right) - \underline{ \mathbf x}_0 - \delta\underline{\mathbf x}= \mathbf 0 \\ 
+\delta \underline{\mathbf x} \cdot \underline{\mathbf f} (\underline{ \mathbf x}_0) = 0 \\
+\mathbf \tau \cdot [\delta \underline{ \mathbf x}, \delta T] = \delta s
+\end{array}
+\right.
+\end{split}\]</div>
+<p>which, with <span class="math notranslate nohighlight">\(\delta s\)</span> fixed, is an overdetermined system of 8 equations in the seven unknowns <span class="math notranslate nohighlight">\(\delta\underline{\mathbf x}, \delta T\)</span>. Note also that <span class="math notranslate nohighlight">\(\mathbf \tau\)</span> is found differentiating  with respect to the pseudo arc-length <span class="math notranslate nohighlight">\(s\)</span> our <span class="math notranslate nohighlight">\(\underline{{\mathbf G}}\)</span> considering both <span class="math notranslate nohighlight">\(\delta\underline{\mathbf x}(s)\)</span> and <span class="math notranslate nohighlight">\(\delta T(s)\)</span> as a function of <span class="math notranslate nohighlight">\(s\)</span> and then applying a normalization. We will solve the above system using a predictor corrector scheme.</p>
+</section>
+<section id="predictor">
+<h3>Predictor<a class="headerlink" href="#predictor" title="Permalink to this heading">#</a></h3>
+<p>If we expand in Taylor series the relation (2) we get:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+\left\{
+\begin{array}{l}
+(\underline{\underline{\mathbf \Phi}}-\underline{\underline{\mathbf I}})\delta\underline{\mathbf x} + \underline{\mathbf f} \delta T = \underline{\mathbf 0}\\ 
+\delta \underline{\mathbf x} \cdot \underline{\mathbf f} (\underline{ \mathbf x}_0) = 0 \\
+\mathbf \tau \cdot [\delta \underline{ \mathbf x}, \delta T] = \delta s
+\end{array}
+\right.
+\end{split}\]</div>
+<p>which forms the basis to get a first guess (predictor) on the new continued state.</p>
+<p>It is convenient to assemble the following matrix:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+\underline{\underline{\mathbf A}} = 
+\left[
+\begin{array}{cc}
+\underline{\underline{\mathbf \Phi}}-\underline{\underline{\mathbf I}} &amp; \underline {\mathbf f} \\
+\underline {\mathbf f}^T &amp; 0 \\
+\underline {\mathbf \tau}_x^T &amp; \tau_T
+\end{array}
+\right]
+\end{split}\]</div>
+<p>then, the predictor scheme, becomes:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Single iteration from ic, t_final, ds</span>
+<span class="k">def</span> <span class="nf">predictor</span><span class="p">(</span><span class="n">x0</span><span class="p">,</span> <span class="n">T0</span><span class="p">,</span> <span class="n">ds</span><span class="p">):</span>
+    <span class="c1"># 1 - We compute the state transition matrix Phi (integrating the full EOM for t_final)</span>
+    <span class="n">ta</span><span class="o">.</span><span class="n">time</span> <span class="o">=</span> <span class="mf">0.</span>
+    <span class="n">ta</span><span class="o">.</span><span class="n">state</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">x0</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span> <span class="o">+</span> <span class="n">ic_var</span>
+    <span class="n">out</span> <span class="o">=</span> <span class="n">ta</span><span class="o">.</span><span class="n">propagate_until</span><span class="p">(</span><span class="n">T0</span><span class="p">)</span>
+    <span class="n">Phi</span> <span class="o">=</span> <span class="n">ta</span><span class="o">.</span><span class="n">state</span><span class="p">[</span><span class="mi">6</span><span class="p">:]</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="mi">6</span><span class="p">,</span><span class="mi">6</span><span class="p">))</span>
+    <span class="c1"># 2 - We compute the dynamics f (at zero, but for periodic orbits this is the same at T)</span>
+    <span class="n">f_dyn</span> <span class="o">=</span> <span class="n">cf_f</span><span class="p">(</span><span class="n">x0</span><span class="p">,</span> <span class="n">pars</span> <span class="o">=</span> <span class="p">[</span><span class="n">mu</span><span class="p">])</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+    <span class="c1"># 3 - Assemble the matrix A</span>
+    <span class="n">A</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">Phi</span><span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="mi">6</span><span class="p">),</span> <span class="n">f_dyn</span><span class="o">.</span><span class="n">T</span><span class="p">))</span>
+    <span class="n">A</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">A</span><span class="p">,</span><span class="n">np</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">f_dyn</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">))),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="c1"># 4 - Compute the tangent vector tau</span>
+    <span class="n">tauT</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">taux</span> <span class="o">=</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">inv</span><span class="p">(</span><span class="n">A</span><span class="p">[:,:</span><span class="mi">6</span><span class="p">]</span><span class="o">.</span><span class="n">T</span><span class="nd">@A</span><span class="p">[:,:</span><span class="mi">6</span><span class="p">])</span><span class="o">@</span><span class="p">(</span><span class="n">A</span><span class="p">[:,:</span><span class="mi">6</span><span class="p">]</span><span class="o">.</span><span class="n">T</span><span class="nd">@A</span><span class="p">[:,</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span> <span class="o">*</span> <span class="n">tauT</span>
+    <span class="n">norm</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">taux</span><span class="nd">@taux</span> <span class="o">+</span> <span class="n">tauT</span><span class="o">*</span><span class="n">tauT</span><span class="p">)</span>
+    <span class="n">tauT</span><span class="o">/=</span><span class="n">norm</span>
+    <span class="n">taux</span><span class="o">/=</span><span class="n">norm</span>
+    <span class="c1"># 5 - Add to the matrix A</span>
+    <span class="n">tmp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">taux</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="n">tauT</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">A</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">A</span><span class="p">,</span> <span class="n">tmp</span><span class="p">))</span>
+    <span class="c1"># 6 - Compute the b vector</span>
+    <span class="n">b</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">8</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>
+    <span class="n">b</span><span class="p">[</span><span class="mi">7</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">ds</span>
+    <span class="c1"># 6 - Predict an initial guess</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">inv</span><span class="p">(</span><span class="n">A</span><span class="o">.</span><span class="n">T</span><span class="nd">@A</span><span class="p">)</span><span class="o">@</span><span class="p">(</span><span class="n">A</span><span class="o">.</span><span class="n">T</span><span class="nd">@b</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">y</span><span class="p">,</span> <span class="n">taux</span><span class="p">,</span> <span class="n">tauT</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Lets instantiate our periodic solution. It is the same Lyapunov orbit we have used in the example <a class="reference internal" href="Periodic%20orbits%20in%20the%20CR3BP.html"><span class="doc std std-doc">Continuation of Periodic Orbits in the CR3BP</span></a>.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># These conditions correspond to a Lyapunov orbit closeto the L2 point</span>
+<span class="n">ic</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="o">-</span><span class="mf">8.3660628427188066e-01</span><span class="p">,</span> <span class="mf">6.8716725011222035e-05</span><span class="p">,</span> <span class="mf">0.0000000000000000e+00</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.3615604665605682e-05</span><span class="p">,</span> <span class="o">-</span><span class="mf">8.3919863043620713e-01</span><span class="p">,</span> <span class="mf">0.0000000000000000e+00</span><span class="p">])</span>
+<span class="n">t_final</span><span class="o">=</span><span class="mf">2.6915996001673941e+00</span>
+<span class="n">mu</span><span class="o">=</span><span class="mf">0.01215057</span>
+<span class="n">ta</span><span class="o">.</span><span class="n">pars</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">mu</span>
+<span class="c1"># Pseudo arc-length</span>
+<span class="n">ds</span> <span class="o">=</span> <span class="mf">1e-3</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># We call the predictor</span>
+<span class="n">predicted</span><span class="p">,</span> <span class="n">taux</span><span class="p">,</span> <span class="n">tauT</span> <span class="o">=</span> <span class="n">predictor</span><span class="p">(</span><span class="n">ic</span><span class="p">,</span> <span class="n">t_final</span><span class="p">,</span> <span class="n">ds</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="corrector">
+<h1>Corrector<a class="headerlink" href="#corrector" title="Permalink to this heading">#</a></h1>
+<p>We want to find  <span class="math notranslate nohighlight">\(\delta \underline{\mathbf y} = [\delta \underline{\mathbf{x}}, \delta T]\)</span> so that the system of equations (2), reported again below for convenience, is satisfied:
+$<span class="math notranslate nohighlight">\(
+(2)
+\qquad
+\left\{
+\begin{array}{l}
+\underline{ \mathbf x}\left(T_0 + \delta T; \underline{ \mathbf x}_0 + \delta\underline{\mathbf x}\right) - \underline{ \mathbf x}_0 - \delta\underline{\mathbf x}= \mathbf 0 \\ 
+\delta \underline{\mathbf x} \cdot \underline{\mathbf f} (\underline{ \mathbf x}_0) = 0 \\
+\mathbf \tau \cdot [\delta \underline{ \mathbf x}, \delta T] = \delta s
+\end{array}
+\right.
+\)</span>$
+and can start from the guess returned by the predictor step.</p>
+<p>Different methods can be used to solve the overdetermined system of equations above (which admits a unique solution), we here use the least-square method implemented in scipy and give our own implementation of a Newton based method.</p>
+<p>First, we define a function that returns, for some <span class="math notranslate nohighlight">\(\delta\underline{\mathbf y} = [\delta \underline{\mathbf{x}}, \delta T]\)</span>, the violations to the equations (2).</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">full_system</span><span class="p">(</span><span class="n">X0</span><span class="p">,</span> <span class="n">T0</span><span class="p">,</span> <span class="n">dy</span><span class="p">,</span> <span class="n">taux</span><span class="p">,</span> <span class="n">tauT</span><span class="p">,</span> <span class="n">ds</span><span class="p">):</span>
+    <span class="n">dx</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">dy</span><span class="p">[:</span><span class="mi">6</span><span class="p">])</span>
+    <span class="n">dT</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">dy</span><span class="p">[</span><span class="mi">6</span><span class="p">])</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">X0</span> <span class="o">+</span> <span class="n">dx</span>
+    <span class="n">propagation_time</span> <span class="o">=</span> <span class="n">T0</span> <span class="o">+</span> <span class="n">dT</span>
+    <span class="c1"># 1 - We compute the state at propagation_time</span>
+    <span class="n">ta</span><span class="o">.</span><span class="n">time</span> <span class="o">=</span> <span class="mf">0.</span>
+    <span class="n">ta</span><span class="o">.</span><span class="n">state</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span> <span class="o">+</span> <span class="n">ic_var</span>
+    <span class="n">out</span> <span class="o">=</span> <span class="n">ta</span><span class="o">.</span><span class="n">propagate_until</span><span class="p">(</span><span class="n">propagation_time</span><span class="p">)</span>
+    <span class="c1"># 2 - We compute the dynamics f (at zero, but for periodic orbits this is the same at T)</span>
+    <span class="n">f_dyn0</span> <span class="o">=</span> <span class="n">cf_f</span><span class="p">(</span><span class="n">X0</span><span class="p">,</span> <span class="n">pars</span> <span class="o">=</span> <span class="p">[</span><span class="n">mu</span><span class="p">])</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+    <span class="c1"># 3 - Error on the state</span>
+    <span class="n">state_err</span> <span class="o">=</span> <span class="n">ta</span><span class="o">.</span><span class="n">state</span><span class="p">[:</span><span class="mi">6</span><span class="p">]</span> <span class="o">-</span> <span class="n">x</span>
+    <span class="c1"># Error on Poincare phasing</span>
+    <span class="n">poin_err</span> <span class="o">=</span> <span class="n">dx</span><span class="nd">@f_dyn0</span>
+    <span class="c1"># Error on pseudo arc-length</span>
+    <span class="n">pseudo_err</span> <span class="o">=</span> <span class="n">taux</span><span class="nd">@dx</span><span class="o">+</span><span class="n">tauT</span><span class="o">*</span><span class="n">dT</span> <span class="o">-</span> <span class="n">ds</span>
+    <span class="c1"># 4 - Assemble return value</span>
+    <span class="n">retval</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">state_err</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span> <span class="n">poin_err</span><span class="p">)</span>
+    <span class="n">retval</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">retval</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span> <span class="n">pseudo_err</span><span class="p">)</span>
+    <span class="n">Phi</span> <span class="o">=</span> <span class="n">ta</span><span class="o">.</span><span class="n">state</span><span class="p">[</span><span class="mi">6</span><span class="p">:]</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="mi">6</span><span class="p">,</span><span class="mi">6</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">retval</span><span class="p">,</span> <span class="n">Phi</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>… we can then call the scipy.optimze.least_squares method to make such a violation vanish.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># A least squared corrector</span>
+<span class="k">def</span> <span class="nf">corrector_ls</span><span class="p">(</span><span class="n">X0</span><span class="p">,</span> <span class="n">T0</span><span class="p">,</span> <span class="n">dy0</span><span class="p">,</span> <span class="n">taux</span><span class="p">,</span> <span class="n">tauy</span><span class="p">,</span> <span class="n">ds</span><span class="p">,</span> <span class="n">tol</span> <span class="o">=</span> <span class="mf">1e-12</span><span class="p">):</span>
+    <span class="n">sol</span> <span class="o">=</span> <span class="n">least_squares</span><span class="p">(</span><span class="k">lambda</span> <span class="n">dy</span><span class="p">:</span> <span class="n">full_system</span><span class="p">(</span><span class="n">X0</span><span class="p">,</span> <span class="n">T0</span><span class="p">,</span> <span class="n">dy</span><span class="p">,</span> <span class="n">taux</span><span class="p">,</span> <span class="n">tauT</span><span class="p">,</span> <span class="n">ds</span><span class="p">)[</span><span class="mi">0</span><span class="p">],</span> <span class="n">dy0</span><span class="p">,</span> <span class="n">ftol</span> <span class="o">=</span> <span class="n">tol</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">sol</span><span class="o">.</span><span class="n">x</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">corrected_ls</span> <span class="o">=</span> <span class="n">corrector_ls</span><span class="p">(</span><span class="n">ic</span><span class="p">,</span> <span class="n">t_final</span><span class="p">,</span> <span class="n">predicted</span><span class="p">[:,</span><span class="mi">0</span><span class="p">],</span> <span class="n">taux</span><span class="p">,</span> <span class="n">tauT</span><span class="p">,</span> <span class="n">ds</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="mf">1e-14</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>We will inspect this result later. Now we implement our own Newton based method making use of the variational equations to compute the necessary gradient.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">corrector_Newton</span><span class="p">(</span><span class="n">X0</span><span class="p">,</span> <span class="n">T0</span><span class="p">,</span><span class="n">dy</span><span class="p">,</span> <span class="n">taux</span><span class="p">,</span> <span class="n">tauy</span><span class="p">,</span> <span class="n">ds</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="mf">1e-12</span><span class="p">,</span> <span class="n">max_iter</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">verbose</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>  
+    <span class="n">flag_tol</span> <span class="o">=</span> <span class="kc">False</span>
+    
+    <span class="n">curr_dx</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">dy</span><span class="p">[:</span><span class="mi">6</span><span class="p">])</span>
+    <span class="n">curr_dT</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">dy</span><span class="p">[</span><span class="mi">6</span><span class="p">])</span>
+    
+    <span class="c1"># Linearization point</span>
+    <span class="n">curr_x</span> <span class="o">=</span> <span class="n">X0</span> <span class="o">+</span> <span class="n">curr_dx</span><span class="o">.</span><span class="n">T</span>
+    <span class="n">curr_T</span> <span class="o">=</span> <span class="n">T0</span> <span class="o">+</span> <span class="n">curr_dT</span>
+    
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">max_iter</span><span class="p">):</span>
+        <span class="c1"># 1 - We compute the state transition matrix Phi (integrating the full EOM from curr_x for t_final)</span>
+        <span class="n">ta</span><span class="o">.</span><span class="n">time</span> <span class="o">=</span> <span class="mf">0.</span>
+        <span class="n">ta</span><span class="o">.</span><span class="n">state</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">curr_x</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span> <span class="o">+</span> <span class="n">ic_var</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="n">ta</span><span class="o">.</span><span class="n">propagate_until</span><span class="p">(</span><span class="n">curr_T</span><span class="p">)</span>
+        <span class="n">Phi</span> <span class="o">=</span> <span class="n">ta</span><span class="o">.</span><span class="n">state</span><span class="p">[</span><span class="mi">6</span><span class="p">:]</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="mi">6</span><span class="p">,</span><span class="mi">6</span><span class="p">))</span>
+        <span class="c1"># 2 - We compute the dynamics f (at the initial state)</span>
+        <span class="n">f_dyn0</span> <span class="o">=</span> <span class="n">cf_f</span><span class="p">(</span><span class="n">X0</span><span class="p">,</span> <span class="n">pars</span> <span class="o">=</span> <span class="p">[</span><span class="n">mu</span><span class="p">])</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+        <span class="c1"># 3 - We compute the dynamics f (at curr_T)</span>
+        <span class="n">f_dynT</span> <span class="o">=</span> <span class="n">cf_f</span><span class="p">(</span><span class="n">ta</span><span class="o">.</span><span class="n">state</span><span class="p">[:</span><span class="mi">6</span><span class="p">],</span> <span class="n">pars</span> <span class="o">=</span> <span class="p">[</span><span class="n">mu</span><span class="p">])</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+        <span class="c1"># 4 - Assemble the function (the full nonlinear system) value at the current point</span>
+        <span class="n">state_err</span> <span class="o">=</span> <span class="n">ta</span><span class="o">.</span><span class="n">state</span><span class="p">[:</span><span class="mi">6</span><span class="p">]</span> <span class="o">-</span> <span class="n">curr_x</span>
+        <span class="c1"># Error on Poincare phasing</span>
+        <span class="n">poin_err</span> <span class="o">=</span> <span class="n">curr_dx</span><span class="nd">@f_dyn0</span>
+        <span class="c1"># Error on pseudo arc-length</span>
+        <span class="n">pseudo_err</span> <span class="o">=</span> <span class="n">taux</span><span class="nd">@curr_dx</span><span class="o">+</span><span class="n">tauT</span><span class="o">*</span><span class="n">curr_dT</span> <span class="o">-</span> <span class="n">ds</span>
+        <span class="n">b</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">8</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>
+        <span class="n">b</span><span class="p">[:</span><span class="mi">6</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span> <span class="n">state_err</span>
+        <span class="n">b</span><span class="p">[</span><span class="mi">6</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span> <span class="n">poin_err</span>
+        <span class="n">b</span><span class="p">[</span><span class="mi">7</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span> <span class="n">pseudo_err</span>
+        <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">state_err</span><span class="p">),</span> <span class="n">poin_err</span><span class="p">,</span> <span class="n">pseudo_err</span><span class="p">)</span>
+        <span class="n">toterror</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">state_err</span><span class="p">))</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">poin_err</span><span class="p">)</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">pseudo_err</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">toterror</span> <span class="o">&lt;</span> <span class="n">tol</span><span class="p">:</span>
+            <span class="n">flag_tol</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="k">break</span>
+        <span class="c1"># 5 - Assemble the matrix A (gradient)</span>
+        <span class="n">A</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">Phi</span><span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="mi">6</span><span class="p">),</span> <span class="n">f_dynT</span><span class="o">.</span><span class="n">T</span><span class="p">))</span>
+        <span class="n">A</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">A</span><span class="p">,</span><span class="n">np</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">f_dynT</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">))),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="c1"># add the tau row</span>
+        <span class="n">tmp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">taux</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="n">tauT</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">A</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">A</span><span class="p">,</span> <span class="n">tmp</span><span class="p">))</span>
+        
+        <span class="c1"># Solve for new y = [dx, dT]</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">inv</span><span class="p">(</span><span class="n">A</span><span class="o">.</span><span class="n">T</span><span class="nd">@A</span><span class="p">)</span><span class="nd">@A</span><span class="o">.</span><span class="n">T</span><span class="nd">@b</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,)</span>
+        <span class="n">curr_dx</span> <span class="o">+=</span> <span class="n">y</span><span class="p">[:</span><span class="mi">6</span><span class="p">]</span>
+        <span class="n">curr_dT</span> <span class="o">+=</span> <span class="n">y</span><span class="p">[</span><span class="mi">6</span><span class="p">]</span>
+        <span class="n">curr_x</span> <span class="o">=</span> <span class="n">X0</span> <span class="o">+</span> <span class="n">curr_dx</span><span class="o">.</span><span class="n">T</span>
+        <span class="n">curr_T</span> <span class="o">=</span> <span class="n">T0</span> <span class="o">+</span> <span class="n">curr_dT</span>
+    <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">flag_tol</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Exit condition - Accuracy&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Exit condition - Maximum Iterations&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Accuracy achieved: &quot;</span><span class="p">,</span> <span class="n">toterror</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Iterations: &quot;</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">curr_dx</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="n">curr_dT</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">corrected_N</span> <span class="o">=</span> <span class="n">corrector_Newton</span><span class="p">(</span><span class="n">ic</span><span class="p">,</span> <span class="n">t_final</span><span class="p">,</span> <span class="n">predicted</span><span class="p">[:,</span><span class="mi">0</span><span class="p">],</span> <span class="n">taux</span><span class="p">,</span> <span class="n">tauT</span><span class="p">,</span> <span class="n">ds</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="mf">1e-14</span><span class="p">,</span> <span class="n">verbose</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>We now assess if the system (2) is actually solved, and to what precision, in both cases:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">errN</span> <span class="o">=</span> <span class="n">full_system</span><span class="p">(</span><span class="n">ic</span><span class="p">,</span> <span class="n">t_final</span><span class="p">,</span> <span class="n">corrected_N</span><span class="p">,</span> <span class="n">taux</span><span class="p">,</span> <span class="n">tauT</span><span class="p">,</span><span class="n">ds</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">err_ls</span> <span class="o">=</span> <span class="n">full_system</span><span class="p">(</span><span class="n">ic</span><span class="p">,</span> <span class="n">t_final</span><span class="p">,</span> <span class="n">corrected_ls</span><span class="p">,</span> <span class="n">taux</span><span class="p">,</span> <span class="n">tauT</span><span class="p">,</span><span class="n">ds</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Error for the Newton method:&quot;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">errN</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Error for the Least-squares method:&quot;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">err_ls</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Error for the Newton method: 8.573824179843603e-15
+Error for the Least-squares method: 1.2142886444425054e-12
+</pre></div>
+</div>
+</div>
+</div>
+<p>And check the CPU time:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%</span><span class="k">timeit</span> corrector_Newton(ic, t_final, predicted[:,0], taux, tauT, ds, tol=1e-14)
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>7.58 ms ± 9.08 µs per loop (mean ± std. dev. of 7 runs, 100 loops each)
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%</span><span class="k">timeit</span> corrector_ls(ic, t_final, predicted[:,0], taux, tauT, ds, tol=1e-14)
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>13.5 ms ± 188 µs per loop (mean ± std. dev. of 7 runs, 100 loops each)
+</pre></div>
+</div>
+</div>
+</div>
+<p>Note that this CPU timing comparison is not entirely fair, as the least square solver is still integrating the variational equations, but not using the associated gradient information.</p>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="producing-the-whole-lyapunov-family">
+<h1>Producing the whole Lyapunov family<a class="headerlink" href="#producing-the-whole-lyapunov-family" title="Permalink to this heading">#</a></h1>
+<p>We now use the code produced above to continue to a whole orbit family. We start defining an initial periodic orbit (around L1) and the starting point.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># These conditions correspond to a Lyapunov orbit close to the L1 point</span>
+<span class="n">ic</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="o">-</span><span class="mf">8.3660628427188066e-01</span><span class="p">,</span> <span class="mf">6.8716725011222035e-05</span><span class="p">,</span> <span class="mf">0.0000000000000000e+00</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.3615604665605682e-05</span><span class="p">,</span> <span class="o">-</span><span class="mf">8.3919863043620713e-01</span><span class="p">,</span> <span class="mf">0.0000000000000000e+00</span><span class="p">])</span>
+<span class="n">period</span><span class="o">=</span><span class="mf">2.6915996001673941e+00</span>
+
+<span class="c1"># Starting point</span>
+<span class="n">new_ic</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">ic</span><span class="p">)</span>
+<span class="n">new_period</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">period</span><span class="p">)</span>
+<span class="c1"># Pseudo arc-length increment</span>
+<span class="n">ds</span> <span class="o">=</span> <span class="mf">1e-3</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Finally we loop over the predictor-corrector and plot each orbit found.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">9</span><span class="p">,</span><span class="mi">9</span><span class="p">))</span>
+
+<span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+<span class="c1"># We find the postiion of the lagrangian points</span>
+<span class="n">xL1</span><span class="p">,</span> <span class="n">xL2</span><span class="p">,</span> <span class="n">xL3</span><span class="p">,</span> <span class="n">xL45</span><span class="p">,</span> <span class="n">yL45</span> <span class="o">=</span> <span class="n">compute_L_points</span><span class="p">(</span><span class="n">mu</span><span class="p">,</span> <span class="n">cf_px</span><span class="p">)</span>
+
+<span class="c1"># Plot the lagrangian points and primaries</span>
+<span class="n">zoom</span><span class="o">=</span><span class="mf">1.5</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="n">xL1</span><span class="o">-</span><span class="n">zoom</span><span class="p">,</span> <span class="n">xL1</span><span class="o">+</span><span class="n">zoom</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="o">-</span><span class="n">zoom</span><span class="p">,</span> <span class="o">+</span><span class="n">zoom</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">mu</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s1">&#39;k&#39;</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">mu</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s1">&#39;k&#39;</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="mi">30</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">xL1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">xL2</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">xL3</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="o">-</span><span class="mf">0.5</span><span class="o">+</span><span class="n">mu</span><span class="p">,</span> <span class="n">yL45</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="o">-</span><span class="mf">0.5</span><span class="o">+</span><span class="n">mu</span><span class="p">,</span> <span class="o">-</span><span class="n">yL45</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+
+<span class="c1">#Set to true to get more info on the iterations</span>
+<span class="n">verbose</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+<span class="c1"># Main iterations</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">200</span><span class="p">):</span>
+    <span class="c1"># We call the predictor</span>
+    <span class="n">predicted</span><span class="p">,</span> <span class="n">taux</span><span class="p">,</span> <span class="n">tauT</span> <span class="o">=</span> <span class="n">predictor</span><span class="p">(</span><span class="n">new_ic</span><span class="p">,</span> <span class="n">new_period</span><span class="p">,</span> <span class="n">ds</span><span class="p">)</span>
+    <span class="c1"># We call the corrector, if it fails (A^tA goes singular) we decrease the pseudo arc-length and try again</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">corrected_N</span> <span class="o">=</span> <span class="n">corrector_Newton</span><span class="p">(</span><span class="n">new_ic</span><span class="p">,</span> <span class="n">new_period</span><span class="p">,</span> <span class="n">predicted</span><span class="p">[:,</span><span class="mi">0</span><span class="p">],</span> <span class="n">taux</span><span class="p">,</span> <span class="n">tauT</span><span class="p">,</span> <span class="n">ds</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="mf">1e-15</span><span class="p">)</span>
+        <span class="c1"># Check convergence</span>
+        <span class="n">errN</span><span class="p">,</span> <span class="n">Phi</span> <span class="o">=</span> <span class="n">full_system</span><span class="p">(</span><span class="n">new_ic</span><span class="p">,</span> <span class="n">new_period</span><span class="p">,</span> <span class="n">corrected_N</span><span class="p">,</span> <span class="n">taux</span><span class="p">,</span> <span class="n">tauT</span><span class="p">,</span><span class="n">ds</span><span class="p">)</span>
+        <span class="n">err</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">errN</span><span class="p">)</span>
+        <span class="c1"># Log</span>
+        <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;ds:&quot;</span><span class="p">,</span> <span class="n">ds</span><span class="p">,</span> <span class="s2">&quot;err:&quot;</span><span class="p">,</span> <span class="n">err</span><span class="p">)</span>
+        <span class="c1"># Accept the step</span>
+        <span class="k">if</span> <span class="n">err</span> <span class="o">&lt;</span> <span class="mf">1e-12</span><span class="p">:</span>
+            <span class="n">new_ic</span> <span class="o">=</span> <span class="n">new_ic</span> <span class="o">+</span> <span class="n">corrected_N</span><span class="p">[:</span><span class="mi">6</span><span class="p">]</span>
+            <span class="n">new_period</span> <span class="o">=</span> <span class="n">new_period</span> <span class="o">+</span> <span class="n">corrected_N</span><span class="p">[</span><span class="mi">6</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span> 
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Converged - increase ds&quot;</span><span class="p">)</span>
+            <span class="n">ds</span><span class="o">*=</span><span class="mf">1.2</span>
+            <span class="k">if</span> <span class="n">ds</span> <span class="o">&gt;</span><span class="mf">0.05</span><span class="p">:</span>
+                <span class="n">ds</span><span class="o">=</span><span class="mf">0.05</span>
+            <span class="c1"># Reset the state</span>
+            <span class="n">ta</span><span class="o">.</span><span class="n">time</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">ta</span><span class="o">.</span><span class="n">state</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">new_ic</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span> <span class="o">+</span> <span class="n">ic_var</span>
+            <span class="c1"># Time grid</span>
+            <span class="n">t_grid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">new_period</span><span class="p">,</span> <span class="mi">2000</span><span class="p">)</span>
+            <span class="c1"># Propagate</span>
+            <span class="n">out</span> <span class="o">=</span> <span class="n">ta</span><span class="o">.</span><span class="n">propagate_grid</span><span class="p">(</span><span class="n">t_grid</span><span class="p">)</span>
+            <span class="c1"># Plot</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">out</span><span class="p">[</span><span class="mi">4</span><span class="p">][:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">out</span><span class="p">[</span><span class="mi">4</span><span class="p">][:,</span> <span class="mi">1</span><span class="p">],</span><span class="s1">&#39;g&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.3</span><span class="p">)</span>
+        <span class="c1"># Reject the step</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">ds</span><span class="o">/=</span><span class="mf">1.1</span>
+            <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Low Precision - reducing ds&quot;</span><span class="p">)</span>
+    <span class="c1"># The (A^T A) matrix was likely singular, we reduce the step ad try again.</span>
+    <span class="k">except</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Singular matrix - reducing ds&quot;</span><span class="p">)</span>
+        <span class="n">ds</span><span class="o">/=</span><span class="mf">1.1</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;--- </span><span class="si">%s</span><span class="s2"> seconds --- to do the iterations&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">start_time</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>ds: 0.001 err: 3.7125860080010274e-13
+Converged - increase ds
+ds: 0.0012 err: 1.1297503340463586e-13
+Converged - increase ds
+ds: 0.0014399999999999999 err: 2.0054823741788055e-13
+Converged - increase ds
+ds: 0.0017279999999999997 err: 7.624771600123291e-16
+Converged - increase ds
+ds: 0.0020735999999999997 err: 2.286492635797018e-13
+Converged - increase ds
+ds: 0.0024883199999999996 err: 3.167132102716876e-13
+Converged - increase ds
+ds: 0.0029859839999999993 err: 3.538672102411126e-14
+Converged - increase ds
+ds: 0.003583180799999999 err: 2.0052650646751112e-13
+Converged - increase ds
+ds: 0.0042998169599999985 err: 8.113302994273082e-13
+Converged - increase ds
+ds: 0.005159780351999998 err: 1.3803765177581485e-13
+Converged - increase ds
+Singular matrix - reducing ds
+ds: 0.005628851293090906 err: 0.149162938277794
+Low Precision - reducing ds
+ds: 0.005117137539173551 err: 0.051661475165313685
+Low Precision - reducing ds
+Singular matrix - reducing ds
+Singular matrix - reducing ds
+ds: 0.0038445811714301653 err: 3.430258445004303e-16
+Converged - increase ds
+Singular matrix - reducing ds
+ds: 0.004194088550651088 err: 0.18034373661749403
+Low Precision - reducing ds
+ds: 0.003812807773319171 err: 1.625453431156856e-13
+Converged - increase ds
+ds: 0.004575369327983005 err: 0.26047463481919153
+Low Precision - reducing ds
+ds: 0.0041594266618027315 err: 1.4697102368760275e-13
+Converged - increase ds
+ds: 0.004991311994163278 err: 0.015419299071966347
+Low Precision - reducing ds
+ds: 0.0045375563583302525 err: 0.009469637791999545
+Low Precision - reducing ds
+ds: 0.004125051234845684 err: 0.011685183396634347
+Low Precision - reducing ds
+ds: 0.0037500465771324394 err: 2.389957742578105e-13
+Converged - increase ds
+ds: 0.004500055892558927 err: 2.1565374580657768e-14
+Converged - increase ds
+Singular matrix - reducing ds
+Singular matrix - reducing ds
+Singular matrix - reducing ds
+ds: 0.004057150316356658 err: 1.4423641477437126e-13
+Converged - increase ds
+Singular matrix - reducing ds
+ds: 0.004425982163298171 err: 2.8616224763996445e-14
+Converged - increase ds
+Singular matrix - reducing ds
+Singular matrix - reducing ds
+ds: 0.004389403798312235 err: 1.3055592498534213e-13
+Converged - increase ds
+Singular matrix - reducing ds
+ds: 0.004788440507249711 err: 3.217864177116722e-13
+Converged - increase ds
+Singular matrix - reducing ds
+ds: 0.005223753280636048 err: 1.341698247013916e-13
+Converged - increase ds
+ds: 0.006268503936763257 err: 0.005025234270002906
+Low Precision - reducing ds
+ds: 0.005698639942512051 err: 6.332288055797163e-16
+Converged - increase ds
+Singular matrix - reducing ds
+ds: 0.006216698119104055 err: 5.878029260535262e-14
+Converged - increase ds
+ds: 0.007460037742924866 err: 0.033000640636744266
+Low Precision - reducing ds
+Singular matrix - reducing ds
+ds: 0.006165320448698235 err: 2.878597295091012e-13
+Converged - increase ds
+ds: 0.007398384538437882 err: 0.017468966290852112
+Low Precision - reducing ds
+ds: 0.006725804125852619 err: 2.264380956369148e-14
+Converged - increase ds
+ds: 0.008070964951023142 err: 0.1948631284448623
+Low Precision - reducing ds
+ds: 0.007337240864566492 err: 4.011561276684139e-13
+Converged - increase ds
+Singular matrix - reducing ds
+ds: 0.008004262761345264 err: 1.4183758132511748e-14
+Converged - increase ds
+Singular matrix - reducing ds
+ds: 0.008731923012376653 err: 7.59557369241061e-16
+Converged - increase ds
+ds: 0.010478307614851983 err: 0.12770158502714596
+Low Precision - reducing ds
+ds: 0.009525734195319983 err: 3.8761389911822585e-13
+Converged - increase ds
+Singular matrix - reducing ds
+ds: 0.010391710031258163 err: 3.0922685544040364e-14
+Converged - increase ds
+ds: 0.012470052037509794 err: 3.7541886997112583
+Low Precision - reducing ds
+ds: 0.011336410943190722 err: 3.0173437599136796e-13
+Converged - increase ds
+ds: 0.013603693131828866 err: 1.8776040709339157
+Low Precision - reducing ds
+ds: 0.01236699375620806 err: 3.8396373049524095e-13
+Converged - increase ds
+ds: 0.01484039250744967 err: 9.872486436897804e-14
+Converged - increase ds
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer">
+                  <!-- Previous / next buttons -->
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="Periodic%20orbits%20in%20the%20CR3BP.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Continuation of Periodic Orbits in the CR3BP</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="Long%20term%20stability%20of%20Trappist-1.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Long term stability of N-body simulations: the case of Trappist-1</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#">Pseudo arc-length continuation in the CR3BP</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#preamble">Preamble</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#the-pseudo-arc-length-continuation-method">The Pseudo arc-length continuation method</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#the-case-of-continuing-periodic-orbits">The case of continuing periodic orbits.</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#predictor">Predictor</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#corrector">Corrector</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#producing-the-whole-lyapunov-family">Producing the whole Lyapunov family</a></li>
+</ul>
+
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Francesco Biscani and Dario Izzo
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  <p class="copyright">
+    
+      © Copyright 2020, 2021, 2022, 2023, Francesco Biscani and Dario Izzo.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=365ca57ee442770a23c6"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=365ca57ee442770a23c6"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>
