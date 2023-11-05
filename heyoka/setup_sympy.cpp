@@ -308,16 +308,54 @@ void setup_sympy(py::module &m)
         auto sympy_kepDE = py::object(detail::spy->attr("Function")("heyoka_kepDE"));
         detail::fmap[typeid(hy::detail::kepDE_impl)] = sympy_kepDE;
 
-        // relu, relup.
-        // NOTE: these will remain unevaluated functions.
-        // NOTE: it might be possible to implement relu and relup as
-        // piecewise functions:
-        // https://stats.stackexchange.com/questions/540101/how-to-use-sympy-library-to-create-a-leakey-relu-function-for-implementation
-        auto sympy_relu = py::object(detail::spy->attr("Function")("heyoka_relu"));
-        detail::fmap[typeid(hy::detail::relu_impl)] = sympy_relu;
+        // relu, relup and leaky variants.
+        // NOTE: these are implemented as piecewise functions:
+        // https://medium.com/@mathcube7/piecewise-functions-in-pythons-sympy-83f857948d3
+        detail::fmap[typeid(hy::detail::relu_impl)]
+            = [](std::unordered_map<const void *, py::object> &func_map, const hy::func &f) -> py::object {
+            assert(f.args().size() == 1u);
 
-        auto sympy_relup = py::object(detail::spy->attr("Function")("heyoka_relup"));
-        detail::fmap[typeid(hy::detail::relup_impl)] = sympy_relup;
+            // Convert the argument to SymPy.
+            auto s_arg = detail::to_sympy_impl(func_map, f.args()[0]);
+
+            // Fetch the slope value.
+            const auto slope = f.extract<hy::detail::relu_impl>()->get_slope();
+
+            // Create the condition arg > 0.
+            auto cond = s_arg.attr("__gt__")(0);
+
+            // Fetch the piecewise function.
+            auto pw = detail::spy->attr("Piecewise");
+
+            if (slope == 0) {
+                return pw(py::make_tuple(s_arg, cond), py::make_tuple(0., true));
+            } else {
+                return pw(py::make_tuple(s_arg, cond), py::make_tuple(py::cast(slope) * s_arg, true));
+            }
+        };
+
+        detail::fmap[typeid(hy::detail::relup_impl)]
+            = [](std::unordered_map<const void *, py::object> &func_map, const hy::func &f) -> py::object {
+            assert(f.args().size() == 1u);
+
+            // Convert the argument to SymPy.
+            auto s_arg = detail::to_sympy_impl(func_map, f.args()[0]);
+
+            // Fetch the slope value.
+            const auto slope = f.extract<hy::detail::relup_impl>()->get_slope();
+
+            // Create the condition arg > 0.
+            auto cond = s_arg.attr("__gt__")(0);
+
+            // Fetch the piecewise function.
+            auto pw = detail::spy->attr("Piecewise");
+
+            if (slope == 0) {
+                return pw(py::make_tuple(1., cond), py::make_tuple(0., true));
+            } else {
+                return pw(py::make_tuple(1., cond), py::make_tuple(slope, true));
+            }
+        };
 
         // sigmoid.
         detail::fmap[typeid(hy::detail::sigmoid_impl)]
