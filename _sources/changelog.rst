@@ -9,6 +9,10 @@ Changelog
 New
 ~~~
 
+- Add a model for feed-forward neural networks
+  (`#142 <https://github.com/bluescarni/heyoka.py/pull/142>`__).
+- Implement (leaky) ``ReLU`` and its derivative in the expression
+  system (`#141 <https://github.com/bluescarni/heyoka.py/pull/141>`__).
 - Implement the eccentric longitude :math:`F` in the expression
   system (`#140 <https://github.com/bluescarni/heyoka.py/pull/140>`__).
 - Implement the delta eccentric anomaly :math:`\Delta E` in the expression
@@ -19,6 +23,8 @@ New
   (`#140 <https://github.com/bluescarni/heyoka.py/pull/140>`__).
 - New example notebook implementing Lagrange propagation
   (`#140 <https://github.com/bluescarni/heyoka.py/pull/140>`__).
+- New example notebook on the continuation of periodic orbits
+  in the CR3BP (`#97 <https://github.com/bluescarni/heyoka.py/pull/97>`__).
 
 Changes
 ~~~~~~~

@@ -70,3 +70,5 @@ Others
   notebooks/The variational equations
   notebooks/Optimal Control of the Lotka-Volterra equations
   notebooks/definite_integrals
+  notebooks/ODEs and neural networks
+
