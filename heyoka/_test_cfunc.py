@@ -12,7 +12,7 @@ import unittest as _ut
 
 class cfunc_test_case(_ut.TestCase):
     def test_basic(self):
-        from . import make_cfunc, make_vars, cfunc_dbl, core
+        from . import make_cfunc, make_vars, cfunc_dbl, core, par, time
         import pickle
         from copy import copy, deepcopy
 
@@ -34,7 +34,7 @@ class cfunc_test_case(_ut.TestCase):
             "Cannot invoke a default-constructed compiled function" in str(cm.exception)
         )
 
-        x, y, z = make_vars("x", "y", "z")
+        x, y, z, s = make_vars("x", "y", "z", "s")
         cf = make_cfunc([y * (x + z)])
 
         self.assertFalse(cf.llvm_state_scalar.force_avx512)
@@ -83,6 +83,51 @@ class cfunc_test_case(_ut.TestCase):
 
         self.assertTrue(cf.llvm_state_batch.force_avx512)
         self.assertTrue(cf.llvm_state_batch.slp_vectorize)
+
+        # Tests for correct detection of number of params, time dependency
+        # and list of variables.
+        cf = make_cfunc(
+            [y * (x + z), x], vars=[y, z, x]
+        )
+        self.assertEqual(cf.param_size, 0)
+        cf = make_cfunc(
+            [y * (x + z), par[0]], vars=[y, z, x]
+        )
+        self.assertEqual(cf.param_size, 1)
+        cf = make_cfunc(
+            [y * (x + z) - par[89], par[0]], vars=[y, z, x]
+        )
+        self.assertEqual(cf.param_size, 90)
+
+        cf = make_cfunc(
+            [y * (x + z), x], vars=[y, z, x]
+        )
+        self.assertFalse(cf.is_time_dependent)
+        cf = make_cfunc(
+            [y * (x + z) + time, x], vars=[y, z, x]
+        )
+        self.assertTrue(cf.is_time_dependent)
+        cf = make_cfunc(
+            [y * (x + z), x + time], vars=[y, z, x]
+        )
+        self.assertTrue(cf.is_time_dependent)
+
+        cf = make_cfunc(
+            [y * (x + z), x + time]
+        )
+        self.assertEqual(cf.list_var, [x, y, z])
+        cf = make_cfunc(
+            [y * (x + z), x + time], vars=[y, z, x]
+        )
+        self.assertEqual(cf.list_var, [y, z, x])
+        cf = make_cfunc(
+            [y * (x + z), x + time], vars=[y, z, x, s]
+        )
+        self.assertEqual(cf.list_var, [y, z, x, s])
+        cf = make_cfunc(
+            [y * (x + z), x + time], vars=[s, y, z, x]
+        )
+        self.assertEqual(cf.list_var, [s, y, z, x])
 
         # NOTE: test for a bug in the multiprecision
         # implementation where the precision is not

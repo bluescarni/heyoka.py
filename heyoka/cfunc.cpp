@@ -14,10 +14,8 @@
 #include <cstdint>
 #include <initializer_list>
 #include <iterator>
-#include <limits>
 #include <optional>
 #include <ostream>
-#include <set>
 #include <sstream>
 #include <string>
 #include <type_traits>
@@ -685,6 +683,9 @@ void expose_add_cfunc_impl(py::module &m, const char *suffix)
     cfunc_inst.def(py::init<>());
     cfunc_inst.def("__call__", &cfunc<T>::operator(), "inputs"_a, "outputs"_a = py::none{}, "pars"_a = py::none{},
                    "time"_a = py::none{});
+    cfunc_inst.def_readonly("param_size", &cfunc<T>::nparams);
+    cfunc_inst.def_readonly("is_time_dependent", &cfunc<T>::is_time_dependent);
+    // NOTE: these can be probably simplified into def_readonly().
     cfunc_inst.def_property_readonly("llvm_state_scalar",
                                      [](const cfunc<T> &cf) -> const hey::llvm_state & { return cf.s_scal; });
     cfunc_inst.def_property_readonly("llvm_state_batch",
@@ -780,12 +781,8 @@ void expose_add_cfunc_impl(py::module &m, const char *suffix)
             }
 
             // Let's figure out if fn contains params and if it is time-dependent.
-            std::uint32_t nparams = 0;
-            bool is_time_dependent = false;
-            for (const auto &ex : fn) {
-                nparams = std::max<std::uint32_t>(nparams, hey::get_param_size(ex));
-                is_time_dependent = is_time_dependent || hey::is_time_dependent(ex);
-            }
+            const auto nparams = hey::get_param_size(fn);
+            const auto is_time_dependent = hey::is_time_dependent(fn);
 
             // Cache the number of variables and outputs.
             // NOTE: static casts are fine, because add_cfunc()
@@ -803,21 +800,14 @@ void expose_add_cfunc_impl(py::module &m, const char *suffix)
 
                 list_var = std::move(*vars);
             } else {
-                // NOTE: this is a bit of repetition from add_cfunc().
-                // If this becomes an issue, we can consider in the
-                // future changing add_cfunc() to return also the number
-                // of detected variables.
-                std::set<std::string> dvars;
-                for (const auto &ex : fn) {
-                    for (const auto &var : hey::get_variables(ex)) {
-                        dvars.emplace(var);
-                    }
-                }
+                // NOTE: get_variables() returns an ordered list of strings,
+                // we need to convert it into a list of expressions.
+                const auto var_slist = hey::get_variables(fn);
+                list_var.reserve(var_slist.size());
+                std::transform(var_slist.begin(), var_slist.end(), std::back_inserter(list_var),
+                               [](const auto &name) { return hey::expression{name}; });
 
-                nvars = static_cast<std::uint32_t>(dvars.size());
-
-                std::transform(dvars.begin(), dvars.end(), std::back_inserter(list_var),
-                               [](const auto &str) { return hey::expression{str}; });
+                nvars = static_cast<std::uint32_t>(list_var.size());
             }
 
             // Prepare local buffers to store inputs, outputs, pars and time
