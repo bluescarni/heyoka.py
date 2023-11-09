@@ -141,10 +141,17 @@
 </a></div>
         <div class="sidebar-primary-item"><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
     <div class="bd-toc-item navbar-nav active">
-        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Contents</span></p>
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Main</span></p>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="install.html">Installation</a></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="basic_tutorials.html">Basic tutorials</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l1"><a class="reference internal" href="changelog.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="breaking_changes.html">Breaking changes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="benchmarks.html">Benchmarks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="acknowledgement.html">Acknowledgement</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="basic_tutorials.html">Basic</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="tut_taylor_method.html">Taylor’s method</a></li>
 <li class="toctree-l2"><a class="reference internal" href="notebooks/The%20expression%20system.html">The expression system</a></li>
 <li class="toctree-l2"><a class="reference internal" href="notebooks/The%20adaptive%20integrator.html">The adaptive integrator</a></li>
@@ -155,7 +162,7 @@
 <li class="toctree-l2"><a class="reference internal" href="notebooks/Event%20detection.html">Event detection</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="advanced_tutorials.html">Advanced tutorials</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="advanced_tutorials.html">Advanced</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="notebooks/Batch%20mode%20overview.html">Batch mode</a></li>
 <li class="toctree-l2"><a class="reference internal" href="notebooks/ensemble_mode.html">Ensemble propagations</a></li>
 <li class="toctree-l2"><a class="reference internal" href="notebooks/parallel_mode.html">Parallel mode</a></li>
@@ -168,7 +175,10 @@
 <li class="toctree-l2"><a class="reference internal" href="notebooks/jit_caching.html">JIT compilation and caching</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="examples.html">Examples</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-3"><i class="fa-solid fa-chevron-down"></i></label><ul>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Examples</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="examples_astro.html">Celestial mechanics and astrodynamics</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-3"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="notebooks/The%20restricted%20three-body%20problem.html">The restricted three-body problem</a></li>
 <li class="toctree-l2"><a class="reference internal" href="notebooks/Periodic%20orbits%20in%20the%20CR3BP.html">Continuation of Periodic Orbits in the CR3BP</a></li>
 <li class="toctree-l2"><a class="reference internal" href="notebooks/Pseudo%20arc-length%20continuation%20in%20the%20CR3BP.html">Pseudo arc-length continuation in the CR3BP</a></li>
@@ -184,6 +194,9 @@
 <li class="toctree-l2"><a class="reference internal" href="notebooks/vsop2013.html">Introduction to the VSOP2013 planetary theory</a></li>
 <li class="toctree-l2"><a class="reference internal" href="notebooks/tides_spokes.html">Elastic tides</a></li>
 <li class="toctree-l2"><a class="reference internal" href="notebooks/lagrangian_propagator.html">Lagrange propagation and the state transition matrix</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="examples_event.html">Event detection</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-4"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="notebooks/Sampling%20events.html">Sampling events</a></li>
 <li class="toctree-l2"><a class="reference internal" href="notebooks/Poincar%C3%A9%20sections.html">Poincaré sections</a></li>
 <li class="toctree-l2"><a class="reference internal" href="notebooks/second_integral.html">The second integral of motion</a></li>
@@ -192,17 +205,20 @@
 <li class="toctree-l2"><a class="reference internal" href="notebooks/The%20wavy%20ramp.html">The wavy ramp</a></li>
 <li class="toctree-l2"><a class="reference internal" href="notebooks/The%20Maxwell-Boltzmann%20distribution.html">The Maxwell-Boltzmann distribution</a></li>
 <li class="toctree-l2"><a class="reference internal" href="notebooks/ev_sensitivity.html">Computing event sensitivity</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="examples_ml.html">Machine Learning</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-5"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/NeuralHamiltonianODEs.html">Neural Hamiltonian ODEs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/NeuralODEs.html">Neural ODEs</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="examples_others.html">Others</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-6"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="notebooks/ensemble_batch_perf.html">Evaluating the performance of ensemble &amp; batch mode</a></li>
 <li class="toctree-l2"><a class="reference internal" href="notebooks/The%20variational%20equations.html">The variational equations</a></li>
 <li class="toctree-l2"><a class="reference internal" href="notebooks/Optimal%20Control%20of%20the%20Lotka-Volterra%20equations.html">Optimal Control of the Lotka-Volterra equations</a></li>
 <li class="toctree-l2"><a class="reference internal" href="notebooks/definite_integrals.html">Computing definite integrals</a></li>
-<li class="toctree-l2"><a class="reference internal" href="notebooks/ODEs%20and%20neural%20networks.html">Neural Hamiltonian ODEs</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="benchmarks.html">Benchmarks</a></li>
-<li class="toctree-l1"><a class="reference internal" href="changelog.html">Changelog</a></li>
-<li class="toctree-l1"><a class="reference internal" href="breaking_changes.html">Breaking changes</a></li>
-<li class="toctree-l1"><a class="reference internal" href="acknowledgement.html">Acknowledgement</a></li>
 </ul>
 
     </div>
@@ -463,7 +479,7 @@ to the heyoka.py paper (<a class="reference external" href="https://arxiv.org/ab
 <p>heyoka.py is released under the <a class="reference external" href="https://www.mozilla.org/en-US/MPL/2.0/FAQ/">MPL-2.0</a> license.
 The authors are Francesco Biscani and Dario Izzo (European Space Agency).</p>
 <div class="toctree-wrapper compound">
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">Contents</span></p>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Main</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="install.html">Installation</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="install.html#dependencies">Dependencies</a></li>
@@ -473,37 +489,6 @@ The authors are Francesco Biscani and Dario Izzo (European Space Agency).</p>
 <li class="toctree-l2"><a class="reference internal" href="install.html#getting-help">Getting help</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="basic_tutorials.html">Basic tutorials</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="tut_taylor_method.html">Taylor’s method</a></li>
-<li class="toctree-l2"><a class="reference internal" href="notebooks/The%20expression%20system.html">The expression system</a></li>
-<li class="toctree-l2"><a class="reference internal" href="notebooks/The%20adaptive%20integrator.html">The adaptive integrator</a></li>
-<li class="toctree-l2"><a class="reference internal" href="notebooks/Customising%20the%20adaptive%20integrator.html">Customising the adaptive integrator</a></li>
-<li class="toctree-l2"><a class="reference internal" href="notebooks/ODEs%20with%20parameters.html">ODEs with parameters</a></li>
-<li class="toctree-l2"><a class="reference internal" href="notebooks/Non-autonomous%20systems.html">Non-autonomous systems</a></li>
-<li class="toctree-l2"><a class="reference internal" href="notebooks/Dense%20output.html">Dense &amp; continuous output</a></li>
-<li class="toctree-l2"><a class="reference internal" href="notebooks/Event%20detection.html">Event detection</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="advanced_tutorials.html">Advanced tutorials</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="notebooks/Batch%20mode%20overview.html">Batch mode</a></li>
-<li class="toctree-l2"><a class="reference internal" href="notebooks/ensemble_mode.html">Ensemble propagations</a></li>
-<li class="toctree-l2"><a class="reference internal" href="notebooks/parallel_mode.html">Parallel mode</a></li>
-<li class="toctree-l2"><a class="reference internal" href="notebooks/ext_precision.html">Computations in extended precision</a></li>
-<li class="toctree-l2"><a class="reference internal" href="notebooks/arbitrary_precision.html">Computations in arbitrary precision</a></li>
-<li class="toctree-l2"><a class="reference internal" href="notebooks/sympy_interop.html">Interoperability with SymPy</a></li>
-<li class="toctree-l2"><a class="reference internal" href="notebooks/compiled_functions.html">Compiled functions</a></li>
-<li class="toctree-l2"><a class="reference internal" href="notebooks/ex_system_revisited.html">Using the expression system effectively</a></li>
-<li class="toctree-l2"><a class="reference internal" href="notebooks/pickling.html">Pickle support</a></li>
-<li class="toctree-l2"><a class="reference internal" href="notebooks/jit_caching.html">JIT compilation and caching</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="examples.html#celestial-mechanics-and-astrodynamics">Celestial mechanics and astrodynamics</a></li>
-<li class="toctree-l2"><a class="reference internal" href="examples.html#event-detection">Event detection</a></li>
-<li class="toctree-l2"><a class="reference internal" href="examples.html#others">Others</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="benchmarks.html">Benchmarks</a></li>
 <li class="toctree-l1"><a class="reference internal" href="changelog.html">Changelog</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="changelog.html#unreleased">3.1.0 (unreleased)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="changelog.html#id2">3.0.0 (2023-10-07)</a></li>
@@ -540,7 +525,58 @@ The authors are Francesco Biscani and Dario Izzo (European Space Agency).</p>
 <li class="toctree-l2"><a class="reference internal" href="breaking_changes.html#bchanges-0-8-0">0.8.0</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="benchmarks.html">Benchmarks</a></li>
 <li class="toctree-l1"><a class="reference internal" href="acknowledgement.html">Acknowledgement</a></li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="basic_tutorials.html">Basic</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="tut_taylor_method.html">Taylor’s method</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/The%20expression%20system.html">The expression system</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/The%20adaptive%20integrator.html">The adaptive integrator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/Customising%20the%20adaptive%20integrator.html">Customising the adaptive integrator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/ODEs%20with%20parameters.html">ODEs with parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/Non-autonomous%20systems.html">Non-autonomous systems</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/Dense%20output.html">Dense &amp; continuous output</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/Event%20detection.html">Event detection</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="advanced_tutorials.html">Advanced</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/Batch%20mode%20overview.html">Batch mode</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/ensemble_mode.html">Ensemble propagations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/parallel_mode.html">Parallel mode</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/ext_precision.html">Computations in extended precision</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/arbitrary_precision.html">Computations in arbitrary precision</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/sympy_interop.html">Interoperability with SymPy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/compiled_functions.html">Compiled functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/ex_system_revisited.html">Using the expression system effectively</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/pickling.html">Pickle support</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/jit_caching.html">JIT compilation and caching</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Examples</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="examples_astro.html">Celestial mechanics and astrodynamics</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="examples_astro.html#id1">Celestial mechanics and astrodynamics</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="examples_event.html">Event detection</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="examples_event.html#id1">Event detection</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="examples_ml.html">Machine Learning</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="examples_ml.html#id1">Machine Learning</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="examples_others.html">Others</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="examples_others.html#id1">Others</a></li>
+</ul>
+</li>
 </ul>
 </div>
 </section>

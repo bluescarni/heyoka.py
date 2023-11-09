@@ -1,6 +1,6 @@
 .. _basic_tutorials:
 
-Basic tutorials
+Basic
 ===============
 
 .. only:: html

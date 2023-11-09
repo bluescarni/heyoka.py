@@ -1,7 +1,7 @@
-.. _examples:
+.. _examples_astro:
 
-Examples
-========
+Celestial mechanics and astrodynamics
+=======================================
 
 .. only:: html
 
@@ -44,31 +44,3 @@ Celestial mechanics and astrodynamics
   notebooks/vsop2013
   notebooks/tides_spokes
   notebooks/lagrangian_propagator
-
-Event detection
----------------
-
-.. toctree::
-  :maxdepth: 1
-
-  notebooks/Sampling events
-  notebooks/Poincaré sections
-  notebooks/second_integral
-  notebooks/The Keplerian billiard
-  notebooks/The two-fixed elliptic billiard
-  notebooks/The wavy ramp
-  notebooks/The Maxwell-Boltzmann distribution
-  notebooks/ev_sensitivity
-
-Others
-------
-
-.. toctree::
-  :maxdepth: 1
-
-  notebooks/ensemble_batch_perf.ipynb
-  notebooks/The variational equations
-  notebooks/Optimal Control of the Lotka-Volterra equations
-  notebooks/definite_integrals
-  notebooks/ODEs and neural networks
-

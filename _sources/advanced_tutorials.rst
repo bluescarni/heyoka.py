@@ -1,6 +1,6 @@
 .. _adv_tutorials:
 
-Advanced tutorials
+Advanced
 ==================
 
 .. only:: html
