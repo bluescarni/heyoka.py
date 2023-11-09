@@ -93,7 +93,8 @@ nb_execution_excludepatterns = [
     "parallel_mode.ipynb",
     "vsop2013.ipynb",
     "compiled_functions.ipynb",
-    "Pseudo arc-length continuation*"
+    "Pseudo arc-length continuation*",
+    "*"
 ]
 
 latex_engine = "xelatex"
