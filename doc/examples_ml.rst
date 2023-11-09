@@ -1,4 +1,4 @@
-.. _examples_misc:
+.. _examples_ml:
 
 Machine Learning
 ====================
