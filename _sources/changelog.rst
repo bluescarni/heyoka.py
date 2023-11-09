@@ -36,6 +36,8 @@ Changes
 Fix
 ~~~
 
+- Fix slow performance when creating very large compiled functions
+  (`#144 <https://github.com/bluescarni/heyoka.py/pull/144>`__).
 - Fix building against Python 3.12
   (`#139 <https://github.com/bluescarni/heyoka.py/pull/139>`__).
 
