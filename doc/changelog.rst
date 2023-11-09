@@ -9,6 +9,9 @@ Changelog
 New
 ~~~
 
+- New example notebooks on neural ODEs
+  (`#143 <https://github.com/bluescarni/heyoka.py/pull/143>`__,
+  `#142 <https://github.com/bluescarni/heyoka.py/pull/142>`__).
 - Add a model for feed-forward neural networks
   (`#142 <https://github.com/bluescarni/heyoka.py/pull/142>`__).
 - Implement (leaky) ``ReLU`` and its derivative in the expression
