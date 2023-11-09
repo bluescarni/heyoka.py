@@ -69,14 +69,30 @@ The authors are Francesco Biscani and Dario Izzo (European Space Agency).
 
 ```{toctree}
 :maxdepth: 2
-:caption: Contents
-
+:caption: Main
+ 
 install
-basic_tutorials
-advanced_tutorials
-examples
-benchmarks
 changelog
 breaking_changes
+benchmarks
 acknowledgement
+
+```
+
+```{toctree}
+:maxdepth: 2
+:caption: Tutorials
+ 
+basic_tutorials
+advanced_tutorials
+```
+
+```{toctree}
+:maxdepth: 2
+:caption: Examples
+
+examples_astro
+examples_event
+examples_ml
+examples_others
 ```
