@@ -471,7 +471,7 @@ document.write(`
 \[
 \dot {\mathbf x} = \mathbf f(\mathbf x, \mathcal N_\theta(\mathbf x))
 \]</div>
-<p>whose solution is indicated with <span class="math notranslate nohighlight">\(\mathbf x(t; x_0, \theta)\)</span> to explicitly denote the dependance on the initial conditions <span class="math notranslate nohighlight">\(\mathbf x+0\)</span> and the network parameters <span class="math notranslate nohighlight">\(\theta\)</span>.
+<p>whose solution is indicated with <span class="math notranslate nohighlight">\(\mathbf x(t; x_0, \theta)\)</span> to explicitly denote the dependance on the initial conditions <span class="math notranslate nohighlight">\(\mathbf x_0\)</span> and the network parameters <span class="math notranslate nohighlight">\(\theta\)</span>.
 We refer to these systems as Neural ODEs, a term that has been made popular in the paper,</p>
 <p><em>Chen, Ricky TQ, Yulia Rubanova, Jesse Bettencourt, and David K. Duvenaud.</em> “Neural ordinary differential equations.” Advances in neural information processing systems 31 (2018).</p>
 <p>where it has been used to indicate a specific form of the above equation, when the state represented the neuronal activity of a Neural Network. We here depart from that terminology and use the term in general for any ODE with a right hand side containing an Artificial Neural Network. All the cases illustrated in the <a class="reference internal" href="NeuralHamiltonianODEs.html"><span class="doc std std-doc">Neural Hamiltonian ODE</span></a> example are, therefore, also to be considered as special cases of Neural ODEs.</p>
@@ -502,10 +502,12 @@ We refer to these systems as Neural ODEs, a term that has been made popular in t
 <p>In the expressions above we know the functional form of <span class="math notranslate nohighlight">\(\mathcal L\)</span> and hence its derivatives w.r.t. <span class="math notranslate nohighlight">\(\mathbf x\)</span>, we thus need to compute the remaining terms, i.e. the ODE sensitivities:</p>
 <div class="math notranslate nohighlight">
 \[
-\mathbf \Phi = \frac{\partial \mathbf x(t)}{\partial \mathbf x_0}
-$$, \]</div>
-<p>\boldsymbol \varphi = \frac{\partial \mathbf x(t)}{\partial \boldsymbol \theta}
-$$</p>
+\mathbf \Phi = \frac{\partial \mathbf x(t)}{\partial \mathbf x_0},
+\]</div>
+<div class="math notranslate nohighlight">
+\[
+\boldsymbol \varphi = \frac{\partial \mathbf x(t)}{\partial \boldsymbol \theta}.
+\]</div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>The computation of the ODE sensitivities can be achieved following two methods: the variational equations and the adjoint method. Both methods compute the same quantities and we shall see how they are, ultimately, two version of the same reasoning leading to algorithms sharing a similar complexity, contrary to what sometimes believed / reported in the scientific literature.</p>
@@ -603,7 +605,7 @@ Shape of dNdx: (2, 2)
 </div>
 </div>
 </div>
-<p>We now assemble a Taylor integrator using the computed expressions for the dynmics. We need to repack everything in tuples (lhs, rhs) where lhs is the expression for the variable corresponding to that ODE (e.g. lhs will be <span class="math notranslate nohighlight">\(x\)</span> for the rhs representing <span class="math notranslate nohighlight">\(\frac{dx}{dt}\)</span>):</p>
+<p>We now assemble a Taylor integrator using the computed expressions for the dynamics. We need to repack everything in tuples (lhs, rhs) where lhs is the expression for the variable corresponding to that ODE (e.g., lhs will be <span class="math notranslate nohighlight">\(x\)</span> for the rhs representing <span class="math notranslate nohighlight">\(\frac{dx}{dt}\)</span>):</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">dyn</span> <span class="o">=</span> <span class="p">[]</span>
@@ -630,7 +632,7 @@ Shape of dNdx: (2, 2)
 <p>We start with setting up the Taylor Integration. We create random weights and biases for the <code class="docutils literal notranslate"><span class="pre">ffnn</span></code>. We also set a very high tolerance as to match what is commonly done in the context of ML work on Neural ODEs. (This test can be repeated at dfferent tolerances and will mostly allow for a similar conclusion).</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>For medium size networks already, the use of the compact_mode kwarg is essential as else the triggered LLVM compilation may take a long time.</p>
+<p>For medium size networks already, the use of the <code class="docutils literal notranslate"><span class="pre">compact_mode</span></code> kwarg is essential as else the triggered LLVM compilation may take a long time.</p>
 </div>
 <section id="taylor-integrator">
 <h3>Taylor Integrator<a class="headerlink" href="#taylor-integrator" title="Permalink to this heading">#</a></h3>
@@ -652,12 +654,12 @@ Shape of dNdx: (2, 2)
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>--- 0.45714402198791504 seconds --- to build (jit) the Taylor integrator
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>--- 0.42095208168029785 seconds --- to build (jit) the Taylor integrator
 </pre></div>
 </div>
 </div>
 </div>
-<p>For this test case we craete random weights and biases and we perform the integrtion for a time <span class="math notranslate nohighlight">\(t_f=1.\)</span></p>
+<p>For this test case we create random weights and biases and we perform the integrtion for a time <span class="math notranslate nohighlight">\(t_f=1\)</span>.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Lets define the random weigths / biases</span>
@@ -693,14 +695,14 @@ Shape of dNdx: (2, 2)
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>--- 0.00038313865661621094 seconds --- to propagate using the Taylor scheme
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>--- 0.0002033710479736328 seconds --- to propagate using the Taylor scheme
 </pre></div>
 </div>
 </div>
 </div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>This is the timing that corresponds to the avaluation of all gradients (ODEs sensitivities) necessary to train the neuralODE on this one point batch. Larger batches will require linearly more time and thus benefit greatly from the batch version of the Taylor Adaptive integrator, leveraging SIMD instructions.</p>
+<p>This is the timing that corresponds to the evaluation of all gradients (ODEs sensitivities) necessary to train the neuralODE on this one point batch. Larger batches will require linearly more time and thus benefit greatly from the batch version of the Taylor Adaptive integrator, leveraging SIMD instructions.</p>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -712,17 +714,17 @@ Shape of dNdx: (2, 2)
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/c11f2f118858fa6848195814a42d4c94d50259f9cb167bc83ea16fd6a3fde2b8.png" src="../_images/c11f2f118858fa6848195814a42d4c94d50259f9cb167bc83ea16fd6a3fde2b8.png" />
+<img alt="../_images/31e6cbd722c3d8b2fd84c7139d43accf253c27de142693bc276dcd5719b3b198.png" src="../_images/31e6cbd722c3d8b2fd84c7139d43accf253c27de142693bc276dcd5719b3b198.png" />
 </div>
 </div>
 </section>
 <section id="scipy-counterpart">
 <h3>Scipy Counterpart<a class="headerlink" href="#scipy-counterpart" title="Permalink to this heading">#</a></h3>
 <p>We assemble the rhs of our equations for use with the <code class="docutils literal notranslate"><span class="pre">scipy.integrate</span></code> suite. Note the simplicity of use of compiled functions for this task.
-This allows us to use identical jitted expressions also for the rhs of the case of the scipy clls. The comparison results are thus to be interpreted solely in the light of different numerical integration techniques.</p>
+This allows us to use identical jitted expressions also for the rhs of the case of the scipy calls. The comparison results are thus to be interpreted solely in the light of different numerical integration techniques.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>As its always the case with compiled functions, here e must take care to pass the variable names in the desired order as to avoid the default lexicographic order which, in thi case as well as in most cases, does not correspond with what we have in mind. (classical source of bugs)</p>
+<p>As it is always the case with compiled functions, here we must take care to pass the variable names in the desired order as to avoid the default lexicographic order which, in this case as well as in most cases, does not correspond with what we have in mind (classical source of bugs).</p>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -751,7 +753,7 @@ This allows us to use identical jitted expressions also for the rhs of the case 
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>--- 0.0013775825500488281 seconds --- to propagate
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>--- 0.001844167709350586 seconds --- to propagate
 </pre></div>
 </div>
 </div>
@@ -766,10 +768,10 @@ This allows us to use identical jitted expressions also for the rhs of the case 
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/afe6c8d200bf10678188791ca8ee6deddd1c2a99a484aa6bfcfbbf0dabe43bfa.png" src="../_images/afe6c8d200bf10678188791ca8ee6deddd1c2a99a484aa6bfcfbbf0dabe43bfa.png" />
+<img alt="../_images/da431badc725133062b232d04a8e585eb27563ea6c9def438aedbc0b03a6cf13.png" src="../_images/da431badc725133062b232d04a8e585eb27563ea6c9def438aedbc0b03a6cf13.png" />
 </div>
 </div>
-<p>We see a net advantage in timings using the Taylor integration scheme. Note we are here not using batch propagation, which woukd add an additional 2-4 factor speedup in performances.</p>
+<p>We see a net advantage in timings using the Taylor integration scheme. Note we are here not using batch propagation, which would add an additional 2-4 factor speedup in performances.</p>
 </section>
 </section>
 <section id="a-note-on-the-adjoint-method">
@@ -778,23 +780,23 @@ This allows us to use identical jitted expressions also for the rhs of the case 
 <p>Let us, for a moment, instead of seeking <span class="math notranslate nohighlight">\(\frac{\partial \mathbf x(t)}{\partial \mathbf x_0}\)</span>, seek the opposite, and thus define:</p>
 <div class="math notranslate nohighlight">
 \[
-\mathbf a = \frac{\partial \mathbf x_0}{\partial \mathbf x(t)} 
+\mathbf a = \frac{\partial \mathbf x_0}{\partial \mathbf x(t)}.
 \]</div>
-<p>by definition <span class="math notranslate nohighlight">\(\mathbf a\)</span> is the inverse of <span class="math notranslate nohighlight">\(\mathbf \Phi\)</span>, which implies <span class="math notranslate nohighlight">\(\mathbf a = \mathbf \Phi^{-1}\)</span> and thus we also have (accounting fo the fact that the derivative of a matrix inverse is <span class="math notranslate nohighlight">\(\frac{d\mathbf A^{-1}}{dt} = - \mathbf A^{-1}\frac{d \mathbf A}{dt}\mathbf A^{-1}\)</span></p>
+<p>By definition <span class="math notranslate nohighlight">\(\mathbf a\)</span> is the inverse of <span class="math notranslate nohighlight">\(\mathbf \Phi\)</span>, which implies <span class="math notranslate nohighlight">\(\mathbf a = \mathbf \Phi^{-1}\)</span> and thus we also have (accounting fo the fact that the derivative of a matrix inverse is <span class="math notranslate nohighlight">\(\frac{d\mathbf A^{-1}}{dt} = - \mathbf A^{-1}\frac{d \mathbf A}{dt}\mathbf A^{-1}\)</span>):</p>
 <div class="math notranslate nohighlight">
 \[
-\frac{\partial \mathbf a}{\partial t} = - \mathbf \Phi^{-1} \frac{\partial \mathbf \Phi}{\partial t} \mathbf \Phi^{-1} =- \mathbf \Phi^{-1} \nabla_\mathbf x \mathcal N_\theta(\mathbf x)  \mathbf \Phi  \mathbf \Phi^{-1} = -\mathbf a \nabla_\mathbf x \mathcal N_\theta(\mathbf x)
+\frac{\partial \mathbf a}{\partial t} = - \mathbf \Phi^{-1} \frac{\partial \mathbf \Phi}{\partial t} \mathbf \Phi^{-1} =- \mathbf \Phi^{-1} \nabla_\mathbf x \mathcal N_\theta(\mathbf x)  \mathbf \Phi  \mathbf \Phi^{-1} = -\mathbf a \nabla_\mathbf x \mathcal N_\theta(\mathbf x),
 \]</div>
 <p>which is a very compact and elegant demonstration (I know right?) of the adjoint equation for our case, otherwise often derived using the calculus of variations and a much more lengthy sequence of variational identities.</p>
 <p>More importantly the derivation shows how the adjoint method is strongly related to the variational equations and thus the resulting algorithm complexity cannot, and will not be different.</p>
 <p>In the classic derivation of the adjoint method the sensitivities are taken with respect to <span class="math notranslate nohighlight">\(\mathbf x(T)\)</span> and not <span class="math notranslate nohighlight">\(\mathbf x_0 = \mathbf x(t_0)\)</span>. This is irrelevant for the purpose of the demonstration as <span class="math notranslate nohighlight">\(t_0\)</span> is just a point in time and can represent a point in the future as well as a point in the past.</p>
-<p>In the paper “Neural ordinary differential equations.” which popularized the use of ffnn on the r.h.s od ODEs, the derivation is made for a loss <span class="math notranslate nohighlight">\(\mathcal L\)</span>, and and ODE is seeked for <span class="math notranslate nohighlight">\(\mathbf {\hat a} = \frac{\partial \mathcal L(\mathbf x(T))}{\partial \mathbf x(t)}\)</span>.</p>
+<p>In the paper “Neural ordinary differential equations” which popularized the use of ffnn on the r.h.s od ODEs, the derivation is made for a loss <span class="math notranslate nohighlight">\(\mathcal L\)</span>, and and ODE is seeked for <span class="math notranslate nohighlight">\(\mathbf {\hat a} = \frac{\partial \mathcal L(\mathbf x(T))}{\partial \mathbf x(t)}\)</span>.</p>
 <p>Since:</p>
 <div class="math notranslate nohighlight">
 \[
-\mathbf {\hat a} = \frac{\partial \mathcal L(\mathbf x(T))}{\partial \mathbf x(t)} = \frac{\partial \mathcal L(\mathbf x(T))}{\partial \mathbf x(T)}\frac{\partial \mathbf x(T)}{\partial \mathbf x(t)}
+\mathbf {\hat a} = \frac{\partial \mathcal L(\mathbf x(T))}{\partial \mathbf x(t)} = \frac{\partial \mathcal L(\mathbf x(T))}{\partial \mathbf x(T)}\frac{\partial \mathbf x(T)}{\partial \mathbf x(t)},
 \]</div>
-<p>Its easy to see that the same differential equation we proved above holds for <span class="math notranslate nohighlight">\(\mathbf {\hat a}\)</span> by taking the time derivatoive of the above identity and noting that <span class="math notranslate nohighlight">\(\frac{\partial \mathcal L(\mathbf x(T))}{\partial \mathbf x(T)}\)</span> is a constant.</p>
+<p>it is easy to see that the same differential equation we proved above holds for <span class="math notranslate nohighlight">\(\mathbf {\hat a}\)</span> by taking the time derivatoive of the above identity and noting that <span class="math notranslate nohighlight">\(\frac{\partial \mathcal L(\mathbf x(T))}{\partial \mathbf x(T)}\)</span> is a constant.</p>
 </section>
 </section>
 
