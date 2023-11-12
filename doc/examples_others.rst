@@ -23,9 +23,6 @@ Others
      the features currently
      available only in the development version of heyoka.py.
 
-Others
-------
-
 .. toctree::
   :maxdepth: 1
 

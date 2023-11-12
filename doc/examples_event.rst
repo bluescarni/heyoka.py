@@ -23,9 +23,6 @@ Event detection
      the features currently
      available only in the development version of heyoka.py.
 
-Event detection
----------------
-
 .. toctree::
   :maxdepth: 1
 
