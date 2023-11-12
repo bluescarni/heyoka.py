@@ -23,9 +23,6 @@ Celestial mechanics and astrodynamics
      the features currently
      available only in the development version of heyoka.py.
 
-Celestial mechanics and astrodynamics
--------------------------------------
-
 .. toctree::
   :maxdepth: 1
 

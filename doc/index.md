@@ -68,7 +68,7 @@ heyoka.py is released under the [MPL-2.0](https://www.mozilla.org/en-US/MPL/2.0/
 The authors are Francesco Biscani and Dario Izzo (European Space Agency).
 
 ```{toctree}
-:maxdepth: 2
+:maxdepth: 1
 :caption: Main
  
 install
