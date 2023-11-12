@@ -654,7 +654,7 @@ Shape of dNdx: (2, 2)
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>--- 0.4591064453125 seconds --- to build (jit) the Taylor integrator
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>--- 0.5256710052490234 seconds --- to build (jit) the Taylor integrator
 </pre></div>
 </div>
 </div>
@@ -695,7 +695,7 @@ Shape of dNdx: (2, 2)
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>--- 0.0003943443298339844 seconds --- to propagate using the Taylor scheme
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>--- 0.00020384788513183594 seconds --- to propagate using the Taylor scheme
 </pre></div>
 </div>
 </div>
@@ -714,7 +714,7 @@ Shape of dNdx: (2, 2)
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/c7d90d9ebbf600886e96fe73b01273d4bb520103b5dd980c3f6b6b0569a15227.png" src="../_images/c7d90d9ebbf600886e96fe73b01273d4bb520103b5dd980c3f6b6b0569a15227.png" />
+<img alt="../_images/ffd1112e51f62540b9fbb3e9562bc194691d43e1b67e0b716a6ab0415582f782.png" src="../_images/ffd1112e51f62540b9fbb3e9562bc194691d43e1b67e0b716a6ab0415582f782.png" />
 </div>
 </div>
 </section>
@@ -753,7 +753,7 @@ This allows us to use identical jitted expressions also for the rhs of the case 
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>--- 0.002102375030517578 seconds --- to propagate
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>--- 0.002337217330932617 seconds --- to propagate
 </pre></div>
 </div>
 </div>
@@ -768,7 +768,7 @@ This allows us to use identical jitted expressions also for the rhs of the case 
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/3f9c675f88d30bdbde3783b65c93256b989ac83c6b9b0e81018f0efa39b7a7cc.png" src="../_images/3f9c675f88d30bdbde3783b65c93256b989ac83c6b9b0e81018f0efa39b7a7cc.png" />
+<img alt="../_images/686b92eb08bfeaa1b104ac07e4bf5b8139a6965177afb17e34f867598726387c.png" src="../_images/686b92eb08bfeaa1b104ac07e4bf5b8139a6965177afb17e34f867598726387c.png" />
 </div>
 </div>
 <p>We see a net advantage in timings using the Taylor integration scheme. Note we are here not using batch propagation, which would add an additional 2-4 factor speedup in performances.</p>
