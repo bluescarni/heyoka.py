@@ -23,9 +23,6 @@ Machine Learning
      the features currently
      available only in the development version of heyoka.py.
      
-Machine Learning
-----------------
-
 .. toctree::
   :maxdepth: 1
 
