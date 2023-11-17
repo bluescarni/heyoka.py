@@ -92,6 +92,7 @@ nb_execution_excludepatterns = [
     "The restricted three-body problem*",
     "parallel_mode.ipynb",
     "vsop2013.ipynb",
+    "elp2000.ipynb",
     "compiled_functions.ipynb",
     "Pseudo arc-length continuation*"
     ]
