@@ -4,6 +4,7 @@ jobs:
   conda_heyoka_head_38:
     docker:
     - image: cimg/base:current
+    resource_class: large
     steps:
     - checkout
     - run:
@@ -14,6 +15,7 @@ jobs:
   conda_heyoka_head_310:
     docker:
     - image: cimg/base:current
+    resource_class: large
     steps:
     - checkout
     - run:
@@ -24,6 +26,7 @@ jobs:
   conda_heyoka_head_312:
     docker:
     - image: cimg/base:current
+    resource_class: large
     steps:
     - checkout
     - run:
@@ -32,6 +35,7 @@ jobs:
   conda_heyoka_head_release_310:
     docker:
     - image: cimg/base:current
+    resource_class: large
     steps:
     - checkout
     - run:
@@ -42,7 +46,7 @@ jobs:
   ubuntu_arm64:
     machine:
       image: ubuntu-2004:202101-01
-    resource_class: arm.medium
+    resource_class: arm.large
     steps:
     - checkout
     - run:
