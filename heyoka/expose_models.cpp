@@ -40,6 +40,7 @@
 #endif
 
 #include <heyoka/expression.hpp>
+#include <heyoka/kw.hpp>
 #include <heyoka/models.hpp>
 
 #include "common_utils.hpp"
@@ -355,6 +356,27 @@ void expose_models(py::module_ &m)
         },
         "pl_idx"_a, "time"_a = hy::time, "thresh"_a.noconvert() = 1e-9);
     m.def("_model_get_vsop2013_mus", &hy::model::get_vsop2013_mus);
+
+    // ELP2000.
+    m.def(
+        "_model_elp2000_spherical",
+        [](hy::expression t_expr, double thresh) {
+            return hy::model::elp2000_spherical(hy::kw::time = std::move(t_expr), hy::kw::thresh = thresh);
+        },
+        "time"_a = hy::time, "thresh"_a.noconvert() = 1e-9);
+    m.def(
+        "_model_elp2000_cartesian_e2000",
+        [](hy::expression t_expr, double thresh) {
+            return hy::model::elp2000_cartesian_e2000(hy::kw::time = std::move(t_expr), hy::kw::thresh = thresh);
+        },
+        "time"_a = hy::time, "thresh"_a.noconvert() = 1e-9);
+    m.def(
+        "_model_elp2000_cartesian_fk5",
+        [](hy::expression t_expr, double thresh) {
+            return hy::model::elp2000_cartesian_fk5(hy::kw::time = std::move(t_expr), hy::kw::thresh = thresh);
+        },
+        "time"_a = hy::time, "thresh"_a.noconvert() = 1e-9);
+    m.def("_model_get_elp2000_mus", &hy::model::get_elp2000_mus);
 
     // CR3BP.
     m.def(
