@@ -63,7 +63,7 @@ if [[ "${HEYOKA_PY_RELEASE_BUILD}" == "yes" ]]; then
 	tar xzf heyoka.tar.gz
 	cd heyoka-${HEYOKA_VERSION_RELEASE}
 else
-	git clone https://github.com/bluescarni/heyoka.git
+	git clone --depth 1 https://github.com/bluescarni/heyoka.git
 	cd heyoka
 fi
 
