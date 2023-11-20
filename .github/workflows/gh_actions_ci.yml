@@ -109,7 +109,7 @@ jobs:
         shell: pwsh
         run: |
           conda install -y python=3.10 git pybind11 numpy cmake 'llvmdev=14.*' tbb-devel tbb astroquery boost-cpp fmt spdlog sleef sympy cloudpickle zlib libzlib mppp numba
-          git clone https://github.com/bluescarni/heyoka.git heyoka_cpp
+          git clone --depth 1 https://github.com/bluescarni/heyoka.git heyoka_cpp
           cd heyoka_cpp
           mkdir build
           cd build

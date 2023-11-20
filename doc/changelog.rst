@@ -3,6 +3,22 @@
 Changelog
 =========
 
+3.2.0 (unreleased)
+------------------
+
+New
+~~~
+
+- Add model implementing the ELP2000 analytical lunar theory
+  (`#149 <https://github.com/bluescarni/heyoka.py/pull/149>`__).
+
+Changes
+~~~~~~~
+
+- heyoka.py now requires version 3.2.0 of the
+  heyoka C++ library
+  (`#149 <https://github.com/bluescarni/heyoka.py/pull/149>`__).
+
 3.1.0 (2023-11-13)
 ------------------
 

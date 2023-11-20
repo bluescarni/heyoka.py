@@ -20,7 +20,7 @@ conda create -y -q -p $deps_dir python=3.10 git pybind11 numpy mpmath cmake 'llv
 source activate $deps_dir
 
 # Checkout, build and install heyoka's HEAD.
-git clone https://github.com/bluescarni/heyoka.git heyoka_cpp
+git clone --depth 1 https://github.com/bluescarni/heyoka.git heyoka_cpp
 cd heyoka_cpp
 mkdir build
 cd build

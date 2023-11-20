@@ -27,6 +27,8 @@ set(HEYOKA_PY_PYTHON_FILES
     _test_memcache.py
     _test_celmec.py
     _test_sympy.py
+    _test_vsop2013.py
+    _test_elp2000.py
     model/__init__.py
 )
 

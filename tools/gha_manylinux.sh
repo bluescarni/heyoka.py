@@ -38,7 +38,7 @@ echo "PYTHON_DIR: ${PYTHON_DIR}"
 export NUMPY_VERSION="1.24.*"
 
 # The heyoka version to be used for releases.
-export HEYOKA_VERSION_RELEASE="3.1.0"
+export HEYOKA_VERSION_RELEASE="3.2.0"
 
 # Check if this is a release build.
 if [[ "${GITHUB_REF}" == "refs/tags/v"* ]]; then
@@ -63,7 +63,7 @@ if [[ "${HEYOKA_PY_RELEASE_BUILD}" == "yes" ]]; then
 	tar xzf heyoka.tar.gz
 	cd heyoka-${HEYOKA_VERSION_RELEASE}
 else
-	git clone https://github.com/bluescarni/heyoka.git
+	git clone --depth 1 https://github.com/bluescarni/heyoka.git
 	cd heyoka
 fi
 
