@@ -123,7 +123,7 @@ find_package(heyoka 3.2.0 REQUIRED CONFIG)
 # Python.
 
 # Setup the list of Python components we need to locate.
-# NOTE: NumPy is used for long double, real and real128 support.
+# NOTE: NumPy is used for float32, long double, real and real128 support.
 set(_HEYOKA_PY_PYTHON3_COMPONENTS Interpreter NumPy Development.Module)
 
 # NOTE: strictly speaking, we should need only the Interpreter and Development.Module

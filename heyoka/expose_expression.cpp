@@ -128,8 +128,9 @@ void expose_expression(py::module_ &m)
     py::class_<hey::expression>(m, "expression", py::dynamic_attr{})
         .def(py::init<>())
         .def(py::init([](std::int32_t x) { return hey::expression{static_cast<double>(x)}; }), "x"_a.noconvert())
+        .def(py::init<float>(), "x"_a.noconvert())
         .def(py::init<double>(), "x"_a.noconvert())
-        .def(py::init<long double>(), "x"_a.noconvert())
+        .def(py::init<ld_t>(), "x"_a.noconvert())
 #if defined(HEYOKA_HAVE_REAL128)
         .def(py::init<mppp::real128>(), "x"_a.noconvert())
 #endif
@@ -154,6 +155,8 @@ void expose_expression(py::module_ &m)
         .def(
             "__radd__", [](const hey::expression &ex, std::int32_t x) { return ex + static_cast<double>(x); },
             "x"_a.noconvert())
+        .def(py::self + float(), "x"_a.noconvert())
+        .def(float() + py::self, "x"_a.noconvert())
         .def(py::self + double(), "x"_a.noconvert())
         .def(double() + py::self, "x"_a.noconvert())
         .def(py::self + ld_t(), "x"_a.noconvert())
@@ -174,6 +177,8 @@ void expose_expression(py::module_ &m)
         .def(
             "__rsub__", [](const hey::expression &ex, std::int32_t x) { return static_cast<double>(x) - ex; },
             "x"_a.noconvert())
+        .def(py::self - float(), "x"_a.noconvert())
+        .def(float() - py::self, "x"_a.noconvert())
         .def(py::self - double(), "x"_a.noconvert())
         .def(double() - py::self, "x"_a.noconvert())
         .def(py::self - ld_t(), "x"_a.noconvert())
@@ -193,6 +198,8 @@ void expose_expression(py::module_ &m)
         .def(
             "__rmul__", [](const hey::expression &ex, std::int32_t x) { return ex * static_cast<double>(x); },
             "x"_a.noconvert())
+        .def(py::self * float(), "x"_a.noconvert())
+        .def(float() * py::self, "x"_a.noconvert())
         .def(py::self * double(), "x"_a.noconvert())
         .def(double() * py::self, "x"_a.noconvert())
         .def(py::self * ld_t(), "x"_a.noconvert())
@@ -213,6 +220,8 @@ void expose_expression(py::module_ &m)
         .def(
             "__rtruediv__", [](const hey::expression &ex, std::int32_t x) { return static_cast<double>(x) / ex; },
             "x"_a.noconvert())
+        .def(py::self / float(), "x"_a.noconvert())
+        .def(float() / py::self, "x"_a.noconvert())
         .def(py::self / double(), "x"_a.noconvert())
         .def(double() / py::self, "x"_a.noconvert())
         .def(py::self / ld_t(), "x"_a.noconvert())
@@ -236,6 +245,8 @@ void expose_expression(py::module_ &m)
         .def(
             "__pow__", [](const hey::expression &b, std::int32_t e) { return hey::pow(b, static_cast<double>(e)); },
             "e"_a.noconvert())
+        .def(
+            "__pow__", [](const hey::expression &b, float e) { return hey::pow(b, e); }, "e"_a.noconvert())
         .def(
             "__pow__", [](const hey::expression &b, double e) { return hey::pow(b, e); }, "e"_a.noconvert())
         .def(
@@ -356,7 +367,7 @@ void expose_expression(py::module_ &m)
     // NOTE: when exposing multivariate functions, we want to be able to pass
     // in numerical arguments for convenience. Thus, we expose such functions taking
     // in input a union of expression and supported numerical types.
-    using mvf_arg = std::variant<hey::expression, double, long double
+    using mvf_arg = std::variant<hey::expression, float, double, long double
 #if defined(HEYOKA_HAVE_REAL128)
                                  ,
                                  mppp::real128
@@ -384,7 +395,7 @@ void expose_expression(py::module_ &m)
                 },
                 e, M);
         },
-        "e"_a, "M"_a);
+        "e"_a.noconvert(), "M"_a.noconvert());
 
     // kepF().
     m.def(
@@ -422,7 +433,7 @@ void expose_expression(py::module_ &m)
                 },
                 h, k, lam);
         },
-        "h"_a, "k"_a, "lam"_a);
+        "h"_a.noconvert(), "k"_a.noconvert(), "lam"_a.noconvert());
 
     // kepDE().
     m.def(
@@ -461,7 +472,7 @@ void expose_expression(py::module_ &m)
                 },
                 s0, c0, DM);
         },
-        "s0"_a, "c0"_a, "DM"_a);
+        "s0"_a.noconvert(), "c0"_a.noconvert(), "DM"_a.noconvert());
 
     // atan2().
     m.def(
@@ -480,7 +491,7 @@ void expose_expression(py::module_ &m)
                 },
                 y, x);
         },
-        "y"_a, "x"_a);
+        "y"_a.noconvert(), "x"_a.noconvert());
 
     // Time.
     m.attr("time") = hey::time;

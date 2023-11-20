@@ -18,6 +18,7 @@ namespace heyoka_py
 
 namespace py = pybind11;
 
+void expose_add_cfunc_flt(py::module &);
 void expose_add_cfunc_dbl(py::module &);
 void expose_add_cfunc_ldbl(py::module &);
 

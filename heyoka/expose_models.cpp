@@ -206,7 +206,7 @@ void expose_models(py::module_ &m)
 
     // A variant containing either an expression or a numerical/string
     // type from which an expression can be constructed.
-    using vex_t = std::variant<hy::expression, std::string, double, long double
+    using vex_t = std::variant<hy::expression, std::string, float, double, long double
 #if defined(HEYOKA_HAVE_REAL128)
                                ,
                                mppp::real128

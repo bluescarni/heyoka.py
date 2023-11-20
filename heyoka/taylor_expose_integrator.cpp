@@ -333,6 +333,11 @@ void expose_taylor_integrator_impl(py::module &m, const std::string &suffix)
 
 } // namespace detail
 
+void expose_taylor_integrator_flt(py::module &m)
+{
+    detail::expose_taylor_integrator_impl<float>(m, "flt");
+}
+
 void expose_taylor_integrator_dbl(py::module &m)
 {
     detail::expose_taylor_integrator_impl<double>(m, "dbl");

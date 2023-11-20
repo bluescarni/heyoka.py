@@ -390,6 +390,13 @@ void expose_taylor_add_jet_impl(py::module &m, const char *name)
 
 } // namespace detail
 
+void expose_taylor_add_jet_flt(py::module &m)
+{
+    detail::expose_taylor_add_jet_impl<float, std::vector<std::pair<hey::expression, hey::expression>>>(
+        m, "_taylor_add_jet_flt");
+    detail::expose_taylor_add_jet_impl<float, std::vector<hey::expression>>(m, "_taylor_add_jet_flt");
+}
+
 void expose_taylor_add_jet_dbl(py::module &m)
 {
     detail::expose_taylor_add_jet_impl<double, std::vector<std::pair<hey::expression, hey::expression>>>(

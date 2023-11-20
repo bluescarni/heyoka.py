@@ -878,6 +878,11 @@ void expose_add_cfunc_impl(py::module &m, const char *suffix)
 
 } // namespace detail
 
+void expose_add_cfunc_flt(py::module &m)
+{
+    detail::expose_add_cfunc_impl<float>(m, "flt");
+}
+
 void expose_add_cfunc_dbl(py::module &m)
 {
     detail::expose_add_cfunc_impl<double>(m, "dbl");

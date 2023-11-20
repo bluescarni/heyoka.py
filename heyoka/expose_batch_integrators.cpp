@@ -31,6 +31,7 @@
 #include <heyoka/taylor.hpp>
 
 #include "common_utils.hpp"
+#include "custom_casters.hpp"
 #include "dtypes.hpp"
 #include "expose_batch_integrators.hpp"
 #include "pickle_wrappers.hpp"
@@ -526,6 +527,7 @@ void expose_batch_integrator_impl(py::module_ &m, const std::string &suffix)
 
 void expose_batch_integrators(py::module_ &m)
 {
+    detail::expose_batch_integrator_impl<float>(m, "flt");
     detail::expose_batch_integrator_impl<double>(m, "dbl");
 }
 

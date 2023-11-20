@@ -29,6 +29,13 @@ namespace pybind11::detail
 {
 
 template <>
+struct type_caster<float> {
+    PYBIND11_TYPE_CASTER(float, _("numpy.float32"));
+    bool load(handle, bool);
+    static handle cast(const float &, return_value_policy, handle);
+};
+
+template <>
 struct type_caster<long double> {
     PYBIND11_TYPE_CASTER(long double, _("numpy.longdouble"));
     bool load(handle, bool);

@@ -94,6 +94,9 @@ void step_cb_wrapper::pre_hook(TA &ta)
 
 // Explicit instantiations.
 
+template bool step_cb_wrapper::operator()(heyoka::taylor_adaptive<float> &);
+template void step_cb_wrapper::pre_hook(heyoka::taylor_adaptive<float> &);
+
 template bool step_cb_wrapper::operator()(heyoka::taylor_adaptive<double> &);
 template void step_cb_wrapper::pre_hook(heyoka::taylor_adaptive<double> &);
 
@@ -113,6 +116,9 @@ template bool step_cb_wrapper::operator()(heyoka::taylor_adaptive<mppp::real> &)
 template void step_cb_wrapper::pre_hook(heyoka::taylor_adaptive<mppp::real> &);
 
 #endif
+
+template bool step_cb_wrapper::operator()(heyoka::taylor_adaptive_batch<float> &);
+template void step_cb_wrapper::pre_hook(heyoka::taylor_adaptive_batch<float> &);
 
 template bool step_cb_wrapper::operator()(heyoka::taylor_adaptive_batch<double> &);
 template void step_cb_wrapper::pre_hook(heyoka::taylor_adaptive_batch<double> &);

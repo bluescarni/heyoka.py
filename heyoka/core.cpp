@@ -207,6 +207,7 @@ PYBIND11_MODULE(core, m)
         .value("negative", hey::event_direction::negative);
 
     // Computation of the jet of derivatives.
+    heypy::expose_taylor_add_jet_flt(m);
     heypy::expose_taylor_add_jet_dbl(m);
     heypy::expose_taylor_add_jet_ldbl(m);
 
@@ -223,6 +224,7 @@ PYBIND11_MODULE(core, m)
 #endif
 
     // Compiled functions.
+    heypy::expose_add_cfunc_flt(m);
     heypy::expose_add_cfunc_dbl(m);
     heypy::expose_add_cfunc_ldbl(m);
 
@@ -251,6 +253,7 @@ PYBIND11_MODULE(core, m)
     // to have their types pretty-printed in the pybind11 machinery (e.g.,
     // when raising an error message about wrong types being passed to an
     // integrator's method), they need to be already exposed.
+    heypy::expose_taylor_t_event_flt(m);
     heypy::expose_taylor_t_event_dbl(m);
     heypy::expose_taylor_t_event_ldbl(m);
 
@@ -266,6 +269,7 @@ PYBIND11_MODULE(core, m)
 
 #endif
 
+    heypy::expose_taylor_nt_event_flt(m);
     heypy::expose_taylor_nt_event_dbl(m);
     heypy::expose_taylor_nt_event_ldbl(m);
 
@@ -282,10 +286,13 @@ PYBIND11_MODULE(core, m)
 #endif
 
     // Batch mode.
+    heypy::expose_taylor_nt_event_batch_flt(m);
+    heypy::expose_taylor_t_event_batch_flt(m);
     heypy::expose_taylor_nt_event_batch_dbl(m);
     heypy::expose_taylor_t_event_batch_dbl(m);
 
     // Scalar adaptive taylor integrators.
+    heypy::expose_taylor_integrator_flt(m);
     heypy::expose_taylor_integrator_dbl(m);
     heypy::expose_taylor_integrator_ldbl(m);
 
@@ -305,6 +312,7 @@ PYBIND11_MODULE(core, m)
     heypy::expose_batch_integrators(m);
 
     // Recommended simd size helper.
+    m.def("_recommended_simd_size_flt", &hey::recommended_simd_size<float>);
     m.def("_recommended_simd_size_dbl", &hey::recommended_simd_size<double>);
 
     // Setup the sympy integration bits.

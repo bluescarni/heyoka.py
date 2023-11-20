@@ -70,10 +70,11 @@ def _with_real():
     return hasattr(core, "real")
 
 
-from numpy import longdouble as _ld
+from numpy import float32 as _f32, longdouble as _ld
 
-_fp_to_suffix_dict = {float: "_dbl", _ld: "_ldbl"}
+_fp_to_suffix_dict = {_f32: "_flt", float: "_dbl", _ld: "_ldbl"}
 
+del _f32
 del _ld
 
 if _with_real128():

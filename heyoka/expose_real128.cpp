@@ -430,6 +430,8 @@ int py_real128_init(PyObject *self, PyObject *args, PyObject *kwargs)
         } else {
             return -1;
         }
+    } else if (PyObject_IsInstance(arg, reinterpret_cast<PyObject *>(&PyFloat32ArrType_Type)) != 0) {
+        *get_real128_val(self) = reinterpret_cast<PyFloat32ScalarObject *>(arg)->obval;
 #if defined(MPPP_FLOAT128_WITH_LONG_DOUBLE)
     } else if (PyObject_IsInstance(arg, reinterpret_cast<PyObject *>(&PyLongDoubleArrType_Type)) != 0) {
         *get_real128_val(self) = reinterpret_cast<PyLongDoubleScalarObject *>(arg)->obval;
@@ -476,6 +478,7 @@ void py_real128_dealloc(PyObject *self)
 // Helper to construct a real128 from one of the
 // supported Pythonic numerical types:
 // - int,
+// - float32,
 // - float,
 // - long double,
 // - real.
@@ -498,6 +501,8 @@ std::pair<std::optional<mppp::real128>, bool> real128_from_ob(PyObject *arg)
         } else {
             return {{}, false};
         }
+    } else if (PyObject_IsInstance(arg, reinterpret_cast<PyObject *>(&PyFloat32ArrType_Type)) != 0) {
+        return {reinterpret_cast<PyFloat32ScalarObject *>(arg)->obval, true};
 #if defined(MPPP_FLOAT128_WITH_LONG_DOUBLE)
     } else if (PyObject_IsInstance(arg, reinterpret_cast<PyObject *>(&PyLongDoubleArrType_Type)) != 0) {
         return {reinterpret_cast<PyLongDoubleScalarObject *>(arg)->obval, true};
