@@ -363,19 +363,19 @@ void expose_models(py::module_ &m)
         [](hy::expression t_expr, double thresh) {
             return hy::model::elp2000_spherical(hy::kw::time = std::move(t_expr), hy::kw::thresh = thresh);
         },
-        "time"_a = hy::time, "thresh"_a.noconvert() = 1e-9);
+        "time"_a = hy::time, "thresh"_a.noconvert() = 1e-6);
     m.def(
         "_model_elp2000_cartesian_e2000",
         [](hy::expression t_expr, double thresh) {
             return hy::model::elp2000_cartesian_e2000(hy::kw::time = std::move(t_expr), hy::kw::thresh = thresh);
         },
-        "time"_a = hy::time, "thresh"_a.noconvert() = 1e-9);
+        "time"_a = hy::time, "thresh"_a.noconvert() = 1e-6);
     m.def(
         "_model_elp2000_cartesian_fk5",
         [](hy::expression t_expr, double thresh) {
             return hy::model::elp2000_cartesian_fk5(hy::kw::time = std::move(t_expr), hy::kw::thresh = thresh);
         },
-        "time"_a = hy::time, "thresh"_a.noconvert() = 1e-9);
+        "time"_a = hy::time, "thresh"_a.noconvert() = 1e-6);
     m.def("_model_get_elp2000_mus", &hy::model::get_elp2000_mus);
 
     // CR3BP.
