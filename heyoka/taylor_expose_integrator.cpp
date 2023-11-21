@@ -194,7 +194,7 @@ void expose_taylor_integrator_impl(py::module &m, const std::string &suffix)
         .def_property_readonly("rhs", &hey::taylor_adaptive<T>::get_rhs)
         .def_property("time", &hey::taylor_adaptive<T>::get_time, &hey::taylor_adaptive<T>::set_time)
         .def_property("dtime", &hey::taylor_adaptive<T>::get_dtime,
-                      [](hey::taylor_adaptive<T> &ta, std::pair<double, double> p) { ta.set_dtime(p.first, p.second); })
+                      [](hey::taylor_adaptive<T> &ta, std::pair<T, T> p) { ta.set_dtime(p.first, p.second); })
         // Step functions.
         .def(
             "step", [](hey::taylor_adaptive<T> &ta, bool wtc) { return ta.step(wtc); }, "write_tc"_a = false)

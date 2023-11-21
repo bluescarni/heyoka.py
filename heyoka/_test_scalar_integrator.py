@@ -64,6 +64,7 @@ class scalar_integrator_test_case(_ut.TestCase):
             )
 
     def test_dtime(self):
+        from .core import _ppc_arch
         from . import taylor_adaptive, make_vars, sin
 
         x, v = make_vars("x", "v")
@@ -82,6 +83,16 @@ class scalar_integrator_test_case(_ut.TestCase):
         ta.dtime = (1, 0.5)
 
         self.assertEqual(ta.dtime, (1.5, 0.0))
+
+        if _ppc_arch:
+            return
+
+        # BUG: the dtime setter used to be hard-coded
+        # to double.
+        from numpy import longdouble as ld
+        ta = taylor_adaptive(sys=sys, state=[ld(0.0), ld(0.25)], fp_type=ld)
+        ta.dtime = (ld('1.1'),ld(0))
+        self.assertEqual(ta.dtime, (ld('1.1'),ld(0)))
 
     def test_copy(self):
         from . import taylor_adaptive, make_vars, t_event, sin
