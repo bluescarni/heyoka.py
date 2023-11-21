@@ -124,169 +124,207 @@ class scalar_integrator_test_case(_ut.TestCase):
         self.assertNotEqual(ta_dc.state[0], ta.state[0])
 
     def test_basic(self):
-        from . import taylor_adaptive, make_vars, t_event, sin
+        from . import taylor_adaptive, make_vars, t_event, sin, core
+        from .core import _ppc_arch
+        import numpy as np
+
+        if _ppc_arch:
+            fp_types = [np.float32, float]
+        else:
+            fp_types = [np.float32, float, np.longdouble]
+
+        if hasattr(core, "real128"):
+            fp_types.append(core.real128)
 
         x, v = make_vars("x", "v")
 
         sys = [(x, v), (v, -9.8 * sin(x))]
 
-        ta = taylor_adaptive(sys=sys, state=[0.0, 0.25], t_events=[t_event(v)])
+        for fp_t in fp_types:
+            ta = taylor_adaptive(
+                sys=sys,
+                state=[fp_t(0.0), fp_t(0.25)],
+                t_events=[t_event(v, fp_type=fp_t)],
+                fp_type=fp_t,
+            )
 
-        self.assertTrue(ta.with_events)
-        self.assertFalse(ta.compact_mode)
-        self.assertFalse(ta.high_accuracy)
-        self.assertEqual(ta.state_vars, [x, v])
-        self.assertEqual(ta.rhs, [v, -9.8 * sin(x)])
+            self.assertTrue(ta.with_events)
+            self.assertFalse(ta.compact_mode)
+            self.assertFalse(ta.high_accuracy)
+            self.assertEqual(ta.state_vars, [x, v])
+            self.assertEqual(ta.rhs, [v, -9.8 * sin(x)])
 
-        ta = taylor_adaptive(
-            sys=sys, state=[0.0, 0.25], compact_mode=True, high_accuracy=True
-        )
+            ta = taylor_adaptive(
+                sys=sys,
+                state=[fp_t(0.0), fp_t(0.25)],
+                compact_mode=True,
+                high_accuracy=True,
+                fp_type=fp_t,
+            )
 
-        self.assertFalse(ta.with_events)
-        self.assertTrue(ta.compact_mode)
-        self.assertTrue(ta.high_accuracy)
-        self.assertFalse(ta.llvm_state.fast_math)
-        self.assertFalse(ta.llvm_state.force_avx512)
-        self.assertEqual(ta.llvm_state.opt_level, 3)
+            self.assertFalse(ta.with_events)
+            self.assertTrue(ta.compact_mode)
+            self.assertTrue(ta.high_accuracy)
+            self.assertFalse(ta.llvm_state.fast_math)
+            self.assertFalse(ta.llvm_state.force_avx512)
+            self.assertEqual(ta.llvm_state.opt_level, 3)
 
-        # Check that certain properties are read-only
-        # arrays and the writeability cannot be changed.
-        self.assertFalse(ta.tc.flags.writeable)
-        with self.assertRaises(ValueError):
-            ta.tc.flags.writeable = True
-        self.assertFalse(ta.d_output.flags.writeable)
-        with self.assertRaises(ValueError):
-            ta.d_output.flags.writeable = True
+            # Check that certain properties are read-only
+            # arrays and the writeability cannot be changed.
+            self.assertFalse(ta.tc.flags.writeable)
+            with self.assertRaises(ValueError):
+                ta.tc.flags.writeable = True
+            self.assertFalse(ta.d_output.flags.writeable)
+            with self.assertRaises(ValueError):
+                ta.d_output.flags.writeable = True
 
-        # Test the custom llvm_state flags.
-        ta = taylor_adaptive(
-            sys=sys,
-            state=[0.0, 0.25],
-            compact_mode=True,
-            high_accuracy=True,
-            force_avx512=True,
-            fast_math=True,
-            opt_level=0,
-        )
+            # Test the custom llvm_state flags.
+            ta = taylor_adaptive(
+                sys=sys,
+                state=[fp_t(0.0), fp_t(0.25)],
+                compact_mode=True,
+                high_accuracy=True,
+                force_avx512=True,
+                fast_math=True,
+                opt_level=0,
+                fp_type=fp_t,
+            )
 
-        self.assertTrue(ta.llvm_state.fast_math)
-        self.assertTrue(ta.llvm_state.force_avx512)
-        self.assertEqual(ta.llvm_state.opt_level, 0)
+            self.assertTrue(ta.llvm_state.fast_math)
+            self.assertTrue(ta.llvm_state.force_avx512)
+            self.assertEqual(ta.llvm_state.opt_level, 0)
 
-        # Test that adding dynattrs to the integrator
-        # object via the propagate callback works.
-        def cb(ta):
-            if hasattr(ta, "counter"):
-                ta.counter += 1
-            else:
-                ta.counter = 0
-
-            return True
-
-        ta.propagate_until(10.0, callback=cb)
-
-        self.assertTrue(ta.counter > 0)
-        orig_ct = ta.counter
-
-        ta.propagate_for(10.0, callback=cb)
-
-        self.assertTrue(ta.counter > orig_ct)
-        orig_ct = ta.counter
-
-        ta.time = 0.0
-        ta.propagate_grid([0.0, 1.0, 2.0], callback=cb)
-
-        self.assertTrue(ta.counter > orig_ct)
-
-        # Test that no copies of the callback are performed.
-        class cb:
-            def __call__(_, ta):
-                self.assertEqual(id(_), _.orig_id)
+            # Test that adding dynattrs to the integrator
+            # object via the propagate callback works.
+            def cb(ta):
+                if hasattr(ta, "counter"):
+                    ta.counter += 1
+                else:
+                    ta.counter = 0
 
                 return True
 
-        cb_inst = cb()
-        cb_inst.orig_id = id(cb_inst)
+            ta.propagate_until(fp_t(10.0), callback=cb)
 
-        ta.time = 0.0
-        ta.propagate_until(10.0, callback=cb_inst)
-        ta.propagate_for(10.0, callback=cb_inst)
-        ta.time = 0.0
-        ta.propagate_grid([0.0, 1.0, 2.0], callback=cb_inst)
+            self.assertTrue(ta.counter > 0)
+            orig_ct = ta.counter
 
-        # Test with a non-callable callback.
-        with self.assertRaises(TypeError) as cm:
-            ta.time = 0.0
-            ta.propagate_grid([0.0, 1.0, 2.0], callback="hello world")
-        self.assertTrue(
-            "cannot be used as a step callback because it is not callable"
-            in str(cm.exception)
-        )
+            ta.propagate_for(fp_t(10.0), callback=cb)
 
-        # Broken callback with wrong return type.
-        class broken_cb:
-            def __call__(self, ta):
-                return []
+            self.assertTrue(ta.counter > orig_ct)
+            orig_ct = ta.counter
 
-        with self.assertRaises(TypeError) as cm:
-            ta.time = 0.0
-            ta.propagate_grid([0.0, 1.0, 2.0], callback=broken_cb())
-        self.assertTrue(
-            "The call operator of a step callback is expected to return a boolean, but a value of type"
-            in str(cm.exception)
-        )
+            ta.time = fp_t(0.0)
+            ta.propagate_grid([fp_t(0.0), fp_t(1.0), fp_t(2.0)], callback=cb)
 
-        # Callback with pre_hook().
-        class cb_hook:
-            def __call__(_, ta):
-                return True
+            self.assertTrue(ta.counter > orig_ct)
 
-            def pre_hook(self, ta):
-                ta.foo = True
+            # Test that no copies of the callback are performed.
+            class cb:
+                def __call__(_, ta):
+                    self.assertEqual(id(_), _.orig_id)
 
-        ta.time = 0.0
-        ta.propagate_until(10.0, callback=cb_hook())
-        self.assertTrue(ta.foo)
-        delattr(ta, "foo")
+                    return True
 
-        ta.time = 0.0
-        ta.propagate_for(10.0, callback=cb_hook())
-        self.assertTrue(ta.foo)
-        delattr(ta, "foo")
+            cb_inst = cb()
+            cb_inst.orig_id = id(cb_inst)
 
-        ta.time = 0.0
-        ta.propagate_grid([0.0, 1.0, 2.0], callback=cb_hook())
-        self.assertTrue(ta.foo)
-        delattr(ta, "foo")
+            ta.time = fp_t(0.0)
+            ta.propagate_until(fp_t(10.0), callback=cb_inst)
+            ta.propagate_for(fp_t(10.0), callback=cb_inst)
+            ta.time = fp_t(0.0)
+            ta.propagate_grid([fp_t(0.0), fp_t(1.0), fp_t(2.0)], callback=cb_inst)
+
+            # Test with a non-callable callback.
+            with self.assertRaises(TypeError) as cm:
+                ta.time = fp_t(0.0)
+                ta.propagate_grid(
+                    [fp_t(0.0), fp_t(1.0), fp_t(2.0)], callback="hello world"
+                )
+            self.assertTrue(
+                "cannot be used as a step callback because it is not callable"
+                in str(cm.exception)
+            )
+
+            # Broken callback with wrong return type.
+            class broken_cb:
+                def __call__(self, ta):
+                    return []
+
+            with self.assertRaises(TypeError) as cm:
+                ta.time = fp_t(0.0)
+                ta.propagate_grid(
+                    [fp_t(0.0), fp_t(1.0), fp_t(2.0)], callback=broken_cb()
+                )
+            self.assertTrue(
+                "The call operator of a step callback is expected to return a boolean, but a value of type"
+                in str(cm.exception)
+            )
+
+            # Callback with pre_hook().
+            class cb_hook:
+                def __call__(_, ta):
+                    return True
+
+                def pre_hook(self, ta):
+                    ta.foo = True
+
+            ta.time = fp_t(0.0)
+            ta.propagate_until(fp_t(10.0), callback=cb_hook())
+            self.assertTrue(ta.foo)
+            delattr(ta, "foo")
+
+            ta.time = fp_t(0.0)
+            ta.propagate_for(fp_t(10.0), callback=cb_hook())
+            self.assertTrue(ta.foo)
+            delattr(ta, "foo")
+
+            ta.time = fp_t(0.0)
+            ta.propagate_grid([fp_t(0.0), fp_t(1.0), fp_t(2.0)], callback=cb_hook())
+            self.assertTrue(ta.foo)
+            delattr(ta, "foo")
 
     def test_events(self):
-        from . import nt_event, t_event, make_vars, sin, taylor_adaptive
+        from . import nt_event, t_event, make_vars, sin, taylor_adaptive, core
+        from .core import _ppc_arch
+        import numpy as np
+
+        if _ppc_arch:
+            fp_types = [np.float32, float]
+        else:
+            fp_types = [np.float32, float, np.longdouble]
+
+        if hasattr(core, "real128"):
+            fp_types.append(core.real128)
 
         x, v = make_vars("x", "v")
 
         # Use a pendulum for testing purposes.
         sys = [(x, v), (v, -9.8 * sin(x))]
 
-        def cb0(ta, t, d_sgn):
-            pass
+        for fp_t in fp_types:
 
-        ta = taylor_adaptive(
-            sys=sys,
-            state=[0.0, 0.25],
-            nt_events=[nt_event(v * v - 1e-10, cb0)],
-            t_events=[t_event(v)],
-        )
+            def cb0(ta, t, d_sgn):
+                pass
 
-        self.assertTrue(ta.with_events)
-        self.assertEqual(len(ta.t_events), 1)
-        self.assertEqual(len(ta.nt_events), 1)
+            ta = taylor_adaptive(
+                sys=sys,
+                state=[fp_t(0.0), fp_t(0.25)],
+                nt_events=[nt_event(v * v - 1e-6, cb0, fp_type=fp_t)],
+                t_events=[t_event(v, fp_type=fp_t)],
+                fp_type=fp_t,
+            )
 
-        oc = ta.propagate_until(1e9)[0]
-        self.assertEqual(int(oc), -1)
-        self.assertFalse(ta.te_cooldowns[0] is None)
+            self.assertTrue(ta.with_events)
+            self.assertEqual(len(ta.t_events), 1)
+            self.assertEqual(len(ta.nt_events), 1)
 
-        ta.reset_cooldowns()
-        self.assertTrue(ta.te_cooldowns[0] is None)
+            oc = ta.propagate_until(fp_t(1e9))[0]
+            self.assertEqual(int(oc), -1)
+            self.assertFalse(ta.te_cooldowns[0] is None)
+
+            ta.reset_cooldowns()
+            self.assertTrue(ta.te_cooldowns[0] is None)
 
     def test_s11n(self):
         from . import nt_event, make_vars, sin, taylor_adaptive, core

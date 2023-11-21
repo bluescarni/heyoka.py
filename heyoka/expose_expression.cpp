@@ -114,7 +114,7 @@ namespace py = pybind11;
 
 // NOTE: regarding single-precision support: we only expose the expression ctor,
 // but not the arithmetic operators. The reason for this is that np.float32 already
-// has math operators defined which sometime take the precedence over our own exposed
+// has math operators defined which sometimes take the precedence over our own exposed
 // operators, leading to implicit conversions to float64 and general inconsistent
 // behaviour (e.g., when constant folding is involved). In a similar fashion and for
 // consistency, we do not expose float32 overloads for multivariate functions.
