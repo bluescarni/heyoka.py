@@ -35,7 +35,11 @@ fi
 echo "PYTHON_DIR: ${PYTHON_DIR}"
 
 # The numpy version heyoka.py will be built against.
-export NUMPY_VERSION="1.24.*"
+if [[ ${HEYOKA_PY_BUILD_TYPE} == *312* ]]; then
+	export NUMPY_VERSION="1.25.*"
+else
+	export NUMPY_VERSION="1.24.*"
+fi
 
 # The heyoka version to be used for releases.
 export HEYOKA_VERSION_RELEASE="3.2.0"
