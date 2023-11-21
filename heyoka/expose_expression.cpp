@@ -112,6 +112,16 @@ struct dtens_t_it {
 
 namespace py = pybind11;
 
+// NOTE: regarding single-precision support: we only expose the expression ctor,
+// but not the arithmetic operators. The reason for this is that np.float32 already
+// has math operators defined which sometime take the precedence over our own exposed
+// operators, leading to implicit conversions to float64 and general inconsistent
+// behaviour (e.g., when constant folding is involved). In a similar fashion and for
+// consistency, we do not expose float32 overloads for multivariate functions.
+// NOTE: I am not 100% sure why this happens, as the same problem does not seem to
+// be there when doing mixed-mode arithmetic between real and float32 for instance.
+// Perhaps something to do with pybind11's conversion machinery (since the exposition
+// of real does not use pybind11)?
 void expose_expression(py::module_ &m)
 {
     namespace hey = heyoka;
@@ -155,8 +165,6 @@ void expose_expression(py::module_ &m)
         .def(
             "__radd__", [](const hey::expression &ex, std::int32_t x) { return ex + static_cast<double>(x); },
             "x"_a.noconvert())
-        .def(py::self + float(), "x"_a.noconvert())
-        .def(float() + py::self, "x"_a.noconvert())
         .def(py::self + double(), "x"_a.noconvert())
         .def(double() + py::self, "x"_a.noconvert())
         .def(py::self + ld_t(), "x"_a.noconvert())
@@ -177,8 +185,6 @@ void expose_expression(py::module_ &m)
         .def(
             "__rsub__", [](const hey::expression &ex, std::int32_t x) { return static_cast<double>(x) - ex; },
             "x"_a.noconvert())
-        .def(py::self - float(), "x"_a.noconvert())
-        .def(float() - py::self, "x"_a.noconvert())
         .def(py::self - double(), "x"_a.noconvert())
         .def(double() - py::self, "x"_a.noconvert())
         .def(py::self - ld_t(), "x"_a.noconvert())
@@ -198,8 +204,6 @@ void expose_expression(py::module_ &m)
         .def(
             "__rmul__", [](const hey::expression &ex, std::int32_t x) { return ex * static_cast<double>(x); },
             "x"_a.noconvert())
-        .def(py::self * float(), "x"_a.noconvert())
-        .def(float() * py::self, "x"_a.noconvert())
         .def(py::self * double(), "x"_a.noconvert())
         .def(double() * py::self, "x"_a.noconvert())
         .def(py::self * ld_t(), "x"_a.noconvert())
@@ -220,8 +224,6 @@ void expose_expression(py::module_ &m)
         .def(
             "__rtruediv__", [](const hey::expression &ex, std::int32_t x) { return static_cast<double>(x) / ex; },
             "x"_a.noconvert())
-        .def(py::self / float(), "x"_a.noconvert())
-        .def(float() / py::self, "x"_a.noconvert())
         .def(py::self / double(), "x"_a.noconvert())
         .def(double() / py::self, "x"_a.noconvert())
         .def(py::self / ld_t(), "x"_a.noconvert())
@@ -245,8 +247,6 @@ void expose_expression(py::module_ &m)
         .def(
             "__pow__", [](const hey::expression &b, std::int32_t e) { return hey::pow(b, static_cast<double>(e)); },
             "e"_a.noconvert())
-        .def(
-            "__pow__", [](const hey::expression &b, float e) { return hey::pow(b, e); }, "e"_a.noconvert())
         .def(
             "__pow__", [](const hey::expression &b, double e) { return hey::pow(b, e); }, "e"_a.noconvert())
         .def(
@@ -367,7 +367,7 @@ void expose_expression(py::module_ &m)
     // NOTE: when exposing multivariate functions, we want to be able to pass
     // in numerical arguments for convenience. Thus, we expose such functions taking
     // in input a union of expression and supported numerical types.
-    using mvf_arg = std::variant<hey::expression, float, double, long double
+    using mvf_arg = std::variant<hey::expression, double, long double
 #if defined(HEYOKA_HAVE_REAL128)
                                  ,
                                  mppp::real128

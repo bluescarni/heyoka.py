@@ -297,9 +297,9 @@ class scalar_integrator_test_case(_ut.TestCase):
         x, v = make_vars("x", "v")
 
         if _ppc_arch:
-            fp_types = [float]
+            fp_types = [np.float32, float]
         else:
-            fp_types = [float, np.longdouble]
+            fp_types = [np.float32, float, np.longdouble]
 
         if hasattr(core, "real128"):
             fp_types.append(core.real128)

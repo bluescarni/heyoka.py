@@ -24,6 +24,7 @@ class expression_test_case(_ut.TestCase):
         self.assertEqual(ex(), ex(0))
         self.assertEqual(ex(123), ex(123.0))
         self.assertEqual(str(ex(123)), "123.00000000000000")
+        self.assertEqual(str(ex(np.float32("1.1"))), "1.10000002")
 
         # Error with large integer.
         with self.assertRaises(TypeError) as cm:

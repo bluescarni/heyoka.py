@@ -2019,8 +2019,10 @@ class c_output_test_case(_ut.TestCase):
 class recommended_simd_size_test_case(_ut.TestCase):
     def test_basic(self):
         from . import recommended_simd_size
+        import numpy as np
 
         self.assertTrue(recommended_simd_size() >= 1)
+        self.assertTrue(recommended_simd_size(fp_type=np.float32) >= 1)
         self.assertEqual(recommended_simd_size(), recommended_simd_size(fp_type=float))
 
 
