@@ -340,12 +340,12 @@ class expression_test_case(_ut.TestCase):
 
         x, y = make_vars("x", "y")
 
-        self.assertEqual(leaky_relu(0.)(x), relu(x))
-        self.assertEqual(leaky_relup(0.)(x), relup(x))
-        self.assertEqual(leaky_relu(0.1)(x+y), relu(x+y,0.1))
-        self.assertEqual(leaky_relup(0.1)(x+y), relup(x+y,0.1))
+        self.assertEqual(leaky_relu(0.0)(x), relu(x))
+        self.assertEqual(leaky_relup(0.0)(x), relup(x))
+        self.assertEqual(leaky_relu(0.1)(x + y), relu(x + y, 0.1))
+        self.assertEqual(leaky_relup(0.1)(x + y), relup(x + y, 0.1))
 
-        self.assertEqual(leaky_relu(0.)(x*y), relu(x*y))
-        self.assertEqual(leaky_relup(0.)(x*y), relup(x*y))
-        self.assertEqual(leaky_relu(0.1)(x*y+y), relu(x*y+y,0.1))
-        self.assertEqual(leaky_relup(0.1)(x*y+y), relup(x*y+y,0.1))
+        self.assertEqual(leaky_relu(0.0)(x * y), relu(x * y))
+        self.assertEqual(leaky_relup(0.0)(x * y), relup(x * y))
+        self.assertEqual(leaky_relu(0.1)(x * y + y), relu(x * y + y, 0.1))
+        self.assertEqual(leaky_relup(0.1)(x * y + y), relup(x * y + y, 0.1))

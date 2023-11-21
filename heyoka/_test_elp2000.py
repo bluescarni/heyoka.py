@@ -20,9 +20,13 @@ class elp2000_test_case(_ut.TestCase):
         cf = make_cfunc([sol])
 
         date = 2469000.5
-        self.assertAlmostEqual(cf([], time=(date - 2451545.0) / 36525)[0], -361605.79234692274)
+        self.assertAlmostEqual(
+            cf([], time=(date - 2451545.0) / 36525)[0], -361605.79234692274
+        )
 
         sol = elp2000_cartesian_fk5(thresh=1e-5)[0]
         cf = make_cfunc([sol])
 
-        self.assertAlmostEqual(cf([], time=(date - 2451545.0) / 36525)[0], -361605.7668217605)
+        self.assertAlmostEqual(
+            cf([], time=(date - 2451545.0) / 36525)[0], -361605.7668217605
+        )

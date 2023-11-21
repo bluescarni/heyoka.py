@@ -287,5 +287,3 @@ class model_test_case(_ut.TestCase):
 
         my_ffnn4 = model.ffnn([x], [], 1, [linear], [1.2, 1.3])
         self.assertTrue(my_ffnn4[0] == expression(1.3) + (expression(1.2) * x))
-
-
