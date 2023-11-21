@@ -34,9 +34,9 @@ class taylor_add_jet_test_case(_ut.TestCase):
         sys_par_t2 = [(x, v), (v, -par[0] * sin(x) + time * (par[1] + par[6]))]
 
         if _ppc_arch:
-            fp_types = [float]
+            fp_types = [np.float32, float]
         else:
-            fp_types = [float, np.longdouble]
+            fp_types = [np.float32, float, np.longdouble]
 
         if hasattr(core, "real128"):
             fp_types.append(core.real128)
@@ -335,7 +335,7 @@ class taylor_add_jet_test_case(_ut.TestCase):
                 taylor_add_jet(sys, 5, fp_type=np.longdouble)
 
         # Batch mode testing.
-        fp_types = [float]
+        fp_types = [np.float32, float]
 
         for fp_t in fp_types:
             batch_size = 4

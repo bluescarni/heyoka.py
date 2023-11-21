@@ -91,9 +91,9 @@ class event_classes_test_case(_ut.TestCase):
         x, v = make_vars("x", "v")
 
         if _ppc_arch:
-            fp_types = [float]
+            fp_types = [np.float32, float]
         else:
-            fp_types = [float, np.longdouble]
+            fp_types = [np.float32, float, np.longdouble]
 
         if hasattr(core, "real128"):
             fp_types.append(core.real128)
@@ -1035,9 +1035,9 @@ class event_detection_test_case(_ut.TestCase):
         x, v = make_vars("x", "v")
 
         if _ppc_arch:
-            fp_types = [float]
+            fp_types = [np.float32, float]
         else:
-            fp_types = [float, np.longdouble]
+            fp_types = [np.float32, float, np.longdouble]
 
         if hasattr(core, "real128"):
             fp_types.append(core.real128)
@@ -1054,6 +1054,9 @@ class event_detection_test_case(_ut.TestCase):
             # in order to make sure that it is passed correctly
             # into the callback.
             ta_id = None
+
+            # NOTE: avoid using very small value for single-precision.
+            small_delta = 1e-6 if fp_t == np.float32 else 1e-10
 
             def cb0(ta, t, d_sgn):
                 nonlocal counter
@@ -1084,7 +1087,7 @@ class event_detection_test_case(_ut.TestCase):
                 state=[fp_t(0), fp_t(0.25)],
                 fp_type=fp_t,
                 nt_events=[
-                    nt_event(v * v - 1e-10, cb0, fp_type=fp_t),
+                    nt_event(v * v - small_delta, cb0, fp_type=fp_t),
                     nt_event(v, cb1, fp_type=fp_t),
                 ],
             )
@@ -1117,7 +1120,7 @@ class event_detection_test_case(_ut.TestCase):
                 state=[fp_t(0), fp_t(0.25)],
                 fp_type=fp_t,
                 nt_events=[
-                    nt_event(v * v - 1e-10, cb0(), fp_type=fp_t),
+                    nt_event(v * v - small_delta, cb0(), fp_type=fp_t),
                     nt_event(v, cb1(), fp_type=fp_t),
                     nt_event(v, cb1(), fp_type=fp_t),
                 ],
@@ -1174,7 +1177,7 @@ class event_detection_test_case(_ut.TestCase):
                 sys=sys,
                 state=[fp_t(0), fp_t(0.25)],
                 fp_type=fp_t,
-                nt_events=[nt_event(v * v - 1e-10, cb2, fp_type=fp_t)],
+                nt_events=[nt_event(v * v - small_delta, cb2, fp_type=fp_t)],
             )
 
             with self.assertRaises(TypeError):
@@ -1214,7 +1217,7 @@ class event_detection_test_case(_ut.TestCase):
                 sys=sys,
                 state=[fp_t(0), fp_t(0.25)],
                 fp_type=fp_t,
-                nt_events=[nt_event(v * v - 1e-10, cb0, fp_type=fp_t)],
+                nt_events=[nt_event(v * v - small_delta, cb0, fp_type=fp_t)],
                 t_events=[t_event(v, callback=cb1, fp_type=fp_t)],
             )
 
@@ -1264,7 +1267,7 @@ class event_detection_test_case(_ut.TestCase):
                 state=[fp_t(0), fp_t(0.25)],
                 fp_type=fp_t,
                 t_events=[
-                    t_event(v * v - 1e-10, callback=cb0(), fp_type=fp_t),
+                    t_event(v * v - small_delta, callback=cb0(), fp_type=fp_t),
                     t_event(v, callback=cb1(), fp_type=fp_t),
                     t_event(v, callback=cb1(), fp_type=fp_t),
                 ],
@@ -1321,7 +1324,7 @@ class event_detection_test_case(_ut.TestCase):
                 sys=sys,
                 state=[fp_t(0), fp_t(0.25)],
                 fp_type=fp_t,
-                t_events=[t_event(v * v - 1e-10, callback=cb2, fp_type=fp_t)],
+                t_events=[t_event(v * v - small_delta, callback=cb2, fp_type=fp_t)],
             )
 
             with self.assertRaises(TypeError):
@@ -1402,6 +1405,7 @@ class c_output_test_case(_ut.TestCase):
             sin,
             taylor_adaptive_batch,
             continuous_output_batch_dbl,
+            continuous_output_batch_flt,
             taylor_adaptive,
         )
         from pickle import dumps, loads
@@ -1410,7 +1414,10 @@ class c_output_test_case(_ut.TestCase):
 
         x, v = make_vars("x", "v")
 
-        fp_types = [(float, continuous_output_batch_dbl)]
+        fp_types = [
+            (np.float32, continuous_output_batch_flt),
+            (float, continuous_output_batch_dbl),
+        ]
 
         # Use a pendulum for testing purposes.
         sys = [(x, v), (v, -9.8 * sin(x))]
@@ -1420,7 +1427,7 @@ class c_output_test_case(_ut.TestCase):
             c_out = c_out_t()
 
             with self.assertRaises(ValueError) as cm:
-                c_out([])
+                c_out(np.zeros((0,), dtype=fp_t))
             self.assertTrue(
                 "Cannot use a default-constructed continuous_output_batch object"
                 in str(cm.exception)
@@ -1533,7 +1540,7 @@ class c_output_test_case(_ut.TestCase):
 
                 for idx, tint in enumerate(ta_scals):
                     tint.state[:] = arr_ic[:, idx]
-                    tint.time = 0
+                    tint.time = fp_t(0)
 
             final_tm = [fp_t(10), fp_t(10.4), fp_t(10.5), fp_t(11.0)]
 
@@ -1566,7 +1573,7 @@ class c_output_test_case(_ut.TestCase):
             self.assertEqual(new_rc, rc + 1)
 
             with self.assertRaises(ValueError) as cm:
-                c_out(np.zeros((1, 1, 1)))
+                c_out(np.zeros((1, 1, 1), dtype=fp_t))
             self.assertTrue(
                 "Invalid time array passed to a continuous_output_batch object: the number of dimensions must be 1 or 2, but it is 3 instead"
                 in str(cm.exception)
@@ -1574,19 +1581,19 @@ class c_output_test_case(_ut.TestCase):
 
             # Single batch tests.
             with self.assertRaises(ValueError) as cm:
-                c_out(np.zeros((1,)))
+                c_out(np.zeros((1,), dtype=fp_t))
             self.assertTrue(
                 "Invalid time array passed to a continuous_output_batch object: the length must be 4 but it is 1 instead"
                 in str(cm.exception)
             )
             with self.assertRaises(ValueError) as cm:
-                c_out(np.zeros((0,)))
+                c_out(np.zeros((0,), dtype=fp_t))
             self.assertTrue(
                 "Invalid time array passed to a continuous_output_batch object: the length must be 4 but it is 0 instead"
                 in str(cm.exception)
             )
             with self.assertRaises(ValueError) as cm:
-                c_out(np.zeros((5,)))
+                c_out(np.zeros((5,), dtype=fp_t))
             self.assertTrue(
                 "Invalid time array passed to a continuous_output_batch object: the length must be 4 but it is 5 instead"
                 in str(cm.exception)
@@ -1620,7 +1627,9 @@ class c_output_test_case(_ut.TestCase):
             self.assertTrue(np.all(scal_res == c_out([fp_t(0.42)] * 4)))
 
             # Non-contiguous single batch.
-            nc_check_tm = np.vstack([check_tm, np.zeros((4,))]).T.flatten()[::2]
+            nc_check_tm = np.vstack([check_tm, np.zeros((4,), dtype=fp_t)]).T.flatten()[
+                ::2
+            ]
             c_out(nc_check_tm)
             for idx in range(4):
                 self.assertTrue(
@@ -1634,7 +1643,7 @@ class c_output_test_case(_ut.TestCase):
 
             # Multiple time batches.
             with self.assertRaises(ValueError) as cm:
-                c_out(np.zeros((5, 3)))
+                c_out(np.zeros((5, 3), dtype=fp_t))
             self.assertTrue(
                 "Invalid time array passed to a continuous_output_batch object: the number of columns must be 4 but it is 3 instead"
                 in str(cm.exception)
@@ -1657,7 +1666,7 @@ class c_output_test_case(_ut.TestCase):
                     )
 
             # Zero rows in input.
-            out_b = c_out(np.zeros((0, 4)))
+            out_b = c_out(np.zeros((0, 4), dtype=fp_t))
             self.assertEqual(out_b.shape, (0, 2, 4))
 
             # Times.
@@ -1746,7 +1755,14 @@ class c_output_test_case(_ut.TestCase):
 
     def test_scalar(self):
         from copy import copy, deepcopy
-        from . import make_vars, sin, taylor_adaptive, continuous_output_dbl, core
+        from . import (
+            make_vars,
+            sin,
+            taylor_adaptive,
+            continuous_output_dbl,
+            continuous_output_flt,
+            core,
+        )
         from .core import _ppc_arch
         import numpy as np
         from pickle import dumps, loads
@@ -1755,11 +1771,15 @@ class c_output_test_case(_ut.TestCase):
         x, v = make_vars("x", "v")
 
         if _ppc_arch:
-            fp_types = [(float, continuous_output_dbl)]
+            fp_types = [
+                (np.float32, continuous_output_flt),
+                (float, continuous_output_dbl),
+            ]
         else:
             from . import continuous_output_ldbl
 
             fp_types = [
+                (np.float32, continuous_output_flt),
                 (float, continuous_output_dbl),
                 (np.longdouble, continuous_output_ldbl),
             ]
@@ -1790,7 +1810,7 @@ class c_output_test_case(_ut.TestCase):
                 in str(cm.exception)
             )
 
-            self.assertTrue(c_out(time=[]).shape == (0, 0))
+            self.assertTrue(c_out(time=np.zeros((0,), dtype=fp_t)).shape == (0, 0))
             self.assertTrue(c_out.output is None)
             self.assertTrue(c_out.times is None)
             self.assertTrue(c_out.tcs is None)
@@ -1889,7 +1909,7 @@ class c_output_test_case(_ut.TestCase):
             new_rc = getrefcount(c_out)
             self.assertEqual(new_rc, rc + 1)
 
-            self.assertTrue(c_out([]).shape == (0, 2))
+            self.assertTrue(c_out(np.zeros((0,), dtype=fp_t)).shape == (0, 2))
 
             tmp = c_out([fp_t(0), fp_t(1), fp_t(2)])
             self.assertTrue(np.all(c_out(fp_t(0)) == tmp[0]))
