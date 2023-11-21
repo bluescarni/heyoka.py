@@ -13,7 +13,7 @@ def _get_eps(fp_t):
     # Small helper to get the epsilon of a floating-point type.
     import numpy as np
 
-    if fp_t == float or fp_t == np.longdouble:
+    if fp_t == float or fp_t == np.longdouble or fp_t == np.float32:
         return np.finfo(fp_t).eps
 
     from . import core
