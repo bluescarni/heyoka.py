@@ -718,8 +718,8 @@ void expose_add_cfunc_impl(py::module &m, const char *suffix)
             // Compute the SIMD size.
             const auto simd_size = batch_size ? *batch_size : hey::recommended_simd_size<T>();
 
-            // Forbid batch sizes > 1 for everything but double.
-            if (!std::is_same_v<T, double> && simd_size > 1u) {
+            // Forbid batch sizes > 1 for everything but double and float.
+            if (!std::is_same_v<T, double> && !std::is_same_v<T, float> && simd_size > 1u) {
                 py_throw(PyExc_ValueError, "Batch sizes greater than 1 are not supported for this floating-point type");
             }
 

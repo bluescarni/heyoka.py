@@ -8,7 +8,6 @@
 
 #include <heyoka/config.hpp>
 
-#include <cassert>
 #include <cstddef>
 #include <exception>
 #include <initializer_list>
@@ -16,7 +15,6 @@
 #include <optional>
 #include <sstream>
 #include <type_traits>
-#include <vector>
 
 #include <oneapi/tbb/global_control.h>
 

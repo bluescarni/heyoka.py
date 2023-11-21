@@ -227,8 +227,8 @@ void expose_taylor_add_jet_impl(py::module &m, const char *name)
         [](const U &sys, std::uint32_t order, std::uint32_t batch_size, bool high_accuracy, bool compact_mode,
            const std::vector<hey::expression> &sv_funcs, bool parallel_mode, unsigned opt_level, bool force_avx512,
            bool slp_vectorize, bool fast_math, long long prec) {
-            // Forbid batch sizes > 1 for everything but double.
-            if (!std::is_same_v<T, double> && batch_size > 1u) {
+            // Forbid batch sizes > 1 for everything but double and float.
+            if (!std::is_same_v<T, double> && !std::is_same_v<T, float> && batch_size > 1u) {
                 py_throw(PyExc_ValueError, "Batch sizes greater than 1 are not supported for this floating-point type");
             }
 
