@@ -36,7 +36,7 @@ echo "PYTHON_DIR: ${PYTHON_DIR}"
 
 # The numpy version heyoka.py will be built against.
 if [[ ${HEYOKA_PY_BUILD_TYPE} == *312* ]]; then
-	export NUMPY_VERSION="1.25.*"
+	export NUMPY_VERSION="1.26.*"
 else
 	export NUMPY_VERSION="1.24.*"
 fi
