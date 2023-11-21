@@ -1678,8 +1678,8 @@ class real_test_case(_ut.TestCase):
         self.assertEqual(str(x + ld(-2.0)), str(real(-1, 128)))
         self.assertEqual(str(ld(1.0) + y), str(real(-1, 128)))
 
-        self.assertEqual(str(real(1, 20) + f32('1.1')), "2.09999990")
-        self.assertEqual(str(f32('1.1') + real(1, 20)), "2.09999990")
+        self.assertEqual(str(real(1, 20) + f32("1.1")), "2.09999990")
+        self.assertEqual(str(f32("1.1") + real(1, 20)), "2.09999990")
 
         # real128.
         if hasattr(core, "real128"):
@@ -1707,8 +1707,8 @@ class real_test_case(_ut.TestCase):
         self.assertEqual(str(x - ld(-2.0)), str(real(3, 128)))
         self.assertEqual(str(ld(1.0) - y), str(real(3, 128)))
 
-        self.assertEqual(str(real(1, 20) - f32('1.1')), "-1.00000024e-1")
-        self.assertEqual(str(f32('1.1') - real(1, 20)), "1.00000024e-1")
+        self.assertEqual(str(real(1, 20) - f32("1.1")), "-1.00000024e-1")
+        self.assertEqual(str(f32("1.1") - real(1, 20)), "1.00000024e-1")
 
         # real128.
         if hasattr(core, "real128"):
@@ -1736,8 +1736,8 @@ class real_test_case(_ut.TestCase):
         self.assertEqual(str(x * ld(-2.0)), str(real(-2, 128)))
         self.assertEqual(str(ld(1.0) * y), str(real(-2, 128)))
 
-        self.assertEqual(str(real(1, 20) * f32('1.1')), "1.10000002")
-        self.assertEqual(str(f32('1.1') * real(1, 20)), "1.10000002")
+        self.assertEqual(str(real(1, 20) * f32("1.1")), "1.10000002")
+        self.assertEqual(str(f32("1.1") * real(1, 20)), "1.10000002")
 
         # real128.
         if hasattr(core, "real128"):
@@ -1765,8 +1765,8 @@ class real_test_case(_ut.TestCase):
         self.assertEqual(str(x / ld(-2.0)), str(real(-0.5, 128)))
         self.assertEqual(str(ld(1.0) / y), str(real(-0.5, 128)))
 
-        self.assertEqual(str(real(1, 20) / f32('1.1')), "9.09090877e-1")
-        self.assertEqual(str(f32('1.1') / real(1, 20)), "1.10000002")
+        self.assertEqual(str(real(1, 20) / f32("1.1")), "9.09090877e-1")
+        self.assertEqual(str(f32("1.1") / real(1, 20)), "1.10000002")
 
         # real128.
         if hasattr(core, "real128"):
@@ -1792,8 +1792,8 @@ class real_test_case(_ut.TestCase):
         self.assertEqual(str(real(2.1, 128) // ld(1.0)), str(real(2.0, 128)))
         self.assertEqual(str(ld(1.0) // real(2.1, 128)), str(real(0.0, 128)))
 
-        self.assertEqual(str(real(1, 20) // f32('1.1')), "0.00000000")
-        self.assertEqual(str(f32('1.1') // real(1, 20)), "1.00000000")
+        self.assertEqual(str(real(1, 20) // f32("1.1")), "0.00000000")
+        self.assertEqual(str(f32("1.1") // real(1, 20)), "1.00000000")
 
         # real128.
         if hasattr(core, "real128"):
@@ -1819,8 +1819,8 @@ class real_test_case(_ut.TestCase):
         self.assertEqual(str(real(2.0, 128) ** ld(3.0)), str(real(8.0, 128)))
         self.assertEqual(str(ld(2.0) ** real(3.0, 128)), str(real(8.0, 128)))
 
-        self.assertEqual(str(real(1, 20) ** f32('1.1')), "1.00000000")
-        self.assertEqual(str(f32('1.1') ** real(1, 20)), "1.10000002")
+        self.assertEqual(str(real(1, 20) ** f32("1.1")), "1.00000000")
+        self.assertEqual(str(f32("1.1") ** real(1, 20)), "1.10000002")
 
         # real128.
         if hasattr(core, "real128"):

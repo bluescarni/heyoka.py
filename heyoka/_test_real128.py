@@ -78,7 +78,7 @@ class real128_test_case(_ut.TestCase):
         self.assertEqual(str(real128(f32(42.0))), "42")
         self.assertEqual(str(real128(f32(-float("inf")))), "-inf")
         self.assertEqual(str(real128(f32(float("nan")))), "nan")
-        self.assertEqual(str(real128(f32('1.1'))), "1.10000002384185791015625")
+        self.assertEqual(str(real128(f32("1.1"))), "1.10000002384185791015625")
 
         # Construction from string.
         self.assertEqual(str(real128("-0")), "-0")
@@ -165,8 +165,8 @@ class real128_test_case(_ut.TestCase):
 
         # A small test to check that the numpy operators
         # do not interfere with our own.
-        self.assertEqual(str(real128(0) + f32('1.1')), "1.10000002384185791015625")
-        self.assertEqual(str(f32('1.1') + real128(0)), "1.10000002384185791015625")
+        self.assertEqual(str(real128(0) + f32("1.1")), "1.10000002384185791015625")
+        self.assertEqual(str(f32("1.1") + real128(0)), "1.10000002384185791015625")
 
         self.assertEqual(repr(real128(42) - real128(1)), "41")
         self.assertEqual(repr(real128(42) - 1), "41")
