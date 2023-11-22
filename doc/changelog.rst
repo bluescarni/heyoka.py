@@ -9,6 +9,8 @@ Changelog
 New
 ~~~
 
+- Add wheels for Python 3.12
+  (`#150 <https://github.com/bluescarni/heyoka.py/pull/150>`__).
 - Add support for single-precision computations
   (`#150 <https://github.com/bluescarni/heyoka.py/pull/150>`__).
 - Add model implementing the ELP2000 analytical lunar theory
