@@ -9,6 +9,8 @@ Changelog
 New
 ~~~
 
+- Add support for single-precision computations
+  (`#150 <https://github.com/bluescarni/heyoka.py/pull/150>`__).
 - Add model implementing the ELP2000 analytical lunar theory
   (`#149 <https://github.com/bluescarni/heyoka.py/pull/149>`__).
 
@@ -18,6 +20,13 @@ Changes
 - heyoka.py now requires version 3.2.0 of the
   heyoka C++ library
   (`#149 <https://github.com/bluescarni/heyoka.py/pull/149>`__).
+
+Fix
+~~~
+
+- Fix wrong truncation to double precision in the dtime setter for the
+  scalar integrator
+  (`#150 <https://github.com/bluescarni/heyoka.py/pull/150>`__).
 
 3.1.0 (2023-11-13)
 ------------------
