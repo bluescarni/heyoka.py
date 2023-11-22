@@ -168,6 +168,7 @@
 <li class="toctree-l2"><a class="reference internal" href="parallel_mode.html">Parallel mode</a></li>
 <li class="toctree-l2"><a class="reference internal" href="ext_precision.html">Computations in extended precision</a></li>
 <li class="toctree-l2"><a class="reference internal" href="arbitrary_precision.html">Computations in arbitrary precision</a></li>
+<li class="toctree-l2"><a class="reference internal" href="single_precision.html">Computations in single precision</a></li>
 <li class="toctree-l2"><a class="reference internal" href="sympy_interop.html">Interoperability with SymPy</a></li>
 <li class="toctree-l2"><a class="reference internal" href="compiled_functions.html">Compiled functions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="ex_system_revisited.html">Using the expression system effectively</a></li>
@@ -693,7 +694,7 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>--- 12.030174493789673 seconds --- to build the Taylor integrator
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>--- 10.76831316947937 seconds --- to build the Taylor integrator
 </pre></div>
 </div>
 </div>
@@ -724,7 +725,7 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>--- 0.0495758056640625 seconds --- to propagate
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>--- 0.04821133613586426 seconds --- to propagate
 </pre></div>
 </div>
 </div>
@@ -782,10 +783,10 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;matplotlib.collections.PathCollection at 0x7f468c093bb0&gt;
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;matplotlib.collections.PathCollection at 0x7f8cb1ef6aa0&gt;
 </pre></div>
 </div>
-<img alt="../_images/09c9e30c51e1ddcd2d5c3177c4746b581948bb4d0af75622102df55c2ee2c5fe.png" src="../_images/09c9e30c51e1ddcd2d5c3177c4746b581948bb4d0af75622102df55c2ee2c5fe.png" />
+<img alt="../_images/de0d9b784e67d433c81e1c6d68b5b937452559993089914853f0e1f45dbc1669.png" src="../_images/de0d9b784e67d433c81e1c6d68b5b937452559993089914853f0e1f45dbc1669.png" />
 </div>
 </div>
 <p>All fine ….. at least visually! So far we have not made use of the variational equations at all, but this is about to change!</p>
@@ -888,7 +889,7 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/e3728e1bdd8b148bb1f8cd0a244a95687a7671b152171f557e587addbb48f867.png" src="../_images/e3728e1bdd8b148bb1f8cd0a244a95687a7671b152171f557e587addbb48f867.png" />
+<img alt="../_images/89806e0c004ea56d2469605eb4f1f51dec6012679b5805c78e95820ced3fcd4e.png" src="../_images/89806e0c004ea56d2469605eb4f1f51dec6012679b5805c78e95820ced3fcd4e.png" />
 </div>
 </div>
 <p>The orbit is good but does not close! Let us build an iteration that corrects <span class="math notranslate nohighlight">\(x_0,y_0, z_0, p_{x_0}, p_{y_0}, p_{z_0}, T\)</span> as to close the orbit.</p>
@@ -1041,7 +1042,7 @@ Initial condition: [-8.3660628428124639e-01, 6.8716716925632383e-05, 0.000000000
 Period: 2.6915996001662497e+00
 </pre></div>
 </div>
-<img alt="../_images/81248ddfb782f73bfb91d374518ac5d43798cae0fca548729419402cdc87a16e.png" src="../_images/81248ddfb782f73bfb91d374518ac5d43798cae0fca548729419402cdc87a16e.png" />
+<img alt="../_images/7a44bf7a2547ea1d3bbea540e8a737be4e895a8dd6ff3f10f78a0dd276c3054f.png" src="../_images/7a44bf7a2547ea1d3bbea540e8a737be4e895a8dd6ff3f10f78a0dd276c3054f.png" />
 </div>
 </div>
 </section>
@@ -1197,7 +1198,7 @@ Period: 2.6915996001662497e+00
 <div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(-0.005, 0.005)
 </pre></div>
 </div>
-<img alt="../_images/c812b1fab736b3e2d01826f9513c943d7dd83febf3e39825b15a31d9dc6431d8.png" src="../_images/c812b1fab736b3e2d01826f9513c943d7dd83febf3e39825b15a31d9dc6431d8.png" />
+<img alt="../_images/17680a3a3d7f1a8a033ff5df275db666a9b6bcba60f7eb26009cbcfe441b573d.png" src="../_images/17680a3a3d7f1a8a033ff5df275db666a9b6bcba60f7eb26009cbcfe441b573d.png" />
 </div>
 </div>
 <p>It’s nearly closed, but not that well …. it will need a correction … but we can call the same iterations we made previously when we closed the first initial guess, remember?</p>
@@ -1281,7 +1282,7 @@ new error is: 3.427171981558372e-14
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/7edeea79938fc2ca401195f09058b7f8cfd31a40bd3cb96471185cc7ce1e85f5.png" src="../_images/7edeea79938fc2ca401195f09058b7f8cfd31a40bd3cb96471185cc7ce1e85f5.png" />
+<img alt="../_images/4632867b8873ae91f7dea3a5da5ed96be650ff335ebe43ce5cb6c1e11aa1bb3f.png" src="../_images/4632867b8873ae91f7dea3a5da5ed96be650ff335ebe43ce5cb6c1e11aa1bb3f.png" />
 </div>
 </div>
 <p>Found it! In order to do this in a loop, though, we will need to do better as eventually this will fail as the continuation parameter

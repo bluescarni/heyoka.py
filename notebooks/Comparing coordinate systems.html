@@ -168,6 +168,7 @@
 <li class="toctree-l2"><a class="reference internal" href="parallel_mode.html">Parallel mode</a></li>
 <li class="toctree-l2"><a class="reference internal" href="ext_precision.html">Computations in extended precision</a></li>
 <li class="toctree-l2"><a class="reference internal" href="arbitrary_precision.html">Computations in arbitrary precision</a></li>
+<li class="toctree-l2"><a class="reference internal" href="single_precision.html">Computations in single precision</a></li>
 <li class="toctree-l2"><a class="reference internal" href="sympy_interop.html">Interoperability with SymPy</a></li>
 <li class="toctree-l2"><a class="reference internal" href="compiled_functions.html">Compiled functions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="ex_system_revisited.html">Using the expression system effectively</a></li>
@@ -567,7 +568,7 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/2ae6a49a5e43ca43ebeb8f6b79590b7194fb66ba37dad9b380f68a3a738583d5.png" src="../_images/2ae6a49a5e43ca43ebeb8f6b79590b7194fb66ba37dad9b380f68a3a738583d5.png" />
+<img alt="../_images/0e69673a471489242e6f1d42acd90b72d3267dc5837b72644ca4409bac95ea53.png" src="../_images/0e69673a471489242e6f1d42acd90b72d3267dc5837b72644ca4409bac95ea53.png" />
 </div>
 </div>
 <p>The plot shows how the initially-Keplerian orbit is slowly being deformed by the constant acceleration field.</p>
@@ -597,7 +598,7 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/d1b70abf0f8ce61aa6eae0454d77aadf10e1675cb60eff8ead559806f4a3fa49.png" src="../_images/d1b70abf0f8ce61aa6eae0454d77aadf10e1675cb60eff8ead559806f4a3fa49.png" />
+<img alt="../_images/75fbc1166cc281a8ded578b8f213695c043f1edbe59d2f3953d61c208b1631ba.png" src="../_images/75fbc1166cc281a8ded578b8f213695c043f1edbe59d2f3953d61c208b1631ba.png" />
 </div>
 </div>
 <p>Note that the oscillatory behaviour in these plots is a quasi-Keplerian motion driven by the central-force field. The additional constant acceleration has a longer-term secular effect which is however not immediately recognisable in these plots.</p>
@@ -721,7 +722,7 @@ p_\phi &amp; = r^2\dot{\phi}\sin^2\theta, &amp; \phi &amp; = \arctan \frac{y}{x}
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/cc0e9d4e7e9e0ede55fb26cdb2fe7a996d832a845ce6a45a5b4cb32e41ea76f3.png" src="../_images/cc0e9d4e7e9e0ede55fb26cdb2fe7a996d832a845ce6a45a5b4cb32e41ea76f3.png" />
+<img alt="../_images/79f86daac2e4e62ffe3374ffe20ed7267c105fba342e45306cbd782da19a2214.png" src="../_images/79f86daac2e4e62ffe3374ffe20ed7267c105fba342e45306cbd782da19a2214.png" />
 </div>
 </div>
 <p>Comparing these plots with those for the Cartesian coordinates, we can see how the oscillatory quasi-Keplerian behaviour remains. However, the oscillation amplitude is reduced with respect to the Cartesian case, and one of the momenta (<span class="math notranslate nohighlight">\(p_\phi\)</span>, top right panel) has become a constant. This reflects the fact that the <span class="math notranslate nohighlight">\(z\)</span> component of the angular momentum in the Stark problem is a constant of motion.</p>
@@ -925,7 +926,7 @@ z = L\sqrt{1-\frac{H^2}{G^2}}\left[ L\left( \cos E - \sqrt{1-\frac{G^2}{L^2}} \r
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/ad8eb62762192c51d3dae6972a8afe5ee9e9995003b96e3f985452ebe6603c7e.png" src="../_images/ad8eb62762192c51d3dae6972a8afe5ee9e9995003b96e3f985452ebe6603c7e.png" />
+<img alt="../_images/6c6214064ce85c3b226c61fca74ed5b9f3088b8cd5db822ddfad2952c6a74afe.png" src="../_images/6c6214064ce85c3b226c61fca74ed5b9f3088b8cd5db822ddfad2952c6a74afe.png" />
 </div>
 </div>
 <p>The plots for <span class="math notranslate nohighlight">\(L\)</span>, <span class="math notranslate nohighlight">\(G\)</span>, <span class="math notranslate nohighlight">\(H\)</span>, <span class="math notranslate nohighlight">\(g\)</span> and <span class="math notranslate nohighlight">\(h\)</span> clearly show how the Keplerian oscillations for these elements have been removed thanks to the use of orbital elements as a coordinate system. These elements would be constant in a perfectly Keplerian orbit, while in the Stark problem they undergo short-term oscillations with amplitude <span class="math notranslate nohighlight">\(\sim\varepsilon\)</span> and long-term evolution with timescale <span class="math notranslate nohighlight">\(\sim 1/\varepsilon\)</span>. We can see the perturbation induced by the constant acceleration field by zooming into, e.g., the plot for the <span class="math notranslate nohighlight">\(g\)</span> angle (the argument of pericentre):</p>
@@ -940,7 +941,7 @@ z = L\sqrt{1-\frac{H^2}{G^2}}\left[ L\left( \cos E - \sqrt{1-\frac{G^2}{L^2}} \r
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/6dff10ee7324807417747ebcb79512215c1af9ec1c1077967a2819948f9a3ce1.png" src="../_images/6dff10ee7324807417747ebcb79512215c1af9ec1c1077967a2819948f9a3ce1.png" />
+<img alt="../_images/236bed5ac1239ea5c47eb199ebd937a20ed5e7e8e58ad596cb462513f4ccabfe.png" src="../_images/236bed5ac1239ea5c47eb199ebd937a20ed5e7e8e58ad596cb462513f4ccabfe.png" />
 </div>
 </div>
 <p>Let us now zoom into the plot for <span class="math notranslate nohighlight">\(E\)</span>:</p>
@@ -955,7 +956,7 @@ z = L\sqrt{1-\frac{H^2}{G^2}}\left[ L\left( \cos E - \sqrt{1-\frac{G^2}{L^2}} \r
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/b67877e0c5420d9cfd7cd1846783322565d554341b9d8514acf40d7ebdb1daa9.png" src="../_images/b67877e0c5420d9cfd7cd1846783322565d554341b9d8514acf40d7ebdb1daa9.png" />
+<img alt="../_images/ba0d679ee0f36fce9582b31b5b86462af40e7f1b7bc0e49db8952faab07180f7.png" src="../_images/ba0d679ee0f36fce9582b31b5b86462af40e7f1b7bc0e49db8952faab07180f7.png" />
 </div>
 </div>
 <p>We can see how <span class="math notranslate nohighlight">\(E\)</span> is still subject to Keplerian oscillations. Indeed, even in a perfectly Keplerian orbit, the time evolution of <span class="math notranslate nohighlight">\(E\)</span> is linear only for circular orbits.</p>
@@ -1060,7 +1061,7 @@ r = L^2\left( 1 - \sqrt{1-\frac{G^2}{L^2}}\cos E\right).
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/0782e908e3cac9868eb1bcf3b1a3b57ce5904bd6c9955cf05359d7316d645b29.png" src="../_images/0782e908e3cac9868eb1bcf3b1a3b57ce5904bd6c9955cf05359d7316d645b29.png" />
+<img alt="../_images/b4a4cf0ddd93b765a165f32df1d1c97675e8dfc434f53ee8e6d4a6c7baf78764.png" src="../_images/b4a4cf0ddd93b765a165f32df1d1c97675e8dfc434f53ee8e6d4a6c7baf78764.png" />
 </div>
 </div>
 <p>And let us zoom into the plot for <span class="math notranslate nohighlight">\(E\)</span>:</p>
@@ -1075,7 +1076,7 @@ r = L^2\left( 1 - \sqrt{1-\frac{G^2}{L^2}}\cos E\right).
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/53e21033ddae0e87e89e76afe05f80b8e271af60a36f15144c90b232ce20b74d.png" src="../_images/53e21033ddae0e87e89e76afe05f80b8e271af60a36f15144c90b232ce20b74d.png" />
+<img alt="../_images/017424faff7face4ef63e77061adc973a64e23d75a4829697f53add6dc138774.png" src="../_images/017424faff7face4ef63e77061adc973a64e23d75a4829697f53add6dc138774.png" />
 </div>
 </div>
 <p>The plot indeed confirms that the Keplerian oscillations for <span class="math notranslate nohighlight">\(E\)</span> are gone.</p>
@@ -1110,7 +1111,7 @@ Number of steps (D + S)    : 388
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/f5b4a57cff0739bee924006066ad27eb63f1d662d870034028ef77a3b336c75c.png" src="../_images/f5b4a57cff0739bee924006066ad27eb63f1d662d870034028ef77a3b336c75c.png" />
+<img alt="../_images/e2f966fd2c68d2e99bfc6bca9e67174cbdcdb3f9fd7cd7555b4d2f1d8a115e55.png" src="../_images/e2f966fd2c68d2e99bfc6bca9e67174cbdcdb3f9fd7cd7555b4d2f1d8a115e55.png" />
 </div>
 </div>
 </section>

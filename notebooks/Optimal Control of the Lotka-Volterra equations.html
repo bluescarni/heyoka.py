@@ -168,6 +168,7 @@
 <li class="toctree-l2"><a class="reference internal" href="parallel_mode.html">Parallel mode</a></li>
 <li class="toctree-l2"><a class="reference internal" href="ext_precision.html">Computations in extended precision</a></li>
 <li class="toctree-l2"><a class="reference internal" href="arbitrary_precision.html">Computations in arbitrary precision</a></li>
+<li class="toctree-l2"><a class="reference internal" href="single_precision.html">Computations in single precision</a></li>
 <li class="toctree-l2"><a class="reference internal" href="sympy_interop.html">Interoperability with SymPy</a></li>
 <li class="toctree-l2"><a class="reference internal" href="compiled_functions.html">Compiled functions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="ex_system_revisited.html">Using the expression system effectively</a></li>
@@ -765,7 +766,7 @@ Parameters              : [1.1, 0.2, 0.1, 0.4]
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/3303facc8d602db61ff88bd0c0f5f2d6ac7db0a597c4554c28a7a5437434bc6f.png" src="../_images/3303facc8d602db61ff88bd0c0f5f2d6ac7db0a597c4554c28a7a5437434bc6f.png" />
+<img alt="../_images/270f94fad7f4b2f05629d7b362e7e42c2a126d028de05b9e570a2db66cedefda.png" src="../_images/270f94fad7f4b2f05629d7b362e7e42c2a126d028de05b9e570a2db66cedefda.png" />
 </div>
 </div>
 </section>
@@ -891,7 +892,7 @@ N of terminal events    : 1
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/339dce5e839f808a9bf9feb44cb716bfa9d2ad996aec3ffd46b6ef6d03fef691.png" src="../_images/339dce5e839f808a9bf9feb44cb716bfa9d2ad996aec3ffd46b6ef6d03fef691.png" />
+<img alt="../_images/c8bbe995aadced2878b19976dd471ad77e949ea3dd656ec04d6bab5d5218d045.png" src="../_images/c8bbe995aadced2878b19976dd471ad77e949ea3dd656ec04d6bab5d5218d045.png" />
 </div>
 </div>
 </section>
@@ -1010,7 +1011,7 @@ N of terminal events    : 2
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/266b2c03b64c173b0cf23bc6fcd251a5c7d86ef77027455d0c24550ba15a7f7b.png" src="../_images/266b2c03b64c173b0cf23bc6fcd251a5c7d86ef77027455d0c24550ba15a7f7b.png" />
+<img alt="../_images/faf27ca3b7cab90795677106249a1aaad4d9d6b70359c94ca36d3cabdfbd699e.png" src="../_images/faf27ca3b7cab90795677106249a1aaad4d9d6b70359c94ca36d3cabdfbd699e.png" />
 </div>
 </div>
 <p>We are now ready to put everything together into a reduced shooting function that will be zero corresponding to the time optimal trajectory.</p>
@@ -1054,9 +1055,9 @@ N of terminal events    : 2
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/tmp/ipykernel_8054/2332358995.py:11: DeprecationWarning: Conversion of an array with ndim &gt; 0 to a scalar is deprecated, and will error in future. Ensure you extract a single element from your array before performing this operation. (Deprecated NumPy 1.25.)
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/tmp/ipykernel_8088/2332358995.py:11: DeprecationWarning: Conversion of an array with ndim &gt; 0 to a scalar is deprecated, and will error in future. Ensure you extract a single element from your array before performing this operation. (Deprecated NumPy 1.25.)
   ta.pars[6] = np.heaviside(switching_function(x_0,y_0,lx_0,ly_0, ps), 1.)
-/tmp/ipykernel_8054/2332358995.py:14: DeprecationWarning: Conversion of an array with ndim &gt; 0 to a scalar is deprecated, and will error in future. Ensure you extract a single element from your array before performing this operation. (Deprecated NumPy 1.25.)
+/tmp/ipykernel_8088/2332358995.py:14: DeprecationWarning: Conversion of an array with ndim &gt; 0 to a scalar is deprecated, and will error in future. Ensure you extract a single element from your array before performing this operation. (Deprecated NumPy 1.25.)
   ta.state[0] = x_0; ta.state[1] = y_0; ta.state[2] = lx_0; ta.state[3] = ly_0
 </pre></div>
 </div>
@@ -1098,7 +1099,7 @@ N of terminal events    : 2
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/tmp/ipykernel_8054/685660463.py:12: DeprecationWarning: Conversion of an array with ndim &gt; 0 to a scalar is deprecated, and will error in future. Ensure you extract a single element from your array before performing this operation. (Deprecated NumPy 1.25.)
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/tmp/ipykernel_8088/685660463.py:12: DeprecationWarning: Conversion of an array with ndim &gt; 0 to a scalar is deprecated, and will error in future. Ensure you extract a single element from your array before performing this operation. (Deprecated NumPy 1.25.)
   ta.pars[6] = np.heaviside(switching_function(x_0,y_0,lx_0,ly_0, ps), 1.)
 </pre></div>
 </div>
@@ -1147,7 +1148,7 @@ N of terminal events    : 2
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/7bfa5b3c0b10e207e549c993bc8bbe44471ca9a017de3fe4af28ea1998815f40.png" src="../_images/7bfa5b3c0b10e207e549c993bc8bbe44471ca9a017de3fe4af28ea1998815f40.png" />
+<img alt="../_images/7853e42cbe0b66873ec4d089705e7dcfe29fb9b5472b3aed37707c0962c1567a.png" src="../_images/7853e42cbe0b66873ec4d089705e7dcfe29fb9b5472b3aed37707c0962c1567a.png" />
 </div>
 </div>
 <p>The time optimal trajectory is thus computed in the blink of an eye, showing us how to control the species dynamics in this example.</p>

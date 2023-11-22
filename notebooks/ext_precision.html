@@ -168,6 +168,7 @@
 <li class="toctree-l2"><a class="reference internal" href="parallel_mode.html">Parallel mode</a></li>
 <li class="toctree-l2 current active"><a class="current reference internal" href="#">Computations in extended precision</a></li>
 <li class="toctree-l2"><a class="reference internal" href="arbitrary_precision.html">Computations in arbitrary precision</a></li>
+<li class="toctree-l2"><a class="reference internal" href="single_precision.html">Computations in single precision</a></li>
 <li class="toctree-l2"><a class="reference internal" href="sympy_interop.html">Interoperability with SymPy</a></li>
 <li class="toctree-l2"><a class="reference internal" href="compiled_functions.html">Compiled functions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="ex_system_revisited.html">Using the expression system effectively</a></li>
@@ -472,14 +473,14 @@ document.write(`
 </ul>
 <p>How these extended precision floating-point types can be accessed and used from Python varies depending on the platform. In particular:</p>
 <ul class="simple">
-<li><p>if you are using an Intel x86 processor and your C/C++ compiler implements <code class="docutils literal notranslate"><span class="pre">long</span> <span class="pre">double</span></code> as the 80-bit IEEE extended-precision format, then the 80-bit IEEE floating-point type is available as the NumPy <a class="reference external" href="https://numpy.org/doc/stable/reference/arrays.scalars.html#numpy.longdouble"><code class="docutils literal notranslate"><span class="pre">longdouble</span></code></a> type;</p></li>
+<li><p>if you are using an Intel x86 processor and your C/C++ compiler implements <code class="docutils literal notranslate"><span class="pre">long</span> <span class="pre">double</span></code> as the 80-bit IEEE extended-precision format, then the 80-bit IEEE floating-point type is available as the NumPy <a class="reference external" href="https://numpy.org/doc/stable/reference/arrays.scalars.html#numpy.longdouble" title="(in NumPy v1.26)"><code class="xref py py-class docutils literal notranslate"><span class="pre">longdouble</span></code></a> type;</p></li>
 <li><p>if you are on a platform with support for the non-standard <code class="docutils literal notranslate"><span class="pre">__float128</span></code> type, then the 128-bit IEEE floating-point type is available as the <code class="docutils literal notranslate"><span class="pre">heyoka.real128</span></code> type;</p></li>
-<li><p>if you are on a platform where the C/C++ <code class="docutils literal notranslate"><span class="pre">long</span> <span class="pre">double</span></code> type is implemented as a quadruple-precision IEEE floating-point type (e.g., 64-bit ARM), then the 128-bit IEEE floating-point type is available as the NumPy <a class="reference external" href="https://numpy.org/doc/stable/reference/arrays.scalars.html#numpy.longdouble"><code class="docutils literal notranslate"><span class="pre">longdouble</span></code></a> type.</p></li>
+<li><p>if you are on a platform where the C/C++ <code class="docutils literal notranslate"><span class="pre">long</span> <span class="pre">double</span></code> type is implemented as a quadruple-precision IEEE floating-point type (e.g., 64-bit ARM), then the 128-bit IEEE floating-point type is available as the NumPy <a class="reference external" href="https://numpy.org/doc/stable/reference/arrays.scalars.html#numpy.longdouble" title="(in NumPy v1.26)"><code class="xref py py-class docutils literal notranslate"><span class="pre">longdouble</span></code></a> type.</p></li>
 </ul>
-<p>In other words, extended precision computations in heyoka.py are supported via the NumPy <a class="reference external" href="https://numpy.org/doc/stable/reference/arrays.scalars.html#numpy.longdouble"><code class="docutils literal notranslate"><span class="pre">longdouble</span></code></a> type (which could be either an 80-bit or 128-bit floating-point type, depending on the platform) and the <code class="docutils literal notranslate"><span class="pre">heyoka.real128</span></code> type (which will always be a 128-bit floating-point type, if available).</p>
+<p>In other words, extended precision computations in heyoka.py are supported via the NumPy <a class="reference external" href="https://numpy.org/doc/stable/reference/arrays.scalars.html#numpy.longdouble" title="(in NumPy v1.26)"><code class="xref py py-class docutils literal notranslate"><span class="pre">longdouble</span></code></a> type (which could be either an 80-bit or 128-bit floating-point type, depending on the platform) and the <code class="docutils literal notranslate"><span class="pre">heyoka.real128</span></code> type (which will always be a 128-bit floating-point type, if available).</p>
 <section id="extended-precision-80-bit-example">
 <h2>Extended-precision (80-bit) example<a class="headerlink" href="#extended-precision-80-bit-example" title="Permalink to this heading">#</a></h2>
-<p>For this first example, we will be assuming that <code class="docutils literal notranslate"><span class="pre">numpy.longdouble</span></code> implements the 80-bit extended-precision floating-point format. In order to verify that heyoka.py indeed is able to work in extended precision, we will be monitoring the evolution of the energy constant in a high-precision numerical integration of the simple pendulum.</p>
+<p>For this first example, we will be assuming that <a class="reference external" href="https://numpy.org/doc/stable/reference/arrays.scalars.html#numpy.longdouble" title="(in NumPy v1.26)"><code class="xref py py-class docutils literal notranslate"><span class="pre">longdouble</span></code></a> implements the 80-bit extended-precision floating-point format. In order to verify that heyoka.py indeed is able to work in extended precision, we will be monitoring the evolution of the energy constant in a high-precision numerical integration of the simple pendulum.</p>
 <p>Let us begin as usual with the definition of the dynamical equations:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -553,14 +554,14 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/842ca92e9d716d2bc8f47d4cb48b6fd595d1e248063e61a45d32cc0f4fe743a1.png" src="../_images/842ca92e9d716d2bc8f47d4cb48b6fd595d1e248063e61a45d32cc0f4fe743a1.png" />
+<img alt="../_images/110de688a43f82f84eaac422c65234b7139f98cbbc62b8d89d3e62cbc9504fd8.png" src="../_images/110de688a43f82f84eaac422c65234b7139f98cbbc62b8d89d3e62cbc9504fd8.png" />
 </div>
 </div>
 <p>We can see indeed how the energy error is kept at around the epsilon of the extended-precision floating-point type (<span class="math notranslate nohighlight">\(\sim 10^{-19}\)</span>).</p>
 </section>
 <section id="quadruple-precision-128-bit-example">
 <h2>Quadruple-precision (128-bit) example<a class="headerlink" href="#quadruple-precision-128-bit-example" title="Permalink to this heading">#</a></h2>
-<p>Switching to quadruple precision is just a matter of replacing <code class="docutils literal notranslate"><span class="pre">np.longdouble</span></code> with <code class="docutils literal notranslate"><span class="pre">heyoka.real128</span></code>:</p>
+<p>Switching to quadruple precision is just a matter of replacing <a class="reference external" href="https://numpy.org/doc/stable/reference/arrays.scalars.html#numpy.longdouble" title="(in NumPy v1.26)"><code class="xref py py-class docutils literal notranslate"><span class="pre">longdouble</span></code></a> with <code class="docutils literal notranslate"><span class="pre">heyoka.real128</span></code>:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ta</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">taylor_adaptive</span><span class="p">(</span><span class="n">sys</span><span class="p">,</span>
@@ -599,7 +600,7 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/9b896f240b6e51c64af5b1d8cdc4f3bc36cfe817e434b1f739eb47fda66eaf85.png" src="../_images/9b896f240b6e51c64af5b1d8cdc4f3bc36cfe817e434b1f739eb47fda66eaf85.png" />
+<img alt="../_images/30fdaf46804670f2ee0cfa265735030b4f3f31acb42e1beff1976a690ac7a590.png" src="../_images/30fdaf46804670f2ee0cfa265735030b4f3f31acb42e1beff1976a690ac7a590.png" />
 </div>
 </div>
 <p>We can see indeed how the energy error is kept at around the epsilon of the quadruple-precision floating-point type.</p>

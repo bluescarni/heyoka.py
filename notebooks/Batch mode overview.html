@@ -168,6 +168,7 @@
 <li class="toctree-l2"><a class="reference internal" href="parallel_mode.html">Parallel mode</a></li>
 <li class="toctree-l2"><a class="reference internal" href="ext_precision.html">Computations in extended precision</a></li>
 <li class="toctree-l2"><a class="reference internal" href="arbitrary_precision.html">Computations in arbitrary precision</a></li>
+<li class="toctree-l2"><a class="reference internal" href="single_precision.html">Computations in single precision</a></li>
 <li class="toctree-l2"><a class="reference internal" href="sympy_interop.html">Interoperability with SymPy</a></li>
 <li class="toctree-l2"><a class="reference internal" href="compiled_functions.html">Compiled functions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="ex_system_revisited.html">Using the expression system effectively</a></li>
@@ -481,8 +482,9 @@ at no additional cost, and it is thus most useful when the need arise
 to integrate the same ODE system with different initial conditions and parameters.</p>
 <p>Although batch mode can in principle be used with all floating-point types supported
 by heyoka.py, in practice at this time no CPU provides SIMD instructions for extended-precision
-datatypes. Thus, here we will consider the application of batch mode only to
-standard <code class="docutils literal notranslate"><span class="pre">double</span></code> precision computations.</p>
+datatypes. Thus, heyoka.py currently enables batch mode only for single and double precision
+computations. Specifically, in this tutorial we will consider the application of batch mode to
+standard double-precision computations.</p>
 <p>The value of the batch size <span class="math notranslate nohighlight">\(n\)</span> can be freely chosen by the user. In order
 to achieve optimal performance, however, <span class="math notranslate nohighlight">\(n\)</span> should match the SIMD width of the
 processor in use. Because at this time the most widespread SIMD instruction set is
@@ -494,13 +496,16 @@ SIMD width for the CPU currently in use:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">heyoka</span> <span class="k">as</span> <span class="nn">hy</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
-<span class="n">hy</span><span class="o">.</span><span class="n">recommended_simd_size</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Recommended SIMD size for double precision: </span><span class="si">{</span><span class="n">hy</span><span class="o">.</span><span class="n">recommended_simd_size</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Recommended SIMD size for single precision: </span><span class="si">{</span><span class="n">hy</span><span class="o">.</span><span class="n">recommended_simd_size</span><span class="p">(</span><span class="n">fp_type</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">single</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>4
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Recommended SIMD size for double precision: 4
+Recommended SIMD size for single precision: 8
 </pre></div>
 </div>
 </div>
@@ -758,7 +763,7 @@ Time:
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/eb5d1adf765441555269a02d58348c9af6622f009dc5cc23f9b935d3d326b3e8.png" src="../_images/eb5d1adf765441555269a02d58348c9af6622f009dc5cc23f9b935d3d326b3e8.png" />
+<img alt="../_images/0b5ab79c2da86ac984283057ea05382d22a3037921183c10ded56e44b5fc8d5a.png" src="../_images/0b5ab79c2da86ac984283057ea05382d22a3037921183c10ded56e44b5fc8d5a.png" />
 </div>
 </div>
 <p>In this example, we chose to propagate all batch elements using the same time grid, but we could have chosen to propagate different batch elements using different time grids.</p>
@@ -1099,7 +1104,7 @@ v = 0,
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/177678b51113f1ed6910ecb077144ca8653de901dea6cb9a14c1dc5e2b0b2312.png" src="../_images/177678b51113f1ed6910ecb077144ca8653de901dea6cb9a14c1dc5e2b0b2312.png" />
+<img alt="../_images/92d262e7cc8d0b1de8ce68e721ddb01de7add7ed7a8657ad88029b853f8148fa.png" src="../_images/92d262e7cc8d0b1de8ce68e721ddb01de7add7ed7a8657ad88029b853f8148fa.png" />
 </div>
 </div>
 <p>Here we marked with vertical dashed lines the times of the local maxima, which, as we can see, were all correctly detected.</p>
@@ -1230,7 +1235,7 @@ v = 0,
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/e8a6aace7fbd2abbe44dee2a5e3a88b232c1002d900b47eef4d77bf58b5a0833.png" src="../_images/e8a6aace7fbd2abbe44dee2a5e3a88b232c1002d900b47eef4d77bf58b5a0833.png" />
+<img alt="../_images/e62e5832260d8ed301f9a5d822d4d72d4bd3da3946e3f19677b9fadeff54076a.png" src="../_images/e62e5832260d8ed301f9a5d822d4d72d4bd3da3946e3f19677b9fadeff54076a.png" />
 </div>
 </div>
 <p>We can see how setting slightly different drop heights for each batch element soon leads to qualitatively-different trajectories.</p>
@@ -1338,7 +1343,7 @@ We begin with the definition of the dynamical equations and of the template inte
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/dc101d9a909d649cd1c6926893508ca2c6880117bbf58842027ad4791f82d222.png" src="../_images/dc101d9a909d649cd1c6926893508ca2c6880117bbf58842027ad4791f82d222.png" />
+<img alt="../_images/d993e2d1b9e3d0cb7b7e067b9cc039e7175fafdd4094429a69efac299b2d381f.png" src="../_images/d993e2d1b9e3d0cb7b7e067b9cc039e7175fafdd4094429a69efac299b2d381f.png" />
 </div>
 </div>
 </section>
