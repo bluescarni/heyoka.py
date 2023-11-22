@@ -2024,6 +2024,9 @@ class recommended_simd_size_test_case(_ut.TestCase):
         self.assertTrue(recommended_simd_size() >= 1)
         self.assertTrue(recommended_simd_size(fp_type=np.float32) >= 1)
         self.assertEqual(recommended_simd_size(), recommended_simd_size(fp_type=float))
+        self.assertEqual(
+            recommended_simd_size(), recommended_simd_size(fp_type=np.float64)
+        )
 
 
 class s11n_backend_test_case(_ut.TestCase):
