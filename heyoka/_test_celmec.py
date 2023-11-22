@@ -28,6 +28,13 @@ class kepE_test_case(_ut.TestCase):
         )
         self.assertEqual(diff(kepE(x, y), y), 1.0 / (1.0 - x * cos(kepE(x, y))))
 
+        # noconvert() behaviour.
+        with self.assertRaises(TypeError) as cm:
+            kepE(23, x)
+
+        with self.assertRaises(TypeError) as cm:
+            kepE(x, 23)
+
         if not _ppc_arch:
             self.assertEqual(
                 diff(kepE(x, np.longdouble("1.1")), x),
@@ -84,6 +91,16 @@ class kepF_test_case(_ut.TestCase):
         kepF(0.1, y, z)
         kepF(h=0.1, k=0.2, lam=z)
 
+        # noconvert() behaviour.
+        with self.assertRaises(TypeError) as cm:
+            kepF(23, x, y)
+
+        with self.assertRaises(TypeError) as cm:
+            kepF(x, 23, y)
+
+        with self.assertRaises(TypeError) as cm:
+            kepF(x, y, 23)
+
         if not _ppc_arch:
             kepF(x, y, np.longdouble("1.1"))
             kepF(x, np.longdouble(".1"), np.longdouble("1.1"))
@@ -130,6 +147,16 @@ class kepDE_test_case(_ut.TestCase):
         kepDE(x, y, z)
         kepDE(0.1, y, z)
         kepDE(s0=0.1, c0=0.2, DM=z)
+
+        # noconvert() behaviour.
+        with self.assertRaises(TypeError) as cm:
+            kepDE(23, x, y)
+
+        with self.assertRaises(TypeError) as cm:
+            kepDE(x, 23, y)
+
+        with self.assertRaises(TypeError) as cm:
+            kepDE(x, y, 23)
 
         if not _ppc_arch:
             kepDE(x, y, np.longdouble("1.1"))
