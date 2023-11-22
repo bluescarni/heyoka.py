@@ -86,47 +86,27 @@ class cfunc_test_case(_ut.TestCase):
 
         # Tests for correct detection of number of params, time dependency
         # and list of variables.
-        cf = make_cfunc(
-            [y * (x + z), x], vars=[y, z, x]
-        )
+        cf = make_cfunc([y * (x + z), x], vars=[y, z, x])
         self.assertEqual(cf.param_size, 0)
-        cf = make_cfunc(
-            [y * (x + z), par[0]], vars=[y, z, x]
-        )
+        cf = make_cfunc([y * (x + z), par[0]], vars=[y, z, x])
         self.assertEqual(cf.param_size, 1)
-        cf = make_cfunc(
-            [y * (x + z) - par[89], par[0]], vars=[y, z, x]
-        )
+        cf = make_cfunc([y * (x + z) - par[89], par[0]], vars=[y, z, x])
         self.assertEqual(cf.param_size, 90)
 
-        cf = make_cfunc(
-            [y * (x + z), x], vars=[y, z, x]
-        )
+        cf = make_cfunc([y * (x + z), x], vars=[y, z, x])
         self.assertFalse(cf.is_time_dependent)
-        cf = make_cfunc(
-            [y * (x + z) + time, x], vars=[y, z, x]
-        )
+        cf = make_cfunc([y * (x + z) + time, x], vars=[y, z, x])
         self.assertTrue(cf.is_time_dependent)
-        cf = make_cfunc(
-            [y * (x + z), x + time], vars=[y, z, x]
-        )
+        cf = make_cfunc([y * (x + z), x + time], vars=[y, z, x])
         self.assertTrue(cf.is_time_dependent)
 
-        cf = make_cfunc(
-            [y * (x + z), x + time]
-        )
+        cf = make_cfunc([y * (x + z), x + time])
         self.assertEqual(cf.list_var, [x, y, z])
-        cf = make_cfunc(
-            [y * (x + z), x + time], vars=[y, z, x]
-        )
+        cf = make_cfunc([y * (x + z), x + time], vars=[y, z, x])
         self.assertEqual(cf.list_var, [y, z, x])
-        cf = make_cfunc(
-            [y * (x + z), x + time], vars=[y, z, x, s]
-        )
+        cf = make_cfunc([y * (x + z), x + time], vars=[y, z, x, s])
         self.assertEqual(cf.list_var, [y, z, x, s])
-        cf = make_cfunc(
-            [y * (x + z), x + time], vars=[s, y, z, x]
-        )
+        cf = make_cfunc([y * (x + z), x + time], vars=[s, y, z, x])
         self.assertEqual(cf.list_var, [s, y, z, x])
 
         # NOTE: test for a bug in the multiprecision
@@ -154,9 +134,9 @@ class cfunc_test_case(_ut.TestCase):
         from .test import _get_eps, _allclose
 
         if _ppc_arch:
-            fp_types = [float]
+            fp_types = [np.float32, float]
         else:
-            fp_types = [float, np.longdouble]
+            fp_types = [np.float32, float, np.longdouble]
 
         if hasattr(core, "real128"):
             fp_types.append(core.real128)
@@ -667,9 +647,9 @@ class cfunc_test_case(_ut.TestCase):
         from .test import _get_eps, _allclose
 
         if _ppc_arch:
-            fp_types = [float]
+            fp_types = [np.float32, float]
         else:
-            fp_types = [float, np.longdouble]
+            fp_types = [np.float32, float, np.longdouble]
 
         if hasattr(core, "real128"):
             fp_types.append(core.real128)
@@ -859,7 +839,9 @@ class cfunc_test_case(_ut.TestCase):
             # Tests with no inputs.
             fn = make_cfunc([expression(fp_t(3)) + par[1], par[0] + time], fp_type=fp_t)
 
-            eval_arr = fn(inputs=np.zeros((0,), dtype=fp_t), pars=[1, 2], time=fp_t(3))
+            eval_arr = fn(
+                inputs=np.zeros((0,), dtype=fp_t), pars=[fp_t(1), fp_t(2)], time=fp_t(3)
+            )
             self.assertTrue(
                 _allclose(
                     eval_arr,
@@ -870,7 +852,7 @@ class cfunc_test_case(_ut.TestCase):
             )
 
             inputs = np.zeros((0,), dtype=fp_t)
-            eval_arr = fn(inputs=inputs[:], pars=[1, 2], time=fp_t(3))
+            eval_arr = fn(inputs=inputs[:], pars=[fp_t(1), fp_t(2)], time=fp_t(3))
             self.assertTrue(
                 _allclose(
                     eval_arr,
@@ -884,7 +866,11 @@ class cfunc_test_case(_ut.TestCase):
                 [expression(fp_t(3)), expression(fp_t(4)) + time], fp_type=fp_t
             )
 
-            eval_arr = fn(inputs=np.zeros((0,), dtype=fp_t), pars=[], time=fp_t(3))
+            eval_arr = fn(
+                inputs=np.zeros((0,), dtype=fp_t),
+                pars=np.zeros((0,), dtype=fp_t),
+                time=fp_t(3),
+            )
             self.assertTrue(
                 _allclose(
                     eval_arr,
@@ -911,11 +897,13 @@ class cfunc_test_case(_ut.TestCase):
             # Test case in which there are no pars but a pars array is provided anyway,
             # with the correct shape.
             fn = make_cfunc([x + y], fp_type=fp_t)
-            eval_arr = fn(inputs=[1, 2], pars=np.zeros((0,), dtype=fp_t))
+            eval_arr = fn(inputs=[fp_t(1), fp_t(2)], pars=np.zeros((0,), dtype=fp_t))
 
             self.assertEqual(eval_arr[0], 3)
 
             # Same but with time.
-            eval_arr = fn(inputs=[1, 2], pars=np.zeros((0,), dtype=fp_t), time=fp_t(3))
+            eval_arr = fn(
+                inputs=[fp_t(1), fp_t(2)], pars=np.zeros((0,), dtype=fp_t), time=fp_t(3)
+            )
 
             self.assertEqual(eval_arr[0], 3)

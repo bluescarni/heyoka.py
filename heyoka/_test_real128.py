@@ -25,6 +25,8 @@ class real128_test_case(_ut.TestCase):
         else:
             from numpy import longdouble as ld
 
+        from numpy import float32 as f32
+
         # Make random testing deterministic.
         random.seed(42)
 
@@ -70,6 +72,13 @@ class real128_test_case(_ut.TestCase):
         self.assertEqual(str(real128(ld(42.0))), "42")
         self.assertEqual(str(real128(ld(-float("inf")))), "-inf")
         self.assertEqual(str(real128(ld(float("nan")))), "nan")
+
+        # Construction from f32.
+        self.assertEqual(str(real128(f32(-0.0))), "-0")
+        self.assertEqual(str(real128(f32(42.0))), "42")
+        self.assertEqual(str(real128(f32(-float("inf")))), "-inf")
+        self.assertEqual(str(real128(f32(float("nan")))), "nan")
+        self.assertEqual(str(real128(f32("1.1"))), "1.10000002384185791015625")
 
         # Construction from string.
         self.assertEqual(str(real128("-0")), "-0")
@@ -134,9 +143,11 @@ class real128_test_case(_ut.TestCase):
         self.assertEqual(repr(real128(42) + 1), "43")
         self.assertEqual(repr(real128(42) + 1.0), "43")
         self.assertEqual(repr(real128(42) + ld(1)), "43")
+        self.assertEqual(repr(real128(42) + f32(1)), "43")
         self.assertEqual(repr(1 + real128(42)), "43")
         self.assertEqual(repr(1.0 + real128(42)), "43")
         self.assertEqual(repr(ld(1) + real128(42)), "43")
+        self.assertEqual(repr(f32(1) + real128(42)), "43")
         if hasattr(core, "real"):
             real = core.real
             self.assertTrue(isinstance(real128() + real(), real))
@@ -152,13 +163,20 @@ class real128_test_case(_ut.TestCase):
         with self.assertRaises(TypeError) as cm:
             [] + real128(1)
 
+        # A small test to check that the numpy operators
+        # do not interfere with our own.
+        self.assertEqual(str(real128(0) + f32("1.1")), "1.10000002384185791015625")
+        self.assertEqual(str(f32("1.1") + real128(0)), "1.10000002384185791015625")
+
         self.assertEqual(repr(real128(42) - real128(1)), "41")
         self.assertEqual(repr(real128(42) - 1), "41")
         self.assertEqual(repr(real128(42) - 1.0), "41")
         self.assertEqual(repr(real128(42) - ld(1)), "41")
+        self.assertEqual(repr(real128(42) - f32(1)), "41")
         self.assertEqual(repr(1 - real128(42)), "-41")
         self.assertEqual(repr(1.0 - real128(42)), "-41")
         self.assertEqual(repr(ld(1) - real128(42)), "-41")
+        self.assertEqual(repr(f32(1) - real128(42)), "-41")
         if hasattr(core, "real"):
             real = core.real
             self.assertTrue(isinstance(real128() - real(), real))
@@ -178,9 +196,11 @@ class real128_test_case(_ut.TestCase):
         self.assertEqual(repr(real128(42) * 2), "84")
         self.assertEqual(repr(real128(42) * 2.0), "84")
         self.assertEqual(repr(real128(42) * ld(2)), "84")
+        self.assertEqual(repr(real128(42) * f32(2)), "84")
         self.assertEqual(repr(2 * real128(42)), "84")
         self.assertEqual(repr(2.0 * real128(42)), "84")
         self.assertEqual(repr(ld(2) * real128(42)), "84")
+        self.assertEqual(repr(f32(2) * real128(42)), "84")
         if hasattr(core, "real"):
             real = core.real
             self.assertTrue(isinstance(real128() * real(), real))
@@ -200,9 +220,11 @@ class real128_test_case(_ut.TestCase):
         self.assertEqual(repr(real128(42) // 9), "4")
         self.assertEqual(repr(real128(42) // 9.0), "4")
         self.assertEqual(repr(real128(42) // ld(9)), "4")
+        self.assertEqual(repr(real128(42) // f32(9)), "4")
         self.assertEqual(repr(-42 // real128(9)), "-5")
         self.assertEqual(repr(-42.0 // real128(9)), "-5")
         self.assertEqual(repr(ld(-42) // real128(9)), "-5")
+        self.assertEqual(repr(f32(-42) // real128(9)), "-5")
         if hasattr(core, "real"):
             real = core.real
             self.assertTrue(isinstance(real128(1) // real(1), real))
@@ -222,9 +244,11 @@ class real128_test_case(_ut.TestCase):
         self.assertEqual(repr(real128(42) ** 2), "1764")
         self.assertEqual(repr(real128(42) ** 2.0), "1764")
         self.assertEqual(repr(real128(42) ** ld(2)), "1764")
+        self.assertEqual(repr(real128(42) ** f32(2)), "1764")
         self.assertEqual(repr(42 ** real128(2)), "1764")
         self.assertEqual(repr(42.0 ** real128(2)), "1764")
         self.assertEqual(repr(ld(42) ** real128(2)), "1764")
+        self.assertEqual(repr(f32(42) ** real128(2)), "1764")
         with self.assertRaises(TypeError) as cm:
             real128(1) ** []
         with self.assertRaises(TypeError) as cm:
@@ -240,9 +264,11 @@ class real128_test_case(_ut.TestCase):
         self.assertTrue(real128(1) < 2)
         self.assertTrue(real128(1) < 2.0)
         self.assertTrue(real128(1) < ld(2))
+        self.assertTrue(real128(1) < f32(2))
         self.assertTrue(1 < real128(2))
         self.assertTrue(1.0 < real128(2))
         self.assertTrue(ld(1) < real128(2))
+        self.assertTrue(f32(1) < real128(2))
         self.assertFalse(real128("nan") < 2)
         self.assertFalse(2 < real128("nan"))
         self.assertFalse(real128("nan") < real128("nan"))

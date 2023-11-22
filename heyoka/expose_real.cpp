@@ -610,6 +610,21 @@ int py_real_init(PyObject *self, PyObject *args, PyObject *kwargs)
         } else {
             return -1;
         }
+    } else if (PyObject_IsInstance(arg, reinterpret_cast<PyObject *>(&PyFloat32ArrType_Type)) != 0) {
+        const auto f32_val = reinterpret_cast<PyFloat32ScalarObject *>(arg)->obval;
+
+        const auto err = with_pybind11_eh([&]() {
+            if (prec) {
+                rval->set_prec(*prec);
+                mppp::set(*rval, f32_val);
+            } else {
+                *rval = f32_val;
+            }
+        });
+
+        if (err) {
+            return -1;
+        }
     } else if (PyObject_IsInstance(arg, reinterpret_cast<PyObject *>(&PyLongDoubleArrType_Type)) != 0) {
         const auto ld_val = reinterpret_cast<PyLongDoubleScalarObject *>(arg)->obval;
 
@@ -715,6 +730,7 @@ void py_real_dealloc(PyObject *self)
 // Helper to construct a real from one of the
 // supported Pythonic numerical types:
 // - int,
+// - float32,
 // - float,
 // - long double,
 // - real128.
@@ -742,6 +758,9 @@ std::pair<std::optional<mppp::real>, bool> real_from_ob(PyObject *arg)
             } else {
                 ret.second = false;
             }
+        } else if (PyObject_IsInstance(arg, reinterpret_cast<PyObject *>(&PyFloat32ArrType_Type)) != 0) {
+            ret.first.emplace(reinterpret_cast<PyFloat32ScalarObject *>(arg)->obval);
+            ret.second = true;
         } else if (PyObject_IsInstance(arg, reinterpret_cast<PyObject *>(&PyLongDoubleArrType_Type)) != 0) {
             ret.first.emplace(reinterpret_cast<PyLongDoubleScalarObject *>(arg)->obval);
             ret.second = true;

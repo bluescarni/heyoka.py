@@ -20,9 +20,13 @@ class vsop2013_test_case(_ut.TestCase):
         cf = make_cfunc([sol])
 
         date = 2411545.0
-        self.assertAlmostEqual(cf([], time=(date - 2451545.0) / 365250)[0], 0.3870979635)
+        self.assertAlmostEqual(
+            cf([], time=(date - 2451545.0) / 365250)[0], 0.3870979635
+        )
 
         sol = vsop2013_cartesian(1, thresh=1e-8)
         cf = make_cfunc([sol[0]])
 
-        self.assertAlmostEqual(cf([], time=(date - 2451545.0) / 365250)[0], 0.3493879042)
+        self.assertAlmostEqual(
+            cf([], time=(date - 2451545.0) / 365250)[0], 0.3493879042
+        )

@@ -18,6 +18,7 @@ namespace heyoka_py
 
 namespace py = pybind11;
 
+void expose_taylor_integrator_flt(py::module &);
 void expose_taylor_integrator_dbl(py::module &);
 void expose_taylor_integrator_ldbl(py::module &);
 

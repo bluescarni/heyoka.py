@@ -60,6 +60,31 @@
 namespace pybind11::detail
 {
 
+bool type_caster<float>::load(handle src, bool)
+{
+    if (PyObject_IsInstance(src.ptr(), reinterpret_cast<PyObject *>(&PyFloat32ArrType_Type)) == 0) {
+        return false;
+    }
+
+    value = reinterpret_cast<PyFloat32ScalarObject *>(src.ptr())->obval;
+
+    return true;
+}
+
+handle type_caster<float>::cast(const float &src, return_value_policy, handle)
+{
+    auto *ret_ob = PyArrayScalar_New(Float32);
+    if (ret_ob == nullptr) {
+        heyoka_py::py_throw(PyExc_RuntimeError, "Unable to obtain storage for a NumPy float32 object");
+    }
+
+    assert(PyObject_IsInstance(ret_ob, reinterpret_cast<PyObject *>(&PyFloat32ArrType_Type)) != 0);
+
+    reinterpret_cast<PyFloat32ScalarObject *>(ret_ob)->obval = src;
+
+    return ret_ob;
+}
+
 bool type_caster<long double>::load(handle src, bool)
 {
     if (PyObject_IsInstance(src.ptr(), reinterpret_cast<PyObject *>(&PyLongDoubleArrType_Type)) == 0) {

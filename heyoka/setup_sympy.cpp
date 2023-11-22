@@ -10,12 +10,10 @@
 
 #include <cassert>
 #include <cmath>
-#include <cstdint>
 #include <functional>
 #include <iostream>
 #include <limits>
 #include <optional>
-#include <stdexcept>
 #include <type_traits>
 #include <typeindex>
 #include <typeinfo>

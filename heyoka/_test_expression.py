@@ -24,6 +24,7 @@ class expression_test_case(_ut.TestCase):
         self.assertEqual(ex(), ex(0))
         self.assertEqual(ex(123), ex(123.0))
         self.assertEqual(str(ex(123)), "123.00000000000000")
+        self.assertEqual(str(ex(np.float32("1.1"))), "1.10000002")
 
         # Error with large integer.
         with self.assertRaises(TypeError) as cm:
@@ -340,12 +341,12 @@ class expression_test_case(_ut.TestCase):
 
         x, y = make_vars("x", "y")
 
-        self.assertEqual(leaky_relu(0.)(x), relu(x))
-        self.assertEqual(leaky_relup(0.)(x), relup(x))
-        self.assertEqual(leaky_relu(0.1)(x+y), relu(x+y,0.1))
-        self.assertEqual(leaky_relup(0.1)(x+y), relup(x+y,0.1))
+        self.assertEqual(leaky_relu(0.0)(x), relu(x))
+        self.assertEqual(leaky_relup(0.0)(x), relup(x))
+        self.assertEqual(leaky_relu(0.1)(x + y), relu(x + y, 0.1))
+        self.assertEqual(leaky_relup(0.1)(x + y), relup(x + y, 0.1))
 
-        self.assertEqual(leaky_relu(0.)(x*y), relu(x*y))
-        self.assertEqual(leaky_relup(0.)(x*y), relup(x*y))
-        self.assertEqual(leaky_relu(0.1)(x*y+y), relu(x*y+y,0.1))
-        self.assertEqual(leaky_relup(0.1)(x*y+y), relup(x*y+y,0.1))
+        self.assertEqual(leaky_relu(0.0)(x * y), relu(x * y))
+        self.assertEqual(leaky_relup(0.0)(x * y), relup(x * y))
+        self.assertEqual(leaky_relu(0.1)(x * y + y), relu(x * y + y, 0.1))
+        self.assertEqual(leaky_relup(0.1)(x * y + y), relup(x * y + y, 0.1))

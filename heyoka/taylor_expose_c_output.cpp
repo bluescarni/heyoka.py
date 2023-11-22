@@ -532,6 +532,7 @@ void expose_c_output_batch_impl(py::module &m, const std::string &suffix)
 void taylor_expose_c_output(py::module &m)
 {
     // Expose the scalar versions.
+    detail::expose_c_output_impl<float>(m, "flt");
     detail::expose_c_output_impl<double>(m, "dbl");
     detail::expose_c_output_impl<long double>(m, "ldbl");
 
@@ -548,6 +549,7 @@ void taylor_expose_c_output(py::module &m)
 #endif
 
     // Expose the batch versions.
+    detail::expose_c_output_batch_impl<float>(m, "flt");
     detail::expose_c_output_batch_impl<double>(m, "dbl");
 }
 

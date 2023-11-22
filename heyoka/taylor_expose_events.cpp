@@ -320,6 +320,11 @@ void expose_taylor_t_event_impl(py::module &m, const std::string &suffix)
 
 } // namespace detail
 
+void expose_taylor_t_event_flt(py::module &m)
+{
+    detail::expose_taylor_t_event_impl<float, false>(m, "flt");
+}
+
 void expose_taylor_t_event_dbl(py::module &m)
 {
     detail::expose_taylor_t_event_impl<double, false>(m, "dbl");
@@ -347,6 +352,11 @@ void expose_taylor_t_event_real(py::module &m)
 }
 
 #endif
+
+void expose_taylor_nt_event_flt(py::module &m)
+{
+    detail::expose_taylor_nt_event_impl<float, false>(m, "flt");
+}
 
 void expose_taylor_nt_event_dbl(py::module &m)
 {
@@ -376,6 +386,16 @@ void expose_taylor_nt_event_real(py::module &m)
 
 #endif
 
+void expose_taylor_t_event_batch_flt(py::module &m)
+{
+    detail::expose_taylor_t_event_impl<float, true>(m, "flt");
+}
+
+void expose_taylor_nt_event_batch_flt(py::module &m)
+{
+    detail::expose_taylor_nt_event_impl<float, true>(m, "flt");
+}
+
 void expose_taylor_t_event_batch_dbl(py::module &m)
 {
     detail::expose_taylor_t_event_impl<double, true>(m, "dbl");
@@ -389,6 +409,7 @@ void expose_taylor_nt_event_batch_dbl(py::module &m)
 // NOTE: create shortcuts for the event callback wrappers,
 // because if we use their full name we ran into issues with the
 // Boost.Serialization library complaining that the class name is too long.
+using nt_cb_flt = detail::ev_callback<void, heyoka::taylor_adaptive<float> &, float, int>;
 using nt_cb_dbl = detail::ev_callback<void, heyoka::taylor_adaptive<double> &, double, int>;
 using nt_cb_ldbl = detail::ev_callback<void, heyoka::taylor_adaptive<long double> &, long double, int>;
 
@@ -404,6 +425,7 @@ using nt_cb_real = detail::ev_callback<void, heyoka::taylor_adaptive<mppp::real>
 
 #endif
 
+using t_cb_flt = detail::ev_callback<bool, heyoka::taylor_adaptive<float> &, bool, int>;
 using t_cb_dbl = detail::ev_callback<bool, heyoka::taylor_adaptive<double> &, bool, int>;
 using t_cb_ldbl = detail::ev_callback<bool, heyoka::taylor_adaptive<long double> &, bool, int>;
 
@@ -419,6 +441,11 @@ using t_cb_real = detail::ev_callback<bool, heyoka::taylor_adaptive<mppp::real> 
 
 #endif
 
+using tabf = heyoka::taylor_adaptive_batch<float>;
+
+using nt_batch_cb_flt = detail::ev_callback<void, tabf &, float, int, std::uint32_t>;
+using t_batch_cb_flt = detail::ev_callback<bool, tabf &, bool, int, std::uint32_t>;
+
 using tabd = heyoka::taylor_adaptive_batch<double>;
 
 using nt_batch_cb_dbl = detail::ev_callback<void, tabd &, double, int, std::uint32_t>;
@@ -427,6 +454,7 @@ using t_batch_cb_dbl = detail::ev_callback<bool, tabd &, bool, int, std::uint32_
 } // namespace heyoka_py
 
 // Register the callback wrappers in the serialisation system.
+HEYOKA_S11N_CALLABLE_EXPORT(heyoka_py::nt_cb_flt, void, heyoka::taylor_adaptive<float> &, float, int)
 HEYOKA_S11N_CALLABLE_EXPORT(heyoka_py::nt_cb_dbl, void, heyoka::taylor_adaptive<double> &, double, int)
 HEYOKA_S11N_CALLABLE_EXPORT(heyoka_py::nt_cb_ldbl, void, heyoka::taylor_adaptive<long double> &, long double, int)
 
@@ -442,6 +470,7 @@ HEYOKA_S11N_CALLABLE_EXPORT(heyoka_py::nt_cb_real, void, heyoka::taylor_adaptive
 
 #endif
 
+HEYOKA_S11N_CALLABLE_EXPORT(heyoka_py::t_cb_flt, bool, heyoka::taylor_adaptive<float> &, bool, int)
 HEYOKA_S11N_CALLABLE_EXPORT(heyoka_py::t_cb_dbl, bool, heyoka::taylor_adaptive<double> &, bool, int)
 HEYOKA_S11N_CALLABLE_EXPORT(heyoka_py::t_cb_ldbl, bool, heyoka::taylor_adaptive<long double> &, bool, int)
 
@@ -457,6 +486,8 @@ HEYOKA_S11N_CALLABLE_EXPORT(heyoka_py::t_cb_real, bool, heyoka::taylor_adaptive<
 
 #endif
 
-HEYOKA_S11N_CALLABLE_EXPORT(heyoka_py::nt_batch_cb_dbl, void, heyoka_py::tabd &, double, int, std::uint32_t)
+HEYOKA_S11N_CALLABLE_EXPORT(heyoka_py::nt_batch_cb_flt, void, heyoka_py::tabf &, float, int, std::uint32_t)
+HEYOKA_S11N_CALLABLE_EXPORT(heyoka_py::t_batch_cb_flt, bool, heyoka_py::tabf &, bool, int, std::uint32_t)
 
+HEYOKA_S11N_CALLABLE_EXPORT(heyoka_py::nt_batch_cb_dbl, void, heyoka_py::tabd &, double, int, std::uint32_t)
 HEYOKA_S11N_CALLABLE_EXPORT(heyoka_py::t_batch_cb_dbl, bool, heyoka_py::tabd &, bool, int, std::uint32_t)

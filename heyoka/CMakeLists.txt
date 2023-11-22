@@ -29,6 +29,7 @@ set(HEYOKA_PY_PYTHON_FILES
     _test_sympy.py
     _test_vsop2013.py
     _test_elp2000.py
+    _test_taylor_add_jet.py
     model/__init__.py
 )
 

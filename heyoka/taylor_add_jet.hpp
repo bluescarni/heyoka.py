@@ -18,6 +18,7 @@ namespace heyoka_py
 
 namespace py = pybind11;
 
+void expose_taylor_add_jet_flt(py::module &);
 void expose_taylor_add_jet_dbl(py::module &);
 void expose_taylor_add_jet_ldbl(py::module &);
 

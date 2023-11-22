@@ -112,206 +112,212 @@ class batch_integrator_test_case(_ut.TestCase):
         from copy import deepcopy
         import numpy as np
 
-        ic = [[0.0, 0.1, 0.2, 0.3], [0.25, 0.26, 0.27, 0.28]]
+        fp_types = [np.float32, float]
 
-        x, v = make_vars("x", "v")
+        for fp_t in fp_types:
+            ic = np.array([[0.0, 0.1, 0.2, 0.3], [0.25, 0.26, 0.27, 0.28]], dtype=fp_t)
 
-        sys = [(x, v), (v, -9.8 * sin(x))]
+            x, v = make_vars("x", "v")
 
-        ta = taylor_adaptive_batch(sys=sys, state=ic)
+            sys = [(x, v), (v, -9.8 * sin(x))]
 
-        # Compare vector/scalar delta_t and max_delta_t.
-        ta.propagate_for([10.0] * 4)
-        st = deepcopy(ta.state)
-        res = deepcopy(ta.propagate_res)
+            ta = taylor_adaptive_batch(sys=sys, state=ic, fp_type=fp_t)
 
-        ta.set_time(0.0)
-        ta.state[:] = ic
+            # Compare vector/scalar delta_t and max_delta_t.
+            ta.propagate_for([fp_t(10.0)] * 4)
+            st = deepcopy(ta.state)
+            res = deepcopy(ta.propagate_res)
 
-        ta.propagate_for(10.0)
-        self.assertTrue(np.all(ta.state == st))
-        self.assertEqual(res, ta.propagate_res)
+            ta.set_time(fp_t(0.0))
+            ta.state[:] = ic
 
-        ta.set_time(0.0)
-        ta.state[:] = ic
+            ta.propagate_for(fp_t(10.0))
+            self.assertTrue(np.all(ta.state == st))
+            self.assertEqual(res, ta.propagate_res)
 
-        ta.propagate_for([10.0] * 4, max_delta_t=[1e-4] * 4)
-        st = deepcopy(ta.state)
-        res = deepcopy(ta.propagate_res)
+            ta.set_time(fp_t(0.0))
+            ta.state[:] = ic
 
-        ta.set_time(0.0)
-        ta.state[:] = ic
+            ta.propagate_for([fp_t(10.0)] * 4, max_delta_t=[fp_t(1e-4)] * 4)
+            st = deepcopy(ta.state)
+            res = deepcopy(ta.propagate_res)
 
-        ta.propagate_for(10.0, max_delta_t=1e-4)
-        self.assertTrue(np.all(ta.state == st))
-        self.assertEqual(res, ta.propagate_res)
+            ta.set_time(fp_t(0.0))
+            ta.state[:] = ic
 
-        # Test that adding dynattrs to the integrator
-        # object via the propagate callback works.
-        def cb(ta):
-            if hasattr(ta, "counter"):
-                ta.counter += 1
-            else:
-                ta.counter = 0
+            ta.propagate_for(fp_t(10.0), max_delta_t=fp_t(1e-4))
+            self.assertTrue(np.all(ta.state == st))
+            self.assertEqual(res, ta.propagate_res)
 
-            return True
-
-        ta.propagate_for(10.0, callback=cb)
-
-        self.assertTrue(ta.counter > 0)
-
-        # Test that no copies of the callback are performed.
-        class cb:
-            def __call__(_, ta):
-                self.assertEqual(id(_), _.orig_id)
+            # Test that adding dynattrs to the integrator
+            # object via the propagate callback works.
+            def cb(ta):
+                if hasattr(ta, "counter"):
+                    ta.counter += 1
+                else:
+                    ta.counter = 0
 
                 return True
 
-        cb_inst = cb()
-        cb_inst.orig_id = id(cb_inst)
+            ta.propagate_for(fp_t(10.0), callback=cb)
 
-        ta.propagate_for(10.0, callback=cb_inst)
+            self.assertTrue(ta.counter > 0)
 
-        # Test with a non-callable callback.
-        with self.assertRaises(TypeError) as cm:
-            ta.set_time(0.0)
+            # Test that no copies of the callback are performed.
+            class cb:
+                def __call__(_, ta):
+                    self.assertEqual(id(_), _.orig_id)
+
+                    return True
+
+            cb_inst = cb()
+            cb_inst.orig_id = id(cb_inst)
+
+            ta.propagate_for(fp_t(10.0), callback=cb_inst)
+
+            # Test with a non-callable callback.
+            with self.assertRaises(TypeError) as cm:
+                ta.set_time(fp_t(0.0))
+                ta.state[:] = ic
+                ta.propagate_for(fp_t(10.0), callback="hello world")
+            self.assertTrue(
+                "cannot be used as a step callback because it is not callable"
+                in str(cm.exception)
+            )
+
+            # Broken callback with wrong return type.
+            class broken_cb:
+                def __call__(self, ta):
+                    return []
+
+            with self.assertRaises(TypeError) as cm:
+                ta.set_time(fp_t(0.0))
+                ta.state[:] = ic
+                ta.propagate_for(fp_t(10.0), callback=broken_cb())
+            self.assertTrue(
+                "The call operator of a step callback is expected to return a boolean, but a value of type"
+                in str(cm.exception)
+            )
+
+            # Callback with pre_hook().
+            class cb_hook:
+                def __call__(_, ta):
+                    return True
+
+                def pre_hook(self, ta):
+                    ta.foo = True
+
+            ta.set_time(fp_t(0.0))
             ta.state[:] = ic
-            ta.propagate_for(10.0, callback="hello world")
-        self.assertTrue(
-            "cannot be used as a step callback because it is not callable"
-            in str(cm.exception)
-        )
-
-        # Broken callback with wrong return type.
-        class broken_cb:
-            def __call__(self, ta):
-                return []
-
-        with self.assertRaises(TypeError) as cm:
-            ta.set_time(0.0)
-            ta.state[:] = ic
-            ta.propagate_for(10.0, callback=broken_cb())
-        self.assertTrue(
-            "The call operator of a step callback is expected to return a boolean, but a value of type"
-            in str(cm.exception)
-        )
-
-        # Callback with pre_hook().
-        class cb_hook:
-            def __call__(_, ta):
-                return True
-
-            def pre_hook(self, ta):
-                ta.foo = True
-
-        ta.set_time(0.0)
-        ta.state[:] = ic
-        ta.propagate_for(10.0, callback=cb_hook())
-        self.assertTrue(ta.foo)
-        delattr(ta, "foo")
+            ta.propagate_for(fp_t(10.0), callback=cb_hook())
+            self.assertTrue(ta.foo)
+            delattr(ta, "foo")
 
     def test_propagate_until(self):
         from . import taylor_adaptive_batch, make_vars, sin
         from copy import deepcopy
         import numpy as np
 
-        ic = [[0.0, 0.1, 0.2, 0.3], [0.25, 0.26, 0.27, 0.28]]
+        fp_types = [np.float32, float]
 
-        x, v = make_vars("x", "v")
+        for fp_t in fp_types:
+            ic = np.array([[0.0, 0.1, 0.2, 0.3], [0.25, 0.26, 0.27, 0.28]], dtype=fp_t)
 
-        sys = [(x, v), (v, -9.8 * sin(x))]
+            x, v = make_vars("x", "v")
 
-        ta = taylor_adaptive_batch(sys=sys, state=ic)
+            sys = [(x, v), (v, -9.8 * sin(x))]
 
-        # Compare vector/scalar delta_t and max_delta_t.
-        ta.propagate_until([10.0] * 4)
-        st = deepcopy(ta.state)
-        res = deepcopy(ta.propagate_res)
+            ta = taylor_adaptive_batch(sys=sys, state=ic, fp_type=fp_t)
 
-        ta.set_time(0.0)
-        ta.state[:] = ic
+            # Compare vector/scalar delta_t and max_delta_t.
+            ta.propagate_until([fp_t(10.0)] * 4)
+            st = deepcopy(ta.state)
+            res = deepcopy(ta.propagate_res)
 
-        ta.propagate_until(10.0)
-        self.assertTrue(np.all(ta.state == st))
-        self.assertEqual(res, ta.propagate_res)
+            ta.set_time(fp_t(0.0))
+            ta.state[:] = ic
 
-        ta.set_time(0.0)
-        ta.state[:] = ic
+            ta.propagate_until(fp_t(10.0))
+            self.assertTrue(np.all(ta.state == st))
+            self.assertEqual(res, ta.propagate_res)
 
-        ta.propagate_until([10.0] * 4, max_delta_t=[1e-4] * 4)
-        st = deepcopy(ta.state)
-        res = deepcopy(ta.propagate_res)
+            ta.set_time(fp_t(0.0))
+            ta.state[:] = ic
 
-        ta.set_time(0.0)
-        ta.state[:] = ic
+            ta.propagate_until([fp_t(10.0)] * 4, max_delta_t=[fp_t(1e-4)] * 4)
+            st = deepcopy(ta.state)
+            res = deepcopy(ta.propagate_res)
 
-        ta.propagate_until(10.0, max_delta_t=1e-4)
-        self.assertTrue(np.all(ta.state == st))
-        self.assertEqual(res, ta.propagate_res)
+            ta.set_time(fp_t(0.0))
+            ta.state[:] = ic
 
-        # Test that adding dynattrs to the integrator
-        # object via the propagate callback works.
-        def cb(ta):
-            if hasattr(ta, "counter"):
-                ta.counter += 1
-            else:
-                ta.counter = 0
+            ta.propagate_until(fp_t(10.0), max_delta_t=fp_t(1e-4))
+            self.assertTrue(np.all(ta.state == st))
+            self.assertEqual(res, ta.propagate_res)
 
-            return True
-
-        ta.propagate_until(20.0, callback=cb)
-
-        self.assertTrue(ta.counter > 0)
-
-        # Test that no copies of the callback are performed.
-        class cb:
-            def __call__(_, ta):
-                self.assertEqual(id(_), _.orig_id)
+            # Test that adding dynattrs to the integrator
+            # object via the propagate callback works.
+            def cb(ta):
+                if hasattr(ta, "counter"):
+                    ta.counter += 1
+                else:
+                    ta.counter = 0
 
                 return True
 
-        cb_inst = cb()
-        cb_inst.orig_id = id(cb_inst)
+            ta.propagate_until(fp_t(20.0), callback=cb)
 
-        ta.propagate_until(30.0, callback=cb_inst)
+            self.assertTrue(ta.counter > 0)
 
-        # Test with a non-callable callback.
-        with self.assertRaises(TypeError) as cm:
-            ta.set_time(0.0)
+            # Test that no copies of the callback are performed.
+            class cb:
+                def __call__(_, ta):
+                    self.assertEqual(id(_), _.orig_id)
+
+                    return True
+
+            cb_inst = cb()
+            cb_inst.orig_id = id(cb_inst)
+
+            ta.propagate_until(fp_t(30.0), callback=cb_inst)
+
+            # Test with a non-callable callback.
+            with self.assertRaises(TypeError) as cm:
+                ta.set_time(fp_t(0.0))
+                ta.state[:] = ic
+                ta.propagate_until(fp_t(10.0), callback="hello world")
+            self.assertTrue(
+                "cannot be used as a step callback because it is not callable"
+                in str(cm.exception)
+            )
+
+            # Broken callback with wrong return type.
+            class broken_cb:
+                def __call__(self, ta):
+                    return []
+
+            with self.assertRaises(TypeError) as cm:
+                ta.set_time(fp_t(0.0))
+                ta.state[:] = ic
+                ta.propagate_until(fp_t(10.0), callback=broken_cb())
+            self.assertTrue(
+                "The call operator of a step callback is expected to return a boolean, but a value of type"
+                in str(cm.exception)
+            )
+
+            # Callback with pre_hook().
+            class cb_hook:
+                def __call__(_, ta):
+                    return True
+
+                def pre_hook(self, ta):
+                    ta.foo = True
+
+            ta.set_time(fp_t(0.0))
             ta.state[:] = ic
-            ta.propagate_until(10.0, callback="hello world")
-        self.assertTrue(
-            "cannot be used as a step callback because it is not callable"
-            in str(cm.exception)
-        )
-
-        # Broken callback with wrong return type.
-        class broken_cb:
-            def __call__(self, ta):
-                return []
-
-        with self.assertRaises(TypeError) as cm:
-            ta.set_time(0.0)
-            ta.state[:] = ic
-            ta.propagate_until(10.0, callback=broken_cb())
-        self.assertTrue(
-            "The call operator of a step callback is expected to return a boolean, but a value of type"
-            in str(cm.exception)
-        )
-
-        # Callback with pre_hook().
-        class cb_hook:
-            def __call__(_, ta):
-                return True
-
-            def pre_hook(self, ta):
-                ta.foo = True
-
-        ta.set_time(0.0)
-        ta.state[:] = ic
-        ta.propagate_until(10.0, callback=cb_hook())
-        self.assertTrue(ta.foo)
-        delattr(ta, "foo")
+            ta.propagate_until(fp_t(10.0), callback=cb_hook())
+            self.assertTrue(ta.foo)
+            delattr(ta, "foo")
 
     def test_update_d_output(self):
         from . import taylor_adaptive_batch, make_vars, sin
@@ -319,170 +325,204 @@ class batch_integrator_test_case(_ut.TestCase):
         from copy import deepcopy
         import numpy as np
 
-        x, v = make_vars("x", "v")
+        fp_types = [np.float32, float]
 
-        sys = [(x, v), (v, -9.8 * sin(x))]
+        for fp_t in fp_types:
+            x, v = make_vars("x", "v")
 
-        ta = taylor_adaptive_batch(
-            sys=sys, state=[[0.0, 0.1, 0.2, 0.3], [0.25, 0.26, 0.27, 0.28]]
-        )
+            sys = [(x, v), (v, -9.8 * sin(x))]
 
-        ta.step(write_tc=True)
-
-        # Scalar overload.
-        with self.assertRaises(ValueError) as cm:
-            ta.update_d_output(0.3)[0] = 0.5
-
-        d_out = ta.update_d_output(0.3)
-        self.assertEqual(d_out.shape, (2, 4))
-        rc = getrefcount(ta)
-        tmp_out = ta.update_d_output(0.2)
-        new_rc = getrefcount(ta)
-        self.assertEqual(new_rc, rc + 1)
-
-        # Vector overload.
-        with self.assertRaises(ValueError) as cm:
-            ta.update_d_output([0.3, 0.4, 0.45, 0.46])[0] = 0.5
-
-        d_out2 = ta.update_d_output([0.3, 0.4, 0.45, 0.46])
-        self.assertEqual(d_out2.shape, (2, 4))
-        rc = getrefcount(ta)
-        tmp_out2 = ta.update_d_output([0.31, 0.41, 0.66, 0.67])
-        new_rc = getrefcount(ta)
-        self.assertEqual(new_rc, rc + 1)
-
-        cp = deepcopy(ta.update_d_output(0.3))
-        self.assertTrue(np.all(cp == ta.update_d_output([0.3] * 4)))
-
-        # Functional testing.
-        ta.set_time(0.0)
-        ta.state[:] = [[0.0, 0.01, 0.02, 0.03], [0.205, 0.206, 0.207, 0.208]]
-        ta.step(write_tc=True)
-        ta.update_d_output(ta.time)
-        self.assertTrue(
-            np.allclose(
-                ta.d_output,
-                ta.state,
-                rtol=np.finfo(float).eps * 10,
-                atol=np.finfo(float).eps * 10,
+            ta = taylor_adaptive_batch(
+                sys=sys,
+                state=np.array(
+                    [[0.0, 0.1, 0.2, 0.3], [0.25, 0.26, 0.27, 0.28]], dtype=fp_t
+                ),
+                fp_type=fp_t,
             )
-        )
-        ta.update_d_output(0.0, rel_time=True)
-        self.assertTrue(
-            np.allclose(
-                ta.d_output,
-                ta.state,
-                rtol=np.finfo(float).eps * 10,
-                atol=np.finfo(float).eps * 10,
+
+            ta.step(write_tc=True)
+
+            # Scalar overload.
+            with self.assertRaises(ValueError) as cm:
+                ta.update_d_output(fp_t(0.3))[0] = fp_t(0.5)
+
+            d_out = ta.update_d_output(fp_t(0.3))
+            self.assertEqual(d_out.shape, (2, 4))
+            rc = getrefcount(ta)
+            tmp_out = ta.update_d_output(fp_t(0.2))
+            new_rc = getrefcount(ta)
+            self.assertEqual(new_rc, rc + 1)
+
+            # Vector overload.
+            with self.assertRaises(ValueError) as cm:
+                ta.update_d_output(np.array([0.3, 0.4, 0.45, 0.46], dtype=fp_t))[
+                    0
+                ] = fp_t(0.5)
+
+            d_out2 = ta.update_d_output(np.array([0.3, 0.4, 0.45, 0.46], dtype=fp_t))
+            self.assertEqual(d_out2.shape, (2, 4))
+            rc = getrefcount(ta)
+            tmp_out2 = ta.update_d_output(
+                np.array([0.31, 0.41, 0.66, 0.67], dtype=fp_t)
             )
-        )
+            new_rc = getrefcount(ta)
+            self.assertEqual(new_rc, rc + 1)
+
+            cp = deepcopy(ta.update_d_output(fp_t(0.3)))
+            self.assertTrue(np.all(cp == ta.update_d_output([fp_t(0.3)] * 4)))
+
+            # Functional testing.
+            ta.set_time(fp_t(0.0))
+            ta.state[:] = [[0.0, 0.01, 0.02, 0.03], [0.205, 0.206, 0.207, 0.208]]
+            ta.step(write_tc=True)
+            ta.update_d_output(ta.time)
+            self.assertTrue(
+                np.allclose(
+                    ta.d_output,
+                    ta.state,
+                    rtol=np.finfo(fp_t).eps * 10,
+                    atol=np.finfo(fp_t).eps * 10,
+                )
+            )
+            ta.update_d_output(fp_t(0.0), rel_time=True)
+            self.assertTrue(
+                np.allclose(
+                    ta.d_output,
+                    ta.state,
+                    rtol=np.finfo(fp_t).eps * 10,
+                    atol=np.finfo(fp_t).eps * 10,
+                )
+            )
 
     def test_set_time(self):
         from . import taylor_adaptive_batch, make_vars, sin
         import numpy as np
 
-        x, v = make_vars("x", "v")
+        fp_types = [np.float32, float]
 
-        sys = [(x, v), (v, -9.8 * sin(x))]
+        for fp_t in fp_types:
+            x, v = make_vars("x", "v")
 
-        ta = taylor_adaptive_batch(sys=sys, state=[[0.0, 0.1], [0.25, 0.26]])
+            sys = [(x, v), (v, -9.8 * sin(x))]
 
-        self.assertTrue(np.all(ta.time == [0, 0]))
+            ta = taylor_adaptive_batch(
+                sys=sys,
+                state=np.array([[0.0, 0.1], [0.25, 0.26]], dtype=fp_t),
+                fp_type=fp_t,
+            )
 
-        ta.set_time([-1.0, 1.0])
-        self.assertTrue(np.all(ta.time == [-1, 1]))
+            self.assertTrue(np.all(ta.time == [0, 0]))
 
-        ta.set_time(5.0)
-        self.assertTrue(np.all(ta.time == [5, 5]))
+            ta.set_time([fp_t(-1.0), fp_t(1.0)])
+            self.assertTrue(np.all(ta.time == [-1, 1]))
+
+            ta.set_time(fp_t(5.0))
+            self.assertTrue(np.all(ta.time == [5, 5]))
 
     def test_dtime(self):
         from . import taylor_adaptive_batch, make_vars, sin
         import numpy as np
 
-        x, v = make_vars("x", "v")
+        fp_types = [np.float32, float]
 
-        sys = [(x, v), (v, -9.8 * sin(x))]
+        for fp_t in fp_types:
+            x, v = make_vars("x", "v")
 
-        ta = taylor_adaptive_batch(sys=sys, state=[[0.0, 0.1], [0.25, 0.26]])
+            sys = [(x, v), (v, -9.8 * sin(x))]
 
-        self.assertTrue(np.all(ta.dtime[0] == [0, 0]))
-        self.assertTrue(np.all(ta.dtime[1] == [0, 0]))
+            ta = taylor_adaptive_batch(
+                sys=sys,
+                state=np.array([[0.0, 0.1], [0.25, 0.26]], dtype=fp_t),
+                fp_type=fp_t,
+            )
 
-        # Check not writeable,
-        with self.assertRaises(ValueError) as cm:
-            ta.dtime[0][0] = 0.5
+            self.assertTrue(np.all(ta.dtime[0] == [0, 0]))
+            self.assertTrue(np.all(ta.dtime[1] == [0, 0]))
 
-        with self.assertRaises(ValueError) as cm:
-            ta.dtime[1][0] = 0.5
+            # Check not writeable,
+            with self.assertRaises(ValueError) as cm:
+                ta.dtime[0][0] = 0.5
 
-        ta.step()
-        ta.propagate_for(1000.1)
+            with self.assertRaises(ValueError) as cm:
+                ta.dtime[1][0] = 0.5
 
-        self.assertFalse(np.all(ta.dtime[1] == [0, 0]))
+            ta.step()
+            ta.propagate_for(fp_t(1000.1))
 
-        ta.set_dtime(1.0, 0.5)
+            self.assertFalse(np.all(ta.dtime[1] == [0, 0]))
 
-        self.assertTrue(np.all(ta.dtime[0] == [1.5, 1.5]))
-        self.assertTrue(np.all(ta.dtime[1] == [0, 0]))
+            ta.set_dtime(fp_t(1.0), fp_t(0.5))
 
-        ta.set_dtime([1.0, 2.0], [0.5, 0.25])
+            self.assertTrue(np.all(ta.dtime[0] == [1.5, 1.5]))
+            self.assertTrue(np.all(ta.dtime[1] == [0, 0]))
 
-        self.assertTrue(np.all(ta.dtime[0] == [1.5, 2.25]))
-        self.assertTrue(np.all(ta.dtime[1] == [0, 0]))
+            ta.set_dtime([fp_t(1.0), fp_t(2.0)], [fp_t(0.5), fp_t(0.25)])
 
-        # Failure modes.
-        with self.assertRaises(TypeError) as cm:
-            ta.set_dtime([1.0, 2.0], 0.5)
-        self.assertTrue(
-            "The two arguments to the set_dtime() method must be of the same type"
-            in str(cm.exception)
-        )
+            self.assertTrue(np.all(ta.dtime[0] == [1.5, 2.25]))
+            self.assertTrue(np.all(ta.dtime[1] == [0, 0]))
+
+            # Failure modes.
+            with self.assertRaises(TypeError) as cm:
+                ta.set_dtime([fp_t(1.0), fp_t(2.0)], fp_t(0.5))
+            self.assertTrue(
+                "The two arguments to the set_dtime() method must be of the same type"
+                in str(cm.exception)
+            )
 
     def test_basic(self):
         from . import taylor_adaptive_batch, make_vars, t_event_batch, sin
+        import numpy as np
 
-        x, v = make_vars("x", "v")
+        fp_types = [np.float32, float]
 
-        sys = [(x, v), (v, -9.8 * sin(x))]
+        for fp_t in fp_types:
+            x, v = make_vars("x", "v")
 
-        ta = taylor_adaptive_batch(
-            sys=sys, state=[[0.0, 0.1], [0.25, 0.26]], t_events=[t_event_batch(v)]
-        )
+            sys = [(x, v), (v, -9.8 * sin(x))]
 
-        self.assertTrue(ta.with_events)
-        self.assertFalse(ta.compact_mode)
-        self.assertFalse(ta.high_accuracy)
-        self.assertEqual(ta.state_vars, [x, v])
-        self.assertEqual(ta.rhs, [v, -9.8 * sin(x)])
+            ta = taylor_adaptive_batch(
+                sys=sys,
+                state=np.array([[0.0, 0.1], [0.25, 0.26]], dtype=fp_t),
+                t_events=[t_event_batch(v, fp_type=fp_t)],
+                fp_type=fp_t,
+            )
 
-        ta = taylor_adaptive_batch(
-            sys=sys,
-            state=[[0.0, 0.1], [0.25, 0.26]],
-            compact_mode=True,
-            high_accuracy=True,
-        )
+            self.assertTrue(ta.with_events)
+            self.assertFalse(ta.compact_mode)
+            self.assertFalse(ta.high_accuracy)
+            self.assertEqual(ta.state_vars, [x, v])
+            self.assertEqual(ta.rhs, [v, -9.8 * sin(x)])
 
-        self.assertFalse(ta.with_events)
-        self.assertTrue(ta.compact_mode)
-        self.assertTrue(ta.high_accuracy)
-        self.assertFalse(ta.llvm_state.fast_math)
-        self.assertFalse(ta.llvm_state.force_avx512)
-        self.assertEqual(ta.llvm_state.opt_level, 3)
+            ta = taylor_adaptive_batch(
+                sys=sys,
+                state=np.array([[0.0, 0.1], [0.25, 0.26]], dtype=fp_t),
+                compact_mode=True,
+                high_accuracy=True,
+                fp_type=fp_t,
+            )
 
-        # Test the custom llvm_state flags.
-        ta = taylor_adaptive_batch(
-            sys=sys,
-            state=[[0.0, 0.1], [0.25, 0.26]],
-            compact_mode=True,
-            high_accuracy=True,
-            force_avx512=True,
-            fast_math=True,
-            opt_level=0,
-        )
+            self.assertFalse(ta.with_events)
+            self.assertTrue(ta.compact_mode)
+            self.assertTrue(ta.high_accuracy)
+            self.assertFalse(ta.llvm_state.fast_math)
+            self.assertFalse(ta.llvm_state.force_avx512)
+            self.assertEqual(ta.llvm_state.opt_level, 3)
 
-        self.assertTrue(ta.llvm_state.fast_math)
-        self.assertTrue(ta.llvm_state.force_avx512)
-        self.assertEqual(ta.llvm_state.opt_level, 0)
+            # Test the custom llvm_state flags.
+            ta = taylor_adaptive_batch(
+                sys=sys,
+                state=np.array([[0.0, 0.1], [0.25, 0.26]], dtype=fp_t),
+                compact_mode=True,
+                high_accuracy=True,
+                force_avx512=True,
+                fast_math=True,
+                opt_level=0,
+                fp_type=fp_t,
+            )
+
+            self.assertTrue(ta.llvm_state.fast_math)
+            self.assertTrue(ta.llvm_state.force_avx512)
+            self.assertEqual(ta.llvm_state.opt_level, 0)
 
     def test_events(self):
         from . import (
@@ -492,39 +532,44 @@ class batch_integrator_test_case(_ut.TestCase):
             sin,
             taylor_adaptive_batch,
         )
+        import numpy as np
 
-        x, v = make_vars("x", "v")
+        fp_types = [np.float32, float]
 
-        # Use a pendulum for testing purposes.
-        sys = [(x, v), (v, -9.8 * sin(x))]
+        for fp_t in fp_types:
+            x, v = make_vars("x", "v")
 
-        def cb0(ta, t, d_sgn, bidx):
-            pass
+            # Use a pendulum for testing purposes.
+            sys = [(x, v), (v, -9.8 * sin(x))]
 
-        ta = taylor_adaptive_batch(
-            sys=sys,
-            state=[[0.0, 0.001], [0.25, 0.2501]],
-            nt_events=[nt_event_batch(v * v - 1e-10, cb0)],
-            t_events=[t_event_batch(v)],
-        )
+            def cb0(ta, t, d_sgn, bidx):
+                pass
 
-        self.assertTrue(ta.with_events)
-        self.assertEqual(len(ta.t_events), 1)
-        self.assertEqual(len(ta.nt_events), 1)
+            ta = taylor_adaptive_batch(
+                sys=sys,
+                state=np.array([[0.0, 0.001], [0.25, 0.2501]], dtype=fp_t),
+                nt_events=[nt_event_batch(v * v - 1e-6, cb0, fp_type=fp_t)],
+                t_events=[t_event_batch(v, fp_type=fp_t)],
+                fp_type=fp_t,
+            )
 
-        ta.propagate_until([1e9, 1e9])
-        self.assertTrue(all(int(_[0]) == -1 for _ in ta.propagate_res))
+            self.assertTrue(ta.with_events)
+            self.assertEqual(len(ta.t_events), 1)
+            self.assertEqual(len(ta.nt_events), 1)
 
-        self.assertFalse(ta.te_cooldowns[0][0] is None)
-        self.assertFalse(ta.te_cooldowns[1][0] is None)
+            ta.propagate_until([fp_t(1e9), fp_t(1e9)])
+            self.assertTrue(all(int(_[0]) == -1 for _ in ta.propagate_res))
 
-        ta.reset_cooldowns(0)
-        self.assertTrue(ta.te_cooldowns[0][0] is None)
-        self.assertFalse(ta.te_cooldowns[1][0] is None)
+            self.assertFalse(ta.te_cooldowns[0][0] is None)
+            self.assertFalse(ta.te_cooldowns[1][0] is None)
 
-        ta.reset_cooldowns()
-        self.assertTrue(ta.te_cooldowns[0][0] is None)
-        self.assertTrue(ta.te_cooldowns[1][0] is None)
+            ta.reset_cooldowns(0)
+            self.assertTrue(ta.te_cooldowns[0][0] is None)
+            self.assertFalse(ta.te_cooldowns[1][0] is None)
+
+            ta.reset_cooldowns()
+            self.assertTrue(ta.te_cooldowns[0][0] is None)
+            self.assertTrue(ta.te_cooldowns[1][0] is None)
 
     def test_s11n(self):
         from . import (
@@ -537,211 +582,237 @@ class batch_integrator_test_case(_ut.TestCase):
         import numpy as np
         import pickle
 
-        x, v = make_vars("x", "v")
+        fp_types = [np.float32, float]
 
-        # Use a pendulum for testing purposes.
-        sys = [(x, v), (v, -9.8 * sin(x))]
+        for fp_t in fp_types:
+            x, v = make_vars("x", "v")
 
-        def cb0(ta, t, d_sgn, bidx):
-            pass
+            # Use a pendulum for testing purposes.
+            sys = [(x, v), (v, -9.8 * sin(x))]
 
-        ta = taylor_adaptive_batch(
-            sys=sys,
-            state=[[0, 0.01], [0.25, 0.26]],
-            nt_events=[nt_event_batch(v * v - 1e-10, cb0)],
-        )
+            def cb0(ta, t, d_sgn, bidx):
+                pass
 
-        ta.step()
-        ta.step()
-        ta.step()
-        ta.step()
+            ta = taylor_adaptive_batch(
+                sys=sys,
+                state=np.array([[0, 0.01], [0.25, 0.26]], dtype=fp_t),
+                nt_events=[nt_event_batch(v * v - 1e-6, cb0, fp_type=fp_t)],
+                fp_type=fp_t,
+            )
 
-        ta2 = pickle.loads(pickle.dumps(ta))
+            ta.step()
+            ta.step()
+            ta.step()
+            ta.step()
 
-        self.assertTrue(np.all(ta.state == ta2.state))
-        self.assertTrue(np.all(ta.time == ta2.time))
+            ta2 = pickle.loads(pickle.dumps(ta))
 
-        self.assertEqual(len(ta.t_events), len(ta2.t_events))
-        self.assertEqual(len(ta.nt_events), len(ta2.nt_events))
+            self.assertTrue(np.all(ta.state == ta2.state))
+            self.assertTrue(np.all(ta.time == ta2.time))
 
-        ta.step()
-        ta2.step()
+            self.assertEqual(len(ta.t_events), len(ta2.t_events))
+            self.assertEqual(len(ta.nt_events), len(ta2.nt_events))
 
-        self.assertTrue(np.all(ta.state == ta2.state))
-        self.assertTrue(np.all(ta.time == ta2.time))
+            ta.step()
+            ta2.step()
 
-        ta = taylor_adaptive_batch(sys=sys, state=[[0, 0.01], [0.25, 0.26]], tol=1e-6)
+            self.assertTrue(np.all(ta.state == ta2.state))
+            self.assertTrue(np.all(ta.time == ta2.time))
 
-        self.assertEqual(ta.tol, 1e-6)
+            ta = taylor_adaptive_batch(
+                sys=sys,
+                state=np.array([[0, 0.01], [0.25, 0.26]], dtype=fp_t),
+                tol=fp_t(1e-6),
+                fp_type=fp_t,
+            )
 
-        # Test dynamic attributes.
-        ta.foo = "hello world"
-        ta = pickle.loads(pickle.dumps(ta))
-        self.assertEqual(ta.foo, "hello world")
+            self.assertEqual(ta.tol, fp_t(1e-6))
 
-        # Try also an integrator with stateful event callback.
-        class cb1:
-            def __init__(self):
-                self.n = 0
+            # Test dynamic attributes.
+            ta.foo = "hello world"
+            ta = pickle.loads(pickle.dumps(ta))
+            self.assertEqual(ta.foo, "hello world")
 
-            def __call__(self, ta, bool, d_sgn, bidx):
-                self.n = self.n + 1
+            # Try also an integrator with stateful event callback.
+            class cb1:
+                def __init__(self):
+                    self.n = 0
 
-                return True
+                def __call__(self, ta, bool, d_sgn, bidx):
+                    self.n = self.n + 1
 
-        clb = cb1()
-        ta = taylor_adaptive_batch(
-            sys=sys,
-            state=[[0, 0.01], [0.25, 0.26]],
-            t_events=[t_event_batch(v, callback=clb)],
-        )
+                    return True
 
-        self.assertNotEqual(id(clb), id(ta.t_events[0].callback))
+            clb = cb1()
+            ta = taylor_adaptive_batch(
+                sys=sys,
+                state=np.array([[0, 0.01], [0.25, 0.26]], dtype=fp_t),
+                t_events=[t_event_batch(v, callback=clb, fp_type=fp_t)],
+                fp_type=fp_t,
+            )
 
-        self.assertEqual(ta.t_events[0].callback.n, 0)
+            self.assertNotEqual(id(clb), id(ta.t_events[0].callback))
 
-        ta.propagate_until([100.0, 100.0])
+            self.assertEqual(ta.t_events[0].callback.n, 0)
 
-        ta2 = pickle.loads(pickle.dumps(ta))
+            ta.propagate_until([fp_t(100.0), fp_t(100.0)])
 
-        self.assertEqual(ta.t_events[0].callback.n, ta2.t_events[0].callback.n)
+            ta2 = pickle.loads(pickle.dumps(ta))
+
+            self.assertEqual(ta.t_events[0].callback.n, ta2.t_events[0].callback.n)
 
     def test_propagate_grid(self):
         from . import make_vars, taylor_adaptive, taylor_adaptive_batch, sin
         import numpy as np
         from copy import deepcopy
 
-        x, v = make_vars("x", "v")
-        eqns = [(x, v), (v, -9.8 * sin(x))]
+        fp_types = [np.float32, float]
 
-        x_ic = [0.06, 0.07, 0.08, 0.09]
-        v_ic = [0.025, 0.026, 0.027, 0.028]
+        for fp_t in fp_types:
+            x, v = make_vars("x", "v")
+            eqns = [(x, v), (v, -9.8 * sin(x))]
 
-        ta = taylor_adaptive_batch(eqns, [x_ic, v_ic])
+            x_ic = np.array([0.06, 0.07, 0.08, 0.09], dtype=fp_t)
+            v_ic = np.array([0.025, 0.026, 0.027, 0.028], dtype=fp_t)
 
-        # Failure modes.
-        with self.assertRaises(ValueError) as cm:
-            ta.propagate_grid([])
-        self.assertTrue(
-            "Invalid grid passed to the propagate_grid() method of a batch integrator: "
-            "the expected number of dimensions is 2, but the input array has a dimension of 1"
-            in str(cm.exception)
-        )
+            ta = taylor_adaptive_batch(eqns, [x_ic, v_ic], fp_type=fp_t)
 
-        with self.assertRaises(ValueError) as cm:
-            ta.propagate_grid([[1, 2], [3, 4]])
-        self.assertTrue(
-            "Invalid grid passed to the propagate_grid() method of a batch integrator: "
-            "the shape must be (n, 4) but the number of columns is 2 instead"
-            in str(cm.exception)
-        )
+            # Failure modes.
+            with self.assertRaises(ValueError) as cm:
+                ta.propagate_grid(np.array([], dtype=fp_t))
+            self.assertTrue(
+                "Invalid grid passed to the propagate_grid() method of a batch integrator: "
+                "the expected number of dimensions is 2, but the input array has a dimension of 1"
+                in str(cm.exception)
+            )
 
-        # Run a simple scalar/batch comparison.
-        tas = []
+            with self.assertRaises(ValueError) as cm:
+                ta.propagate_grid(np.array([[1, 2], [3, 4]], dtype=fp_t))
+            self.assertTrue(
+                "Invalid grid passed to the propagate_grid() method of a batch integrator: "
+                "the shape must be (n, 4) but the number of columns is 2 instead"
+                in str(cm.exception)
+            )
 
-        for x0, v0 in zip(x_ic, v_ic):
-            tas.append(taylor_adaptive(eqns, [x0, v0]))
+            # Run a simple scalar/batch comparison.
+            tas = []
 
-        grid = np.array(
-            [
-                [-0.1, -0.2, -0.3, -0.4],
-                [0.01, 0.02, 0.03, 0.9],
-                [1.0, 1.1, 1.2, 1.3],
-                [11.0, 11.1, 11.2, 11.3],
+            for x0, v0 in zip(x_ic, v_ic):
+                tas.append(taylor_adaptive(eqns, [x0, v0], fp_type=fp_t))
+
+            grid = np.array(
+                [
+                    [-0.1, -0.2, -0.3, -0.4],
+                    [0.01, 0.02, 0.03, 0.9],
+                    [1.0, 1.1, 1.2, 1.3],
+                    [11.0, 11.1, 11.2, 11.3],
+                ],
+                dtype=fp_t,
+            )
+
+            bres = ta.propagate_grid(grid)
+
+            sres = [
+                tas[0].propagate_grid(grid[:, 0]),
+                tas[1].propagate_grid(grid[:, 1]),
+                tas[2].propagate_grid(grid[:, 2]),
+                tas[3].propagate_grid(grid[:, 3]),
             ]
-        )
 
-        bres = ta.propagate_grid(grid)
+            self.assertTrue(
+                np.max(np.abs(sres[0][4] - bres[:, :, 0]).flatten())
+                < np.finfo(fp_t).eps * 100
+            )
+            self.assertTrue(
+                np.max(np.abs(sres[1][4] - bres[:, :, 1]).flatten())
+                < np.finfo(fp_t).eps * 100
+            )
+            self.assertTrue(
+                np.max(np.abs(sres[2][4] - bres[:, :, 2]).flatten())
+                < np.finfo(fp_t).eps * 100
+            )
+            self.assertTrue(
+                np.max(np.abs(sres[3][4] - bres[:, :, 3]).flatten())
+                < np.finfo(fp_t).eps * 100
+            )
 
-        sres = [
-            tas[0].propagate_grid(grid[:, 0]),
-            tas[1].propagate_grid(grid[:, 1]),
-            tas[2].propagate_grid(grid[:, 2]),
-            tas[3].propagate_grid(grid[:, 3]),
-        ]
+            # Test vector/scalar max_delta_t.
+            ta.set_time(fp_t(0.0))
+            ta.state[:] = [x_ic, v_ic]
 
-        self.assertTrue(np.max(np.abs(sres[0][4] - bres[:, :, 0]).flatten()) < 1e-14)
-        self.assertTrue(np.max(np.abs(sres[1][4] - bres[:, :, 1]).flatten()) < 1e-14)
-        self.assertTrue(np.max(np.abs(sres[2][4] - bres[:, :, 2]).flatten()) < 1e-14)
-        self.assertTrue(np.max(np.abs(sres[3][4] - bres[:, :, 3]).flatten()) < 1e-14)
+            bres = ta.propagate_grid(grid, max_delta_t=[fp_t(1e-3)] * 4)
+            res = deepcopy(ta.propagate_res)
 
-        # Test vector/scalar max_delta_t.
-        ta.set_time(0.0)
-        ta.state[:] = [x_ic, v_ic]
+            ta.set_time(fp_t(0.0))
+            ta.state[:] = [x_ic, v_ic]
 
-        bres = ta.propagate_grid(grid, max_delta_t=[1e-3] * 4)
-        res = deepcopy(ta.propagate_res)
+            bres2 = ta.propagate_grid(grid, max_delta_t=fp_t(1e-3))
 
-        ta.set_time(0.0)
-        ta.state[:] = [x_ic, v_ic]
+            self.assertTrue(np.all(bres == bres2))
+            self.assertEqual(ta.propagate_res, res)
 
-        bres2 = ta.propagate_grid(grid, max_delta_t=1e-3)
-
-        self.assertTrue(np.all(bres == bres2))
-        self.assertEqual(ta.propagate_res, res)
-
-        # Test that adding dynattrs to the integrator
-        # object via the propagate callback works.
-        def cb(ta):
-            if hasattr(ta, "counter"):
-                ta.counter += 1
-            else:
-                ta.counter = 0
-
-            return True
-
-        ta.set_time(0.0)
-        ta.propagate_grid(grid, callback=cb)
-
-        self.assertTrue(ta.counter > 0)
-
-        # Test that no copies of the callback are performed.
-        class cb:
-            def __call__(_, ta):
-                self.assertEqual(id(_), _.orig_id)
+            # Test that adding dynattrs to the integrator
+            # object via the propagate callback works.
+            def cb(ta):
+                if hasattr(ta, "counter"):
+                    ta.counter += 1
+                else:
+                    ta.counter = 0
 
                 return True
 
-        cb_inst = cb()
-        cb_inst.orig_id = id(cb_inst)
+            ta.set_time(fp_t(0.0))
+            ta.propagate_grid(grid, callback=cb)
 
-        ta.set_time(0.0)
-        ta.propagate_grid(grid, callback=cb_inst)
+            self.assertTrue(ta.counter > 0)
 
-        # Test with a non-callable callback.
-        with self.assertRaises(TypeError) as cm:
-            ta.set_time(0.0)
+            # Test that no copies of the callback are performed.
+            class cb:
+                def __call__(_, ta):
+                    self.assertEqual(id(_), _.orig_id)
+
+                    return True
+
+            cb_inst = cb()
+            cb_inst.orig_id = id(cb_inst)
+
+            ta.set_time(fp_t(0.0))
+            ta.propagate_grid(grid, callback=cb_inst)
+
+            # Test with a non-callable callback.
+            with self.assertRaises(TypeError) as cm:
+                ta.set_time(fp_t(0.0))
+                ta.state[:] = [x_ic, v_ic]
+                ta.propagate_grid(grid, callback="hello world")
+            self.assertTrue(
+                "cannot be used as a step callback because it is not callable"
+                in str(cm.exception)
+            )
+
+            # Broken callback with wrong return type.
+            class broken_cb:
+                def __call__(self, ta):
+                    return []
+
+            with self.assertRaises(TypeError) as cm:
+                ta.set_time(fp_t(0.0))
+                ta.state[:] = [x_ic, v_ic]
+                ta.propagate_grid(grid, callback=broken_cb())
+            self.assertTrue(
+                "The call operator of a step callback is expected to return a boolean, but a value of type"
+                in str(cm.exception)
+            )
+
+            # Callback with pre_hook().
+            class cb_hook:
+                def __call__(_, ta):
+                    return True
+
+                def pre_hook(self, ta):
+                    ta.foo = True
+
+            ta.set_time(fp_t(0.0))
             ta.state[:] = [x_ic, v_ic]
-            ta.propagate_grid(grid, callback="hello world")
-        self.assertTrue(
-            "cannot be used as a step callback because it is not callable"
-            in str(cm.exception)
-        )
-
-        # Broken callback with wrong return type.
-        class broken_cb:
-            def __call__(self, ta):
-                return []
-
-        with self.assertRaises(TypeError) as cm:
-            ta.set_time(0.0)
-            ta.state[:] = [x_ic, v_ic]
-            ta.propagate_grid(grid, callback=broken_cb())
-        self.assertTrue(
-            "The call operator of a step callback is expected to return a boolean, but a value of type"
-            in str(cm.exception)
-        )
-
-        # Callback with pre_hook().
-        class cb_hook:
-            def __call__(_, ta):
-                return True
-
-            def pre_hook(self, ta):
-                ta.foo = True
-
-        ta.set_time(0.0)
-        ta.state[:] = [x_ic, v_ic]
-        ta.propagate_grid(grid, callback=cb_hook())
-        self.assertTrue(ta.foo)
-        delattr(ta, "foo")
+            ta.propagate_grid(grid, callback=cb_hook())
+            self.assertTrue(ta.foo)
+            delattr(ta, "foo")

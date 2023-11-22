@@ -78,6 +78,13 @@ class sympy_test_case(_ut.TestCase):
         # From rational.
         self.assertEqual(from_sympy(Rational(42, -2)), expression(-21.0))
 
+        # Single precision.
+        with workprec(24):
+            self.assertEqual(
+                to_sympy(expression(np.float32("1.1"))),
+                Float("1.1", precision=np.finfo(np.float32).nmant + 1),
+            )
+
         # Double precision.
         with workprec(53):
             self.assertEqual(to_sympy(expression(1.1)), Float(1.1))
@@ -295,10 +302,18 @@ class sympy_test_case(_ut.TestCase):
         )
 
         # relu/relup.
-        self.assertEqual(to_sympy(core.relu(hx)), spy.Piecewise((x, x > 0), (0., True)))
-        self.assertEqual(to_sympy(core.relup(hx)), spy.Piecewise((1., x > 0), (0., True)))
-        self.assertEqual(to_sympy(core.relu(hx, 0.1)), spy.Piecewise((x, x > 0), (x*0.1, True)))
-        self.assertEqual(to_sympy(core.relup(hx, 0.1)), spy.Piecewise((1., x > 0), (0.1, True)))
+        self.assertEqual(
+            to_sympy(core.relu(hx)), spy.Piecewise((x, x > 0), (0.0, True))
+        )
+        self.assertEqual(
+            to_sympy(core.relup(hx)), spy.Piecewise((1.0, x > 0), (0.0, True))
+        )
+        self.assertEqual(
+            to_sympy(core.relu(hx, 0.1)), spy.Piecewise((x, x > 0), (x * 0.1, True))
+        )
+        self.assertEqual(
+            to_sympy(core.relup(hx, 0.1)), spy.Piecewise((1.0, x > 0), (0.1, True))
+        )
 
         self.assertEqual(-1.0 * hx, from_sympy(-x))
         self.assertEqual(to_sympy(-hx), -x)

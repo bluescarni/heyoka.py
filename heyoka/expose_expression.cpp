@@ -112,6 +112,16 @@ struct dtens_t_it {
 
 namespace py = pybind11;
 
+// NOTE: regarding single-precision support: we only expose the expression ctor,
+// but not the arithmetic operators. The reason for this is that np.float32 already
+// has math operators defined which sometimes take the precedence over our own exposed
+// operators, leading to implicit conversions to float64 and general inconsistent
+// behaviour (e.g., when constant folding is involved). In a similar fashion and for
+// consistency, we do not expose float32 overloads for multivariate functions.
+// NOTE: I am not 100% sure why this happens, as the same problem does not seem to
+// be there when doing mixed-mode arithmetic between real and float32 for instance.
+// Perhaps something to do with pybind11's conversion machinery (since the exposition
+// of real does not use pybind11)?
 void expose_expression(py::module_ &m)
 {
     namespace hey = heyoka;
@@ -128,8 +138,9 @@ void expose_expression(py::module_ &m)
     py::class_<hey::expression>(m, "expression", py::dynamic_attr{})
         .def(py::init<>())
         .def(py::init([](std::int32_t x) { return hey::expression{static_cast<double>(x)}; }), "x"_a.noconvert())
+        .def(py::init<float>(), "x"_a.noconvert())
         .def(py::init<double>(), "x"_a.noconvert())
-        .def(py::init<long double>(), "x"_a.noconvert())
+        .def(py::init<ld_t>(), "x"_a.noconvert())
 #if defined(HEYOKA_HAVE_REAL128)
         .def(py::init<mppp::real128>(), "x"_a.noconvert())
 #endif
@@ -384,7 +395,7 @@ void expose_expression(py::module_ &m)
                 },
                 e, M);
         },
-        "e"_a, "M"_a);
+        "e"_a.noconvert(), "M"_a.noconvert());
 
     // kepF().
     m.def(
@@ -422,7 +433,7 @@ void expose_expression(py::module_ &m)
                 },
                 h, k, lam);
         },
-        "h"_a, "k"_a, "lam"_a);
+        "h"_a.noconvert(), "k"_a.noconvert(), "lam"_a.noconvert());
 
     // kepDE().
     m.def(
@@ -461,7 +472,7 @@ void expose_expression(py::module_ &m)
                 },
                 s0, c0, DM);
         },
-        "s0"_a, "c0"_a, "DM"_a);
+        "s0"_a.noconvert(), "c0"_a.noconvert(), "DM"_a.noconvert());
 
     // atan2().
     m.def(
@@ -480,7 +491,7 @@ void expose_expression(py::module_ &m)
                 },
                 y, x);
         },
-        "y"_a, "x"_a);
+        "y"_a.noconvert(), "x"_a.noconvert());
 
     // Time.
     m.attr("time") = hey::time;
