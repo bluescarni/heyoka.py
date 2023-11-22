@@ -78,6 +78,13 @@ class sympy_test_case(_ut.TestCase):
         # From rational.
         self.assertEqual(from_sympy(Rational(42, -2)), expression(-21.0))
 
+        # Single precision.
+        with workprec(24):
+            self.assertEqual(
+                to_sympy(expression(np.float32("1.1"))),
+                Float("1.1", precision=np.finfo(np.float32).nmant + 1),
+            )
+
         # Double precision.
         with workprec(53):
             self.assertEqual(to_sympy(expression(1.1)), Float(1.1))
