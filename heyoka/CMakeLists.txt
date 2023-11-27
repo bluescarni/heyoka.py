@@ -62,6 +62,7 @@ set(_HEYOKA_PY_CORE_SOURCES
     numpy_memory.cpp
     expose_models.cpp
     step_cb_wrapper.cpp
+    expose_step_callback_set.cpp
 )
 
 Python3_add_library(core MODULE WITH_SOABI ${_HEYOKA_PY_CORE_SOURCES})

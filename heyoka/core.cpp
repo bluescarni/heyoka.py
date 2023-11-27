@@ -57,6 +57,7 @@
 #include "expose_models.hpp"
 #include "expose_real.hpp"
 #include "expose_real128.hpp"
+#include "expose_step_callback_set.hpp"
 #include "logging.hpp"
 #include "pickle_wrappers.hpp"
 #include "setup_sympy.hpp"
@@ -282,6 +283,9 @@ PYBIND11_MODULE(core, m)
     heypy::expose_taylor_nt_event_real(m);
 
 #endif
+
+    // Expose the step callback sets.
+    heypy::expose_step_callback_set(m);
 
     // Batch mode.
     heypy::expose_taylor_nt_event_batch_flt(m);

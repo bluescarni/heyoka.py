@@ -89,6 +89,9 @@ void expose_taylor_integrator_impl(py::module &m, const std::string &suffix)
     // Union of ODE system types, used in the ctor.
     using sys_t = std::variant<std::vector<std::pair<hey::expression, hey::expression>>, std::vector<hey::expression>>;
 
+    // Union of step callback types.
+    using step_cb_t = std::variant<hey::step_callback_set<T>, py::object>;
+
     py::class_<hey::taylor_adaptive<T>> cl(m, (fmt::format("taylor_adaptive_{}", suffix)).c_str(), py::dynamic_attr{});
     cl.def(py::init([](const sys_t &sys, std::vector<T> state, T time, std::vector<T> pars, T tol, bool high_accuracy,
                        bool compact_mode, std::vector<t_ev_t> tes, std::vector<nt_ev_t> ntes, bool parallel_mode,
@@ -208,24 +211,36 @@ void expose_taylor_integrator_impl(py::module &m, const std::string &suffix)
         .def(
             "propagate_for",
             [](hey::taylor_adaptive<T> &ta, T delta_t, std::size_t max_steps, T max_delta_t,
-               std::optional<py::object> &cb_, bool write_tc, bool c_output) {
+               std::optional<step_cb_t> &cb_, bool write_tc, bool c_output) {
                 // NOTE: after releasing the GIL, the only potential
                 // calls into the Python interpreter are when invoking the event or
                 // step callbacks (which are all protected by GIL reacquire).
 
                 if (cb_) {
-                    // NOTE: because cb is a step_callback, it will be passed by reference
-                    // into the propagate_for() function. Thus, no copies are made and no
-                    // calling into the Python interpreter takes place (and no need to hold
-                    // the GIL).
-                    // NOTE: because cb is created before the GIL scoped releaser, it will be
-                    // destroyed *after* the GIL has been re-acquired. Thus, the reference
-                    // count decrease associated with the destructor is safe.
-                    auto cb = hey::step_callback<T>(step_cb_wrapper(*cb_));
+                    return std::visit(
+                        [&](auto &callback) {
+                            if constexpr (std::is_same_v<py::object &, decltype(callback)>) {
+                                // NOTE: because cb is a step_callback, it will be passed by reference
+                                // into the propagate_for() function. Thus, no copies are made and no
+                                // calling into the Python interpreter takes place (and no need to hold
+                                // the GIL).
+                                // NOTE: because cb is created before the GIL scoped releaser, it will be
+                                // destroyed *after* the GIL has been re-acquired. Thus, the reference
+                                // count decrease associated with the destructor is safe.
+                                hey::step_callback<T> cb{step_cb_wrapper(callback)};
 
-                    py::gil_scoped_release release;
-                    return ta.propagate_for(delta_t, kw::max_steps = max_steps, kw::max_delta_t = max_delta_t,
-                                            kw::write_tc = write_tc, kw::c_output = c_output, kw::callback = cb);
+                                py::gil_scoped_release release;
+                                return ta.propagate_for(delta_t, kw::max_steps = max_steps,
+                                                        kw::max_delta_t = max_delta_t, kw::write_tc = write_tc,
+                                                        kw::c_output = c_output, kw::callback = cb);
+                            } else {
+                                py::gil_scoped_release release;
+                                return ta.propagate_for(delta_t, kw::max_steps = max_steps,
+                                                        kw::max_delta_t = max_delta_t, kw::write_tc = write_tc,
+                                                        kw::c_output = c_output, kw::callback = callback);
+                            }
+                        },
+                        *cb_);
                 } else {
                     py::gil_scoped_release release;
                     return ta.propagate_for(delta_t, kw::max_steps = max_steps, kw::max_delta_t = max_delta_t,
