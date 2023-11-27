@@ -95,6 +95,7 @@ nb_execution_excludepatterns = [
     "elp2000.ipynb",
     "compiled_functions.ipynb",
     "Pseudo arc-length continuation*"
+    "torch_and_heyoka*",
     ]
 
 latex_engine = "xelatex"
