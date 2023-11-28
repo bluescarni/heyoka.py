@@ -1,7 +1,7 @@
 version: 2.1
 
 jobs:
-  conda_heyoka_head_38:
+  conda_heyoka_head_39:
     docker:
     - image: cimg/base:current
     resource_class: large
@@ -9,7 +9,7 @@ jobs:
     - checkout
     - run:
         name: Build and test
-        command: bash ./tools/circleci_conda_heyoka_head_38.sh
+        command: bash ./tools/circleci_conda_heyoka_head_39.sh
     - store_artifacts:
         path: doc/_build/html
   conda_heyoka_head_310:
