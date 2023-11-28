@@ -57,7 +57,7 @@ workflows:
   version: 2.1
   all_builds:
     jobs:
-    - conda_heyoka_head_38
+    - conda_heyoka_head_39
     - conda_heyoka_head_310
     - conda_heyoka_head_312
     - conda_heyoka_head_release_310
