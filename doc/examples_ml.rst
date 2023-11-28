@@ -30,4 +30,5 @@ Machine Learning
   notebooks/torch_and_heyoka
   notebooks/NeuralHamiltonianODEs
   notebooks/NeuralODEs
+  notebooks/differentiable_atmosphere
 

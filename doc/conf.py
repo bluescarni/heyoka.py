@@ -94,8 +94,9 @@ nb_execution_excludepatterns = [
     "vsop2013.ipynb",
     "elp2000.ipynb",
     "compiled_functions.ipynb",
-    "Pseudo arc-length continuation*"
+    "Pseudo arc-length continuation*",
     "torch_and_heyoka*",
+    "differentiable_atm*"
     ]
 
 latex_engine = "xelatex"
