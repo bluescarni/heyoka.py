@@ -1,0 +1,704 @@
+
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+    <title>Interfacing torch to heyoka.py &#8212; heyoka.py 3.2.0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=5b4479735964841361fd" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=5b4479735964841361fd" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=5b4479735964841361fd" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=5b4479735964841361fd" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" href="../_static/styles/sphinx-book-theme.css?digest=14f4ca6b54d191a8c7657f6c759bf11a5fb86285" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=5b4479735964841361fd" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=5b4479735964841361fd" />
+  <script src="../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=5b4479735964841361fd"></script>
+
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinx_highlight.js"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?digest=5a5c038af52cf7bc1a1ec88eea08e6366ee68824"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'notebooks/torch_and_heyoka';</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Neural Hamiltonian ODEs" href="NeuralHamiltonianODEs.html" />
+    <link rel="prev" title="Feed-Forward Neural Networks" href="ffnn.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>
+    Back to top
+  </button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__primary"
+          id="__primary"/>
+  <label class="overlay overlay-primary" for="__primary"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__secondary"
+          id="__secondary"/>
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+  
+    <nav class="bd-header navbar navbar-expand-lg bd-navbar">
+    </nav>
+  
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/white_logo.png" class="logo__image only-light" alt="heyoka.py 3.2.0 documentation - Home"/>
+    <script>document.write(`<img src="../_static/white_logo.png" class="logo__image only-dark" alt="heyoka.py 3.2.0 documentation - Home"/>`);</script>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item"><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Main</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../install.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../changelog.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../breaking_changes.html">Breaking changes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../benchmarks.html">Benchmarks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../acknowledgement.html">Acknowledgement</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../basic_tutorials.html">Basic</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../tut_taylor_method.html">Taylor’s method</a></li>
+<li class="toctree-l2"><a class="reference internal" href="The%20expression%20system.html">The expression system</a></li>
+<li class="toctree-l2"><a class="reference internal" href="The%20adaptive%20integrator.html">The adaptive integrator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Customising%20the%20adaptive%20integrator.html">Customising the adaptive integrator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ODEs%20with%20parameters.html">ODEs with parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Non-autonomous%20systems.html">Non-autonomous systems</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Dense%20output.html">Dense &amp; continuous output</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Event%20detection.html">Event detection</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../advanced_tutorials.html">Advanced</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="Batch%20mode%20overview.html">Batch mode</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ensemble_mode.html">Ensemble propagations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="parallel_mode.html">Parallel mode</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ext_precision.html">Computations in extended precision</a></li>
+<li class="toctree-l2"><a class="reference internal" href="arbitrary_precision.html">Computations in arbitrary precision</a></li>
+<li class="toctree-l2"><a class="reference internal" href="single_precision.html">Computations in single precision</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sympy_interop.html">Interoperability with SymPy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="compiled_functions.html">Compiled functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ex_system_revisited.html">Using the expression system effectively</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pickling.html">Pickle support</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jit_caching.html">JIT compilation and caching</a></li>
+</ul>
+</li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Examples</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../examples_astro.html">Celestial mechanics and astrodynamics</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-3"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="The%20restricted%20three-body%20problem.html">The restricted three-body problem</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Periodic%20orbits%20in%20the%20CR3BP.html">Continuation of Periodic Orbits in the CR3BP</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Pseudo%20arc-length%20continuation%20in%20the%20CR3BP.html">Pseudo arc-length continuation in the CR3BP</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Long%20term%20stability%20of%20Trappist-1.html">Long term stability of N-body simulations: the case of Trappist-1</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Outer%20Solar%20System.html">Brouwer’s law in the outer Solar System</a></li>
+<li class="toctree-l2"><a class="reference internal" href="projection.html">Conserving first integrals via manifold projection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Box%20control%20for%20Formation%20Flying%20Satellites.html">Box control in satellite Formation Flying</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Comparing%20coordinate%20systems.html">Comparing coordinate systems</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Inverting%20Kepler%27s%20equation%20in%20ODEs.html">Inverting Kepler’s equation in ODEs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Planetary%20embryos.html">Planetary embryos in the inner Solar System</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mercury_precession.html">Mercury’s relativistic precession</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ttv.html">Calculating transit timing variations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vsop2013.html">Introduction to the VSOP2013 planetary theory</a></li>
+<li class="toctree-l2"><a class="reference internal" href="elp2000.html">Introduction to the ELP2000 lunar theory</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tides_spokes.html">Elastic tides</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lagrangian_propagator.html">Lagrange propagation and the state transition matrix</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../examples_event.html">Event detection</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-4"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="Sampling%20events.html">Sampling events</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Poincar%C3%A9%20sections.html">Poincaré sections</a></li>
+<li class="toctree-l2"><a class="reference internal" href="second_integral.html">The second integral of motion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="The%20Keplerian%20billiard.html">The Keplerian billiard</a></li>
+<li class="toctree-l2"><a class="reference internal" href="The%20two-fixed%20elliptic%20billiard.html">The two-fixed centres elliptic billiard</a></li>
+<li class="toctree-l2"><a class="reference internal" href="The%20wavy%20ramp.html">The wavy ramp</a></li>
+<li class="toctree-l2"><a class="reference internal" href="The%20Maxwell-Boltzmann%20distribution.html">The Maxwell-Boltzmann distribution</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ev_sensitivity.html">Computing event sensitivity</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="../examples_ml.html">Machine Learning</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-5"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="ffnn.html">Feed-Forward Neural Networks</a></li>
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">Interfacing <em>torch</em> to <em>heyoka.py</em></a></li>
+<li class="toctree-l2"><a class="reference internal" href="NeuralHamiltonianODEs.html">Neural Hamiltonian ODEs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="NeuralODEs.html">Neural ODEs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="differentiable_atmosphere.html">Differentiable Atmosphere</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../examples_others.html">Others</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-6"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="ensemble_batch_perf.html">Evaluating the performance of ensemble &amp; batch mode</a></li>
+<li class="toctree-l2"><a class="reference internal" href="The%20variational%20equations.html">The variational equations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Optimal%20Control%20of%20the%20Lotka-Volterra%20equations.html">Optimal Control of the Lotka-Volterra equations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="definite_integrals.html">Computing definite integrals</a></li>
+</ul>
+</li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><label class="sidebar-toggle primary-toggle btn btn-sm" for="__primary" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</label></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-launch-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Launch interactive content">
+    <i class="fas fa-rocket"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://mybinder.org/v2/gh/bluescarni/heyoka.py/main?urlpath=lab/tree/doc/notebooks/torch_and_heyoka.ipynb" target="_blank"
+   class="btn btn-sm dropdown-item"
+   title="Launch onBinder"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  
+    <img src="../_static/images/logo_binder.svg">
+  </span>
+<span class="btn__text-container">Binder</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://github.com/bluescarni/heyoka.py" target="_blank"
+   class="btn btn-sm btn-source-repository-button dropdown-item"
+   title="Source repository"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="btn__text-container">Repository</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/bluescarni/heyoka.py/issues/new?title=Issue%20on%20page%20%2Fnotebooks/torch_and_heyoka.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button dropdown-item"
+   title="Open an issue"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="btn__text-container">Open issue</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../_sources/notebooks/torch_and_heyoka.ipynb" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.ipynb</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Interfacing torch to heyoka.py</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article" role="main">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="interfacing-torch-to-heyoka-py">
+<h1>Interfacing <em>torch</em> to <em>heyoka.py</em><a class="headerlink" href="#interfacing-torch-to-heyoka-py" title="Permalink to this heading">#</a></h1>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>For an introduction on feed forward neural networks in <em>heyoka.py</em>, check out the example: <a class="reference internal" href="ffnn.html"><span class="std std-doc">Feed-Forward Neural Networks</span></a>.</p>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>This tutorial assumes <a class="reference external" href="https://pytorch.org/">torch</a> is installed</p>
+</div>
+<p><em>heyoka.py</em> is not a library meant for machine learning, nor it aspires to be one. However, given its support for feed-forward neural networks and their potential use in numerical integration, it is useful to connect the <em>heyoka.py</em> <code class="docutils literal notranslate"><span class="pre">ffnn()</span></code> factory to a torch model. This tutorial tackles this!</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">heyoka</span> <span class="k">as</span> <span class="nn">hk</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="c1"># We will need torch for this notebook. The CPU version is enough though.</span>
+<span class="kn">import</span> <span class="nn">torch</span>
+<span class="kn">from</span> <span class="nn">torch</span> <span class="kn">import</span> <span class="n">nn</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>We start defining a <code class="docutils literal notranslate"><span class="pre">ffnn</span></code> model in <em>torch</em>. We use as a test-case, a feed-forward neural network with two hidden layers having 32 neurons each and use <code class="docutils literal notranslate"><span class="pre">tanh</span></code> as nonlinearities and a <code class="docutils literal notranslate"><span class="pre">sigmoid</span></code> for the output layer. We define the model as to map it easily to the <em>heyoka</em> <code class="docutils literal notranslate"><span class="pre">ffnn</span></code> factory, but other styles are also possible.</p>
+<p>This will typically look something like:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">#Let us use float64 (this is not necessary as heyoka has also the float32 type, but we go for high precision here!)</span>
+<span class="n">torch</span><span class="o">.</span><span class="n">set_default_dtype</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+
+<span class="k">class</span> <span class="nc">torch_net</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">n_inputs</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
+        <span class="n">nn_hidden</span><span class="o">=</span><span class="p">[</span><span class="mi">32</span><span class="p">,</span> <span class="mi">32</span><span class="p">],</span>
+        <span class="n">n_out</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">activations</span><span class="o">=</span><span class="p">[</span><span class="n">nn</span><span class="o">.</span><span class="n">Tanh</span><span class="p">(),</span> <span class="n">nn</span><span class="o">.</span><span class="n">Tanh</span><span class="p">(),</span> <span class="n">nn</span><span class="o">.</span><span class="n">Sigmoid</span><span class="p">()]</span>
+    <span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">torch_net</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+
+        <span class="c1"># We treat all layers equally.</span>
+        <span class="n">dims</span> <span class="o">=</span> <span class="p">[</span><span class="n">n_inputs</span><span class="p">]</span> <span class="o">+</span> <span class="n">nn_hidden</span> <span class="o">+</span> <span class="p">[</span><span class="n">n_out</span><span class="p">]</span>
+
+        <span class="c1"># Linear function.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fcs</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">ModuleList</span><span class="p">([</span><span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">dims</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">dims</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">])</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">dims</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)])</span>
+
+        <span class="c1"># Non-linearities.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">acts</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">ModuleList</span><span class="p">(</span><span class="n">activations</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">fc</span><span class="p">,</span> <span class="n">act</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fcs</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">acts</span><span class="p">):</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="n">act</span><span class="p">(</span><span class="n">fc</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">x</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Weights and biases are stored by <em>torch</em> in the model as arrays, while <em>heyoka</em> flattens everything into a one-dimensional sequence containing all weights first, then all biases.</p>
+<p>The following function takes care of converting the <em>torch</em> representation to <em>heyoka</em>’s:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">weights_and_biases_heyoka</span><span class="p">(</span><span class="n">model</span><span class="p">):</span>
+    <span class="n">weights</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">biases</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">param</span> <span class="ow">in</span> <span class="n">model</span><span class="o">.</span><span class="n">named_parameters</span><span class="p">():</span>
+        <span class="k">if</span> <span class="s1">&#39;weight&#39;</span> <span class="ow">in</span> <span class="n">name</span><span class="p">:</span>
+            <span class="n">weights</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">param</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">clone</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="s1">&#39;bias&#39;</span> <span class="ow">in</span> <span class="n">name</span><span class="p">:</span>
+            <span class="n">biases</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">param</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">clone</span><span class="p">()</span>
+    <span class="n">biases_torch</span><span class="o">=</span><span class="p">[]</span>
+    <span class="n">weights_torch</span><span class="o">=</span><span class="p">[]</span>
+    <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">weights</span><span class="p">)):</span>
+        <span class="n">weights_torch</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">weights</span><span class="p">[</span><span class="nb">list</span><span class="p">(</span><span class="n">weights</span><span class="o">.</span><span class="n">keys</span><span class="p">())[</span><span class="n">idx</span><span class="p">]]</span><span class="o">.</span><span class="n">numpy</span><span class="p">())</span>
+        <span class="n">biases_torch</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">biases</span><span class="p">[</span><span class="nb">list</span><span class="p">(</span><span class="n">biases</span><span class="o">.</span><span class="n">keys</span><span class="p">())[</span><span class="n">idx</span><span class="p">]]</span><span class="o">.</span><span class="n">numpy</span><span class="p">())</span>
+        
+    <span class="n">w_flat</span><span class="o">=</span><span class="p">[]</span>
+    <span class="n">b_flat</span><span class="o">=</span><span class="p">[]</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">weights_torch</span><span class="p">)):</span>
+        <span class="n">w_flat</span><span class="o">+=</span><span class="nb">list</span><span class="p">(</span><span class="n">weights_torch</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">flatten</span><span class="p">())</span>
+        <span class="n">b_flat</span><span class="o">+=</span><span class="nb">list</span><span class="p">(</span><span class="n">biases_torch</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">flatten</span><span class="p">())</span>
+    <span class="n">w_flat</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">w_flat</span><span class="p">)</span>
+    <span class="n">b_flat</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">b_flat</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">w_flat</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">w_flat</span><span class="p">,</span> <span class="n">b_flat</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>We are now ready to instantiate the model and extract its weights and biases ready for constructing an <code class="docutils literal notranslate"><span class="pre">heyoka.ffnn</span></code> object:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">model</span> <span class="o">=</span> <span class="n">torch_net</span><span class="p">(</span><span class="n">n_inputs</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> 
+                  <span class="n">nn_hidden</span><span class="o">=</span><span class="p">[</span><span class="mi">32</span><span class="p">,</span> <span class="mi">32</span><span class="p">],</span>
+                  <span class="n">n_out</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                  <span class="n">activations</span><span class="o">=</span><span class="p">[</span><span class="n">nn</span><span class="o">.</span><span class="n">Tanh</span><span class="p">(),</span> <span class="n">nn</span><span class="o">.</span><span class="n">Tanh</span><span class="p">(),</span> <span class="n">nn</span><span class="o">.</span><span class="n">Sigmoid</span><span class="p">()])</span>
+
+<span class="c1"># Here one would likely perform some training ... at the end, we extract the model parameters:</span>
+<span class="n">flattened_weights</span> <span class="o">=</span> <span class="n">weights_and_biases_heyoka</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(1184,)
+</pre></div>
+</div>
+</div>
+</div>
+<p>Let us instantiate the feed forward neural network in <em>heyoka.py</em> using those parameters:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">inp_1</span><span class="p">,</span> <span class="n">inp_2</span><span class="p">,</span> <span class="n">inp_3</span><span class="p">,</span> <span class="n">inp_4</span><span class="o">=</span><span class="n">hk</span><span class="o">.</span><span class="n">make_vars</span><span class="p">(</span><span class="s2">&quot;inp_1&quot;</span><span class="p">,</span><span class="s2">&quot;inp_2&quot;</span><span class="p">,</span><span class="s2">&quot;inp_3&quot;</span><span class="p">,</span><span class="s2">&quot;inp_4&quot;</span><span class="p">)</span>
+<span class="n">model_heyoka</span><span class="o">=</span><span class="n">hk</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">ffnn</span><span class="p">(</span><span class="n">inputs</span><span class="o">=</span><span class="p">[</span><span class="n">inp_1</span><span class="p">,</span> <span class="n">inp_2</span><span class="p">,</span> <span class="n">inp_3</span><span class="p">,</span> <span class="n">inp_4</span><span class="p">],</span> 
+                           <span class="n">nn_hidden</span><span class="o">=</span><span class="p">[</span><span class="mi">32</span><span class="p">,</span><span class="mi">32</span><span class="p">],</span> 
+                           <span class="n">n_out</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                           <span class="n">activations</span><span class="o">=</span><span class="p">[</span><span class="n">hk</span><span class="o">.</span><span class="n">tanh</span><span class="p">,</span><span class="n">hk</span><span class="o">.</span><span class="n">tanh</span><span class="p">,</span><span class="n">hk</span><span class="o">.</span><span class="n">sigmoid</span><span class="p">],</span> 
+                           <span class="n">nn_wb</span><span class="o">=</span><span class="n">flattened_weights</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Good! Just to be sure, we now verify the output is the same at inference? Let’s first compile the network so that we can run inference:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">model_heyoka_compiled</span><span class="o">=</span><span class="n">hk</span><span class="o">.</span><span class="n">make_cfunc</span><span class="p">(</span><span class="n">model_heyoka</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>… and create some random inputs</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">random_input</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">rand</span><span class="p">((</span><span class="mi">4</span><span class="p">,</span><span class="mi">1000000</span><span class="p">))</span>
+<span class="n">random_input_torch</span><span class="o">=</span><span class="n">random_input</span><span class="o">.</span><span class="n">t</span><span class="p">()</span>
+<span class="n">random_input_numpy</span><span class="o">=</span><span class="n">random_input</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span>
+<span class="n">out_array</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span><span class="mi">1000000</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Now, let’s compare the output of <code class="docutils literal notranslate"><span class="pre">heyoka.ffnn</span></code> and <code class="docutils literal notranslate"><span class="pre">torch</span></code> to see if they are identical</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">hey</span> <span class="o">=</span> <span class="n">model_heyoka_compiled</span><span class="p">(</span><span class="n">random_input_numpy</span><span class="p">,</span><span class="n">outputs</span><span class="o">=</span><span class="n">out_array</span><span class="p">)</span>
+<span class="n">torch</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">random_input_torch</span><span class="p">)</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Maximum difference in the inference is: &quot;</span><span class="p">,</span> <span class="p">(</span><span class="n">hey</span><span class="o">-</span><span class="n">torch</span><span class="p">)</span><span class="o">.</span><span class="n">max</span><span class="p">())</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Maximum difference in the inference is:  2.220446049250313e-16
+</pre></div>
+</div>
+</div>
+</div>
+<p>In this way we have managed to port the <em>torch</em> model in <em>heyoka.py</em>, reproducing the same results…</p>
+</section>
+
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="ffnn.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Feed-Forward Neural Networks</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="NeuralHamiltonianODEs.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Neural Hamiltonian ODEs</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Francesco Biscani and Dario Izzo
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2020, 2021, 2022, 2023, Francesco Biscani and Dario Izzo.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=5b4479735964841361fd"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=5b4479735964841361fd"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

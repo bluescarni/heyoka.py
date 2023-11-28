@@ -1,0 +1,908 @@
+
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+    <title>Feed-Forward Neural Networks &#8212; heyoka.py 3.2.0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=5b4479735964841361fd" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=5b4479735964841361fd" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=5b4479735964841361fd" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=5b4479735964841361fd" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" href="../_static/styles/sphinx-book-theme.css?digest=14f4ca6b54d191a8c7657f6c759bf11a5fb86285" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=5b4479735964841361fd" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=5b4479735964841361fd" />
+  <script src="../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=5b4479735964841361fd"></script>
+
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinx_highlight.js"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?digest=5a5c038af52cf7bc1a1ec88eea08e6366ee68824"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'notebooks/ffnn';</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Interfacing torch to heyoka.py" href="torch_and_heyoka.html" />
+    <link rel="prev" title="Machine Learning" href="../examples_ml.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>
+    Back to top
+  </button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__primary"
+          id="__primary"/>
+  <label class="overlay overlay-primary" for="__primary"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__secondary"
+          id="__secondary"/>
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+  
+    <nav class="bd-header navbar navbar-expand-lg bd-navbar">
+    </nav>
+  
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/white_logo.png" class="logo__image only-light" alt="heyoka.py 3.2.0 documentation - Home"/>
+    <script>document.write(`<img src="../_static/white_logo.png" class="logo__image only-dark" alt="heyoka.py 3.2.0 documentation - Home"/>`);</script>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item"><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Main</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../install.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../changelog.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../breaking_changes.html">Breaking changes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../benchmarks.html">Benchmarks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../acknowledgement.html">Acknowledgement</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../basic_tutorials.html">Basic</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../tut_taylor_method.html">Taylor’s method</a></li>
+<li class="toctree-l2"><a class="reference internal" href="The%20expression%20system.html">The expression system</a></li>
+<li class="toctree-l2"><a class="reference internal" href="The%20adaptive%20integrator.html">The adaptive integrator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Customising%20the%20adaptive%20integrator.html">Customising the adaptive integrator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ODEs%20with%20parameters.html">ODEs with parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Non-autonomous%20systems.html">Non-autonomous systems</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Dense%20output.html">Dense &amp; continuous output</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Event%20detection.html">Event detection</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../advanced_tutorials.html">Advanced</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="Batch%20mode%20overview.html">Batch mode</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ensemble_mode.html">Ensemble propagations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="parallel_mode.html">Parallel mode</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ext_precision.html">Computations in extended precision</a></li>
+<li class="toctree-l2"><a class="reference internal" href="arbitrary_precision.html">Computations in arbitrary precision</a></li>
+<li class="toctree-l2"><a class="reference internal" href="single_precision.html">Computations in single precision</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sympy_interop.html">Interoperability with SymPy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="compiled_functions.html">Compiled functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ex_system_revisited.html">Using the expression system effectively</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pickling.html">Pickle support</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jit_caching.html">JIT compilation and caching</a></li>
+</ul>
+</li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Examples</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../examples_astro.html">Celestial mechanics and astrodynamics</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-3"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="The%20restricted%20three-body%20problem.html">The restricted three-body problem</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Periodic%20orbits%20in%20the%20CR3BP.html">Continuation of Periodic Orbits in the CR3BP</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Pseudo%20arc-length%20continuation%20in%20the%20CR3BP.html">Pseudo arc-length continuation in the CR3BP</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Long%20term%20stability%20of%20Trappist-1.html">Long term stability of N-body simulations: the case of Trappist-1</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Outer%20Solar%20System.html">Brouwer’s law in the outer Solar System</a></li>
+<li class="toctree-l2"><a class="reference internal" href="projection.html">Conserving first integrals via manifold projection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Box%20control%20for%20Formation%20Flying%20Satellites.html">Box control in satellite Formation Flying</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Comparing%20coordinate%20systems.html">Comparing coordinate systems</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Inverting%20Kepler%27s%20equation%20in%20ODEs.html">Inverting Kepler’s equation in ODEs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Planetary%20embryos.html">Planetary embryos in the inner Solar System</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mercury_precession.html">Mercury’s relativistic precession</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ttv.html">Calculating transit timing variations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vsop2013.html">Introduction to the VSOP2013 planetary theory</a></li>
+<li class="toctree-l2"><a class="reference internal" href="elp2000.html">Introduction to the ELP2000 lunar theory</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tides_spokes.html">Elastic tides</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lagrangian_propagator.html">Lagrange propagation and the state transition matrix</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../examples_event.html">Event detection</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-4"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="Sampling%20events.html">Sampling events</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Poincar%C3%A9%20sections.html">Poincaré sections</a></li>
+<li class="toctree-l2"><a class="reference internal" href="second_integral.html">The second integral of motion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="The%20Keplerian%20billiard.html">The Keplerian billiard</a></li>
+<li class="toctree-l2"><a class="reference internal" href="The%20two-fixed%20elliptic%20billiard.html">The two-fixed centres elliptic billiard</a></li>
+<li class="toctree-l2"><a class="reference internal" href="The%20wavy%20ramp.html">The wavy ramp</a></li>
+<li class="toctree-l2"><a class="reference internal" href="The%20Maxwell-Boltzmann%20distribution.html">The Maxwell-Boltzmann distribution</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ev_sensitivity.html">Computing event sensitivity</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="../examples_ml.html">Machine Learning</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-5"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">Feed-Forward Neural Networks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torch_and_heyoka.html">Interfacing <em>torch</em> to <em>heyoka.py</em></a></li>
+<li class="toctree-l2"><a class="reference internal" href="NeuralHamiltonianODEs.html">Neural Hamiltonian ODEs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="NeuralODEs.html">Neural ODEs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="differentiable_atmosphere.html">Differentiable Atmosphere</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../examples_others.html">Others</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-6"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="ensemble_batch_perf.html">Evaluating the performance of ensemble &amp; batch mode</a></li>
+<li class="toctree-l2"><a class="reference internal" href="The%20variational%20equations.html">The variational equations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Optimal%20Control%20of%20the%20Lotka-Volterra%20equations.html">Optimal Control of the Lotka-Volterra equations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="definite_integrals.html">Computing definite integrals</a></li>
+</ul>
+</li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><label class="sidebar-toggle primary-toggle btn btn-sm" for="__primary" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</label></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-launch-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Launch interactive content">
+    <i class="fas fa-rocket"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://mybinder.org/v2/gh/bluescarni/heyoka.py/main?urlpath=lab/tree/doc/notebooks/ffnn.ipynb" target="_blank"
+   class="btn btn-sm dropdown-item"
+   title="Launch onBinder"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  
+    <img src="../_static/images/logo_binder.svg">
+  </span>
+<span class="btn__text-container">Binder</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://github.com/bluescarni/heyoka.py" target="_blank"
+   class="btn btn-sm btn-source-repository-button dropdown-item"
+   title="Source repository"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="btn__text-container">Repository</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/bluescarni/heyoka.py/issues/new?title=Issue%20on%20page%20%2Fnotebooks/ffnn.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button dropdown-item"
+   title="Open an issue"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="btn__text-container">Open issue</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../_sources/notebooks/ffnn.ipynb" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.ipynb</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<label class="sidebar-toggle secondary-toggle btn btn-sm" for="__secondary"title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</label>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Feed-Forward Neural Networks</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#inference">Inference</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#use-in-numerical-integration">Use in numerical integration</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article" role="main">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="feed-forward-neural-networks">
+<h1>Feed-Forward Neural Networks<a class="headerlink" href="#feed-forward-neural-networks" title="Permalink to this heading">#</a></h1>
+<p>In this tutorial, we will introduce feed-forward neural networks (FFNNs) in <em>heyoka.py</em>, and how to use <em>heyoka.py</em> FFNN factory to create FFNNs.
+For an example on how to load a FFNN model from torch to <em>heyoka.py</em>, please check out: <a class="reference internal" href="torch_and_heyoka.html"><span class="std std-doc">Interfacing torch to heyoka.py</span></a>; while for an example on applications of FFNNs in dynamical systems, check out: <a class="reference internal" href="NeuralHamiltonianODEs.html"><span class="std std-doc">Neural Hamiltonian ODE</span></a> and <a class="reference internal" href="NeuralODEs.html"><span class="std std-doc">Neural ODEs</span></a>.</p>
+<p>To facilitate the instantiation of FFNNs, <em>heyoka.py</em> implements, in its module <em>model</em>, a Feed Forward Neural Network factory called <code class="docutils literal notranslate"><span class="pre">ffnn()</span></code>. The Neural Network inputs <span class="math notranslate nohighlight">\(\mathbf {in}\)</span>, with dimensionality <span class="math notranslate nohighlight">\(n_{in}\)</span> are fed into a succession of <span class="math notranslate nohighlight">\(N \ge 0 \)</span> neural layers defined by:</p>
+<div class="math notranslate nohighlight">
+\[
+\mathbf h_i = F_i(\mathbf W_i\mathbf h_{i-1} + \mathbf b_i), \quad i = 1 .. N
+\]</div>
+<p>to derive the Neural Network outputs <span class="math notranslate nohighlight">\(\mathbf {out}\)</span> with dimensionality <span class="math notranslate nohighlight">\(n_{out}\)</span>:</p>
+<div class="math notranslate nohighlight">
+\[
+\mathbf {out} = F_{N+1}(\mathbf W_{N+1}\mathbf h_{N} + \mathbf b_{N+1})
+\]</div>
+<p>where <span class="math notranslate nohighlight">\(\mathbf h_0 = \mathbf {in}\)</span> and <span class="math notranslate nohighlight">\(F_i\)</span> define the network non-linearities, or activation functions.</p>
+<p>We here show how to use this factory in the context of inference as well as in definition of the dynamics of an adaptive Taylor integrator. We start with importing the tools we need:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">heyoka</span> <span class="k">as</span> <span class="nn">hy</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="o">%</span><span class="k">matplotlib</span> inline
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Let us start with something simple and small, without hidden layers and with one only input and output, to illustrate the basics of such a factory.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># We create the symbols for the network inputs (only one in this first simple case)</span>
+<span class="n">x</span><span class="p">,</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">make_vars</span><span class="p">(</span><span class="s2">&quot;x&quot;</span><span class="p">)</span>
+
+<span class="c1"># We define as nonlinearity a simple linear layer</span>
+<span class="n">linear</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">inp</span><span class="p">:</span> <span class="n">inp</span>
+
+<span class="c1"># We call the factory to construct the FFNN:</span>
+<span class="n">ffnn</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">ffnn</span><span class="p">(</span><span class="n">inputs</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span><span class="p">],</span> <span class="n">nn_hidden</span> <span class="o">=</span> <span class="p">[],</span> <span class="n">n_out</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">activations</span> <span class="o">=</span> <span class="p">[</span><span class="n">linear</span><span class="p">])</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">ffnn</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[(p1 + (p0 * x))]
+</pre></div>
+</div>
+</div>
+</div>
+<p>The factory <code class="docutils literal notranslate"><span class="pre">ffnn()</span></code> returns a list of <code class="docutils literal notranslate"><span class="pre">heyoka.expression</span></code> representing each of the output neurons, in this case only one.
+The same syntax can be used to instantiate a more complex case:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">make_vars</span><span class="p">(</span><span class="s2">&quot;x&quot;</span><span class="p">,</span> <span class="s2">&quot;y&quot;</span><span class="p">)</span>
+<span class="n">ffnn</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">ffnn</span><span class="p">(</span><span class="n">inputs</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">],</span> <span class="n">nn_hidden</span> <span class="o">=</span> <span class="p">[</span><span class="mi">32</span><span class="p">],</span> <span class="n">n_out</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span> <span class="n">activations</span> <span class="o">=</span> <span class="p">[</span><span class="n">hy</span><span class="o">.</span><span class="n">tanh</span><span class="p">,</span> <span class="n">linear</span><span class="p">])</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">ffnn</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[(p160 + (p64 * tanh((p128 + (p0 * x) + (p1 * y)))) + (p65 * tanh((p129 + (p2 * x) + (p3 * y)))) + (p66 * tanh((p130 + (p4 * x) + (p5 * y)))) + (p67 * tanh((p131 + (p6 * x) + (p7 * y)))) + (p68 * tanh((p132 + (p8 * x) + (p9 * y)))) + (p69 * tanh((p133 + (p10 * x) + (p11 * y)))) + (p70 * tanh((p134 + (p12 * x) + (p13 * y)))) + (p71 * tanh((p135 + (p14 * x) + (p15 * y)))) + (p72 * tanh((p136 + (p16 * x) + (p17 * y)))) + (p73 * tanh((p137 + (p18 * x) + (p19 * y)))) + (p74 * tanh((p138 + (p20 * x) + (p21 * y)))) + (p75 * tanh((p139 + (p22 * x) + (p23 * y)))) + (p76 * tanh((p140 + (p24 * x) + (p25 * y)))) + (p77 * tanh((p141 + (p26 * x) + (p27 * y)))) + (p78 * tanh((p142 + (p28 * x) + (p29 * y)))) + (p79 * tanh((p143 + (p30 * x) + (p31 * y)))) + (p80 * tanh((p144 + (p32 * x) + (p33 * y)))) + (p81 * tanh((p145 + (p34 * x) + (p35 * y)))) + (p82 * tanh((p146 + (p36 * x) + (p37 * y)))) + (p83 * tanh((p147 + (p38 * x) + (p39 * y)))) + (p84 * tanh((p148 + (p40 * x) + (p41 * y)))) + (p85 * tanh((p149 + ..., (p161 + (p96 * tanh((p128 + (p0 * x) + (p1 * y)))) + (p97 * tanh((p129 + (p2 * x) + (p3 * y)))) + (p98 * tanh((p130 + (p4 * x) + (p5 * y)))) + (p99 * tanh((p131 + (p6 * x) + (p7 * y)))) + (p100 * tanh((p132 + (p8 * x) + (p9 * y)))) + (p101 * tanh((p133 + (p10 * x) + (p11 * y)))) + (p102 * tanh((p134 + (p12 * x) + (p13 * y)))) + (p103 * tanh((p135 + (p14 * x) + (p15 * y)))) + (p104 * tanh((p136 + (p16 * x) + (p17 * y)))) + (p105 * tanh((p137 + (p18 * x) + (p19 * y)))) + (p106 * tanh((p138 + (p20 * x) + (p21 * y)))) + (p107 * tanh((p139 + (p22 * x) + (p23 * y)))) + (p108 * tanh((p140 + (p24 * x) + (p25 * y)))) + (p109 * tanh((p141 + (p26 * x) + (p27 * y)))) + (p110 * tanh((p142 + (p28 * x) + (p29 * y)))) + (p111 * tanh((p143 + (p30 * x) + (p31 * y)))) + (p112 * tanh((p144 + (p32 * x) + (p33 * y)))) + (p113 * tanh((p145 + (p34 * x) + (p35 * y)))) + (p114 * tanh((p146 + (p36 * x) + (p37 * y)))) + (p115 * tanh((p147 + (p38 * x) + (p39 * y)))) + (p116 * tanh((p148 + (p40 * x) + (p41 * y)))) + ...]
+</pre></div>
+</div>
+</div>
+</div>
+<p>The resulting screen output of the built expression is much longer and eventually it actually makes little sense to print it.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The user must take care of consistency of the dimensions of the various kwargs passed into the factory, else an error will be raised. For example, the dimension of the list containing the activation functions must be exactly one more than the dimension of the <em>nn_hidden</em> and so on.</p>
+</div>
+<p>All the network parameters, i.e. the weights and biases, are, by default, defined as <code class="docutils literal notranslate"><span class="pre">par[j]</span></code> in the <em>heyoka</em> expression system. This flattens the weight matrices <span class="math notranslate nohighlight">\(\mathbf W_i, i=1 .. (N-1)\)</span> and then the biases <span class="math notranslate nohighlight">\(\mathbf b_i, i=1 .. (N-1)\)</span> into one non-dimensional vector. In this case we have that <span class="math notranslate nohighlight">\(\mathbf W_1\)</span> is a (2,32) matrix, <span class="math notranslate nohighlight">\(\mathbf W_2\)</span> is a (32,2) matrix, <span class="math notranslate nohighlight">\(\mathbf b_1\)</span> is a (32,1) vector and <span class="math notranslate nohighlight">\(\mathbf b_2\)</span> a (2,1) vector. A total of 2x32+32x2+32+2=162 parameters are then needed.</p>
+<p>We now assume the matrices and biases are available (for example from some third party code that trained the model) and for the sake of the tutorial we create them here randomly. In case you are familiar with the ML tool <em>pytorch</em>, check the dedicated example <a class="reference internal" href="torch_and_heyoka.html"><span class="std std-doc">Interfacing torch to heyoka.py</span></a>.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># To simulate that the network parameters are coming from some third party tool that performed the network training, </span>
+<span class="c1"># we here generate them as random numpy arrays.</span>
+<span class="n">W1</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">((</span><span class="mi">2</span><span class="p">,</span><span class="mi">32</span><span class="p">))</span>
+<span class="n">W2</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">((</span><span class="mi">32</span><span class="p">,</span><span class="mi">2</span><span class="p">))</span>
+<span class="n">b1</span> <span class="o">=</span>  <span class="mf">0.5</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">((</span><span class="mi">32</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>
+<span class="n">b2</span> <span class="o">=</span>  <span class="mf">0.5</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">((</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>And we flatten them into the <em>heyoka</em> format (i.e. first weights then biases):</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">flattened_nw</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">W1</span><span class="o">.</span><span class="n">flatten</span><span class="p">(),</span> <span class="n">W2</span><span class="o">.</span><span class="n">flatten</span><span class="p">(),</span> <span class="n">b1</span><span class="o">.</span><span class="n">flatten</span><span class="p">(),</span> <span class="n">b2</span><span class="o">.</span><span class="n">flatten</span><span class="p">()))</span>
+</pre></div>
+</div>
+</div>
+</div>
+<section id="inference">
+<h2>Inference<a class="headerlink" href="#inference" title="Permalink to this heading">#</a></h2>
+<p>In order to use the ffnn to make inferences, we must compile it into a cfunction. Thats easy though, specially if you have followed the <a class="reference internal" href="compiled_functions.html"><span class="std std-doc">compiled functions</span></a> tutorial:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">cf</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">make_cfunc</span><span class="p">(</span><span class="n">ffnn</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">cf</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Variables: [x, y]
+Output #0: (p160 + (p64 * tanh((p128 + (p0 * x) + (p1 * y)))) + (p65 * tanh((p129 + (p2 * x) + (p3 * y)))) + (p66 * tanh((p130 + (p4 * x) + (p5 * y)))) + (p67 * tanh((p131 + (p6 * x) + (p7 * y)))) + (p68 * tanh((p132 + (p8 * x) + (p9 * y)))) + (p69 * tanh((p133 + (p10 * x) + (p11 * y)))) + (p70 * tanh((p134 + (p12 * x) + (p13 * y)))) + (p71 * tanh((p135 + (p14 * x) + (p15 * y)))) + (p72 * tanh((p136 + (p16 * x) + (p17 * y)))) + (p73 * tanh((p137 + (p18 * x) + (p19 * y)))) + (p74 * tanh((p138 + (p20 * x) + (p21 * y)))) + (p75 * tanh((p139 + (p22 * x) + (p23 * y)))) + (p76 * tanh((p140 + (p24 * x) + (p25 * y)))) + (p77 * tanh((p141 + (p26 * x) + (p27 * y)))) + (p78 * tanh((p142 + (p28 * x) + (p29 * y)))) + (p79 * tanh((p143 + (p30 * x) + (p31 * y)))) + (p80 * tanh((p144 + (p32 * x) + (p33 * y)))) + (p81 * tanh((p145 + (p34 * x) + (p35 * y)))) + (p82 * tanh((p146 + (p36 * x) + (p37 * y)))) + (p83 * tanh((p147 + (p38 * x) + (p39 * y)))) + (p84 * tanh((p148 + (p40 * x) + (p41 * y)))) + (p85 * tanh((p149 + ...
+Output #1: (p161 + (p96 * tanh((p128 + (p0 * x) + (p1 * y)))) + (p97 * tanh((p129 + (p2 * x) + (p3 * y)))) + (p98 * tanh((p130 + (p4 * x) + (p5 * y)))) + (p99 * tanh((p131 + (p6 * x) + (p7 * y)))) + (p100 * tanh((p132 + (p8 * x) + (p9 * y)))) + (p101 * tanh((p133 + (p10 * x) + (p11 * y)))) + (p102 * tanh((p134 + (p12 * x) + (p13 * y)))) + (p103 * tanh((p135 + (p14 * x) + (p15 * y)))) + (p104 * tanh((p136 + (p16 * x) + (p17 * y)))) + (p105 * tanh((p137 + (p18 * x) + (p19 * y)))) + (p106 * tanh((p138 + (p20 * x) + (p21 * y)))) + (p107 * tanh((p139 + (p22 * x) + (p23 * y)))) + (p108 * tanh((p140 + (p24 * x) + (p25 * y)))) + (p109 * tanh((p141 + (p26 * x) + (p27 * y)))) + (p110 * tanh((p142 + (p28 * x) + (p29 * y)))) + (p111 * tanh((p143 + (p30 * x) + (p31 * y)))) + (p112 * tanh((p144 + (p32 * x) + (p33 * y)))) + (p113 * tanh((p145 + (p34 * x) + (p35 * y)))) + (p114 * tanh((p146 + (p36 * x) + (p37 * y)))) + (p115 * tanh((p147 + (p38 * x) + (p39 * y)))) + (p116 * tanh((p148 + (p40 * x) + (p41 * y)))) + ...
+</pre></div>
+</div>
+</div>
+</div>
+<p>Let us now make an inference of the input point [1.2, -2.2]</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">cf</span><span class="p">([</span><span class="mf">1.2</span><span class="p">,</span><span class="o">-</span><span class="mf">2.2</span><span class="p">],</span> <span class="n">pars</span> <span class="o">=</span> <span class="n">flattened_nw</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([ 0.19482651, -0.57963785])
+</pre></div>
+</div>
+</div>
+</div>
+<p>The backdraw here is that at each inference the actual values of all the parameters must be copied into the expression upon evaluation, which may result in slower performances. Hardcoding the values into the FFNN is surely a better option, which can be achieved using the optional kwarg <em>nn_wb</em> (neural network weights and biases) of the factory <code class="docutils literal notranslate"><span class="pre">ffnn()</span></code>:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ffnn</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">ffnn</span><span class="p">(</span><span class="n">inputs</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">],</span> <span class="n">nn_hidden</span> <span class="o">=</span> <span class="p">[</span><span class="mi">32</span><span class="p">],</span> <span class="n">n_out</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span> <span class="n">activations</span> <span class="o">=</span> <span class="p">[</span><span class="n">hy</span><span class="o">.</span><span class="n">tanh</span><span class="p">,</span> <span class="n">linear</span><span class="p">],</span> <span class="n">nn_wb</span> <span class="o">=</span> <span class="n">flattened_nw</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">ffnn</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[(0.11099525088169693 + (0.064253972669598869 * tanh((0.25854601422646672 + (0.10340034402930953 * x) + (0.35109441944116204 * y)))) + (0.083341196490398284 * tanh(((0.039839293347418203 * x) - 0.28292948687070385 - (0.21967486305370010 * y)))) + (0.19923153995766152 * tanh((0.37875567784408903 + (0.16730956267690467 * x) + (0.39987752087510398 * y)))) + (0.24344860686181691 * tanh(((0.086906381486940742 * x) - 0.011553987095314744 - (0.093405979765594283 * y)))) + (0.26040543824635209 * tanh(((0.19895780285781850 * y) + (0.47277027041248998 * x) - 0.12194241057993194))) + (0.26388370049465448 * tanh((-0.080624689362648883 - (0.057774667409172920 * y) - (0.024258741356006697 * x)))) + (0.26632125257907913 * tanh(((0.23994404444375073 * y) + (0.48575593367207226 * x) - 0.35338928337566089))) + (0.29377409993967185 * tanh(((0.21511423446949651 * y) - 0.40378393337712082 - (0.055826692726025806 * x)))) + (0.29935341412000649 * tanh((0.017979267056720150 + (0.29719766423181671 * x) - (0.089623931927273359 * ..., ((0.0076437656200760706 * tanh((0.28241165560928339 + (0.14690773409616253 * y) - (0.16230362006193444 * x)))) + (0.020395552009842222 * tanh((0.37875567784408903 + (0.16730956267690467 * x) + (0.39987752087510398 * y)))) + (0.024289035821685734 * tanh((0.48504413348063879 + (0.35136616932417264 * y) + (0.36640376610911252 * x)))) + (0.025750847982344727 * tanh(((0.31704448681652564 * x) - 0.29647677779292891 - (0.032362418564234496 * y)))) + (0.13953129304741196 * tanh((0.066072575858538873 + (0.43724091709899315 * y) - (0.23039172621641046 * x)))) + (0.19442774307204658 * tanh(((0.35895681832304860 * y) - 0.074097940963912867 - (0.29371187240499563 * x)))) + (0.22536779047478250 * tanh((0.091611220920367109 + (0.14939910978486692 * x) - (0.10190297618237210 * y)))) + (0.28530179255742660 * tanh(((0.19895780285781850 * y) + (0.47277027041248998 * x) - 0.12194241057993194))) + (0.30231418197145532 * tanh((0.44886163996911965 + (0.079557389976756432 * x) - (0.24146639765314259 * y)))) + ...]
+</pre></div>
+</div>
+</div>
+</div>
+<p>We can now recompile the function:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">cf</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">make_cfunc</span><span class="p">(</span><span class="n">ffnn</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">cf</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Variables: [x, y]
+Output #0: (0.11099525088169693 + (0.064253972669598869 * tanh((0.25854601422646672 + (0.10340034402930953 * x) + (0.35109441944116204 * y)))) + (0.083341196490398284 * tanh(((0.039839293347418203 * x) - 0.28292948687070385 - (0.21967486305370010 * y)))) + (0.19923153995766152 * tanh((0.37875567784408903 + (0.16730956267690467 * x) + (0.39987752087510398 * y)))) + (0.24344860686181691 * tanh(((0.086906381486940742 * x) - 0.011553987095314744 - (0.093405979765594283 * y)))) + (0.26040543824635209 * tanh(((0.19895780285781850 * y) + (0.47277027041248998 * x) - 0.12194241057993194))) + (0.26388370049465448 * tanh((-0.080624689362648883 - (0.057774667409172920 * y) - (0.024258741356006697 * x)))) + (0.26632125257907913 * tanh(((0.23994404444375073 * y) + (0.48575593367207226 * x) - 0.35338928337566089))) + (0.29377409993967185 * tanh(((0.21511423446949651 * y) - 0.40378393337712082 - (0.055826692726025806 * x)))) + (0.29935341412000649 * tanh((0.017979267056720150 + (0.29719766423181671 * x) - (0.089623931927273359 * ...
+Output #1: ((0.0076437656200760706 * tanh((0.28241165560928339 + (0.14690773409616253 * y) - (0.16230362006193444 * x)))) + (0.020395552009842222 * tanh((0.37875567784408903 + (0.16730956267690467 * x) + (0.39987752087510398 * y)))) + (0.024289035821685734 * tanh((0.48504413348063879 + (0.35136616932417264 * y) + (0.36640376610911252 * x)))) + (0.025750847982344727 * tanh(((0.31704448681652564 * x) - 0.29647677779292891 - (0.032362418564234496 * y)))) + (0.13953129304741196 * tanh((0.066072575858538873 + (0.43724091709899315 * y) - (0.23039172621641046 * x)))) + (0.19442774307204658 * tanh(((0.35895681832304860 * y) - 0.074097940963912867 - (0.29371187240499563 * x)))) + (0.22536779047478250 * tanh((0.091611220920367109 + (0.14939910978486692 * x) - (0.10190297618237210 * y)))) + (0.28530179255742660 * tanh(((0.19895780285781850 * y) + (0.47277027041248998 * x) - 0.12194241057993194))) + (0.30231418197145532 * tanh((0.44886163996911965 + (0.079557389976756432 * x) - (0.24146639765314259 * y)))) + ...
+</pre></div>
+</div>
+</div>
+</div>
+<p>And compute the inference much more efficiently as:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">cf</span><span class="p">([</span><span class="mf">1.2</span><span class="p">,</span><span class="o">-</span><span class="mf">2.2</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([ 0.19482651, -0.57963785])
+</pre></div>
+</div>
+</div>
+</div>
+<p>Using the batch evaluation results in even faster code:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">cf</span><span class="p">([[</span><span class="mf">1.2</span><span class="p">,</span><span class="o">-</span><span class="mf">2.2</span><span class="p">,</span><span class="mf">1.0</span><span class="p">],[</span><span class="o">-</span><span class="mf">2.2</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.1</span><span class="p">,</span><span class="mf">0.1</span><span class="p">]])</span><span class="o">.</span><span class="n">transpose</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([[ 0.19482651, -0.57963785],
+       [-0.48834677, -0.19682762],
+       [ 0.3431084 , -0.82868397]])
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="use-in-numerical-integration">
+<h2>Use in numerical integration<a class="headerlink" href="#use-in-numerical-integration" title="Permalink to this heading">#</a></h2>
+<p>In a number of cases the right hand side of a system of ordinary differential equations contain an artificial neural network (ANN). This is the case, for example, in controlled systems where the state-feedback is provided via a neural network, or
+in those cases where the ANN has been trained to describe nonlinear interactions or external disturbances, but also in more advanced scenarios where the full system of ODEs is a ANN trained to reproduce some observed or desired dynamics. It is the case, as we shall see later, where a perturtbation to the system Hamiltonian is parametrized by an ANN, hence the name of this tutorial!</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>A particularly significant case, in the context of Taylor integration, is also when the ANN is used to represent some otherwise discontinuous or non differentiable term, allowing the use of a Taylor integration also in those, otherwise untractable, cases.</p>
+</div>
+<p>Regardless of the reason why, we end up solving a system in the form:</p>
+<div class="math notranslate nohighlight">
+\[
+\dot {\mathbf x} = \mathbf f(\mathbf x, \mathcal N_\theta(\mathbf x))
+\]</div>
+<p>where we have denoted with <span class="math notranslate nohighlight">\(\theta\)</span> the network model parameters.</p>
+<p>Making inferences of ANN in <em>heyoka</em> can surely be useful for debugging and other purposes, but it is likely not the main reason we use <em>heyoka</em> in the first place, nor the main objective of this tutorial. Instantiating and integrating a system in the form:</p>
+<div class="math notranslate nohighlight">
+\[
+\dot {\mathbf x} = \mathbf f(\mathbf x, \mathcal N_\theta(\mathbf x))
+\]</div>
+<p>is!</p>
+<p>Let us then define a simple harmonic oscillator, perturbed by a random nonlinear term defined via an Artificial Neural Network:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+\begin{array}{l}
+\dot x = v_x \\
+\dot y = v_y \\
+\dot v_x = - k_x x + \alpha \mathcal N_x \\
+\dot v_y = - k_y y + \alpha \mathcal N_y \\
+\end{array}
+\end{split}\]</div>
+<p>Let us start defining the neural network.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">vx</span><span class="p">,</span> <span class="n">vy</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">make_vars</span><span class="p">(</span><span class="s2">&quot;x&quot;</span><span class="p">,</span><span class="s2">&quot;y&quot;</span><span class="p">,</span><span class="s2">&quot;vx&quot;</span><span class="p">,</span><span class="s2">&quot;vy&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Network parameters (play around)</span>
+<span class="n">nn_hidden</span> <span class="o">=</span> <span class="p">[</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">]</span>
+<span class="n">activations</span> <span class="o">=</span> <span class="p">[</span><span class="n">hy</span><span class="o">.</span><span class="n">tanh</span><span class="p">,</span> <span class="n">hy</span><span class="o">.</span><span class="n">tanh</span><span class="p">,</span> <span class="n">hy</span><span class="o">.</span><span class="n">tanh</span><span class="p">]</span> <span class="c1"># the output will be in [-1,1]</span>
+<span class="n">n_inputs</span> <span class="o">=</span> <span class="mi">4</span>
+<span class="n">n_outputs</span> <span class="o">=</span> <span class="mi">2</span>
+<span class="n">nn_layers</span> <span class="o">=</span> <span class="p">[</span><span class="n">n_inputs</span><span class="p">]</span> <span class="o">+</span> <span class="n">nn_hidden</span> <span class="o">+</span> <span class="p">[</span><span class="n">n_outputs</span><span class="p">]</span>
+
+<span class="c1"># Weight matrices</span>
+<span class="n">Ws</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">activations</span><span class="p">)):</span>
+    <span class="n">Ws</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mf">0.5</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">((</span><span class="n">nn_layers</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">nn_layers</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">])))</span>
+<span class="c1"># Bias vectors</span>
+<span class="n">bs</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">activations</span><span class="p">)):</span>
+    <span class="n">bs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">((</span><span class="n">nn_layers</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">],</span><span class="mi">1</span><span class="p">)))</span>
+<span class="c1"># Flatten everything</span>
+<span class="n">flattened_nw</span> <span class="o">=</span>  <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="n">it</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span> <span class="k">for</span> <span class="n">it</span> <span class="ow">in</span> <span class="n">Ws</span><span class="p">]</span> <span class="o">+</span> <span class="p">[</span><span class="n">it</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span> <span class="k">for</span> <span class="n">it</span> <span class="ow">in</span> <span class="n">bs</span><span class="p">])</span>
+
+<span class="c1"># Calling the ffnn factory</span>
+<span class="n">ffnn</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">ffnn</span><span class="p">(</span><span class="n">inputs</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">vx</span><span class="p">,</span> <span class="n">vy</span><span class="p">],</span> <span class="n">nn_hidden</span> <span class="o">=</span> <span class="n">nn_hidden</span><span class="p">,</span> <span class="n">n_out</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span> <span class="n">activations</span> <span class="o">=</span> <span class="n">activations</span><span class="p">,</span> <span class="n">nn_wb</span> <span class="o">=</span> <span class="n">flattened_nw</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>We write the dynamics, introducing as <em>heyoka</em> parameters <span class="math notranslate nohighlight">\(k_x, k_y\)</span> and the value <span class="math notranslate nohighlight">\(\alpha\)</span> which will determine the strength of the perturbation.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">vx</span><span class="p">,</span> <span class="n">vy</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">make_vars</span><span class="p">(</span><span class="s2">&quot;x&quot;</span><span class="p">,</span> <span class="s2">&quot;y&quot;</span><span class="p">,</span> <span class="s2">&quot;vx&quot;</span><span class="p">,</span> <span class="s2">&quot;vy&quot;</span><span class="p">)</span>
+<span class="n">dxdt</span> <span class="o">=</span> <span class="n">vx</span>
+<span class="n">dydt</span> <span class="o">=</span> <span class="n">vy</span>
+<span class="n">dvxdt</span> <span class="o">=</span> <span class="o">-</span><span class="n">hy</span><span class="o">.</span><span class="n">par</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">x</span> <span class="o">+</span> <span class="n">hy</span><span class="o">.</span><span class="n">par</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">*</span> <span class="n">ffnn</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">dvydt</span> <span class="o">=</span> <span class="o">-</span><span class="n">hy</span><span class="o">.</span><span class="n">par</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">y</span> <span class="o">+</span> <span class="n">hy</span><span class="o">.</span><span class="n">par</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">*</span> <span class="n">ffnn</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>and package it into a <code class="docutils literal notranslate"><span class="pre">taylor_adaptive</span></code> integrator which will compile the Taylor integrator for us and create the object we will use to perform numerics:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ta</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">taylor_adaptive</span><span class="p">(</span>
+    <span class="c1"># The ODEs.</span>
+    <span class="p">[(</span><span class="n">x</span><span class="p">,</span> <span class="n">dxdt</span><span class="p">),</span> <span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">dydt</span><span class="p">),</span> 
+     <span class="p">(</span><span class="n">vx</span><span class="p">,</span> <span class="n">dvxdt</span><span class="p">),</span> <span class="p">(</span><span class="n">vy</span><span class="p">,</span> <span class="n">dvydt</span><span class="p">)],</span>
+    <span class="c1"># The initial conditions.</span>
+    <span class="p">[</span><span class="mf">0.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">],</span>
+    <span class="n">tol</span> <span class="o">=</span> <span class="mf">1e-16</span><span class="p">,</span>
+    <span class="n">compact_mode</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>We may now call the integrator. Let us start with the unperturbed case:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ta</span><span class="o">.</span><span class="n">state</span><span class="p">[:]</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">]</span>
+<span class="n">ta</span><span class="o">.</span><span class="n">time</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="n">ta</span><span class="o">.</span><span class="n">pars</span><span class="p">[:]</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mf">0.0</span><span class="p">]</span>
+<span class="n">tgrid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">40</span><span class="p">,</span><span class="mi">1000</span><span class="p">)</span>
+<span class="n">sol</span> <span class="o">=</span> <span class="n">ta</span><span class="o">.</span><span class="n">propagate_grid</span><span class="p">(</span><span class="n">tgrid</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>… to then assume the FFNN is perturbing the dynamics with some relatively small strength.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ta</span><span class="o">.</span><span class="n">state</span><span class="p">[:]</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">]</span>
+<span class="n">ta</span><span class="o">.</span><span class="n">time</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="n">ta</span><span class="o">.</span><span class="n">pars</span><span class="p">[:]</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mf">0.2</span><span class="p">]</span>
+<span class="n">tgrid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">40</span><span class="p">,</span><span class="mi">1000</span><span class="p">)</span>
+<span class="n">sol_pert</span> <span class="o">=</span> <span class="n">ta</span><span class="o">.</span><span class="n">propagate_grid</span><span class="p">(</span><span class="n">tgrid</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">sol</span><span class="p">[</span><span class="mi">4</span><span class="p">][:,</span><span class="mi">0</span><span class="p">],</span> <span class="n">sol</span><span class="p">[</span><span class="mi">4</span><span class="p">][:,</span><span class="mi">1</span><span class="p">])</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">sol_pert</span><span class="p">[</span><span class="mi">4</span><span class="p">][:,</span><span class="mi">0</span><span class="p">],</span> <span class="n">sol_pert</span><span class="p">[</span><span class="mi">4</span><span class="p">][:,</span><span class="mi">1</span><span class="p">],</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[&lt;matplotlib.lines.Line2D at 0x7f7a75fe6b90&gt;]
+</pre></div>
+</div>
+<img alt="../_images/d89d10bcb61cd31288fdbe360d2dbd363a4d6471e453a193e3b848797fb8ec98.png" src="../_images/d89d10bcb61cd31288fdbe360d2dbd363a4d6471e453a193e3b848797fb8ec98.png" />
+</div>
+</div>
+<p>… increasing the perturbation level:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ta</span><span class="o">.</span><span class="n">state</span><span class="p">[:]</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">]</span>
+<span class="n">ta</span><span class="o">.</span><span class="n">time</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="n">ta</span><span class="o">.</span><span class="n">pars</span><span class="p">[:]</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mf">2.</span><span class="p">]</span>
+<span class="n">tgrid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">40</span><span class="p">,</span><span class="mi">1000</span><span class="p">)</span>
+<span class="n">sol_pert_strong</span> <span class="o">=</span> <span class="n">ta</span><span class="o">.</span><span class="n">propagate_grid</span><span class="p">(</span><span class="n">tgrid</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">sol</span><span class="p">[</span><span class="mi">4</span><span class="p">][:,</span><span class="mi">0</span><span class="p">],</span> <span class="n">sol</span><span class="p">[</span><span class="mi">4</span><span class="p">][:,</span><span class="mi">1</span><span class="p">])</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">sol_pert_strong</span><span class="p">[</span><span class="mi">4</span><span class="p">][:,</span><span class="mi">0</span><span class="p">],</span> <span class="n">sol_pert_strong</span><span class="p">[</span><span class="mi">4</span><span class="p">][:,</span><span class="mi">1</span><span class="p">],</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[&lt;matplotlib.lines.Line2D at 0x7f7beeb25420&gt;]
+</pre></div>
+</div>
+<img alt="../_images/bd754a680004769b203274954e6018246ef36125064b43ab146a0d13d1c5df25.png" src="../_images/bd754a680004769b203274954e6018246ef36125064b43ab146a0d13d1c5df25.png" />
+</div>
+</div>
+<p>… and thats all I wanted to tell you! But wait …. one last thing … the above system is dissipative and does not really look Hamiltonian right? The random perturbation is, well …. random. To fix this, have a look at the tutorial: <a class="reference internal" href="NeuralHamiltonianODEs.html"><span class="std std-doc">Neural Hamiltonian ODE</span></a>.</p>
+</section>
+</section>
+
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="../examples_ml.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Machine Learning</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="torch_and_heyoka.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Interfacing <em>torch</em> to <em>heyoka.py</em></p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#inference">Inference</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#use-in-numerical-integration">Use in numerical integration</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Francesco Biscani and Dario Izzo
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2020, 2021, 2022, 2023, Francesco Biscani and Dario Izzo.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=5b4479735964841361fd"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=5b4479735964841361fd"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

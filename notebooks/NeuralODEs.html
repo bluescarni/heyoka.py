@@ -3,7 +3,7 @@
 <!DOCTYPE html>
 
 
-<html lang="en" >
+<html lang="en" data-content_root="" >
 
   <head>
     <meta charset="utf-8" />
@@ -19,12 +19,12 @@
   </script>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../_static/styles/theme.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
-<link href="../_static/styles/bootstrap.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
-<link href="../_static/styles/pydata-sphinx-theme.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
+  <link href="../_static/styles/theme.css?digest=5b4479735964841361fd" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=5b4479735964841361fd" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=5b4479735964841361fd" rel="stylesheet" />
 
   
-  <link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
+  <link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=5b4479735964841361fd" rel="stylesheet" />
   <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
@@ -34,9 +34,9 @@
     <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=365ca57ee442770a23c6" />
-<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=365ca57ee442770a23c6" />
-  <script src="../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=365ca57ee442770a23c6"></script>
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=5b4479735964841361fd" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=5b4479735964841361fd" />
+  <script src="../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=5b4479735964841361fd"></script>
 
     <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
     <script src="../_static/doctools.js"></script>
@@ -47,7 +47,7 @@
     <script>DOCUMENTATION_OPTIONS.pagename = 'notebooks/NeuralODEs';</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Others" href="../examples_others.html" />
+    <link rel="next" title="Differentiable Atmosphere" href="differentiable_atmosphere.html" />
     <link rel="prev" title="Neural Hamiltonian ODEs" href="NeuralHamiltonianODEs.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
@@ -121,6 +121,7 @@
   
     <div class="sidebar-primary-items__start sidebar-primary__section">
         <div class="sidebar-primary-item">
+
   
 
 <a class="navbar-brand logo" href="../index.html">
@@ -210,8 +211,11 @@
 </ul>
 </li>
 <li class="toctree-l1 current active has-children"><a class="reference internal" href="../examples_ml.html">Machine Learning</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-5"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="ffnn.html">Feed-Forward Neural Networks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torch_and_heyoka.html">Interfacing <em>torch</em> to <em>heyoka.py</em></a></li>
 <li class="toctree-l2"><a class="reference internal" href="NeuralHamiltonianODEs.html">Neural Hamiltonian ODEs</a></li>
 <li class="toctree-l2 current active"><a class="current reference internal" href="#">Neural ODEs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="differentiable_atmosphere.html">Differentiable Atmosphere</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../examples_others.html">Others</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-6"><i class="fa-solid fa-chevron-down"></i></label><ul>
@@ -405,6 +409,7 @@
 </button>
 
 
+
 <script>
 document.write(`
   <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
@@ -414,6 +419,7 @@ document.write(`
   </button>
 `);
 </script>
+
 
 <script>
 document.write(`
@@ -465,7 +471,7 @@ document.write(`
                   
   <section class="tex2jax_ignore mathjax_ignore" id="neural-odes">
 <h1>Neural ODEs<a class="headerlink" href="#neural-odes" title="Permalink to this heading">#</a></h1>
-<p>We here consider, as already done in the <a class="reference internal" href="NeuralHamiltonianODEs.html"><span class="std std-doc">Neural Hamiltonian ODE</span></a> example, a generic system in the form:</p>
+<p>We here consider, check also <a class="reference internal" href="NeuralHamiltonianODEs.html"><span class="std std-doc">Neural Hamiltonian ODE</span></a> example, a generic system in the form:</p>
 <div class="math notranslate nohighlight">
 \[
 \dot {\mathbf x} = \mathbf f(\mathbf x, \mathcal N_\theta(\mathbf x))
@@ -653,7 +659,7 @@ Shape of dNdx: (2, 2)
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>--- 0.4317047595977783 seconds --- to build (jit) the Taylor integrator
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>--- 0.5826332569122314 seconds --- to build (jit) the Taylor integrator
 </pre></div>
 </div>
 </div>
@@ -694,7 +700,7 @@ Shape of dNdx: (2, 2)
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>--- 0.0003132820129394531 seconds --- to propagate using the Taylor scheme
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>--- 0.00023818016052246094 seconds --- to propagate using the Taylor scheme
 </pre></div>
 </div>
 </div>
@@ -713,7 +719,7 @@ Shape of dNdx: (2, 2)
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/fbbc8215c572f57d33dc2900ab71b76a488c38fe97cc4b5c9abf60805a0e9a0a.png" src="../_images/fbbc8215c572f57d33dc2900ab71b76a488c38fe97cc4b5c9abf60805a0e9a0a.png" />
+<img alt="../_images/f6e0c219d558da623e3ba62c1ed7cec00ef2cf35d2b2f7919da258907355a1c6.png" src="../_images/f6e0c219d558da623e3ba62c1ed7cec00ef2cf35d2b2f7919da258907355a1c6.png" />
 </div>
 </div>
 </section>
@@ -752,7 +758,7 @@ This allows us to use identical jitted expressions also for the rhs of the case 
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>--- 0.0016679763793945312 seconds --- to propagate
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>--- 0.0023894309997558594 seconds --- to propagate
 </pre></div>
 </div>
 </div>
@@ -767,7 +773,7 @@ This allows us to use identical jitted expressions also for the rhs of the case 
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/42cf486bc8300ef3beb6ec4d938fdf10c67e23703460572a0a5ad76bfa8da2e2.png" src="../_images/42cf486bc8300ef3beb6ec4d938fdf10c67e23703460572a0a5ad76bfa8da2e2.png" />
+<img alt="../_images/ba032ff4e5036fe5a9ebb851faf55b3cbed531f330a5a77feb1ee676f4d8a6a6.png" src="../_images/ba032ff4e5036fe5a9ebb851faf55b3cbed531f330a5a77feb1ee676f4d8a6a6.png" />
 </div>
 </div>
 <p>We see a net advantage in timings using the Taylor integration scheme. Note we are here not using batch propagation, which would add an additional 2-4 factor speedup in performances.</p>
@@ -808,7 +814,7 @@ This allows us to use identical jitted expressions also for the rhs of the case 
               
               
                 <footer class="prev-next-footer">
-                  <!-- Previous / next buttons -->
+                  
 <div class="prev-next-area">
     <a class="left-prev"
        href="NeuralHamiltonianODEs.html"
@@ -820,11 +826,11 @@ This allows us to use identical jitted expressions also for the rhs of the case 
       </div>
     </a>
     <a class="right-next"
-       href="../examples_others.html"
+       href="differentiable_atmosphere.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Others</p>
+        <p class="prev-next-title">Differentiable Atmosphere</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -871,6 +877,7 @@ By Francesco Biscani and Dario Izzo
   
   <div class="footer-item">
     
+
   <p class="copyright">
     
       © Copyright 2020, 2021, 2022, 2023, Francesco Biscani and Dario Izzo.
@@ -897,8 +904,8 @@ By Francesco Biscani and Dario Izzo
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../_static/scripts/bootstrap.js?digest=365ca57ee442770a23c6"></script>
-<script src="../_static/scripts/pydata-sphinx-theme.js?digest=365ca57ee442770a23c6"></script>
+  <script src="../_static/scripts/bootstrap.js?digest=5b4479735964841361fd"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=5b4479735964841361fd"></script>
 
   <footer class="bd-footer">
   </footer>

@@ -1,0 +1,1099 @@
+
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+    <title>Differentiable Atmosphere &#8212; heyoka.py 3.2.0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=5b4479735964841361fd" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=5b4479735964841361fd" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=5b4479735964841361fd" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=5b4479735964841361fd" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" href="../_static/styles/sphinx-book-theme.css?digest=14f4ca6b54d191a8c7657f6c759bf11a5fb86285" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=5b4479735964841361fd" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=5b4479735964841361fd" />
+  <script src="../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=5b4479735964841361fd"></script>
+
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinx_highlight.js"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?digest=5a5c038af52cf7bc1a1ec88eea08e6366ee68824"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'notebooks/differentiable_atmosphere';</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Others" href="../examples_others.html" />
+    <link rel="prev" title="Neural ODEs" href="NeuralODEs.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>
+    Back to top
+  </button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__primary"
+          id="__primary"/>
+  <label class="overlay overlay-primary" for="__primary"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__secondary"
+          id="__secondary"/>
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+  
+    <nav class="bd-header navbar navbar-expand-lg bd-navbar">
+    </nav>
+  
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/white_logo.png" class="logo__image only-light" alt="heyoka.py 3.2.0 documentation - Home"/>
+    <script>document.write(`<img src="../_static/white_logo.png" class="logo__image only-dark" alt="heyoka.py 3.2.0 documentation - Home"/>`);</script>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item"><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Main</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../install.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../changelog.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../breaking_changes.html">Breaking changes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../benchmarks.html">Benchmarks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../acknowledgement.html">Acknowledgement</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../basic_tutorials.html">Basic</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../tut_taylor_method.html">Taylor’s method</a></li>
+<li class="toctree-l2"><a class="reference internal" href="The%20expression%20system.html">The expression system</a></li>
+<li class="toctree-l2"><a class="reference internal" href="The%20adaptive%20integrator.html">The adaptive integrator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Customising%20the%20adaptive%20integrator.html">Customising the adaptive integrator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ODEs%20with%20parameters.html">ODEs with parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Non-autonomous%20systems.html">Non-autonomous systems</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Dense%20output.html">Dense &amp; continuous output</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Event%20detection.html">Event detection</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../advanced_tutorials.html">Advanced</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="Batch%20mode%20overview.html">Batch mode</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ensemble_mode.html">Ensemble propagations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="parallel_mode.html">Parallel mode</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ext_precision.html">Computations in extended precision</a></li>
+<li class="toctree-l2"><a class="reference internal" href="arbitrary_precision.html">Computations in arbitrary precision</a></li>
+<li class="toctree-l2"><a class="reference internal" href="single_precision.html">Computations in single precision</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sympy_interop.html">Interoperability with SymPy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="compiled_functions.html">Compiled functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ex_system_revisited.html">Using the expression system effectively</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pickling.html">Pickle support</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jit_caching.html">JIT compilation and caching</a></li>
+</ul>
+</li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Examples</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../examples_astro.html">Celestial mechanics and astrodynamics</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-3"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="The%20restricted%20three-body%20problem.html">The restricted three-body problem</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Periodic%20orbits%20in%20the%20CR3BP.html">Continuation of Periodic Orbits in the CR3BP</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Pseudo%20arc-length%20continuation%20in%20the%20CR3BP.html">Pseudo arc-length continuation in the CR3BP</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Long%20term%20stability%20of%20Trappist-1.html">Long term stability of N-body simulations: the case of Trappist-1</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Outer%20Solar%20System.html">Brouwer’s law in the outer Solar System</a></li>
+<li class="toctree-l2"><a class="reference internal" href="projection.html">Conserving first integrals via manifold projection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Box%20control%20for%20Formation%20Flying%20Satellites.html">Box control in satellite Formation Flying</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Comparing%20coordinate%20systems.html">Comparing coordinate systems</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Inverting%20Kepler%27s%20equation%20in%20ODEs.html">Inverting Kepler’s equation in ODEs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Planetary%20embryos.html">Planetary embryos in the inner Solar System</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mercury_precession.html">Mercury’s relativistic precession</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ttv.html">Calculating transit timing variations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vsop2013.html">Introduction to the VSOP2013 planetary theory</a></li>
+<li class="toctree-l2"><a class="reference internal" href="elp2000.html">Introduction to the ELP2000 lunar theory</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tides_spokes.html">Elastic tides</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lagrangian_propagator.html">Lagrange propagation and the state transition matrix</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../examples_event.html">Event detection</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-4"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="Sampling%20events.html">Sampling events</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Poincar%C3%A9%20sections.html">Poincaré sections</a></li>
+<li class="toctree-l2"><a class="reference internal" href="second_integral.html">The second integral of motion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="The%20Keplerian%20billiard.html">The Keplerian billiard</a></li>
+<li class="toctree-l2"><a class="reference internal" href="The%20two-fixed%20elliptic%20billiard.html">The two-fixed centres elliptic billiard</a></li>
+<li class="toctree-l2"><a class="reference internal" href="The%20wavy%20ramp.html">The wavy ramp</a></li>
+<li class="toctree-l2"><a class="reference internal" href="The%20Maxwell-Boltzmann%20distribution.html">The Maxwell-Boltzmann distribution</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ev_sensitivity.html">Computing event sensitivity</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="../examples_ml.html">Machine Learning</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-5"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="ffnn.html">Feed-Forward Neural Networks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torch_and_heyoka.html">Interfacing <em>torch</em> to <em>heyoka.py</em></a></li>
+<li class="toctree-l2"><a class="reference internal" href="NeuralHamiltonianODEs.html">Neural Hamiltonian ODEs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="NeuralODEs.html">Neural ODEs</a></li>
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">Differentiable Atmosphere</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../examples_others.html">Others</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-6"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="ensemble_batch_perf.html">Evaluating the performance of ensemble &amp; batch mode</a></li>
+<li class="toctree-l2"><a class="reference internal" href="The%20variational%20equations.html">The variational equations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Optimal%20Control%20of%20the%20Lotka-Volterra%20equations.html">Optimal Control of the Lotka-Volterra equations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="definite_integrals.html">Computing definite integrals</a></li>
+</ul>
+</li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><label class="sidebar-toggle primary-toggle btn btn-sm" for="__primary" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</label></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-launch-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Launch interactive content">
+    <i class="fas fa-rocket"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://mybinder.org/v2/gh/bluescarni/heyoka.py/main?urlpath=lab/tree/doc/notebooks/differentiable_atmosphere.ipynb" target="_blank"
+   class="btn btn-sm dropdown-item"
+   title="Launch onBinder"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  
+    <img src="../_static/images/logo_binder.svg">
+  </span>
+<span class="btn__text-container">Binder</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://github.com/bluescarni/heyoka.py" target="_blank"
+   class="btn btn-sm btn-source-repository-button dropdown-item"
+   title="Source repository"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="btn__text-container">Repository</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/bluescarni/heyoka.py/issues/new?title=Issue%20on%20page%20%2Fnotebooks/differentiable_atmosphere.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button dropdown-item"
+   title="Open an issue"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="btn__text-container">Open issue</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../_sources/notebooks/differentiable_atmosphere.ipynb" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.ipynb</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<label class="sidebar-toggle secondary-toggle btn btn-sm" for="__secondary"title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</label>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Differentiable Atmosphere</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#numerical-integration-with-differentiable-atmosphere">Numerical Integration with Differentiable Atmosphere</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#scipy-nrlmsise-00">Scipy + NRLMSISE-00</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#heyoka-differentiable-atmosphere-nn">Heyoka + differentiable atmosphere (NN)</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#lets-plot-the-results-to-check-the-accuracy">Lets plot the results to check the accuracy</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article" role="main">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="differentiable-atmosphere">
+<h1>Differentiable Atmosphere<a class="headerlink" href="#differentiable-atmosphere" title="Permalink to this heading">#</a></h1>
+<p>This notebook introduces a differentiable atmosphere model useful for propagating satellites in low-Earth orbit with <em>heyoka.py</em>. The model extends the ideas introduced in ESA’s <a class="reference external" href="https://esa.github.io/cascade/utilities/simple_atmosphere.html">cascade</a> simulations for the long term propagation of orbital debris enriching that model with the dependence on longitude, latitude, solar flux, local time and accounting for Earth oblateness via the Geodetic coordinates.</p>
+<p>We leverage the key observation that the thermosphere is well approximated (at any given time, and location) by an exponential behavior with respect to the altitude.</p>
+<p>The thermosphere is also subject to variations at different longitude, latitude, and times, due to seasonal variations, diurnal variations, geomagnetic storms, and more.</p>
+<p>We thus assume the density profile as a sum of exponentials in the form:</p>
+<div class="math notranslate nohighlight">
+\[
+\rho(h) = \sum_i \alpha_i \ \textrm{exp}(-\beta_i (h-\gamma_i))
+\]</div>
+<p>and use a neural network to learn <span class="math notranslate nohighlight">\(\alpha_i, \beta_i, \gamma_i\)</span> as a function of longitude, latitude, solar conditions,  times, etc…. In the equation above, <span class="math notranslate nohighlight">\(h\)</span> is the geodetic altitude, and <span class="math notranslate nohighlight">\(\alpha_i, \beta_i, \gamma_i\)</span> are the exponential parameters, which will be predicted using a neural network.</p>
+<p>To enhance the training, we do not directly learn these coefficients, but their variations w.r.t. an underlying average value (i.e., <span class="math notranslate nohighlight">\(\overline{\alpha}_i, \overline{\beta}_i, \overline{\gamma}_i\)</span>) precomputed minimizing the loss of the above equation compared to the target density (as done in <a class="reference external" href="https://esa.github.io/cascade/utilities/simple_atmosphere.html">cascade</a>).</p>
+<p>This way, the neural model only needs to learn a correction to the average parameter, as defined by:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+\begin{align*}
+\alpha_i&amp;=\overline{\alpha}_i(1+f\delta \alpha_i)\\
+\beta_i&amp;=\overline{\beta}_i(1+f\delta \beta_i)\\
+\gamma_i&amp;=\overline{\gamma}_i(1+f\delta \gamma_i)
+\end{align*}
+\end{split}\]</div>
+<p>where the factor <span class="math notranslate nohighlight">\(f=0.9\)</span> is used to limit the variations and avoid numerical instabilities of the exponential.</p>
+<p>At the end, our neural differetiable atmospheric model will thus be written as:</p>
+<div class="math notranslate nohighlight">
+\[
+\rho = \sum_i \overline{\alpha}_i(1+f\delta \alpha_i) \ \textrm{exp}\bigg(-\overline{\beta}_i(1+f\delta \beta_i) \big(h-\overline{\gamma}_i(1+f\delta \gamma_i)\big)\bigg)
+\]</div>
+<p>where,</p>
+<div class="math notranslate nohighlight">
+\[
+[\delta \alpha_i, \delta \beta_i, \delta \gamma_i ]^T = \mathcal{N}_\theta(\pmb{x})
+\]</div>
+<p>We have indicated with <span class="math notranslate nohighlight">\(\pmb{x}\)</span> the input parameters that capture the density variations at a given, fixed, altitude <span class="math notranslate nohighlight">\(h\)</span>.</p>
+<p>Let us make some imports:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">heyoka</span> <span class="k">as</span> <span class="nn">hk</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">datetime</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">from</span> <span class="nn">scipy.integrate</span> <span class="kn">import</span> <span class="n">solve_ivp</span>
+<span class="kn">from</span> <span class="nn">nrlmsise00</span> <span class="kn">import</span> <span class="n">msise_flat</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>For training the neural network, we need thermospheric density values that can be used as target. In this case study, we use <a class="reference external" href="https://en.wikipedia.org/wiki/NRLMSISE-00">NRLMSISE-00</a> (a popular empirical density model in the community), however, the same approach can also be extended to other models (<a class="reference external" href="https://ccmc.gsfc.nasa.gov/models/JB2008~2008/">JB-08</a>, <a class="reference external" href="https://www.sciencedirect.com/science/article/pii/S0273117705002048">HASDM</a>, etc.). We thus assume our parameters <span class="math notranslate nohighlight">\(\delta \alpha_i, \delta \beta_i, \delta \gamma_i\)</span> are a function of the <a class="reference external" href="https://en.wikipedia.org/wiki/NRLMSISE-00">NRLMSISE-00</a> input parameters (except the altitude ofc.).</p>
+<p>We thus train the network with the following inputs:</p>
+<ul class="simple">
+<li><p>geodetic latitude normalized between <code class="docutils literal notranslate"><span class="pre">[-1,1]</span></code></p></li>
+<li><p>sine of geodetic longitude</p></li>
+<li><p>cosine of geodetic longitude</p></li>
+<li><p>sine of seconds in the day, where seconds in the day are first transformed in <code class="docutils literal notranslate"><span class="pre">[0,2$\pi$]</span></code></p></li>
+<li><p>cosine of seconds in the day, where seconds in the day are first transformed in <code class="docutils literal notranslate"><span class="pre">[0,2$\pi$]</span></code></p></li>
+<li><p>F10.7 normalized between <code class="docutils literal notranslate"><span class="pre">[-1,1]</span></code>, using the bounds <code class="docutils literal notranslate"><span class="pre">[60.,290.]</span></code></p></li>
+<li><p>F10.7 81-day average normalized between <code class="docutils literal notranslate"><span class="pre">[-1,1]</span></code>, using the bounds <code class="docutils literal notranslate"><span class="pre">[60.,190.]</span></code></p></li>
+<li><p>Ap index normalized between <code class="docutils literal notranslate"><span class="pre">[-1,1]</span></code>, using the bounds <code class="docutils literal notranslate"><span class="pre">[0.,140.]</span></code></p></li>
+</ul>
+<p>The network training was done using <a class="reference external" href="https://pytorch.org/">PyTorch</a> and resulted in weights and biases can be found under <code class="docutils literal notranslate"><span class="pre">data/nrlmsise00_flattened_nw.txt</span></code>.
+We now load the model flattened weights and biases, and construct the <code class="docutils literal notranslate"><span class="pre">heyoka.ffnn</span></code></p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>For a tutorial on how to transfer the weights and biases from a torch model to heyoka.py, check out the tutorial: <a class="reference internal" href="torch_and_heyoka.html"><span class="std std-doc">Interfacing torch to heyoka.py</span></a></p>
+</div>
+<p>We instantiate the state variables:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">z</span><span class="p">,</span><span class="n">vx</span><span class="p">,</span><span class="n">vy</span><span class="p">,</span><span class="n">vz</span><span class="o">=</span><span class="n">hk</span><span class="o">.</span><span class="n">make_vars</span><span class="p">(</span><span class="s2">&quot;x&quot;</span><span class="p">,</span><span class="s2">&quot;y&quot;</span><span class="p">,</span><span class="s2">&quot;z&quot;</span><span class="p">,</span><span class="s2">&quot;vx&quot;</span><span class="p">,</span><span class="s2">&quot;vy&quot;</span><span class="p">,</span><span class="s2">&quot;vz&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>However, the neural network model, similar to <a class="reference external" href="https://en.wikipedia.org/wiki/NRLMSISE-00">NRLMSISE-00</a> and other models, accepts the geodetic coordinates as inputs (also the altitude <span class="math notranslate nohighlight">\(h\)</span> must be computed using the geodetic coordinates).</p>
+<p>Here, we use the method discussed in <a class="reference external" href="https://library.wur.nl/WebQuery/titel/1236290">“Physical Geodesy” by Heiskanen and Moritz, 1967</a>, to transform the Cartesian coordinates into geodetic ones.
+For the Earth ellipsoid parameters, we use the <a class="reference external" href="https://en.wikipedia.org/wiki/World_Geodetic_System#WGS_84">WGS-84</a> ellipsoid.</p>
+<p>The resulting method, implemented in heyoka, is thus:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">#here we use the solution from: &quot;Physical Geodesy&quot; by Heiskanen and Moritz, 1967</span>
+<span class="k">def</span> <span class="nf">from_position_to_geodetic</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">z</span><span class="p">,</span><span class="n">a_earth</span><span class="o">=</span><span class="mf">6378137.0</span><span class="p">,</span><span class="n">b_earth</span><span class="o">=</span><span class="mf">6356752.314245</span><span class="p">,</span><span class="n">iters</span><span class="o">=</span><span class="mi">4</span><span class="p">):</span>
+    <span class="n">long</span><span class="o">=</span><span class="n">hk</span><span class="o">.</span><span class="n">atan2</span><span class="p">(</span><span class="n">y</span><span class="p">,</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">p</span><span class="o">=</span><span class="n">hk</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">x</span><span class="o">**</span><span class="mi">2</span><span class="o">+</span><span class="n">y</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">e</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">((</span><span class="n">a_earth</span><span class="o">**</span><span class="mi">2</span><span class="o">-</span><span class="n">b_earth</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">/</span><span class="n">a_earth</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">phi</span><span class="o">=</span><span class="n">hk</span><span class="o">.</span><span class="n">atan</span><span class="p">(</span><span class="n">z</span><span class="o">/</span><span class="n">p</span><span class="o">/</span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">e</span><span class="o">**</span><span class="mi">2</span><span class="p">))</span>
+    <span class="c1">#we iterate to improve the solution</span>
+    <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">iters</span><span class="p">):</span>            
+        <span class="n">N</span><span class="o">=</span><span class="n">a_earth</span><span class="o">**</span><span class="mi">2</span><span class="o">/</span><span class="n">hk</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">a_earth</span><span class="o">**</span><span class="mi">2</span><span class="o">*</span><span class="n">hk</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">phi</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="o">+</span><span class="n">b_earth</span><span class="o">**</span><span class="mi">2</span><span class="o">*</span><span class="n">hk</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">phi</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+        <span class="n">h</span><span class="o">=</span><span class="n">p</span><span class="o">/</span><span class="n">hk</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">phi</span><span class="p">)</span><span class="o">-</span><span class="n">N</span>
+        <span class="n">phi</span><span class="o">=</span><span class="n">hk</span><span class="o">.</span><span class="n">atan</span><span class="p">(</span><span class="n">z</span><span class="o">/</span><span class="n">p</span><span class="o">/</span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">e</span><span class="o">**</span><span class="mi">2</span><span class="o">*</span><span class="n">N</span><span class="o">/</span><span class="p">(</span><span class="n">N</span><span class="o">+</span><span class="n">h</span><span class="p">)))</span>
+    <span class="k">return</span> <span class="n">h</span><span class="o">/</span><span class="mf">1e3</span><span class="p">,</span><span class="n">phi</span><span class="p">,</span><span class="n">long</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Note that we need to decide on a fixed number of iterations to use as to reconstruct the geodetic coordinates from the Cartesian ones. Running an experiment and limiting the altitude in the range <span class="math notranslate nohighlight">\(h \in [100, 1000]\)</span> Km we find maximum errors (in reconstructing the altitude), of 37m for 2 iterations, 0.2m for 3 iterations, and 2cm for 4 iterations.</p>
+<p>We can then settle for now on four iterations (3 or even 2 could actually be good enough) and compute the symbolic expression of the inversions:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">altitude</span><span class="p">,</span><span class="n">lat</span><span class="p">,</span><span class="n">lon</span><span class="o">=</span><span class="n">from_position_to_geodetic</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">z</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;As an example here is the symbolic expression for the altitude: </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">altitude</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>As an example here is the symbolic expression for the altitude: 
+ (((0.0010000000000000000 * (x**2.0000000000000000 + y**2.0000000000000000)**0.50000000000000000) / cos(atan((z / ((1.0000000000000000 - ((272331606109.84375 * cos(atan((z / ((1.0000000000000000 - ((272331606109.84375 * cos(atan((z / ((1.0000000000000000 - ((272331606109.84375 * cos(atan(((1.0067394967423335 * z) / (x**2.0000000000000000 + y**2.0000000000000000)**0.50000000000000000)))) / ((x**2.0000000000000000 + y**2.0000000000000000)**0.50000000000000000 * ((40408299984659.156 * sin(atan(((1.0067394967423335 * z) / (x**2.0000000000000000 + y**2.0000000000000000)**0.50000000000000000)))**2.0000000000000000) + (40680631590769.000 * cos(atan(((1.0067394967423335 * z) / (x**2.0000000000000000 + y**2.0000000000000000)**0.50000000000000000)))**2.0000000000000000))**0.50000000000000000))) * (x**2.0000000000000000 + y**2.0000000000000000)**0.50000000000000000))))) / ((x**2.0000000000000000 + y**2.0000000000000000)**0.50000000000000000 * ((40408299984659.156 * sin(atan((z / ((1.0000000000000000 - ...
+</pre></div>
+</div>
+</div>
+</div>
+<p>We now can define all the normalized inputs to feed the neural network.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">lat_n</span><span class="o">=</span><span class="n">lat</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span><span class="mi">2</span>
+<span class="n">sin_lon</span><span class="o">=</span><span class="n">hk</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">lon</span><span class="p">)</span>
+<span class="n">cos_lon</span><span class="o">=</span><span class="n">hk</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">lon</span><span class="p">)</span>
+<span class="c1"># This is the date we assume to start our integration at</span>
+<span class="n">date0</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">(</span><span class="mi">2009</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+<span class="n">offset</span><span class="o">=</span><span class="n">date0</span><span class="o">.</span><span class="n">second</span><span class="o">+</span><span class="n">date0</span><span class="o">.</span><span class="n">minute</span><span class="o">*</span><span class="mf">60.</span><span class="o">+</span><span class="n">date0</span><span class="o">.</span><span class="n">hour</span><span class="o">*</span><span class="mf">3600.</span>
+<span class="n">sec_in_day_n</span><span class="o">=</span><span class="p">(</span><span class="n">hk</span><span class="o">.</span><span class="n">time</span><span class="o">+</span><span class="n">offset</span><span class="p">)</span><span class="o">/</span><span class="mf">86400.</span><span class="o">*</span><span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span>
+<span class="n">cos_sec_in_day</span><span class="o">=</span><span class="n">hk</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">sec_in_day_n</span><span class="p">)</span>
+<span class="n">sin_sec_in_day</span><span class="o">=</span><span class="n">hk</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">sec_in_day_n</span><span class="p">)</span>
+<span class="c1"># We will integrate for 10 hours, we can thus assume these values are constant.</span>
+<span class="c1"># We compute their values using the nrlmsise00 toolbox and querying the date0. We then normalize to obtain:</span>
+<span class="n">f107_n</span><span class="p">,</span> <span class="n">f107A_n</span><span class="p">,</span> <span class="n">ap_n</span><span class="o">=</span><span class="p">(</span><span class="mf">0.17409463226795197</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.5575244426727295</span><span class="p">,</span> <span class="mf">0.1701483279466629</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>We have everything we need to instantiate our differentiable, neural model for the atmosphere: let us load the pre-trained weights and biases for the <code class="docutils literal notranslate"><span class="pre">ffnn</span></code>:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">flattened_nw</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">loadtxt</span><span class="p">(</span><span class="s1">&#39;data/nrlmsise00_flattened_nw.txt&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>and instantiate the <code class="docutils literal notranslate"><span class="pre">heyoka.ffnn</span></code>:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">model_heyoka</span><span class="o">=</span><span class="n">hk</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">ffnn</span><span class="p">(</span><span class="n">inputs</span><span class="o">=</span><span class="p">[</span><span class="n">lat_n</span><span class="p">,</span><span class="n">sin_lon</span><span class="p">,</span><span class="n">cos_lon</span><span class="p">,</span><span class="n">sin_sec_in_day</span><span class="p">,</span> <span class="n">cos_sec_in_day</span><span class="p">,</span> <span class="n">hk</span><span class="o">.</span><span class="n">expression</span><span class="p">(</span><span class="n">f107_n</span><span class="p">),</span> <span class="n">hk</span><span class="o">.</span><span class="n">expression</span><span class="p">(</span><span class="n">f107A_n</span><span class="p">),</span> <span class="n">hk</span><span class="o">.</span><span class="n">expression</span><span class="p">(</span><span class="n">ap_n</span><span class="p">)],</span>
+                           <span class="n">nn_hidden</span><span class="o">=</span><span class="p">[</span><span class="mi">32</span><span class="p">,</span><span class="mi">32</span><span class="p">],</span> 
+                           <span class="n">n_out</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span> 
+                           <span class="n">activations</span><span class="o">=</span><span class="p">[</span><span class="n">hk</span><span class="o">.</span><span class="n">tanh</span><span class="p">,</span><span class="n">hk</span><span class="o">.</span><span class="n">tanh</span><span class="p">,</span><span class="n">hk</span><span class="o">.</span><span class="n">tanh</span><span class="p">],</span> 
+                           <span class="n">nn_wb</span><span class="o">=</span><span class="n">flattened_nw</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>The network above predicts the <span class="math notranslate nohighlight">\(\delta \alpha_i\)</span>, <span class="math notranslate nohighlight">\(\delta \beta_i\)</span>, <span class="math notranslate nohighlight">\(\delta \gamma_i\)</span>, to use in the expression below:</p>
+<div class="math notranslate nohighlight">
+\[
+\rho = \sum_i \overline{\alpha}_i(1+f\delta \alpha_i) \ \textrm{exp}\bigg(-\overline{\beta}_i(1+f\delta \beta_i) \big(h-\overline{\gamma}_i(1+f\delta \gamma_i)\big)\bigg)
+\]</div>
+<p>The values of the various <span class="math notranslate nohighlight">\(\overline{\alpha}_i, \overline{\beta}_i, \overline{\gamma}_i\)</span> have been precomputed as to fit an average atmospheric model, similarily as done in ESA’s <a class="reference external" href="https://esa.github.io/cascade/utilities/simple_atmosphere.html">cascade</a> simulations. Their values are here reported explicitly:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># these are the constant</span>
+<span class="n">fit_params_all</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span><span class="mi">12</span><span class="p">))</span>
+<span class="c1"># alpha</span>
+<span class="n">fit_params_all</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="o">=</span><span class="mf">1.1961831205553608e-06</span>
+<span class="n">fit_params_all</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">3</span><span class="p">]</span><span class="o">=</span><span class="mf">0.7521974444389343</span>
+<span class="n">fit_params_all</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">6</span><span class="p">]</span><span class="o">=</span><span class="mf">3.916130530967621e-09</span>
+<span class="n">fit_params_all</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">9</span><span class="p">]</span><span class="o">=</span><span class="mf">1.4778674432228828e-13</span>
+<span class="c1"># beta</span>
+<span class="n">fit_params_all</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span><span class="o">=</span><span class="mf">0.04639218747615814</span>
+<span class="n">fit_params_all</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">4</span><span class="p">]</span><span class="o">=</span><span class="mf">0.18178749084472656</span>
+<span class="n">fit_params_all</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">7</span><span class="p">]</span><span class="o">=</span><span class="mf">0.019965510815382004</span>
+<span class="n">fit_params_all</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">10</span><span class="p">]</span><span class="o">=</span><span class="mf">0.004425965249538422</span>
+<span class="c1">#gamma</span>
+<span class="n">fit_params_all</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="p">]</span><span class="o">=</span><span class="mf">5.996347427368164</span>
+<span class="n">fit_params_all</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">5</span><span class="p">]</span><span class="o">=</span><span class="mf">21.895925521850586</span>
+<span class="n">fit_params_all</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">8</span><span class="p">]</span><span class="o">=</span><span class="mf">2.3234505653381348</span>
+<span class="n">fit_params_all</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">11</span><span class="p">]</span><span class="o">=</span><span class="mf">0.26730024814605713</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>and used to define the final differentiable model:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">density</span><span class="p">(</span><span class="n">altitude</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">factor</span><span class="o">=</span><span class="mf">0.9</span><span class="p">):</span>
+    <span class="n">density</span><span class="o">=</span><span class="mf">0.</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">fit_params_all</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="p">):</span>
+        <span class="n">density</span> <span class="o">+=</span> <span class="p">(</span><span class="n">fit_params_all</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">item</span><span class="p">()</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span><span class="o">+</span><span class="n">factor</span><span class="o">*</span><span class="n">model</span><span class="p">[</span><span class="n">i</span><span class="p">])</span><span class="o">*</span><span class="n">hk</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">fit_params_all</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">item</span><span class="p">()</span><span class="o">*</span><span class="p">(</span><span class="mf">1.</span><span class="o">+</span><span class="n">factor</span><span class="o">*</span><span class="n">model</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">])</span><span class="o">*</span><span class="p">(</span><span class="n">altitude</span><span class="o">-</span><span class="p">(</span><span class="n">fit_params_all</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="n">i</span><span class="o">+</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">item</span><span class="p">()</span><span class="o">*</span><span class="p">(</span><span class="mf">1.</span><span class="o">+</span><span class="n">factor</span><span class="o">*</span><span class="n">model</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">2</span><span class="p">])))))</span>
+    <span class="k">return</span> <span class="n">density</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Let’s now use the function to instantiate the neutral density model with feed-forward neural network correction:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">density_nn</span> <span class="o">=</span> <span class="n">density</span><span class="p">(</span><span class="n">altitude</span><span class="o">=</span><span class="n">altitude</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="n">model_heyoka</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Let’s now do the same, but zeroing out the correction terms: this corresponds to a density model representing on average all latitudes, longitudes, time of days etc … and only varying with the geodetic altitude.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">density_fit_global</span> <span class="o">=</span> <span class="n">density</span><span class="p">(</span><span class="n">altitude</span><span class="o">=</span><span class="n">altitude</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="n">model_heyoka</span><span class="p">,</span> <span class="n">factor</span><span class="o">=</span><span class="mf">0.</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<section id="numerical-integration-with-differentiable-atmosphere">
+<h2>Numerical Integration with Differentiable Atmosphere<a class="headerlink" href="#numerical-integration-with-differentiable-atmosphere" title="Permalink to this heading">#</a></h2>
+<p>All right… we have a differentiable density model defined via a functional form and NN coefficients, and one defined by a global fit.</p>
+<p>How can these be used for predicting the orbit of a satellite in low-Earth orbit? And how do they compare to <code class="docutils literal notranslate"><span class="pre">scipy</span></code> integration using the <code class="docutils literal notranslate"><span class="pre">NRLMSISE-00</span></code> model itself?</p>
+<p>We are now ready to set up numerical integrations of a satellite subject to different atmospheric models. We do so, for the purpose of this example, assuming the only forces acting on the satellite are the air drag and the gravitational attraction to a central body.</p>
+<div class="math notranslate nohighlight">
+\[
+\begin{array}{l}
+\ddot{\mathbf r} = -\dfrac{\mu}r^3 \mathbf r -\dfrac {A\rho(\mathbf r, t)}{2m} C_d |\mathbf v|\mathbf v
+\end{array}
+\]</div>
+<p>First some useful constants:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">#First we need to set some variables useful for integration:</span>
+<span class="n">mu</span> <span class="o">=</span> <span class="mf">3.986004407799724e14</span>   <span class="c1">#Earth gravitational parameter SI</span>
+<span class="n">r_earth</span> <span class="o">=</span> <span class="mf">6378.1363</span><span class="o">*</span><span class="mf">1e3</span>     <span class="c1">#Earth radius SI</span>
+<span class="n">initial_h</span><span class="o">=</span><span class="mf">350.</span><span class="o">*</span><span class="mf">1e3</span>          <span class="c1">#Satellite&#39;s initial altitude SI</span>
+<span class="n">mass</span><span class="o">=</span><span class="mi">200</span>                    <span class="c1">#mass of the satellite SI</span>
+<span class="n">area</span><span class="o">=</span><span class="mi">2</span><span class="c1">#                     drag cross-sectional area of the satellite in SI</span>
+<span class="n">cd</span><span class="o">=</span><span class="mf">2.2</span><span class="c1">#                     drag coefficient [-]</span>
+<span class="n">bc</span> <span class="o">=</span> <span class="n">mass</span><span class="o">/</span><span class="p">(</span><span class="n">cd</span><span class="o">*</span><span class="n">area</span><span class="p">)</span>         <span class="c1">#ballistic coefficient in SI</span>
+<span class="c1">#we assume a circular orbit at first</span>
+<span class="n">initial_state</span><span class="o">=</span><span class="p">[</span><span class="n">r_earth</span><span class="o">+</span><span class="n">initial_h</span><span class="p">,</span><span class="mf">0.</span><span class="p">,</span><span class="mf">0.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">mu</span><span class="o">/</span><span class="p">(</span><span class="n">r_earth</span><span class="o">+</span><span class="n">initial_h</span><span class="p">)),</span><span class="mf">0.</span><span class="p">]</span>
+<span class="c1">#finally, we need to de-normalize the solar indices of the day of the integration:</span>
+<span class="n">f107</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="o">+</span><span class="n">f107_n</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span><span class="o">*</span><span class="p">(</span><span class="mf">290.</span><span class="o">-</span><span class="mf">60.</span><span class="p">)</span><span class="o">+</span><span class="mf">60.</span>
+<span class="n">f107A</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="o">+</span><span class="n">f107A_n</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span><span class="o">*</span><span class="p">(</span><span class="mf">190.</span><span class="o">-</span><span class="mf">60.</span><span class="p">)</span><span class="o">+</span><span class="mf">60.</span>
+<span class="n">ap</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="o">+</span><span class="n">ap_n</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span><span class="o">*</span><span class="p">(</span><span class="mf">140.</span><span class="o">-</span><span class="mf">0.</span><span class="p">)</span><span class="o">+</span><span class="mf">0.</span>
+</pre></div>
+</div>
+</div>
+</div>
+<section id="scipy-nrlmsise-00">
+<h3>Scipy + NRLMSISE-00<a class="headerlink" href="#scipy-nrlmsise-00" title="Permalink to this heading">#</a></h3>
+<p>This is the standard scipy integration, using NRLMSISE-00 as neutral density model</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>to run this, the <a class="reference external" href="https://pypi.org/project/nrlmsise00/">nrlmsise00</a> pypi package shall be first installed</p>
+</div>
+<p>First, we define the dynamics:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">from_position_to_geodetic_</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">z</span><span class="p">,</span><span class="n">a_earth</span><span class="o">=</span><span class="mf">6378137.0</span><span class="p">,</span><span class="n">b_earth</span><span class="o">=</span><span class="mf">6356752.314245</span><span class="p">,</span><span class="n">iters</span><span class="o">=</span><span class="mi">4</span><span class="p">):</span>
+    <span class="n">long</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">arctan2</span><span class="p">(</span><span class="n">y</span><span class="p">,</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">p</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">x</span><span class="o">**</span><span class="mi">2</span><span class="o">+</span><span class="n">y</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">e</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">((</span><span class="n">a_earth</span><span class="o">**</span><span class="mi">2</span><span class="o">-</span><span class="n">b_earth</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">/</span><span class="n">a_earth</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">phi</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">arctan</span><span class="p">(</span><span class="n">z</span><span class="o">/</span><span class="n">p</span><span class="o">/</span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">e</span><span class="o">**</span><span class="mi">2</span><span class="p">))</span>
+    <span class="c1">#we iterate to improve the solution</span>
+    <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">iters</span><span class="p">):</span>            
+        <span class="n">N</span><span class="o">=</span><span class="n">a_earth</span><span class="o">**</span><span class="mi">2</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">a_earth</span><span class="o">**</span><span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">phi</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="o">+</span><span class="n">b_earth</span><span class="o">**</span><span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">phi</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+        <span class="n">h</span><span class="o">=</span><span class="n">p</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">phi</span><span class="p">)</span><span class="o">-</span><span class="n">N</span>
+        <span class="n">phi</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">arctan</span><span class="p">(</span><span class="n">z</span><span class="o">/</span><span class="n">p</span><span class="o">/</span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">e</span><span class="o">**</span><span class="mi">2</span><span class="o">*</span><span class="n">N</span><span class="o">/</span><span class="p">(</span><span class="n">N</span><span class="o">+</span><span class="n">h</span><span class="p">)))</span>
+    <span class="k">return</span> <span class="n">h</span><span class="o">/</span><span class="mf">1e3</span><span class="p">,</span><span class="n">phi</span><span class="p">,</span><span class="n">long</span>
+
+<span class="k">def</span> <span class="nf">dxdt</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">state</span><span class="p">,</span> <span class="n">mu</span><span class="p">,</span> <span class="n">f107A</span><span class="p">,</span> <span class="n">f107</span><span class="p">,</span> <span class="n">ap</span><span class="p">,</span> <span class="n">bc</span><span class="p">,</span> <span class="n">date0</span><span class="p">):</span>
+    <span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">z</span><span class="p">,</span><span class="n">vx</span><span class="p">,</span><span class="n">vy</span><span class="p">,</span><span class="n">vz</span><span class="o">=</span><span class="n">state</span>
+    <span class="n">r</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">x</span><span class="o">**</span><span class="mi">2</span><span class="o">+</span><span class="n">y</span><span class="o">**</span><span class="mi">2</span><span class="o">+</span><span class="n">z</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">h</span><span class="p">,</span><span class="n">lat</span><span class="p">,</span><span class="n">long</span><span class="o">=</span><span class="n">from_position_to_geodetic_</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">z</span><span class="p">)</span>
+    <span class="c1">#nrlmsise-00 density (takes: datetime, altitude [km], latitude [deg], longitude [deg], f107, f107A, ap)</span>
+    <span class="n">rho</span><span class="o">=</span><span class="n">msise_flat</span><span class="p">(</span><span class="n">time</span><span class="o">=</span><span class="n">date0</span><span class="o">+</span><span class="n">datetime</span><span class="o">.</span><span class="n">timedelta</span><span class="p">(</span><span class="n">seconds</span><span class="o">=</span><span class="n">t</span><span class="p">),</span> <span class="n">alt</span><span class="o">=</span><span class="n">h</span><span class="p">,</span> <span class="n">lat</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">rad2deg</span><span class="p">(</span><span class="n">lat</span><span class="p">),</span> <span class="n">lon</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">rad2deg</span><span class="p">(</span><span class="n">long</span><span class="p">),</span> <span class="n">f107a</span><span class="o">=</span><span class="n">f107A</span><span class="p">,</span> <span class="n">f107</span><span class="o">=</span><span class="n">f107</span><span class="p">,</span> <span class="n">ap</span><span class="o">=</span><span class="n">ap</span><span class="p">)[</span><span class="mi">5</span><span class="p">]</span><span class="o">*</span><span class="mf">1e3</span>
+    <span class="n">adrag_x</span><span class="o">=-</span><span class="mi">1</span><span class="o">/</span><span class="mi">2</span><span class="o">*</span><span class="n">rho</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">vx</span><span class="o">**</span><span class="mi">2</span><span class="o">+</span><span class="n">vy</span><span class="o">**</span><span class="mi">2</span><span class="o">+</span><span class="n">vz</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">*</span><span class="n">vx</span><span class="o">/</span><span class="n">bc</span>
+    <span class="n">adrag_y</span><span class="o">=-</span><span class="mi">1</span><span class="o">/</span><span class="mi">2</span><span class="o">*</span><span class="n">rho</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">vx</span><span class="o">**</span><span class="mi">2</span><span class="o">+</span><span class="n">vy</span><span class="o">**</span><span class="mi">2</span><span class="o">+</span><span class="n">vz</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">*</span><span class="n">vy</span><span class="o">/</span><span class="n">bc</span>
+    <span class="n">adrag_z</span><span class="o">=-</span><span class="mi">1</span><span class="o">/</span><span class="mi">2</span><span class="o">*</span><span class="n">rho</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">vx</span><span class="o">**</span><span class="mi">2</span><span class="o">+</span><span class="n">vy</span><span class="o">**</span><span class="mi">2</span><span class="o">+</span><span class="n">vz</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">*</span><span class="n">vz</span><span class="o">/</span><span class="n">bc</span>
+    <span class="n">ax</span><span class="o">=-</span><span class="n">mu</span><span class="o">*</span><span class="n">x</span><span class="o">/</span><span class="n">r</span><span class="o">**</span><span class="mi">3</span><span class="o">+</span><span class="n">adrag_x</span>
+    <span class="n">ay</span><span class="o">=-</span><span class="n">mu</span><span class="o">*</span><span class="n">y</span><span class="o">/</span><span class="n">r</span><span class="o">**</span><span class="mi">3</span><span class="o">+</span><span class="n">adrag_y</span>
+    <span class="n">az</span><span class="o">=-</span><span class="n">mu</span><span class="o">*</span><span class="n">z</span><span class="o">/</span><span class="n">r</span><span class="o">**</span><span class="mi">3</span><span class="o">+</span><span class="n">adrag_z</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">vx</span><span class="p">,</span><span class="n">vy</span><span class="p">,</span><span class="n">vz</span><span class="p">,</span><span class="n">ax</span><span class="p">,</span><span class="n">ay</span><span class="p">,</span><span class="n">az</span><span class="p">])</span>
+    
+</pre></div>
+</div>
+</div>
+</div>
+<p>Then, we set up the integration:</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>To have a fair comparison, as integrator, we use <code class="docutils literal notranslate"><span class="pre">DOP853</span></code> with absolute and relative tolerances of <span class="math notranslate nohighlight">\(10^{-13}\)</span>, and we then select the same tolerances for the Taylor integrator)</p>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">t_span</span><span class="o">=</span><span class="p">(</span><span class="mf">0.</span><span class="p">,</span><span class="mf">60.</span><span class="o">*</span><span class="mi">60</span><span class="o">*</span><span class="mf">10.</span><span class="p">)</span> <span class="c1">#10 hours propagation</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%%time</span>it
+<span class="n">sol</span> <span class="o">=</span> <span class="n">solve_ivp</span><span class="p">(</span><span class="n">dxdt</span><span class="p">,</span> 
+                <span class="n">t_span</span><span class="p">,</span> 
+                <span class="n">initial_state</span><span class="p">,</span> 
+                <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">mu</span><span class="p">,</span> <span class="n">f107A</span><span class="p">,</span> <span class="n">f107</span><span class="p">,</span> <span class="n">ap</span><span class="p">,</span> <span class="n">bc</span><span class="p">,</span> <span class="n">date0</span><span class="p">),</span> 
+                <span class="n">method</span><span class="o">=</span><span class="s1">&#39;DOP853&#39;</span><span class="p">,</span>
+                <span class="n">rtol</span><span class="o">=</span><span class="mf">1e-13</span><span class="p">,</span>
+                <span class="n">atol</span><span class="o">=</span><span class="mf">1e-14</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>1.19 s ± 7.67 ms per loop (mean ± std. dev. of 7 runs, 1 loop each)
+</pre></div>
+</div>
+</div>
+</div>
+<p>For plotting (later on) we perform again the integration once to record the result.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sol</span> <span class="o">=</span> <span class="n">solve_ivp</span><span class="p">(</span><span class="n">dxdt</span><span class="p">,</span> 
+                <span class="n">t_span</span><span class="p">,</span> 
+                <span class="n">initial_state</span><span class="p">,</span> 
+                <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">mu</span><span class="p">,</span> <span class="n">f107A</span><span class="p">,</span> <span class="n">f107</span><span class="p">,</span> <span class="n">ap</span><span class="p">,</span> <span class="n">bc</span><span class="p">,</span> <span class="n">date0</span><span class="p">),</span> 
+                <span class="n">method</span><span class="o">=</span><span class="s1">&#39;DOP853&#39;</span><span class="p">,</span>
+                <span class="n">rtol</span><span class="o">=</span><span class="mf">1e-13</span><span class="p">,</span>
+                <span class="n">atol</span><span class="o">=</span><span class="mf">1e-14</span><span class="p">)</span>
+<span class="n">res_x_scipy_nrlmsise00</span><span class="o">=</span><span class="n">sol</span><span class="o">.</span><span class="n">y</span><span class="p">[</span><span class="mi">0</span><span class="p">,:]</span>
+<span class="n">res_y_scipy_nrlmsise00</span><span class="o">=</span><span class="n">sol</span><span class="o">.</span><span class="n">y</span><span class="p">[</span><span class="mi">1</span><span class="p">,:]</span>
+<span class="n">res_z_scipy_nrlmsise00</span><span class="o">=</span><span class="n">sol</span><span class="o">.</span><span class="n">y</span><span class="p">[</span><span class="mi">2</span><span class="p">,:]</span>
+<span class="n">res_vx_scipy_nrlmsise00</span><span class="o">=</span><span class="n">sol</span><span class="o">.</span><span class="n">y</span><span class="p">[</span><span class="mi">3</span><span class="p">,:]</span>
+<span class="n">res_vy_scipy_nrlmsise00</span><span class="o">=</span><span class="n">sol</span><span class="o">.</span><span class="n">y</span><span class="p">[</span><span class="mi">4</span><span class="p">,:]</span>
+<span class="n">res_vz_scipy_nrlmsise00</span><span class="o">=</span><span class="n">sol</span><span class="o">.</span><span class="n">y</span><span class="p">[</span><span class="mi">5</span><span class="p">,:]</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="heyoka-differentiable-atmosphere-nn">
+<h3>Heyoka + differentiable atmosphere (NN)<a class="headerlink" href="#heyoka-differentiable-atmosphere-nn" title="Permalink to this heading">#</a></h3>
+<p>Here we do the same as above, but using <code class="docutils literal notranslate"><span class="pre">heyoka</span></code>’s Taylor method, and the differentiable atmosphere model.</p>
+<p>First, we define the dynamics:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">akepler_x</span><span class="o">=-</span><span class="n">mu</span><span class="o">*</span><span class="n">x</span><span class="o">*</span><span class="p">(</span><span class="n">x</span><span class="o">**</span><span class="mi">2</span><span class="o">+</span><span class="n">y</span><span class="o">**</span><span class="mi">2</span><span class="o">+</span><span class="n">z</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">**</span><span class="p">(</span><span class="o">-</span><span class="mi">3</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">akepler_y</span><span class="o">=-</span><span class="n">mu</span><span class="o">*</span><span class="n">y</span><span class="o">*</span><span class="p">(</span><span class="n">x</span><span class="o">**</span><span class="mi">2</span><span class="o">+</span><span class="n">y</span><span class="o">**</span><span class="mi">2</span><span class="o">+</span><span class="n">z</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">**</span><span class="p">(</span><span class="o">-</span><span class="mi">3</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">akepler_z</span><span class="o">=-</span><span class="n">mu</span><span class="o">*</span><span class="n">z</span><span class="o">*</span><span class="p">(</span><span class="n">x</span><span class="o">**</span><span class="mi">2</span><span class="o">+</span><span class="n">y</span><span class="o">**</span><span class="mi">2</span><span class="o">+</span><span class="n">z</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">**</span><span class="p">(</span><span class="o">-</span><span class="mi">3</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span>
+
+<span class="n">adragx</span><span class="o">=-</span><span class="mi">1</span><span class="o">/</span><span class="mi">2</span><span class="o">*</span><span class="n">density_nn</span><span class="o">*</span><span class="n">vx</span><span class="o">*</span><span class="n">hk</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">vx</span><span class="o">**</span><span class="mi">2</span><span class="o">+</span><span class="n">vy</span><span class="o">**</span><span class="mi">2</span><span class="o">+</span><span class="n">vz</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">/</span><span class="n">bc</span>
+<span class="n">adragy</span><span class="o">=-</span><span class="mi">1</span><span class="o">/</span><span class="mi">2</span><span class="o">*</span><span class="n">density_nn</span><span class="o">*</span><span class="n">vy</span><span class="o">*</span><span class="n">hk</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">vx</span><span class="o">**</span><span class="mi">2</span><span class="o">+</span><span class="n">vy</span><span class="o">**</span><span class="mi">2</span><span class="o">+</span><span class="n">vz</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">/</span><span class="n">bc</span>
+<span class="n">adragz</span><span class="o">=-</span><span class="mi">1</span><span class="o">/</span><span class="mi">2</span><span class="o">*</span><span class="n">density_nn</span><span class="o">*</span><span class="n">vz</span><span class="o">*</span><span class="n">hk</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">vx</span><span class="o">**</span><span class="mi">2</span><span class="o">+</span><span class="n">vy</span><span class="o">**</span><span class="mi">2</span><span class="o">+</span><span class="n">vz</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">/</span><span class="n">bc</span>
+
+<span class="n">dyn_drag</span><span class="o">=</span><span class="p">[(</span><span class="n">x</span><span class="p">,</span><span class="n">vx</span><span class="p">),</span> <span class="p">(</span><span class="n">y</span><span class="p">,</span><span class="n">vy</span><span class="p">),</span> <span class="p">(</span><span class="n">z</span><span class="p">,</span><span class="n">vz</span><span class="p">),</span> <span class="p">(</span><span class="n">vx</span><span class="p">,</span><span class="n">akepler_x</span><span class="o">+</span><span class="n">adragx</span><span class="p">),</span> <span class="p">(</span><span class="n">vy</span><span class="p">,</span><span class="n">akepler_y</span><span class="o">+</span><span class="n">adragy</span><span class="p">),</span> <span class="p">(</span><span class="n">vz</span><span class="p">,</span><span class="n">akepler_z</span><span class="o">+</span><span class="n">adragz</span><span class="p">)]</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>We first compile the integrator:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+<span class="n">ta</span><span class="o">=</span><span class="n">hk</span><span class="o">.</span><span class="n">taylor_adaptive</span><span class="p">(</span>
+    <span class="n">dyn_drag</span><span class="p">,</span>
+    <span class="n">initial_state</span><span class="p">,</span>
+    <span class="n">compact_mode</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">tol</span><span class="o">=</span><span class="mf">1e-14</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span><span class="o">-</span><span class="n">start_time</span><span class="si">}</span><span class="s1"> to build the integrator&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>1.5339181423187256 to build the integrator
+</pre></div>
+</div>
+</div>
+</div>
+<p>And then, we can finally perform the integration:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%%time</span>it
+<span class="n">ta</span><span class="o">.</span><span class="n">state</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">initial_state</span>
+<span class="n">ta</span><span class="o">.</span><span class="n">time</span><span class="o">=</span><span class="mf">0.</span>
+<span class="n">sol_heyoka_nn</span><span class="o">=</span><span class="n">ta</span><span class="o">.</span><span class="n">propagate_grid</span><span class="p">(</span><span class="n">sol</span><span class="o">.</span><span class="n">t</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>4.72 ms ± 6.32 µs per loop (mean ± std. dev. of 7 runs, 100 loops each)
+</pre></div>
+</div>
+</div>
+</div>
+<p>For plotting (later on) we perform again the integration once to record the result.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ta</span><span class="o">.</span><span class="n">state</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">initial_state</span>
+<span class="n">ta</span><span class="o">.</span><span class="n">time</span><span class="o">=</span><span class="mf">0.</span>
+<span class="n">sol_heyoka_nn</span><span class="o">=</span><span class="n">ta</span><span class="o">.</span><span class="n">propagate_grid</span><span class="p">(</span><span class="n">sol</span><span class="o">.</span><span class="n">t</span><span class="p">)</span>
+<span class="n">res_x_heyoka_nn</span><span class="o">=</span><span class="n">sol_heyoka_nn</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][:,</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">res_y_heyoka_nn</span><span class="o">=</span><span class="n">sol_heyoka_nn</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][:,</span><span class="mi">1</span><span class="p">]</span>
+<span class="n">res_z_heyoka_nn</span><span class="o">=</span><span class="n">sol_heyoka_nn</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][:,</span><span class="mi">2</span><span class="p">]</span>
+<span class="n">res_vx_heyoka_nn</span><span class="o">=</span><span class="n">sol_heyoka_nn</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][:,</span><span class="mi">3</span><span class="p">]</span>
+<span class="n">res_vy_heyoka_nn</span><span class="o">=</span><span class="n">sol_heyoka_nn</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][:,</span><span class="mi">4</span><span class="p">]</span>
+<span class="n">res_vz_heyoka_nn</span><span class="o">=</span><span class="n">sol_heyoka_nn</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][:,</span><span class="mi">5</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p><em>heyoka.py</em> integration with a differentiable atmosphere is more than 100x times faster than <code class="docutils literal notranslate"><span class="pre">scipy</span></code> with <code class="docutils literal notranslate"><span class="pre">NRLMSISE-00</span></code> !</p>
+</section>
+</section>
+<section id="lets-plot-the-results-to-check-the-accuracy">
+<h2>Lets plot the results to check the accuracy<a class="headerlink" href="#lets-plot-the-results-to-check-the-accuracy" title="Permalink to this heading">#</a></h2>
+<p>All right! But what about the accuracy? Does the trained neural network manage to accurately represent <code class="docutils literal notranslate"><span class="pre">NRLMSISE-00</span></code>, without accumulating too much error during integration?</p>
+<p>For this, we setup a test where we compare:</p>
+<ul class="simple">
+<li><p>scipy with <code class="docutils literal notranslate"><span class="pre">NRLMSISE-00</span></code></p></li>
+<li><p>heyoka with NN</p></li>
+<li><p>heyoka with global fit</p></li>
+</ul>
+<p>But first, let’s integrate the equations of motion using the global fit:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">akepler_x</span><span class="o">=-</span><span class="n">mu</span><span class="o">*</span><span class="n">x</span><span class="o">*</span><span class="p">(</span><span class="n">x</span><span class="o">**</span><span class="mi">2</span><span class="o">+</span><span class="n">y</span><span class="o">**</span><span class="mi">2</span><span class="o">+</span><span class="n">z</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">**</span><span class="p">(</span><span class="o">-</span><span class="mi">3</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">akepler_y</span><span class="o">=-</span><span class="n">mu</span><span class="o">*</span><span class="n">y</span><span class="o">*</span><span class="p">(</span><span class="n">x</span><span class="o">**</span><span class="mi">2</span><span class="o">+</span><span class="n">y</span><span class="o">**</span><span class="mi">2</span><span class="o">+</span><span class="n">z</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">**</span><span class="p">(</span><span class="o">-</span><span class="mi">3</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">akepler_z</span><span class="o">=-</span><span class="n">mu</span><span class="o">*</span><span class="n">z</span><span class="o">*</span><span class="p">(</span><span class="n">x</span><span class="o">**</span><span class="mi">2</span><span class="o">+</span><span class="n">y</span><span class="o">**</span><span class="mi">2</span><span class="o">+</span><span class="n">z</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">**</span><span class="p">(</span><span class="o">-</span><span class="mi">3</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span>
+
+<span class="n">adragx</span><span class="o">=-</span><span class="mi">1</span><span class="o">/</span><span class="mi">2</span><span class="o">*</span><span class="n">density_fit_global</span><span class="o">*</span><span class="n">vx</span><span class="o">*</span><span class="n">hk</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">vx</span><span class="o">**</span><span class="mi">2</span><span class="o">+</span><span class="n">vy</span><span class="o">**</span><span class="mi">2</span><span class="o">+</span><span class="n">vz</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">/</span><span class="n">bc</span>
+<span class="n">adragy</span><span class="o">=-</span><span class="mi">1</span><span class="o">/</span><span class="mi">2</span><span class="o">*</span><span class="n">density_fit_global</span><span class="o">*</span><span class="n">vy</span><span class="o">*</span><span class="n">hk</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">vx</span><span class="o">**</span><span class="mi">2</span><span class="o">+</span><span class="n">vy</span><span class="o">**</span><span class="mi">2</span><span class="o">+</span><span class="n">vz</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">/</span><span class="n">bc</span>
+<span class="n">adragz</span><span class="o">=-</span><span class="mi">1</span><span class="o">/</span><span class="mi">2</span><span class="o">*</span><span class="n">density_fit_global</span><span class="o">*</span><span class="n">vz</span><span class="o">*</span><span class="n">hk</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">vx</span><span class="o">**</span><span class="mi">2</span><span class="o">+</span><span class="n">vy</span><span class="o">**</span><span class="mi">2</span><span class="o">+</span><span class="n">vz</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">/</span><span class="n">bc</span>
+
+<span class="n">dyn_drag_fit_global</span><span class="o">=</span><span class="p">[(</span><span class="n">x</span><span class="p">,</span><span class="n">vx</span><span class="p">),</span> <span class="p">(</span><span class="n">y</span><span class="p">,</span><span class="n">vy</span><span class="p">),</span> <span class="p">(</span><span class="n">z</span><span class="p">,</span><span class="n">vz</span><span class="p">),</span> <span class="p">(</span><span class="n">vx</span><span class="p">,</span><span class="n">akepler_x</span><span class="o">+</span><span class="n">adragx</span><span class="p">),</span> <span class="p">(</span><span class="n">vy</span><span class="p">,</span><span class="n">akepler_y</span><span class="o">+</span><span class="n">adragy</span><span class="p">),</span> <span class="p">(</span><span class="n">vz</span><span class="p">,</span><span class="n">akepler_z</span><span class="o">+</span><span class="n">adragz</span><span class="p">)]</span>
+
+<span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+<span class="n">ta</span><span class="o">=</span><span class="n">hk</span><span class="o">.</span><span class="n">taylor_adaptive</span><span class="p">(</span>
+    <span class="n">dyn_drag_fit_global</span><span class="p">,</span>
+    <span class="n">initial_state</span><span class="p">,</span>
+    <span class="n">compact_mode</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">tol</span><span class="o">=</span><span class="mf">1e-14</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span><span class="o">-</span><span class="n">start_time</span><span class="si">}</span><span class="s1"> to build the integrator&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>0.7945075035095215 to build the integrator
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%%time</span>it
+<span class="n">ta</span><span class="o">.</span><span class="n">state</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">initial_state</span>
+<span class="n">ta</span><span class="o">.</span><span class="n">time</span><span class="o">=</span><span class="mf">0.</span>
+<span class="n">sol_heyoka_fit_global</span><span class="o">=</span><span class="n">ta</span><span class="o">.</span><span class="n">propagate_grid</span><span class="p">(</span><span class="n">sol</span><span class="o">.</span><span class="n">t</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>512 µs ± 470 ns per loop (mean ± std. dev. of 7 runs, 1,000 loops each)
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ta</span><span class="o">.</span><span class="n">state</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">initial_state</span>
+<span class="n">ta</span><span class="o">.</span><span class="n">time</span><span class="o">=</span><span class="mf">0.</span>
+<span class="n">sol_heyoka_fit_global</span><span class="o">=</span><span class="n">ta</span><span class="o">.</span><span class="n">propagate_grid</span><span class="p">(</span><span class="n">sol</span><span class="o">.</span><span class="n">t</span><span class="p">)</span>
+<span class="n">res_x_heyoka_fit_global</span><span class="o">=</span><span class="n">sol_heyoka_fit_global</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][:,</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">res_y_heyoka_fit_global</span><span class="o">=</span><span class="n">sol_heyoka_fit_global</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][:,</span><span class="mi">1</span><span class="p">]</span>
+<span class="n">res_z_heyoka_fit_global</span><span class="o">=</span><span class="n">sol_heyoka_fit_global</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][:,</span><span class="mi">2</span><span class="p">]</span>
+<span class="n">res_vx_heyoka_fit_global</span><span class="o">=</span><span class="n">sol_heyoka_fit_global</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][:,</span><span class="mi">3</span><span class="p">]</span>
+<span class="n">res_vy_heyoka_fit_global</span><span class="o">=</span><span class="n">sol_heyoka_fit_global</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][:,</span><span class="mi">4</span><span class="p">]</span>
+<span class="n">res_vz_heyoka_fit_global</span><span class="o">=</span><span class="n">sol_heyoka_fit_global</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][:,</span><span class="mi">5</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Wow! This is even more than 1000x faster than <code class="docutils literal notranslate"><span class="pre">scipy</span></code> with <code class="docutils literal notranslate"><span class="pre">NRLMSISE-00</span></code>. But does it maintain an acceptable accuracy? Let’s see:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">sol</span><span class="o">.</span><span class="n">t</span><span class="p">,(</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">res_x_heyoka_nn</span><span class="o">**</span><span class="mi">2</span><span class="o">+</span><span class="n">res_y_heyoka_nn</span><span class="o">**</span><span class="mi">2</span><span class="o">+</span><span class="n">res_z_heyoka_nn</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">-</span><span class="n">r_earth</span><span class="p">)</span><span class="o">*</span><span class="mf">1e-3</span><span class="p">,</span><span class="n">label</span><span class="o">=</span><span class="s1">&#39;heyoka+NN&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">sol</span><span class="o">.</span><span class="n">t</span><span class="p">,(</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">res_x_scipy_nrlmsise00</span><span class="o">**</span><span class="mi">2</span><span class="o">+</span><span class="n">res_y_scipy_nrlmsise00</span><span class="o">**</span><span class="mi">2</span><span class="o">+</span><span class="n">res_z_scipy_nrlmsise00</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">-</span><span class="n">r_earth</span><span class="p">)</span><span class="o">*</span><span class="mf">1e-3</span><span class="p">,</span><span class="n">label</span><span class="o">=</span><span class="s1">&#39;scipy+NRLMSISE-00&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">sol</span><span class="o">.</span><span class="n">t</span><span class="p">,(</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">res_x_heyoka_fit_global</span><span class="o">**</span><span class="mi">2</span><span class="o">+</span><span class="n">res_y_heyoka_fit_global</span><span class="o">**</span><span class="mi">2</span><span class="o">+</span><span class="n">res_z_heyoka_fit_global</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">-</span><span class="n">r_earth</span><span class="p">)</span><span class="o">*</span><span class="mf">1e-3</span><span class="p">,</span><span class="n">label</span><span class="o">=</span><span class="s1">&#39;global fit&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;h [km]&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;time [s]&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Text(0.5, 0, &#39;time [s]&#39;)
+</pre></div>
+</div>
+<img alt="../_images/f1fdd73d98dc4c50d4a487b5e6df7cb9bfd83c620cd0cf90891794dc905e308f.png" src="../_images/f1fdd73d98dc4c50d4a487b5e6df7cb9bfd83c620cd0cf90891794dc905e308f.png" />
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;######### global fit vs NRLMSISE-00 #########&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Maximum difference across the integration period:&quot;</span><span class="p">,</span><span class="mf">1e3</span><span class="o">*</span><span class="nb">max</span><span class="p">(</span><span class="nb">abs</span><span class="p">((</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">res_x_heyoka_fit_global</span><span class="o">**</span><span class="mi">2</span><span class="o">+</span><span class="n">res_y_heyoka_fit_global</span><span class="o">**</span><span class="mi">2</span><span class="o">+</span><span class="n">res_z_heyoka_fit_global</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">-</span><span class="n">r_earth</span><span class="p">)</span><span class="o">*</span><span class="mf">1e-3</span><span class="o">-</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">res_x_scipy_nrlmsise00</span><span class="o">**</span><span class="mi">2</span><span class="o">+</span><span class="n">res_y_scipy_nrlmsise00</span><span class="o">**</span><span class="mi">2</span><span class="o">+</span><span class="n">res_z_scipy_nrlmsise00</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">-</span><span class="n">r_earth</span><span class="p">)</span><span class="o">*</span><span class="mf">1e-3</span><span class="p">)))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Final difference:&quot;</span><span class="p">,</span><span class="mf">1e3</span><span class="o">*</span><span class="p">(</span><span class="nb">abs</span><span class="p">((</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">res_x_heyoka_fit_global</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span><span class="o">+</span><span class="n">res_y_heyoka_fit_global</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span><span class="o">+</span><span class="n">res_z_heyoka_fit_global</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">-</span><span class="n">r_earth</span><span class="p">)</span><span class="o">*</span><span class="mf">1e-3</span><span class="o">-</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">res_x_scipy_nrlmsise00</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span><span class="o">+</span><span class="n">res_y_scipy_nrlmsise00</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span><span class="o">+</span><span class="n">res_z_scipy_nrlmsise00</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">-</span><span class="n">r_earth</span><span class="p">)</span><span class="o">*</span><span class="mf">1e-3</span><span class="p">)))</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">######### NN vs NRLMSISE-00 #########&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Maximum difference across the integration period:&quot;</span><span class="p">,</span><span class="mf">1e3</span><span class="o">*</span><span class="nb">max</span><span class="p">(</span><span class="nb">abs</span><span class="p">((</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">res_x_heyoka_nn</span><span class="o">**</span><span class="mi">2</span><span class="o">+</span><span class="n">res_y_heyoka_nn</span><span class="o">**</span><span class="mi">2</span><span class="o">+</span><span class="n">res_z_heyoka_nn</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">-</span><span class="n">r_earth</span><span class="p">)</span><span class="o">*</span><span class="mf">1e-3</span><span class="o">-</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">res_x_scipy_nrlmsise00</span><span class="o">**</span><span class="mi">2</span><span class="o">+</span><span class="n">res_y_scipy_nrlmsise00</span><span class="o">**</span><span class="mi">2</span><span class="o">+</span><span class="n">res_z_scipy_nrlmsise00</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">-</span><span class="n">r_earth</span><span class="p">)</span><span class="o">*</span><span class="mf">1e-3</span><span class="p">)))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Final difference:&quot;</span><span class="p">,</span><span class="mf">1e3</span><span class="o">*</span><span class="p">(</span><span class="nb">abs</span><span class="p">((</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">res_x_heyoka_nn</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span><span class="o">+</span><span class="n">res_y_heyoka_nn</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span><span class="o">+</span><span class="n">res_z_heyoka_nn</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">-</span><span class="n">r_earth</span><span class="p">)</span><span class="o">*</span><span class="mf">1e-3</span><span class="o">-</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">res_x_scipy_nrlmsise00</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span><span class="o">+</span><span class="n">res_y_scipy_nrlmsise00</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span><span class="o">+</span><span class="n">res_z_scipy_nrlmsise00</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">-</span><span class="n">r_earth</span><span class="p">)</span><span class="o">*</span><span class="mf">1e-3</span><span class="p">)))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>######### global fit vs NRLMSISE-00 #########
+Maximum difference across the integration period: 241.68232485931185
+Final difference: 241.68232485931185
+
+
+######### NN vs NRLMSISE-00 #########
+Maximum difference across the integration period: 25.222124388449174
+Final difference: 9.643930614913643
+</pre></div>
+</div>
+</div>
+</div>
+<p>As we notice, the differentiable atmosphere manages to capture very well the underlying behavior of NRLMSISE-00, maintaining (for 10 hours integrations) differences always below 23 meters, with a final difference of 9.45 meters, in the altitude of the satellite at an initial altitude of 350km (where drag is one of the main perturbations).</p>
+<p>Conversely, a global fit does not manage to maintain the same accuracy, reaching difference as high as 223 meters, and a final difference of 200 meters.</p>
+</section>
+</section>
+
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="NeuralODEs.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Neural ODEs</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="../examples_others.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Others</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#numerical-integration-with-differentiable-atmosphere">Numerical Integration with Differentiable Atmosphere</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#scipy-nrlmsise-00">Scipy + NRLMSISE-00</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#heyoka-differentiable-atmosphere-nn">Heyoka + differentiable atmosphere (NN)</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#lets-plot-the-results-to-check-the-accuracy">Lets plot the results to check the accuracy</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Francesco Biscani and Dario Izzo
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2020, 2021, 2022, 2023, Francesco Biscani and Dario Izzo.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=5b4479735964841361fd"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=5b4479735964841361fd"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

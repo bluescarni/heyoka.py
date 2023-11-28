@@ -3,7 +3,7 @@
 <!DOCTYPE html>
 
 
-<html lang="en" >
+<html lang="en" data-content_root="" >
 
   <head>
     <meta charset="utf-8" />
@@ -19,12 +19,12 @@
   </script>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../_static/styles/theme.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
-<link href="../_static/styles/bootstrap.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
-<link href="../_static/styles/pydata-sphinx-theme.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
+  <link href="../_static/styles/theme.css?digest=5b4479735964841361fd" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=5b4479735964841361fd" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=5b4479735964841361fd" rel="stylesheet" />
 
   
-  <link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
+  <link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=5b4479735964841361fd" rel="stylesheet" />
   <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
@@ -34,9 +34,9 @@
     <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=365ca57ee442770a23c6" />
-<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=365ca57ee442770a23c6" />
-  <script src="../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=365ca57ee442770a23c6"></script>
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=5b4479735964841361fd" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=5b4479735964841361fd" />
+  <script src="../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=5b4479735964841361fd"></script>
 
     <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
     <script src="../_static/doctools.js"></script>
@@ -121,6 +121,7 @@
   
     <div class="sidebar-primary-items__start sidebar-primary__section">
         <div class="sidebar-primary-item">
+
   
 
 <a class="navbar-brand logo" href="../index.html">
@@ -210,8 +211,11 @@
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../examples_ml.html">Machine Learning</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-5"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="ffnn.html">Feed-Forward Neural Networks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torch_and_heyoka.html">Interfacing <em>torch</em> to <em>heyoka.py</em></a></li>
 <li class="toctree-l2"><a class="reference internal" href="NeuralHamiltonianODEs.html">Neural Hamiltonian ODEs</a></li>
 <li class="toctree-l2"><a class="reference internal" href="NeuralODEs.html">Neural ODEs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="differentiable_atmosphere.html">Differentiable Atmosphere</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../examples_others.html">Others</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-6"><i class="fa-solid fa-chevron-down"></i></label><ul>
@@ -405,6 +409,7 @@
 </button>
 
 
+
 <script>
 document.write(`
   <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
@@ -414,6 +419,7 @@ document.write(`
   </button>
 `);
 </script>
+
 
 <script>
 document.write(`
@@ -628,7 +634,7 @@ x = 0,
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/71e6c4f532e62247ae95bc09d5d9a75c54432c720473dde7cf9a5a458cb0cdae.png" src="../_images/71e6c4f532e62247ae95bc09d5d9a75c54432c720473dde7cf9a5a458cb0cdae.png" />
+<img alt="../_images/4b0f9bc5850f04deb0868b387f0b0abc7028a2bd308abe78b207759d34d71f18.png" src="../_images/4b0f9bc5850f04deb0868b387f0b0abc7028a2bd308abe78b207759d34d71f18.png" />
 </div>
 </div>
 <p>This Poincare’ section is suggesting that the integral of motion <span class="math notranslate nohighlight">\(\mathcal{C}\)</span> does indeed exist, because the intersections of all random orbits are clearly tracing curves on the <span class="math notranslate nohighlight">\(x=0\)</span> plane.</p>
@@ -643,7 +649,7 @@ x = 0,
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/42c664dccede8bd4e5f3dfb069b08b9f48c5e5c3486e9834a3fca40e0f9fd767.png" src="../_images/42c664dccede8bd4e5f3dfb069b08b9f48c5e5c3486e9834a3fca40e0f9fd767.png" />
+<img alt="../_images/57dd72ac05794d7dfb2ffedbf8dab5d1cb4bb15ac2eb6f08101636c5d345b7db.png" src="../_images/57dd72ac05794d7dfb2ffedbf8dab5d1cb4bb15ac2eb6f08101636c5d345b7db.png" />
 </div>
 </div>
 <p>The qualitative picture is now radically different. Although islands of stable motion persist, now most trajectories seem to be densely filling the plane, rather than tracing curves on it. Let us further increase the energy level:</p>
@@ -654,7 +660,7 @@ x = 0,
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/748a262e82811fd91a293e01da4f1337a96939ef45d4bf77dce7e9b6ac251571.png" src="../_images/748a262e82811fd91a293e01da4f1337a96939ef45d4bf77dce7e9b6ac251571.png" />
+<img alt="../_images/f3fa0186a1660f107192ce6b461d607acf868289d73eefdff2f6139a33ee9dc4.png" src="../_images/f3fa0186a1660f107192ce6b461d607acf868289d73eefdff2f6139a33ee9dc4.png" />
 </div>
 </div>
 <p>At higher energies, the densely-filling behaviour (which Henon and Heiles call <em>ergodic</em>) is even more prevalent than before.</p>
@@ -674,7 +680,7 @@ x = 0,
               
               
                 <footer class="prev-next-footer">
-                  <!-- Previous / next buttons -->
+                  
 <div class="prev-next-area">
     <a class="left-prev"
        href="Poincar%C3%A9%20sections.html"
@@ -733,6 +739,7 @@ By Francesco Biscani and Dario Izzo
   
   <div class="footer-item">
     
+
   <p class="copyright">
     
       © Copyright 2020, 2021, 2022, 2023, Francesco Biscani and Dario Izzo.
@@ -759,8 +766,8 @@ By Francesco Biscani and Dario Izzo
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../_static/scripts/bootstrap.js?digest=365ca57ee442770a23c6"></script>
-<script src="../_static/scripts/pydata-sphinx-theme.js?digest=365ca57ee442770a23c6"></script>
+  <script src="../_static/scripts/bootstrap.js?digest=5b4479735964841361fd"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=5b4479735964841361fd"></script>
 
   <footer class="bd-footer">
   </footer>
