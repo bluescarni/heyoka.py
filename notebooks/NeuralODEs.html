@@ -470,7 +470,7 @@ document.write(`
                 <article class="bd-article" role="main">
                   
   <section class="tex2jax_ignore mathjax_ignore" id="neural-odes">
-<h1>Neural ODEs<a class="headerlink" href="#neural-odes" title="Permalink to this heading">#</a></h1>
+<span id="tut-neural-ode"></span><h1>Neural ODEs<a class="headerlink" href="#neural-odes" title="Permalink to this heading">#</a></h1>
 <p>We here consider, check also <a class="reference internal" href="NeuralHamiltonianODEs.html"><span class="std std-doc">Neural Hamiltonian ODE</span></a> example, a generic system in the form:</p>
 <div class="math notranslate nohighlight">
 \[
@@ -659,7 +659,7 @@ Shape of dNdx: (2, 2)
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>--- 0.5826332569122314 seconds --- to build (jit) the Taylor integrator
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>--- 0.5606160163879395 seconds --- to build (jit) the Taylor integrator
 </pre></div>
 </div>
 </div>
@@ -700,7 +700,7 @@ Shape of dNdx: (2, 2)
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>--- 0.00023818016052246094 seconds --- to propagate using the Taylor scheme
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>--- 0.00020503997802734375 seconds --- to propagate using the Taylor scheme
 </pre></div>
 </div>
 </div>
@@ -719,7 +719,7 @@ Shape of dNdx: (2, 2)
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/f6e0c219d558da623e3ba62c1ed7cec00ef2cf35d2b2f7919da258907355a1c6.png" src="../_images/f6e0c219d558da623e3ba62c1ed7cec00ef2cf35d2b2f7919da258907355a1c6.png" />
+<img alt="../_images/9e49248c2d207ca2cf0e0022aa98c13053fa9743e742c5b01cf8bde628cf0b25.png" src="../_images/9e49248c2d207ca2cf0e0022aa98c13053fa9743e742c5b01cf8bde628cf0b25.png" />
 </div>
 </div>
 </section>
@@ -758,7 +758,7 @@ This allows us to use identical jitted expressions also for the rhs of the case 
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>--- 0.0023894309997558594 seconds --- to propagate
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>--- 0.0015060901641845703 seconds --- to propagate
 </pre></div>
 </div>
 </div>
@@ -773,7 +773,7 @@ This allows us to use identical jitted expressions also for the rhs of the case 
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/ba032ff4e5036fe5a9ebb851faf55b3cbed531f330a5a77feb1ee676f4d8a6a6.png" src="../_images/ba032ff4e5036fe5a9ebb851faf55b3cbed531f330a5a77feb1ee676f4d8a6a6.png" />
+<img alt="../_images/d8c39aec0f572261a9a940017c22201d35c7b30fa4f3a013b6fd350a80acd38c.png" src="../_images/d8c39aec0f572261a9a940017c22201d35c7b30fa4f3a013b6fd350a80acd38c.png" />
 </div>
 </div>
 <p>We see a net advantage in timings using the Taylor integration scheme. Note we are here not using batch propagation, which would add an additional 2-4 factor speedup in performances.</p>
