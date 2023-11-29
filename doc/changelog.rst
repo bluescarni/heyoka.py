@@ -3,12 +3,17 @@
 Changelog
 =========
 
-3.2.0 (unreleased)
+3.2.0 (2023-11-29)
 ------------------
 
 New
 ~~~
 
+- New example on a differentiable atmosphere model via
+  neural networks
+  (`#151 <https://github.com/bluescarni/heyoka.py/pull/151>`__).
+- New example on interfacing pytorch and heyoka.py
+  (`#151 <https://github.com/bluescarni/heyoka.py/pull/151>`__).
 - Add wheels for Python 3.12
   (`#150 <https://github.com/bluescarni/heyoka.py/pull/150>`__).
 - Add support for single-precision computations
