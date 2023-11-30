@@ -213,8 +213,8 @@
 <li class="toctree-l1 has-children"><a class="reference internal" href="../examples_ml.html">Machine Learning</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-5"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="ffnn.html">Feed-Forward Neural Networks</a></li>
 <li class="toctree-l2"><a class="reference internal" href="torch_and_heyoka.html">Interfacing <em>torch</em> to <em>heyoka.py</em></a></li>
-<li class="toctree-l2"><a class="reference internal" href="NeuralHamiltonianODEs.html">Neural Hamiltonian ODEs</a></li>
 <li class="toctree-l2"><a class="reference internal" href="NeuralODEs.html">Neural ODEs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="NeuralHamiltonianODEs.html">Neural Hamiltonian ODEs</a></li>
 <li class="toctree-l2"><a class="reference internal" href="differentiable_atmosphere.html">Differentiable Atmosphere</a></li>
 </ul>
 </li>
@@ -467,8 +467,8 @@ document.write(`
   <section class="tex2jax_ignore mathjax_ignore" id="lagrange-propagation-and-the-state-transition-matrix">
 <h1>Lagrange propagation and the state transition matrix<a class="headerlink" href="#lagrange-propagation-and-the-state-transition-matrix" title="Permalink to this heading">#</a></h1>
 <p>In the gravitational <a class="reference external" href="https://en.wikipedia.org/wiki/Two-body_problem">two-body problem</a> it is possible to compute the state of the system at an arbitrary time from an initial state <span class="math notranslate nohighlight">\(\left( \boldsymbol{r}_0, \boldsymbol{v}_0 \right)\)</span> via the so-called Lagrange coefficients <span class="math notranslate nohighlight">\(F\)</span>, <span class="math notranslate nohighlight">\(G\)</span>, <span class="math notranslate nohighlight">\(F_t\)</span> and <span class="math notranslate nohighlight">\(G_t\)</span>:</p>
-<div class="amsmath math notranslate nohighlight" id="equation-d4613824-1246-4470-8736-75f72f1c2bbf">
-<span class="eqno">(1)<a class="headerlink" href="#equation-d4613824-1246-4470-8736-75f72f1c2bbf" title="Permalink to this equation">#</a></span>\[\begin{equation}
+<div class="amsmath math notranslate nohighlight" id="equation-f21f0adf-952a-4113-a027-d1ed0362242a">
+<span class="eqno">(1)<a class="headerlink" href="#equation-f21f0adf-952a-4113-a027-d1ed0362242a" title="Permalink to this equation">#</a></span>\[\begin{equation}
 \begin{cases}
 \boldsymbol{r} &amp; = F \boldsymbol{r}_0 + G \boldsymbol{v}_0 \\
 \boldsymbol{v} &amp; = F_t \boldsymbol{r}_0 + G_t \boldsymbol{v}_0

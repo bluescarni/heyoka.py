@@ -47,8 +47,8 @@
     <script>DOCUMENTATION_OPTIONS.pagename = 'notebooks/NeuralODEs';</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Differentiable Atmosphere" href="differentiable_atmosphere.html" />
-    <link rel="prev" title="Neural Hamiltonian ODEs" href="NeuralHamiltonianODEs.html" />
+    <link rel="next" title="Neural Hamiltonian ODEs" href="NeuralHamiltonianODEs.html" />
+    <link rel="prev" title="Interfacing torch to heyoka.py" href="torch_and_heyoka.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -213,8 +213,8 @@
 <li class="toctree-l1 current active has-children"><a class="reference internal" href="../examples_ml.html">Machine Learning</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-5"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="ffnn.html">Feed-Forward Neural Networks</a></li>
 <li class="toctree-l2"><a class="reference internal" href="torch_and_heyoka.html">Interfacing <em>torch</em> to <em>heyoka.py</em></a></li>
-<li class="toctree-l2"><a class="reference internal" href="NeuralHamiltonianODEs.html">Neural Hamiltonian ODEs</a></li>
 <li class="toctree-l2 current active"><a class="current reference internal" href="#">Neural ODEs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="NeuralHamiltonianODEs.html">Neural Hamiltonian ODEs</a></li>
 <li class="toctree-l2"><a class="reference internal" href="differentiable_atmosphere.html">Differentiable Atmosphere</a></li>
 </ul>
 </li>
@@ -633,7 +633,7 @@ Shape of dNdx: (2, 2)
 </section>
 <section id="performance-test">
 <h2>Performance test<a class="headerlink" href="#performance-test" title="Permalink to this heading">#</a></h2>
-<p>Let us profile the speed of Taylor integration in the context of Neural ODE vs the <code class="docutils literal notranslate"><span class="pre">scipy.integrate</span></code> counterpart, used in most existsing tools that provide some easy access to some version of Neural ODEs.</p>
+<p>Let us profile the speed of Taylor integration in the context of Neural ODE vs the <a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/integrate.html#module-scipy.integrate" title="(in SciPy v1.11.4)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">scipy.integrate</span></code></a> counterpart, used in most existsing tools that provide some easy access to some version of Neural ODEs.</p>
 <p>We start with setting up the Taylor Integration. We create random weights and biases for the <code class="docutils literal notranslate"><span class="pre">ffnn</span></code>. We also set a very high tolerance as to match what is commonly done in the context of ML work on Neural ODEs. (This test can be repeated at dfferent tolerances and will mostly allow for a similar conclusion).</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -659,7 +659,7 @@ Shape of dNdx: (2, 2)
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>--- 0.4279334545135498 seconds --- to build (jit) the Taylor integrator
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>--- 0.5135993957519531 seconds --- to build (jit) the Taylor integrator
 </pre></div>
 </div>
 </div>
@@ -700,7 +700,7 @@ Shape of dNdx: (2, 2)
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>--- 0.00024175643920898438 seconds --- to propagate using the Taylor scheme
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>--- 0.0003116130828857422 seconds --- to propagate using the Taylor scheme
 </pre></div>
 </div>
 </div>
@@ -719,13 +719,13 @@ Shape of dNdx: (2, 2)
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/8700c903600cfc193e178baa28653b7fabb5fb0cf3a232a0a6acf194814d7fc1.png" src="../_images/8700c903600cfc193e178baa28653b7fabb5fb0cf3a232a0a6acf194814d7fc1.png" />
+<img alt="../_images/090f3d53e412b34058e1aa031f1f82fbea801edb42cfd9d4f53dcc024806deb7.png" src="../_images/090f3d53e412b34058e1aa031f1f82fbea801edb42cfd9d4f53dcc024806deb7.png" />
 </div>
 </div>
 </section>
 <section id="scipy-counterpart">
 <h3>Scipy Counterpart<a class="headerlink" href="#scipy-counterpart" title="Permalink to this heading">#</a></h3>
-<p>We assemble the rhs of our equations for use with the <code class="docutils literal notranslate"><span class="pre">scipy.integrate</span></code> suite. Note the simplicity of use of compiled functions for this task.
+<p>We assemble the rhs of our equations for use with the <a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/integrate.html#module-scipy.integrate" title="(in SciPy v1.11.4)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">scipy.integrate</span></code></a> suite. Note the simplicity of use of compiled functions for this task.
 This allows us to use identical jitted expressions also for the rhs of the case of the scipy calls. The comparison results are thus to be interpreted solely in the light of different numerical integration techniques.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -758,7 +758,7 @@ This allows us to use identical jitted expressions also for the rhs of the case 
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>--- 0.0012469291687011719 seconds --- to propagate
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>--- 0.001988649368286133 seconds --- to propagate
 </pre></div>
 </div>
 </div>
@@ -773,7 +773,7 @@ This allows us to use identical jitted expressions also for the rhs of the case 
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/315c29e49ecbe09b6da02fa01caefcda899bc2d93eb68143b6edfaee785890ad.png" src="../_images/315c29e49ecbe09b6da02fa01caefcda899bc2d93eb68143b6edfaee785890ad.png" />
+<img alt="../_images/230c6f775169c39ac85a0825e0b1732e7ac2600dee9c079d1311e249ee5d322f.png" src="../_images/230c6f775169c39ac85a0825e0b1732e7ac2600dee9c079d1311e249ee5d322f.png" />
 </div>
 </div>
 <p>We see a net advantage in timings using the Taylor integration scheme. Note we are here not using batch propagation, which would add an additional 2-4 factor speedup in performances.</p>
@@ -817,20 +817,20 @@ This allows us to use identical jitted expressions also for the rhs of the case 
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="NeuralHamiltonianODEs.html"
+       href="torch_and_heyoka.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Neural Hamiltonian ODEs</p>
+        <p class="prev-next-title">Interfacing <em>torch</em> to <em>heyoka.py</em></p>
       </div>
     </a>
     <a class="right-next"
-       href="differentiable_atmosphere.html"
+       href="NeuralHamiltonianODEs.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Differentiable Atmosphere</p>
+        <p class="prev-next-title">Neural Hamiltonian ODEs</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>

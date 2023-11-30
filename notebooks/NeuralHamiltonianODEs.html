@@ -47,8 +47,8 @@
     <script>DOCUMENTATION_OPTIONS.pagename = 'notebooks/NeuralHamiltonianODEs';</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Neural ODEs" href="NeuralODEs.html" />
-    <link rel="prev" title="Interfacing torch to heyoka.py" href="torch_and_heyoka.html" />
+    <link rel="next" title="Differentiable Atmosphere" href="differentiable_atmosphere.html" />
+    <link rel="prev" title="Neural ODEs" href="NeuralODEs.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -213,8 +213,8 @@
 <li class="toctree-l1 current active has-children"><a class="reference internal" href="../examples_ml.html">Machine Learning</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-5"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="ffnn.html">Feed-Forward Neural Networks</a></li>
 <li class="toctree-l2"><a class="reference internal" href="torch_and_heyoka.html">Interfacing <em>torch</em> to <em>heyoka.py</em></a></li>
-<li class="toctree-l2 current active"><a class="current reference internal" href="#">Neural Hamiltonian ODEs</a></li>
 <li class="toctree-l2"><a class="reference internal" href="NeuralODEs.html">Neural ODEs</a></li>
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">Neural Hamiltonian ODEs</a></li>
 <li class="toctree-l2"><a class="reference internal" href="differentiable_atmosphere.html">Differentiable Atmosphere</a></li>
 </ul>
 </li>
@@ -457,7 +457,7 @@ document.write(`
 <h1>Neural Hamiltonian ODEs<a class="headerlink" href="#neural-hamiltonian-odes" title="Permalink to this heading">#</a></h1>
 <p>Where we define a perturbation to the hamiltonian mechanics parametrized by a FFNN. This is different, but also obviously connected, from what was briefly studied in the paper:</p>
 <p><em>Greydanus, S., Dzamba, M., &amp; Yosinski, J.</em> (2019). Hamiltonian Neural Networks. Advances in neural information processing systems, 32.</p>
-<p>in that only the perturbation of the Hamiltonian is parametrized by a network. Let us consider the same system as above, but this time using the Hamiltonian formalism. We will shortly summarize, in wht follows, the obvious as to show later how to obtain the same symbolically and using <em>heyoka</em>.</p>
+<p>in that only the perturbation of the Hamiltonian is parametrized by a network. Let us consider the same system as <a class="reference internal" href="NeuralODEs.html"><span class="std std-doc">in the previous example</span></a>, but this time using the Hamiltonian formalism. We will shortly summarize, in what follows, the obvious as to show later how to obtain the same symbolically and using <em>heyoka</em>.</p>
 <p>Let us first introduce our Lagrangian coordinates <span class="math notranslate nohighlight">\(\mathbf q = [x, y]\)</span> and their derivatives: <span class="math notranslate nohighlight">\(\dot{\mathbf q} = [v_x, v_y]\)</span>. Under this choice we may compute the kinetic energy of the system as:</p>
 <div class="math notranslate nohighlight">
 \[
@@ -471,7 +471,7 @@ U = \frac 12 k_x x^2 + \frac 12 k_y y^2
 <p>and thus its Lagrangian as:</p>
 <div class="math notranslate nohighlight">
 \[
-\mathcal (\mathbf q, \dot{\mathbf q}) = T - U
+\left(\mathbf q, \dot{\mathbf q}\right) = T - U
 \]</div>
 <p>We can then compute the trivial <em>canonical momenta</em> <span class="math notranslate nohighlight">\(\mathbf p=[p_x, p_y]\)</span> as:</p>
 <div class="math notranslate nohighlight">
@@ -601,10 +601,10 @@ p_y = \frac{\partial {\mathcal L}}{\partial v_y} = v_y \\
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[&lt;matplotlib.lines.Line2D at 0x7f8baf672950&gt;]
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[&lt;matplotlib.lines.Line2D at 0x7f74713a2860&gt;]
 </pre></div>
 </div>
-<img alt="../_images/74dec9b92c49e3b3398b121c9eaf8791e292e861b102c54b16339e680a4eda95.png" src="../_images/74dec9b92c49e3b3398b121c9eaf8791e292e861b102c54b16339e680a4eda95.png" />
+<img alt="../_images/00ad97ce98023d6a34930b1fe6ac6e1fa16d6d3c87fee0a0512af1258797cee5.png" src="../_images/00ad97ce98023d6a34930b1fe6ac6e1fa16d6d3c87fee0a0512af1258797cee5.png" />
 </div>
 </div>
 <p>Clearly, the power and interest of this technique, applied to Hamiltonian systems, lies in the possibility to define some good training for the FFNN weights and biases so that the final system converges to something useful</p>
@@ -623,20 +623,20 @@ p_y = \frac{\partial {\mathcal L}}{\partial v_y} = v_y \\
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="torch_and_heyoka.html"
+       href="NeuralODEs.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Interfacing <em>torch</em> to <em>heyoka.py</em></p>
+        <p class="prev-next-title">Neural ODEs</p>
       </div>
     </a>
     <a class="right-next"
-       href="NeuralODEs.html"
+       href="differentiable_atmosphere.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Neural ODEs</p>
+        <p class="prev-next-title">Differentiable Atmosphere</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
