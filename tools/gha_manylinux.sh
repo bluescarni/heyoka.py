@@ -57,7 +57,7 @@ fi
 # Python optional deps.
 /opt/python/${PYTHON_DIR}/bin/pip install sympy mpmath
 
-# In the pagmo2/manylinux228_x86_64_with_deps:latest image in dockerhub
+# In the pagmo2/manylinux2014_x86_64_with_deps:latest image in dockerhub
 # the working directory is /root/install, we will install heyoka there.
 cd /root/install
 
