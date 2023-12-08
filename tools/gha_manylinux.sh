@@ -42,7 +42,7 @@ else
 fi
 
 # The heyoka version to be used for releases.
-export HEYOKA_VERSION_RELEASE="3.2.0"
+export HEYOKA_VERSION_RELEASE="4.0.0"
 
 # Check if this is a release build.
 if [[ "${GITHUB_REF}" == "refs/tags/v"* ]]; then
