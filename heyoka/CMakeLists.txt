@@ -83,7 +83,7 @@ target_compile_options(core PRIVATE
 )
 set_target_properties(core PROPERTIES CXX_VISIBILITY_PRESET hidden)
 set_target_properties(core PROPERTIES VISIBILITY_INLINES_HIDDEN TRUE)
-target_compile_features(core PRIVATE cxx_std_17)
+target_compile_features(core PRIVATE cxx_std_20)
 set_property(TARGET core PROPERTY CXX_EXTENSIONS NO)
 
 if (HEYOKA_PY_ENABLE_IPO)

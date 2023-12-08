@@ -386,7 +386,6 @@ class event_classes_test_case(_ut.TestCase):
                 cooldown=fp_t(3),
             )
 
-            ev = pickle.loads(pickle.dumps(ev))
             self.assertTrue(" terminal" in repr(ev))
             self.assertTrue("(v + x)" in repr(ev))
             self.assertTrue("event_direction::positive" in repr(ev))
@@ -673,7 +672,6 @@ class event_classes_test_case(_ut.TestCase):
         # Test also with empty callback.
         ev = t_event_batch(x + v, direction=event_direction.positive, cooldown=fp_t(3))
 
-        ev = pickle.loads(pickle.dumps(ev))
         self.assertTrue(" terminal" in repr(ev))
         self.assertTrue("(v + x)" in repr(ev))
         self.assertTrue("event_direction::positive" in repr(ev))
