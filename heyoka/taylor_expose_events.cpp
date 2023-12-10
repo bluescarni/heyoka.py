@@ -93,7 +93,7 @@ struct ev_callback {
     ev_callback &operator=(ev_callback &&) noexcept = default;
     ~ev_callback() = default;
 
-    Ret operator()(Args... args) const
+    Ret operator()(Args... args)
     {
         // Make sure we lock the GIL before calling into the
         // interpreter, as the callbacks may be invoked in long-running
@@ -208,9 +208,6 @@ void expose_taylor_nt_event_impl(py::module &m, const std::string &suffix)
                  return oss.str();
              })
         // Expression.
-        // NOTE: return by copy here. If we return by reference, it becomes possible
-        // to mutate an expression (e.g., via an in-place arithmetic operator) through
-        // a const reference, which is UB.
         .def_property_readonly("expression", [](const ev_t &ev) { return ev.get_expression(); })
         // Callback.
         .def_property_readonly("callback",
@@ -284,9 +281,6 @@ void expose_taylor_t_event_impl(py::module &m, const std::string &suffix)
                  return oss.str();
              })
         // Expression.
-        // NOTE: return by copy here. If we return by reference, it becomes possible
-        // to mutate an expression (e.g., via an in-place arithmetic operator) through
-        // a const reference, which is UB.
         .def_property_readonly("expression", [](const ev_t &ev) { return ev.get_expression(); })
         // Callback.
         .def_property_readonly("callback",

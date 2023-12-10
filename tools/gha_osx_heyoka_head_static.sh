@@ -7,13 +7,11 @@ set -x
 set -e
 
 # Install conda+deps.
-wget https://repo.anaconda.com/miniconda/Miniconda3-latest-MacOSX-x86_64.sh -O miniconda.sh
+wget https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-MacOSX-x86_64.sh -O miniconda.sh
 export deps_dir=$HOME/local
 export PATH="$HOME/miniconda/bin:$PATH"
 bash miniconda.sh -b -p $HOME/miniconda
-conda config --add channels conda-forge
-conda config --set channel_priority strict
-conda create -y -q -p $deps_dir python=3.10 git pybind11 numpy cmake llvmdev tbb-devel tbb astroquery boost-cpp sleef fmt spdlog sympy cloudpickle 'mppp>=0.27' numba
+mamba create -y -p $deps_dir python=3.11 c-compiler cxx-compiler git pybind11 numpy cmake llvmdev tbb-devel tbb astroquery boost-cpp sleef fmt spdlog sympy cloudpickle 'mppp=1.*' numba
 source activate $deps_dir
 
 # Checkout, build and install heyoka's HEAD.

@@ -42,7 +42,7 @@ else
 fi
 
 # The heyoka version to be used for releases.
-export HEYOKA_VERSION_RELEASE="3.2.0"
+export HEYOKA_VERSION_RELEASE="4.0.0"
 
 # Check if this is a release build.
 if [[ "${GITHUB_REF}" == "refs/tags/v"* ]]; then
@@ -57,7 +57,7 @@ fi
 # Python optional deps.
 /opt/python/${PYTHON_DIR}/bin/pip install sympy mpmath
 
-# In the pagmo2/manylinux228_x86_64_with_deps:latest image in dockerhub
+# In the pagmo2/manylinux2014_x86_64_with_deps:latest image in dockerhub
 # the working directory is /root/install, we will install heyoka there.
 cd /root/install
 
