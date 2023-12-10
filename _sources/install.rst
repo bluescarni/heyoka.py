@@ -9,7 +9,7 @@ Dependencies
 heyoka.py has several Python and C++ dependencies. On the C++ side, heyoka.py depends on:
 
 * the `heyoka C++ library <https://github.com/bluescarni/heyoka>`__,
-  version 3.2.x (**mandatory**),
+  version 4.x (**mandatory**),
 * the `Boost <https://www.boost.org/>`__ C++ libraries (**mandatory**),
 * the `{fmt} <https://fmt.dev/latest/index.html>`__ library (**mandatory**),
 * the `TBB <https://github.com/oneapi-src/oneTBB>`__ library (**mandatory**),
@@ -89,12 +89,10 @@ Installation from source
 ------------------------
 
 heyoka.py is written in modern C++, and it requires a compiler able to understand
-at least C++17. The library is regularly tested on
-a continuous integration pipeline which currently includes:
-
-* GCC 9 on Linux,
-* Clang 11 on OSX,
-* MSVC 2019 on Windows.
+at least C++20. The library is regularly tested on
+a continuous integration pipeline which currently includes several
+compilers (GCC, Clang, MSVC) on several operating systems (Linux, OSX, Windows)
+and several CPU architectures (x86-64, 64-bit ARM and 64-bit PowerPC).
 
 In addition to the C++ dependencies enumerated :ref:`earlier <installation_deps>`,
 installation from source requires also:

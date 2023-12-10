@@ -9,7 +9,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
-    <title>Neural ODEs &#8212; heyoka.py 3.2.0 documentation</title>
+    <title>Neural ODEs &#8212; heyoka.py 4.0.0 documentation</title>
   
   
   
@@ -135,8 +135,8 @@
       
     
     
-    <img src="../_static/white_logo.png" class="logo__image only-light" alt="heyoka.py 3.2.0 documentation - Home"/>
-    <script>document.write(`<img src="../_static/white_logo.png" class="logo__image only-dark" alt="heyoka.py 3.2.0 documentation - Home"/>`);</script>
+    <img src="../_static/white_logo.png" class="logo__image only-light" alt="heyoka.py 4.0.0 documentation - Home"/>
+    <script>document.write(`<img src="../_static/white_logo.png" class="logo__image only-dark" alt="heyoka.py 4.0.0 documentation - Home"/>`);</script>
   
   
 </a></div>
@@ -659,7 +659,7 @@ Shape of dNdx: (2, 2)
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>--- 0.5135993957519531 seconds --- to build (jit) the Taylor integrator
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>--- 0.4148597717285156 seconds --- to build (jit) the Taylor integrator
 </pre></div>
 </div>
 </div>
@@ -700,7 +700,7 @@ Shape of dNdx: (2, 2)
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>--- 0.0003116130828857422 seconds --- to propagate using the Taylor scheme
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>--- 0.00021386146545410156 seconds --- to propagate using the Taylor scheme
 </pre></div>
 </div>
 </div>
@@ -719,7 +719,7 @@ Shape of dNdx: (2, 2)
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/090f3d53e412b34058e1aa031f1f82fbea801edb42cfd9d4f53dcc024806deb7.png" src="../_images/090f3d53e412b34058e1aa031f1f82fbea801edb42cfd9d4f53dcc024806deb7.png" />
+<img alt="../_images/d83f10f0a23697afe5495b08f38086c30479c42e6ced4c7e56643515d69f24b2.png" src="../_images/d83f10f0a23697afe5495b08f38086c30479c42e6ced4c7e56643515d69f24b2.png" />
 </div>
 </div>
 </section>
@@ -758,7 +758,7 @@ This allows us to use identical jitted expressions also for the rhs of the case 
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>--- 0.001988649368286133 seconds --- to propagate
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>--- 0.001550912857055664 seconds --- to propagate
 </pre></div>
 </div>
 </div>
@@ -773,7 +773,7 @@ This allows us to use identical jitted expressions also for the rhs of the case 
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/230c6f775169c39ac85a0825e0b1732e7ac2600dee9c079d1311e249ee5d322f.png" src="../_images/230c6f775169c39ac85a0825e0b1732e7ac2600dee9c079d1311e249ee5d322f.png" />
+<img alt="../_images/98ba6403d4275f32e35fa02d890f85bc5a52e399c7537cf0885d55e3df81dd27.png" src="../_images/98ba6403d4275f32e35fa02d890f85bc5a52e399c7537cf0885d55e3df81dd27.png" />
 </div>
 </div>
 <p>We see a net advantage in timings using the Taylor integration scheme. Note we are here not using batch propagation, which would add an additional 2-4 factor speedup in performances.</p>

@@ -3,6 +3,20 @@
 Changelog
 =========
 
+4.0.0 (unreleased)
+------------------
+
+Changes
+~~~~~~~
+
+- The binary wheels are now built on top of ``manylinux2014``
+  (`#153 <https://github.com/bluescarni/heyoka.py/pull/153>`__).
+- heyoka.py now requires C++20 when building from source
+  (`#153 <https://github.com/bluescarni/heyoka.py/pull/153>`__).
+- heyoka.py now requires version 4.0.0 of the
+  heyoka C++ library
+  (`#153 <https://github.com/bluescarni/heyoka.py/pull/153>`__).
+
 3.2.0 (2023-11-29)
 ------------------
 
