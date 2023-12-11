@@ -40,6 +40,7 @@
 #include <Python.h>
 
 #include <heyoka/expression.hpp>
+#include <heyoka/kw.hpp>
 #include <heyoka/llvm_state.hpp>
 #include <heyoka/variable.hpp>
 

@@ -88,7 +88,7 @@ auto pendulum_impl(const Op &op, const V &gconst, const V &l)
     const auto gval = ex_from_variant(gconst);
     const auto lval = ex_from_variant(l);
 
-    return op(hy::kw::gconst = gval, hy::kw::l = lval);
+    return op(hy::kw::gconst = gval, hy::kw::length = lval);
 }
 
 // Common logic to expose rotating rf helpers.
@@ -260,13 +260,13 @@ void expose_models(py::module_ &m)
     m.def(
         "_model_pendulum",
         [](const vex_t &gconst, const vex_t &l) { return detail::pendulum_impl(hy::model::pendulum, gconst, l); },
-        "gconst"_a.noconvert() = 1., "l"_a.noconvert() = 1.);
+        "gconst"_a.noconvert() = 1., "length"_a.noconvert() = 1.);
     m.def(
         "_model_pendulum_energy",
         [](const vex_t &gconst, const vex_t &l) {
             return detail::pendulum_impl(hy::model::pendulum_energy, gconst, l);
         },
-        "gconst"_a.noconvert() = 1., "l"_a.noconvert() = 1.);
+        "gconst"_a.noconvert() = 1., "length"_a.noconvert() = 1.);
 
     // Fixed centres.
     m.def(
