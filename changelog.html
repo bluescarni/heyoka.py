@@ -571,6 +571,11 @@ document.write(`
 <section id="changes">
 <h3>Changes<a class="headerlink" href="#changes" title="Permalink to this heading">#</a></h3>
 <ul class="simple">
+<li><p><strong>BREAKING</strong>: the <code class="docutils literal notranslate"><span class="pre">propagate_grid()</span></code> methods of the
+adaptive integrators now require the first element of the
+time grid to be equal to the current integrator time
+(<a class="reference external" href="https://github.com/bluescarni/heyoka.py/pull/154">#154</a>).
+This is a <a class="reference internal" href="breaking_changes.html#bchanges-4-0-0"><span class="std std-ref">breaking change</span></a>.</p></li>
 <li><p>The binary wheels are now built on top of <code class="docutils literal notranslate"><span class="pre">manylinux2014</span></code>
 (<a class="reference external" href="https://github.com/bluescarni/heyoka.py/pull/153">#153</a>).</p></li>
 <li><p>heyoka.py now requires C++20 when building from source

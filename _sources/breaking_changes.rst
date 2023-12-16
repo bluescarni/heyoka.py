@@ -3,6 +3,27 @@
 Breaking changes
 ================
 
+.. _bchanges_4_0_0:
+
+4.0.0
+-----
+
+heyoka.py 4 includes several backwards-incompatible changes.
+
+API/behaviour changes
+~~~~~~~~~~~~~~~~~~~~~
+
+``propagate_grid()``
+^^^^^^^^^^^^^^^^^^^^
+
+The ``propagate_grid()`` methods of the adaptive integrators now require the first element of the
+time grid to be equal to the current integrator time. Previously, in case of a difference between the
+integrator time and the first grid point, heyoka.py would propagate the state of the system up to the
+first grid point with ``propagate_until()``.
+
+If you want to recover the previous behaviour, you will have to invoke manually ``propagate_until(grid[0])``
+before invoking ``propagate_grid()``.
+
 .. _bchanges_1_0_0:
 
 1.0.0

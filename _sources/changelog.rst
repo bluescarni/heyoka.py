@@ -9,6 +9,11 @@ Changelog
 Changes
 ~~~~~~~
 
+- **BREAKING**: the ``propagate_grid()`` methods of the
+  adaptive integrators now require the first element of the
+  time grid to be equal to the current integrator time
+  (`#154 <https://github.com/bluescarni/heyoka.py/pull/154>`__).
+  This is a :ref:`breaking change <bchanges_4_0_0>`.
 - The binary wheels are now built on top of ``manylinux2014``
   (`#153 <https://github.com/bluescarni/heyoka.py/pull/153>`__).
 - heyoka.py now requires C++20 when building from source

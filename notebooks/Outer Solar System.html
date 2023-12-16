@@ -623,6 +623,7 @@ calendar year (365 days) as unit of time.</p>
     <span class="n">E0</span> <span class="o">=</span> <span class="n">energy</span><span class="p">(</span><span class="n">ta_local</span><span class="o">.</span><span class="n">state</span><span class="p">)</span>
 
     <span class="c1"># Integrate over the time grid.</span>
+    <span class="n">ta_local</span><span class="o">.</span><span class="n">propagate_until</span><span class="p">(</span><span class="n">t_grid</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
     <span class="n">res</span> <span class="o">=</span> <span class="n">ta_local</span><span class="o">.</span><span class="n">propagate_grid</span><span class="p">(</span><span class="n">t_grid</span><span class="p">)</span>
     
     <span class="c1"># Check if any batch element produced an error.</span>
@@ -637,10 +638,11 @@ calendar year (365 days) as unit of time.</p>
 </div>
 <p>The <code class="docutils literal notranslate"><span class="pre">worker()</span></code> function will be invoked concurrently from multiple threads of execution. It will first create a local copy of the integrator object, add some noise to the initial conditions, reset the centre of mass and then integrate the system for 1 million years.</p>
 <p>Let us now run 16 batch integrations concurrently, for a total of <span class="math notranslate nohighlight">\(16\times 4 = 64\)</span> sets of initial conditions.</p>
-<blockquote>
-<div><p><strong>NOTE</strong>: the following code will take a while to run (from a few seconds to a few minutes, depending
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The following code will take a while to run (from a few seconds to a few minutes, depending
 on the CPU). In order to shorten the runtime, you can reduce the number of threads and/or the total integration time.</p>
-</div></blockquote>
+</div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">concurrent.futures</span>
@@ -721,7 +723,7 @@ Let us re-arrange the array in order to facilitate further analysis:</p>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/22576e85c9dcea4faf76e83397b7608cf7f7549aaa1dc0e8e6a0b86258f6259c.png" src="../_images/22576e85c9dcea4faf76e83397b7608cf7f7549aaa1dc0e8e6a0b86258f6259c.png" />
+<img alt="../_images/c3a29a4cffd12f043b7f6d4eb577639ae6f2f60d3ba7dd583e60357ffe7c435a.png" src="../_images/c3a29a4cffd12f043b7f6d4eb577639ae6f2f60d3ba7dd583e60357ffe7c435a.png" />
 </div>
 </div>
 <p>The plot clearly shows how the average energy error starts out around machine precision and then begins to grow following Brouwer’s law. These results indicate that heyoka.py is able to optimally conserve the invariants of a dynamical system over long-term integrations.</p>
