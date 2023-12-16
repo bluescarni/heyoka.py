@@ -41,6 +41,7 @@
 #endif
 
 #include <heyoka/callable.hpp>
+#include <heyoka/kw.hpp>
 #include <heyoka/s11n.hpp>
 #include <heyoka/taylor.hpp>
 

@@ -218,7 +218,7 @@ class model_test_case(_ut.TestCase):
         self.assertEqual(dyn[1][0], v)
         self.assertEqual(dyn[1][1], -2.0 * sin(x))
 
-        dyn = model.pendulum(gconst=4.0, l=2.0)
+        dyn = model.pendulum(gconst=4.0, length=2.0)
 
         self.assertEqual(dyn[0][0], x)
         self.assertEqual(dyn[0][1], v)
@@ -241,7 +241,7 @@ class model_test_case(_ut.TestCase):
             ),
         )
 
-        en = model.pendulum_energy(l=2.0, gconst=4.0)
+        en = model.pendulum_energy(length=2.0, gconst=4.0)
 
         self.assertEqual(
             en,

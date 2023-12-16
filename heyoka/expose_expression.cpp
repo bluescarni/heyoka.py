@@ -33,6 +33,7 @@
 #include <pybind11/stl.h>
 
 #include <heyoka/expression.hpp>
+#include <heyoka/kw.hpp>
 #include <heyoka/math.hpp>
 
 #if defined(HEYOKA_HAVE_REAL128)
