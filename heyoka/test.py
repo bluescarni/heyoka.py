@@ -1546,20 +1546,23 @@ class c_output_test_case(_ut.TestCase):
 
             check_tm = [fp_t(0.1), fp_t(1.3), fp_t(5.6), fp_t(9.1)]
 
-            c_out = ta.propagate_until(final_tm)
+            c_out, cb = ta.propagate_until(final_tm)
 
+            self.assertTrue(cb is None)
             self.assertTrue(c_out is None)
 
             reset()
 
-            c_out = ta.propagate_until(final_tm, c_output=False)
+            c_out, cb = ta.propagate_until(final_tm, c_output=False)
 
+            self.assertTrue(cb is None)
             self.assertTrue(c_out is None)
 
             reset()
 
-            c_out = ta.propagate_until(final_tm, c_output=True)
+            c_out, cb = ta.propagate_until(final_tm, c_output=True)
 
+            self.assertTrue(cb is None)
             self.assertFalse(c_out is None)
 
             self.assertTrue(c_out(check_tm).shape == (2, 4))
@@ -1895,8 +1898,9 @@ class c_output_test_case(_ut.TestCase):
 
             reset()
 
-            _, _, _, nsteps, c_out = ta.propagate_until(fp_t(10), c_output=True)
+            _, _, _, nsteps, c_out, cb = ta.propagate_until(fp_t(10), c_output=True)
 
+            self.assertTrue(cb is None)
             self.assertFalse(c_out is None)
 
             self.assertTrue(c_out(fp_t(0.1)).shape == (2,))

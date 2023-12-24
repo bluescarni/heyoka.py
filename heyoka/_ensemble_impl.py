@@ -60,12 +60,7 @@ def _ensemble_propagate_thread(tp, ta, arg, n_iter, gen, **kwargs):
             loc_ret = local_ta.propagate_grid(_splat_grid(arg, ta), **kwargs_list[i])
 
         # Return the results.
-        # NOTE: in batch mode, loc_ret will be single
-        # value rather than a tuple, hence the branch.
-        if isinstance(loc_ret, tuple):
-            return (local_ta,) + loc_ret
-        else:
-            return (local_ta, loc_ret)
+        return (local_ta,) + loc_ret
 
     with ThreadPoolExecutor(max_workers=max_workers) as executor:
         ret = list(executor.map(func, range(n_iter)))
@@ -100,12 +95,7 @@ def _mp_propagate(tup):
         loc_ret = local_ta.propagate_grid(_splat_grid(arg, ta), **kwargs)
 
     # Return the results.
-    # NOTE: in batch mode, loc_ret will be single
-    # value rather than a tuple, hence the branch.
-    if isinstance(loc_ret, tuple):
-        return s11n_be.dumps((local_ta,) + loc_ret)
-    else:
-        return s11n_be.dumps((local_ta, loc_ret))
+    return s11n_be.dumps((local_ta,) + loc_ret)
 
 
 # Process-based implementation.

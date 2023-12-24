@@ -107,7 +107,7 @@ class ensemble_test_case(_ut.TestCase):
                 self.assertTrue(np.all(ta.time == ret[i][0].time))
                 self.assertEqual(ta.propagate_res, ret[i][0].propagate_res)
 
-                self.assertTrue(np.all(loc_ret(5.0) == ret[i][1](5.0)))
+                self.assertTrue(np.all(loc_ret[0](5.0) == ret[i][1](5.0)))
 
         # propagate_for().
         def gen(ta, idx):
@@ -168,7 +168,7 @@ class ensemble_test_case(_ut.TestCase):
                 ta.state[:] = ics[i]
                 loc_ret = ta.propagate_grid(splat_grid)
 
-                self.assertTrue(np.all(loc_ret == ret[i][1]))
+                self.assertTrue(np.all(loc_ret[1] == ret[i][2]))
 
                 for j in range(4):
                     self.assertAlmostEqual(ret[i][0].time[j], 20.0)
@@ -260,10 +260,10 @@ class ensemble_test_case(_ut.TestCase):
 
                 self.assertAlmostEqual(ret[i][0].time, 20.0)
                 self.assertTrue(np.all(ta.state == ret[i][0].state))
-                self.assertEqual(loc_ret[:-1], ret[i][1:-1])
+                self.assertEqual(loc_ret[:-2], ret[i][1:-2])
                 self.assertEqual(ta.time, ret[i][0].time)
 
-                self.assertTrue(np.all(loc_ret[-1](5.0) == ret[i][-1](5.0)))
+                self.assertTrue(np.all(loc_ret[-2](5.0) == ret[i][-2](5.0)))
 
         # propagate_for().
         def gen(ta, idx):

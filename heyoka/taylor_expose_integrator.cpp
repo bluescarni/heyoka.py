@@ -53,7 +53,7 @@
 #include "custom_casters.hpp"
 #include "dtypes.hpp"
 #include "pickle_wrappers.hpp"
-#include "step_cb_wrapper.hpp"
+#include "step_cb_utils.hpp"
 #include "taylor_expose_integrator.hpp"
 
 namespace heyoka_py
@@ -209,28 +209,47 @@ void expose_taylor_integrator_impl(py::module &m, const std::string &suffix)
         .def(
             "propagate_for",
             [](hey::taylor_adaptive<T> &ta, T delta_t, std::size_t max_steps, T max_delta_t,
-               std::optional<py::object> &cb_, bool write_tc, bool c_output) {
+               std::optional<scb_arg_t> cb_, bool write_tc, bool c_output) {
                 // NOTE: after releasing the GIL, the only potential
                 // calls into the Python interpreter are when invoking the event or
                 // step callbacks (which are all protected by GIL reacquire).
-
                 if (cb_) {
-                    // NOTE: because cb is a step_callback, it will be passed by reference
-                    // into the propagate_for() function. Thus, no copies are made and no
-                    // calling into the Python interpreter takes place (and no need to hold
-                    // the GIL).
-                    // NOTE: because cb is created before the GIL scoped releaser, it will be
-                    // destroyed *after* the GIL has been re-acquired. Thus, the reference
-                    // count decrease associated with the destructor is safe.
-                    auto cb = hey::step_callback<T>(step_cb_wrapper(*cb_));
+                    // NOTE: here we convert the input scb_arg_t object into a
+                    // step_callback, with the following logic:
+                    // - if cb_ contains a single scb_t, then use it to construct
+                    //   a step_callback (passing through a step_cb_wrapper in case
+                    //   of a Pythonic callback). Otherwise,
+                    // - cb_ contains a list of scb_t objects: convert each of them
+                    //   into a step_callback (with the same logic as above), and then
+                    //   assemble them into a step_callback_set.
+                    // NOTE: C++ callbacks will be moved into cb, while Pythonic callback
+                    // will be referenced into cb (this is necessary in order to avoid
+                    // calling into the Python interpreter in case of exceptions being
+                    // raised by the callback within the propagate_*() call).
+                    auto cb = scb_arg_to_step_callback<heyoka::step_callback<T>>(*cb_);
 
-                    py::gil_scoped_release release;
-                    return ta.propagate_for(delta_t, kw::max_steps = max_steps, kw::max_delta_t = max_delta_t,
-                                            kw::write_tc = write_tc, kw::c_output = c_output, kw::callback = cb);
+                    auto ret = [&]() {
+                        // Release the GIL during propagation.
+                        py::gil_scoped_release release;
+
+                        return ta.propagate_for(delta_t, kw::max_steps = max_steps, kw::max_delta_t = max_delta_t,
+                                                kw::write_tc = write_tc, kw::c_output = c_output,
+                                                kw::callback = std::move(cb));
+                    }();
+
+                    return py::make_tuple(std::get<0>(ret), std::get<1>(ret), std::get<2>(ret), std::get<3>(ret),
+                                          std::move(std::get<4>(ret)),
+                                          step_callback_to_scb_arg_t(*cb_, std::get<5>(ret)));
                 } else {
-                    py::gil_scoped_release release;
-                    return ta.propagate_for(delta_t, kw::max_steps = max_steps, kw::max_delta_t = max_delta_t,
-                                            kw::write_tc = write_tc, kw::c_output = c_output);
+                    auto ret = [&]() {
+                        py::gil_scoped_release release;
+
+                        return ta.propagate_for(delta_t, kw::max_steps = max_steps, kw::max_delta_t = max_delta_t,
+                                                kw::write_tc = write_tc, kw::c_output = c_output);
+                    }();
+
+                    return py::make_tuple(std::get<0>(ret), std::get<1>(ret), std::get<2>(ret), std::get<3>(ret),
+                                          std::move(std::get<4>(ret)), py::none{});
                 }
             },
             "delta_t"_a.noconvert(), "max_steps"_a = 0,
@@ -238,18 +257,32 @@ void expose_taylor_integrator_impl(py::module &m, const std::string &suffix)
             "write_tc"_a = false, "c_output"_a = false)
         .def(
             "propagate_until",
-            [](hey::taylor_adaptive<T> &ta, T t, std::size_t max_steps, T max_delta_t, std::optional<py::object> &cb_,
+            [](hey::taylor_adaptive<T> &ta, T t, std::size_t max_steps, T max_delta_t, std::optional<scb_arg_t> cb_,
                bool write_tc, bool c_output) {
                 if (cb_) {
-                    auto cb = hey::step_callback<T>(step_cb_wrapper(*cb_));
+                    auto cb = scb_arg_to_step_callback<heyoka::step_callback<T>>(*cb_);
 
-                    py::gil_scoped_release release;
-                    return ta.propagate_until(t, kw::max_steps = max_steps, kw::max_delta_t = max_delta_t,
-                                              kw::write_tc = write_tc, kw::c_output = c_output, kw::callback = cb);
+                    auto ret = [&]() {
+                        py::gil_scoped_release release;
+
+                        return ta.propagate_until(t, kw::max_steps = max_steps, kw::max_delta_t = max_delta_t,
+                                                  kw::write_tc = write_tc, kw::c_output = c_output,
+                                                  kw::callback = std::move(cb));
+                    }();
+
+                    return py::make_tuple(std::get<0>(ret), std::get<1>(ret), std::get<2>(ret), std::get<3>(ret),
+                                          std::move(std::get<4>(ret)),
+                                          step_callback_to_scb_arg_t(*cb_, std::get<5>(ret)));
                 } else {
-                    py::gil_scoped_release release;
-                    return ta.propagate_until(t, kw::max_steps = max_steps, kw::max_delta_t = max_delta_t,
-                                              kw::write_tc = write_tc, kw::c_output = c_output);
+                    auto ret = [&]() {
+                        py::gil_scoped_release release;
+
+                        return ta.propagate_until(t, kw::max_steps = max_steps, kw::max_delta_t = max_delta_t,
+                                                  kw::write_tc = write_tc, kw::c_output = c_output);
+                    }();
+
+                    return py::make_tuple(std::get<0>(ret), std::get<1>(ret), std::get<2>(ret), std::get<3>(ret),
+                                          std::move(std::get<4>(ret)), py::none{});
                 }
             },
             "t"_a.noconvert(), "max_steps"_a = 0,
@@ -258,16 +291,16 @@ void expose_taylor_integrator_impl(py::module &m, const std::string &suffix)
         .def(
             "propagate_grid",
             [](hey::taylor_adaptive<T> &ta, std::vector<T> grid, std::size_t max_steps, T max_delta_t,
-               std::optional<py::object> &cb_) {
+               std::optional<scb_arg_t> cb_) {
                 decltype(ta.propagate_grid(grid, max_steps)) ret;
 
                 {
                     if (cb_) {
-                        auto cb = hey::step_callback<T>(step_cb_wrapper(*cb_));
+                        auto cb = scb_arg_to_step_callback<heyoka::step_callback<T>>(*cb_);
 
                         py::gil_scoped_release release;
                         ret = ta.propagate_grid(std::move(grid), kw::max_steps = max_steps,
-                                                kw::max_delta_t = max_delta_t, kw::callback = cb);
+                                                kw::max_delta_t = max_delta_t, kw::callback = std::move(cb));
                     } else {
                         py::gil_scoped_release release;
                         ret = ta.propagate_grid(std::move(grid), kw::max_steps = max_steps,
@@ -277,16 +310,21 @@ void expose_taylor_integrator_impl(py::module &m, const std::string &suffix)
 
                 // Determine the number of state vectors returned
                 // (could be < grid.size() if errors arise).
-                assert(std::get<4>(ret).size() % ta.get_dim() == 0u);
-                const auto nrows = boost::numeric_cast<py::ssize_t>(std::get<4>(ret).size() / ta.get_dim());
+                assert(std::get<5>(ret).size() % ta.get_dim() == 0u);
+                const auto nrows = boost::numeric_cast<py::ssize_t>(std::get<5>(ret).size() / ta.get_dim());
                 const auto ncols = boost::numeric_cast<py::ssize_t>(ta.get_dim());
 
                 // Convert the output to a NumPy array.
                 py::array a_ret(py::dtype(get_dtype<T>()), py::array::ShapeContainer{nrows, ncols},
-                                std::get<4>(ret).data());
+                                std::get<5>(ret).data());
 
-                return py::make_tuple(std::get<0>(ret), std::get<1>(ret), std::get<2>(ret), std::get<3>(ret),
-                                      std::move(a_ret));
+                if (cb_) {
+                    return py::make_tuple(std::get<0>(ret), std::get<1>(ret), std::get<2>(ret), std::get<3>(ret),
+                                          step_callback_to_scb_arg_t(*cb_, std::get<4>(ret)), std::move(a_ret));
+                } else {
+                    return py::make_tuple(std::get<0>(ret), std::get<1>(ret), std::get<2>(ret), std::get<3>(ret),
+                                          py::none{}, std::move(a_ret));
+                }
             },
             "grid"_a.noconvert(), "max_steps"_a = 0,
             "max_delta_t"_a.noconvert() = hey::detail::taylor_default_max_delta_t<T>(), "callback"_a = py::none{})

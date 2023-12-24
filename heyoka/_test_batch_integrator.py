@@ -712,6 +712,7 @@ class batch_integrator_test_case(_ut.TestCase):
 
             ta.propagate_until(grid[0,:])
             bres = ta.propagate_grid(grid)
+            self.assertTrue(bres[0] is None)
 
             for idx, cur_ta in enumerate(tas):
                 cur_ta.propagate_until(grid[0, idx]),
@@ -724,19 +725,19 @@ class batch_integrator_test_case(_ut.TestCase):
             ]
 
             self.assertTrue(
-                np.max(np.abs(sres[0][4] - bres[:, :, 0]).flatten())
+                np.max(np.abs(sres[0][5] - bres[1][:, :, 0]).flatten())
                 < np.finfo(fp_t).eps * 100
             )
             self.assertTrue(
-                np.max(np.abs(sres[1][4] - bres[:, :, 1]).flatten())
+                np.max(np.abs(sres[1][5] - bres[1][:, :, 1]).flatten())
                 < np.finfo(fp_t).eps * 100
             )
             self.assertTrue(
-                np.max(np.abs(sres[2][4] - bres[:, :, 2]).flatten())
+                np.max(np.abs(sres[2][5] - bres[1][:, :, 2]).flatten())
                 < np.finfo(fp_t).eps * 100
             )
             self.assertTrue(
-                np.max(np.abs(sres[3][4] - bres[:, :, 3]).flatten())
+                np.max(np.abs(sres[3][5] - bres[1][:, :, 3]).flatten())
                 < np.finfo(fp_t).eps * 100
             )
 
@@ -754,7 +755,7 @@ class batch_integrator_test_case(_ut.TestCase):
             ta.propagate_until(grid[0,:])
             bres2 = ta.propagate_grid(grid, max_delta_t=fp_t(1e-3))
 
-            self.assertTrue(np.all(bres == bres2))
+            self.assertTrue(np.all(bres[1] == bres2[1]))
             self.assertEqual(ta.propagate_res, res)
 
             # Test that adding dynattrs to the integrator
