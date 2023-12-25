@@ -53,6 +53,7 @@
 #include "custom_casters.hpp"
 #include "dtypes.hpp"
 #include "expose_batch_integrators.hpp"
+#include "expose_callbacks.hpp"
 #include "expose_expression.hpp"
 #include "expose_models.hpp"
 #include "expose_real.hpp"
@@ -288,6 +289,9 @@ PYBIND11_MODULE(core, m)
     heypy::expose_taylor_t_event_batch_flt(m);
     heypy::expose_taylor_nt_event_batch_dbl(m);
     heypy::expose_taylor_t_event_batch_dbl(m);
+
+    // Expose the callbacks.
+    heypy::expose_callbacks(m);
 
     // Scalar adaptive taylor integrators.
     heypy::expose_taylor_integrator_flt(m);

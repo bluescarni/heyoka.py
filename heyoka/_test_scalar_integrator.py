@@ -126,6 +126,7 @@ class scalar_integrator_test_case(_ut.TestCase):
     def test_basic(self):
         from . import taylor_adaptive, make_vars, t_event, sin, core
         from .core import _ppc_arch
+        from .callback import angle_reducer
         import numpy as np
 
         if _ppc_arch:
@@ -230,10 +231,13 @@ class scalar_integrator_test_case(_ut.TestCase):
             cb_inst.orig_id = id(cb_inst)
 
             ta.time = fp_t(0.0)
-            ta.propagate_until(fp_t(10.0), callback=cb_inst)
-            ta.propagate_for(fp_t(10.0), callback=cb_inst)
+            res = ta.propagate_until(fp_t(10.0), callback=cb_inst)
+            self.assertEqual(id(cb_inst), id(res[-1]))
+            res = ta.propagate_for(fp_t(10.0), callback=cb_inst)
+            self.assertEqual(id(cb_inst), id(res[-1]))
             ta.time = fp_t(0.0)
-            ta.propagate_grid([fp_t(0.0), fp_t(1.0), fp_t(2.0)], callback=cb_inst)
+            res = ta.propagate_grid([fp_t(0.0), fp_t(1.0), fp_t(2.0)], callback=cb_inst)
+            self.assertEqual(id(cb_inst), id(res[-2]))
 
             # Test with a non-callable callback.
             with self.assertRaises(TypeError) as cm:
@@ -425,3 +429,68 @@ class scalar_integrator_test_case(_ut.TestCase):
                 taylor_adaptive(
                     sys=sys, state=[fp_t(0), fp_t(0.25)], fp_type=np.longdouble
                 )
+
+    def test_step_callback(self):
+        from . import taylor_adaptive, make_vars, sin, core
+        from .core import _ppc_arch
+        from .callback import angle_reducer
+        import numpy as np
+
+        if _ppc_arch:
+            fp_types = [np.float32, float]
+        else:
+            fp_types = [np.float32, float, np.longdouble]
+
+        if hasattr(core, "real128"):
+            fp_types.append(core.real128)
+
+        x, v = make_vars("x", "v")
+
+        sys = [(x, v), (v, -9.8 * sin(x))]
+
+        # Callback with pre_hook().
+        class cb_hook:
+            def __call__(_, ta):
+                return True
+
+            def pre_hook(self, ta):
+                ta.foo = True
+
+        for fp_t in fp_types:
+            ta = taylor_adaptive(
+                sys=sys,
+                state=[fp_t(0.0), fp_t(10.)],
+                fp_type=fp_t,
+            )
+
+            # List overaload.
+            cb1 = cb_hook()
+            cb2 = cb_hook()
+            id_cb1 = id(cb1)
+            id_cb2 = id(cb2)
+            res = ta.propagate_for(fp_t(10.0), callback=[cb1, cb2])
+            self.assertTrue(isinstance(res[-1], list))
+            self.assertTrue(isinstance(res[-1][0], cb_hook))
+            self.assertTrue(isinstance(res[-1][1], cb_hook))
+            self.assertEqual(id(res[-1][0]), id_cb1)
+            self.assertEqual(id(res[-1][1]), id_cb2)
+            self.assertTrue(hasattr(ta, "foo"))
+
+            # Try with a C++ callback too.
+            res = ta.propagate_until(fp_t(20.0), callback=[cb1, angle_reducer([x]), cb2])
+            self.assertTrue(isinstance(res[-1], list))
+            self.assertTrue(isinstance(res[-1][0], cb_hook))
+            self.assertTrue(isinstance(res[-1][1], angle_reducer))
+            self.assertTrue(isinstance(res[-1][2], cb_hook))
+            self.assertEqual(id(res[-1][0]), id_cb1)
+            self.assertEqual(id(res[-1][2]), id_cb2)
+            self.assertTrue((ta.state[0] >= fp_t(0) and ta.state[0] < fp_t(6.29)))
+
+            # Single callback overload.
+            res = ta.propagate_grid([fp_t(20.), fp_t(30.0)], callback=cb1)
+            self.assertTrue(isinstance(res[-2], cb_hook))
+            self.assertEqual(id(res[-2]), id_cb1)
+
+            res = ta.propagate_for(fp_t(10.0), callback=angle_reducer([x]))
+            self.assertTrue(isinstance(res[-1], angle_reducer))
+            self.assertTrue((ta.state[0] >= fp_t(0) and ta.state[0] < fp_t(6.29)))
