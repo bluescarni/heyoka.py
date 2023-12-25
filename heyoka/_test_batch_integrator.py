@@ -710,7 +710,7 @@ class batch_integrator_test_case(_ut.TestCase):
                 dtype=fp_t,
             )
 
-            ta.propagate_until(grid[0,:])
+            ta.propagate_until(grid[0, :])
             bres = ta.propagate_grid(grid)
             self.assertTrue(bres[0] is None)
 
@@ -745,14 +745,14 @@ class batch_integrator_test_case(_ut.TestCase):
             ta.set_time(fp_t(0.0))
             ta.state[:] = [x_ic, v_ic]
 
-            ta.propagate_until(grid[0,:])
+            ta.propagate_until(grid[0, :])
             bres = ta.propagate_grid(grid, max_delta_t=[fp_t(1e-3)] * 4)
             res = deepcopy(ta.propagate_res)
 
             ta.set_time(fp_t(0.0))
             ta.state[:] = [x_ic, v_ic]
 
-            ta.propagate_until(grid[0,:])
+            ta.propagate_until(grid[0, :])
             bres2 = ta.propagate_grid(grid, max_delta_t=fp_t(1e-3))
 
             self.assertTrue(np.all(bres[1] == bres2[1]))
@@ -769,7 +769,7 @@ class batch_integrator_test_case(_ut.TestCase):
                 return True
 
             ta.set_time(fp_t(0.0))
-            ta.propagate_until(grid[0,:])
+            ta.propagate_until(grid[0, :])
             ta.propagate_grid(grid, callback=cb)
 
             self.assertTrue(ta.counter > 0)
@@ -785,7 +785,7 @@ class batch_integrator_test_case(_ut.TestCase):
             cb_inst.orig_id = id(cb_inst)
 
             ta.set_time(fp_t(0.0))
-            ta.propagate_until(grid[0,:])
+            ta.propagate_until(grid[0, :])
             ta.propagate_grid(grid, callback=cb_inst)
 
             # Test with a non-callable callback.
@@ -806,7 +806,7 @@ class batch_integrator_test_case(_ut.TestCase):
             with self.assertRaises(TypeError) as cm:
                 ta.set_time(fp_t(0.0))
                 ta.state[:] = [x_ic, v_ic]
-                ta.propagate_until(grid[0,:])
+                ta.propagate_until(grid[0, :])
                 ta.propagate_grid(grid, callback=broken_cb())
             self.assertTrue(
                 "The call operator of a step callback is expected to return a boolean, but a value of type"
@@ -823,7 +823,7 @@ class batch_integrator_test_case(_ut.TestCase):
 
             ta.set_time(fp_t(0.0))
             ta.state[:] = [x_ic, v_ic]
-            ta.propagate_until(grid[0,:])
+            ta.propagate_until(grid[0, :])
             ta.propagate_grid(grid, callback=cb_hook())
             self.assertTrue(ta.foo)
             delattr(ta, "foo")
@@ -868,22 +868,26 @@ class batch_integrator_test_case(_ut.TestCase):
             self.assertTrue(hasattr(ta, "foo"))
 
             # Try with a C++ callback too.
-            res = ta.propagate_until(fp_t(20.0), callback=[cb1, angle_reducer([x]), cb2])
+            res = ta.propagate_until(
+                fp_t(20.0), callback=[cb1, angle_reducer([x]), cb2]
+            )
             self.assertTrue(isinstance(res[1], list))
             self.assertTrue(isinstance(res[1][0], cb_hook))
             self.assertTrue(isinstance(res[1][1], angle_reducer))
             self.assertTrue(isinstance(res[1][2], cb_hook))
             self.assertEqual(id(res[1][0]), id_cb1)
             self.assertEqual(id(res[1][2]), id_cb2)
-            self.assertTrue((ta.state[0,0] >= fp_t(0) and ta.state[0,0] < fp_t(6.29)))
-            self.assertTrue((ta.state[0,1] >= fp_t(0) and ta.state[0,1] < fp_t(6.29)))
+            self.assertTrue((ta.state[0, 0] >= fp_t(0) and ta.state[0, 0] < fp_t(6.29)))
+            self.assertTrue((ta.state[0, 1] >= fp_t(0) and ta.state[0, 1] < fp_t(6.29)))
 
             # Single callback overload.
-            res = ta.propagate_grid([[fp_t(20.), fp_t(20.)], [fp_t(30.0), fp_t(30.1)]], callback=cb1)
+            res = ta.propagate_grid(
+                [[fp_t(20.0), fp_t(20.0)], [fp_t(30.0), fp_t(30.1)]], callback=cb1
+            )
             self.assertTrue(isinstance(res[0], cb_hook))
             self.assertEqual(id(res[0]), id_cb1)
 
             res = ta.propagate_for(fp_t(10.0), callback=angle_reducer([x]))
             self.assertTrue(isinstance(res[1], angle_reducer))
-            self.assertTrue((ta.state[0,0] >= fp_t(0) and ta.state[0,0] < fp_t(6.29)))
-            self.assertTrue((ta.state[0,1] >= fp_t(0) and ta.state[0,1] < fp_t(6.29)))
+            self.assertTrue((ta.state[0, 0] >= fp_t(0) and ta.state[0, 0] < fp_t(6.29)))
+            self.assertTrue((ta.state[0, 1] >= fp_t(0) and ta.state[0, 1] < fp_t(6.29)))

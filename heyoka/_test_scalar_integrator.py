@@ -459,7 +459,7 @@ class scalar_integrator_test_case(_ut.TestCase):
         for fp_t in fp_types:
             ta = taylor_adaptive(
                 sys=sys,
-                state=[fp_t(0.0), fp_t(10.)],
+                state=[fp_t(0.0), fp_t(10.0)],
                 fp_type=fp_t,
             )
 
@@ -477,7 +477,9 @@ class scalar_integrator_test_case(_ut.TestCase):
             self.assertTrue(hasattr(ta, "foo"))
 
             # Try with a C++ callback too.
-            res = ta.propagate_until(fp_t(20.0), callback=[cb1, angle_reducer([x]), cb2])
+            res = ta.propagate_until(
+                fp_t(20.0), callback=[cb1, angle_reducer([x]), cb2]
+            )
             self.assertTrue(isinstance(res[-1], list))
             self.assertTrue(isinstance(res[-1][0], cb_hook))
             self.assertTrue(isinstance(res[-1][1], angle_reducer))
@@ -487,7 +489,7 @@ class scalar_integrator_test_case(_ut.TestCase):
             self.assertTrue((ta.state[0] >= fp_t(0) and ta.state[0] < fp_t(6.29)))
 
             # Single callback overload.
-            res = ta.propagate_grid([fp_t(20.), fp_t(30.0)], callback=cb1)
+            res = ta.propagate_grid([fp_t(20.0), fp_t(30.0)], callback=cb1)
             self.assertTrue(isinstance(res[-2], cb_hook))
             self.assertEqual(id(res[-2]), id_cb1)
 
