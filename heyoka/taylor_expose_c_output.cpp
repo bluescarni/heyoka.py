@@ -186,7 +186,7 @@ void expose_c_output_impl(py::module &m, const std::string &suffix)
                                        // Ensure the returned array is read-only.
                                        ret.attr("flags").attr("writeable") = false;
 
-                                       return std::move(ret);
+                                       return ret;
                                    }
                                })
         .def_property_readonly("times",
@@ -204,7 +204,7 @@ void expose_c_output_impl(py::module &m, const std::string &suffix)
                                        // Ensure the returned array is read-only.
                                        ret.attr("flags").attr("writeable") = false;
 
-                                       return std::move(ret);
+                                       return ret;
                                    }
                                })
         .def_property_readonly("tcs",
@@ -234,7 +234,7 @@ void expose_c_output_impl(py::module &m, const std::string &suffix)
                                        // Ensure the returned array is read-only.
                                        ret.attr("flags").attr("writeable") = false;
 
-                                       return std::move(ret);
+                                       return ret;
                                    }
                                })
         .def_property_readonly("bounds", &c_output_t::get_bounds)
@@ -431,7 +431,7 @@ void expose_c_output_batch_impl(py::module &m, const std::string &suffix)
                                        // Ensure the returned array is read-only.
                                        ret.attr("flags").attr("writeable") = false;
 
-                                       return std::move(ret);
+                                       return ret;
                                    }
                                })
         .def_property_readonly("times",
@@ -459,7 +459,7 @@ void expose_c_output_batch_impl(py::module &m, const std::string &suffix)
                                        // Ensure the returned array is read-only.
                                        ret.attr("flags").attr("writeable") = false;
 
-                                       return std::move(ret);
+                                       return ret;
                                    }
                                })
         .def_property_readonly("tcs",
@@ -496,7 +496,7 @@ void expose_c_output_batch_impl(py::module &m, const std::string &suffix)
                                        // Ensure the returned array is read-only.
                                        ret.attr("flags").attr("writeable") = false;
 
-                                       return std::move(ret);
+                                       return ret;
                                    }
                                })
         .def_property_readonly("bounds",
