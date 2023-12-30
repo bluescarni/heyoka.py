@@ -30,7 +30,7 @@
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
-    <link rel="stylesheet" href="../_static/styles/sphinx-book-theme.css?digest=14f4ca6b54d191a8c7657f6c759bf11a5fb86285" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css" />
     <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
@@ -41,7 +41,7 @@
     <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
     <script src="../_static/doctools.js"></script>
     <script src="../_static/sphinx_highlight.js"></script>
-    <script src="../_static/scripts/sphinx-book-theme.js?digest=5a5c038af52cf7bc1a1ec88eea08e6366ee68824"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js"></script>
     <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'notebooks/second_integral';</script>
@@ -140,7 +140,18 @@
   
   
 </a></div>
-        <div class="sidebar-primary-item"><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
     <div class="bd-toc-item navbar-nav active">
         <p aria-level="2" class="caption" role="heading"><span class="caption-text">Main</span></p>
 <ul class="nav bd-sidenav">
@@ -634,7 +645,7 @@ x = 0,
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/10bc7d900b9d13320376107500b75ac21466dd66c74e2575b293661fb7d1acf1.png" src="../_images/10bc7d900b9d13320376107500b75ac21466dd66c74e2575b293661fb7d1acf1.png" />
+<img alt="../_images/677c9bb911fe48b0ecbbf3937c56af557697bb5c267e7c3daf3b6941fc80d051.png" src="../_images/677c9bb911fe48b0ecbbf3937c56af557697bb5c267e7c3daf3b6941fc80d051.png" />
 </div>
 </div>
 <p>This Poincare’ section is suggesting that the integral of motion <span class="math notranslate nohighlight">\(\mathcal{C}\)</span> does indeed exist, because the intersections of all random orbits are clearly tracing curves on the <span class="math notranslate nohighlight">\(x=0\)</span> plane.</p>
@@ -649,7 +660,7 @@ x = 0,
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/49556f4f7f0c058c3d04c2e7af57bbe2230e998ed4c10fa45df35440d6432cba.png" src="../_images/49556f4f7f0c058c3d04c2e7af57bbe2230e998ed4c10fa45df35440d6432cba.png" />
+<img alt="../_images/6dc1eb61da445cb8f9e77b9891b7a23e81184b64d99aa26c544223cf842f8347.png" src="../_images/6dc1eb61da445cb8f9e77b9891b7a23e81184b64d99aa26c544223cf842f8347.png" />
 </div>
 </div>
 <p>The qualitative picture is now radically different. Although islands of stable motion persist, now most trajectories seem to be densely filling the plane, rather than tracing curves on it. Let us further increase the energy level:</p>
@@ -660,7 +671,7 @@ x = 0,
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/f7147f3014883810d00d4e7087a29114933441e2c66f07a1f920dd2f5ce67561.png" src="../_images/f7147f3014883810d00d4e7087a29114933441e2c66f07a1f920dd2f5ce67561.png" />
+<img alt="../_images/d5d1b136457df116f4780128700d80d669f9cb0245c5a8543a14b423c2be9be1.png" src="../_images/d5d1b136457df116f4780128700d80d669f9cb0245c5a8543a14b423c2be9be1.png" />
 </div>
 </div>
 <p>At higher energies, the densely-filling behaviour (which Henon and Heiles call <em>ergodic</em>) is even more prevalent than before.</p>

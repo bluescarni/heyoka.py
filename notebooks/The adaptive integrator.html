@@ -30,7 +30,7 @@
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
-    <link rel="stylesheet" href="../_static/styles/sphinx-book-theme.css?digest=14f4ca6b54d191a8c7657f6c759bf11a5fb86285" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css" />
     <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
@@ -41,7 +41,7 @@
     <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
     <script src="../_static/doctools.js"></script>
     <script src="../_static/sphinx_highlight.js"></script>
-    <script src="../_static/scripts/sphinx-book-theme.js?digest=5a5c038af52cf7bc1a1ec88eea08e6366ee68824"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js"></script>
     <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'notebooks/The adaptive integrator';</script>
@@ -140,7 +140,18 @@
   
   
 </a></div>
-        <div class="sidebar-primary-item"><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
     <div class="bd-toc-item navbar-nav active">
         <p aria-level="2" class="caption" role="heading"><span class="caption-text">Main</span></p>
 <ul class="nav bd-sidenav">
@@ -712,7 +723,7 @@ propagates the state up to a specified epoch.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Propagate for 5 time units.</span>
-<span class="n">status</span><span class="p">,</span> <span class="n">min_h</span><span class="p">,</span> <span class="n">max_h</span><span class="p">,</span> <span class="n">nsteps</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">ta</span><span class="o">.</span><span class="n">propagate_for</span><span class="p">(</span><span class="n">delta_t</span> <span class="o">=</span> <span class="mf">5.</span><span class="p">)</span>
+<span class="n">status</span><span class="p">,</span> <span class="n">min_h</span><span class="p">,</span> <span class="n">max_h</span><span class="p">,</span> <span class="n">nsteps</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">ta</span><span class="o">.</span><span class="n">propagate_for</span><span class="p">(</span><span class="n">delta_t</span> <span class="o">=</span> <span class="mf">5.</span><span class="p">)</span>
 
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Outcome      : </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">status</span><span class="p">))</span>
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Min. timestep: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">min_h</span><span class="p">))</span>
@@ -721,7 +732,7 @@ propagates the state up to a specified epoch.</p>
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Current time : </span><span class="si">{}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ta</span><span class="o">.</span><span class="n">time</span><span class="p">))</span>
 
 <span class="c1"># Propagate until t = 20.</span>
-<span class="n">status</span><span class="p">,</span> <span class="n">min_h</span><span class="p">,</span> <span class="n">max_h</span><span class="p">,</span> <span class="n">nsteps</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">ta</span><span class="o">.</span><span class="n">propagate_until</span><span class="p">(</span><span class="n">t</span> <span class="o">=</span> <span class="mf">20.</span><span class="p">)</span>
+<span class="n">status</span><span class="p">,</span> <span class="n">min_h</span><span class="p">,</span> <span class="n">max_h</span><span class="p">,</span> <span class="n">nsteps</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">ta</span><span class="o">.</span><span class="n">propagate_until</span><span class="p">(</span><span class="n">t</span> <span class="o">=</span> <span class="mf">20.</span><span class="p">)</span>
 
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Outcome      : </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">status</span><span class="p">))</span>
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Min. timestep: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">min_h</span><span class="p">))</span>
@@ -748,7 +759,7 @@ Current time : 20.0
 </div>
 </div>
 <p>The time-limited propagation methods return
-a tuple of 5 values, which represent, respectively:</p>
+a tuple of 6 values, which represent, respectively:</p>
 <ul class="simple">
 <li><p>the outcome of the integration (which will always be
 <code class="docutils literal notranslate"><span class="pre">time_limit</span></code>, unless error conditions arise),</p></li>
@@ -756,14 +767,16 @@ a tuple of 5 values, which represent, respectively:</p>
 that were used in the propagation,</p></li>
 <li><p>the total number of steps that were taken,</p></li>
 <li><p>the <a class="reference internal" href="Dense%20output.html"><span class="std std-doc">continuous output</span></a> function object,
-if requested (off by default).</p></li>
+if requested (off by default),</p></li>
+<li><p>the step callback (see below for an explanation). If no callback has
+been provided, <code class="docutils literal notranslate"><span class="pre">None</span></code> is returned.</p></li>
 </ul>
 <p>The time-limited propagation methods can be used
 to propagate both forward and backward in time:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Propagate back to t = 0.</span>
-<span class="n">status</span><span class="p">,</span> <span class="n">min_h</span><span class="p">,</span> <span class="n">max_h</span><span class="p">,</span> <span class="n">nsteps</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">ta</span><span class="o">.</span><span class="n">propagate_until</span><span class="p">(</span><span class="n">t</span> <span class="o">=</span> <span class="mf">0.</span><span class="p">)</span>
+<span class="n">status</span><span class="p">,</span> <span class="n">min_h</span><span class="p">,</span> <span class="n">max_h</span><span class="p">,</span> <span class="n">nsteps</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">ta</span><span class="o">.</span><span class="n">propagate_until</span><span class="p">(</span><span class="n">t</span> <span class="o">=</span> <span class="mf">0.</span><span class="p">)</span>
 
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Outcome      : </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">status</span><span class="p">))</span>
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Min. timestep: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">min_h</span><span class="p">))</span>
@@ -804,9 +817,9 @@ can be invoked with additional optional keyword arguments:</p>
 <li><p><code class="docutils literal notranslate"><span class="pre">max_delta_t</span></code>: similarly to the <code class="docutils literal notranslate"><span class="pre">step()</span></code> function, this value
 represents the maximum timestep size in absolute value;</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">callback</span></code>: this is a callable which will be invoked at the end of
-each timestep, with the integrator object as only argument. If the callback returns <code class="docutils literal notranslate"><span class="pre">True</span></code> then the integration
-will continue after the invocation of the callback, otherwise the integration
-will be interrupted;</p></li>
+each timestep, with the integrator object as only argument. This is known as a <em>step callback</em>.
+If the callback returns <code class="docutils literal notranslate"><span class="pre">True</span></code> then the integration will continue after the invocation of the callback,
+otherwise the integration will be interrupted;</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">c_output</span></code>: a boolean flag that enables <a class="reference internal" href="Dense%20output.html"><span class="std std-doc">continuous output</span></a>.</p></li>
 </ul>
 <div class="cell docutils container">
@@ -866,6 +879,8 @@ Current time: 1.5
 </div>
 </div>
 </div>
+<p>Step callbacks are returned as the sixth member of the return tuple of
+the <code class="docutils literal notranslate"><span class="pre">propagate_for()</span></code> and <code class="docutils literal notranslate"><span class="pre">propagate_until()</span></code> methods.</p>
 </section>
 <section id="propagation-over-a-time-grid">
 <h2>Propagation over a time grid<a class="headerlink" href="#propagation-over-a-time-grid" title="Permalink to this heading">#</a></h2>
@@ -896,6 +911,7 @@ a full integration step.</p>
  0.2021425243240425,
  0.21605277478009474,
  5,
+ None,
  array([[ 0.05      ,  0.025     ],
         [ 0.05003035, -0.024398  ],
         [ 0.04519961, -0.07142727],
@@ -912,7 +928,7 @@ a full integration step.</p>
 </div>
 </div>
 <p><code class="docutils literal notranslate"><span class="pre">propagate_grid()</span></code> takes in input a grid of time points,
-and returns a tuple of 5 values. The first 4 values are the same
+and returns a tuple of 6 values. The first 4 values are the same
 as in the other <code class="docutils literal notranslate"><span class="pre">propagate_*()</span></code> functions:</p>
 <ul class="simple">
 <li><p>the outcome of the integration,</p></li>
@@ -920,12 +936,13 @@ as in the other <code class="docutils literal notranslate"><span class="pre">pro
 that were used in the propagation,</p></li>
 <li><p>the total number of steps that were taken.</p></li>
 </ul>
-<p>The fifth value returned by <code class="docutils literal notranslate"><span class="pre">propagate_grid()</span></code> is a 2D array containing
+<p>The fifth value returned by <code class="docutils literal notranslate"><span class="pre">propagate_grid()</span></code> is the step callback, if provided by the user (see below). Otherwise, <code class="docutils literal notranslate"><span class="pre">None</span></code> is returned.</p>
+<p>The sixth value returned by <code class="docutils literal notranslate"><span class="pre">propagate_grid()</span></code> is a 2D array containing
 the state of the system at the time points in the grid:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Print the state at t = 0.4 (index 4 in the time grid).</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;State at t = 0.4: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">out</span><span class="p">[</span><span class="mi">4</span><span class="p">][</span><span class="mi">4</span><span class="p">]))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;State at t = 0.4: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">out</span><span class="p">[</span><span class="mi">5</span><span class="p">][</span><span class="mi">4</span><span class="p">]))</span>
 </pre></div>
 </div>
 </div>
@@ -952,10 +969,8 @@ can be invoked with additional optional keyword arguments:</p>
 <li><p><code class="docutils literal notranslate"><span class="pre">max_delta_t</span></code>: similarly to the <code class="docutils literal notranslate"><span class="pre">step()</span></code> function, this value
 represents the maximum timestep size in absolute value;</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">callback</span></code>: this is a callable which will be invoked at the end of
-each timestep, with the integrator object as only argument. If the callback returns <code class="docutils literal notranslate"><span class="pre">True</span></code> then the integration
-will continue after the invocation of the callback, otherwise the integration
-will be interrupted;</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">c_output</span></code>: a boolean flag that enables <a class="reference internal" href="Dense%20output.html"><span class="std std-doc">continuous output</span></a>.</p></li>
+each timestep, with the integrator object as only argument. This is known as a <em>step callback</em>. If the callback returns <code class="docutils literal notranslate"><span class="pre">True</span></code>
+then the integration will continue after the invocation of the callback, otherwise the integration will be interrupted.</p></li>
 </ul>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -1021,6 +1036,8 @@ Current time: 2.0
 </div>
 </div>
 </div>
+<p>Step callbacks are returned as the fifth member of the return tuple of
+the <code class="docutils literal notranslate"><span class="pre">propagate_grid()</span></code> method.</p>
 </section>
 </section>
 

@@ -30,7 +30,7 @@
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
-    <link rel="stylesheet" href="../_static/styles/sphinx-book-theme.css?digest=14f4ca6b54d191a8c7657f6c759bf11a5fb86285" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css" />
     <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
@@ -41,7 +41,7 @@
     <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
     <script src="../_static/doctools.js"></script>
     <script src="../_static/sphinx_highlight.js"></script>
-    <script src="../_static/scripts/sphinx-book-theme.js?digest=5a5c038af52cf7bc1a1ec88eea08e6366ee68824"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js"></script>
     <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'notebooks/Periodic orbits in the CR3BP';</script>
@@ -140,7 +140,18 @@
   
   
 </a></div>
-        <div class="sidebar-primary-item"><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
     <div class="bd-toc-item navbar-nav active">
         <p aria-level="2" class="caption" role="heading"><span class="caption-text">Main</span></p>
 <ul class="nav bd-sidenav">
@@ -700,7 +711,7 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>--- 10.312782764434814 seconds --- to build the Taylor integrator
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>--- 11.538409948348999 seconds --- to build the Taylor integrator
 </pre></div>
 </div>
 </div>
@@ -731,7 +742,7 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>--- 0.04742860794067383 seconds --- to propagate
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>--- 0.050736188888549805 seconds --- to propagate
 </pre></div>
 </div>
 </div>
@@ -748,7 +759,7 @@ document.write(`
 
 <span class="c1"># Plot the trajectory (xy)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">out</span><span class="p">[</span><span class="mi">4</span><span class="p">][:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">out</span><span class="p">[</span><span class="mi">4</span><span class="p">][:,</span> <span class="mi">1</span><span class="p">])</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">out</span><span class="p">[</span><span class="mi">5</span><span class="p">][:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">out</span><span class="p">[</span><span class="mi">5</span><span class="p">][:,</span> <span class="mi">1</span><span class="p">])</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;x&quot;</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;y&quot;</span><span class="p">)</span>
 <span class="c1"># Plot the zero velocity curve</span>
@@ -768,7 +779,7 @@ document.write(`
 
 <span class="c1"># Plot the trajectory (xz)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">out</span><span class="p">[</span><span class="mi">4</span><span class="p">][:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">out</span><span class="p">[</span><span class="mi">4</span><span class="p">][:,</span> <span class="mi">2</span><span class="p">])</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">out</span><span class="p">[</span><span class="mi">5</span><span class="p">][:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">out</span><span class="p">[</span><span class="mi">5</span><span class="p">][:,</span> <span class="mi">2</span><span class="p">])</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;x&quot;</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;z&quot;</span><span class="p">);</span>
 <span class="c1"># Plot the zero velocity curve</span>
@@ -789,7 +800,7 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;matplotlib.collections.PathCollection at 0x7fe0a24caad0&gt;
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;matplotlib.collections.PathCollection at 0x7f1eb00a6770&gt;
 </pre></div>
 </div>
 <img alt="../_images/de0d9b784e67d433c81e1c6d68b5b937452559993089914853f0e1f45dbc1669.png" src="../_images/de0d9b784e67d433c81e1c6d68b5b937452559993089914853f0e1f45dbc1669.png" />
@@ -867,7 +878,7 @@ document.write(`
 
 <span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
 <span class="n">zoom</span><span class="o">=</span><span class="mf">0.005</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">out0</span><span class="p">[</span><span class="mi">4</span><span class="p">][:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">out0</span><span class="p">[</span><span class="mi">4</span><span class="p">][:,</span> <span class="mi">1</span><span class="p">],</span><span class="s1">&#39;r&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">out0</span><span class="p">[</span><span class="mi">5</span><span class="p">][:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">out0</span><span class="p">[</span><span class="mi">5</span><span class="p">][:,</span> <span class="mi">1</span><span class="p">],</span><span class="s1">&#39;r&#39;</span><span class="p">)</span>
 
 <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;x&quot;</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;y&quot;</span><span class="p">)</span>
@@ -1010,8 +1021,8 @@ new error is: 1.844168530369353e-12
 
 <span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
 <span class="n">zoom</span><span class="o">=</span><span class="mf">0.005</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">out0</span><span class="p">[</span><span class="mi">4</span><span class="p">][:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">out0</span><span class="p">[</span><span class="mi">4</span><span class="p">][:,</span> <span class="mi">1</span><span class="p">],</span><span class="s1">&#39;r&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">out</span><span class="p">[</span><span class="mi">4</span><span class="p">][:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">out</span><span class="p">[</span><span class="mi">4</span><span class="p">][:,</span> <span class="mi">1</span><span class="p">],</span><span class="s1">&#39;k&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">out0</span><span class="p">[</span><span class="mi">5</span><span class="p">][:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">out0</span><span class="p">[</span><span class="mi">5</span><span class="p">][:,</span> <span class="mi">1</span><span class="p">],</span><span class="s1">&#39;r&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">out</span><span class="p">[</span><span class="mi">5</span><span class="p">][:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">out</span><span class="p">[</span><span class="mi">5</span><span class="p">][:,</span> <span class="mi">1</span><span class="p">],</span><span class="s1">&#39;k&#39;</span><span class="p">)</span>
 
 <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;x&quot;</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;y&quot;</span><span class="p">)</span>
@@ -1037,7 +1048,7 @@ new error is: 1.844168530369353e-12
 <span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">(</span><span class="o">-</span><span class="n">zoom</span><span class="p">,</span> <span class="o">+</span><span class="n">zoom</span><span class="p">)</span>
 
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;mu: &quot;</span><span class="p">,</span> <span class="n">ta</span><span class="o">.</span><span class="n">pars</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Initial condition: [</span><span class="si">{</span><span class="n">out</span><span class="p">[</span><span class="mi">4</span><span class="p">][</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="si">:</span><span class="s2">.16e</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">out</span><span class="p">[</span><span class="mi">4</span><span class="p">][</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span><span class="si">:</span><span class="s2">.16e</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">out</span><span class="p">[</span><span class="mi">4</span><span class="p">][</span><span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="p">]</span><span class="si">:</span><span class="s2">.16e</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">out</span><span class="p">[</span><span class="mi">4</span><span class="p">][</span><span class="mi">0</span><span class="p">,</span><span class="mi">3</span><span class="p">]</span><span class="si">:</span><span class="s2">.16e</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">out</span><span class="p">[</span><span class="mi">4</span><span class="p">][</span><span class="mi">0</span><span class="p">,</span><span class="mi">4</span><span class="p">]</span><span class="si">:</span><span class="s2">.16e</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">out</span><span class="p">[</span><span class="mi">4</span><span class="p">][</span><span class="mi">0</span><span class="p">,</span><span class="mi">5</span><span class="p">]</span><span class="si">:</span><span class="s2">.16e</span><span class="si">}</span><span class="s2">]&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Initial condition: [</span><span class="si">{</span><span class="n">out</span><span class="p">[</span><span class="mi">5</span><span class="p">][</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="si">:</span><span class="s2">.16e</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">out</span><span class="p">[</span><span class="mi">5</span><span class="p">][</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span><span class="si">:</span><span class="s2">.16e</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">out</span><span class="p">[</span><span class="mi">5</span><span class="p">][</span><span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="p">]</span><span class="si">:</span><span class="s2">.16e</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">out</span><span class="p">[</span><span class="mi">5</span><span class="p">][</span><span class="mi">0</span><span class="p">,</span><span class="mi">3</span><span class="p">]</span><span class="si">:</span><span class="s2">.16e</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">out</span><span class="p">[</span><span class="mi">5</span><span class="p">][</span><span class="mi">0</span><span class="p">,</span><span class="mi">4</span><span class="p">]</span><span class="si">:</span><span class="s2">.16e</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">out</span><span class="p">[</span><span class="mi">5</span><span class="p">][</span><span class="mi">0</span><span class="p">,</span><span class="mi">5</span><span class="p">]</span><span class="si">:</span><span class="s2">.16e</span><span class="si">}</span><span class="s2">]&quot;</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Period: </span><span class="si">{</span><span class="n">t_final</span><span class="si">:</span><span class="s2">.16e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -1171,9 +1182,9 @@ Period: 2.6915996001662497e+00
 
 <span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
 <span class="n">zoom</span><span class="o">=</span><span class="mf">0.005</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">out0</span><span class="p">[</span><span class="mi">4</span><span class="p">][:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">out0</span><span class="p">[</span><span class="mi">4</span><span class="p">][:,</span> <span class="mi">1</span><span class="p">],</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">out</span><span class="p">[</span><span class="mi">4</span><span class="p">][:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">out</span><span class="p">[</span><span class="mi">4</span><span class="p">][:,</span> <span class="mi">1</span><span class="p">],</span><span class="s1">&#39;k&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">out2</span><span class="p">[</span><span class="mi">4</span><span class="p">][:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">out2</span><span class="p">[</span><span class="mi">4</span><span class="p">][:,</span> <span class="mi">1</span><span class="p">],</span><span class="s1">&#39;r&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">out0</span><span class="p">[</span><span class="mi">5</span><span class="p">][:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">out0</span><span class="p">[</span><span class="mi">5</span><span class="p">][:,</span> <span class="mi">1</span><span class="p">],</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">out</span><span class="p">[</span><span class="mi">5</span><span class="p">][:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">out</span><span class="p">[</span><span class="mi">5</span><span class="p">][:,</span> <span class="mi">1</span><span class="p">],</span><span class="s1">&#39;k&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">out2</span><span class="p">[</span><span class="mi">5</span><span class="p">][:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">out2</span><span class="p">[</span><span class="mi">5</span><span class="p">][:,</span> <span class="mi">1</span><span class="p">],</span><span class="s1">&#39;r&#39;</span><span class="p">)</span>
 
 <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;x&quot;</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;y&quot;</span><span class="p">)</span>
@@ -1257,10 +1268,10 @@ new error is: 3.427171981558372e-14
 
 <span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
 <span class="n">zoom</span><span class="o">=</span><span class="mf">0.005</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">out0</span><span class="p">[</span><span class="mi">4</span><span class="p">][:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">out0</span><span class="p">[</span><span class="mi">4</span><span class="p">][:,</span> <span class="mi">1</span><span class="p">],</span><span class="s1">&#39;r&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">out</span><span class="p">[</span><span class="mi">4</span><span class="p">][:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">out</span><span class="p">[</span><span class="mi">4</span><span class="p">][:,</span> <span class="mi">1</span><span class="p">],</span><span class="s1">&#39;k&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">out2</span><span class="p">[</span><span class="mi">4</span><span class="p">][:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">out2</span><span class="p">[</span><span class="mi">4</span><span class="p">][:,</span> <span class="mi">1</span><span class="p">],</span><span class="s1">&#39;r&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">out3</span><span class="p">[</span><span class="mi">4</span><span class="p">][:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">out3</span><span class="p">[</span><span class="mi">4</span><span class="p">][:,</span> <span class="mi">1</span><span class="p">],</span><span class="s1">&#39;k&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">out0</span><span class="p">[</span><span class="mi">5</span><span class="p">][:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">out0</span><span class="p">[</span><span class="mi">5</span><span class="p">][:,</span> <span class="mi">1</span><span class="p">],</span><span class="s1">&#39;r&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">out</span><span class="p">[</span><span class="mi">5</span><span class="p">][:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">out</span><span class="p">[</span><span class="mi">5</span><span class="p">][:,</span> <span class="mi">1</span><span class="p">],</span><span class="s1">&#39;k&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">out2</span><span class="p">[</span><span class="mi">5</span><span class="p">][:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">out2</span><span class="p">[</span><span class="mi">5</span><span class="p">][:,</span> <span class="mi">1</span><span class="p">],</span><span class="s1">&#39;r&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">out3</span><span class="p">[</span><span class="mi">5</span><span class="p">][:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">out3</span><span class="p">[</span><span class="mi">5</span><span class="p">][:,</span> <span class="mi">1</span><span class="p">],</span><span class="s1">&#39;k&#39;</span><span class="p">)</span>
 
 <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;x&quot;</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;y&quot;</span><span class="p">)</span>

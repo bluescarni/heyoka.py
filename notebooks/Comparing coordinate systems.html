@@ -30,7 +30,7 @@
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
-    <link rel="stylesheet" href="../_static/styles/sphinx-book-theme.css?digest=14f4ca6b54d191a8c7657f6c759bf11a5fb86285" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css" />
     <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
@@ -41,7 +41,7 @@
     <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
     <script src="../_static/doctools.js"></script>
     <script src="../_static/sphinx_highlight.js"></script>
-    <script src="../_static/scripts/sphinx-book-theme.js?digest=5a5c038af52cf7bc1a1ec88eea08e6366ee68824"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js"></script>
     <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'notebooks/Comparing coordinate systems';</script>
@@ -140,7 +140,18 @@
   
   
 </a></div>
-        <div class="sidebar-primary-item"><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
     <div class="bd-toc-item navbar-nav active">
         <p aria-level="2" class="caption" role="heading"><span class="caption-text">Main</span></p>
 <ul class="nav bd-sidenav">
@@ -547,7 +558,7 @@ document.write(`
 <span class="n">t_grid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">250</span><span class="p">,</span> <span class="mi">1000</span><span class="p">)</span>
 
 <span class="c1"># Integrate.</span>
-<span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">nsteps_cart</span><span class="p">,</span> <span class="n">out_cart</span> <span class="o">=</span> <span class="n">ta_cart</span><span class="o">.</span><span class="n">propagate_grid</span><span class="p">(</span><span class="n">t_grid</span><span class="p">)</span>
+<span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">nsteps_cart</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">out_cart</span> <span class="o">=</span> <span class="n">ta_cart</span><span class="o">.</span><span class="n">propagate_grid</span><span class="p">(</span><span class="n">t_grid</span><span class="p">)</span>
 
 <span class="c1"># Plot.</span>
 <span class="o">%</span><span class="k">matplotlib</span> inline
@@ -712,10 +723,10 @@ p_\phi &amp; = r^2\dot{\phi}\sin^2\theta, &amp; \phi &amp; = \arctan \frac{y}{x}
 <span class="p">)</span>
 
 <span class="c1"># Run the integration.</span>
-<span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">nsteps_sph</span><span class="p">,</span> <span class="n">out_sph</span> <span class="o">=</span> <span class="n">ta_sph</span><span class="o">.</span><span class="n">propagate_grid</span><span class="p">(</span><span class="n">t_grid</span><span class="p">,</span>
-                                                     <span class="c1"># Callback to reduce the</span>
-                                                     <span class="c1"># value of phi to [-pi, pi].</span>
-                                                     <span class="n">callback</span> <span class="o">=</span> <span class="n">mod_cb_sph</span><span class="p">)</span>
+<span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">nsteps_sph</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">out_sph</span> <span class="o">=</span> <span class="n">ta_sph</span><span class="o">.</span><span class="n">propagate_grid</span><span class="p">(</span><span class="n">t_grid</span><span class="p">,</span>
+                                                        <span class="c1"># Callback to reduce the</span>
+                                                        <span class="c1"># value of phi to [-pi, pi].</span>
+                                                        <span class="n">callback</span> <span class="o">=</span> <span class="n">mod_cb_sph</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -919,7 +930,7 @@ z = L\sqrt{1-\frac{H^2}{G^2}}\left[ L\left( \cos E - \sqrt{1-\frac{G^2}{L^2}} \r
 <p>Let us proceed to the numerical integration:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">nsteps_del</span><span class="p">,</span> <span class="n">out_del</span> <span class="o">=</span> <span class="n">ta_del</span><span class="o">.</span><span class="n">propagate_grid</span><span class="p">(</span><span class="n">t_grid</span><span class="p">,</span> <span class="n">callback</span> <span class="o">=</span> <span class="n">mod_cb_del</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">nsteps_del</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">out_del</span> <span class="o">=</span> <span class="n">ta_del</span><span class="o">.</span><span class="n">propagate_grid</span><span class="p">(</span><span class="n">t_grid</span><span class="p">,</span> <span class="n">callback</span> <span class="o">=</span> <span class="n">mod_cb_del</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -1054,7 +1065,7 @@ r = L^2\left( 1 - \sqrt{1-\frac{G^2}{L^2}}\cos E\right).
 <p>We can now proceed to the integration:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">nsteps_del_e</span><span class="p">,</span> <span class="n">out_del_e</span> <span class="o">=</span> <span class="n">ta_del_e</span><span class="o">.</span><span class="n">propagate_grid</span><span class="p">(</span><span class="n">t_grid</span><span class="p">,</span> <span class="n">callback</span> <span class="o">=</span> <span class="n">mod_cb_del_e</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">nsteps_del_e</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">out_del_e</span> <span class="o">=</span> <span class="n">ta_del_e</span><span class="o">.</span><span class="n">propagate_grid</span><span class="p">(</span><span class="n">t_grid</span><span class="p">,</span> <span class="n">callback</span> <span class="o">=</span> <span class="n">mod_cb_del_e</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>

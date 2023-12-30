@@ -30,7 +30,7 @@
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
-    <link rel="stylesheet" href="../_static/styles/sphinx-book-theme.css?digest=14f4ca6b54d191a8c7657f6c759bf11a5fb86285" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css" />
     <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
@@ -41,7 +41,7 @@
     <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
     <script src="../_static/doctools.js"></script>
     <script src="../_static/sphinx_highlight.js"></script>
-    <script src="../_static/scripts/sphinx-book-theme.js?digest=5a5c038af52cf7bc1a1ec88eea08e6366ee68824"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js"></script>
     <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'notebooks/The two-fixed elliptic billiard';</script>
@@ -140,7 +140,18 @@
   
   
 </a></div>
-        <div class="sidebar-primary-item"><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
     <div class="bd-toc-item navbar-nav active">
         <p aria-level="2" class="caption" role="heading"><span class="caption-text">Main</span></p>
 <ul class="nav bd-sidenav">
@@ -465,7 +476,8 @@ y^2 = \left(a - x \right)\cdot\left(x - b\right)\cdot\left(x^2 + c\right),
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">matplotlib.pylab</span> <span class="kn">import</span> <span class="n">plt</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s2">&quot;figure.figsize&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">9</span><span class="p">,</span> <span class="mi">9</span><span class="p">)</span>
+
+<span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">9</span><span class="p">,</span><span class="mi">9</span><span class="p">))</span>
 
 <span class="c1"># The curve&#39;s parameters.</span>
 <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">,</span> <span class="mf">.01</span>
@@ -494,7 +506,10 @@ y^2 = \left(a - x \right)\cdot\left(x - b\right)\cdot\left(x^2 + c\right),
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/a6540ba1c02976eb5cb8fa8208a0afedf9f07f5c910370df6debb965a42b4245.png" src="../_images/a6540ba1c02976eb5cb8fa8208a0afedf9f07f5c910370df6debb965a42b4245.png" />
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;Figure size 900x900 with 0 Axes&gt;
+</pre></div>
+</div>
+<img alt="../_images/304fb7d55f798ad46bb1191cb3d03dda2e1ae57547e6369a9919b2af223255a1.png" src="../_images/304fb7d55f798ad46bb1191cb3d03dda2e1ae57547e6369a9919b2af223255a1.png" />
 </div>
 </div>
 <p>The elliptic curve generates on the plane a smooth, hourglass-like shape.</p>
@@ -611,7 +626,7 @@ y^2 - \left(a - x \right)\cdot\left(x - b\right)\cdot\left(x^2 + c\right) = 0 \\
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">tgrid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">10000</span><span class="p">)</span>
-<span class="n">traj</span> <span class="o">=</span> <span class="n">ta</span><span class="o">.</span><span class="n">propagate_grid</span><span class="p">(</span><span class="n">tgrid</span><span class="p">)[</span><span class="mi">4</span><span class="p">]</span>
+<span class="n">traj</span> <span class="o">=</span> <span class="n">ta</span><span class="o">.</span><span class="n">propagate_grid</span><span class="p">(</span><span class="n">tgrid</span><span class="p">)[</span><span class="mi">5</span><span class="p">]</span>
 </pre></div>
 </div>
 </div>
@@ -619,7 +634,8 @@ y^2 - \left(a - x \right)\cdot\left(x - b\right)\cdot\left(x^2 + c\right) = 0 \\
 <p>Let’s plot the trajectory:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">9</span><span class="p">,</span><span class="mi">6</span><span class="p">))</span>
+
 <span class="n">ax</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s1">&#39;equal&#39;</span><span class="p">)</span>
 
 <span class="c1"># Setup the billiard and the centres.</span>
@@ -639,7 +655,7 @@ y^2 - \left(a - x \right)\cdot\left(x - b\right)\cdot\left(x^2 + c\right) = 0 \\
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/4e613e5243407e19c781171af6725c2ae28d9400e65596233bd51656164b2f20.png" src="../_images/4e613e5243407e19c781171af6725c2ae28d9400e65596233bd51656164b2f20.png" />
+<img alt="../_images/b12a06aca90482522de3ae27b268adf894c0d1f0c36f3fbe645035244d87da57.png" src="../_images/b12a06aca90482522de3ae27b268adf894c0d1f0c36f3fbe645035244d87da57.png" />
 </div>
 </div>
 <p>We can see how, indeed, the test particle bounces both against the walls of the billiard and the centres of gravitational attraction.</p>
@@ -654,9 +670,9 @@ y^2 - \left(a - x \right)\cdot\left(x - b\right)\cdot\left(x^2 + c\right) = 0 \\
 
 <span class="c1"># Integrate and plot.</span>
 <span class="n">tgrid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">50000</span><span class="p">)</span>
-<span class="n">traj</span> <span class="o">=</span> <span class="n">ta</span><span class="o">.</span><span class="n">propagate_grid</span><span class="p">(</span><span class="n">tgrid</span><span class="p">)[</span><span class="mi">4</span><span class="p">]</span>
+<span class="n">traj</span> <span class="o">=</span> <span class="n">ta</span><span class="o">.</span><span class="n">propagate_grid</span><span class="p">(</span><span class="n">tgrid</span><span class="p">)[</span><span class="mi">5</span><span class="p">]</span>
 
-<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">9</span><span class="p">,</span><span class="mi">6</span><span class="p">))</span>
 <span class="n">ax</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s1">&#39;equal&#39;</span><span class="p">)</span>
 
 <span class="n">xrng</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="mi">1000</span><span class="p">)</span>
@@ -673,7 +689,7 @@ y^2 - \left(a - x \right)\cdot\left(x - b\right)\cdot\left(x^2 + c\right) = 0 \\
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/d7de58ab250b45a126956ec2200b67a6d3ba267190bc825b51fa6c640f91f728.png" src="../_images/d7de58ab250b45a126956ec2200b67a6d3ba267190bc825b51fa6c640f91f728.png" />
+<img alt="../_images/9c6af7d5ede92d8282b26af505efefd6dbd6ccbd7fe743424e6270a755da027d.png" src="../_images/9c6af7d5ede92d8282b26af505efefd6dbd6ccbd7fe743424e6270a755da027d.png" />
 </div>
 </div>
 <p>Because we increased the initial velocity, the motion of the test particle is now almost rectilinear, and it fills up in a dense fashion the simulation domain.</p>

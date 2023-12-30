@@ -30,7 +30,7 @@
 <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
 
     <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
-    <link rel="stylesheet" href="_static/styles/sphinx-book-theme.css?digest=14f4ca6b54d191a8c7657f6c759bf11a5fb86285" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/sphinx-book-theme.css" />
     <link rel="stylesheet" type="text/css" href="_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
@@ -41,7 +41,7 @@
     <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
     <script src="_static/doctools.js"></script>
     <script src="_static/sphinx_highlight.js"></script>
-    <script src="_static/scripts/sphinx-book-theme.js?digest=5a5c038af52cf7bc1a1ec88eea08e6366ee68824"></script>
+    <script src="_static/scripts/sphinx-book-theme.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'breaking_changes';</script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -138,7 +138,18 @@
   
   
 </a></div>
-        <div class="sidebar-primary-item"><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
     <div class="bd-toc-item navbar-nav active">
         <p aria-level="2" class="caption" role="heading"><span class="caption-text">Main</span></p>
 <ul class="current nav bd-sidenav">
@@ -420,6 +431,7 @@ document.write(`
                 <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#bchanges-4-0-0">4.0.0</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#api-behaviour-changes">API/behaviour changes</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#step-callbacks-and-propagate">Step callbacks and <code class="docutils literal notranslate"><span class="pre">propagate_*()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#propagate-grid"><code class="docutils literal notranslate"><span class="pre">propagate_grid()</span></code></a></li>
 </ul>
 </li>
@@ -448,6 +460,29 @@ document.write(`
 <p>heyoka.py 4 includes several backwards-incompatible changes.</p>
 <section id="api-behaviour-changes">
 <h3>API/behaviour changes<a class="headerlink" href="#api-behaviour-changes" title="Permalink to this heading">#</a></h3>
+<section id="step-callbacks-and-propagate">
+<h4>Step callbacks and <code class="docutils literal notranslate"><span class="pre">propagate_*()</span></code><a class="headerlink" href="#step-callbacks-and-propagate" title="Permalink to this heading">#</a></h4>
+<p>The step callbacks that can (optionally) be passed to the <code class="docutils literal notranslate"><span class="pre">propagate_*()</span></code> methods of the
+adaptive integrators are now part of the return value. Specifically:</p>
+<ul class="simple">
+<li><p>for the scalar <code class="docutils literal notranslate"><span class="pre">propagate_for()</span></code> and <code class="docutils literal notranslate"><span class="pre">propagate_until()</span></code> methods, the step callback is
+the sixth element of the return tuple, while for the batch variants the step callback
+is the second element of the return tuple;</p></li>
+<li><p>for the scalar <code class="docutils literal notranslate"><span class="pre">propagate_grid()</span></code> method, the step callback is the fifth element of the return
+tuple, while for the batch variant the step callback is the first element of the return
+tuple.</p></li>
+</ul>
+<p><a class="reference internal" href="notebooks/ensemble_mode.html#ensemble-prop"><span class="std std-ref">The ensemble propagation</span></a> functions have been modified in an analogous way.</p>
+<p>Adapting existing code for the new API should be straightforward. In most cases it should be just
+a matter of:</p>
+<ul class="simple">
+<li><p>adapting unpacking declarations to account for the new element in the return tuple
+of scalar propagations,</p></li>
+<li><p>adjusting the indexing into the return tuple when fetching a specific element,</p></li>
+<li><p>accounting for the fact that batch propagations now return a tuple of two elements
+rather than a single value.</p></li>
+</ul>
+</section>
 <section id="propagate-grid">
 <h4><code class="docutils literal notranslate"><span class="pre">propagate_grid()</span></code><a class="headerlink" href="#propagate-grid" title="Permalink to this heading">#</a></h4>
 <p>The <code class="docutils literal notranslate"><span class="pre">propagate_grid()</span></code> methods of the adaptive integrators now require the first element of the
@@ -593,6 +628,7 @@ time, and its value will be -1 for negative derivative,
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#bchanges-4-0-0">4.0.0</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#api-behaviour-changes">API/behaviour changes</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#step-callbacks-and-propagate">Step callbacks and <code class="docutils literal notranslate"><span class="pre">propagate_*()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#propagate-grid"><code class="docutils literal notranslate"><span class="pre">propagate_grid()</span></code></a></li>
 </ul>
 </li>

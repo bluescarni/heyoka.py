@@ -30,7 +30,7 @@
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
-    <link rel="stylesheet" href="../_static/styles/sphinx-book-theme.css?digest=14f4ca6b54d191a8c7657f6c759bf11a5fb86285" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css" />
     <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
@@ -41,7 +41,7 @@
     <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
     <script src="../_static/doctools.js"></script>
     <script src="../_static/sphinx_highlight.js"></script>
-    <script src="../_static/scripts/sphinx-book-theme.js?digest=5a5c038af52cf7bc1a1ec88eea08e6366ee68824"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js"></script>
     <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'notebooks/The restricted three-body problem';</script>
@@ -140,7 +140,18 @@
   
   
 </a></div>
-        <div class="sidebar-primary-item"><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
     <div class="bd-toc-item navbar-nav active">
         <p aria-level="2" class="caption" role="heading"><span class="caption-text">Main</span></p>
 <ul class="nav bd-sidenav">
@@ -529,9 +540,10 @@ document.write(`
 </div>
 <div class="cell_output docutils container">
 <div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(&lt;taylor_outcome.time_limit: -4294967299&gt;,
- 0.14525004089826318,
- 0.4117835887806674,
+ 0.14525004089826876,
+ 0.4117835887806712,
  753,
+ None,
  array([[-0.45      ,  0.8       ,  0.        , -0.8       , -0.45      ,
           0.58      ],
         [-0.44964278,  0.79928721,  0.04635564, -0.79085155, -0.46766159,
@@ -556,18 +568,18 @@ document.write(`
 <span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s2">&quot;figure.figsize&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">12</span><span class="p">,</span><span class="mi">6</span><span class="p">)</span>
 
 <span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">out</span><span class="p">[</span><span class="mi">4</span><span class="p">][:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">out</span><span class="p">[</span><span class="mi">4</span><span class="p">][:,</span> <span class="mi">1</span><span class="p">])</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">out</span><span class="p">[</span><span class="mi">5</span><span class="p">][:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">out</span><span class="p">[</span><span class="mi">5</span><span class="p">][:,</span> <span class="mi">1</span><span class="p">])</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;x&quot;</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;y&quot;</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">out</span><span class="p">[</span><span class="mi">4</span><span class="p">][:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">out</span><span class="p">[</span><span class="mi">4</span><span class="p">][:,</span> <span class="mi">2</span><span class="p">])</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">out</span><span class="p">[</span><span class="mi">5</span><span class="p">][:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">out</span><span class="p">[</span><span class="mi">5</span><span class="p">][:,</span> <span class="mi">2</span><span class="p">])</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;x&quot;</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;z&quot;</span><span class="p">);</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/d2dd441955d783ad156383860db10a3117262c7b32e2d1c37660df93082f582e.png" src="../_images/d2dd441955d783ad156383860db10a3117262c7b32e2d1c37660df93082f582e.png" />
+<img alt="../_images/406db12374605e909606d01fceb67b849d132e7aac777402740340230dc75d34.png" src="../_images/406db12374605e909606d01fceb67b849d132e7aac777402740340230dc75d34.png" />
 </div>
 </div>
 <p>The left panel displays a top-down view of the trajectory, while the right panel shows a side view. As anticipated earlier, the set of initial conditions we chose produces a regular, quasi-periodic trajectory which stays away from the two centres of force (which are located at <span class="math notranslate nohighlight">\(x=0.01\)</span> and <span class="math notranslate nohighlight">\(x=-0.99\)</span>).</p>
@@ -588,14 +600,14 @@ document.write(`
 <p>Next, we plot the relative error of Jacobi’s integral throughout the integration with respect to its initial value:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">t_grid</span><span class="p">,</span> <span class="nb">abs</span><span class="p">((</span><span class="n">ham</span><span class="p">(</span><span class="n">out</span><span class="p">[</span><span class="mi">4</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span> <span class="o">-</span> <span class="n">ham</span><span class="p">(</span><span class="n">out</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span><span class="o">.</span><span class="n">transpose</span><span class="p">()))</span> <span class="o">/</span> <span class="n">ham</span><span class="p">(</span><span class="n">out</span><span class="p">[</span><span class="mi">4</span><span class="p">][</span><span class="mi">0</span><span class="p">])),</span> <span class="s1">&#39;x&#39;</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">t_grid</span><span class="p">,</span> <span class="nb">abs</span><span class="p">((</span><span class="n">ham</span><span class="p">(</span><span class="n">out</span><span class="p">[</span><span class="mi">5</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span> <span class="o">-</span> <span class="n">ham</span><span class="p">(</span><span class="n">out</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span><span class="o">.</span><span class="n">transpose</span><span class="p">()))</span> <span class="o">/</span> <span class="n">ham</span><span class="p">(</span><span class="n">out</span><span class="p">[</span><span class="mi">5</span><span class="p">][</span><span class="mi">0</span><span class="p">])),</span> <span class="s1">&#39;x&#39;</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Time&#39;</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;Relative error&#39;</span><span class="p">);</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/ff3d3b90fabc30099b92b2c26fb57e54e0e69ea95255334afab58be9b18d8950.png" src="../_images/ff3d3b90fabc30099b92b2c26fb57e54e0e69ea95255334afab58be9b18d8950.png" />
+<img alt="../_images/1da6fbdcdb6f7b50cb77bb58e5f0c40cefaf4dfe17dd14204709d3cfc582e60e.png" src="../_images/1da6fbdcdb6f7b50cb77bb58e5f0c40cefaf4dfe17dd14204709d3cfc582e60e.png" />
 </div>
 </div>
 <p>We can see how, for this short-term integration, Jacobi’s integral is preserved roughly at machine precision.</p>
@@ -620,9 +632,10 @@ document.write(`
 </div>
 <div class="cell_output docutils container">
 <div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(&lt;taylor_outcome.time_limit: -4294967299&gt;,
- 0.0006037073839959427,
- 0.21942894741255112,
- 37596,
+ 0.0003689101085023595,
+ 0.23936494270073383,
+ 28829,
+ None,
  array([[-0.8       ,  0.        ,  0.        ,  0.        , -0.62764107,
           0.        ],
         [-0.79984466,  0.00344461,  0.        ,  0.0120914 , -0.62787633,
@@ -630,11 +643,11 @@ document.write(`
         [-0.79937842,  0.0068736 ,  0.        ,  0.02421839, -0.62858128,
           0.        ],
         ...,
-        [-0.71789538, -0.25719758,  0.        ,  0.34230309, -0.53770744,
+        [-0.28606638, -0.38317725,  0.        ,  1.45700845, -0.45768591,
           0.        ],
-        [-0.71596044, -0.25356176,  0.        ,  0.36201975, -0.53271893,
+        [-0.26419973, -0.38643491,  0.        ,  1.49934284, -0.41776562,
           0.        ],
-        [-0.71355409, -0.24987382,  0.        ,  0.38212331, -0.52815489,
+        [-0.24154658, -0.3892956 ,  0.        ,  1.54173429, -0.37340628,
           0.        ]]))
 </pre></div>
 </div>
@@ -648,7 +661,7 @@ document.write(`
 <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
 
 <span class="n">plt</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s1">&#39;equal&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">out</span><span class="p">[</span><span class="mi">4</span><span class="p">][:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">out</span><span class="p">[</span><span class="mi">4</span><span class="p">][:,</span> <span class="mi">1</span><span class="p">])</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">out</span><span class="p">[</span><span class="mi">5</span><span class="p">][:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">out</span><span class="p">[</span><span class="mi">5</span><span class="p">][:,</span> <span class="mi">1</span><span class="p">])</span>
 
 <span class="n">cc0</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">Circle</span><span class="p">((</span><span class="mf">0.01</span> <span class="p">,</span> <span class="mf">0.</span><span class="p">),</span> <span class="mf">0.012</span><span class="p">,</span> <span class="n">ec</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">,</span> <span class="n">fc</span><span class="o">=</span><span class="s1">&#39;orange&#39;</span><span class="p">,</span> <span class="n">zorder</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
 <span class="n">cc1</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">Circle</span><span class="p">((</span><span class="o">-</span><span class="mf">0.99</span> <span class="p">,</span> <span class="mf">0.</span><span class="p">),</span> <span class="mf">0.012</span><span class="p">,</span> <span class="n">ec</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">,</span> <span class="n">fc</span><span class="o">=</span><span class="s1">&#39;orange&#39;</span><span class="p">,</span> <span class="n">zorder</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
@@ -662,14 +675,14 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/a2874040524deda63d80e324805fe219c764ccaab7eb4d0ce7a0af31a36285be.png" src="../_images/a2874040524deda63d80e324805fe219c764ccaab7eb4d0ce7a0af31a36285be.png" />
+<img alt="../_images/cba7bf47077ecec715edb70f72e5344a6c767cf429258dc9643e5add2ce52010.png" src="../_images/cba7bf47077ecec715edb70f72e5344a6c767cf429258dc9643e5add2ce52010.png" />
 </div>
 </div>
 <p>We can see how the massless particle now explores regions surrounding both massive particles. The motion is bounded by the zero velocity curve, which is implicitly defined by Jacobi’s integral after imposing the constraint that the square of the velocity of the massless particle cannot be negative.</p>
 <p>Let us now take a look at the conservation of Jacobi’s integral in this trajectory:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">semilogy</span><span class="p">(</span><span class="n">t_grid</span><span class="p">,</span> <span class="nb">abs</span><span class="p">((</span><span class="n">ham</span><span class="p">(</span><span class="n">out</span><span class="p">[</span><span class="mi">4</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span> <span class="o">-</span> <span class="n">ham</span><span class="p">(</span><span class="n">out</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span><span class="o">.</span><span class="n">transpose</span><span class="p">()))))</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">semilogy</span><span class="p">(</span><span class="n">t_grid</span><span class="p">,</span> <span class="nb">abs</span><span class="p">((</span><span class="n">ham</span><span class="p">(</span><span class="n">out</span><span class="p">[</span><span class="mi">5</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span> <span class="o">-</span> <span class="n">ham</span><span class="p">(</span><span class="n">out</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span><span class="o">.</span><span class="n">transpose</span><span class="p">()))))</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">(</span><span class="mf">1e-16</span><span class="p">,</span> <span class="mf">1e-10</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Time&#39;</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;Relative error&#39;</span><span class="p">);</span>
@@ -677,10 +690,10 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/68050d49678ddd1c9e1548d1d6047aa393577ca79de9109b24b9a7e4673bdb39.png" src="../_images/68050d49678ddd1c9e1548d1d6047aa393577ca79de9109b24b9a7e4673bdb39.png" />
+<img alt="../_images/91d892bde852e78fa3e10945954a87150c42a4b290db8a07f0d10258536c5233.png" src="../_images/91d892bde852e78fa3e10945954a87150c42a4b290db8a07f0d10258536c5233.png" />
 </div>
 </div>
-<p>The relative error on Jacobi’s integral remains bounded below <span class="math notranslate nohighlight">\(10^{-13}\)</span>.</p>
+<p>The relative error on Jacobi’s integral remains around <span class="math notranslate nohighlight">\(10^{-13}\)</span>.</p>
 </section>
 
 

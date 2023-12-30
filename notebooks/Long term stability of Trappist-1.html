@@ -30,7 +30,7 @@
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
-    <link rel="stylesheet" href="../_static/styles/sphinx-book-theme.css?digest=14f4ca6b54d191a8c7657f6c759bf11a5fb86285" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css" />
     <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
@@ -41,7 +41,7 @@
     <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
     <script src="../_static/doctools.js"></script>
     <script src="../_static/sphinx_highlight.js"></script>
-    <script src="../_static/scripts/sphinx-book-theme.js?digest=5a5c038af52cf7bc1a1ec88eea08e6366ee68824"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js"></script>
     <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'notebooks/Long term stability of Trappist-1';</script>
@@ -140,7 +140,18 @@
   
   
 </a></div>
-        <div class="sidebar-primary-item"><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
     <div class="bd-toc-item navbar-nav active">
         <p aria-level="2" class="caption" role="heading"><span class="caption-text">Main</span></p>
 <ul class="nav bd-sidenav">
@@ -634,7 +645,7 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/234074e72246864a488b1f6cc952c1a43dc5ba4cbe22c0a9732f401c8452eef7.png" src="../_images/234074e72246864a488b1f6cc952c1a43dc5ba4cbe22c0a9732f401c8452eef7.png" />
+<img alt="../_images/6c76fb112e6aed763313191e2434247b9c1342a49e28022dad8334c7826762da.png" src="../_images/6c76fb112e6aed763313191e2434247b9c1342a49e28022dad8334c7826762da.png" />
 </div>
 </div>
 <p>We are now ready to define the details of the experiment which will simulate in parallel a number of plausible Trappist-1 systems.</p>
@@ -681,7 +692,7 @@ document.write(`
         <span class="n">np</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s1">&#39;trappist1_m_</span><span class="si">{}</span><span class="s1">.npy&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">),</span> <span class="n">m</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
         <span class="n">data_saver</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">ic</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
         <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">N_log</span><span class="p">):</span>
-            <span class="n">oc</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">nsteps</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">ta</span><span class="o">.</span><span class="n">propagate_until</span><span class="p">(</span><span class="n">times</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">*</span> <span class="mf">365.25</span> <span class="o">*</span> <span class="n">pk</span><span class="o">.</span><span class="n">DAY2SEC</span><span class="p">)</span>
+            <span class="n">oc</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">nsteps</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">ta</span><span class="o">.</span><span class="n">propagate_until</span><span class="p">(</span><span class="n">times</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">*</span> <span class="mf">365.25</span> <span class="o">*</span> <span class="n">pk</span><span class="o">.</span><span class="n">DAY2SEC</span><span class="p">)</span>
             <span class="n">data_saver</span><span class="p">(</span><span class="n">j</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">ta</span><span class="o">.</span><span class="n">state</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">oc</span> <span class="o">!=</span> <span class="n">hey</span><span class="o">.</span><span class="n">taylor_outcome</span><span class="o">.</span><span class="n">time_limit</span><span class="p">:</span>
                 <span class="k">break</span>
@@ -812,7 +823,7 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/7bc7cc653291ac2c64adc7395ac7b7e452bfda10b46b3855438bf25537f83d41.png" src="../_images/7bc7cc653291ac2c64adc7395ac7b7e452bfda10b46b3855438bf25537f83d41.png" />
+<img alt="../_images/92df99209c8dca16738a28488339f9d4484c501e1e196edc918eda66d32c305a.png" src="../_images/92df99209c8dca16738a28488339f9d4484c501e1e196edc918eda66d32c305a.png" />
 </div>
 </div>
 <p>Let us also look at the energy conservation and plot it along the simulation, since we only simulated 1000 years in this example, there is not much we can see, but for long term simulation we would see that the Brouwer’s law is achieved for the error growth:</p>
@@ -832,7 +843,7 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/c54a6f304293716a162e54052d9a085515eab486681228376346e5d0836e9855.png" src="../_images/c54a6f304293716a162e54052d9a085515eab486681228376346e5d0836e9855.png" />
+<img alt="../_images/6cb7bd19c53978914b7a4db90a44b1321af2b0ead0ccc8f95a9535dd0e9227df.png" src="../_images/6cb7bd19c53978914b7a4db90a44b1321af2b0ead0ccc8f95a9535dd0e9227df.png" />
 </div>
 </div>
 </section>
