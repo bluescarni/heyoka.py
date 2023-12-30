@@ -19,6 +19,7 @@ class ensemble_test_case(_ut.TestCase):
             sin,
             taylor_adaptive_batch,
         )
+        from .callback import angle_reducer
         import numpy as np
 
         x, v = make_vars("x", "v")
@@ -107,7 +108,7 @@ class ensemble_test_case(_ut.TestCase):
                 self.assertTrue(np.all(ta.time == ret[i][0].time))
                 self.assertEqual(ta.propagate_res, ret[i][0].propagate_res)
 
-                self.assertTrue(np.all(loc_ret(5.0) == ret[i][1](5.0)))
+                self.assertTrue(np.all(loc_ret[0](5.0) == ret[i][1](5.0)))
 
         # propagate_for().
         def gen(ta, idx):
@@ -168,13 +169,72 @@ class ensemble_test_case(_ut.TestCase):
                 ta.state[:] = ics[i]
                 loc_ret = ta.propagate_grid(splat_grid)
 
-                self.assertTrue(np.all(loc_ret == ret[i][1]))
+                self.assertTrue(np.all(loc_ret[1] == ret[i][2]))
 
                 for j in range(4):
                     self.assertAlmostEqual(ret[i][0].time[j], 20.0)
                 self.assertTrue(np.all(ta.state == ret[i][0].state))
                 self.assertTrue(np.all(ta.time == ret[i][0].time))
                 self.assertEqual(ta.propagate_res, ret[i][0].propagate_res)
+
+        # Check that callbacks are deep-copied in thread-based
+        # ensemble propagations.
+
+        class step_cb:
+            def __call__(_, ta):
+                self.assertNotEqual(id(_), _.orig_id)
+
+                return True
+
+        cb = step_cb()
+        cb.orig_id = id(cb)
+
+        def gen(ta, idx):
+            ta.set_time(0.0)
+            ta.state[:] = ics[idx]
+
+            return ta
+
+        ret = ensemble_propagate_for_batch(
+            ta, 20.0, 10, gen, algorithm="thread", max_workers=8, callback=cb
+        )
+
+        for r in ret:
+            self.assertTrue(isinstance(r[2], step_cb))
+
+        # Test the list overload too.
+        ret = ensemble_propagate_for_batch(
+            ta,
+            20.0,
+            10,
+            gen,
+            algorithm="thread",
+            max_workers=8,
+            callback=[cb, angle_reducer([x])],
+        )
+
+        for r in ret:
+            self.assertTrue(isinstance(r[2], list))
+            self.assertTrue(isinstance(r[2][0], step_cb))
+            self.assertTrue(isinstance(r[2][1], angle_reducer))
+            self.assertEqual(len(r[2]), 2)
+
+        # Test s11n machinery in multi-processing situations.
+        ret = ensemble_propagate_for_batch(
+            ta,
+            20.0,
+            10,
+            gen,
+            algorithm="process",
+            callback=[cb, angle_reducer([x])],
+        )
+
+        for r in ret:
+            self.assertTrue(isinstance(r[2], list))
+            self.assertTrue(isinstance(r[2][0], step_cb))
+            self.assertTrue(isinstance(r[2][1], angle_reducer))
+            self.assertEqual(len(r[2]), 2)
+
 
     def test_scalar(self):
         from . import (
@@ -186,6 +246,7 @@ class ensemble_test_case(_ut.TestCase):
             taylor_adaptive,
             taylor_outcome,
         )
+        from .callback import angle_reducer
         import numpy as np
 
         x, v = make_vars("x", "v")
@@ -260,10 +321,10 @@ class ensemble_test_case(_ut.TestCase):
 
                 self.assertAlmostEqual(ret[i][0].time, 20.0)
                 self.assertTrue(np.all(ta.state == ret[i][0].state))
-                self.assertEqual(loc_ret[:-1], ret[i][1:-1])
+                self.assertEqual(loc_ret[:-2], ret[i][1:-2])
                 self.assertEqual(ta.time, ret[i][0].time)
 
-                self.assertTrue(np.all(loc_ret[-1](5.0) == ret[i][-1](5.0)))
+                self.assertTrue(np.all(loc_ret[-2](5.0) == ret[i][-2](5.0)))
 
         # propagate_for().
         def gen(ta, idx):
@@ -395,6 +456,42 @@ class ensemble_test_case(_ut.TestCase):
 
             return ta
 
-        ensemble_propagate_until(
+        ret = ensemble_propagate_for(
             ta, 20.0, 10, gen, algorithm="thread", max_workers=8, callback=cb
         )
+
+        for r in ret:
+            self.assertTrue(isinstance(r[-1], step_cb))
+
+        # Test the list overload too.
+        ret = ensemble_propagate_for(
+            ta,
+            20.0,
+            10,
+            gen,
+            algorithm="thread",
+            max_workers=8,
+            callback=[cb, angle_reducer([x])],
+        )
+
+        for r in ret:
+            self.assertTrue(isinstance(r[-1], list))
+            self.assertTrue(isinstance(r[-1][0], step_cb))
+            self.assertTrue(isinstance(r[-1][1], angle_reducer))
+            self.assertEqual(len(r[-1]), 2)
+
+        # Test s11n machinery in multi-processing situations.
+        ret = ensemble_propagate_for(
+            ta,
+            20.0,
+            10,
+            gen,
+            algorithm="process",
+            callback=[cb, angle_reducer([x])],
+        )
+
+        for r in ret:
+            self.assertTrue(isinstance(r[-1], list))
+            self.assertTrue(isinstance(r[-1][0], step_cb))
+            self.assertTrue(isinstance(r[-1][1], angle_reducer))
+            self.assertEqual(len(r[-1]), 2)

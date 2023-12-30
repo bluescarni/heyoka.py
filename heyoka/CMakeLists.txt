@@ -31,6 +31,7 @@ set(HEYOKA_PY_PYTHON_FILES
     _test_elp2000.py
     _test_taylor_add_jet.py
     model/__init__.py
+    callback/__init__.py
 )
 
 # Copy the python files in the current binary dir,
@@ -61,7 +62,8 @@ set(_HEYOKA_PY_CORE_SOURCES
     expose_batch_integrators.cpp
     numpy_memory.cpp
     expose_models.cpp
-    step_cb_wrapper.cpp
+    expose_callbacks.cpp
+    step_cb_utils.cpp
 )
 
 Python3_add_library(core MODULE WITH_SOABI ${_HEYOKA_PY_CORE_SOURCES})

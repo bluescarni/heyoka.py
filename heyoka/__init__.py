@@ -53,7 +53,7 @@ del _os
 # NOTE: it is *important* that the import is performed
 # here, *after* the initial import of core. Otherwise,
 # we would get missing symbols on POSIX platforms.
-from . import test, model
+from . import test, model, callback
 
 
 def _with_real128():

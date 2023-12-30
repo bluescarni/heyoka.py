@@ -710,8 +710,9 @@ class batch_integrator_test_case(_ut.TestCase):
                 dtype=fp_t,
             )
 
-            ta.propagate_until(grid[0,:])
+            ta.propagate_until(grid[0, :])
             bres = ta.propagate_grid(grid)
+            self.assertTrue(bres[0] is None)
 
             for idx, cur_ta in enumerate(tas):
                 cur_ta.propagate_until(grid[0, idx]),
@@ -724,19 +725,19 @@ class batch_integrator_test_case(_ut.TestCase):
             ]
 
             self.assertTrue(
-                np.max(np.abs(sres[0][4] - bres[:, :, 0]).flatten())
+                np.max(np.abs(sres[0][5] - bres[1][:, :, 0]).flatten())
                 < np.finfo(fp_t).eps * 100
             )
             self.assertTrue(
-                np.max(np.abs(sres[1][4] - bres[:, :, 1]).flatten())
+                np.max(np.abs(sres[1][5] - bres[1][:, :, 1]).flatten())
                 < np.finfo(fp_t).eps * 100
             )
             self.assertTrue(
-                np.max(np.abs(sres[2][4] - bres[:, :, 2]).flatten())
+                np.max(np.abs(sres[2][5] - bres[1][:, :, 2]).flatten())
                 < np.finfo(fp_t).eps * 100
             )
             self.assertTrue(
-                np.max(np.abs(sres[3][4] - bres[:, :, 3]).flatten())
+                np.max(np.abs(sres[3][5] - bres[1][:, :, 3]).flatten())
                 < np.finfo(fp_t).eps * 100
             )
 
@@ -744,17 +745,17 @@ class batch_integrator_test_case(_ut.TestCase):
             ta.set_time(fp_t(0.0))
             ta.state[:] = [x_ic, v_ic]
 
-            ta.propagate_until(grid[0,:])
+            ta.propagate_until(grid[0, :])
             bres = ta.propagate_grid(grid, max_delta_t=[fp_t(1e-3)] * 4)
             res = deepcopy(ta.propagate_res)
 
             ta.set_time(fp_t(0.0))
             ta.state[:] = [x_ic, v_ic]
 
-            ta.propagate_until(grid[0,:])
+            ta.propagate_until(grid[0, :])
             bres2 = ta.propagate_grid(grid, max_delta_t=fp_t(1e-3))
 
-            self.assertTrue(np.all(bres == bres2))
+            self.assertTrue(np.all(bres[1] == bres2[1]))
             self.assertEqual(ta.propagate_res, res)
 
             # Test that adding dynattrs to the integrator
@@ -768,7 +769,7 @@ class batch_integrator_test_case(_ut.TestCase):
                 return True
 
             ta.set_time(fp_t(0.0))
-            ta.propagate_until(grid[0,:])
+            ta.propagate_until(grid[0, :])
             ta.propagate_grid(grid, callback=cb)
 
             self.assertTrue(ta.counter > 0)
@@ -784,7 +785,7 @@ class batch_integrator_test_case(_ut.TestCase):
             cb_inst.orig_id = id(cb_inst)
 
             ta.set_time(fp_t(0.0))
-            ta.propagate_until(grid[0,:])
+            ta.propagate_until(grid[0, :])
             ta.propagate_grid(grid, callback=cb_inst)
 
             # Test with a non-callable callback.
@@ -805,7 +806,7 @@ class batch_integrator_test_case(_ut.TestCase):
             with self.assertRaises(TypeError) as cm:
                 ta.set_time(fp_t(0.0))
                 ta.state[:] = [x_ic, v_ic]
-                ta.propagate_until(grid[0,:])
+                ta.propagate_until(grid[0, :])
                 ta.propagate_grid(grid, callback=broken_cb())
             self.assertTrue(
                 "The call operator of a step callback is expected to return a boolean, but a value of type"
@@ -822,7 +823,71 @@ class batch_integrator_test_case(_ut.TestCase):
 
             ta.set_time(fp_t(0.0))
             ta.state[:] = [x_ic, v_ic]
-            ta.propagate_until(grid[0,:])
+            ta.propagate_until(grid[0, :])
             ta.propagate_grid(grid, callback=cb_hook())
             self.assertTrue(ta.foo)
             delattr(ta, "foo")
+
+    def test_step_callback(self):
+        from . import taylor_adaptive_batch, make_vars, sin
+        from .callback import angle_reducer
+        import numpy as np
+
+        fp_types = [np.float32, float]
+
+        x, v = make_vars("x", "v")
+
+        sys = [(x, v), (v, -9.8 * sin(x))]
+
+        # Callback with pre_hook().
+        class cb_hook:
+            def __call__(_, ta):
+                return True
+
+            def pre_hook(self, ta):
+                ta.foo = True
+
+        for fp_t in fp_types:
+            ta = taylor_adaptive_batch(
+                sys=sys,
+                state=[[fp_t(0.0), fp_t(0.01)], [fp_t(10.0), fp_t(10.01)]],
+                fp_type=fp_t,
+            )
+
+            # List overaload.
+            cb1 = cb_hook()
+            cb2 = cb_hook()
+            id_cb1 = id(cb1)
+            id_cb2 = id(cb2)
+            res = ta.propagate_for(fp_t(10.0), callback=[cb1, cb2])
+            self.assertTrue(isinstance(res[1], list))
+            self.assertTrue(isinstance(res[1][0], cb_hook))
+            self.assertTrue(isinstance(res[1][1], cb_hook))
+            self.assertEqual(id(res[1][0]), id_cb1)
+            self.assertEqual(id(res[1][1]), id_cb2)
+            self.assertTrue(hasattr(ta, "foo"))
+
+            # Try with a C++ callback too.
+            res = ta.propagate_until(
+                fp_t(20.0), callback=[cb1, angle_reducer([x]), cb2]
+            )
+            self.assertTrue(isinstance(res[1], list))
+            self.assertTrue(isinstance(res[1][0], cb_hook))
+            self.assertTrue(isinstance(res[1][1], angle_reducer))
+            self.assertTrue(isinstance(res[1][2], cb_hook))
+            self.assertEqual(id(res[1][0]), id_cb1)
+            self.assertEqual(id(res[1][2]), id_cb2)
+            self.assertTrue((ta.state[0, 0] >= fp_t(0) and ta.state[0, 0] < fp_t(6.29)))
+            self.assertTrue((ta.state[0, 1] >= fp_t(0) and ta.state[0, 1] < fp_t(6.29)))
+
+            # Single callback overload.
+            res = ta.propagate_grid(
+                [[fp_t(20.0), fp_t(20.0)], [fp_t(30.0), fp_t(30.1)]], callback=cb1
+            )
+            self.assertTrue(isinstance(res[0], cb_hook))
+            self.assertEqual(id(res[0]), id_cb1)
+
+            res = ta.propagate_for(fp_t(10.0), callback=angle_reducer([x]))
+            self.assertTrue(isinstance(res[1], angle_reducer))
+            self.assertTrue((ta.state[0, 0] >= fp_t(0) and ta.state[0, 0] < fp_t(6.29)))
+            self.assertTrue((ta.state[0, 1] >= fp_t(0) and ta.state[0, 1] < fp_t(6.29)))

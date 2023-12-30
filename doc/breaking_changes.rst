@@ -13,6 +13,30 @@ heyoka.py 4 includes several backwards-incompatible changes.
 API/behaviour changes
 ~~~~~~~~~~~~~~~~~~~~~
 
+Step callbacks and ``propagate_*()``
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The step callbacks that can (optionally) be passed to the ``propagate_*()`` methods of the
+adaptive integrators are now part of the return value. Specifically:
+
+- for the scalar ``propagate_for()`` and ``propagate_until()`` methods, the step callback is
+  the sixth element of the return tuple, while for the batch variants the step callback
+  is the second element of the return tuple;
+- for the scalar ``propagate_grid()`` method, the step callback is the fifth element of the return
+  tuple, while for the batch variant the step callback is the first element of the return
+  tuple.
+
+:ref:`The ensemble propagation <ensemble_prop>` functions have been modified in an analogous way.
+
+Adapting existing code for the new API should be straightforward. In most cases it should be just
+a matter of:
+
+- adapting unpacking declarations to account for the new element in the return tuple
+  of scalar propagations,
+- adjusting the indexing into the return tuple when fetching a specific element,
+- accounting for the fact that batch propagations now return a tuple of two elements
+  rather than a single value.
+
 ``propagate_grid()``
 ^^^^^^^^^^^^^^^^^^^^
 

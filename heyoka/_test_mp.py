@@ -480,7 +480,8 @@ class mp_test_case(_ut.TestCase):
         )
 
         res = ta.propagate_until(real(10), c_output=True)
-        r5 = res[-1](real("5.3", prec + 10))
+        self.assertTrue(res[-1] is None)
+        r5 = res[-2](real("5.3", prec + 10))
         self.assertFalse(r5.flags.writeable)
         self.assertFalse(r5.flags.owndata)
         x_cmp = np.sin(real("5.3", prec))
@@ -490,13 +491,13 @@ class mp_test_case(_ut.TestCase):
 
         # Test for the vector time overload.
         r5 = deepcopy(r5)
-        r7 = deepcopy(res[-1](real("7.3", prec + 10)))
-        vout = res[-1]([real("5.3", prec + 10), real("7.3", prec + 10)])
+        r7 = deepcopy(res[-2](real("7.3", prec + 10)))
+        vout = res[-2]([real("5.3", prec + 10), real("7.3", prec + 10)])
         self.assertTrue(np.all(vout[0] == r5))
         self.assertTrue(np.all(vout[1] == r7))
 
         # Test with non-owning array.
-        vout = res[-1](
+        vout = res[-2](
             core._make_no_real_array([real("5.3", prec + 10), real("7.3", prec + 10)])
         )
         self.assertTrue(np.all(vout[0] == r5))
@@ -505,13 +506,13 @@ class mp_test_case(_ut.TestCase):
         # Test failure modes.
         arr = np.empty((2,), dtype=real)
         with self.assertRaises(ValueError) as cm:
-            res[-1](arr)
+            res[-2](arr)
         self.assertTrue("A non-constructed/invalid real" in str(cm.exception))
         self.assertTrue("0" in str(cm.exception))
 
         arr[0] = 1
         with self.assertRaises(ValueError) as cm:
-            res[-1](arr)
+            res[-2](arr)
         self.assertTrue("A non-constructed/invalid real" in str(cm.exception))
         self.assertTrue("1" in str(cm.exception))
 
