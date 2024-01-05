@@ -32,7 +32,10 @@ release = hy.__version__
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
-extensions = ["myst_nb", "sphinx.ext.intersphinx"]
+extensions = ["myst_nb",
+              "sphinx.ext.intersphinx",
+              "sphinx.ext.autodoc",
+              ]
 
 intersphinx_mapping = {
     "hy": ("https://bluescarni.github.io/heyoka", None),

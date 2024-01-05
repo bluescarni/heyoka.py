@@ -96,3 +96,12 @@ examples_event
 examples_ml
 examples_others
 ```
+
+```{toctree}
+:maxdepth: 2
+:caption: API reference
+
+api_integrators
+api_exsys
+api_lagham
+```
