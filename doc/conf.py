@@ -35,6 +35,7 @@ release = hy.__version__
 extensions = ["myst_nb",
               "sphinx.ext.intersphinx",
               "sphinx.ext.autodoc",
+              "sphinx.ext.autosummary",
               ]
 
 intersphinx_mapping = {

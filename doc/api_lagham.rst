@@ -5,6 +5,8 @@ Lagrangian and Hamiltonian mechanics
 
 .. currentmodule:: heyoka
 
-.. autofunction:: lagrangian
+.. autosummary::
+   :toctree: autosummary_generated
 
-.. autofunction:: hamiltonian
+   lagrangian
+   hamiltonian

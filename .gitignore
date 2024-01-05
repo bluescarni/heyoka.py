@@ -15,3 +15,4 @@ build*
 # Docs.
 doc/_build
 doc/notebooks/.ipynb_checkpoints
+doc/autosummary_generated
