@@ -176,7 +176,8 @@ find_package(TBB REQUIRED CONFIG)
 # in the heyoka.py source code if real/real128 support is enabled.
 if(heyoka_WITH_REAL128 OR heyoka_WITH_REAL)
     # NOTE: sync up the required mp++ version
-    # with heyoka.
+    # with heyoka for now, not sure if there is
+    # a better solution.
     find_package(mp++ ${heyoka_mp++_VERSION} REQUIRED CONFIG)
 endif()
 
