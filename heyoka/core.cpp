@@ -44,6 +44,8 @@
 
 #include <heyoka/exceptions.hpp>
 #include <heyoka/expression.hpp>
+#include <heyoka/hamiltonian.hpp>
+#include <heyoka/lagrangian.hpp>
 #include <heyoka/llvm_state.hpp>
 #include <heyoka/math.hpp>
 #include <heyoka/number.hpp>
@@ -190,6 +192,10 @@ PYBIND11_MODULE(core, m)
 
     // Models.
     heypy::expose_models(m);
+
+    // Lagrangian/Hamiltonian.
+    m.def("lagrangian", &hey::lagrangian, "L"_a, "qs"_a, "qdots"_a, "D"_a = hey::expression{0.});
+    m.def("hamiltonian", &hey::hamiltonian, "H"_a, "qs"_a, "ps"_a);
 
     // taylor_outcome enum.
     py::enum_<hey::taylor_outcome>(m, "taylor_outcome", py::arithmetic())
