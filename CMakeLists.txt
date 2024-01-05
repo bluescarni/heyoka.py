@@ -175,16 +175,9 @@ find_package(TBB REQUIRED CONFIG)
 # NOTE: we make direct use of the mp++ headers
 # in the heyoka.py source code if real/real128 support is enabled.
 if(heyoka_WITH_REAL128 OR heyoka_WITH_REAL)
-    find_package(mp++ REQUIRED CONFIG)
-
-    # NOTE: not sure which minimum version we need here,
-    # for the moment let's just grab the minimal requirement
-    # from current heyoka.
-    set(_HEYOKA_PY_MIN_MPPP_VERSION "0.27")
-    if(${mp++_VERSION} VERSION_LESS ${_HEYOKA_PY_MIN_MPPP_VERSION})
-        message(FATAL_ERROR "mp++ >= ${_HEYOKA_PY_MIN_MPPP_VERSION} is required.")
-    endif()
-    unset(_HEYOKA_PY_MIN_MPPP_VERSION)
+    # NOTE: sync up the required mp++ version
+    # with heyoka.
+    find_package(mp++ ${heyoka_mp++_VERSION} REQUIRED CONFIG)
 endif()
 
 # Add the module directory.
