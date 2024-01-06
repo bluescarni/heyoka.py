@@ -1,13 +1,12 @@
 
-
 <!DOCTYPE html>
 
 
-<html lang="en" data-content_root="" >
+<html lang="en" data-content_root="../" >
 
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
     <title>Feed-Forward Neural Networks &#8212; heyoka.py 4.0.0 documentation</title>
   
@@ -19,29 +18,29 @@
   </script>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../_static/styles/theme.css?digest=5b4479735964841361fd" rel="stylesheet" />
-<link href="../_static/styles/bootstrap.css?digest=5b4479735964841361fd" rel="stylesheet" />
-<link href="../_static/styles/pydata-sphinx-theme.css?digest=5b4479735964841361fd" rel="stylesheet" />
+  <link href="../_static/styles/theme.css?digest=bd9e20870c6007c4c509" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=bd9e20870c6007c4c509" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=bd9e20870c6007c4c509" rel="stylesheet" />
 
   
-  <link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=5b4479735964841361fd" rel="stylesheet" />
-  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
+  <link href="../_static/vendor/fontawesome/6.5.1/css/all.min.css?digest=bd9e20870c6007c4c509" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.1/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.1/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.1/webfonts/fa-regular-400.woff2" />
 
-    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=384b581d" />
     <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=5b4479735964841361fd" />
-<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=5b4479735964841361fd" />
-  <script src="../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=5b4479735964841361fd"></script>
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=bd9e20870c6007c4c509" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=bd9e20870c6007c4c509" />
+  <script src="../_static/vendor/fontawesome/6.5.1/js/all.min.js?digest=bd9e20870c6007c4c509"></script>
 
-    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-    <script src="../_static/doctools.js"></script>
-    <script src="../_static/sphinx_highlight.js"></script>
-    <script src="../_static/scripts/sphinx-book-theme.js"></script>
+    <script src="../_static/documentation_options.js?v=a1c85040"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?v=efea14e4"></script>
     <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'notebooks/ffnn';</script>
@@ -58,7 +57,7 @@
 
   
   
-  <a class="skip-link" href="#main-content">Skip to main content</a>
+  <a id="pst-skip-link" class="skip-link" href="#main-content">Skip to main content</a>
   
   <div id="pst-scroll-pixel-helper"></div>
 
@@ -101,12 +100,18 @@
   <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
 </form></div>
   </div>
+
+  <header>
   
-    <nav class="bd-header navbar navbar-expand-lg bd-navbar">
-    </nav>
+    <div class="bd-header navbar navbar-expand-lg bd-navbar">
+    </div>
   
+  </header>
+
   <div class="bd-container">
     <div class="bd-container__inner bd-page-width">
+      
+      
       
       <div class="bd-sidebar-primary bd-sidebar">
         
@@ -181,6 +186,7 @@
 <li class="toctree-l2"><a class="reference internal" href="ext_precision.html">Computations in extended precision</a></li>
 <li class="toctree-l2"><a class="reference internal" href="arbitrary_precision.html">Computations in arbitrary precision</a></li>
 <li class="toctree-l2"><a class="reference internal" href="single_precision.html">Computations in single precision</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lagrangian.html">Lagrangian and Hamiltonian mechanics</a></li>
 <li class="toctree-l2"><a class="reference internal" href="sympy_interop.html">Interoperability with SymPy</a></li>
 <li class="toctree-l2"><a class="reference internal" href="compiled_functions.html">Compiled functions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="ex_system_revisited.html">Using the expression system effectively</a></li>
@@ -234,6 +240,22 @@
 <li class="toctree-l2"><a class="reference internal" href="The%20variational%20equations.html">The variational equations</a></li>
 <li class="toctree-l2"><a class="reference internal" href="Optimal%20Control%20of%20the%20Lotka-Volterra%20equations.html">Optimal Control of the Lotka-Volterra equations</a></li>
 <li class="toctree-l2"><a class="reference internal" href="definite_integrals.html">Computing definite integrals</a></li>
+</ul>
+</li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">API reference</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../api_integrators.html">Numerical integrators</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-7"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../autosummary_generated/heyoka.taylor_adaptive.html">heyoka.taylor_adaptive</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../api_exsys.html">Expression system</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-8"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../autosummary_generated/heyoka.expression.html">heyoka.expression</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../api_lagham.html">Lagrangian and Hamiltonian mechanics</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-9"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../autosummary_generated/heyoka.lagrangian.html">heyoka.lagrangian</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../autosummary_generated/heyoka.hamiltonian.html">heyoka.hamiltonian</a></li>
 </ul>
 </li>
 </ul>
@@ -473,10 +495,10 @@ document.write(`
               
                 
 <div id="searchbox"></div>
-                <article class="bd-article" role="main">
+                <article class="bd-article">
                   
   <section class="tex2jax_ignore mathjax_ignore" id="feed-forward-neural-networks">
-<h1>Feed-Forward Neural Networks<a class="headerlink" href="#feed-forward-neural-networks" title="Permalink to this heading">#</a></h1>
+<h1>Feed-Forward Neural Networks<a class="headerlink" href="#feed-forward-neural-networks" title="Link to this heading">#</a></h1>
 <p>In this tutorial, we will introduce feed-forward neural networks (FFNNs) in <em>heyoka.py</em>, and how to use <em>heyoka.py</em> FFNN factory to create FFNNs.
 For an example on how to load a FFNN model from torch to <em>heyoka.py</em>, please check out: <a class="reference internal" href="torch_and_heyoka.html"><span class="std std-doc">Interfacing torch to heyoka.py</span></a>; while for an example on applications of FFNNs in dynamical systems, check out: <a class="reference internal" href="NeuralHamiltonianODEs.html"><span class="std std-doc">Neural Hamiltonian ODE</span></a> and <a class="reference internal" href="NeuralODEs.html"><span class="std std-doc">Neural ODEs</span></a>.</p>
 <p>To facilitate the instantiation of FFNNs, <em>heyoka.py</em> implements, in its module <em>model</em>, a Feed Forward Neural Network factory called <code class="docutils literal notranslate"><span class="pre">ffnn()</span></code>. The Neural Network inputs <span class="math notranslate nohighlight">\(\mathbf {in}\)</span>, with dimensionality <span class="math notranslate nohighlight">\(n_{in}\)</span> are fed into a succession of <span class="math notranslate nohighlight">\(N \ge 0 \)</span> neural layers defined by:</p>
@@ -567,7 +589,7 @@ The same syntax can be used to instantiate a more complex case:</p>
 </div>
 </div>
 <section id="inference">
-<h2>Inference<a class="headerlink" href="#inference" title="Permalink to this heading">#</a></h2>
+<h2>Inference<a class="headerlink" href="#inference" title="Link to this heading">#</a></h2>
 <p>In order to use the ffnn to make inferences, we must compile it into a cfunction. Thats easy though, specially if you have followed the <a class="reference internal" href="compiled_functions.html"><span class="std std-doc">compiled functions</span></a> tutorial:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -592,7 +614,7 @@ Output #1: (p161 + (p96 * tanh((p128 + (p0 * x) + (p1 * y)))) + (p97 * tanh((p12
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([-0.37030527, -1.069743  ])
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([0.38746804, 1.23811952])
 </pre></div>
 </div>
 </div>
@@ -606,7 +628,7 @@ Output #1: (p161 + (p96 * tanh((p128 + (p0 * x) + (p1 * y)))) + (p97 * tanh((p12
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[((0.028779778639414944 * tanh(((0.031553500851303817 * x) + (0.38244794218112532 * y) - 0.23403313031570305))) + (0.063583117740885320 * tanh((0.48922622849061637 + (0.15630489098895561 * y) - (0.030437741616159419 * x)))) + (0.067126046789427574 * tanh((0.38590130797705635 + (0.18412032319461547 * x) + (0.25855896447331927 * y)))) + (0.085937860620355577 * tanh((0.42716704324956500 + (0.29395846350672683 * x) - (0.0022153304381931083 * y)))) + (0.13347371028949662 * tanh(((0.24404972956354554 * y) - 0.20559550987951092 - (0.075918191977354499 * x)))) + (0.14469326642235858 * tanh((0.049794534821424707 + (0.025405004868438663 * y) - (0.27314981057195697 * x)))) + (0.14719301773468152 * tanh(((0.091081664862294631 * x) - 0.099725606975267445 - (0.24312015846082558 * y)))) + (0.19181610744933275 * tanh(((0.24133790540213529 * y) - 0.33093934290272298 - (0.14085851478639999 * x)))) + (0.19310652181886134 * tanh(((0.0069460406877231984 * y) - 0.32811290783289315 - (0.39056448966535273 * x)))) + ..., ((0.020125758799497184 * tanh((0.0055914387372252294 + (0.39393038476035691 * x) - (0.19767338349186203 * y)))) + (0.11082338015519855 * tanh((-0.45447161268433067 - (0.072556686088253719 * y) - (0.062668308096477610 * x)))) + (0.14898786144929366 * tanh((0.38980436867366153 - (0.42929950088822411 * x) - (0.031782893428512260 * y)))) + (0.20986451750658475 * tanh((0.44984587264504483 - (0.25874708889056119 * y) - (0.23587936137738108 * x)))) + (0.21170942551989946 * tanh(((0.44045141263760068 * x) - 0.25454257120340618 - (0.012184897408509587 * y)))) + (0.21569649215040110 * tanh((0.48922622849061637 + (0.15630489098895561 * y) - (0.030437741616159419 * x)))) + (0.26878445325237388 * tanh((0.46188884762844673 - (0.39020415314405732 * x) - (0.20789198943724552 * y)))) + (0.29380691437005768 * tanh((0.41149353329834470 + (0.44715609604992490 * y) - (0.0092968521276289851 * x)))) + (0.32899844806729384 * tanh(((0.031553500851303817 * x) + (0.38244794218112532 * y) - 0.23403313031570305))) + ...]
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[(0.31323376175202455 + (0.081684936221021354 * tanh(((0.35942535794405239 * x) - 0.061809899185578110 - (0.087834931361155721 * y)))) + (0.082164117260352776 * tanh(((0.38110467564496153 * y) - 0.065869357745387158 - (0.13030308521481815 * x)))) + (0.11508424802492334 * tanh((0.24471343155102199 + (0.061062677587957248 * y) - (0.35075325430623094 * x)))) + (0.13402947342195970 * tanh(((0.42046110946875925 * x) - 0.38745855650112238 - (0.28947838889673649 * y)))) + (0.13657147229541311 * tanh((-0.25817622088095860 - (0.17004465740653307 * x) - (0.075101319100195463 * y)))) + (0.15311519239122406 * tanh((0.20062556957343580 + (0.45398050688518921 * x) - (0.080657075417296609 * y)))) + (0.17671245324252294 * tanh(((0.18088963831293714 * y) - 0.48439212230744721 - (0.37094331627870492 * x)))) + (0.20004859458271340 * tanh((-0.27847982814066363 - (0.47614466051722848 * x) - (0.17711025287772797 * y)))) + (0.20491599701638286 * tanh((0.18732128524654834 + (0.20731905822578889 * y) - (0.042464444821752712 * ..., (0.35372418521678761 + (0.051614023727809877 * tanh((0.091379947093426117 + (0.33538838295960871 * x) - (0.086791260073240006 * y)))) + (0.052185152477395413 * tanh((-0.34000911943538037 - (0.13440399517938917 * x) - (0.017248725103806484 * y)))) + (0.056329116728706774 * tanh(((0.10776139017936126 * x) - 0.12774681533694354 - (0.064542080498766308 * y)))) + (0.080512554671200887 * tanh(((0.16113443502456348 * x) - 0.37177831858514376 - (0.20915753680276461 * y)))) + (0.10847133729612457 * tanh((0.10137048012304939 + (0.37784400218479697 * y) - (0.22852581924312254 * x)))) + (0.15390224175549150 * tanh((0.18108107889479907 - (0.31052723186137521 * y) - (0.023390131100794576 * x)))) + (0.17916900504196565 * tanh((0.054826714361272955 + (0.30706397222712645 * x) + (0.32211325047208905 * y)))) + (0.20945010904082118 * tanh(((0.13809398090669600 * y) - 0.28125073250445021 - (0.44347425263952323 * x)))) + (0.27939527703519884 * tanh((-0.27847982814066363 - (0.47614466051722848 * x) - (0.17711025287772797 * ...]
 </pre></div>
 </div>
 </div>
@@ -621,8 +643,8 @@ Output #1: (p161 + (p96 * tanh((p128 + (p0 * x) + (p1 * y)))) + (p97 * tanh((p12
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Variables: [x, y]
-Output #0: ((0.028779778639414944 * tanh(((0.031553500851303817 * x) + (0.38244794218112532 * y) - 0.23403313031570305))) + (0.063583117740885320 * tanh((0.48922622849061637 + (0.15630489098895561 * y) - (0.030437741616159419 * x)))) + (0.067126046789427574 * tanh((0.38590130797705635 + (0.18412032319461547 * x) + (0.25855896447331927 * y)))) + (0.085937860620355577 * tanh((0.42716704324956500 + (0.29395846350672683 * x) - (0.0022153304381931083 * y)))) + (0.13347371028949662 * tanh(((0.24404972956354554 * y) - 0.20559550987951092 - (0.075918191977354499 * x)))) + (0.14469326642235858 * tanh((0.049794534821424707 + (0.025405004868438663 * y) - (0.27314981057195697 * x)))) + (0.14719301773468152 * tanh(((0.091081664862294631 * x) - 0.099725606975267445 - (0.24312015846082558 * y)))) + (0.19181610744933275 * tanh(((0.24133790540213529 * y) - 0.33093934290272298 - (0.14085851478639999 * x)))) + (0.19310652181886134 * tanh(((0.0069460406877231984 * y) - 0.32811290783289315 - (0.39056448966535273 * x)))) + ...
-Output #1: ((0.020125758799497184 * tanh((0.0055914387372252294 + (0.39393038476035691 * x) - (0.19767338349186203 * y)))) + (0.11082338015519855 * tanh((-0.45447161268433067 - (0.072556686088253719 * y) - (0.062668308096477610 * x)))) + (0.14898786144929366 * tanh((0.38980436867366153 - (0.42929950088822411 * x) - (0.031782893428512260 * y)))) + (0.20986451750658475 * tanh((0.44984587264504483 - (0.25874708889056119 * y) - (0.23587936137738108 * x)))) + (0.21170942551989946 * tanh(((0.44045141263760068 * x) - 0.25454257120340618 - (0.012184897408509587 * y)))) + (0.21569649215040110 * tanh((0.48922622849061637 + (0.15630489098895561 * y) - (0.030437741616159419 * x)))) + (0.26878445325237388 * tanh((0.46188884762844673 - (0.39020415314405732 * x) - (0.20789198943724552 * y)))) + (0.29380691437005768 * tanh((0.41149353329834470 + (0.44715609604992490 * y) - (0.0092968521276289851 * x)))) + (0.32899844806729384 * tanh(((0.031553500851303817 * x) + (0.38244794218112532 * y) - 0.23403313031570305))) + ...
+Output #0: (0.31323376175202455 + (0.081684936221021354 * tanh(((0.35942535794405239 * x) - 0.061809899185578110 - (0.087834931361155721 * y)))) + (0.082164117260352776 * tanh(((0.38110467564496153 * y) - 0.065869357745387158 - (0.13030308521481815 * x)))) + (0.11508424802492334 * tanh((0.24471343155102199 + (0.061062677587957248 * y) - (0.35075325430623094 * x)))) + (0.13402947342195970 * tanh(((0.42046110946875925 * x) - 0.38745855650112238 - (0.28947838889673649 * y)))) + (0.13657147229541311 * tanh((-0.25817622088095860 - (0.17004465740653307 * x) - (0.075101319100195463 * y)))) + (0.15311519239122406 * tanh((0.20062556957343580 + (0.45398050688518921 * x) - (0.080657075417296609 * y)))) + (0.17671245324252294 * tanh(((0.18088963831293714 * y) - 0.48439212230744721 - (0.37094331627870492 * x)))) + (0.20004859458271340 * tanh((-0.27847982814066363 - (0.47614466051722848 * x) - (0.17711025287772797 * y)))) + (0.20491599701638286 * tanh((0.18732128524654834 + (0.20731905822578889 * y) - (0.042464444821752712 * ...
+Output #1: (0.35372418521678761 + (0.051614023727809877 * tanh((0.091379947093426117 + (0.33538838295960871 * x) - (0.086791260073240006 * y)))) + (0.052185152477395413 * tanh((-0.34000911943538037 - (0.13440399517938917 * x) - (0.017248725103806484 * y)))) + (0.056329116728706774 * tanh(((0.10776139017936126 * x) - 0.12774681533694354 - (0.064542080498766308 * y)))) + (0.080512554671200887 * tanh(((0.16113443502456348 * x) - 0.37177831858514376 - (0.20915753680276461 * y)))) + (0.10847133729612457 * tanh((0.10137048012304939 + (0.37784400218479697 * y) - (0.22852581924312254 * x)))) + (0.15390224175549150 * tanh((0.18108107889479907 - (0.31052723186137521 * y) - (0.023390131100794576 * x)))) + (0.17916900504196565 * tanh((0.054826714361272955 + (0.30706397222712645 * x) + (0.32211325047208905 * y)))) + (0.20945010904082118 * tanh(((0.13809398090669600 * y) - 0.28125073250445021 - (0.44347425263952323 * x)))) + (0.27939527703519884 * tanh((-0.27847982814066363 - (0.47614466051722848 * x) - (0.17711025287772797 * ...
 </pre></div>
 </div>
 </div>
@@ -635,7 +657,7 @@ Output #1: ((0.020125758799497184 * tanh((0.0055914387372252294 + (0.39393038476
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([-0.37030527, -1.069743  ])
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([0.38746804, 1.23811952])
 </pre></div>
 </div>
 </div>
@@ -648,16 +670,16 @@ Output #1: ((0.020125758799497184 * tanh((0.0055914387372252294 + (0.39393038476
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([[-0.37030527, -1.069743  ],
-       [ 0.40611796, -0.51349033],
-       [-0.71255777,  0.37203288]])
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([[ 0.38746804,  1.23811952],
+       [ 0.43034428, -0.59001203],
+       [ 1.12789927,  0.4066835 ]])
 </pre></div>
 </div>
 </div>
 </div>
 </section>
 <section id="use-in-numerical-integration">
-<h2>Use in numerical integration<a class="headerlink" href="#use-in-numerical-integration" title="Permalink to this heading">#</a></h2>
+<h2>Use in numerical integration<a class="headerlink" href="#use-in-numerical-integration" title="Link to this heading">#</a></h2>
 <p>In a number of cases the right hand side of a system of ordinary differential equations contain an artificial neural network (ANN). This is the case, for example, in controlled systems where the state-feedback is provided via a neural network, or
 in those cases where the ANN has been trained to describe nonlinear interactions or external disturbances, but also in more advanced scenarios where the full system of ODEs is a ANN trained to reproduce some observed or desired dynamics. It is the case, as we shall see later, where a perturtbation to the system Hamiltonian is parametrized by an ANN, hence the name of this tutorial!</p>
 <div class="admonition note">
@@ -780,10 +802,10 @@ in those cases where the ANN has been trained to describe nonlinear interactions
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[&lt;matplotlib.lines.Line2D at 0x7fce0b14e9e0&gt;]
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[&lt;matplotlib.lines.Line2D at 0x7f3d634a6fb0&gt;]
 </pre></div>
 </div>
-<img alt="../_images/3bdb60d0ab519b2d0d00658a441d2f3c146a30ea211b4fddc811b5b5e0b84680.png" src="../_images/3bdb60d0ab519b2d0d00658a441d2f3c146a30ea211b4fddc811b5b5e0b84680.png" />
+<img alt="../_images/77fc6a52667e59cb8370fcc3e4bf9ba35dc4365e73effaa39010a1a9c61b05e9.png" src="../_images/77fc6a52667e59cb8370fcc3e4bf9ba35dc4365e73effaa39010a1a9c61b05e9.png" />
 </div>
 </div>
 <p>… increasing the perturbation level:</p>
@@ -806,10 +828,10 @@ in those cases where the ANN has been trained to describe nonlinear interactions
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[&lt;matplotlib.lines.Line2D at 0x7fcdd5791960&gt;]
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[&lt;matplotlib.lines.Line2D at 0x7f3d2db702b0&gt;]
 </pre></div>
 </div>
-<img alt="../_images/c3fc99335f8f9a9d7e2f6943687ac3267113ec46a7dd071997e00c7d63a24292.png" src="../_images/c3fc99335f8f9a9d7e2f6943687ac3267113ec46a7dd071997e00c7d63a24292.png" />
+<img alt="../_images/27d0bd5be17fd8dac667f16f5e834310dec2ffef2cac346f3bfaf7f6fdcebe9d.png" src="../_images/27d0bd5be17fd8dac667f16f5e834310dec2ffef2cac346f3bfaf7f6fdcebe9d.png" />
 </div>
 </div>
 <p>… and thats all I wanted to tell you! But wait …. one last thing … the above system is dissipative and does not really look Hamiltonian right? The random perturbation is, well …. random. To fix this, have a look at the tutorial: <a class="reference internal" href="NeuralHamiltonianODEs.html"><span class="std std-doc">Neural Hamiltonian ODE</span></a>.</p>
@@ -853,6 +875,7 @@ in those cases where the ANN has been trained to describe nonlinear interactions
             
               
                 <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
 
   <div class="sidebar-secondary-item">
   <div class="page-toc tocsection onthispage">
@@ -910,8 +933,8 @@ By Francesco Biscani and Dario Izzo
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../_static/scripts/bootstrap.js?digest=5b4479735964841361fd"></script>
-<script src="../_static/scripts/pydata-sphinx-theme.js?digest=5b4479735964841361fd"></script>
+  <script src="../_static/scripts/bootstrap.js?digest=bd9e20870c6007c4c509"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=bd9e20870c6007c4c509"></script>
 
   <footer class="bd-footer">
   </footer>

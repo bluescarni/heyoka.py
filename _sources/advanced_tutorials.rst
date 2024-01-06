@@ -32,6 +32,7 @@ Advanced
   notebooks/ext_precision.ipynb
   notebooks/arbitrary_precision.ipynb
   notebooks/single_precision.ipynb
+  notebooks/lagrangian.ipynb
   notebooks/sympy_interop.ipynb
   notebooks/compiled_functions.ipynb
   notebooks/ex_system_revisited.ipynb

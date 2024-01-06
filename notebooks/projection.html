@@ -1,13 +1,12 @@
 
-
 <!DOCTYPE html>
 
 
-<html lang="en" data-content_root="" >
+<html lang="en" data-content_root="../" >
 
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
     <title>Conserving first integrals via manifold projection &#8212; heyoka.py 4.0.0 documentation</title>
   
@@ -19,29 +18,29 @@
   </script>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../_static/styles/theme.css?digest=5b4479735964841361fd" rel="stylesheet" />
-<link href="../_static/styles/bootstrap.css?digest=5b4479735964841361fd" rel="stylesheet" />
-<link href="../_static/styles/pydata-sphinx-theme.css?digest=5b4479735964841361fd" rel="stylesheet" />
+  <link href="../_static/styles/theme.css?digest=bd9e20870c6007c4c509" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=bd9e20870c6007c4c509" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=bd9e20870c6007c4c509" rel="stylesheet" />
 
   
-  <link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=5b4479735964841361fd" rel="stylesheet" />
-  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
+  <link href="../_static/vendor/fontawesome/6.5.1/css/all.min.css?digest=bd9e20870c6007c4c509" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.1/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.1/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.1/webfonts/fa-regular-400.woff2" />
 
-    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=384b581d" />
     <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=5b4479735964841361fd" />
-<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=5b4479735964841361fd" />
-  <script src="../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=5b4479735964841361fd"></script>
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=bd9e20870c6007c4c509" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=bd9e20870c6007c4c509" />
+  <script src="../_static/vendor/fontawesome/6.5.1/js/all.min.js?digest=bd9e20870c6007c4c509"></script>
 
-    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-    <script src="../_static/doctools.js"></script>
-    <script src="../_static/sphinx_highlight.js"></script>
-    <script src="../_static/scripts/sphinx-book-theme.js"></script>
+    <script src="../_static/documentation_options.js?v=a1c85040"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?v=efea14e4"></script>
     <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'notebooks/projection';</script>
@@ -58,7 +57,7 @@
 
   
   
-  <a class="skip-link" href="#main-content">Skip to main content</a>
+  <a id="pst-skip-link" class="skip-link" href="#main-content">Skip to main content</a>
   
   <div id="pst-scroll-pixel-helper"></div>
 
@@ -101,12 +100,18 @@
   <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
 </form></div>
   </div>
+
+  <header>
   
-    <nav class="bd-header navbar navbar-expand-lg bd-navbar">
-    </nav>
+    <div class="bd-header navbar navbar-expand-lg bd-navbar">
+    </div>
   
+  </header>
+
   <div class="bd-container">
     <div class="bd-container__inner bd-page-width">
+      
+      
       
       <div class="bd-sidebar-primary bd-sidebar">
         
@@ -181,6 +186,7 @@
 <li class="toctree-l2"><a class="reference internal" href="ext_precision.html">Computations in extended precision</a></li>
 <li class="toctree-l2"><a class="reference internal" href="arbitrary_precision.html">Computations in arbitrary precision</a></li>
 <li class="toctree-l2"><a class="reference internal" href="single_precision.html">Computations in single precision</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lagrangian.html">Lagrangian and Hamiltonian mechanics</a></li>
 <li class="toctree-l2"><a class="reference internal" href="sympy_interop.html">Interoperability with SymPy</a></li>
 <li class="toctree-l2"><a class="reference internal" href="compiled_functions.html">Compiled functions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="ex_system_revisited.html">Using the expression system effectively</a></li>
@@ -234,6 +240,22 @@
 <li class="toctree-l2"><a class="reference internal" href="The%20variational%20equations.html">The variational equations</a></li>
 <li class="toctree-l2"><a class="reference internal" href="Optimal%20Control%20of%20the%20Lotka-Volterra%20equations.html">Optimal Control of the Lotka-Volterra equations</a></li>
 <li class="toctree-l2"><a class="reference internal" href="definite_integrals.html">Computing definite integrals</a></li>
+</ul>
+</li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">API reference</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../api_integrators.html">Numerical integrators</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-7"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../autosummary_generated/heyoka.taylor_adaptive.html">heyoka.taylor_adaptive</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../api_exsys.html">Expression system</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-8"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../autosummary_generated/heyoka.expression.html">heyoka.expression</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../api_lagham.html">Lagrangian and Hamiltonian mechanics</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-9"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../autosummary_generated/heyoka.lagrangian.html">heyoka.lagrangian</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../autosummary_generated/heyoka.hamiltonian.html">heyoka.hamiltonian</a></li>
 </ul>
 </li>
 </ul>
@@ -475,15 +497,15 @@ document.write(`
               
                 
 <div id="searchbox"></div>
-                <article class="bd-article" role="main">
+                <article class="bd-article">
                   
   <section class="tex2jax_ignore mathjax_ignore" id="conserving-first-integrals-via-manifold-projection">
-<h1>Conserving first integrals via manifold projection<a class="headerlink" href="#conserving-first-integrals-via-manifold-projection" title="Permalink to this heading">#</a></h1>
+<h1>Conserving first integrals via manifold projection<a class="headerlink" href="#conserving-first-integrals-via-manifold-projection" title="Link to this heading">#</a></h1>
 <p>As we saw in an <a class="reference internal" href="Outer%20Solar%20System.html"><span class="std std-doc">earlier example</span></a>, even though heyoka.py is not a <a class="reference external" href="https://en.wikipedia.org/wiki/Symplectic_integrator">symplectic integrator</a> it is nevertheless capable of optimally preserving conserved quantities in dynamical systems.</p>
 <p>In order to conserve dynamical invariants, heyoka.py needs to be configured to operate at very low tolerances (i.e., below machine epsilon). High-precision numerical integrations however are computationally expensive, and in some contexts it is preferable, for performance reasons, to maintain a low integration accuracy while at the same time ensuring that the global dynamical invariants are preserved. This is the main reason why symplectic integrators are the tool of choice, for instance, in numerical studies of the long-term stability of extrasolar planetary systems.</p>
 <p>In this example, we will show how we can enforce the conservation of dynamical invariants in high-tolerance numerical integrations with heyoka.py via a technique known as <em>manifold projection</em>.</p>
 <section id="setting-things-up">
-<h2>Setting things up<a class="headerlink" href="#setting-things-up" title="Permalink to this heading">#</a></h2>
+<h2>Setting things up<a class="headerlink" href="#setting-things-up" title="Link to this heading">#</a></h2>
 <p>We will re-use here the setup described in the <a class="reference internal" href="Outer%20Solar%20System.html"><span class="std std-doc">outer Solar System example</span></a>: a gravitational 6-body problem consisting of the Sun, Jupiter, Saturn, Uranus, Neptune and Pluto with realistic initial conditions.</p>
 <p>Let us begin by defining a few constants and the initial conditions:</p>
 <div class="cell docutils container">
@@ -613,7 +635,7 @@ document.write(`
  1.0583722519817735,
  36,
  None,
- &lt;__main__.proj_callback at 0x7fde223f9480&gt;)
+ &lt;__main__.proj_callback at 0x7f9ca7ad7bb0&gt;)
 </pre></div>
 </div>
 </div>
@@ -621,7 +643,7 @@ document.write(`
 <p>We can see from the output that indeed the integration was terminated earlier because of the callback (as indicated by the <code class="docutils literal notranslate"><span class="pre">taylor_outcome.cb_stop</span></code> outcome), and that the error threshold was exceeded after 36 steps.</p>
 </section>
 <section id="fixing-the-energy">
-<h2>Fixing the energy<a class="headerlink" href="#fixing-the-energy" title="Permalink to this heading">#</a></h2>
+<h2>Fixing the energy<a class="headerlink" href="#fixing-the-energy" title="Link to this heading">#</a></h2>
 <p>We can now move to the interesting part, that is, enforcing energy conservation. The basic idea is to alter the current state vector of the system (whose energy has drifted away from the initial value) so that the energy of the updated state vector matches the initial energy of the system.</p>
 <p>Because there are infinite points in phase space whose energy is equal to the initial value, we impose the additional constraint that the updated state vector should be as close as possible to the original one. In other words, we are projecting the position in phase space of the current state vector onto the hyper-surface (manifold) defined by the conservation of energy.</p>
 <p>This projection process can be seen as a <a class="reference external" href="https://en.wikipedia.org/wiki/Constrained_optimization">constrained optimisation problem</a>: we want to minimise the distance from the original state vector subject to the constraint that the updated state vector must lie on the manifold defined by the conservation of energy.</p>
@@ -691,7 +713,7 @@ Updated  energy error: 1.3963053728083164e-11
 </div>
 </section>
 <section id="helping-the-optimiser-out">
-<h2>Helping the optimiser out<a class="headerlink" href="#helping-the-optimiser-out" title="Permalink to this heading">#</a></h2>
+<h2>Helping the optimiser out<a class="headerlink" href="#helping-the-optimiser-out" title="Link to this heading">#</a></h2>
 <p>Optimisation algorithms can greatly benefit from the availability of gradients for the objective function and the constraints. Luckily, heyoka.py’s expression system lets us compute derivatives without too much pain.</p>
 <p>Let us begin by defining a symbolic expression representing the square of the distance between the original state vector and the updated state vector. Here, the original state vector will be represented by the symbolic state variables (stored earlier in <code class="docutils literal notranslate"><span class="pre">state_vars</span></code>) and the updated state vector will be passed in the array of <a class="reference internal" href="ODEs%20with%20parameters.html"><span class="std std-doc">runtime parameters</span></a>:</p>
 <div class="cell docutils container">
@@ -846,7 +868,7 @@ Updated  energy error: 1.3842666877172304e-11
 </div>
 </section>
 <section id="packaging-it-all-together">
-<h2>Packaging it all together<a class="headerlink" href="#packaging-it-all-together" title="Permalink to this heading">#</a></h2>
+<h2>Packaging it all together<a class="headerlink" href="#packaging-it-all-together" title="Link to this heading">#</a></h2>
 <p>As a last step, we now incorporate manifold projection into the step callback, so that we can automatically ensure energy conservation whenever the energy error drifts too far during the numerical integration.</p>
 <p>Here is the updated version of the callback:</p>
 <div class="cell docutils container">
@@ -1005,6 +1027,7 @@ Number of steps: 108881
               
                 <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
 
+
   <div class="sidebar-secondary-item">
   <div class="page-toc tocsection onthispage">
     <i class="fa-solid fa-list"></i> Contents
@@ -1063,8 +1086,8 @@ By Francesco Biscani and Dario Izzo
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../_static/scripts/bootstrap.js?digest=5b4479735964841361fd"></script>
-<script src="../_static/scripts/pydata-sphinx-theme.js?digest=5b4479735964841361fd"></script>
+  <script src="../_static/scripts/bootstrap.js?digest=bd9e20870c6007c4c509"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=bd9e20870c6007c4c509"></script>
 
   <footer class="bd-footer">
   </footer>

@@ -1,13 +1,12 @@
 
-
 <!DOCTYPE html>
 
 
-<html lang="en" data-content_root="" >
+<html lang="en" data-content_root="../" >
 
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
     <title>Lagrange propagation and the state transition matrix &#8212; heyoka.py 4.0.0 documentation</title>
   
@@ -19,29 +18,29 @@
   </script>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../_static/styles/theme.css?digest=5b4479735964841361fd" rel="stylesheet" />
-<link href="../_static/styles/bootstrap.css?digest=5b4479735964841361fd" rel="stylesheet" />
-<link href="../_static/styles/pydata-sphinx-theme.css?digest=5b4479735964841361fd" rel="stylesheet" />
+  <link href="../_static/styles/theme.css?digest=bd9e20870c6007c4c509" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=bd9e20870c6007c4c509" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=bd9e20870c6007c4c509" rel="stylesheet" />
 
   
-  <link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=5b4479735964841361fd" rel="stylesheet" />
-  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
+  <link href="../_static/vendor/fontawesome/6.5.1/css/all.min.css?digest=bd9e20870c6007c4c509" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.1/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.1/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.1/webfonts/fa-regular-400.woff2" />
 
-    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=384b581d" />
     <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=5b4479735964841361fd" />
-<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=5b4479735964841361fd" />
-  <script src="../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=5b4479735964841361fd"></script>
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=bd9e20870c6007c4c509" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=bd9e20870c6007c4c509" />
+  <script src="../_static/vendor/fontawesome/6.5.1/js/all.min.js?digest=bd9e20870c6007c4c509"></script>
 
-    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-    <script src="../_static/doctools.js"></script>
-    <script src="../_static/sphinx_highlight.js"></script>
-    <script src="../_static/scripts/sphinx-book-theme.js"></script>
+    <script src="../_static/documentation_options.js?v=a1c85040"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?v=efea14e4"></script>
     <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'notebooks/lagrangian_propagator';</script>
@@ -58,7 +57,7 @@
 
   
   
-  <a class="skip-link" href="#main-content">Skip to main content</a>
+  <a id="pst-skip-link" class="skip-link" href="#main-content">Skip to main content</a>
   
   <div id="pst-scroll-pixel-helper"></div>
 
@@ -101,12 +100,18 @@
   <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
 </form></div>
   </div>
+
+  <header>
   
-    <nav class="bd-header navbar navbar-expand-lg bd-navbar">
-    </nav>
+    <div class="bd-header navbar navbar-expand-lg bd-navbar">
+    </div>
   
+  </header>
+
   <div class="bd-container">
     <div class="bd-container__inner bd-page-width">
+      
+      
       
       <div class="bd-sidebar-primary bd-sidebar">
         
@@ -181,6 +186,7 @@
 <li class="toctree-l2"><a class="reference internal" href="ext_precision.html">Computations in extended precision</a></li>
 <li class="toctree-l2"><a class="reference internal" href="arbitrary_precision.html">Computations in arbitrary precision</a></li>
 <li class="toctree-l2"><a class="reference internal" href="single_precision.html">Computations in single precision</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lagrangian.html">Lagrangian and Hamiltonian mechanics</a></li>
 <li class="toctree-l2"><a class="reference internal" href="sympy_interop.html">Interoperability with SymPy</a></li>
 <li class="toctree-l2"><a class="reference internal" href="compiled_functions.html">Compiled functions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="ex_system_revisited.html">Using the expression system effectively</a></li>
@@ -234,6 +240,22 @@
 <li class="toctree-l2"><a class="reference internal" href="The%20variational%20equations.html">The variational equations</a></li>
 <li class="toctree-l2"><a class="reference internal" href="Optimal%20Control%20of%20the%20Lotka-Volterra%20equations.html">Optimal Control of the Lotka-Volterra equations</a></li>
 <li class="toctree-l2"><a class="reference internal" href="definite_integrals.html">Computing definite integrals</a></li>
+</ul>
+</li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">API reference</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../api_integrators.html">Numerical integrators</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-7"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../autosummary_generated/heyoka.taylor_adaptive.html">heyoka.taylor_adaptive</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../api_exsys.html">Expression system</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-8"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../autosummary_generated/heyoka.expression.html">heyoka.expression</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../api_lagham.html">Lagrangian and Hamiltonian mechanics</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-9"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../autosummary_generated/heyoka.lagrangian.html">heyoka.lagrangian</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../autosummary_generated/heyoka.hamiltonian.html">heyoka.hamiltonian</a></li>
 </ul>
 </li>
 </ul>
@@ -473,13 +495,13 @@ document.write(`
               
                 
 <div id="searchbox"></div>
-                <article class="bd-article" role="main">
+                <article class="bd-article">
                   
   <section class="tex2jax_ignore mathjax_ignore" id="lagrange-propagation-and-the-state-transition-matrix">
-<h1>Lagrange propagation and the state transition matrix<a class="headerlink" href="#lagrange-propagation-and-the-state-transition-matrix" title="Permalink to this heading">#</a></h1>
+<h1>Lagrange propagation and the state transition matrix<a class="headerlink" href="#lagrange-propagation-and-the-state-transition-matrix" title="Link to this heading">#</a></h1>
 <p>In the gravitational <a class="reference external" href="https://en.wikipedia.org/wiki/Two-body_problem">two-body problem</a> it is possible to compute the state of the system at an arbitrary time from an initial state <span class="math notranslate nohighlight">\(\left( \boldsymbol{r}_0, \boldsymbol{v}_0 \right)\)</span> via the so-called Lagrange coefficients <span class="math notranslate nohighlight">\(F\)</span>, <span class="math notranslate nohighlight">\(G\)</span>, <span class="math notranslate nohighlight">\(F_t\)</span> and <span class="math notranslate nohighlight">\(G_t\)</span>:</p>
-<div class="amsmath math notranslate nohighlight" id="equation-64b145d2-b972-4faf-8857-ed4016541403">
-<span class="eqno">(1)<a class="headerlink" href="#equation-64b145d2-b972-4faf-8857-ed4016541403" title="Permalink to this equation">#</a></span>\[\begin{equation}
+<div class="amsmath math notranslate nohighlight" id="equation-37e2aa35-e69f-418e-be71-72449fbd0415">
+<span class="eqno">(1)<a class="headerlink" href="#equation-37e2aa35-e69f-418e-be71-72449fbd0415" title="Permalink to this equation">#</a></span>\[\begin{equation}
 \begin{cases}
 \boldsymbol{r} &amp; = F \boldsymbol{r}_0 + G \boldsymbol{v}_0 \\
 \boldsymbol{v} &amp; = F_t \boldsymbol{r}_0 + G_t \boldsymbol{v}_0
@@ -488,7 +510,7 @@ document.write(`
 <p>Analytical expressions for these coefficients are available in terms of anomalies differences between the end state and the initial state. The details on these analytical expressions and their derivation can be found, for example, in the seminal book by Richard Battin <a class="reference external" href="https://ui.adsabs.harvard.edu/abs/1987aiaa.rept.....B/abstract">“An introduction to the mathematics and methods of astrodynamics”</a> (section 4.3). See <a class="reference external" href="https://orbital-mechanics.space/time-since-periapsis-and-keplers-equation/the-lagrange-coefficients.html">here</a> for another derivation.</p>
 <p>In this notebook, we will first show how to implement a Lagrange propagator using heyoka.py’s expression system. Because the propagator will be implemented in terms of analytical formulae, we will then be able to differentiate it and effortlessly construct the state transtition matrix (i.e., the Jacobian of the propagator with respect to the initial state).</p>
 <section id="the-lagrange-propagator">
-<h2>The Lagrange propagator<a class="headerlink" href="#the-lagrange-propagator" title="Permalink to this heading">#</a></h2>
+<h2>The Lagrange propagator<a class="headerlink" href="#the-lagrange-propagator" title="Link to this heading">#</a></h2>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>The propagator presented here is implemented in terms of eccentric anomalies, and thus it is limited to elliptic orbits.</p>
@@ -666,7 +688,7 @@ document.write(`
 </div>
 </section>
 <section id="constructing-the-stm">
-<h2>Constructing the STM<a class="headerlink" href="#constructing-the-stm" title="Permalink to this heading">#</a></h2>
+<h2>Constructing the STM<a class="headerlink" href="#constructing-the-stm" title="Link to this heading">#</a></h2>
 <p>We can now proceed to the construction of an analytical expression for the state transition matrix (STM).</p>
 <p>The STM is nothing but the Jacobian of the Lagrange propagator with respect to the initial conditions. In order to compute the derivatives, we employ the <code class="docutils literal notranslate"><span class="pre">diff_tensors()</span></code> function as explained <a class="reference internal" href="ex_system_revisited.html#computing-derivatives"><span class="std std-ref">here</span></a>:</p>
 <div class="cell docutils container">
@@ -780,6 +802,7 @@ document.write(`
               
                 <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
 
+
   <div class="sidebar-secondary-item">
   <div class="page-toc tocsection onthispage">
     <i class="fa-solid fa-list"></i> Contents
@@ -836,8 +859,8 @@ By Francesco Biscani and Dario Izzo
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../_static/scripts/bootstrap.js?digest=5b4479735964841361fd"></script>
-<script src="../_static/scripts/pydata-sphinx-theme.js?digest=5b4479735964841361fd"></script>
+  <script src="../_static/scripts/bootstrap.js?digest=bd9e20870c6007c4c509"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=bd9e20870c6007c4c509"></script>
 
   <footer class="bd-footer">
   </footer>

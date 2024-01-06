@@ -1,13 +1,12 @@
 
-
 <!DOCTYPE html>
 
 
-<html lang="en" data-content_root="" >
+<html lang="en" data-content_root="../" >
 
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
     <title>Optimal Control of the Lotka-Volterra equations &#8212; heyoka.py 4.0.0 documentation</title>
   
@@ -19,29 +18,29 @@
   </script>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../_static/styles/theme.css?digest=5b4479735964841361fd" rel="stylesheet" />
-<link href="../_static/styles/bootstrap.css?digest=5b4479735964841361fd" rel="stylesheet" />
-<link href="../_static/styles/pydata-sphinx-theme.css?digest=5b4479735964841361fd" rel="stylesheet" />
+  <link href="../_static/styles/theme.css?digest=bd9e20870c6007c4c509" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=bd9e20870c6007c4c509" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=bd9e20870c6007c4c509" rel="stylesheet" />
 
   
-  <link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=5b4479735964841361fd" rel="stylesheet" />
-  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
+  <link href="../_static/vendor/fontawesome/6.5.1/css/all.min.css?digest=bd9e20870c6007c4c509" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.1/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.1/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.1/webfonts/fa-regular-400.woff2" />
 
-    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=384b581d" />
     <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=5b4479735964841361fd" />
-<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=5b4479735964841361fd" />
-  <script src="../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=5b4479735964841361fd"></script>
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=bd9e20870c6007c4c509" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=bd9e20870c6007c4c509" />
+  <script src="../_static/vendor/fontawesome/6.5.1/js/all.min.js?digest=bd9e20870c6007c4c509"></script>
 
-    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-    <script src="../_static/doctools.js"></script>
-    <script src="../_static/sphinx_highlight.js"></script>
-    <script src="../_static/scripts/sphinx-book-theme.js"></script>
+    <script src="../_static/documentation_options.js?v=a1c85040"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?v=efea14e4"></script>
     <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'notebooks/Optimal Control of the Lotka-Volterra equations';</script>
@@ -58,7 +57,7 @@
 
   
   
-  <a class="skip-link" href="#main-content">Skip to main content</a>
+  <a id="pst-skip-link" class="skip-link" href="#main-content">Skip to main content</a>
   
   <div id="pst-scroll-pixel-helper"></div>
 
@@ -101,12 +100,18 @@
   <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
 </form></div>
   </div>
+
+  <header>
   
-    <nav class="bd-header navbar navbar-expand-lg bd-navbar">
-    </nav>
+    <div class="bd-header navbar navbar-expand-lg bd-navbar">
+    </div>
   
+  </header>
+
   <div class="bd-container">
     <div class="bd-container__inner bd-page-width">
+      
+      
       
       <div class="bd-sidebar-primary bd-sidebar">
         
@@ -181,6 +186,7 @@
 <li class="toctree-l2"><a class="reference internal" href="ext_precision.html">Computations in extended precision</a></li>
 <li class="toctree-l2"><a class="reference internal" href="arbitrary_precision.html">Computations in arbitrary precision</a></li>
 <li class="toctree-l2"><a class="reference internal" href="single_precision.html">Computations in single precision</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lagrangian.html">Lagrangian and Hamiltonian mechanics</a></li>
 <li class="toctree-l2"><a class="reference internal" href="sympy_interop.html">Interoperability with SymPy</a></li>
 <li class="toctree-l2"><a class="reference internal" href="compiled_functions.html">Compiled functions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="ex_system_revisited.html">Using the expression system effectively</a></li>
@@ -234,6 +240,22 @@
 <li class="toctree-l2"><a class="reference internal" href="The%20variational%20equations.html">The variational equations</a></li>
 <li class="toctree-l2 current active"><a class="current reference internal" href="#">Optimal Control of the Lotka-Volterra equations</a></li>
 <li class="toctree-l2"><a class="reference internal" href="definite_integrals.html">Computing definite integrals</a></li>
+</ul>
+</li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">API reference</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../api_integrators.html">Numerical integrators</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-7"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../autosummary_generated/heyoka.taylor_adaptive.html">heyoka.taylor_adaptive</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../api_exsys.html">Expression system</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-8"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../autosummary_generated/heyoka.expression.html">heyoka.expression</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../api_lagham.html">Lagrangian and Hamiltonian mechanics</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-9"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../autosummary_generated/heyoka.lagrangian.html">heyoka.lagrangian</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../autosummary_generated/heyoka.hamiltonian.html">heyoka.hamiltonian</a></li>
 </ul>
 </li>
 </ul>
@@ -475,10 +497,10 @@ document.write(`
               
                 
 <div id="searchbox"></div>
-                <article class="bd-article" role="main">
+                <article class="bd-article">
                   
   <section class="tex2jax_ignore mathjax_ignore" id="optimal-control-of-the-lotka-volterra-equations">
-<h1>Optimal Control of the Lotka-Volterra equations<a class="headerlink" href="#optimal-control-of-the-lotka-volterra-equations" title="Permalink to this heading">#</a></h1>
+<h1>Optimal Control of the Lotka-Volterra equations<a class="headerlink" href="#optimal-control-of-the-lotka-volterra-equations" title="Link to this heading">#</a></h1>
 <p>In this tutorial we study an optimal control problem for the <a class="reference external" href="https://en.wikipedia.org/wiki/Lotka%E2%80%93Volterra_equations">Lotka-Volterra equations</a>.These famous equations are frequently
 used to describe the dynamics of biological systems in which two species interact: a predator (<span class="math notranslate nohighlight">\(y\)</span>) and a prey (<span class="math notranslate nohighlight">\(x\)</span>).</p>
 <p>The dynamics considered, taken from the work of Aitziber Ibanez, is:</p>
@@ -523,7 +545,7 @@ which we will solve using <code class="docutils literal notranslate"><span class
 </div>
 </div>
 <section id="deriving-the-augmented-dynamics">
-<h2>Deriving the augmented dynamics<a class="headerlink" href="#deriving-the-augmented-dynamics" title="Permalink to this heading">#</a></h2>
+<h2>Deriving the augmented dynamics<a class="headerlink" href="#deriving-the-augmented-dynamics" title="Link to this heading">#</a></h2>
 <p>The straightforward application of the <strong>PMP</strong> requires the introduction of auxiliary functions <span class="math notranslate nohighlight">\(\boldsymbol\lambda(t)\)</span> and of a Hamiltonian which, in the case of a minimum time problem is:</p>
 <div class="math notranslate nohighlight">
 \[
@@ -703,7 +725,7 @@ y(t_f) - y_f \\
 solved by a root finder.</p>
 </section>
 <section id="studying-the-uncontrolled-system">
-<h2>Studying the uncontrolled system<a class="headerlink" href="#studying-the-uncontrolled-system" title="Permalink to this heading">#</a></h2>
+<h2>Studying the uncontrolled system<a class="headerlink" href="#studying-the-uncontrolled-system" title="Link to this heading">#</a></h2>
 <p>Let us see what happens in an uncontrolled case. We will consider an initial population of 10 preys with growth rates <span class="math notranslate nohighlight">\(p_0= 1.1\)</span>, <span class="math notranslate nohighlight">\(p_1 = 0.2\)</span> and 10 predators with growth rates <span class="math notranslate nohighlight">\(p_2 = 0.1\)</span>, <span class="math notranslate nohighlight">\(p_3 = 0.4\)</span>.</p>
 <p>We write the r.h.s. of Eq.(1). The parameters in the equations are indicated symbolically by the syntax <code class="docutils literal notranslate"><span class="pre">par[i]</span></code>. Their numerical value will be set later.</p>
 <div class="cell docutils container">
@@ -789,7 +811,7 @@ Parameters              : [1.1, 0.2, 0.1, 0.4]
 </div>
 </section>
 <section id="controlling-the-prey-predator-dynamics">
-<h2>Controlling the prey-predator dynamics<a class="headerlink" href="#controlling-the-prey-predator-dynamics" title="Permalink to this heading">#</a></h2>
+<h2>Controlling the prey-predator dynamics<a class="headerlink" href="#controlling-the-prey-predator-dynamics" title="Link to this heading">#</a></h2>
 <p>We now study the augmented system of equations. This will be used later in the shooting method.</p>
 <p>We define our ODE first:</p>
 <div class="cell docutils container">
@@ -916,7 +938,7 @@ N of terminal events    : 1
 </div>
 </section>
 <section id="implementing-a-single-shooting-method">
-<h2>Implementing a single shooting method<a class="headerlink" href="#implementing-a-single-shooting-method" title="Permalink to this heading">#</a></h2>
+<h2>Implementing a single shooting method<a class="headerlink" href="#implementing-a-single-shooting-method" title="Link to this heading">#</a></h2>
 <p>Above we have produced an optimal trajectory, only not the one we looked for since we want to achieve the terminal conditions <span class="math notranslate nohighlight">\(x_f = 10, y_f=4\)</span> and (free time) <span class="math notranslate nohighlight">\(H_f=0\)</span>.
 The choice we made for <span class="math notranslate nohighlight">\(\lambda_{x0}\)</span>, <span class="math notranslate nohighlight">\(\lambda_{y0}\)</span>, <span class="math notranslate nohighlight">\(t_f\)</span> was not a good one, we need to change it up to when Eq.(3) is actually satisfied.</p>
 <p>In this case, to showcase the possibilities offered by <em>heyoka.py</em>, we will vary <span class="math notranslate nohighlight">\(\lambda_x\)</span>, find <span class="math notranslate nohighlight">\(\lambda_y\)</span> from the condition <span class="math notranslate nohighlight">\(\mathcal H_f = \mathcal H_0 = 0\)</span> and find <span class="math notranslate nohighlight">\(t_f\)</span> as the time along the generated trajectory when the difference between the state and the target is minimal (a terminal event).</p>
@@ -1075,9 +1097,9 @@ N of terminal events    : 2
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/tmp/ipykernel_10693/2413872175.py:11: DeprecationWarning: Conversion of an array with ndim &gt; 0 to a scalar is deprecated, and will error in future. Ensure you extract a single element from your array before performing this operation. (Deprecated NumPy 1.25.)
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/tmp/ipykernel_10837/2413872175.py:11: DeprecationWarning: Conversion of an array with ndim &gt; 0 to a scalar is deprecated, and will error in future. Ensure you extract a single element from your array before performing this operation. (Deprecated NumPy 1.25.)
   ta.pars[6] = np.heaviside(switching_function(x_0,y_0,lx_0,ly_0, ps), 1.)
-/tmp/ipykernel_10693/2413872175.py:14: DeprecationWarning: Conversion of an array with ndim &gt; 0 to a scalar is deprecated, and will error in future. Ensure you extract a single element from your array before performing this operation. (Deprecated NumPy 1.25.)
+/tmp/ipykernel_10837/2413872175.py:14: DeprecationWarning: Conversion of an array with ndim &gt; 0 to a scalar is deprecated, and will error in future. Ensure you extract a single element from your array before performing this operation. (Deprecated NumPy 1.25.)
   ta.state[0] = x_0; ta.state[1] = y_0; ta.state[2] = lx_0; ta.state[3] = ly_0
 </pre></div>
 </div>
@@ -1119,7 +1141,7 @@ N of terminal events    : 2
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/tmp/ipykernel_10693/3578120629.py:12: DeprecationWarning: Conversion of an array with ndim &gt; 0 to a scalar is deprecated, and will error in future. Ensure you extract a single element from your array before performing this operation. (Deprecated NumPy 1.25.)
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/tmp/ipykernel_10837/3578120629.py:12: DeprecationWarning: Conversion of an array with ndim &gt; 0 to a scalar is deprecated, and will error in future. Ensure you extract a single element from your array before performing this operation. (Deprecated NumPy 1.25.)
   ta.pars[6] = np.heaviside(switching_function(x_0,y_0,lx_0,ly_0, ps), 1.)
 </pre></div>
 </div>
@@ -1213,6 +1235,7 @@ N of terminal events    : 2
               
                 <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
 
+
   <div class="sidebar-secondary-item">
   <div class="page-toc tocsection onthispage">
     <i class="fa-solid fa-list"></i> Contents
@@ -1271,8 +1294,8 @@ By Francesco Biscani and Dario Izzo
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../_static/scripts/bootstrap.js?digest=5b4479735964841361fd"></script>
-<script src="../_static/scripts/pydata-sphinx-theme.js?digest=5b4479735964841361fd"></script>
+  <script src="../_static/scripts/bootstrap.js?digest=bd9e20870c6007c4c509"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=bd9e20870c6007c4c509"></script>
 
   <footer class="bd-footer">
   </footer>

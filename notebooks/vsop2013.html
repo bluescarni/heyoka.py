@@ -1,13 +1,12 @@
 
-
 <!DOCTYPE html>
 
 
-<html lang="en" data-content_root="" >
+<html lang="en" data-content_root="../" >
 
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
     <title>Introduction to the VSOP2013 planetary theory &#8212; heyoka.py 4.0.0 documentation</title>
   
@@ -19,29 +18,29 @@
   </script>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../_static/styles/theme.css?digest=5b4479735964841361fd" rel="stylesheet" />
-<link href="../_static/styles/bootstrap.css?digest=5b4479735964841361fd" rel="stylesheet" />
-<link href="../_static/styles/pydata-sphinx-theme.css?digest=5b4479735964841361fd" rel="stylesheet" />
+  <link href="../_static/styles/theme.css?digest=bd9e20870c6007c4c509" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=bd9e20870c6007c4c509" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=bd9e20870c6007c4c509" rel="stylesheet" />
 
   
-  <link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=5b4479735964841361fd" rel="stylesheet" />
-  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
+  <link href="../_static/vendor/fontawesome/6.5.1/css/all.min.css?digest=bd9e20870c6007c4c509" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.1/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.1/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.1/webfonts/fa-regular-400.woff2" />
 
-    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=384b581d" />
     <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=5b4479735964841361fd" />
-<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=5b4479735964841361fd" />
-  <script src="../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=5b4479735964841361fd"></script>
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=bd9e20870c6007c4c509" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=bd9e20870c6007c4c509" />
+  <script src="../_static/vendor/fontawesome/6.5.1/js/all.min.js?digest=bd9e20870c6007c4c509"></script>
 
-    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-    <script src="../_static/doctools.js"></script>
-    <script src="../_static/sphinx_highlight.js"></script>
-    <script src="../_static/scripts/sphinx-book-theme.js"></script>
+    <script src="../_static/documentation_options.js?v=a1c85040"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?v=efea14e4"></script>
     <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'notebooks/vsop2013';</script>
@@ -58,7 +57,7 @@
 
   
   
-  <a class="skip-link" href="#main-content">Skip to main content</a>
+  <a id="pst-skip-link" class="skip-link" href="#main-content">Skip to main content</a>
   
   <div id="pst-scroll-pixel-helper"></div>
 
@@ -101,12 +100,18 @@
   <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
 </form></div>
   </div>
+
+  <header>
   
-    <nav class="bd-header navbar navbar-expand-lg bd-navbar">
-    </nav>
+    <div class="bd-header navbar navbar-expand-lg bd-navbar">
+    </div>
   
+  </header>
+
   <div class="bd-container">
     <div class="bd-container__inner bd-page-width">
+      
+      
       
       <div class="bd-sidebar-primary bd-sidebar">
         
@@ -181,6 +186,7 @@
 <li class="toctree-l2"><a class="reference internal" href="ext_precision.html">Computations in extended precision</a></li>
 <li class="toctree-l2"><a class="reference internal" href="arbitrary_precision.html">Computations in arbitrary precision</a></li>
 <li class="toctree-l2"><a class="reference internal" href="single_precision.html">Computations in single precision</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lagrangian.html">Lagrangian and Hamiltonian mechanics</a></li>
 <li class="toctree-l2"><a class="reference internal" href="sympy_interop.html">Interoperability with SymPy</a></li>
 <li class="toctree-l2"><a class="reference internal" href="compiled_functions.html">Compiled functions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="ex_system_revisited.html">Using the expression system effectively</a></li>
@@ -234,6 +240,22 @@
 <li class="toctree-l2"><a class="reference internal" href="The%20variational%20equations.html">The variational equations</a></li>
 <li class="toctree-l2"><a class="reference internal" href="Optimal%20Control%20of%20the%20Lotka-Volterra%20equations.html">Optimal Control of the Lotka-Volterra equations</a></li>
 <li class="toctree-l2"><a class="reference internal" href="definite_integrals.html">Computing definite integrals</a></li>
+</ul>
+</li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">API reference</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../api_integrators.html">Numerical integrators</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-7"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../autosummary_generated/heyoka.taylor_adaptive.html">heyoka.taylor_adaptive</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../api_exsys.html">Expression system</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-8"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../autosummary_generated/heyoka.expression.html">heyoka.expression</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../api_lagham.html">Lagrangian and Hamiltonian mechanics</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-9"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../autosummary_generated/heyoka.lagrangian.html">heyoka.lagrangian</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../autosummary_generated/heyoka.hamiltonian.html">heyoka.hamiltonian</a></li>
 </ul>
 </li>
 </ul>
@@ -476,13 +498,13 @@ document.write(`
               
                 
 <div id="searchbox"></div>
-                <article class="bd-article" role="main">
+                <article class="bd-article">
                   
   <section class="tex2jax_ignore mathjax_ignore" id="introduction-to-the-vsop2013-planetary-theory">
-<h1>Introduction to the VSOP2013 planetary theory<a class="headerlink" href="#introduction-to-the-vsop2013-planetary-theory" title="Permalink to this heading">#</a></h1>
+<h1>Introduction to the VSOP2013 planetary theory<a class="headerlink" href="#introduction-to-the-vsop2013-planetary-theory" title="Link to this heading">#</a></h1>
 <p>Starting from version 0.15, heyoka.py provides an implementation of the <a class="reference external" href="https://en.wikipedia.org/wiki/VSOP_%28planets%29">VSOP2013</a> planetary theory. VSOP2013 consists of a set of (large) analytical formulae expressing the heliocentric orbital elements of the 8 planets of the Solar System (plus the dwarf planet Pluto) as a function of time. Because the VSOP2013 theory is expressed as a set of analytical, differentiable formulae, it can be implemented in heyoka.py’s expression system and it can thus be used in the formulation of differential equations.</p>
 <section id="api-overview">
-<h2>API overview<a class="headerlink" href="#api-overview" title="Permalink to this heading">#</a></h2>
+<h2>API overview<a class="headerlink" href="#api-overview" title="Link to this heading">#</a></h2>
 <p>heyoka.py provides three functions to generate the analytical formulae for the VSOP2013 theory. These functions are available in the <code class="docutils literal notranslate"><span class="pre">model</span></code> submodule.</p>
 <p>The first one, <code class="docutils literal notranslate"><span class="pre">vsop2013_elliptic()</span></code>, returns the time-dependent formulae for the heliocentric elliptic orbital elements for a given planet. The 6 elliptic orbital elements are, in order:</p>
 <ul class="simple">
@@ -496,7 +518,7 @@ document.write(`
 <p>The third function, <code class="docutils literal notranslate"><span class="pre">vsop2013_cartesian_icrf()</span></code>, returns the heliocentric Cartesian state vector for a given planet in the <a class="reference external" href="https://en.wikipedia.org/wiki/International_Celestial_Reference_System_and_Frame">International Celestial Reference Frame (ICRF)</a>. The ICRF state vector is computed by applying a rotation to the output of <code class="docutils literal notranslate"><span class="pre">vsop2013_cartesian()</span></code>.</p>
 </section>
 <section id="precision-and-truncation-threshold">
-<h2>Precision and truncation threshold<a class="headerlink" href="#precision-and-truncation-threshold" title="Permalink to this heading">#</a></h2>
+<h2>Precision and truncation threshold<a class="headerlink" href="#precision-and-truncation-threshold" title="Link to this heading">#</a></h2>
 <p>The VSOP2013 solution is formulated as large Fourier/Poisson series whose numerical coefficients decay exponentially. When using the full VSOP2013 solution, the precision with respect to high-accuracy numerical integrations is roughly sub-meter for the inner planets (except Mars) and kilometers for the outer planets (except Pluto). By dropping the smaller terms from the series, the precision of the theory degrades but computational efficiency greatly increases. See the <a class="reference external" href="https://ftp.imcce.fr/pub/ephem/planets/vsop2013/solution/README.pdf">VSOP2013 readme</a> for more details and estimates of the precision at various truncation levels.</p>
 <p>By default, all <code class="docutils literal notranslate"><span class="pre">vsop2013_*()</span></code> functions filter out from the solution terms whose numerical coefficients have a magnitude smaller than <span class="math notranslate nohighlight">\(10^{-9}\)</span>. This corresponds to an accuracy of the order of a few kilometers on the Cartesian positions of the terrestrial planets. The truncation threshold can be changed via the <code class="docutils literal notranslate"><span class="pre">thresh</span></code> keyword argument:</p>
 <div class="cell docutils container">
@@ -518,7 +540,7 @@ Size of Mars&#39; semi-major axis solution @ 1e-11: 154965
 </div>
 </section>
 <section id="time-coordinate">
-<h2>Time coordinate<a class="headerlink" href="#time-coordinate" title="Permalink to this heading">#</a></h2>
+<h2>Time coordinate<a class="headerlink" href="#time-coordinate" title="Link to this heading">#</a></h2>
 <p>The precision of the VSOP2013 solution is highest betwen <span class="math notranslate nohighlight">\(1890\,\mathrm{CE}\)</span> and <span class="math notranslate nohighlight">\(2000\,\mathrm{CE}\)</span>, and it slowly degrades outside this time range. See the <a class="reference external" href="https://ftp.imcce.fr/pub/ephem/planets/vsop2013/solution/README.pdf">VSOP2013 readme</a> for estimates of the precision degradation up to a few thousand years in the past/future.</p>
 <p>VSOP2013 uses <a class="reference external" href="https://en.wikipedia.org/wiki/Barycentric_Dynamical_Time">barycentric dynamical time (TDB)</a>, expressed in thousands of Julian years from J2000 (JD2451545.0). Note than one Julian year = 365.25 days.</p>
 <p>By default, all <code class="docutils literal notranslate"><span class="pre">vsop2013_*()</span></code> functions use <code class="docutils literal notranslate"><span class="pre">hy.time</span></code> to represent the time variable in the VSOP2013 formulae. This means that, by default, when the VSOP2013 solution is used in an ODE system, time is assumed to be measured in thousands of Julian years of TDB and <span class="math notranslate nohighlight">\(t = 0\)</span> corresponds to the Julian date <span class="math notranslate nohighlight">\(2451545.0\)</span>:</p>
@@ -584,7 +606,7 @@ Size of Mars&#39; semi-major axis solution @ 1e-11: 154965
 </div>
 </section>
 <section id="checking-the-implementation">
-<h2>Checking the implementation<a class="headerlink" href="#checking-the-implementation" title="Permalink to this heading">#</a></h2>
+<h2>Checking the implementation<a class="headerlink" href="#checking-the-implementation" title="Link to this heading">#</a></h2>
 <p>In order to check the correctness of heyoka.py’s implementation of the VSOP2013 theory, we are going to use the <a class="reference external" href="https://ssd.jpl.nasa.gov/?horizons">NASA HORIZONS service</a> via the <a class="reference external" href="https://astroquery.readthedocs.io/en/latest/">Astroquery</a> package. Our objective is to compare the planetary positions computed by VSOP2013 at different threshold levels with those computed by HORIZONS. On the heyoka.py side, we will be using <a class="reference internal" href="compiled_functions.html"><span class="std std-doc">compiled functions</span></a> to evaluate the VSOP2013 series.</p>
 <p>In this example, we will be using Venus as a target body. Because the ecliptical coordinate system used by VSOP2013 does not match exactly any of the coordinate systems available in HORIZONS, we will be using the <code class="docutils literal notranslate"><span class="pre">vsop2013_cartesian_icrf()</span></code> function instead, which outputs heliocentric Cartesian coordinates in the standard <a class="reference external" href="https://en.wikipedia.org/wiki/International_Celestial_Reference_System_and_Frame">ICRF</a> (which is available in HORIZONS). Let’s take a look at the code and at the results:</p>
 <div class="cell docutils container">
@@ -662,7 +684,7 @@ Size of Mars&#39; semi-major axis solution @ 1e-11: 154965
 <p>We can see how VSOP2013 matches up well with respect to HORIZONS, and how lower truncation levels indeed increase the precision of the VSOP2013 solution (up to an error of hundreds of meters for a threshold of <span class="math notranslate nohighlight">\(10^{-10}\)</span>).</p>
 </section>
 <section id="limitations-and-caveats">
-<h2>Limitations and caveats<a class="headerlink" href="#limitations-and-caveats" title="Permalink to this heading">#</a></h2>
+<h2>Limitations and caveats<a class="headerlink" href="#limitations-and-caveats" title="Link to this heading">#</a></h2>
 <p>Like most analytical theories, VSOP2013 excels at high thresholds (i.e., low precisions), where it provides compact formulae that can be evaluated quickly. As the precision increases, the solution becomes exponentially longer and more computationally expensive to evaluate and thus less appealing from the point of view of astrodynamical applications.</p>
 <p>An issue in astrodynamical applications is that VSOP2013 does not directly provide formulae for the state vector of the Sun. The barycentric position of the Sun can be estimated via the heliocentric planetary formulae after imposing that the system’s barycentre is fixed in the origin. This approach is not 100% accurate (as VSOP2013 includes perturbations on the planets by asteroids, whose state vectors are not provided in the solution), but it should be adequate for most practical purposes. In low-precision applications, the Sun may be considered fixed in the origin of an inertial reference frame.</p>
 </section>
@@ -705,6 +727,7 @@ Size of Mars&#39; semi-major axis solution @ 1e-11: 154965
             
               
                 <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
 
   <div class="sidebar-secondary-item">
   <div class="page-toc tocsection onthispage">
@@ -765,8 +788,8 @@ By Francesco Biscani and Dario Izzo
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../_static/scripts/bootstrap.js?digest=5b4479735964841361fd"></script>
-<script src="../_static/scripts/pydata-sphinx-theme.js?digest=5b4479735964841361fd"></script>
+  <script src="../_static/scripts/bootstrap.js?digest=bd9e20870c6007c4c509"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=bd9e20870c6007c4c509"></script>
 
   <footer class="bd-footer">
   </footer>

@@ -1,13 +1,12 @@
 
-
 <!DOCTYPE html>
 
 
-<html lang="en" data-content_root="" >
+<html lang="en" data-content_root="../" >
 
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
     <title>Evaluating the performance of ensemble &amp; batch mode &#8212; heyoka.py 4.0.0 documentation</title>
   
@@ -19,29 +18,29 @@
   </script>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../_static/styles/theme.css?digest=5b4479735964841361fd" rel="stylesheet" />
-<link href="../_static/styles/bootstrap.css?digest=5b4479735964841361fd" rel="stylesheet" />
-<link href="../_static/styles/pydata-sphinx-theme.css?digest=5b4479735964841361fd" rel="stylesheet" />
+  <link href="../_static/styles/theme.css?digest=bd9e20870c6007c4c509" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=bd9e20870c6007c4c509" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=bd9e20870c6007c4c509" rel="stylesheet" />
 
   
-  <link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=5b4479735964841361fd" rel="stylesheet" />
-  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
+  <link href="../_static/vendor/fontawesome/6.5.1/css/all.min.css?digest=bd9e20870c6007c4c509" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.1/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.1/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.1/webfonts/fa-regular-400.woff2" />
 
-    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=384b581d" />
     <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=5b4479735964841361fd" />
-<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=5b4479735964841361fd" />
-  <script src="../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=5b4479735964841361fd"></script>
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=bd9e20870c6007c4c509" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=bd9e20870c6007c4c509" />
+  <script src="../_static/vendor/fontawesome/6.5.1/js/all.min.js?digest=bd9e20870c6007c4c509"></script>
 
-    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-    <script src="../_static/doctools.js"></script>
-    <script src="../_static/sphinx_highlight.js"></script>
-    <script src="../_static/scripts/sphinx-book-theme.js"></script>
+    <script src="../_static/documentation_options.js?v=a1c85040"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?v=efea14e4"></script>
     <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'notebooks/ensemble_batch_perf';</script>
@@ -58,7 +57,7 @@
 
   
   
-  <a class="skip-link" href="#main-content">Skip to main content</a>
+  <a id="pst-skip-link" class="skip-link" href="#main-content">Skip to main content</a>
   
   <div id="pst-scroll-pixel-helper"></div>
 
@@ -101,12 +100,18 @@
   <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
 </form></div>
   </div>
+
+  <header>
   
-    <nav class="bd-header navbar navbar-expand-lg bd-navbar">
-    </nav>
+    <div class="bd-header navbar navbar-expand-lg bd-navbar">
+    </div>
   
+  </header>
+
   <div class="bd-container">
     <div class="bd-container__inner bd-page-width">
+      
+      
       
       <div class="bd-sidebar-primary bd-sidebar">
         
@@ -181,6 +186,7 @@
 <li class="toctree-l2"><a class="reference internal" href="ext_precision.html">Computations in extended precision</a></li>
 <li class="toctree-l2"><a class="reference internal" href="arbitrary_precision.html">Computations in arbitrary precision</a></li>
 <li class="toctree-l2"><a class="reference internal" href="single_precision.html">Computations in single precision</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lagrangian.html">Lagrangian and Hamiltonian mechanics</a></li>
 <li class="toctree-l2"><a class="reference internal" href="sympy_interop.html">Interoperability with SymPy</a></li>
 <li class="toctree-l2"><a class="reference internal" href="compiled_functions.html">Compiled functions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="ex_system_revisited.html">Using the expression system effectively</a></li>
@@ -234,6 +240,22 @@
 <li class="toctree-l2"><a class="reference internal" href="The%20variational%20equations.html">The variational equations</a></li>
 <li class="toctree-l2"><a class="reference internal" href="Optimal%20Control%20of%20the%20Lotka-Volterra%20equations.html">Optimal Control of the Lotka-Volterra equations</a></li>
 <li class="toctree-l2"><a class="reference internal" href="definite_integrals.html">Computing definite integrals</a></li>
+</ul>
+</li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">API reference</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../api_integrators.html">Numerical integrators</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-7"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../autosummary_generated/heyoka.taylor_adaptive.html">heyoka.taylor_adaptive</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../api_exsys.html">Expression system</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-8"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../autosummary_generated/heyoka.expression.html">heyoka.expression</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../api_lagham.html">Lagrangian and Hamiltonian mechanics</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-9"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../autosummary_generated/heyoka.lagrangian.html">heyoka.lagrangian</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../autosummary_generated/heyoka.hamiltonian.html">heyoka.hamiltonian</a></li>
 </ul>
 </li>
 </ul>
@@ -475,15 +497,15 @@ document.write(`
               
                 
 <div id="searchbox"></div>
-                <article class="bd-article" role="main">
+                <article class="bd-article">
                   
   <section class="tex2jax_ignore mathjax_ignore" id="evaluating-the-performance-of-ensemble-batch-mode">
-<span id="ensemble-batch-perf"></span><h1>Evaluating the performance of ensemble &amp; batch mode<a class="headerlink" href="#evaluating-the-performance-of-ensemble-batch-mode" title="Permalink to this heading">#</a></h1>
+<span id="ensemble-batch-perf"></span><h1>Evaluating the performance of ensemble &amp; batch mode<a class="headerlink" href="#evaluating-the-performance-of-ensemble-batch-mode" title="Link to this heading">#</a></h1>
 <p>In this short tutorial, we will run a couple of benchmarks with the goal of evaluating how features such as <a class="reference internal" href="Batch%20mode%20overview.html"><span class="std std-doc">batch mode</span></a> and <a class="reference internal" href="ensemble_mode.html"><span class="doc std std-doc">ensemble propagation</span></a> can lead to substantial speedups in the solution of multiple independent ODE systems.</p>
 <p>As an illustrative example, we will be using a toy model of the outer Solar System consisting of the Sun, Jupiter, Saturn, Uranus, Neptune and Pluto, with all bodies represented as point masses attracting each other according to Newtonian gravity. This dynamical system is described in detail in <a class="reference internal" href="Outer%20Solar%20System.html"><span class="std std-doc">another tutorial</span></a>.</p>
 <p>All timings were taken on a Ryzen 5950x CPU.</p>
 <section id="the-scalar-serial-baseline">
-<h2>The scalar, serial baseline<a class="headerlink" href="#the-scalar-serial-baseline" title="Permalink to this heading">#</a></h2>
+<h2>The scalar, serial baseline<a class="headerlink" href="#the-scalar-serial-baseline" title="Link to this heading">#</a></h2>
 <p>To begin with, we set up a single, scalar numerical integration of the system for <span class="math notranslate nohighlight">\(10^6\)</span> years. Let us start by introducing a few physical constants:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -554,7 +576,7 @@ Wall time: 14.4 s
 <p>The scalar serial integration took about 14 seconds.</p>
 </section>
 <section id="parallelisation-with-ensemble-propagation">
-<h2>Parallelisation with ensemble propagation<a class="headerlink" href="#parallelisation-with-ensemble-propagation" title="Permalink to this heading">#</a></h2>
+<h2>Parallelisation with ensemble propagation<a class="headerlink" href="#parallelisation-with-ensemble-propagation" title="Link to this heading">#</a></h2>
 <p>We are now going to use <a class="reference internal" href="ensemble_mode.html"><span class="doc std std-doc">ensemble propagation</span></a> to integrate several instances of our dynamical system in parallel, using multiple threads of execution. In each instance of the ensemble, we will slightly and randomly alter the original initial conditions:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -587,7 +609,7 @@ Wall time: 15.5 s
 <p>Note that, on modern desktop CPUs, parallel speedup is rarely 100% efficient because of CPU frequency boosting when using a single core.</p>
 </section>
 <section id="vectorisation-with-batch-mode">
-<h2>Vectorisation with batch mode<a class="headerlink" href="#vectorisation-with-batch-mode" title="Permalink to this heading">#</a></h2>
+<h2>Vectorisation with batch mode<a class="headerlink" href="#vectorisation-with-batch-mode" title="Link to this heading">#</a></h2>
 <p>As the last step, we are now going to activate <a class="reference internal" href="Batch%20mode%20overview.html"><span class="std std-doc">batch mode</span></a> in order to take full advantage of SIMD instructions in modern CPUs. In this example, we will be using a batch size of 4 (which is the SIMD vector width for double precision on most contemporary x86 CPUs). This means that each integrator in the ensemble will be propagating 4 different trajectories at once.</p>
 <p>We begin with the definition of a template batch integrator:</p>
 <div class="cell docutils container">
@@ -627,7 +649,7 @@ Wall time: 19.8 s
 <p>We can see how, with respect to the scalar ensemble propagation, we increased the number of integrated trajectories by a factor of 4 with only a slight runtime increase.</p>
 </section>
 <section id="conclusions">
-<h2>Conclusions<a class="headerlink" href="#conclusions" title="Permalink to this heading">#</a></h2>
+<h2>Conclusions<a class="headerlink" href="#conclusions" title="Link to this heading">#</a></h2>
 <p>Thanks to the use of batch mode and ensemble propagation, we were able to increase the computational throughput of our simulations with respect to the serial scalar baseline by a factor of <span class="math notranslate nohighlight">\(\sim 24\)</span> using 8 CPU cores. These results show how batch mode and ensemble propagation can be very effective in accelerating Monte Carlo simulations and parameter searches.</p>
 </section>
 </section>
@@ -669,6 +691,7 @@ Wall time: 19.8 s
             
               
                 <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
 
   <div class="sidebar-secondary-item">
   <div class="page-toc tocsection onthispage">
@@ -728,8 +751,8 @@ By Francesco Biscani and Dario Izzo
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../_static/scripts/bootstrap.js?digest=5b4479735964841361fd"></script>
-<script src="../_static/scripts/pydata-sphinx-theme.js?digest=5b4479735964841361fd"></script>
+  <script src="../_static/scripts/bootstrap.js?digest=bd9e20870c6007c4c509"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=bd9e20870c6007c4c509"></script>
 
   <footer class="bd-footer">
   </footer>

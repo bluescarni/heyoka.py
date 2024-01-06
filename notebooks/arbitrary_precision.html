@@ -1,13 +1,12 @@
 
-
 <!DOCTYPE html>
 
 
-<html lang="en" data-content_root="" >
+<html lang="en" data-content_root="../" >
 
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
     <title>Computations in arbitrary precision &#8212; heyoka.py 4.0.0 documentation</title>
   
@@ -19,29 +18,29 @@
   </script>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../_static/styles/theme.css?digest=5b4479735964841361fd" rel="stylesheet" />
-<link href="../_static/styles/bootstrap.css?digest=5b4479735964841361fd" rel="stylesheet" />
-<link href="../_static/styles/pydata-sphinx-theme.css?digest=5b4479735964841361fd" rel="stylesheet" />
+  <link href="../_static/styles/theme.css?digest=bd9e20870c6007c4c509" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=bd9e20870c6007c4c509" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=bd9e20870c6007c4c509" rel="stylesheet" />
 
   
-  <link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=5b4479735964841361fd" rel="stylesheet" />
-  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
+  <link href="../_static/vendor/fontawesome/6.5.1/css/all.min.css?digest=bd9e20870c6007c4c509" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.1/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.1/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.1/webfonts/fa-regular-400.woff2" />
 
-    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=384b581d" />
     <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=5b4479735964841361fd" />
-<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=5b4479735964841361fd" />
-  <script src="../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=5b4479735964841361fd"></script>
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=bd9e20870c6007c4c509" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=bd9e20870c6007c4c509" />
+  <script src="../_static/vendor/fontawesome/6.5.1/js/all.min.js?digest=bd9e20870c6007c4c509"></script>
 
-    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-    <script src="../_static/doctools.js"></script>
-    <script src="../_static/sphinx_highlight.js"></script>
-    <script src="../_static/scripts/sphinx-book-theme.js"></script>
+    <script src="../_static/documentation_options.js?v=a1c85040"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?v=efea14e4"></script>
     <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'notebooks/arbitrary_precision';</script>
@@ -58,7 +57,7 @@
 
   
   
-  <a class="skip-link" href="#main-content">Skip to main content</a>
+  <a id="pst-skip-link" class="skip-link" href="#main-content">Skip to main content</a>
   
   <div id="pst-scroll-pixel-helper"></div>
 
@@ -101,12 +100,18 @@
   <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
 </form></div>
   </div>
+
+  <header>
   
-    <nav class="bd-header navbar navbar-expand-lg bd-navbar">
-    </nav>
+    <div class="bd-header navbar navbar-expand-lg bd-navbar">
+    </div>
   
+  </header>
+
   <div class="bd-container">
     <div class="bd-container__inner bd-page-width">
+      
+      
       
       <div class="bd-sidebar-primary bd-sidebar">
         
@@ -181,6 +186,7 @@
 <li class="toctree-l2"><a class="reference internal" href="ext_precision.html">Computations in extended precision</a></li>
 <li class="toctree-l2 current active"><a class="current reference internal" href="#">Computations in arbitrary precision</a></li>
 <li class="toctree-l2"><a class="reference internal" href="single_precision.html">Computations in single precision</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lagrangian.html">Lagrangian and Hamiltonian mechanics</a></li>
 <li class="toctree-l2"><a class="reference internal" href="sympy_interop.html">Interoperability with SymPy</a></li>
 <li class="toctree-l2"><a class="reference internal" href="compiled_functions.html">Compiled functions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="ex_system_revisited.html">Using the expression system effectively</a></li>
@@ -234,6 +240,22 @@
 <li class="toctree-l2"><a class="reference internal" href="The%20variational%20equations.html">The variational equations</a></li>
 <li class="toctree-l2"><a class="reference internal" href="Optimal%20Control%20of%20the%20Lotka-Volterra%20equations.html">Optimal Control of the Lotka-Volterra equations</a></li>
 <li class="toctree-l2"><a class="reference internal" href="definite_integrals.html">Computing definite integrals</a></li>
+</ul>
+</li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">API reference</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../api_integrators.html">Numerical integrators</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-7"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../autosummary_generated/heyoka.taylor_adaptive.html">heyoka.taylor_adaptive</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../api_exsys.html">Expression system</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-8"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../autosummary_generated/heyoka.expression.html">heyoka.expression</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../api_lagham.html">Lagrangian and Hamiltonian mechanics</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-9"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../autosummary_generated/heyoka.lagrangian.html">heyoka.lagrangian</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../autosummary_generated/heyoka.hamiltonian.html">heyoka.hamiltonian</a></li>
 </ul>
 </li>
 </ul>
@@ -475,14 +497,14 @@ document.write(`
               
                 
 <div id="searchbox"></div>
-                <article class="bd-article" role="main">
+                <article class="bd-article">
                   
   <section class="tex2jax_ignore mathjax_ignore" id="computations-in-arbitrary-precision">
-<h1>Computations in arbitrary precision<a class="headerlink" href="#computations-in-arbitrary-precision" title="Permalink to this heading">#</a></h1>
+<h1>Computations in arbitrary precision<a class="headerlink" href="#computations-in-arbitrary-precision" title="Link to this heading">#</a></h1>
 <p>As hinted in the <a class="reference internal" href="The%20expression%20system.html"><span class="std std-doc">expression system tutorial</span></a>, starting from version 0.20 heyoka.py supports computations in <a class="reference external" href="https://en.wikipedia.org/wiki/Arbitrary-precision_arithmetic">arbitrary precision</a> via the <code class="docutils literal notranslate"><span class="pre">real</span></code> type.</p>
 <p><code class="docutils literal notranslate"><span class="pre">real</span></code> is a Python wrapper for the <a class="reference external" href="https://bluescarni.github.io/mppp/real.html">arbitrary-precision floating-point type</a> from the mp++ library. Before showing how to perform arbitrary-precision computations in heyoka.py, we will go through a quick crash course on the <code class="docutils literal notranslate"><span class="pre">real</span></code> type (more details are available in the mp++ <a class="reference external" href="https://bluescarni.github.io/mppp/tutorial_real.html">tutorial</a> and <a class="reference external" href="https://bluescarni.github.io/mppp/real.html">reference</a>).</p>
 <section id="getting-to-know-your-real-self">
-<h2>Getting to know your real self<a class="headerlink" href="#getting-to-know-your-real-self" title="Permalink to this heading">#</a></h2>
+<h2>Getting to know your real self<a class="headerlink" href="#getting-to-know-your-real-self" title="Link to this heading">#</a></h2>
 <p>Let us begin by importing the necessary bits from heyoka.py:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -622,7 +644,7 @@ Precision manually specified from a float    : 12 bits
 <p>Please be aware that NumPy support is to be considered <strong>experimental</strong> at this time (see the <a class="reference internal" href="#mp-caveats"><span class="std std-ref">“Limitations and caveats”</span></a> section below).</p>
 </section>
 <section id="numerical-integration">
-<h2>Numerical integration<a class="headerlink" href="#numerical-integration" title="Permalink to this heading">#</a></h2>
+<h2>Numerical integration<a class="headerlink" href="#numerical-integration" title="Link to this heading">#</a></h2>
 <p>We are now ready to proceed to our first numerical integration in arbitrary precision. In the heyoka.py tradition, we will be using the pendulum as a simple test case.</p>
 <p>Let us begin with the definition of the dynamical equations:</p>
 <div class="cell docutils container">
@@ -816,7 +838,7 @@ Value of x when v is zero: 5.000000000000000000000000000000000000000000000000000
 <p>In this example, the event is supposed to trigger whenever the pendulum’s bob reaches the maximum amplitude, which corresponds to <span class="math notranslate nohighlight">\(v=0\)</span> and <span class="math notranslate nohighlight">\(\left|x\right|=0.05\)</span>. We can see from the screen output that this is indeed the case.</p>
 </section>
 <section id="compiled-functions">
-<h2>Compiled functions<a class="headerlink" href="#compiled-functions" title="Permalink to this heading">#</a></h2>
+<h2>Compiled functions<a class="headerlink" href="#compiled-functions" title="Link to this heading">#</a></h2>
 <p><a class="reference internal" href="compiled_functions.html"><span class="std std-doc">Compiled functions</span></a> are also available in arbitrary precision. Here’s a simple example:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -848,7 +870,7 @@ Value of x when v is zero: 5.000000000000000000000000000000000000000000000000000
 </div>
 </section>
 <section id="limitations-and-caveats">
-<span id="mp-caveats"></span><h2>Limitations and caveats<a class="headerlink" href="#limitations-and-caveats" title="Permalink to this heading">#</a></h2>
+<span id="mp-caveats"></span><h2>Limitations and caveats<a class="headerlink" href="#limitations-and-caveats" title="Link to this heading">#</a></h2>
 <p>Similarly to <a class="reference internal" href="ext_precision.html"><span class="std std-doc">extended-precision datatypes</span></a>, NumPy support for the <code class="docutils literal notranslate"><span class="pre">real</span></code> dtype is quite limited: while basic features such as array slicing, indexing, arithmetic, special functions and explicit conversions to/from other types are supported and working as intended, more advanced features such as random number generation, nontrivial linear algebra, etc. will not work with <code class="docutils literal notranslate"><span class="pre">real</span></code>.</p>
 <p>Additionally, because <code class="docutils literal notranslate"><span class="pre">real</span></code> wraps a C++ class with nontrivial lifetime management, creating and manipulating arrays with <code class="docutils literal notranslate"><span class="pre">real</span></code> dtype will result by default in <strong>memory leaks</strong>. Specifically, when a <code class="docutils literal notranslate"><span class="pre">real</span></code> array is garbage-collected, the memory allocated by the individual <code class="docutils literal notranslate"><span class="pre">real</span></code> objects in the array will <strong>not</strong> be freed.</p>
 <p>This leaky behaviour can be avoided by (ab)using a <a class="reference external" href="https://numpy.org/neps/nep-0049.html">recently-introduced NumPy memory management feature</a>. Specifically, it is possible to invoke the <code class="docutils literal notranslate"><span class="pre">install_custom_numpy_mem_handler()</span></code> function to install a custom memory manager for NumPy arrays that will ensure that all <code class="docutils literal notranslate"><span class="pre">real</span></code> objects are properly destroyed when an array is garbage-collected:</p>
@@ -910,6 +932,7 @@ Value of x when v is zero: 5.000000000000000000000000000000000000000000000000000
               
                 <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
 
+
   <div class="sidebar-secondary-item">
   <div class="page-toc tocsection onthispage">
     <i class="fa-solid fa-list"></i> Contents
@@ -968,8 +991,8 @@ By Francesco Biscani and Dario Izzo
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../_static/scripts/bootstrap.js?digest=5b4479735964841361fd"></script>
-<script src="../_static/scripts/pydata-sphinx-theme.js?digest=5b4479735964841361fd"></script>
+  <script src="../_static/scripts/bootstrap.js?digest=bd9e20870c6007c4c509"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=bd9e20870c6007c4c509"></script>
 
   <footer class="bd-footer">
   </footer>

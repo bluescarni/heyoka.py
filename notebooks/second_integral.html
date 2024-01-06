@@ -1,13 +1,12 @@
 
-
 <!DOCTYPE html>
 
 
-<html lang="en" data-content_root="" >
+<html lang="en" data-content_root="../" >
 
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
     <title>The second integral of motion &#8212; heyoka.py 4.0.0 documentation</title>
   
@@ -19,29 +18,29 @@
   </script>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../_static/styles/theme.css?digest=5b4479735964841361fd" rel="stylesheet" />
-<link href="../_static/styles/bootstrap.css?digest=5b4479735964841361fd" rel="stylesheet" />
-<link href="../_static/styles/pydata-sphinx-theme.css?digest=5b4479735964841361fd" rel="stylesheet" />
+  <link href="../_static/styles/theme.css?digest=bd9e20870c6007c4c509" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=bd9e20870c6007c4c509" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=bd9e20870c6007c4c509" rel="stylesheet" />
 
   
-  <link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=5b4479735964841361fd" rel="stylesheet" />
-  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
+  <link href="../_static/vendor/fontawesome/6.5.1/css/all.min.css?digest=bd9e20870c6007c4c509" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.1/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.1/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.1/webfonts/fa-regular-400.woff2" />
 
-    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=384b581d" />
     <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=5b4479735964841361fd" />
-<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=5b4479735964841361fd" />
-  <script src="../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=5b4479735964841361fd"></script>
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=bd9e20870c6007c4c509" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=bd9e20870c6007c4c509" />
+  <script src="../_static/vendor/fontawesome/6.5.1/js/all.min.js?digest=bd9e20870c6007c4c509"></script>
 
-    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-    <script src="../_static/doctools.js"></script>
-    <script src="../_static/sphinx_highlight.js"></script>
-    <script src="../_static/scripts/sphinx-book-theme.js"></script>
+    <script src="../_static/documentation_options.js?v=a1c85040"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?v=efea14e4"></script>
     <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'notebooks/second_integral';</script>
@@ -58,7 +57,7 @@
 
   
   
-  <a class="skip-link" href="#main-content">Skip to main content</a>
+  <a id="pst-skip-link" class="skip-link" href="#main-content">Skip to main content</a>
   
   <div id="pst-scroll-pixel-helper"></div>
 
@@ -101,12 +100,18 @@
   <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
 </form></div>
   </div>
+
+  <header>
   
-    <nav class="bd-header navbar navbar-expand-lg bd-navbar">
-    </nav>
+    <div class="bd-header navbar navbar-expand-lg bd-navbar">
+    </div>
   
+  </header>
+
   <div class="bd-container">
     <div class="bd-container__inner bd-page-width">
+      
+      
       
       <div class="bd-sidebar-primary bd-sidebar">
         
@@ -181,6 +186,7 @@
 <li class="toctree-l2"><a class="reference internal" href="ext_precision.html">Computations in extended precision</a></li>
 <li class="toctree-l2"><a class="reference internal" href="arbitrary_precision.html">Computations in arbitrary precision</a></li>
 <li class="toctree-l2"><a class="reference internal" href="single_precision.html">Computations in single precision</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lagrangian.html">Lagrangian and Hamiltonian mechanics</a></li>
 <li class="toctree-l2"><a class="reference internal" href="sympy_interop.html">Interoperability with SymPy</a></li>
 <li class="toctree-l2"><a class="reference internal" href="compiled_functions.html">Compiled functions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="ex_system_revisited.html">Using the expression system effectively</a></li>
@@ -234,6 +240,22 @@
 <li class="toctree-l2"><a class="reference internal" href="The%20variational%20equations.html">The variational equations</a></li>
 <li class="toctree-l2"><a class="reference internal" href="Optimal%20Control%20of%20the%20Lotka-Volterra%20equations.html">Optimal Control of the Lotka-Volterra equations</a></li>
 <li class="toctree-l2"><a class="reference internal" href="definite_integrals.html">Computing definite integrals</a></li>
+</ul>
+</li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">API reference</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../api_integrators.html">Numerical integrators</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-7"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../autosummary_generated/heyoka.taylor_adaptive.html">heyoka.taylor_adaptive</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../api_exsys.html">Expression system</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-8"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../autosummary_generated/heyoka.expression.html">heyoka.expression</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../api_lagham.html">Lagrangian and Hamiltonian mechanics</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-9"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../autosummary_generated/heyoka.lagrangian.html">heyoka.lagrangian</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../autosummary_generated/heyoka.hamiltonian.html">heyoka.hamiltonian</a></li>
 </ul>
 </li>
 </ul>
@@ -474,10 +496,10 @@ document.write(`
               
                 
 <div id="searchbox"></div>
-                <article class="bd-article" role="main">
+                <article class="bd-article">
                   
   <section class="tex2jax_ignore mathjax_ignore" id="the-second-integral-of-motion">
-<h1>The second integral of motion<a class="headerlink" href="#the-second-integral-of-motion" title="Permalink to this heading">#</a></h1>
+<h1>The second integral of motion<a class="headerlink" href="#the-second-integral-of-motion" title="Link to this heading">#</a></h1>
 <p>In this example we will reproduce a <a class="reference external" href="https://ui.adsabs.harvard.edu/abs/1964AJ.....69...73H/abstract">famous numerical experiment</a> investigating the existence of a second integral of motion in axisymmetric potentials. Specifically, we will focus on a two-dimensional dynamical system described by the Hamiltonian</p>
 <div class="math notranslate nohighlight">
 \[
@@ -492,7 +514,7 @@ U\left(x, y\right) = \frac{1}{2}\left( x^2 + y^2 + 2x^2y - \frac{2}{3}y^3 \right
 <p>Because we are dealing with an autonomous dynamical system, the Hamiltonian <span class="math notranslate nohighlight">\(\mathcal{H}\)</span> is a constant of motion, corresponding to the total energy of the system.
 Our objective is to investigate the existence of <em>another</em> integral of motion independent of <span class="math notranslate nohighlight">\(\mathcal{H}\)</span>: if that were the case, we could solve analytically this dynamical system via the <a class="reference external" href="https://en.wikipedia.org/wiki/Liouville%E2%80%93Arnold_theorem">Liouville-Arnold theorem</a>.</p>
 <section id="procedure">
-<h2>Procedure<a class="headerlink" href="#procedure" title="Permalink to this heading">#</a></h2>
+<h2>Procedure<a class="headerlink" href="#procedure" title="Link to this heading">#</a></h2>
 <p>Because <span class="math notranslate nohighlight">\(\mathcal{H}\)</span> is a constant of motion, we can invert the definition of the Hamiltonian to yield</p>
 <div class="math notranslate nohighlight">
 \[
@@ -513,7 +535,7 @@ f\left(x, y, \dot{y}, \mathcal{H}, \mathcal{C}\right) = 0
 <p>A possible answer to this question is to consider the intersections of the particle’s trajectory in phase space with a fixed 2D plane (or, in other words, a <a class="reference external" href="https://en.wikipedia.org/wiki/Poincar%C3%A9_map">Poincare’ section</a>). If the particle’s trajectory is constrained by a surface (i.e., if the additional integral of motion <span class="math notranslate nohighlight">\(\mathcal{C}\)</span> <em>does</em> exist), the Poincare’ section will consist of a curve representing the intersection of the surface with the 2D plane. If, instead, the particle’s trajectory is constrained by a volume (i.e., if the additional integral of motion <span class="math notranslate nohighlight">\(\mathcal{C}\)</span> <em>does not</em> exist), the Poincare’ section will resemble a densely-filled surface, rather than a curve.</p>
 </section>
 <section id="running-the-experiments">
-<h2>Running the experiments<a class="headerlink" href="#running-the-experiments" title="Permalink to this heading">#</a></h2>
+<h2>Running the experiments<a class="headerlink" href="#running-the-experiments" title="Link to this heading">#</a></h2>
 <p>For the computation of Poincare’ sections, we use the plane defined by the condition <span class="math notranslate nohighlight">\(x = 0\)</span> (i.e., the <span class="math notranslate nohighlight">\(\left(y, \dot{y}\right)\)</span> plane), and, for the sake of consistency with the <a class="reference external" href="https://ui.adsabs.harvard.edu/abs/1964AJ.....69...73H/abstract">original paper</a>, we consider only intersections for which <span class="math notranslate nohighlight">\(\dot{x} &gt; 0\)</span> (i.e., the particle is moving from below to above the plane). We will compute different Poincare’ sections at different energy levels (i.e., values of the <span class="math notranslate nohighlight">\(\mathcal{H}\)</span> constant). The initial value of <span class="math notranslate nohighlight">\(x\)</span> is always <span class="math notranslate nohighlight">\(0\)</span> (so that the motion always starts on the plane of the Poincare’ section), and the initial values for <span class="math notranslate nohighlight">\(y\)</span> and <span class="math notranslate nohighlight">\(\dot{y}\)</span> are randomly selected. The initial value for <span class="math notranslate nohighlight">\(\dot{x}\)</span> is then implicitly defined by the value of the energy constant.</p>
 <p>Let us begin by defining a function for the generation of a set of initial conditions from an energy value:</p>
 <div class="cell docutils container">
@@ -645,7 +667,7 @@ x = 0,
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/677c9bb911fe48b0ecbbf3937c56af557697bb5c267e7c3daf3b6941fc80d051.png" src="../_images/677c9bb911fe48b0ecbbf3937c56af557697bb5c267e7c3daf3b6941fc80d051.png" />
+<img alt="../_images/441ad1e6718e534e160df0aef9493a0ef62e9d3da1d8b4c71091fb48d9e877e7.png" src="../_images/441ad1e6718e534e160df0aef9493a0ef62e9d3da1d8b4c71091fb48d9e877e7.png" />
 </div>
 </div>
 <p>This Poincare’ section is suggesting that the integral of motion <span class="math notranslate nohighlight">\(\mathcal{C}\)</span> does indeed exist, because the intersections of all random orbits are clearly tracing curves on the <span class="math notranslate nohighlight">\(x=0\)</span> plane.</p>
@@ -660,7 +682,7 @@ x = 0,
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/6dc1eb61da445cb8f9e77b9891b7a23e81184b64d99aa26c544223cf842f8347.png" src="../_images/6dc1eb61da445cb8f9e77b9891b7a23e81184b64d99aa26c544223cf842f8347.png" />
+<img alt="../_images/28135ba45b58aaa704278ede2e2cfc5ffb1d72e613d4da8e80795b4df13ef972.png" src="../_images/28135ba45b58aaa704278ede2e2cfc5ffb1d72e613d4da8e80795b4df13ef972.png" />
 </div>
 </div>
 <p>The qualitative picture is now radically different. Although islands of stable motion persist, now most trajectories seem to be densely filling the plane, rather than tracing curves on it. Let us further increase the energy level:</p>
@@ -671,13 +693,13 @@ x = 0,
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/d5d1b136457df116f4780128700d80d669f9cb0245c5a8543a14b423c2be9be1.png" src="../_images/d5d1b136457df116f4780128700d80d669f9cb0245c5a8543a14b423c2be9be1.png" />
+<img alt="../_images/0a0089d33ef953e7125a24ef9fa4dfa613998be911c1bf725fc07f3d308a771b.png" src="../_images/0a0089d33ef953e7125a24ef9fa4dfa613998be911c1bf725fc07f3d308a771b.png" />
 </div>
 </div>
 <p>At higher energies, the densely-filling behaviour (which Henon and Heiles call <em>ergodic</em>) is even more prevalent than before.</p>
 </section>
 <section id="conclusions">
-<h2>Conclusions<a class="headerlink" href="#conclusions" title="Permalink to this heading">#</a></h2>
+<h2>Conclusions<a class="headerlink" href="#conclusions" title="Link to this heading">#</a></h2>
 <p>These numerical experiments indicate that, in general, no additional integrals of motion (beside the energy) exist for axisymmetric potentials. Note that this result does not imply that no additional integrals exist for <em>some</em> axisymmetric potentials (e.g., see <a class="reference external" href="https://en.wikipedia.org/wiki/Euler%27s_three-body_problem">Euler’s three body problem</a>, which is solvable via elliptic functions), but that just an additional integral of motion cannot be defined generically for <em>all</em> axisymmetric potentials.</p>
 </section>
 </section>
@@ -719,6 +741,7 @@ x = 0,
             
               
                 <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
 
   <div class="sidebar-secondary-item">
   <div class="page-toc tocsection onthispage">
@@ -777,8 +800,8 @@ By Francesco Biscani and Dario Izzo
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../_static/scripts/bootstrap.js?digest=5b4479735964841361fd"></script>
-<script src="../_static/scripts/pydata-sphinx-theme.js?digest=5b4479735964841361fd"></script>
+  <script src="../_static/scripts/bootstrap.js?digest=bd9e20870c6007c4c509"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=bd9e20870c6007c4c509"></script>
 
   <footer class="bd-footer">
   </footer>
