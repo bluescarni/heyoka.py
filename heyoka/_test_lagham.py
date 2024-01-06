@@ -15,10 +15,16 @@ class lagham_test_case(_ut.TestCase):
         from . import lagrangian, hamiltonian, make_vars, cos, sin, fix, expression
 
         x, v, p = make_vars("x", "v", "p")
-        L = 0.5 * v**2 - (1. - cos(x))
-        sys = lagrangian(L=L, qs=[x], qdots=[v], D=expression(0.))
+        L = 0.5 * v**2 - (1.0 - cos(x))
+        sys = lagrangian(L=L, qs=[x], qdots=[v], D=expression(0.0))
         self.assertEqual(sys, [(x, v), (v, fix(-sin(x)))])
 
-        H = p * p / 2. + (1. - cos(x))
+        H = p * p / 2.0 + (1.0 - cos(x))
         sys = hamiltonian(H=H, qs=[x], ps=[p])
-        self.assertEqual(sys, [(x, fix((0.50000000000000000 * fix((2.0000000000000000 * p))))), (p, -fix(-fix(-sin(x))))])
+        self.assertEqual(
+            sys,
+            [
+                (x, fix((0.50000000000000000 * fix((2.0000000000000000 * p))))),
+                (p, -fix(-fix(-sin(x)))),
+            ],
+        )
