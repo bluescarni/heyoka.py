@@ -5,4 +5,7 @@ Expression system
 
 .. currentmodule:: heyoka
 
-.. autoclass:: expression
+.. autosummary::
+   :toctree: autosummary_generated
+
+   expression

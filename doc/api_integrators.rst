@@ -5,4 +5,7 @@ Numerical integrators
 
 .. currentmodule:: heyoka
 
-.. autofunction:: taylor_adaptive
+.. autosummary::
+   :toctree: autosummary_generated
+
+   taylor_adaptive
