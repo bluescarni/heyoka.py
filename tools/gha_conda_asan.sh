@@ -16,7 +16,7 @@ export PATH="$HOME/miniconda/bin:$PATH"
 bash miniconda.sh -b -p $HOME/miniconda
 conda config --add channels conda-forge
 conda config --set channel_priority strict
-conda create -y -q -p $deps_dir python=3.10 git pybind11 numpy mpmath cmake llvmdev tbb-devel tbb libboost-devel 'mppp>=0.27' sleef fmt spdlog sympy cloudpickle c-compiler cxx-compiler
+conda create -y -q -p $deps_dir python=3.10 git pybind11 numpy mpmath cmake llvmdev tbb-devel tbb libboost-devel 'mppp=1.*' sleef fmt spdlog sympy cloudpickle c-compiler cxx-compiler
 source activate $deps_dir
 
 export CXXFLAGS="$CXXFLAGS -fsanitize=address"

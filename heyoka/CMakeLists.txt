@@ -30,6 +30,7 @@ set(HEYOKA_PY_PYTHON_FILES
     _test_vsop2013.py
     _test_elp2000.py
     _test_taylor_add_jet.py
+    _test_lagham.py
     model/__init__.py
     callback/__init__.py
 )
@@ -64,6 +65,7 @@ set(_HEYOKA_PY_CORE_SOURCES
     expose_models.cpp
     expose_callbacks.cpp
     step_cb_utils.cpp
+    docstrings.cpp
 )
 
 Python3_add_library(core MODULE WITH_SOABI ${_HEYOKA_PY_CORE_SOURCES})

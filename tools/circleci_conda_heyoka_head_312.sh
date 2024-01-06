@@ -7,14 +7,14 @@ set -x
 set -e
 
 # Core deps.
-sudo apt-get install build-essential wget
+sudo apt-get install wget
 
 # Install conda+deps.
 wget https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-Linux-x86_64.sh -O miniforge.sh
 export deps_dir=$HOME/local
 export PATH="$HOME/miniforge/bin:$PATH"
 bash miniforge.sh -b -p $HOME/miniforge
-mamba create -y -q -p $deps_dir python=3.12 git pybind11 numpy mpmath cmake llvmdev tbb-devel tbb libboost-devel 'mppp>=0.27' sleef fmt spdlog sympy cloudpickle
+mamba create -y -p $deps_dir python=3.12 c-compiler cxx-compiler git pybind11 numpy mpmath cmake llvmdev tbb-devel tbb libboost-devel 'mppp=1.*' sleef fmt spdlog sympy cloudpickle
 source activate $deps_dir
 
 # Checkout, build and install heyoka's HEAD.

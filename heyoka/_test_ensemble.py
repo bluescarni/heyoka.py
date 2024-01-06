@@ -235,7 +235,6 @@ class ensemble_test_case(_ut.TestCase):
             self.assertTrue(isinstance(r[2][1], angle_reducer))
             self.assertEqual(len(r[2]), 2)
 
-
     def test_scalar(self):
         from . import (
             ensemble_propagate_until,
