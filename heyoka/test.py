@@ -2081,6 +2081,7 @@ def run_test_suite():
         _test_vsop2013,
         _test_elp2000,
         _test_taylor_add_jet,
+        _test_lagham,
     )
     import numpy as np
     from .model import nbody
@@ -2101,6 +2102,7 @@ def run_test_suite():
     suite.addTest(
         tl.loadTestsFromTestCase(_test_batch_integrator.batch_integrator_test_case)
     )
+    suite.addTest(tl.loadTestsFromTestCase(_test_lagham.lagham_test_case))
     suite.addTest(tl.loadTestsFromTestCase(_test_vsop2013.vsop2013_test_case))
     suite.addTest(tl.loadTestsFromTestCase(_test_elp2000.elp2000_test_case))
     suite.addTest(tl.loadTestsFromTestCase(_test_dtens.dtens_test_case))

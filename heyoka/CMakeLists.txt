@@ -30,6 +30,7 @@ set(HEYOKA_PY_PYTHON_FILES
     _test_vsop2013.py
     _test_elp2000.py
     _test_taylor_add_jet.py
+    _test_lagham.py
     model/__init__.py
     callback/__init__.py
 )
