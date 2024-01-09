@@ -1,0 +1,928 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Computing derivatives &#8212; heyoka.py 4.0.0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=bd9e20870c6007c4c509" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=bd9e20870c6007c4c509" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=bd9e20870c6007c4c509" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.5.1/css/all.min.css?digest=bd9e20870c6007c4c509" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.1/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.1/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.1/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=384b581d" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=bd9e20870c6007c4c509" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=bd9e20870c6007c4c509" />
+  <script src="../_static/vendor/fontawesome/6.5.1/js/all.min.js?digest=bd9e20870c6007c4c509"></script>
+
+    <script src="../_static/documentation_options.js?v=a1c85040"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?v=efea14e4"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'notebooks/computing_derivatives';</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Pickle support" href="pickling.html" />
+    <link rel="prev" title="Using the expression system effectively" href="ex_system_revisited.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <a id="pst-skip-link" class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>
+    Back to top
+  </button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__primary"
+          id="__primary"/>
+  <label class="overlay overlay-primary" for="__primary"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__secondary"
+          id="__secondary"/>
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <header>
+  
+    <div class="bd-header navbar navbar-expand-lg bd-navbar">
+    </div>
+  
+  </header>
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/white_logo.png" class="logo__image only-light" alt="heyoka.py 4.0.0 documentation - Home"/>
+    <script>document.write(`<img src="../_static/white_logo.png" class="logo__image only-dark" alt="heyoka.py 4.0.0 documentation - Home"/>`);</script>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Main</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../install.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../changelog.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../breaking_changes.html">Breaking changes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../benchmarks.html">Benchmarks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../acknowledgement.html">Acknowledgement</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../basic_tutorials.html">Basic</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../tut_taylor_method.html">Taylor’s method</a></li>
+<li class="toctree-l2"><a class="reference internal" href="The%20expression%20system.html">The expression system</a></li>
+<li class="toctree-l2"><a class="reference internal" href="The%20adaptive%20integrator.html">The adaptive integrator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Customising%20the%20adaptive%20integrator.html">Customising the adaptive integrator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ODEs%20with%20parameters.html">ODEs with parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Non-autonomous%20systems.html">Non-autonomous systems</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Dense%20output.html">Dense &amp; continuous output</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Event%20detection.html">Event detection</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="../advanced_tutorials.html">Advanced</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="Batch%20mode%20overview.html">Batch mode</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ensemble_mode.html">Ensemble propagations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="parallel_mode.html">Parallel mode</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ext_precision.html">Computations in extended precision</a></li>
+<li class="toctree-l2"><a class="reference internal" href="arbitrary_precision.html">Computations in arbitrary precision</a></li>
+<li class="toctree-l2"><a class="reference internal" href="single_precision.html">Computations in single precision</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lagrangian.html">Lagrangian and Hamiltonian mechanics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sympy_interop.html">Interoperability with SymPy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="compiled_functions.html">Compiled functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ex_system_revisited.html">Using the expression system effectively</a></li>
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">Computing derivatives</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pickling.html">Pickle support</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jit_caching.html">JIT compilation and caching</a></li>
+</ul>
+</li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Examples</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../examples_astro.html">Celestial mechanics and astrodynamics</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-3"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="The%20restricted%20three-body%20problem.html">The restricted three-body problem</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Periodic%20orbits%20in%20the%20CR3BP.html">Continuation of Periodic Orbits in the CR3BP</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Pseudo%20arc-length%20continuation%20in%20the%20CR3BP.html">Pseudo arc-length continuation in the CR3BP</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Outer%20Solar%20System.html">Brouwer’s law in the outer Solar System</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Long%20term%20stability%20of%20Trappist-1.html">Long term stability of N-body simulations: the case of Trappist-1</a></li>
+<li class="toctree-l2"><a class="reference internal" href="projection.html">Conserving first integrals via manifold projection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Box%20control%20for%20Formation%20Flying%20Satellites.html">Box control in satellite Formation Flying</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Comparing%20coordinate%20systems.html">Comparing coordinate systems</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Inverting%20Kepler%27s%20equation%20in%20ODEs.html">Inverting Kepler’s equation in ODEs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Planetary%20embryos.html">Planetary embryos in the inner Solar System</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mercury_precession.html">Mercury’s relativistic precession</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ttv.html">Calculating transit timing variations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vsop2013.html">Introduction to the VSOP2013 planetary theory</a></li>
+<li class="toctree-l2"><a class="reference internal" href="elp2000.html">Introduction to the ELP2000 lunar theory</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tides_spokes.html">Elastic tides</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lagrangian_propagator.html">Lagrange propagation and the state transition matrix</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../examples_event.html">Event detection</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-4"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="Sampling%20events.html">Sampling events</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Poincar%C3%A9%20sections.html">Poincaré sections</a></li>
+<li class="toctree-l2"><a class="reference internal" href="second_integral.html">The second integral of motion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="The%20Keplerian%20billiard.html">The Keplerian billiard</a></li>
+<li class="toctree-l2"><a class="reference internal" href="The%20two-fixed%20elliptic%20billiard.html">The two-fixed centres elliptic billiard</a></li>
+<li class="toctree-l2"><a class="reference internal" href="The%20wavy%20ramp.html">The wavy ramp</a></li>
+<li class="toctree-l2"><a class="reference internal" href="The%20Maxwell-Boltzmann%20distribution.html">The Maxwell-Boltzmann distribution</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ev_sensitivity.html">Computing event sensitivity</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../examples_ml.html">Machine Learning</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-5"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="ffnn.html">Feed-Forward Neural Networks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torch_and_heyoka.html">Interfacing <em>torch</em> to <em>heyoka.py</em></a></li>
+<li class="toctree-l2"><a class="reference internal" href="NeuralODEs.html">Neural ODEs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="NeuralHamiltonianODEs.html">Neural Hamiltonian ODEs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="differentiable_atmosphere.html">Differentiable Atmosphere</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../examples_others.html">Others</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-6"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="ensemble_batch_perf.html">Evaluating the performance of ensemble &amp; batch mode</a></li>
+<li class="toctree-l2"><a class="reference internal" href="The%20variational%20equations.html">The variational equations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Optimal%20Control%20of%20the%20Lotka-Volterra%20equations.html">Optimal Control of the Lotka-Volterra equations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="definite_integrals.html">Computing definite integrals</a></li>
+</ul>
+</li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">API reference</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../api_integrators.html">Numerical integrators</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-7"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../autosummary_generated/heyoka.taylor_adaptive.html">heyoka.taylor_adaptive</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../api_exsys.html">Expression system</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-8"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../autosummary_generated/heyoka.expression.html">heyoka.expression</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../api_lagham.html">Lagrangian and Hamiltonian mechanics</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-9"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../autosummary_generated/heyoka.lagrangian.html">heyoka.lagrangian</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../autosummary_generated/heyoka.hamiltonian.html">heyoka.hamiltonian</a></li>
+</ul>
+</li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><label class="sidebar-toggle primary-toggle btn btn-sm" for="__primary" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</label></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-launch-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Launch interactive content">
+    <i class="fas fa-rocket"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://mybinder.org/v2/gh/bluescarni/heyoka.py/main?urlpath=lab/tree/doc/notebooks/computing_derivatives.ipynb" target="_blank"
+   class="btn btn-sm dropdown-item"
+   title="Launch onBinder"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  
+    <img src="../_static/images/logo_binder.svg">
+  </span>
+<span class="btn__text-container">Binder</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://github.com/bluescarni/heyoka.py" target="_blank"
+   class="btn btn-sm btn-source-repository-button dropdown-item"
+   title="Source repository"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="btn__text-container">Repository</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/bluescarni/heyoka.py/issues/new?title=Issue%20on%20page%20%2Fnotebooks/computing_derivatives.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button dropdown-item"
+   title="Open an issue"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="btn__text-container">Open issue</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../_sources/notebooks/computing_derivatives.ipynb" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.ipynb</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<label class="sidebar-toggle secondary-toggle btn btn-sm" for="__secondary"title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</label>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Computing derivatives</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#diff-vs-diff-tensors">diff() vs diff_tensors()</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#general-guidelines">General guidelines</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="computing-derivatives">
+<span id="id1"></span><h1>Computing derivatives<a class="headerlink" href="#computing-derivatives" title="Link to this heading">#</a></h1>
+<p>heyoka.py provides two ways of computing the derivatives of an expression. The first one is the <code class="docutils literal notranslate"><span class="pre">diff()</span></code> function:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">heyoka</span> <span class="k">as</span> <span class="nn">hy</span>
+
+<span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">z</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">make_vars</span><span class="p">(</span><span class="s2">&quot;x&quot;</span><span class="p">,</span> <span class="s2">&quot;y&quot;</span><span class="p">,</span> <span class="s2">&quot;z&quot;</span><span class="p">)</span>
+
+<span class="n">hy</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">x</span> <span class="o">+</span> <span class="n">hy</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">y</span><span class="o">*</span><span class="n">z</span><span class="p">),</span> <span class="n">z</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>-(y * sin((y * z)))
+</pre></div>
+</div>
+</div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">diff()</span></code> function implements symbolic differentiation of an expression with respect to a variable (or a parameter) via a straightforward application of the chain rule. Repeated applications of <code class="docutils literal notranslate"><span class="pre">diff()</span></code> can be used to compute higher-order derivatives.</p>
+<p>The other way of computing derivatives in heyoka.py is the <code class="docutils literal notranslate"><span class="pre">diff_tensors()</span></code> function. <code class="docutils literal notranslate"><span class="pre">diff_tensors()</span></code> computes the full tensors of derivatives up to an arbitrary order. Let us see a simple example:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">dt</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">diff_tensors</span><span class="p">([</span><span class="n">x</span> <span class="o">+</span> <span class="n">hy</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">y</span><span class="o">*</span><span class="n">z</span><span class="p">),</span> <span class="n">hy</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">x</span><span class="o">-</span><span class="n">z</span><span class="p">)</span> <span class="o">+</span> <span class="n">hy</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">y</span><span class="p">)],</span> <span class="n">diff_order</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Here we are asking for the derivatives of a 2-component vector-valued function with respect to all variables up to order 1. The value returned by <code class="docutils literal notranslate"><span class="pre">diff_tensors()</span></code> is an object of type <code class="docutils literal notranslate"><span class="pre">dtens</span></code>. Let us explore it a bit:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">dt</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Highest diff order: 1
+Number of outputs : 2
+Diff arguments    : [x, y, z]
+</pre></div>
+</div>
+</div>
+</div>
+<p>The screen output shows some general information: the derivative order, the number of outputs and the differentiation arguments. <code class="docutils literal notranslate"><span class="pre">dtens</span></code> objects have a length corresponding to the total number of derivatives stored within the object:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">len</span><span class="p">(</span><span class="n">dt</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>8
+</pre></div>
+</div>
+</div>
+</div>
+<p>Here we have 8 derivatives in total: 2 order-0 derivatives (i.e., the original components of the function, which are returned in the <code class="docutils literal notranslate"><span class="pre">dtens</span></code> object) and 6 order-1 derivatives (3 for each component of the function).</p>
+<p><code class="docutils literal notranslate"><span class="pre">dtens</span></code> is a dictionary-like ordered container mapping vectors of integral indices to derivatives. It is possible to iterate over the indices vectors, so that, e.g., we can build an ordered list of all the indices vectors in <code class="docutils literal notranslate"><span class="pre">dt</span></code>:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">list</span><span class="p">(</span><span class="n">dt</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[[0, 0, 0, 0],
+ [1, 0, 0, 0],
+ [0, 1, 0, 0],
+ [0, 0, 1, 0],
+ [0, 0, 0, 1],
+ [1, 1, 0, 0],
+ [1, 0, 1, 0],
+ [1, 0, 0, 1]]
+</pre></div>
+</div>
+</div>
+</div>
+<p>Each index vector begins with an index representing the function component. The remaining indices represent the derivative orders with respect to the variables. Thus, the index vector <code class="docutils literal notranslate"><span class="pre">[1,</span> <span class="pre">0,</span> <span class="pre">1,</span> <span class="pre">0]</span></code> is used to indicate the first-order derivative of the second function component with respect to the second variable <span class="math notranslate nohighlight">\(y\)</span>.</p>
+<p>Indices vector in a <code class="docutils literal notranslate"><span class="pre">dtens</span></code> object are sorted as follows:</p>
+<ul class="simple">
+<li><p>first, according to the total differentiation order in ascending order,</p></li>
+<li><p>then, according to the function component in ascending order,</p></li>
+<li><p>finally, in reverse lexicographic order with respect to the derivative orders for the differentiation arguments.</p></li>
+</ul>
+<p>We can lookup specific derivatives via the square brackets operator. For instance, here is the first-order derivative of the second component with respect to <span class="math notranslate nohighlight">\(x\)</span>:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">dt</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{exp((x - z))}
+</pre></div>
+</div>
+</div>
+</div>
+<p>We can check if a specific index vector appears in a <code class="docutils literal notranslate"><span class="pre">dtens</span></code> object via the <code class="docutils literal notranslate"><span class="pre">in</span></code> operator:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">]</span> <span class="ow">in</span> <span class="n">dt</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>False
+</pre></div>
+</div>
+</div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">get_derivatives()</span></code> method can be used to fetch all derivatives for a specific total order. For instance, we can fetch the Jacobian from <code class="docutils literal notranslate"><span class="pre">dt</span></code>:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">dt</span><span class="o">.</span><span class="n">get_derivatives</span><span class="p">(</span><span class="n">diff_order</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[([0, 1, 0, 0], 1.0000000000000000),
+ ([0, 0, 1, 0], {({z} * {-sin((y * z))})}),
+ ([0, 0, 0, 1], {({y} * {-sin((y * z))})}),
+ ([1, 1, 0, 0], {exp((x - z))}),
+ ([1, 0, 1, 0], {y**-1.0000000000000000}),
+ ([1, 0, 0, 1], {-{exp((x - z))}})]
+</pre></div>
+</div>
+</div>
+</div>
+<p>We can also ask for the derivatives of a specific component. For instance, here’s the gradient of the first component of the function:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">dt</span><span class="o">.</span><span class="n">get_derivatives</span><span class="p">(</span><span class="n">diff_order</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">component</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[([0, 1, 0, 0], 1.0000000000000000),
+ ([0, 0, 1, 0], {({z} * {-sin((y * z))})}),
+ ([0, 0, 0, 1], {({y} * {-sin((y * z))})})]
+</pre></div>
+</div>
+</div>
+</div>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 3.1.0.</span></p>
+</div>
+<p>The convenience properties <code class="docutils literal notranslate"><span class="pre">gradient</span></code> and <code class="docutils literal notranslate"><span class="pre">jacobian</span></code> can be used to access the gradient and Jacobian from a <code class="docutils literal notranslate"><span class="pre">dtens</span></code> object. For instance:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Fetch from dt the Jacobian as a 2D array.</span>
+<span class="n">dt</span><span class="o">.</span><span class="n">jacobian</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([[1.0000000000000000, {({z} * {-sin((y * z))})},
+        {({y} * {-sin((y * z))})}],
+       [{exp((x - z))}, {y**-1.0000000000000000}, {-{exp((x - z))}}]],
+      dtype=object)
+</pre></div>
+</div>
+</div>
+</div>
+<section id="diff-vs-diff-tensors">
+<h2>diff() vs diff_tensors()<a class="headerlink" href="#diff-vs-diff-tensors" title="Link to this heading">#</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">diff()</span></code> and <code class="docutils literal notranslate"><span class="pre">diff_tensors()</span></code> both compute symbolic derivatives, and thus produce mathematically-equivalent results. However, the symbolic structure of the expressions returned by <code class="docutils literal notranslate"><span class="pre">diff()</span></code> and <code class="docutils literal notranslate"><span class="pre">diff_tensors()</span></code> can differ in ways that have a profound impact on the runtime complexity of the numerical evaluation of the derivatives.</p>
+<p><code class="docutils literal notranslate"><span class="pre">diff()</span></code> always applies the chain rule in <a class="reference external" href="https://en.wikipedia.org/wiki/Automatic_differentiation#Forward_accumulation">forward mode</a>, and it also always applies the automatic simplifications described earlier in this tutorial. It is somewhat analogue to a pen-and-paper calculation.</p>
+<p>By contrast, <code class="docutils literal notranslate"><span class="pre">diff_tensors()</span></code> may choose, depending on the function being differentiated and on the differentiation order, to perform symbolic differentiation in <a class="reference external" href="https://en.wikipedia.org/wiki/Automatic_differentiation#Reverse_accumulation">reverse mode</a>, rather than in forward mode. <code class="docutils literal notranslate"><span class="pre">diff_tensors()</span></code> also extensively uses <code class="docutils literal notranslate"><span class="pre">fix()</span></code> to <a class="reference internal" href="ex_system_revisited.html#ex-system-prev-simpl"><span class="std std-ref">disable most automatic simplifications</span></a> with the goal of producing symbolic expressions that are as close as possible to verbatim transcriptions of the forward/reverse mode automatic differentiation (AD) algorithms.</p>
+<p>In order to clarify, let us show a concrete example where the differences between <code class="docutils literal notranslate"><span class="pre">diff()</span></code> and <code class="docutils literal notranslate"><span class="pre">diff_tensors()</span></code> matter a great deal. Speelpenning’s function</p>
+<div class="math notranslate nohighlight">
+\[
+f\left(x_1, x_2, \ldots, x_n \right) = x_1\cdot x_2 \cdot \ldots \cdot x_n
+\]</div>
+<p>has often been used to (<a class="reference external" href="https://arxiv.org/abs/1904.02990">incorrectly</a>) argue that numerical reverse-mode AD is superior to symbolic differentiation. Let us try to compute the gradient of this function first using <code class="docutils literal notranslate"><span class="pre">diff()</span></code> and then using <code class="docutils literal notranslate"><span class="pre">diff_tensors()</span></code>.</p>
+<p>We begin with the definition of the function (taking <span class="math notranslate nohighlight">\(n=8\)</span>):</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sym_vars</span> <span class="o">=</span> <span class="p">[</span><span class="n">hy</span><span class="o">.</span><span class="n">expression</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;x_</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">9</span><span class="p">)]</span>
+<span class="n">sp_func</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">prod</span><span class="p">(</span><span class="n">sym_vars</span><span class="p">)</span>
+<span class="n">sp_func</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(x_1 * x_2 * x_3 * x_4 * x_5 * x_6 * x_7 * x_8)
+</pre></div>
+</div>
+</div>
+</div>
+<p>Now let us compute the gradient via <code class="docutils literal notranslate"><span class="pre">diff()</span></code>:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">grad_diff</span> <span class="o">=</span> <span class="p">[</span><span class="n">hy</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">sp_func</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">sym_vars</span><span class="p">]</span>
+<span class="n">grad_diff</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[(x_2 * x_3 * x_4 * x_5 * x_6 * x_7 * x_8),
+ (x_1 * x_3 * x_4 * x_5 * x_6 * x_7 * x_8),
+ (x_1 * x_2 * x_4 * x_5 * x_6 * x_7 * x_8),
+ (x_1 * x_2 * x_3 * x_5 * x_6 * x_7 * x_8),
+ (x_1 * x_2 * x_3 * x_4 * x_6 * x_7 * x_8),
+ (x_1 * x_2 * x_3 * x_4 * x_5 * x_7 * x_8),
+ (x_1 * x_2 * x_3 * x_4 * x_5 * x_6 * x_8),
+ (x_1 * x_2 * x_3 * x_4 * x_5 * x_6 * x_7)]
+</pre></div>
+</div>
+</div>
+</div>
+<p>We can see how in the components of the gradient there are multiple repeated subexpressions. It is however unclear how one would select and isolate these common subexpressions with the goal of avoiding redundant computations - in general, this is a combinatorially-hard symbolic optimisation problem.</p>
+<p>If we construct a compiled function for the evaluation of <code class="docutils literal notranslate"><span class="pre">grad_diff</span></code> and examine its decomposition, we can confirm that the number of operations needed to evaluate <code class="docutils literal notranslate"><span class="pre">grad_diff</span></code> scales quadratically <span class="math notranslate nohighlight">\(\operatorname{O}\left(n^2\right)\)</span> with the number of variables:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">grad_diff_cf</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">make_cfunc</span><span class="p">(</span><span class="n">grad_diff</span><span class="p">)</span>
+<span class="n">grad_diff_cf</span><span class="o">.</span><span class="n">decomposition</span><span class="p">[</span><span class="mi">8</span><span class="p">:</span><span class="o">-</span><span class="mi">8</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[(u_0 * u_1 * u_2 * u_3 * u_4 * u_5 * u_6),
+ (u_1 * u_2 * u_3 * u_4 * u_5 * u_6 * u_7),
+ (u_0 * u_2 * u_3 * u_4 * u_5 * u_6 * u_7),
+ (u_0 * u_1 * u_3 * u_4 * u_5 * u_6 * u_7),
+ (u_0 * u_1 * u_2 * u_4 * u_5 * u_6 * u_7),
+ (u_0 * u_1 * u_2 * u_3 * u_5 * u_6 * u_7),
+ (u_0 * u_1 * u_2 * u_3 * u_4 * u_6 * u_7),
+ (u_0 * u_1 * u_2 * u_3 * u_4 * u_5 * u_7)]
+</pre></div>
+</div>
+</div>
+</div>
+<p>Now let us take a look at how <code class="docutils literal notranslate"><span class="pre">diff_tensors()</span></code> behaves instead:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Compute the gradient via diff_tensors().</span>
+<span class="n">grad_diff_tensors</span> <span class="o">=</span> <span class="p">[</span><span class="n">t</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">hy</span><span class="o">.</span><span class="n">diff_tensors</span><span class="p">([</span><span class="n">sp_func</span><span class="p">],</span> <span class="n">diff_order</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">get_derivatives</span><span class="p">(</span><span class="mi">1</span><span class="p">)]</span>
+<span class="n">grad_diff_tensors</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[{({x_2} * {({((x_5 * x_6) * (x_7 * x_8))} * {(x_3 * x_4)})})},
+ {({x_1} * {({((x_5 * x_6) * (x_7 * x_8))} * {(x_3 * x_4)})})},
+ {({x_4} * {({((x_5 * x_6) * (x_7 * x_8))} * {(x_1 * x_2)})})},
+ {({x_3} * {({((x_5 * x_6) * (x_7 * x_8))} * {(x_1 * x_2)})})},
+ {({x_6} * {({(x_7 * x_8)} * {((x_1 * x_2) * (x_3 * x_4))})})},
+ {({x_5} * {({(x_7 * x_8)} * {((x_1 * x_2) * (x_3 * x_4))})})},
+ {({x_8} * {({(x_5 * x_6)} * {((x_1 * x_2) * (x_3 * x_4))})})},
+ {({x_7} * {({(x_5 * x_6)} * {((x_1 * x_2) * (x_3 * x_4))})})}]
+</pre></div>
+</div>
+</div>
+</div>
+<p>When computing the gradient of a multivariate scalar function, <code class="docutils literal notranslate"><span class="pre">diff_tensors()</span></code> automatically selects reverse-mode symbolic differentiation. We can see how the reverse-mode AD algorithm collects the terms in nested binary multiplications which occur multiple times in the gradient’s components. The flattening of these binary multiplications is prevented by the use of the <code class="docutils literal notranslate"><span class="pre">fix()</span></code> function. As a consequence, when creating a compiled function for the evaluation of <code class="docutils literal notranslate"><span class="pre">grad_diff_tensors</span></code>, the repeated subexpressions are recognised by heyoka.py (via a process of <a class="reference external" href="https://en.wikipedia.org/wiki/Common_subexpression_elimination">common subexpression elimination</a>) and evaluated only once. Let us check:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">grad_diff_tensors_cf</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">make_cfunc</span><span class="p">(</span><span class="n">grad_diff_tensors</span><span class="p">)</span>
+<span class="n">grad_diff_tensors_cf</span><span class="o">.</span><span class="n">decomposition</span><span class="p">[</span><span class="mi">8</span><span class="p">:</span><span class="o">-</span><span class="mi">8</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[(u_0 * u_1),
+ (u_2 * u_3),
+ (u_4 * u_5),
+ (u_6 * u_7),
+ (u_8 * u_9),
+ (u_10 * u_11),
+ (u_11 * u_12),
+ (u_10 * u_12),
+ (u_13 * u_9),
+ (u_13 * u_8),
+ (u_5 * u_14),
+ (u_4 * u_14),
+ (u_7 * u_15),
+ (u_6 * u_15),
+ (u_1 * u_16),
+ (u_0 * u_16),
+ (u_3 * u_17),
+ (u_2 * u_17)]
+</pre></div>
+</div>
+</div>
+</div>
+<p>The total number of operations needed to evaluate the gradient has been reduced from 48 (via <code class="docutils literal notranslate"><span class="pre">diff()</span></code>) to 18 (via <code class="docutils literal notranslate"><span class="pre">diff_tensors()</span></code>). Indeed, we can show how the computational complexity of the evaluation of the gradient of Speelpenning’s function via reverse-mode symbolic AD scales linearly <span class="math notranslate nohighlight">\(\operatorname{O}\left(n\right)\)</span> with the number of variables:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">nops</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">nvars_list</span> <span class="o">=</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">15</span><span class="p">,</span> <span class="mi">18</span><span class="p">,</span> <span class="mi">21</span><span class="p">]</span>
+
+<span class="k">for</span> <span class="n">nvars</span> <span class="ow">in</span> <span class="n">nvars_list</span><span class="p">:</span>
+    <span class="n">sym_vars</span> <span class="o">=</span> <span class="p">[</span><span class="n">hy</span><span class="o">.</span><span class="n">expression</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;x_</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">nvars</span><span class="o">+</span><span class="mi">1</span><span class="p">)]</span>
+    <span class="n">sp_func</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">prod</span><span class="p">(</span><span class="n">sym_vars</span><span class="p">)</span>
+    <span class="n">grad_diff_tensors</span> <span class="o">=</span> <span class="p">[</span><span class="n">t</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">hy</span><span class="o">.</span><span class="n">diff_tensors</span><span class="p">([</span><span class="n">sp_func</span><span class="p">],</span> <span class="n">diff_order</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">get_derivatives</span><span class="p">(</span><span class="mi">1</span><span class="p">)]</span>
+    <span class="n">grad_diff_tensors_cf</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">make_cfunc</span><span class="p">(</span><span class="n">grad_diff_tensors</span><span class="p">)</span>
+    <span class="n">nops</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">grad_diff_tensors_cf</span><span class="o">.</span><span class="n">decomposition</span><span class="p">)</span> <span class="o">-</span> <span class="mi">2</span><span class="o">*</span><span class="n">nvars</span><span class="p">)</span>
+
+<span class="o">%</span><span class="k">matplotlib</span> inline
+<span class="kn">from</span> <span class="nn">matplotlib.pylab</span> <span class="kn">import</span> <span class="n">plt</span>
+
+<span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span> <span class="o">=</span> <span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">nvars_list</span><span class="p">,</span> <span class="n">nops</span><span class="p">,</span> <span class="s1">&#39;o-&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xticks</span><span class="p">(</span><span class="n">nvars_list</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;N of variables&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;N of operations&quot;</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">();</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/7693a556960cfd78d49862421577605ebbd43fdd9bd60bcab9b5329e4206db6f.png" src="../_images/7693a556960cfd78d49862421577605ebbd43fdd9bd60bcab9b5329e4206db6f.png" />
+</div>
+</div>
+<p>This is clearly a marked improvement with respect to the quadratic complexity of the gradient computed via <code class="docutils literal notranslate"><span class="pre">diff()</span></code>.</p>
+</section>
+<section id="general-guidelines">
+<h2>General guidelines<a class="headerlink" href="#general-guidelines" title="Link to this heading">#</a></h2>
+<p>In conclusion, how should one choose whether to use <code class="docutils literal notranslate"><span class="pre">diff()</span></code> or <code class="docutils literal notranslate"><span class="pre">diff_tensors()</span></code> to compute symbolic derivatives in heyoka.py?</p>
+<p>In general, <code class="docutils literal notranslate"><span class="pre">diff()</span></code> should be used when the goal is to produce human-readable symbolic expressions, and when one wants to take advantage of heyoka.py’s symbolic simplification capabilities.</p>
+<p>If, however, the goal is to optimise the performance of the numerical evaluation of derivatives, then one should consider using <code class="docutils literal notranslate"><span class="pre">diff_tensors()</span></code> instead.</p>
+</section>
+</section>
+
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="ex_system_revisited.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Using the expression system effectively</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="pickling.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Pickle support</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#diff-vs-diff-tensors">diff() vs diff_tensors()</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#general-guidelines">General guidelines</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Francesco Biscani and Dario Izzo
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2020, 2021, 2022, 2023, Francesco Biscani and Dario Izzo.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=bd9e20870c6007c4c509"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=bd9e20870c6007c4c509"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

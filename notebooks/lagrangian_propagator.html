@@ -190,6 +190,7 @@
 <li class="toctree-l2"><a class="reference internal" href="sympy_interop.html">Interoperability with SymPy</a></li>
 <li class="toctree-l2"><a class="reference internal" href="compiled_functions.html">Compiled functions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="ex_system_revisited.html">Using the expression system effectively</a></li>
+<li class="toctree-l2"><a class="reference internal" href="computing_derivatives.html">Computing derivatives</a></li>
 <li class="toctree-l2"><a class="reference internal" href="pickling.html">Pickle support</a></li>
 <li class="toctree-l2"><a class="reference internal" href="jit_caching.html">JIT compilation and caching</a></li>
 </ul>
@@ -201,8 +202,8 @@
 <li class="toctree-l2"><a class="reference internal" href="The%20restricted%20three-body%20problem.html">The restricted three-body problem</a></li>
 <li class="toctree-l2"><a class="reference internal" href="Periodic%20orbits%20in%20the%20CR3BP.html">Continuation of Periodic Orbits in the CR3BP</a></li>
 <li class="toctree-l2"><a class="reference internal" href="Pseudo%20arc-length%20continuation%20in%20the%20CR3BP.html">Pseudo arc-length continuation in the CR3BP</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Long%20term%20stability%20of%20Trappist-1.html">Long term stability of N-body simulations: the case of Trappist-1</a></li>
 <li class="toctree-l2"><a class="reference internal" href="Outer%20Solar%20System.html">Brouwer’s law in the outer Solar System</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Long%20term%20stability%20of%20Trappist-1.html">Long term stability of N-body simulations: the case of Trappist-1</a></li>
 <li class="toctree-l2"><a class="reference internal" href="projection.html">Conserving first integrals via manifold projection</a></li>
 <li class="toctree-l2"><a class="reference internal" href="Box%20control%20for%20Formation%20Flying%20Satellites.html">Box control in satellite Formation Flying</a></li>
 <li class="toctree-l2"><a class="reference internal" href="Comparing%20coordinate%20systems.html">Comparing coordinate systems</a></li>
@@ -500,8 +501,8 @@ document.write(`
   <section class="tex2jax_ignore mathjax_ignore" id="lagrange-propagation-and-the-state-transition-matrix">
 <h1>Lagrange propagation and the state transition matrix<a class="headerlink" href="#lagrange-propagation-and-the-state-transition-matrix" title="Link to this heading">#</a></h1>
 <p>In the gravitational <a class="reference external" href="https://en.wikipedia.org/wiki/Two-body_problem">two-body problem</a> it is possible to compute the state of the system at an arbitrary time from an initial state <span class="math notranslate nohighlight">\(\left( \boldsymbol{r}_0, \boldsymbol{v}_0 \right)\)</span> via the so-called Lagrange coefficients <span class="math notranslate nohighlight">\(F\)</span>, <span class="math notranslate nohighlight">\(G\)</span>, <span class="math notranslate nohighlight">\(F_t\)</span> and <span class="math notranslate nohighlight">\(G_t\)</span>:</p>
-<div class="amsmath math notranslate nohighlight" id="equation-37e2aa35-e69f-418e-be71-72449fbd0415">
-<span class="eqno">(1)<a class="headerlink" href="#equation-37e2aa35-e69f-418e-be71-72449fbd0415" title="Permalink to this equation">#</a></span>\[\begin{equation}
+<div class="amsmath math notranslate nohighlight" id="equation-8a6e8150-a675-4673-a75a-260d2d06137f">
+<span class="eqno">(1)<a class="headerlink" href="#equation-8a6e8150-a675-4673-a75a-260d2d06137f" title="Permalink to this equation">#</a></span>\[\begin{equation}
 \begin{cases}
 \boldsymbol{r} &amp; = F \boldsymbol{r}_0 + G \boldsymbol{v}_0 \\
 \boldsymbol{v} &amp; = F_t \boldsymbol{r}_0 + G_t \boldsymbol{v}_0
@@ -690,7 +691,7 @@ document.write(`
 <section id="constructing-the-stm">
 <h2>Constructing the STM<a class="headerlink" href="#constructing-the-stm" title="Link to this heading">#</a></h2>
 <p>We can now proceed to the construction of an analytical expression for the state transition matrix (STM).</p>
-<p>The STM is nothing but the Jacobian of the Lagrange propagator with respect to the initial conditions. In order to compute the derivatives, we employ the <code class="docutils literal notranslate"><span class="pre">diff_tensors()</span></code> function as explained <a class="reference internal" href="ex_system_revisited.html#computing-derivatives"><span class="std std-ref">here</span></a>:</p>
+<p>The STM is nothing but the Jacobian of the Lagrange propagator with respect to the initial conditions. In order to compute the derivatives, we employ the <code class="docutils literal notranslate"><span class="pre">diff_tensors()</span></code> function as explained <a class="reference internal" href="computing_derivatives.html#computing-derivatives"><span class="std std-ref">here</span></a>:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">dt</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">diff_tensors</span><span class="p">(</span><span class="n">pos_vel</span><span class="p">,</span>

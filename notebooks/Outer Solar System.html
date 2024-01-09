@@ -46,8 +46,8 @@
     <script>DOCUMENTATION_OPTIONS.pagename = 'notebooks/Outer Solar System';</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Conserving first integrals via manifold projection" href="projection.html" />
-    <link rel="prev" title="Long term stability of N-body simulations: the case of Trappist-1" href="Long%20term%20stability%20of%20Trappist-1.html" />
+    <link rel="next" title="Long term stability of N-body simulations: the case of Trappist-1" href="Long%20term%20stability%20of%20Trappist-1.html" />
+    <link rel="prev" title="Pseudo arc-length continuation in the CR3BP" href="Pseudo%20arc-length%20continuation%20in%20the%20CR3BP.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -190,6 +190,7 @@
 <li class="toctree-l2"><a class="reference internal" href="sympy_interop.html">Interoperability with SymPy</a></li>
 <li class="toctree-l2"><a class="reference internal" href="compiled_functions.html">Compiled functions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="ex_system_revisited.html">Using the expression system effectively</a></li>
+<li class="toctree-l2"><a class="reference internal" href="computing_derivatives.html">Computing derivatives</a></li>
 <li class="toctree-l2"><a class="reference internal" href="pickling.html">Pickle support</a></li>
 <li class="toctree-l2"><a class="reference internal" href="jit_caching.html">JIT compilation and caching</a></li>
 </ul>
@@ -201,8 +202,8 @@
 <li class="toctree-l2"><a class="reference internal" href="The%20restricted%20three-body%20problem.html">The restricted three-body problem</a></li>
 <li class="toctree-l2"><a class="reference internal" href="Periodic%20orbits%20in%20the%20CR3BP.html">Continuation of Periodic Orbits in the CR3BP</a></li>
 <li class="toctree-l2"><a class="reference internal" href="Pseudo%20arc-length%20continuation%20in%20the%20CR3BP.html">Pseudo arc-length continuation in the CR3BP</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Long%20term%20stability%20of%20Trappist-1.html">Long term stability of N-body simulations: the case of Trappist-1</a></li>
 <li class="toctree-l2 current active"><a class="current reference internal" href="#">Brouwer’s law in the outer Solar System</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Long%20term%20stability%20of%20Trappist-1.html">Long term stability of N-body simulations: the case of Trappist-1</a></li>
 <li class="toctree-l2"><a class="reference internal" href="projection.html">Conserving first integrals via manifold projection</a></li>
 <li class="toctree-l2"><a class="reference internal" href="Box%20control%20for%20Formation%20Flying%20Satellites.html">Box control in satellite Formation Flying</a></li>
 <li class="toctree-l2"><a class="reference internal" href="Comparing%20coordinate%20systems.html">Comparing coordinate systems</a></li>
@@ -567,7 +568,7 @@ calendar year (365 days) as unit of time.</p>
 </div>
 </div>
 </div>
-<p>The next step is the creation of the numerical integrator. We will be using a <a class="reference internal" href="Batch%20mode%20overview.html"><span class="std std-doc">batch integrator</span></a>, which will allow us to substantially increase the floating-point throughput by integrating multiple sets of initial conditions at once. When creating the integrator, we will specify a tolerance of <span class="math notranslate nohighlight">\(10^{-18}\)</span> (below machine precision) and we will activate high-accuracy mode. In high-accuracy mode, the integrator internally uses techniques (based on <a class="reference external" href="https://en.wikipedia.org/wiki/Kahan_summation_algorithm">compensated summation</a> and similar algorithms) to reduce the numerical errors arising from the use of floating-point arithmetics, at the price of a slight performance penalty.</p>
+<p>The next step is the creation of the numerical integrator. We will be using a <a class="reference internal" href="Batch%20mode%20overview.html"><span class="std std-doc">batch integrator</span></a>, which will allow us to substantially increase the floating-point throughput via SIMD vectorisation. When creating the integrator, we will specify a tolerance of <span class="math notranslate nohighlight">\(10^{-18}\)</span> (below machine precision) and we will activate high-accuracy mode. In high-accuracy mode, the integrator internally uses techniques (based on <a class="reference external" href="https://en.wikipedia.org/wiki/Kahan_summation_algorithm">compensated summation</a> and similar algorithms) to reduce the numerical errors arising from the use of floating-point arithmetics, at the price of a slight performance penalty.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Multiplex the initial conditions to batches of 4 elements.</span>
@@ -580,57 +581,36 @@ calendar year (365 days) as unit of time.</p>
 </div>
 </div>
 </div>
+<p>We also create a <a class="reference internal" href="compiled_functions.html"><span class="std std-doc">compiled function</span></a> for the computation of the energy of the system, which we will be using to check the energy-conservation properties of the numerical integration:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">en_cf</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">make_cfunc</span><span class="p">([</span><span class="n">hy</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">nbody_energy</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="n">masses</span> <span class="o">=</span> <span class="n">masses</span><span class="p">,</span> <span class="n">Gconst</span> <span class="o">=</span> <span class="n">G</span><span class="p">)],</span>
+                     <span class="c1"># NOTE: the variables for the compiled function</span>
+                     <span class="c1"># are taken from the definition of the ODE system.</span>
+                     <span class="nb">vars</span><span class="o">=</span><span class="p">[</span><span class="n">_</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">sys</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+</div>
 </section>
 <section id="integrating-in-parallel">
 <h2>Integrating in parallel<a class="headerlink" href="#integrating-in-parallel" title="Link to this heading">#</a></h2>
-<p>In order to add statistical weight to our experiment, we will be integrating multiple sets of initial conditions at the same time. Each set of initial conditions will be slightly and randomly altered with respect to the numerical values introduced earlier, which will allow us to study the energy-conservation behaviour of the integrator using an ensemble of different but related problems.</p>
-<p>As explained earlier, the use of a batch integrator already allows us to integrate multiple sets of initial conditions (4, in this case) at the same time. Additionally, we will concurrently run multiple batch integrators in different threads, in order to take full advantage of modern multi-core processors. The total integration time will be limited to 1 million years.</p>
+<p>In order to add statistical weight to our experiment, we will be integrating multiple sets of initial conditions at the same time via <a class="reference internal" href="ensemble_mode.html"><span class="std std-doc">ensemble propagation</span></a>. Each set of initial conditions will be slightly and randomly altered with respect to the numerical values introduced earlier. The total integration time will be limited to 1 million years.</p>
 <p>Let us take a look at the code:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Define a logarithmic time grid over which</span>
 <span class="c1"># the integrations will be performed.</span>
-<span class="n">t_grid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">logspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">1000</span><span class="p">),</span> <span class="mi">4</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
+<span class="n">t_grid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">logspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">1000</span><span class="p">)</span>
 
 <span class="c1"># Multiplex the masses to batches of 4 elements.</span>
 <span class="n">masses_batch</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="n">masses</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
 
-<span class="c1"># A function for the computation of the total energy</span>
-<span class="c1"># of the system from the state vector.</span>
-<span class="k">def</span> <span class="nf">energy</span><span class="p">(</span><span class="n">st</span><span class="p">):</span>
-        <span class="c1"># Kinetic energy.</span>
-        <span class="n">vx</span> <span class="o">=</span> <span class="n">st</span><span class="p">[</span><span class="mi">3</span><span class="p">::</span><span class="mi">6</span><span class="p">]</span>
-        <span class="n">vy</span> <span class="o">=</span> <span class="n">st</span><span class="p">[</span><span class="mi">4</span><span class="p">::</span><span class="mi">6</span><span class="p">]</span>
-        <span class="n">vz</span> <span class="o">=</span> <span class="n">st</span><span class="p">[</span><span class="mi">5</span><span class="p">::</span><span class="mi">6</span><span class="p">]</span>
-        
-        <span class="n">kin</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">masses_batch</span> <span class="o">*</span> <span class="p">(</span><span class="n">vx</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">vy</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">vz</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="n">axis</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span>
-        
-        <span class="c1"># Potential energy.</span>
-        <span class="n">pot</span> <span class="o">=</span> <span class="mf">0.</span>
-        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">6</span><span class="p">):</span>
-            <span class="n">xi</span> <span class="o">=</span> <span class="n">st</span><span class="p">[</span><span class="n">i</span><span class="o">*</span><span class="mi">6</span> <span class="o">+</span> <span class="mi">0</span><span class="p">,</span> <span class="p">:]</span>
-            <span class="n">yi</span> <span class="o">=</span> <span class="n">st</span><span class="p">[</span><span class="n">i</span><span class="o">*</span><span class="mi">6</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="p">:]</span>
-            <span class="n">zi</span> <span class="o">=</span> <span class="n">st</span><span class="p">[</span><span class="n">i</span><span class="o">*</span><span class="mi">6</span> <span class="o">+</span> <span class="mi">2</span><span class="p">,</span> <span class="p">:]</span>
-            
-            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="mi">6</span><span class="p">):</span>
-                <span class="n">xj</span> <span class="o">=</span> <span class="n">st</span><span class="p">[</span><span class="n">j</span><span class="o">*</span><span class="mi">6</span> <span class="o">+</span> <span class="mi">0</span><span class="p">,</span> <span class="p">:]</span>
-                <span class="n">yj</span> <span class="o">=</span> <span class="n">st</span><span class="p">[</span><span class="n">j</span><span class="o">*</span><span class="mi">6</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="p">:]</span>
-                <span class="n">zj</span> <span class="o">=</span> <span class="n">st</span><span class="p">[</span><span class="n">j</span><span class="o">*</span><span class="mi">6</span> <span class="o">+</span> <span class="mi">2</span><span class="p">,</span> <span class="p">:]</span>
+<span class="c1"># Implement the generator for the ensemble propagation.</span>
+<span class="k">def</span> <span class="nf">gen</span><span class="p">(</span><span class="n">ta_copy</span><span class="p">,</span> <span class="n">idx</span><span class="p">):</span>
+    <span class="c1"># Randomly alter by a small amount the state of the system.</span>
+    <span class="n">new_state</span> <span class="o">=</span> <span class="n">ta_copy</span><span class="o">.</span><span class="n">state</span> <span class="o">+</span> <span class="nb">abs</span><span class="p">(</span><span class="n">ta_copy</span><span class="o">.</span><span class="n">state</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="o">-</span><span class="mf">1e-12</span><span class="p">,</span> <span class="mf">1e-12</span><span class="p">,</span> <span class="n">ta_copy</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
 
-                <span class="n">pot</span> <span class="o">+=</span> <span class="o">-</span><span class="n">G</span> <span class="o">*</span> <span class="n">masses_batch</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">*</span> <span class="n">masses_batch</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">((</span><span class="n">xi</span> <span class="o">-</span> <span class="n">xj</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">xi</span> <span class="o">-</span> <span class="n">xj</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="n">yi</span> <span class="o">-</span> <span class="n">yj</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">yi</span> <span class="o">-</span> <span class="n">yj</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="n">zi</span> <span class="o">-</span> <span class="n">zj</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">zi</span> <span class="o">-</span> <span class="n">zj</span><span class="p">))</span>
-
-        <span class="k">return</span> <span class="n">kin</span> <span class="o">+</span> <span class="n">pot</span>
-
-<span class="c1"># The worker function that will be run in each thread.</span>
-<span class="k">def</span> <span class="nf">worker</span><span class="p">():</span>
-    <span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">deepcopy</span>
-    
-    <span class="c1"># Make a deep copy of the original integrator.</span>
-    <span class="n">ta_local</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">ta</span><span class="p">)</span>
-    
-    <span class="c1"># Randomly alter the initial conditions.</span>
-    <span class="n">new_state</span> <span class="o">=</span> <span class="n">ta_local</span><span class="o">.</span><span class="n">state</span> <span class="o">+</span> <span class="nb">abs</span><span class="p">(</span><span class="n">ta_local</span><span class="o">.</span><span class="n">state</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="o">-</span><span class="mf">1e-12</span><span class="p">,</span> <span class="mf">1e-12</span><span class="p">,</span> <span class="n">ta_local</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
-    
     <span class="c1"># Determine the new centre of mass and its velocity.</span>
     <span class="n">com_x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">new_state</span><span class="p">[</span><span class="mi">0</span><span class="p">::</span><span class="mi">6</span><span class="p">]</span> <span class="o">*</span> <span class="n">masses_batch</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">masses_batch</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
     <span class="n">com_y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">new_state</span><span class="p">[</span><span class="mi">1</span><span class="p">::</span><span class="mi">6</span><span class="p">]</span> <span class="o">*</span> <span class="n">masses_batch</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">masses_batch</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
@@ -639,38 +619,30 @@ calendar year (365 days) as unit of time.</p>
     <span class="n">com_vx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">new_state</span><span class="p">[</span><span class="mi">3</span><span class="p">::</span><span class="mi">6</span><span class="p">]</span> <span class="o">*</span> <span class="n">masses_batch</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">masses_batch</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
     <span class="n">com_vy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">new_state</span><span class="p">[</span><span class="mi">4</span><span class="p">::</span><span class="mi">6</span><span class="p">]</span> <span class="o">*</span> <span class="n">masses_batch</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">masses_batch</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
     <span class="n">com_vz</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">new_state</span><span class="p">[</span><span class="mi">5</span><span class="p">::</span><span class="mi">6</span><span class="p">]</span> <span class="o">*</span> <span class="n">masses_batch</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">masses_batch</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
-   
+
     <span class="c1"># Recentre.</span>
     <span class="n">new_state</span><span class="p">[</span><span class="mi">0</span><span class="p">::</span><span class="mi">6</span><span class="p">]</span> <span class="o">-=</span> <span class="n">com_x</span>
     <span class="n">new_state</span><span class="p">[</span><span class="mi">1</span><span class="p">::</span><span class="mi">6</span><span class="p">]</span> <span class="o">-=</span> <span class="n">com_y</span>
     <span class="n">new_state</span><span class="p">[</span><span class="mi">2</span><span class="p">::</span><span class="mi">6</span><span class="p">]</span> <span class="o">-=</span> <span class="n">com_z</span>
-    
+
     <span class="n">new_state</span><span class="p">[</span><span class="mi">3</span><span class="p">::</span><span class="mi">6</span><span class="p">]</span> <span class="o">-=</span> <span class="n">com_vx</span>
     <span class="n">new_state</span><span class="p">[</span><span class="mi">4</span><span class="p">::</span><span class="mi">6</span><span class="p">]</span> <span class="o">-=</span> <span class="n">com_vy</span>
     <span class="n">new_state</span><span class="p">[</span><span class="mi">5</span><span class="p">::</span><span class="mi">6</span><span class="p">]</span> <span class="o">-=</span> <span class="n">com_vz</span>
-   
-    <span class="c1"># Assign the new state.</span>
-    <span class="n">ta_local</span><span class="o">.</span><span class="n">state</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">new_state</span>
-    
-    <span class="c1"># Compute the initial energy.</span>
-    <span class="n">E0</span> <span class="o">=</span> <span class="n">energy</span><span class="p">(</span><span class="n">ta_local</span><span class="o">.</span><span class="n">state</span><span class="p">)</span>
 
-    <span class="c1"># Integrate over the time grid.</span>
-    <span class="n">ta_local</span><span class="o">.</span><span class="n">propagate_until</span><span class="p">(</span><span class="n">t_grid</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
-    <span class="n">_</span><span class="p">,</span> <span class="n">res</span> <span class="o">=</span> <span class="n">ta_local</span><span class="o">.</span><span class="n">propagate_grid</span><span class="p">(</span><span class="n">t_grid</span><span class="p">)</span>
-    
-    <span class="c1"># Check if any batch element produced an error.</span>
-    <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">oc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="n">hy</span><span class="o">.</span><span class="n">taylor_outcome</span><span class="o">.</span><span class="n">time_limit</span> <span class="k">for</span> <span class="n">oc</span> <span class="ow">in</span> <span class="n">ta_local</span><span class="o">.</span><span class="n">propagate_res</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Integration failed: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ta_local</span><span class="o">.</span><span class="n">propagate_res</span><span class="p">))</span>
-    
-    <span class="c1"># Compute and return the relative energy error.</span>
-    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="nb">abs</span><span class="p">((</span><span class="n">E0</span> <span class="o">-</span> <span class="n">energy</span><span class="p">(</span><span class="n">st</span><span class="p">))</span> <span class="o">/</span> <span class="n">E0</span><span class="p">)</span> <span class="k">for</span> <span class="n">st</span> <span class="ow">in</span> <span class="n">res</span><span class="p">])</span>
+    <span class="c1"># Assign the new state.</span>
+    <span class="n">ta_copy</span><span class="o">.</span><span class="n">state</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">new_state</span>
+
+    <span class="c1"># Set the time to the beginning of the time grid.</span>
+    <span class="n">ta_copy</span><span class="o">.</span><span class="n">set_time</span><span class="p">(</span><span class="n">t_grid</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+    <span class="c1"># Return the integrator.</span>
+    <span class="k">return</span> <span class="n">ta_copy</span>
 </pre></div>
 </div>
 </div>
 </div>
-<p>The <code class="docutils literal notranslate"><span class="pre">worker()</span></code> function will be invoked concurrently from multiple threads of execution. It will first create a local copy of the integrator object, add some noise to the initial conditions, reset the centre of mass and then integrate the system for 1 million years.</p>
-<p>Let us now run 16 batch integrations concurrently, for a total of <span class="math notranslate nohighlight">\(16\times 4 = 64\)</span> sets of initial conditions.</p>
+<p>As explained in the <a class="reference internal" href="ensemble_mode.html"><span class="std std-doc">tutorial</span></a>, ensemble propagations require a generator function <code class="docutils literal notranslate"><span class="pre">gen()</span></code> that alters in-place a copy of the original integrator <code class="docutils literal notranslate"><span class="pre">ta</span></code> and then returns it. In this specific case, in the generator we are slightly altering the original initial conditions and re-centering the system so that the centre of mass sits in the origin with zero velocity.</p>
+<p>We can now proceed to run the numerical integration. We will run 16 batch integrations concurrently, for a total of <span class="math notranslate nohighlight">\(16\times 4 = 64\)</span> sets of initial conditions.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>The following code will take a while to run (from a few seconds to a few minutes, depending
@@ -678,21 +650,20 @@ on the CPU). In order to shorten the runtime, you can reduce the number of threa
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">concurrent.futures</span>
-
-<span class="c1"># Run the integrations concurrently.</span>
-<span class="k">with</span> <span class="n">concurrent</span><span class="o">.</span><span class="n">futures</span><span class="o">.</span><span class="n">ThreadPoolExecutor</span><span class="p">()</span> <span class="k">as</span> <span class="n">executor</span><span class="p">:</span>
-    <span class="n">futures</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">16</span><span class="p">):</span>
-        <span class="n">futures</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">executor</span><span class="o">.</span><span class="n">submit</span><span class="p">(</span><span class="n">worker</span><span class="p">))</span>
-
-    <span class="c1"># Gather the results.</span>
-    <span class="n">res</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">future</span><span class="o">.</span><span class="n">result</span><span class="p">()</span> <span class="k">for</span> <span class="n">future</span> <span class="ow">in</span> <span class="n">concurrent</span><span class="o">.</span><span class="n">futures</span><span class="o">.</span><span class="n">as_completed</span><span class="p">(</span><span class="n">futures</span><span class="p">)])</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ret</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">ensemble_propagate_grid</span><span class="p">(</span><span class="n">ta</span><span class="p">,</span> <span class="n">t_grid</span><span class="p">,</span> <span class="mi">16</span><span class="p">,</span> <span class="n">gen</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 </div>
-<p>Let us take a look at the shape of the result array:</p>
+<p><code class="docutils literal notranslate"><span class="pre">ret</span></code> is a list containing the return values of each individual <code class="docutils literal notranslate"><span class="pre">propagate_grid()</span></code> invocation in the ensemble. From it, we can extract the histories of the state vectors and pack them into a single array:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">res</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">_</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">ret</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Let us take a look at the shape of <code class="docutils literal notranslate"><span class="pre">res</span></code>:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">res</span><span class="o">.</span><span class="n">shape</span>
@@ -700,27 +671,72 @@ on the CPU). In order to shorten the runtime, you can reduce the number of threa
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(16, 1000, 4)
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(16, 1000, 36, 4)
 </pre></div>
 </div>
 </div>
 </div>
-<p>The first dimension refers to the 16 separate integrations we ran in parallel, the second dimension to the 1000 points in the time grid and the last dimension to the 4 elements in each batch.
-Let us re-arrange the array in order to facilitate further analysis:</p>
+<p>The first dimension refers to the 16 separate integrations we ran in parallel, the second dimension to the 1000 points in the time grid, the third dimension to the 36 elements in the state vector and the last dimension to the 4 elements in each batch.</p>
+<p>In order to facilitate the analysis of the results, we first re-arrange (via <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.transpose.html#numpy.transpose" title="(in NumPy v1.26)"><code class="xref py py-func docutils literal notranslate"><span class="pre">transpose()</span></code></a>) the array so that:</p>
+<ul class="simple">
+<li><p>the first dimension refers to the 1000 points in the time grid,</p></li>
+<li><p>the second dimension refers to the 36 elements in the state vector,</p></li>
+<li><p>the third dimension referse to the 16 parallel integrations,</p></li>
+<li><p>the fourth dimension refers to the 4 elements in each batch.</p></li>
+</ul>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">res</span> <span class="o">=</span> <span class="n">res</span><span class="o">.</span><span class="n">transpose</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="mi">1000</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">))</span>
-<span class="n">res</span><span class="o">.</span><span class="n">shape</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">tres</span> <span class="o">=</span> <span class="n">res</span><span class="o">.</span><span class="n">transpose</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+<span class="n">tres</span><span class="o">.</span><span class="n">shape</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(1000, 64)
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(1000, 36, 16, 4)
 </pre></div>
 </div>
 </div>
 </div>
-<p>Now the first dimension refers to the time grid points, and we have squashed into the second dimension the results of all integrations for each time point.</p>
+<p>We then merge the last two dimensions into a single one with a <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.reshape.html#numpy.reshape" title="(in NumPy v1.26)"><code class="xref py py-func docutils literal notranslate"><span class="pre">reshape()</span></code></a>:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">tres</span> <span class="o">=</span> <span class="n">tres</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="mi">1000</span><span class="p">,</span> <span class="mi">36</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">))</span>
+<span class="n">tres</span><span class="o">.</span><span class="n">shape</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(1000, 36, 64)
+</pre></div>
+</div>
+</div>
+</div>
+<p>This way, the last dimension now contains the value of the state variables splatted across all 16x4 parallel integrations and batch elements.
+For example, we can fetch all initial values for the second state variable (index 1) like this:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">tres</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([-0.00608837, -0.00608837, -0.00608837, -0.00608837, -0.00608837,
+       -0.00608837, -0.00608837, -0.00608837, -0.00608837, -0.00608837,
+       -0.00608837, -0.00608837, -0.00608837, -0.00608837, -0.00608837,
+       -0.00608837, -0.00608837, -0.00608837, -0.00608837, -0.00608837,
+       -0.00608837, -0.00608837, -0.00608837, -0.00608837, -0.00608837,
+       -0.00608837, -0.00608837, -0.00608837, -0.00608837, -0.00608837,
+       -0.00608837, -0.00608837, -0.00608837, -0.00608837, -0.00608837,
+       -0.00608837, -0.00608837, -0.00608837, -0.00608837, -0.00608837,
+       -0.00608837, -0.00608837, -0.00608837, -0.00608837, -0.00608837,
+       -0.00608837, -0.00608837, -0.00608837, -0.00608837, -0.00608837,
+       -0.00608837, -0.00608837, -0.00608837, -0.00608837, -0.00608837,
+       -0.00608837, -0.00608837, -0.00608837, -0.00608837, -0.00608837,
+       -0.00608837, -0.00608837, -0.00608837, -0.00608837])
+</pre></div>
+</div>
+</div>
+</div>
 </section>
 <section id="results">
 <h2>Results<a class="headerlink" href="#results" title="Link to this heading">#</a></h2>
@@ -739,15 +755,22 @@ Let us re-arrange the array in order to facilitate further analysis:</p>
 <span class="n">plt</span><span class="o">.</span><span class="n">xscale</span><span class="p">(</span><span class="s1">&#39;log&#39;</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">yscale</span><span class="p">(</span><span class="s1">&#39;log&#39;</span><span class="p">)</span>
 
-<span class="c1"># Plot all data points.</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">t_grid</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">res</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;gray&#39;</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s1">&#39;.&#39;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;None&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">.4</span><span class="p">,</span> <span class="n">markersize</span><span class="o">=</span><span class="mf">3.5</span><span class="p">)</span>
+<span class="c1"># Compute the initial energy.</span>
+<span class="n">E0</span> <span class="o">=</span> <span class="n">en_cf</span><span class="p">(</span><span class="n">tres</span><span class="p">[</span><span class="mi">0</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
+
+<span class="c1"># Compute the energy error.</span>
+<span class="n">E_err</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="nb">abs</span><span class="p">((</span><span class="n">E0</span> <span class="o">-</span> <span class="n">en_cf</span><span class="p">(</span><span class="n">_</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span> <span class="o">/</span> <span class="n">E0</span><span class="p">)</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">tres</span><span class="p">])</span>
+
+<span class="c1"># Plot it.</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">t_grid</span><span class="p">,</span> <span class="n">E_err</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;gray&#39;</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s1">&#39;.&#39;</span><span class="p">,</span>
+         <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;None&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">.4</span><span class="p">,</span> <span class="n">markersize</span><span class="o">=</span><span class="mf">3.5</span><span class="p">)</span>
 
 <span class="c1"># Plot the root mean square computed over all</span>
 <span class="c1"># data points at each timestep.</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">t_grid</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">res</span><span class="o">*</span><span class="n">res</span><span class="p">,</span> <span class="n">axis</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)),</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;k&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;RMS&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">t_grid</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">E_err</span><span class="o">*</span><span class="n">E_err</span><span class="p">,</span> <span class="n">axis</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)),</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;k&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;RMS&quot;</span><span class="p">)</span>
 
 <span class="c1"># Plot sqrt(t).</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">t_grid</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="mf">1.5e-16</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">t_grid</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]),</span> <span class="s1">&#39;k--&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;$\sqrt</span><span class="si">{t}</span><span class="s2">$ (Brouwer&#39;s law)&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">t_grid</span><span class="p">,</span> <span class="mf">1.5e-16</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">t_grid</span><span class="p">),</span> <span class="s1">&#39;k--&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;$\sqrt</span><span class="si">{t}</span><span class="s2">$ (Brouwer&#39;s law)&quot;</span><span class="p">)</span>
 
 <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;Time (years)&quot;</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;Rel. energy error&quot;</span><span class="p">)</span>
@@ -756,7 +779,7 @@ Let us re-arrange the array in order to facilitate further analysis:</p>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/44f0112ecdef7945149a6cab8480726e85cda226897d3a2fcb9709ac5bd38169.png" src="../_images/44f0112ecdef7945149a6cab8480726e85cda226897d3a2fcb9709ac5bd38169.png" />
+<img alt="../_images/a5a0a2e6531e933c4f76055e9192ec9f2c35b4a50d60f58586af8c60b80fd75b.png" src="../_images/a5a0a2e6531e933c4f76055e9192ec9f2c35b4a50d60f58586af8c60b80fd75b.png" />
 </div>
 </div>
 <p>The plot clearly shows how the average energy error starts out around machine precision and then begins to grow following Brouwer’s law. These results indicate that heyoka.py is able to optimally conserve the invariants of a dynamical system over long-term integrations.</p>
@@ -775,20 +798,20 @@ Let us re-arrange the array in order to facilitate further analysis:</p>
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="Long%20term%20stability%20of%20Trappist-1.html"
+       href="Pseudo%20arc-length%20continuation%20in%20the%20CR3BP.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Long term stability of N-body simulations: the case of Trappist-1</p>
+        <p class="prev-next-title">Pseudo arc-length continuation in the CR3BP</p>
       </div>
     </a>
     <a class="right-next"
-       href="projection.html"
+       href="Long%20term%20stability%20of%20Trappist-1.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Conserving first integrals via manifold projection</p>
+        <p class="prev-next-title">Long term stability of N-body simulations: the case of Trappist-1</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>

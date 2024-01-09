@@ -190,6 +190,7 @@
 <li class="toctree-l2"><a class="reference internal" href="sympy_interop.html">Interoperability with SymPy</a></li>
 <li class="toctree-l2"><a class="reference internal" href="compiled_functions.html">Compiled functions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="ex_system_revisited.html">Using the expression system effectively</a></li>
+<li class="toctree-l2"><a class="reference internal" href="computing_derivatives.html">Computing derivatives</a></li>
 <li class="toctree-l2"><a class="reference internal" href="pickling.html">Pickle support</a></li>
 <li class="toctree-l2"><a class="reference internal" href="jit_caching.html">JIT compilation and caching</a></li>
 </ul>
@@ -201,8 +202,8 @@
 <li class="toctree-l2"><a class="reference internal" href="The%20restricted%20three-body%20problem.html">The restricted three-body problem</a></li>
 <li class="toctree-l2"><a class="reference internal" href="Periodic%20orbits%20in%20the%20CR3BP.html">Continuation of Periodic Orbits in the CR3BP</a></li>
 <li class="toctree-l2"><a class="reference internal" href="Pseudo%20arc-length%20continuation%20in%20the%20CR3BP.html">Pseudo arc-length continuation in the CR3BP</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Long%20term%20stability%20of%20Trappist-1.html">Long term stability of N-body simulations: the case of Trappist-1</a></li>
 <li class="toctree-l2"><a class="reference internal" href="Outer%20Solar%20System.html">Brouwer’s law in the outer Solar System</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Long%20term%20stability%20of%20Trappist-1.html">Long term stability of N-body simulations: the case of Trappist-1</a></li>
 <li class="toctree-l2"><a class="reference internal" href="projection.html">Conserving first integrals via manifold projection</a></li>
 <li class="toctree-l2"><a class="reference internal" href="Box%20control%20for%20Formation%20Flying%20Satellites.html">Box control in satellite Formation Flying</a></li>
 <li class="toctree-l2"><a class="reference internal" href="Comparing%20coordinate%20systems.html">Comparing coordinate systems</a></li>
@@ -692,7 +693,7 @@ Shape of dNdx: (2, 2)
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>--- 0.4570624828338623 seconds --- to build (jit) the Taylor integrator
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>--- 0.7153522968292236 seconds --- to build (jit) the Taylor integrator
 </pre></div>
 </div>
 </div>
@@ -733,7 +734,7 @@ Shape of dNdx: (2, 2)
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>--- 0.00015664100646972656 seconds --- to propagate using the Taylor scheme
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>--- 0.00036978721618652344 seconds --- to propagate using the Taylor scheme
 </pre></div>
 </div>
 </div>
@@ -752,7 +753,7 @@ Shape of dNdx: (2, 2)
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/bbf7052b40f585db4d1568aec544c3e0e55653ca1ecd6388e5f4e2c7b4a13459.png" src="../_images/bbf7052b40f585db4d1568aec544c3e0e55653ca1ecd6388e5f4e2c7b4a13459.png" />
+<img alt="../_images/23287008890e3e34ccf73c402a71c816e50cbd6d9f22ac7d485694a04cab6918.png" src="../_images/23287008890e3e34ccf73c402a71c816e50cbd6d9f22ac7d485694a04cab6918.png" />
 </div>
 </div>
 </section>
@@ -791,7 +792,7 @@ This allows us to use identical jitted expressions also for the rhs of the case 
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>--- 0.0012502670288085938 seconds --- to propagate
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>--- 0.0017545223236083984 seconds --- to propagate
 </pre></div>
 </div>
 </div>
@@ -806,7 +807,7 @@ This allows us to use identical jitted expressions also for the rhs of the case 
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/c5a5e18f36be4844eb1b29551f9b9b113ef27fd32e69f52de2ad47b1773cadab.png" src="../_images/c5a5e18f36be4844eb1b29551f9b9b113ef27fd32e69f52de2ad47b1773cadab.png" />
+<img alt="../_images/b06177830c503ec15e96af8ae6333e1f14351279b8b0d558b05d0942aaa9db70.png" src="../_images/b06177830c503ec15e96af8ae6333e1f14351279b8b0d558b05d0942aaa9db70.png" />
 </div>
 </div>
 <p>We see a net advantage in timings using the Taylor integration scheme. Note we are here not using batch propagation, which would add an additional 2-4 factor speedup in performances.</p>
