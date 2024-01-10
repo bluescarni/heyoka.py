@@ -1179,7 +1179,7 @@ v = 0,
 <span class="n">bounce_points</span> <span class="o">=</span> <span class="nb">list</span><span class="p">([]</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">batch_size</span><span class="p">))</span>
 
 <span class="c1"># Callback for bouncing against the curve.</span>
-<span class="k">def</span> <span class="nf">cb_w_curve</span><span class="p">(</span><span class="n">ta</span><span class="p">,</span> <span class="n">mr</span><span class="p">,</span> <span class="n">d_sgn</span><span class="p">,</span> <span class="n">bidx</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">cb_w_curve</span><span class="p">(</span><span class="n">ta</span><span class="p">,</span> <span class="n">d_sgn</span><span class="p">,</span> <span class="n">bidx</span><span class="p">):</span>
     <span class="k">global</span> <span class="n">last_t</span>
 
     <span class="c1"># If the last collision happened</span>
@@ -1214,7 +1214,7 @@ v = 0,
     <span class="k">return</span> <span class="kc">True</span>
 
 <span class="c1"># Callback for bouncing off the ground.</span>
-<span class="k">def</span> <span class="nf">cb_bottom</span><span class="p">(</span><span class="n">ta</span><span class="p">,</span> <span class="n">mr</span><span class="p">,</span> <span class="n">d_sgn</span><span class="p">,</span> <span class="n">bidx</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">cb_bottom</span><span class="p">(</span><span class="n">ta</span><span class="p">,</span> <span class="n">d_sgn</span><span class="p">,</span> <span class="n">bidx</span><span class="p">):</span>
     <span class="k">global</span> <span class="n">last_t</span>
     
     <span class="c1"># If the last collision happened</span>
@@ -1383,7 +1383,7 @@ We begin with the definition of the dynamical equations and of the template inte
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/68456be7b1122c1d7b0c6a9e1499fabd83f0ad654814057658c440b3395ce0a9.png" src="../_images/68456be7b1122c1d7b0c6a9e1499fabd83f0ad654814057658c440b3395ce0a9.png" />
+<img alt="../_images/c0fe83129df6c72bc894cd3455f588298011cd60e7bf171485f7eca044084dd3.png" src="../_images/c0fe83129df6c72bc894cd3455f588298011cd60e7bf171485f7eca044084dd3.png" />
 </div>
 </div>
 </section>

@@ -23,6 +23,10 @@ New
 Changes
 ~~~~~~~
 
+- **BREAKING**: the signature of callbacks for terminal events
+  has been simplified
+  (`#158 <https://github.com/bluescarni/heyoka.py/pull/158>`__).
+  This is a :ref:`breaking change <bchanges_4_0_0>`.
 - **BREAKING**: the ``propagate_*()`` functions
   now return the (optional) step callback that can be
   passed in input

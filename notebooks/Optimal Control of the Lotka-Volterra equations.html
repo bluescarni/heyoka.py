@@ -844,20 +844,19 @@ Parameters              : [1.1, 0.2, 0.1, 0.4]
 <span class="n">switch_times</span> <span class="o">=</span> <span class="p">[]</span>
 
 <span class="c1"># This callback will be called by the Taylor integrator when the switching event is detected </span>
-<span class="k">def</span> <span class="nf">switch_callback</span><span class="p">(</span><span class="n">ta</span><span class="p">,</span> <span class="n">mr</span><span class="p">,</span> <span class="n">log_times</span><span class="p">):</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">mr</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">ta</span><span class="o">.</span><span class="n">pars</span><span class="p">[</span><span class="mi">6</span><span class="p">]</span><span class="o">==</span><span class="mf">0.</span><span class="p">:</span>
-            <span class="n">ta</span><span class="o">.</span><span class="n">pars</span><span class="p">[</span><span class="mi">6</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">ta</span><span class="o">.</span><span class="n">pars</span><span class="p">[</span><span class="mi">6</span><span class="p">]</span><span class="o">=</span><span class="mf">0.</span>
-        <span class="k">if</span> <span class="n">log_times</span><span class="p">:</span>
-            <span class="n">switch_times</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ta</span><span class="o">.</span><span class="n">time</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">switch_callback</span><span class="p">(</span><span class="n">ta</span><span class="p">,</span> <span class="n">log_times</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">ta</span><span class="o">.</span><span class="n">pars</span><span class="p">[</span><span class="mi">6</span><span class="p">]</span><span class="o">==</span><span class="mf">0.</span><span class="p">:</span>
+        <span class="n">ta</span><span class="o">.</span><span class="n">pars</span><span class="p">[</span><span class="mi">6</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">ta</span><span class="o">.</span><span class="n">pars</span><span class="p">[</span><span class="mi">6</span><span class="p">]</span><span class="o">=</span><span class="mf">0.</span>
+    <span class="k">if</span> <span class="n">log_times</span><span class="p">:</span>
+        <span class="n">switch_times</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ta</span><span class="o">.</span><span class="n">time</span><span class="p">)</span>
     <span class="c1"># Do not stop the integration</span>
     <span class="k">return</span> <span class="kc">True</span>
         
 <span class="c1"># The switching event</span>
 <span class="n">switching_event</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">t_event</span><span class="p">(</span><span class="n">x</span> <span class="o">*</span> <span class="n">lx</span> <span class="o">*</span> <span class="n">hy</span><span class="o">.</span><span class="n">par</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span> <span class="o">+</span> <span class="n">y</span> <span class="o">*</span> <span class="n">ly</span> <span class="o">*</span> <span class="n">hy</span><span class="o">.</span><span class="n">par</span><span class="p">[</span><span class="mi">5</span><span class="p">],</span>
-                             <span class="n">callback</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">ta</span><span class="p">,</span> <span class="n">mr</span><span class="p">,</span> <span class="n">d_sgn</span><span class="p">:</span> <span class="n">switch_callback</span><span class="p">(</span><span class="n">ta</span><span class="p">,</span> <span class="n">mr</span><span class="p">,</span> <span class="kc">True</span><span class="p">))</span>
+                             <span class="n">callback</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">ta</span><span class="p">,</span> <span class="n">d_sgn</span><span class="p">:</span> <span class="n">switch_callback</span><span class="p">(</span><span class="n">ta</span><span class="p">,</span> <span class="kc">True</span><span class="p">))</span>
 
 <span class="c1"># The Taylor integrator</span>
 <span class="n">ta</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">taylor_adaptive</span><span class="p">(</span><span class="n">ode_sys</span><span class="p">,</span> <span class="p">[</span><span class="n">x_0</span><span class="p">,</span> <span class="n">y_0</span><span class="p">,</span> <span class="n">lx_0</span><span class="p">,</span> <span class="n">ly_0</span><span class="p">],</span> <span class="n">pars</span> <span class="o">=</span> <span class="n">ps</span><span class="p">,</span> <span class="n">t_events</span> <span class="o">=</span> <span class="p">[</span><span class="n">switching_event</span><span class="p">])</span>
@@ -969,7 +968,7 @@ and it is implemented in the function below:</p>
 <p>We also need to introduce a distance event triggering when the derivative of the distance is zero, hence at the maximum and minimum distance points.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">distance_callback</span><span class="p">(</span><span class="n">ta</span><span class="p">,</span> <span class="n">mr</span><span class="p">,</span> <span class="n">d_sgn</span><span class="p">):</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">distance_callback</span><span class="p">(</span><span class="n">ta</span><span class="p">,</span> <span class="n">d_sgn</span><span class="p">):</span>
     <span class="n">candidates_t</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ta</span><span class="o">.</span><span class="n">time</span><span class="p">)</span>
     <span class="n">candidates_d</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">ta</span><span class="o">.</span><span class="n">state</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">-</span><span class="n">x_t</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="p">(</span><span class="n">ta</span><span class="o">.</span><span class="n">state</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="n">y_t</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
     <span class="c1"># Do not stop the integration</span>
@@ -980,7 +979,7 @@ and it is implemented in the function below:</p>
 
 <span class="c1"># We also redefine the switching event as we have no need to log the switching times (this is optional and has not real impact in this case)</span>
 <span class="n">switching_event_no_log</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">t_event</span><span class="p">(</span><span class="n">x</span> <span class="o">*</span> <span class="n">lx</span> <span class="o">*</span> <span class="n">hy</span><span class="o">.</span><span class="n">par</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span> <span class="o">+</span> <span class="n">y</span> <span class="o">*</span> <span class="n">ly</span> <span class="o">*</span> <span class="n">hy</span><span class="o">.</span><span class="n">par</span><span class="p">[</span><span class="mi">5</span><span class="p">],</span>
-                                    <span class="n">callback</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">ta</span><span class="p">,</span> <span class="n">mr</span><span class="p">,</span> <span class="n">d_sgn</span><span class="p">:</span> <span class="n">switch_callback</span><span class="p">(</span><span class="n">ta</span><span class="p">,</span> <span class="n">mr</span><span class="p">,</span> <span class="kc">False</span><span class="p">))</span>
+                                    <span class="n">callback</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">ta</span><span class="p">,</span> <span class="n">d_sgn</span><span class="p">:</span> <span class="n">switch_callback</span><span class="p">(</span><span class="n">ta</span><span class="p">,</span> <span class="kc">False</span><span class="p">))</span>
 </pre></div>
 </div>
 </div>
@@ -1098,9 +1097,9 @@ N of terminal events    : 2
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/tmp/ipykernel_10940/2413872175.py:11: DeprecationWarning: Conversion of an array with ndim &gt; 0 to a scalar is deprecated, and will error in future. Ensure you extract a single element from your array before performing this operation. (Deprecated NumPy 1.25.)
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/tmp/ipykernel_10939/2413872175.py:11: DeprecationWarning: Conversion of an array with ndim &gt; 0 to a scalar is deprecated, and will error in future. Ensure you extract a single element from your array before performing this operation. (Deprecated NumPy 1.25.)
   ta.pars[6] = np.heaviside(switching_function(x_0,y_0,lx_0,ly_0, ps), 1.)
-/tmp/ipykernel_10940/2413872175.py:14: DeprecationWarning: Conversion of an array with ndim &gt; 0 to a scalar is deprecated, and will error in future. Ensure you extract a single element from your array before performing this operation. (Deprecated NumPy 1.25.)
+/tmp/ipykernel_10939/2413872175.py:14: DeprecationWarning: Conversion of an array with ndim &gt; 0 to a scalar is deprecated, and will error in future. Ensure you extract a single element from your array before performing this operation. (Deprecated NumPy 1.25.)
   ta.state[0] = x_0; ta.state[1] = y_0; ta.state[2] = lx_0; ta.state[3] = ly_0
 </pre></div>
 </div>
@@ -1142,7 +1141,7 @@ N of terminal events    : 2
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/tmp/ipykernel_10940/3578120629.py:12: DeprecationWarning: Conversion of an array with ndim &gt; 0 to a scalar is deprecated, and will error in future. Ensure you extract a single element from your array before performing this operation. (Deprecated NumPy 1.25.)
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/tmp/ipykernel_10939/3578120629.py:12: DeprecationWarning: Conversion of an array with ndim &gt; 0 to a scalar is deprecated, and will error in future. Ensure you extract a single element from your array before performing this operation. (Deprecated NumPy 1.25.)
   ta.pars[6] = np.heaviside(switching_function(x_0,y_0,lx_0,ly_0, ps), 1.)
 </pre></div>
 </div>

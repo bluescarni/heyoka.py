@@ -557,7 +557,7 @@ y = 1 - x + 0.05 \cos\left(11 \pi x \right).
 <span class="n">bounce_points</span> <span class="o">=</span> <span class="p">[]</span>
 
 <span class="c1"># Callback for bouncing against the curve.</span>
-<span class="k">def</span> <span class="nf">cb_w_curve</span><span class="p">(</span><span class="n">ta</span><span class="p">,</span> <span class="n">mr</span><span class="p">,</span> <span class="n">d_sgn</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">cb_w_curve</span><span class="p">(</span><span class="n">ta</span><span class="p">,</span> <span class="n">d_sgn</span><span class="p">):</span>
     <span class="k">global</span> <span class="n">last_t</span>
 
     <span class="c1"># If the last collision happened</span>
@@ -592,7 +592,7 @@ y = 1 - x + 0.05 \cos\left(11 \pi x \right).
     <span class="k">return</span> <span class="kc">True</span>
 
 <span class="c1"># Callback for bouncing off the ground.</span>
-<span class="k">def</span> <span class="nf">cb_bottom</span><span class="p">(</span><span class="n">ta</span><span class="p">,</span> <span class="n">mr</span><span class="p">,</span> <span class="n">d_sgn</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">cb_bottom</span><span class="p">(</span><span class="n">ta</span><span class="p">,</span> <span class="n">d_sgn</span><span class="p">):</span>
     <span class="k">global</span> <span class="n">last_t</span>
     
     <span class="c1"># If the last collision happened</span>
