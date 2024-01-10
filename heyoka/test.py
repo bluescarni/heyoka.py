@@ -287,7 +287,7 @@ class event_classes_test_case(_ut.TestCase):
                 def __init__(self):
                     self.n = 0
 
-                def __call__(self, ta, mr, d_sgn):
+                def __call__(self, ta, d_sgn):
                     self.n = self.n + 1
 
             lcb = local_cb()
@@ -310,9 +310,9 @@ class event_classes_test_case(_ut.TestCase):
             self.assertFalse(ev.callback is None)
             self.assertEqual(ev.callback.n, 0)
             cb = ev.callback
-            cb(1, 2, 3)
-            cb(1, 2, 3)
-            cb(1, 2, 3)
+            cb(1, 2)
+            cb(1, 2)
+            cb(1, 2)
             self.assertEqual(ev.callback.n, 3)
             ev.callback.n = 0
             self.assertEqual(ev.callback.n, 0)
@@ -404,9 +404,9 @@ class event_classes_test_case(_ut.TestCase):
             out_cb = ev.callback
             del ev
             gc.collect()
-            out_cb(1, 2, 3)
-            out_cb(1, 2, 3)
-            out_cb(1, 2, 3)
+            out_cb(1, 2)
+            out_cb(1, 2)
+            out_cb(1, 2)
             self.assertEqual(out_cb.n, 3)
 
         # Unsupported fp_type.
@@ -589,7 +589,7 @@ class event_classes_test_case(_ut.TestCase):
             def __init__(self):
                 self.n = 0
 
-            def __call__(self, ta, mr, d_sgn):
+            def __call__(self, ta, d_sgn):
                 self.n = self.n + 1
 
         lcb = local_cb()
@@ -608,9 +608,9 @@ class event_classes_test_case(_ut.TestCase):
         self.assertFalse(ev.callback is None)
         self.assertEqual(ev.callback.n, 0)
         cb = ev.callback
-        cb(1, 2, 3)
-        cb(1, 2, 3)
-        cb(1, 2, 3)
+        cb(1, 2)
+        cb(1, 2)
+        cb(1, 2)
         self.assertEqual(ev.callback.n, 3)
         ev.callback.n = 0
         self.assertEqual(ev.callback.n, 0)
@@ -688,9 +688,9 @@ class event_classes_test_case(_ut.TestCase):
         out_cb = ev.callback
         del ev
         gc.collect()
-        out_cb(1, 2, 3)
-        out_cb(1, 2, 3)
-        out_cb(1, 2, 3)
+        out_cb(1, 2)
+        out_cb(1, 2)
+        out_cb(1, 2)
         self.assertEqual(out_cb.n, 3)
 
         with self.assertRaises(TypeError) as cm:
