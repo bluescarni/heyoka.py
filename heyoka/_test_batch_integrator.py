@@ -638,7 +638,7 @@ class batch_integrator_test_case(_ut.TestCase):
                 def __init__(self):
                     self.n = 0
 
-                def __call__(self, ta, bool, d_sgn, bidx):
+                def __call__(self, ta, d_sgn, bidx):
                     self.n = self.n + 1
 
                     return True
