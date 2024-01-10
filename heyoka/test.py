@@ -287,7 +287,7 @@ class event_classes_test_case(_ut.TestCase):
                 def __init__(self):
                     self.n = 0
 
-                def __call__(self, ta, mr, d_sgn):
+                def __call__(self, ta, d_sgn):
                     self.n = self.n + 1
 
             lcb = local_cb()
@@ -310,9 +310,9 @@ class event_classes_test_case(_ut.TestCase):
             self.assertFalse(ev.callback is None)
             self.assertEqual(ev.callback.n, 0)
             cb = ev.callback
-            cb(1, 2, 3)
-            cb(1, 2, 3)
-            cb(1, 2, 3)
+            cb(1, 2)
+            cb(1, 2)
+            cb(1, 2)
             self.assertEqual(ev.callback.n, 3)
             ev.callback.n = 0
             self.assertEqual(ev.callback.n, 0)
@@ -404,9 +404,9 @@ class event_classes_test_case(_ut.TestCase):
             out_cb = ev.callback
             del ev
             gc.collect()
-            out_cb(1, 2, 3)
-            out_cb(1, 2, 3)
-            out_cb(1, 2, 3)
+            out_cb(1, 2)
+            out_cb(1, 2)
+            out_cb(1, 2)
             self.assertEqual(out_cb.n, 3)
 
         # Unsupported fp_type.
@@ -589,7 +589,7 @@ class event_classes_test_case(_ut.TestCase):
             def __init__(self):
                 self.n = 0
 
-            def __call__(self, ta, mr, d_sgn):
+            def __call__(self, ta, d_sgn):
                 self.n = self.n + 1
 
         lcb = local_cb()
@@ -608,9 +608,9 @@ class event_classes_test_case(_ut.TestCase):
         self.assertFalse(ev.callback is None)
         self.assertEqual(ev.callback.n, 0)
         cb = ev.callback
-        cb(1, 2, 3)
-        cb(1, 2, 3)
-        cb(1, 2, 3)
+        cb(1, 2)
+        cb(1, 2)
+        cb(1, 2)
         self.assertEqual(ev.callback.n, 3)
         ev.callback.n = 0
         self.assertEqual(ev.callback.n, 0)
@@ -688,9 +688,9 @@ class event_classes_test_case(_ut.TestCase):
         out_cb = ev.callback
         del ev
         gc.collect()
-        out_cb(1, 2, 3)
-        out_cb(1, 2, 3)
-        out_cb(1, 2, 3)
+        out_cb(1, 2)
+        out_cb(1, 2)
+        out_cb(1, 2)
         self.assertEqual(out_cb.n, 3)
 
         with self.assertRaises(TypeError) as cm:
@@ -874,12 +874,11 @@ class event_detection_test_case(_ut.TestCase):
             counter_nt[bidx] = counter_nt[bidx] + 1
             cur_time[bidx] = t
 
-        def cb1(ta, mr, d_sgn, bidx):
+        def cb1(ta, d_sgn, bidx):
             nonlocal cur_time
             nonlocal counter_t
             nonlocal ta_id
 
-            self.assertFalse(mr)
             self.assertTrue(ta.time[bidx] > cur_time[bidx])
             self.assertEqual(ta_id, id(ta))
 
@@ -924,14 +923,14 @@ class event_detection_test_case(_ut.TestCase):
             def __init__(self):
                 self.lst = []
 
-            def __call__(self, ta, mr, d_sgn, bidx):
+            def __call__(self, ta, d_sgn, bidx):
                 pass
 
         class cb1:
             def __init__(self):
                 self.lst = []
 
-            def __call__(self, ta, mr, d_sgn, bidx):
+            def __call__(self, ta, d_sgn, bidx):
                 pass
 
         ta = taylor_adaptive_batch(
@@ -1001,7 +1000,7 @@ class event_detection_test_case(_ut.TestCase):
             ta.propagate_until([4.0, 4.0])
 
         # Callback with wrong retval.
-        def cb3(ta, mr, d_sgn, bidx):
+        def cb3(ta, d_sgn, bidx):
             return "hello"
 
         ta = taylor_adaptive_batch(
@@ -1199,12 +1198,11 @@ class event_detection_test_case(_ut.TestCase):
                 counter_nt = counter_nt + 1
                 cur_time = t
 
-            def cb1(ta, mr, d_sgn):
+            def cb1(ta, d_sgn):
                 nonlocal cur_time
                 nonlocal counter_t
                 nonlocal ta_id
 
-                self.assertFalse(mr)
                 self.assertTrue(ta.time > cur_time)
                 self.assertEqual(ta_id, id(ta))
 
@@ -1252,14 +1250,14 @@ class event_detection_test_case(_ut.TestCase):
                 def __init__(self):
                     self.lst = []
 
-                def __call__(self, ta, mr, d_sgn):
+                def __call__(self, ta, d_sgn):
                     pass
 
             class cb1:
                 def __init__(self):
                     self.lst = []
 
-                def __call__(self, ta, mr, d_sgn):
+                def __call__(self, ta, d_sgn):
                     pass
 
             ta = taylor_adaptive(
@@ -1317,7 +1315,7 @@ class event_detection_test_case(_ut.TestCase):
             )
 
             # Callback with wrong signature.
-            def cb2(ta, t):
+            def cb2(ta, t, tut):
                 pass
 
             ta = taylor_adaptive(
@@ -1331,7 +1329,7 @@ class event_detection_test_case(_ut.TestCase):
                 ta.propagate_until(fp_t(4))
 
             # Callback with wrong retval.
-            def cb3(ta, mr, d_sgn):
+            def cb3(ta, d_sgn):
                 return "hello"
 
             ta = taylor_adaptive(

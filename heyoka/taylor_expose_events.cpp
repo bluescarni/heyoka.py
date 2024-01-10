@@ -242,9 +242,8 @@ void expose_taylor_t_event_impl(py::module &m, const std::string &suffix)
     namespace kw = hey::kw;
 
     using ev_t = std::conditional_t<B, hey::t_event_batch<T>, hey::t_event<T>>;
-    using callback_t
-        = std::conditional_t<B, ev_callback<bool, hey::taylor_adaptive_batch<T> &, bool, int, std::uint32_t>,
-                             ev_callback<bool, hey::taylor_adaptive<T> &, bool, int>>;
+    using callback_t = std::conditional_t<B, ev_callback<bool, hey::taylor_adaptive_batch<T> &, int, std::uint32_t>,
+                                          ev_callback<bool, hey::taylor_adaptive<T> &, int>>;
 
     const auto name = B ? fmt::format("t_event_batch_{}", suffix) : fmt::format("t_event_{}", suffix);
 
@@ -420,31 +419,31 @@ using nt_cb_real = detail::ev_callback<void, heyoka::taylor_adaptive<mppp::real>
 
 #endif
 
-using t_cb_flt = detail::ev_callback<bool, heyoka::taylor_adaptive<float> &, bool, int>;
-using t_cb_dbl = detail::ev_callback<bool, heyoka::taylor_adaptive<double> &, bool, int>;
-using t_cb_ldbl = detail::ev_callback<bool, heyoka::taylor_adaptive<long double> &, bool, int>;
+using t_cb_flt = detail::ev_callback<bool, heyoka::taylor_adaptive<float> &, int>;
+using t_cb_dbl = detail::ev_callback<bool, heyoka::taylor_adaptive<double> &, int>;
+using t_cb_ldbl = detail::ev_callback<bool, heyoka::taylor_adaptive<long double> &, int>;
 
 #if defined(HEYOKA_HAVE_REAL128)
 
-using t_cb_f128 = detail::ev_callback<bool, heyoka::taylor_adaptive<mppp::real128> &, bool, int>;
+using t_cb_f128 = detail::ev_callback<bool, heyoka::taylor_adaptive<mppp::real128> &, int>;
 
 #endif
 
 #if defined(HEYOKA_HAVE_REAL)
 
-using t_cb_real = detail::ev_callback<bool, heyoka::taylor_adaptive<mppp::real> &, bool, int>;
+using t_cb_real = detail::ev_callback<bool, heyoka::taylor_adaptive<mppp::real> &, int>;
 
 #endif
 
 using tabf = heyoka::taylor_adaptive_batch<float>;
 
 using nt_batch_cb_flt = detail::ev_callback<void, tabf &, float, int, std::uint32_t>;
-using t_batch_cb_flt = detail::ev_callback<bool, tabf &, bool, int, std::uint32_t>;
+using t_batch_cb_flt = detail::ev_callback<bool, tabf &, int, std::uint32_t>;
 
 using tabd = heyoka::taylor_adaptive_batch<double>;
 
 using nt_batch_cb_dbl = detail::ev_callback<void, tabd &, double, int, std::uint32_t>;
-using t_batch_cb_dbl = detail::ev_callback<bool, tabd &, bool, int, std::uint32_t>;
+using t_batch_cb_dbl = detail::ev_callback<bool, tabd &, int, std::uint32_t>;
 
 } // namespace heyoka_py
 
@@ -465,24 +464,24 @@ HEYOKA_S11N_CALLABLE_EXPORT(heyoka_py::nt_cb_real, void, heyoka::taylor_adaptive
 
 #endif
 
-HEYOKA_S11N_CALLABLE_EXPORT(heyoka_py::t_cb_flt, bool, heyoka::taylor_adaptive<float> &, bool, int)
-HEYOKA_S11N_CALLABLE_EXPORT(heyoka_py::t_cb_dbl, bool, heyoka::taylor_adaptive<double> &, bool, int)
-HEYOKA_S11N_CALLABLE_EXPORT(heyoka_py::t_cb_ldbl, bool, heyoka::taylor_adaptive<long double> &, bool, int)
+HEYOKA_S11N_CALLABLE_EXPORT(heyoka_py::t_cb_flt, bool, heyoka::taylor_adaptive<float> &, int)
+HEYOKA_S11N_CALLABLE_EXPORT(heyoka_py::t_cb_dbl, bool, heyoka::taylor_adaptive<double> &, int)
+HEYOKA_S11N_CALLABLE_EXPORT(heyoka_py::t_cb_ldbl, bool, heyoka::taylor_adaptive<long double> &, int)
 
 #if defined(HEYOKA_HAVE_REAL128)
 
-HEYOKA_S11N_CALLABLE_EXPORT(heyoka_py::t_cb_f128, bool, heyoka::taylor_adaptive<mppp::real128> &, bool, int)
+HEYOKA_S11N_CALLABLE_EXPORT(heyoka_py::t_cb_f128, bool, heyoka::taylor_adaptive<mppp::real128> &, int)
 
 #endif
 
 #if defined(HEYOKA_HAVE_REAL)
 
-HEYOKA_S11N_CALLABLE_EXPORT(heyoka_py::t_cb_real, bool, heyoka::taylor_adaptive<mppp::real> &, bool, int)
+HEYOKA_S11N_CALLABLE_EXPORT(heyoka_py::t_cb_real, bool, heyoka::taylor_adaptive<mppp::real> &, int)
 
 #endif
 
 HEYOKA_S11N_CALLABLE_EXPORT(heyoka_py::nt_batch_cb_flt, void, heyoka_py::tabf &, float, int, std::uint32_t)
-HEYOKA_S11N_CALLABLE_EXPORT(heyoka_py::t_batch_cb_flt, bool, heyoka_py::tabf &, bool, int, std::uint32_t)
+HEYOKA_S11N_CALLABLE_EXPORT(heyoka_py::t_batch_cb_flt, bool, heyoka_py::tabf &, int, std::uint32_t)
 
 HEYOKA_S11N_CALLABLE_EXPORT(heyoka_py::nt_batch_cb_dbl, void, heyoka_py::tabd &, double, int, std::uint32_t)
-HEYOKA_S11N_CALLABLE_EXPORT(heyoka_py::t_batch_cb_dbl, bool, heyoka_py::tabd &, bool, int, std::uint32_t)
+HEYOKA_S11N_CALLABLE_EXPORT(heyoka_py::t_batch_cb_dbl, bool, heyoka_py::tabd &, int, std::uint32_t)
