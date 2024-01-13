@@ -53,7 +53,7 @@ jobs:
         name: Build and test
         command: bash ./tools/circleci_ubuntu_arm64.sh
   arm64_manylinux2014-py312:
-    machine:
+    docker:
       image: pagmo2/manylinux2014_aarch64_with_deps:latest
     resource_class: arm.large
     steps:
