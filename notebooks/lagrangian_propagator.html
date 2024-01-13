@@ -46,7 +46,7 @@
     <script>DOCUMENTATION_OPTIONS.pagename = 'notebooks/lagrangian_propagator';</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Event detection" href="../examples_event.html" />
+    <link rel="next" title="Gravity-gradient stabilization" href="gg_stab.html" />
     <link rel="prev" title="Elastic tides" href="tides_spokes.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
@@ -215,6 +215,7 @@
 <li class="toctree-l2"><a class="reference internal" href="elp2000.html">Introduction to the ELP2000 lunar theory</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tides_spokes.html">Elastic tides</a></li>
 <li class="toctree-l2 current active"><a class="current reference internal" href="#">Lagrange propagation and the state transition matrix</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gg_stab.html">Gravity-gradient stabilization</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../examples_event.html">Event detection</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-4"><i class="fa-solid fa-chevron-down"></i></label><ul>
@@ -501,8 +502,8 @@ document.write(`
   <section class="tex2jax_ignore mathjax_ignore" id="lagrange-propagation-and-the-state-transition-matrix">
 <h1>Lagrange propagation and the state transition matrix<a class="headerlink" href="#lagrange-propagation-and-the-state-transition-matrix" title="Link to this heading">#</a></h1>
 <p>In the gravitational <a class="reference external" href="https://en.wikipedia.org/wiki/Two-body_problem">two-body problem</a> it is possible to compute the state of the system at an arbitrary time from an initial state <span class="math notranslate nohighlight">\(\left( \boldsymbol{r}_0, \boldsymbol{v}_0 \right)\)</span> via the so-called Lagrange coefficients <span class="math notranslate nohighlight">\(F\)</span>, <span class="math notranslate nohighlight">\(G\)</span>, <span class="math notranslate nohighlight">\(F_t\)</span> and <span class="math notranslate nohighlight">\(G_t\)</span>:</p>
-<div class="amsmath math notranslate nohighlight" id="equation-e71c8f2e-b453-40c5-ab88-08126b76d27c">
-<span class="eqno">(1)<a class="headerlink" href="#equation-e71c8f2e-b453-40c5-ab88-08126b76d27c" title="Permalink to this equation">#</a></span>\[\begin{equation}
+<div class="amsmath math notranslate nohighlight" id="equation-952b7c82-6c04-4f69-8b9b-e97f34838705">
+<span class="eqno">(1)<a class="headerlink" href="#equation-952b7c82-6c04-4f69-8b9b-e97f34838705" title="Permalink to this equation">#</a></span>\[\begin{equation}
 \begin{cases}
 \boldsymbol{r} &amp; = F \boldsymbol{r}_0 + G \boldsymbol{v}_0 \\
 \boldsymbol{v} &amp; = F_t \boldsymbol{r}_0 + G_t \boldsymbol{v}_0
@@ -786,11 +787,11 @@ document.write(`
       </div>
     </a>
     <a class="right-next"
-       href="../examples_event.html"
+       href="gg_stab.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Event detection</p>
+        <p class="prev-next-title">Gravity-gradient stabilization</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>

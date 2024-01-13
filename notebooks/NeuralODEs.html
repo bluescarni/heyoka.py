@@ -215,6 +215,7 @@
 <li class="toctree-l2"><a class="reference internal" href="elp2000.html">Introduction to the ELP2000 lunar theory</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tides_spokes.html">Elastic tides</a></li>
 <li class="toctree-l2"><a class="reference internal" href="lagrangian_propagator.html">Lagrange propagation and the state transition matrix</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gg_stab.html">Gravity-gradient stabilization</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../examples_event.html">Event detection</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-4"><i class="fa-solid fa-chevron-down"></i></label><ul>
@@ -693,7 +694,7 @@ Shape of dNdx: (2, 2)
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>--- 0.6093339920043945 seconds --- to build (jit) the Taylor integrator
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>--- 0.5768654346466064 seconds --- to build (jit) the Taylor integrator
 </pre></div>
 </div>
 </div>
@@ -734,7 +735,7 @@ Shape of dNdx: (2, 2)
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>--- 0.0001926422119140625 seconds --- to propagate using the Taylor scheme
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>--- 0.00022745132446289062 seconds --- to propagate using the Taylor scheme
 </pre></div>
 </div>
 </div>
@@ -753,7 +754,7 @@ Shape of dNdx: (2, 2)
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/15503379f4ec7a9ab3cd516fb266ba4ee99ee511686c8959294bf035861cfa17.png" src="../_images/15503379f4ec7a9ab3cd516fb266ba4ee99ee511686c8959294bf035861cfa17.png" />
+<img alt="../_images/a9b2d54938fe7017cc317087e13be864394ab1e1c1fdb9cdbc43f48a3ac9942c.png" src="../_images/a9b2d54938fe7017cc317087e13be864394ab1e1c1fdb9cdbc43f48a3ac9942c.png" />
 </div>
 </div>
 </section>
@@ -792,7 +793,7 @@ This allows us to use identical jitted expressions also for the rhs of the case 
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>--- 0.001458883285522461 seconds --- to propagate
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>--- 0.0013499259948730469 seconds --- to propagate
 </pre></div>
 </div>
 </div>
@@ -807,7 +808,7 @@ This allows us to use identical jitted expressions also for the rhs of the case 
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/b2a64de76aaf9638fd17814220a167e99f2b9b82e0a568a57a0efe4c9421b375.png" src="../_images/b2a64de76aaf9638fd17814220a167e99f2b9b82e0a568a57a0efe4c9421b375.png" />
+<img alt="../_images/ed054e77c58342bc17bf17e06bea7984f7feca8c3427f844a30e11e8a4e58b4e.png" src="../_images/ed054e77c58342bc17bf17e06bea7984f7feca8c3427f844a30e11e8a4e58b4e.png" />
 </div>
 </div>
 <p>We see a net advantage in timings using the Taylor integration scheme. Note we are here not using batch propagation, which would add an additional 2-4 factor speedup in performances.</p>
