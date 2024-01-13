@@ -54,7 +54,7 @@ jobs:
         command: bash ./tools/circleci_ubuntu_arm64.sh
   arm64_manylinux2014-py312:
     docker:
-      image: pagmo2/manylinux2014_aarch64_with_deps:latest
+      - image: pagmo2/manylinux2014_aarch64_with_deps:latest
     steps:
     - checkout
     - run:
