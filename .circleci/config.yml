@@ -71,4 +71,4 @@ workflows:
     - conda_heyoka_head_312
     - conda_heyoka_head_release_310
     - ubuntu_arm64
-    - arm64_manylinux2014
+    - arm64_manylinux2014-py312
