@@ -55,7 +55,6 @@ jobs:
   arm64_manylinux2014-py312:
     docker:
       image: pagmo2/manylinux2014_aarch64_with_deps:latest
-    resource_class: arm.large
     steps:
     - checkout
     - run:
