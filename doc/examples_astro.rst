@@ -42,3 +42,4 @@ Celestial mechanics and astrodynamics
   notebooks/elp2000
   notebooks/tides_spokes
   notebooks/lagrangian_propagator
+  notebooks/gg_stab
