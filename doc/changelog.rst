@@ -9,6 +9,8 @@ Changelog
 New
 ~~~
 
+- Add new example on gravity-gradient stabilisation
+  (`#159 <https://github.com/bluescarni/heyoka.py/pull/159>`__).
 - Add support for Lagrangian and Hamiltonian mechanics
   (`#156 <https://github.com/bluescarni/heyoka.py/pull/156>`__).
 - It is now possible to pass a list of step callbacks to the
