@@ -13,6 +13,26 @@
 namespace heyoka_py::docstrings
 {
 
+std::string make_vars()
+{
+    return R"(make_vars(*args: str) -> expression | list[expression]
+
+Create expressions from strings.
+
+This function will return one or more :py:class:`~heyoka.expression`
+instances constructed from the input arguments. If a single argument
+is supplied, a single expression is returned. Otherwise, a list of
+expressions (one for each argument) is returned.
+
+:param args: the input string(s).
+
+:returns: one or more expressions constructed from *args*.
+
+:raises ValueError: if the number of *args* is zero.
+
+)";
+}
+
 std::string lagrangian()
 {
     return R"(lagrangian(L: expression, qs: list[expression], qdots: list[expression], D: expression = expression(0.)) -> list[tuple[expression, expression]]

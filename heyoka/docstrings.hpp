@@ -14,6 +14,9 @@
 namespace heyoka_py::docstrings
 {
 
+// Expression system.
+std::string make_vars();
+
 // Lagrangian/Hamiltonian mechanics.
 std::string lagrangian();
 std::string hamiltonian();

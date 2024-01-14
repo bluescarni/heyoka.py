@@ -9,3 +9,4 @@ Expression system
    :toctree: autosummary_generated
 
    expression
+   make_vars

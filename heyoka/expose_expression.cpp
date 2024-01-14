@@ -50,6 +50,7 @@
 
 #include "common_utils.hpp"
 #include "custom_casters.hpp"
+#include "docstrings.hpp"
 #include "pickle_wrappers.hpp"
 
 namespace heyoka_py
@@ -319,13 +320,24 @@ void expose_expression(py::module_ &m)
         "arg"_a);
 
     // make_vars() helper.
-    m.def("make_vars", [](const py::args &v_str) {
-        py::list retval;
-        for (auto o : v_str) {
-            retval.append(hey::expression(py::cast<std::string>(o)));
-        }
-        return retval;
-    });
+    m.def(
+        "make_vars",
+        [](const py::args &v_str) -> std::variant<hey::expression, py::list> {
+            if (py::len(v_str) == 0u) {
+                py_throw(PyExc_ValueError, "At least one argument is required when invoking 'make_vars()'");
+            }
+
+            if (py::len(v_str) == 1u) {
+                return hey::expression(py::cast<std::string>(v_str[0]));
+            }
+
+            py::list retval;
+            for (auto o : v_str) {
+                retval.append(hey::expression(py::cast<std::string>(o)));
+            }
+            return retval;
+        },
+        docstrings::make_vars().c_str());
 
     // Math functions.
 

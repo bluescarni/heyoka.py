@@ -12,6 +12,7 @@ import unittest as _ut
 class expression_test_case(_ut.TestCase):
     def test_basic(self):
         from . import expression as ex, core
+        from . import make_vars
         import numpy as np
 
         with_real128 = hasattr(core, "real128")
@@ -19,6 +20,24 @@ class expression_test_case(_ut.TestCase):
 
         if with_real128:
             real128 = core.real128
+
+        # Minimal make_vars() testing.
+        with self.assertRaises(ValueError) as cm:
+            make_vars()
+        self.assertTrue(
+            "At least one argument is required when invoking 'make_vars()'"
+            in str(cm.exception)
+        )
+
+        x = make_vars("x")
+        self.assertTrue(isinstance(x, ex))
+        self.assertEqual(x, ex("x"))
+
+        l = make_vars("x", "y")
+        self.assertTrue(isinstance(l, list))
+        x, y = l
+        self.assertEqual(x, ex("x"))
+        self.assertEqual(y, ex("y"))
 
         # Constructors.
         self.assertEqual(ex(), ex(0))
