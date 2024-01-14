@@ -25,6 +25,11 @@ New
 Changes
 ~~~~~~~
 
+- **BREAKING**: the :py:func:`~heyoka.make_vars()` function
+  now returns a single expression (rather than a list of expressions)
+  if a single argument is passed in input
+  (`#161 <https://github.com/bluescarni/heyoka.py/pull/161>`__).
+  This is a :ref:`breaking change <bchanges_4_0_0>`.
 - **BREAKING**: the signature of callbacks for terminal events
   has been simplified
   (`#158 <https://github.com/bluescarni/heyoka.py/pull/158>`__).

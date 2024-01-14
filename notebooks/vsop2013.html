@@ -253,6 +253,7 @@
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../api_exsys.html">Expression system</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-8"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../autosummary_generated/heyoka.expression.html">heyoka.expression</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../autosummary_generated/heyoka.make_vars.html">heyoka.make_vars</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../api_lagham.html">Lagrangian and Hamiltonian mechanics</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-9"><i class="fa-solid fa-chevron-down"></i></label><ul>
@@ -624,7 +625,7 @@ Size of Mars&#39; semi-major axis solution @ 1e-11: 154965
 <span class="n">plt</span><span class="o">.</span><span class="n">yscale</span><span class="p">(</span><span class="s1">&#39;log&#39;</span><span class="p">)</span>
 
 <span class="c1"># Create a heyoka variable for representing time.</span>
-<span class="n">tm</span><span class="p">,</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">make_vars</span><span class="p">(</span><span class="s2">&quot;tm&quot;</span><span class="p">)</span>
+<span class="n">tm</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">make_vars</span><span class="p">(</span><span class="s2">&quot;tm&quot;</span><span class="p">)</span>
 
 <span class="c1"># Threshold levels at which we will be computing</span>
 <span class="c1"># the VSOP2013 solution.</span>
@@ -680,7 +681,7 @@ Size of Mars&#39; semi-major axis solution @ 1e-11: 154965
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/f88a72ab7afde0d40aea530e0966648e5361ec4d011a733db7c565e33faa8be8.png" src="../_images/f88a72ab7afde0d40aea530e0966648e5361ec4d011a733db7c565e33faa8be8.png" />
+<img alt="../_images/b8db398fcf1679d0ca028fdd2aa4cbbf6cb35182f094b9c6e221a30cd5fe8fb5.png" src="../_images/b8db398fcf1679d0ca028fdd2aa4cbbf6cb35182f094b9c6e221a30cd5fe8fb5.png" />
 </div>
 </div>
 <p>We can see how VSOP2013 matches up well with respect to HORIZONS, and how lower truncation levels indeed increase the precision of the VSOP2013 solution (up to an error of hundreds of meters for a threshold of <span class="math notranslate nohighlight">\(10^{-10}\)</span>).</p>

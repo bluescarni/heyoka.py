@@ -253,6 +253,7 @@
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../api_exsys.html">Expression system</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-8"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../autosummary_generated/heyoka.expression.html">heyoka.expression</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../autosummary_generated/heyoka.make_vars.html">heyoka.make_vars</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../api_lagham.html">Lagrangian and Hamiltonian mechanics</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-9"><i class="fa-solid fa-chevron-down"></i></label><ul>
@@ -530,7 +531,7 @@ For an example on how to load a FFNN model from torch to <em>heyoka.py</em>, ple
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># We create the symbols for the network inputs (only one in this first simple case)</span>
-<span class="n">x</span><span class="p">,</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">make_vars</span><span class="p">(</span><span class="s2">&quot;x&quot;</span><span class="p">)</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">make_vars</span><span class="p">(</span><span class="s2">&quot;x&quot;</span><span class="p">)</span>
 
 <span class="c1"># We define as nonlinearity a simple linear layer</span>
 <span class="n">linear</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">inp</span><span class="p">:</span> <span class="n">inp</span>
@@ -616,7 +617,7 @@ Output #1: (p161 + (p96 * tanh((p128 + (p0 * x) + (p1 * y)))) + (p97 * tanh((p12
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([0.4024254 , 0.26507553])
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([-0.68122692,  0.01377936])
 </pre></div>
 </div>
 </div>
@@ -630,7 +631,7 @@ Output #1: (p161 + (p96 * tanh((p128 + (p0 * x) + (p1 * y)))) + (p97 * tanh((p12
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[((0.010047649900582933 * tanh((0.41819192102674574 + (0.17016332058727224 * y) + (0.48043442416097593 * x)))) + (0.023595647755543347 * tanh((0.10916888143285342 - (0.40158747298773823 * x) - (0.32883987426392036 * y)))) + (0.043185279266428345 * tanh((0.066222485802713504 - (0.23585572104839014 * y) - (0.089377383506187291 * x)))) + (0.059260237879375843 * tanh(((0.12442855825760668 * y) + (0.22190378658283028 * x) - 0.15790674701543839))) + (0.077967476813287528 * tanh((0.21102662624629254 + (0.10653368509515171 * x) + (0.49636826317996463 * y)))) + (0.14900073246213041 * tanh((0.15455930594483036 - (0.18410001556765432 * x) - (0.11061210232878360 * y)))) + (0.15901416139225966 * tanh(((0.14032791833443037 * y) - 0.060896737352681529 - (0.055921805807376157 * x)))) + (0.16308650051286799 * tanh(((0.41713301659082158 * y) - 0.16307134625563102 - (0.020464155239924620 * x)))) + (0.17144326407235000 * tanh((-0.087297345866973464 - (0.36561759577664443 * x) - (0.32194136258334094 * y)))) + ..., ((0.20517589276189818 * tanh((0.066222485802713504 - (0.23585572104839014 * y) - (0.089377383506187291 * x)))) + (0.21275262691772046 * tanh((0.086064178939059488 + (0.47840070709231308 * x) - (0.29034552495043864 * y)))) + (0.25237896527921411 * tanh(((0.17220180169328281 * x) + (0.37953509481065606 * y) - 0.39585662134868671))) + (0.25635227776578218 * tanh(((0.40998855258331524 * y) - 0.38638667732472665 - (0.062643365238770676 * x)))) + (0.31135550930500988 * tanh(((0.17717953440337220 * y) + (0.39487593214969630 * x) - 0.40731542409530508))) + (0.31591547094199390 * tanh((0.21151817824018737 + (0.066199357964867089 * x) - (0.33588490124295678 * y)))) + (0.38600450633442318 * tanh((0.49777849862808077 + (0.31366165796726586 * x) - (0.054002947775096843 * y)))) + (0.39216843918114086 * tanh((-0.46073897135421416 - (0.20689267056337457 * y) - (0.15572156644721258 * x)))) + (0.39395599025509676 * tanh((0.29363590522519167 + (0.21605611012437764 * x) - (0.070541023975485673 * y)))) + (0.39681418055245887 * ...]
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[((0.017253118882584295 * tanh((-0.063623068233981672 - (0.29269518410175488 * x) - (0.17707268018887845 * y)))) + (0.048963839700263412 * tanh(((0.29063664755492546 * y) + (0.45474690853167166 * x) - 0.43504586772748832))) + (0.16693277285733976 * tanh((0.19414507258060176 + (0.099029450529836693 * x) + (0.10711331618097097 * y)))) + (0.20873869886523155 * tanh((0.29681755460425063 - (0.33050426647485975 * y) - (0.19774785834430320 * x)))) + (0.27531444902273927 * tanh((-0.28515954293191437 - (0.49844644167293195 * x) - (0.016889329560663469 * y)))) + (0.37693263621362172 * tanh((0.46880039537412355 + (0.24586157227216887 * x) - (0.32035246461922695 * y)))) + (0.37874471293247125 * tanh(((0.21918558710447666 * x) - 0.20814116567731189 - (0.41573461840854697 * y)))) + (0.39051153065429955 * tanh((0.29735826552902334 - (0.40825424609317296 * y) - (0.18860179514172126 * x)))) + (0.39319776452531663 * tanh((0.19510441167639614 + (0.46928118023813015 * y) - (0.32767962616232560 * x)))) + (0.39478993667313345 * ..., (0.28640264415760175 + (0.067698524268233862 * tanh((0.24508887450027905 - (0.46017743232827046 * y) - (0.40299625183469634 * x)))) + (0.071801114979293756 * tanh(((0.22406960426211275 * y) + (0.24612256926791098 * x) - 0.19617727321471234))) + (0.10249103991809794 * tanh((0.13407064125815005 - (0.33416922495985335 * x) - (0.11298162586283766 * y)))) + (0.11728652252162519 * tanh((-0.44989809917123458 - (0.37370872276382572 * y) - (0.069581614965795513 * x)))) + (0.13903785919182221 * tanh(((0.21918558710447666 * x) - 0.20814116567731189 - (0.41573461840854697 * y)))) + (0.14703311666073682 * tanh((-0.28082363257648491 - (0.48619282744996228 * x) - (0.43886206038873121 * y)))) + (0.21816800974228079 * tanh((0.16533636896104398 + (0.31142579032338757 * x) - (0.089058796236158755 * y)))) + (0.23495406295773336 * tanh((0.26526522145245868 + (0.22015771216682267 * x) + (0.25496464472362979 * y)))) + (0.26125573380442191 * tanh((0.19414507258060176 + (0.099029450529836693 * x) + (0.10711331618097097 * ...]
 </pre></div>
 </div>
 </div>
@@ -645,8 +646,8 @@ Output #1: (p161 + (p96 * tanh((p128 + (p0 * x) + (p1 * y)))) + (p97 * tanh((p12
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Variables: [x, y]
-Output #0: ((0.010047649900582933 * tanh((0.41819192102674574 + (0.17016332058727224 * y) + (0.48043442416097593 * x)))) + (0.023595647755543347 * tanh((0.10916888143285342 - (0.40158747298773823 * x) - (0.32883987426392036 * y)))) + (0.043185279266428345 * tanh((0.066222485802713504 - (0.23585572104839014 * y) - (0.089377383506187291 * x)))) + (0.059260237879375843 * tanh(((0.12442855825760668 * y) + (0.22190378658283028 * x) - 0.15790674701543839))) + (0.077967476813287528 * tanh((0.21102662624629254 + (0.10653368509515171 * x) + (0.49636826317996463 * y)))) + (0.14900073246213041 * tanh((0.15455930594483036 - (0.18410001556765432 * x) - (0.11061210232878360 * y)))) + (0.15901416139225966 * tanh(((0.14032791833443037 * y) - 0.060896737352681529 - (0.055921805807376157 * x)))) + (0.16308650051286799 * tanh(((0.41713301659082158 * y) - 0.16307134625563102 - (0.020464155239924620 * x)))) + (0.17144326407235000 * tanh((-0.087297345866973464 - (0.36561759577664443 * x) - (0.32194136258334094 * y)))) + ...
-Output #1: ((0.20517589276189818 * tanh((0.066222485802713504 - (0.23585572104839014 * y) - (0.089377383506187291 * x)))) + (0.21275262691772046 * tanh((0.086064178939059488 + (0.47840070709231308 * x) - (0.29034552495043864 * y)))) + (0.25237896527921411 * tanh(((0.17220180169328281 * x) + (0.37953509481065606 * y) - 0.39585662134868671))) + (0.25635227776578218 * tanh(((0.40998855258331524 * y) - 0.38638667732472665 - (0.062643365238770676 * x)))) + (0.31135550930500988 * tanh(((0.17717953440337220 * y) + (0.39487593214969630 * x) - 0.40731542409530508))) + (0.31591547094199390 * tanh((0.21151817824018737 + (0.066199357964867089 * x) - (0.33588490124295678 * y)))) + (0.38600450633442318 * tanh((0.49777849862808077 + (0.31366165796726586 * x) - (0.054002947775096843 * y)))) + (0.39216843918114086 * tanh((-0.46073897135421416 - (0.20689267056337457 * y) - (0.15572156644721258 * x)))) + (0.39395599025509676 * tanh((0.29363590522519167 + (0.21605611012437764 * x) - (0.070541023975485673 * y)))) + (0.39681418055245887 * ...
+Output #0: ((0.017253118882584295 * tanh((-0.063623068233981672 - (0.29269518410175488 * x) - (0.17707268018887845 * y)))) + (0.048963839700263412 * tanh(((0.29063664755492546 * y) + (0.45474690853167166 * x) - 0.43504586772748832))) + (0.16693277285733976 * tanh((0.19414507258060176 + (0.099029450529836693 * x) + (0.10711331618097097 * y)))) + (0.20873869886523155 * tanh((0.29681755460425063 - (0.33050426647485975 * y) - (0.19774785834430320 * x)))) + (0.27531444902273927 * tanh((-0.28515954293191437 - (0.49844644167293195 * x) - (0.016889329560663469 * y)))) + (0.37693263621362172 * tanh((0.46880039537412355 + (0.24586157227216887 * x) - (0.32035246461922695 * y)))) + (0.37874471293247125 * tanh(((0.21918558710447666 * x) - 0.20814116567731189 - (0.41573461840854697 * y)))) + (0.39051153065429955 * tanh((0.29735826552902334 - (0.40825424609317296 * y) - (0.18860179514172126 * x)))) + (0.39319776452531663 * tanh((0.19510441167639614 + (0.46928118023813015 * y) - (0.32767962616232560 * x)))) + (0.39478993667313345 * ...
+Output #1: (0.28640264415760175 + (0.067698524268233862 * tanh((0.24508887450027905 - (0.46017743232827046 * y) - (0.40299625183469634 * x)))) + (0.071801114979293756 * tanh(((0.22406960426211275 * y) + (0.24612256926791098 * x) - 0.19617727321471234))) + (0.10249103991809794 * tanh((0.13407064125815005 - (0.33416922495985335 * x) - (0.11298162586283766 * y)))) + (0.11728652252162519 * tanh((-0.44989809917123458 - (0.37370872276382572 * y) - (0.069581614965795513 * x)))) + (0.13903785919182221 * tanh(((0.21918558710447666 * x) - 0.20814116567731189 - (0.41573461840854697 * y)))) + (0.14703311666073682 * tanh((-0.28082363257648491 - (0.48619282744996228 * x) - (0.43886206038873121 * y)))) + (0.21816800974228079 * tanh((0.16533636896104398 + (0.31142579032338757 * x) - (0.089058796236158755 * y)))) + (0.23495406295773336 * tanh((0.26526522145245868 + (0.22015771216682267 * x) + (0.25496464472362979 * y)))) + (0.26125573380442191 * tanh((0.19414507258060176 + (0.099029450529836693 * x) + (0.10711331618097097 * ...
 </pre></div>
 </div>
 </div>
@@ -659,7 +660,7 @@ Output #1: ((0.20517589276189818 * tanh((0.066222485802713504 - (0.2358557210483
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([0.4024254 , 0.26507553])
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([-0.68122692,  0.01377936])
 </pre></div>
 </div>
 </div>
@@ -672,9 +673,9 @@ Output #1: ((0.20517589276189818 * tanh((0.066222485802713504 - (0.2358557210483
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([[ 0.4024254 ,  0.26507553],
-       [ 0.85722792, -0.18216195],
-       [-0.02378293, -0.22483049]])
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([[-0.68122692,  0.01377936],
+       [-0.07855811,  0.9793227 ],
+       [-0.85707857,  0.29743782]])
 </pre></div>
 </div>
 </div>
@@ -804,10 +805,10 @@ in those cases where the ANN has been trained to describe nonlinear interactions
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[&lt;matplotlib.lines.Line2D at 0x7fbd95e47010&gt;]
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[&lt;matplotlib.lines.Line2D at 0x7f8dca436f50&gt;]
 </pre></div>
 </div>
-<img alt="../_images/d4cba28e54ca2c351a83112b0d2adfdeab1936a7237c8da1e98ec5e1f9c61292.png" src="../_images/d4cba28e54ca2c351a83112b0d2adfdeab1936a7237c8da1e98ec5e1f9c61292.png" />
+<img alt="../_images/870b87eb8365ed36ab49b0dae973708df1f8ae265eaf5651333076142ea52a01.png" src="../_images/870b87eb8365ed36ab49b0dae973708df1f8ae265eaf5651333076142ea52a01.png" />
 </div>
 </div>
 <p>… increasing the perturbation level:</p>
@@ -830,10 +831,10 @@ in those cases where the ANN has been trained to describe nonlinear interactions
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[&lt;matplotlib.lines.Line2D at 0x7fbd7d179870&gt;]
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[&lt;matplotlib.lines.Line2D at 0x7f8d9cbb01c0&gt;]
 </pre></div>
 </div>
-<img alt="../_images/aad2e0b2708e906aaee7cddf7922171d35e0f7fdea611457dc180cccdf5d3a87.png" src="../_images/aad2e0b2708e906aaee7cddf7922171d35e0f7fdea611457dc180cccdf5d3a87.png" />
+<img alt="../_images/53411de25b498f6a27bd378538ec489cc990f96e245628ae596c443ecbcf9c34.png" src="../_images/53411de25b498f6a27bd378538ec489cc990f96e245628ae596c443ecbcf9c34.png" />
 </div>
 </div>
 <p>… and thats all I wanted to tell you! But wait …. one last thing … the above system is dissipative and does not really look Hamiltonian right? The random perturbation is, well …. random. To fix this, have a look at the tutorial: <a class="reference internal" href="NeuralHamiltonianODEs.html"><span class="std std-doc">Neural Hamiltonian ODE</span></a>.</p>

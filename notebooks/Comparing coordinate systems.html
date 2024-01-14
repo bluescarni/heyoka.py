@@ -253,6 +253,7 @@
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../api_exsys.html">Expression system</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-8"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../autosummary_generated/heyoka.expression.html">heyoka.expression</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../autosummary_generated/heyoka.make_vars.html">heyoka.make_vars</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../api_lagham.html">Lagrangian and Hamiltonian mechanics</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-9"><i class="fa-solid fa-chevron-down"></i></label><ul>
@@ -1047,7 +1048,7 @@ r = L^2\left( 1 - \sqrt{1-\frac{G^2}{L^2}}\cos E\right).
 
 <span class="c1"># Additional dynamical variable to</span>
 <span class="c1"># integrate t(tau).</span>
-<span class="n">t</span><span class="p">,</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">make_vars</span><span class="p">(</span><span class="s2">&quot;t&quot;</span><span class="p">)</span>
+<span class="n">t</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">make_vars</span><span class="p">(</span><span class="s2">&quot;t&quot;</span><span class="p">)</span>
 
 <span class="n">ta_del_e</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">taylor_adaptive</span><span class="p">(</span>
     <span class="p">[(</span><span class="n">L</span><span class="p">,</span> <span class="n">dL_dt</span><span class="o">*</span><span class="n">dt_dtau</span><span class="p">),</span>

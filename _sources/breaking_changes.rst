@@ -13,6 +13,22 @@ heyoka.py 4 includes several backwards-incompatible changes.
 API/behaviour changes
 ~~~~~~~~~~~~~~~~~~~~~
 
+Changes to :py:func:`~heyoka.make_vars()`
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The :py:func:`~heyoka.make_vars()` function now returns a single expression (rather than a list of expressions)
+if a single argument is passed in input. This means that code such as
+
+.. code-block:: python
+
+    x, = make_vars("x")
+
+needs to be rewritten like this:
+
+.. code-block:: python
+
+    x = make_vars("x")
+
 Terminal events callbacks
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
