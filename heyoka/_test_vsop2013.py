@@ -17,7 +17,7 @@ class vsop2013_test_case(_ut.TestCase):
         from .model import vsop2013_elliptic, vsop2013_cartesian
 
         sol = vsop2013_elliptic(1, 1)
-        cf = make_cfunc([sol])
+        cf = make_cfunc([sol], [])
 
         date = 2411545.0
         self.assertAlmostEqual(
@@ -25,7 +25,7 @@ class vsop2013_test_case(_ut.TestCase):
         )
 
         sol = vsop2013_cartesian(1, thresh=1e-8)
-        cf = make_cfunc([sol[0]])
+        cf = make_cfunc([sol[0]], [])
 
         self.assertAlmostEqual(
             cf([], time=(date - 2451545.0) / 365250)[0], 0.3493879042

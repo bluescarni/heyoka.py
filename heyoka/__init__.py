@@ -138,13 +138,13 @@ def taylor_add_jet(sys, order, **kwargs):
     return getattr(core, "_taylor_add_jet{}".format(fp_suffix))(sys, order, **kwargs)
 
 
-def make_cfunc(fn, **kwargs):
+def make_cfunc(fn, vars, **kwargs):
     from . import core
 
     fp_type = kwargs.pop("fp_type", float)
     fp_suffix = _fp_to_suffix(fp_type)
 
-    return getattr(core, "_add_cfunc{}".format(fp_suffix))(fn, **kwargs)
+    return getattr(core, "_add_cfunc{}".format(fp_suffix))(fn, vars, **kwargs)
 
 
 def nt_event(ex, callback, **kwargs):

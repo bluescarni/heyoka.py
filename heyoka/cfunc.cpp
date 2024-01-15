@@ -23,6 +23,7 @@
 #include <variant>
 #include <vector>
 
+#include <boost/core/demangle.hpp>
 #include <boost/numeric/conversion/cast.hpp>
 #include <boost/serialization/split_member.hpp>
 #include <boost/serialization/string.hpp>
@@ -102,7 +103,7 @@ struct cfunc {
     using ptr_t = cfunc_ptr_t<T>;
     using ptr_s_t = cfunc_ptr_s_t<T>;
 
-    hey::llvm_state s_scal, s_batch;
+    hey::llvm_state s_scal, s_batch, s_scal_s, s_batch_s;
     std::uint32_t simd_size = 0, nparams = 0, nouts = 0, nvars = 0;
     bool is_time_dependent = false;
     ptr_t fptr_scal = nullptr, fptr_batch = nullptr;
@@ -116,6 +117,8 @@ struct cfunc {
     {
         ar << s_scal;
         ar << s_batch;
+        ar << s_scal_s;
+        ar << s_batch_s;
         ar << simd_size;
         ar << nparams;
         ar << nouts;
@@ -133,12 +136,11 @@ struct cfunc {
     template <typename Archive>
     void load(Archive &ar, unsigned)
     {
-        // NOTE: make a copy of this for exception safety.
-        auto copy_this = *this;
-
         try {
             ar >> s_scal;
             ar >> s_batch;
+            ar >> s_scal_s;
+            ar >> s_batch_s;
             ar >> simd_size;
             ar >> nparams;
             ar >> nouts;
@@ -155,11 +157,11 @@ struct cfunc {
 
             fptr_scal = reinterpret_cast<ptr_t>(s_scal.jit_lookup("cfunc"));
             fptr_batch = reinterpret_cast<ptr_t>(s_batch.jit_lookup("cfunc"));
-            fptr_scal_s = reinterpret_cast<ptr_s_t>(s_scal.jit_lookup("cfunc.strided"));
-            fptr_batch_s = reinterpret_cast<ptr_s_t>(s_batch.jit_lookup("cfunc.strided"));
+            fptr_scal_s = reinterpret_cast<ptr_s_t>(s_scal_s.jit_lookup("cfunc.strided"));
+            fptr_batch_s = reinterpret_cast<ptr_s_t>(s_batch_s.jit_lookup("cfunc.strided"));
         } catch (...) {
-            // Restore before rethrowing.
-            *this = std::move(copy_this);
+            // Restore to def-cted state before rethrowing.
+            *this = cfunc{};
 
             throw;
         }
@@ -167,32 +169,34 @@ struct cfunc {
     BOOST_SERIALIZATION_SPLIT_MEMBER()
 
     cfunc() = default;
-    explicit cfunc(hey::llvm_state s_scal, hey::llvm_state s_batch, std::uint32_t simd_size, std::uint32_t nparams,
-                   std::uint32_t nouts, std::uint32_t nvars, bool is_time_dependent, ptr_t fptr_scal, ptr_t fptr_batch,
-                   ptr_s_t fptr_scal_s, ptr_s_t fptr_batch_s, std::vector<T> buf_in, std::vector<T> buf_out,
-                   std::vector<T> buf_pars, std::vector<T> buf_time, long long prec,
-                   std::vector<hey::expression> list_var, std::vector<hey::expression> fn,
+    explicit cfunc(hey::llvm_state s_scal, hey::llvm_state s_batch, hey::llvm_state s_scal_s, hey::llvm_state s_batch_s,
+                   std::uint32_t simd_size, std::uint32_t nparams, std::uint32_t nouts, std::uint32_t nvars,
+                   bool is_time_dependent, ptr_t fptr_scal, ptr_t fptr_batch, ptr_s_t fptr_scal_s, ptr_s_t fptr_batch_s,
+                   std::vector<T> buf_in, std::vector<T> buf_out, std::vector<T> buf_pars, std::vector<T> buf_time,
+                   long long prec, std::vector<hey::expression> list_var, std::vector<hey::expression> fn,
                    std::vector<hey::expression> dc)
-        : s_scal(std::move(s_scal)), s_batch(std::move(s_batch)), simd_size(simd_size), nparams(nparams), nouts(nouts),
-          nvars(nvars), is_time_dependent(is_time_dependent), fptr_scal(fptr_scal), fptr_batch(fptr_batch),
-          fptr_scal_s(fptr_scal_s), fptr_batch_s(fptr_batch_s), buf_in(std::move(buf_in)), buf_out(std::move(buf_out)),
+        : s_scal(std::move(s_scal)), s_batch(std::move(s_batch)), s_scal_s(std::move(s_scal_s)),
+          s_batch_s(std::move(s_batch_s)), simd_size(simd_size), nparams(nparams), nouts(nouts), nvars(nvars),
+          is_time_dependent(is_time_dependent), fptr_scal(fptr_scal), fptr_batch(fptr_batch), fptr_scal_s(fptr_scal_s),
+          fptr_batch_s(fptr_batch_s), buf_in(std::move(buf_in)), buf_out(std::move(buf_out)),
           buf_pars(std::move(buf_pars)), buf_time(std::move(buf_time)), prec(prec), list_var(std::move(list_var)),
           fn(std::move(fn)), dc(std::move(dc))
     {
     }
     cfunc(const cfunc &other)
-        : s_scal(other.s_scal), s_batch(other.s_batch), simd_size(other.simd_size), nparams(other.nparams),
-          nouts(other.nouts), nvars(other.nvars), is_time_dependent(other.is_time_dependent), buf_in(other.buf_in),
-          buf_out(other.buf_out), buf_pars(other.buf_pars), buf_time(other.buf_time), prec(other.prec),
-          list_var(other.list_var), fn(other.fn), dc(other.dc)
+        : s_scal(other.s_scal), s_batch(other.s_batch), s_scal_s(other.s_scal_s), s_batch_s(other.s_batch_s),
+          simd_size(other.simd_size), nparams(other.nparams), nouts(other.nouts), nvars(other.nvars),
+          is_time_dependent(other.is_time_dependent), buf_in(other.buf_in), buf_out(other.buf_out),
+          buf_pars(other.buf_pars), buf_time(other.buf_time), prec(other.prec), list_var(other.list_var), fn(other.fn),
+          dc(other.dc)
     {
         // NOTE: don't lookup the pointers if we are copying a def-cted cfunc,
         // just leave them null.
         if (other.fptr_scal != nullptr) {
             fptr_scal = reinterpret_cast<ptr_t>(s_scal.jit_lookup("cfunc"));
             fptr_batch = reinterpret_cast<ptr_t>(s_batch.jit_lookup("cfunc"));
-            fptr_scal_s = reinterpret_cast<ptr_s_t>(s_scal.jit_lookup("cfunc.strided"));
-            fptr_batch_s = reinterpret_cast<ptr_s_t>(s_batch.jit_lookup("cfunc.strided"));
+            fptr_scal_s = reinterpret_cast<ptr_s_t>(s_scal_s.jit_lookup("cfunc.strided"));
+            fptr_batch_s = reinterpret_cast<ptr_s_t>(s_batch_s.jit_lookup("cfunc.strided"));
         }
     }
     cfunc(cfunc &&) noexcept = default;
@@ -657,6 +661,8 @@ struct cfunc {
 template <typename T>
 std::ostream &operator<<(std::ostream &os, const cfunc<T> &cf)
 {
+    os << fmt::format("C++ datatype: {}\n", boost::core::demangle(typeid(T).name()));
+
 #if defined(HEYOKA_HAVE_REAL)
 
     if constexpr (std::is_same_v<T, mppp::real>) {
@@ -686,11 +692,10 @@ void expose_add_cfunc_impl(py::module &m, const char *suffix)
                    "time"_a = py::none{});
     cfunc_inst.def_readonly("param_size", &cfunc<T>::nparams);
     cfunc_inst.def_readonly("is_time_dependent", &cfunc<T>::is_time_dependent);
-    // NOTE: these can be probably simplified into def_readonly().
-    cfunc_inst.def_property_readonly("llvm_state_scalar",
-                                     [](const cfunc<T> &cf) -> const hey::llvm_state & { return cf.s_scal; });
-    cfunc_inst.def_property_readonly("llvm_state_batch",
-                                     [](const cfunc<T> &cf) -> const hey::llvm_state & { return cf.s_batch; });
+    cfunc_inst.def_readonly("llvm_state_scalar", &cfunc<T>::s_scal);
+    cfunc_inst.def_readonly("llvm_state_scalar_s", &cfunc<T>::s_scal_s);
+    cfunc_inst.def_readonly("llvm_state_batch", &cfunc<T>::s_batch);
+    cfunc_inst.def_readonly("llvm_state_batch_s", &cfunc<T>::s_batch_s);
     cfunc_inst.def_property_readonly("list_var", [](const cfunc<T> &cf) { return cf.list_var; });
     cfunc_inst.def_property_readonly("fn", [](const cfunc<T> &cf) { return cf.fn; });
     cfunc_inst.def_property_readonly("decomposition", [](const cfunc<T> &cf) { return cf.dc; });
@@ -713,8 +718,8 @@ void expose_add_cfunc_impl(py::module &m, const char *suffix)
 
     m.def(
         fmt::format("_add_cfunc_{}", suffix).c_str(),
-        [](std::vector<hey::expression> fn, std::optional<std::vector<hey::expression>> vars, bool high_accuracy,
-           bool compact_mode, bool parallel_mode, unsigned opt_level, bool force_avx512, bool slp_vectorize,
+        [](std::vector<hey::expression> fn, std::vector<hey::expression> vars, bool high_accuracy, bool compact_mode,
+           bool parallel_mode, unsigned opt_level, bool force_avx512, bool slp_vectorize,
            std::optional<std::uint32_t> batch_size, bool fast_math, long long prec) {
             // Compute the SIMD size.
             const auto simd_size = batch_size ? *batch_size : hey::recommended_simd_size<T>();
@@ -732,8 +737,7 @@ void expose_add_cfunc_impl(py::module &m, const char *suffix)
 
             hey::llvm_state s_scal{kw::opt_level = opt_level, kw::force_avx512 = force_avx512,
                                    kw::slp_vectorize = slp_vectorize, kw::fast_math = fast_math},
-                s_batch{kw::opt_level = opt_level, kw::force_avx512 = force_avx512, kw::slp_vectorize = slp_vectorize,
-                        kw::fast_math = fast_math};
+                s_batch{s_scal}, s_scal_s{s_scal}, s_batch_s{s_scal};
 
             // Variable to store the decomposition.
             std::vector<hey::expression> dc;
@@ -744,40 +748,46 @@ void expose_add_cfunc_impl(py::module &m, const char *suffix)
 
                 oneapi::tbb::parallel_invoke(
                     [&]() {
-                        // Scalar.
-                        // NOTE: we fetch the decomposition from the scalar invocation
-                        // of add_cfunc().
-                        if (vars) {
-                            dc = hey::add_cfunc<T>(s_scal, "cfunc", fn, kw::vars = *vars,
-                                                   kw::high_accuracy = high_accuracy, kw::compact_mode = compact_mode,
-                                                   kw::parallel_mode = parallel_mode, kw::prec = prec);
-                        } else {
-                            dc = hey::add_cfunc<T>(s_scal, "cfunc", fn, kw::high_accuracy = high_accuracy,
-                                                   kw::compact_mode = compact_mode, kw::parallel_mode = parallel_mode,
-                                                   kw::prec = prec);
-                        }
+                        // Scalar unstrided.
+                        // NOTE: we fetch the decomposition from the scalar
+                        // unstrided invocation of add_cfunc().
+                        dc = hey::add_cfunc<T>(s_scal, "cfunc", fn, vars, kw::high_accuracy = high_accuracy,
+                                               kw::compact_mode = compact_mode, kw::parallel_mode = parallel_mode,
+                                               kw::prec = prec);
 
                         s_scal.compile();
 
                         fptr_scal = reinterpret_cast<ptr_t>(s_scal.jit_lookup("cfunc"));
-                        fptr_scal_s = reinterpret_cast<ptr_s_t>(s_scal.jit_lookup("cfunc.strided"));
                     },
                     [&]() {
-                        // Batch.
-                        if (vars) {
-                            hey::add_cfunc<T>(s_batch, "cfunc", fn, kw::vars = *vars, kw::batch_size = simd_size,
-                                              kw::high_accuracy = high_accuracy, kw::compact_mode = compact_mode,
-                                              kw::parallel_mode = parallel_mode, kw::prec = prec);
-                        } else {
-                            hey::add_cfunc<T>(s_batch, "cfunc", fn, kw::batch_size = simd_size,
-                                              kw::high_accuracy = high_accuracy, kw::compact_mode = compact_mode,
-                                              kw::parallel_mode = parallel_mode, kw::prec = prec);
-                        }
+                        // Batch unstrided.
+                        hey::add_cfunc<T>(s_batch, "cfunc", fn, vars, kw::batch_size = simd_size,
+                                          kw::high_accuracy = high_accuracy, kw::compact_mode = compact_mode,
+                                          kw::parallel_mode = parallel_mode, kw::prec = prec);
 
                         s_batch.compile();
 
                         fptr_batch = reinterpret_cast<ptr_t>(s_batch.jit_lookup("cfunc"));
-                        fptr_batch_s = reinterpret_cast<ptr_s_t>(s_batch.jit_lookup("cfunc.strided"));
+                    },
+                    [&]() {
+                        // Scalar strided.
+                        hey::add_cfunc<T>(s_scal_s, "cfunc.strided", fn, vars, kw::high_accuracy = high_accuracy,
+                                          kw::compact_mode = compact_mode, kw::parallel_mode = parallel_mode,
+                                          kw::prec = prec, kw::strided = true);
+
+                        s_scal_s.compile();
+
+                        fptr_scal_s = reinterpret_cast<ptr_s_t>(s_scal_s.jit_lookup("cfunc.strided"));
+                    },
+                    [&]() {
+                        // Batch strided.
+                        hey::add_cfunc<T>(s_batch_s, "cfunc.strided", fn, vars, kw::batch_size = simd_size,
+                                          kw::high_accuracy = high_accuracy, kw::compact_mode = compact_mode,
+                                          kw::parallel_mode = parallel_mode, kw::prec = prec, kw::strided = true);
+
+                        s_batch_s.compile();
+
+                        fptr_batch_s = reinterpret_cast<ptr_s_t>(s_batch_s.jit_lookup("cfunc.strided"));
                     });
             }
 
@@ -790,26 +800,7 @@ void expose_add_cfunc_impl(py::module &m, const char *suffix)
             // succeeded and that guarantees that the number of vars and outputs
             // fits in a 32-bit int.
             const auto nouts = static_cast<std::uint32_t>(fn.size());
-
-            // NOTE: save as well the list of variables, so
-            // that we can pass it to the cfunc ctor.
-            std::vector<hey::expression> list_var;
-
-            std::uint32_t nvars = 0;
-            if (vars) {
-                nvars = static_cast<std::uint32_t>(vars->size());
-
-                list_var = std::move(*vars);
-            } else {
-                // NOTE: get_variables() returns an ordered list of strings,
-                // we need to convert it into a list of expressions.
-                const auto var_slist = hey::get_variables(fn);
-                list_var.reserve(var_slist.size());
-                std::transform(var_slist.begin(), var_slist.end(), std::back_inserter(list_var),
-                               [](const auto &name) { return hey::expression{name}; });
-
-                nvars = static_cast<std::uint32_t>(list_var.size());
-            }
+            const auto nvars = static_cast<std::uint32_t>(vars.size());
 
             // Prepare local buffers to store inputs, outputs, pars and time
             // during the invocation of the compiled functions.
@@ -851,6 +842,8 @@ void expose_add_cfunc_impl(py::module &m, const char *suffix)
 
             return cfunc<T>{std::move(s_scal),
                             std::move(s_batch),
+                            std::move(s_scal_s),
+                            std::move(s_batch_s),
                             simd_size,
                             nparams,
                             nouts,
@@ -865,14 +858,14 @@ void expose_add_cfunc_impl(py::module &m, const char *suffix)
                             std::move(buf_pars),
                             std::move(buf_time),
                             prec,
-                            std::move(list_var),
+                            std::move(vars),
                             std::move(fn),
                             std::move(dc)};
         },
-        "fn"_a, "vars"_a = py::none{}, "high_accuracy"_a.noconvert() = false,
-        "compact_mode"_a.noconvert() = default_cm<T>, "parallel_mode"_a.noconvert() = false,
-        "opt_level"_a.noconvert() = 3, "force_avx512"_a.noconvert() = false, "slp_vectorize"_a.noconvert() = false,
-        "batch_size"_a.noconvert() = py::none{}, "fast_math"_a.noconvert() = false, "prec"_a.noconvert() = 0);
+        "fn"_a, "vars"_a, "high_accuracy"_a.noconvert() = false, "compact_mode"_a.noconvert() = default_cm<T>,
+        "parallel_mode"_a.noconvert() = false, "opt_level"_a.noconvert() = 3, "force_avx512"_a.noconvert() = false,
+        "slp_vectorize"_a.noconvert() = false, "batch_size"_a.noconvert() = py::none{},
+        "fast_math"_a.noconvert() = false, "prec"_a.noconvert() = 0);
 }
 
 } // namespace
