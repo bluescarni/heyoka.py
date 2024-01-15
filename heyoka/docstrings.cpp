@@ -17,12 +17,12 @@ std::string make_vars()
 {
     return R"(make_vars(*args: str) -> expression | list[expression]
 
-Create expressions from strings.
+Create variable expressions from strings.
 
 This function will return one or more :py:class:`~heyoka.expression`
-instances constructed from the input arguments. If a single argument
-is supplied, a single expression is returned. Otherwise, a list of
-expressions (one for each argument) is returned.
+instances containing variables constructed from the input arguments.
+If a single argument is supplied, a single expression is returned.
+Otherwise, a list of expressions (one for each argument) is returned.
 
 :param args: the input string(s).
 
