@@ -25,6 +25,10 @@ New
 Changes
 ~~~~~~~
 
+- **BREAKING**: :ref:`compiled functions <cfunc_tut>` now require
+  the list of input variables to be always supplied by the user
+  (`#162 <https://github.com/bluescarni/heyoka.py/pull/162>`__).
+  This is a :ref:`breaking change <bchanges_4_0_0>`.
 - **BREAKING**: the :py:func:`~heyoka.make_vars()` function
   now returns a single expression (rather than a list of expressions)
   if a single argument is passed in input

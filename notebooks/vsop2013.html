@@ -647,7 +647,7 @@ Size of Mars&#39; semi-major axis solution @ 1e-11: 154965
                                                                  <span class="n">thresh</span><span class="o">=</span><span class="n">thr</span><span class="p">)[:</span><span class="mi">3</span><span class="p">]</span>
 
     <span class="c1"># Compile the function for the evaluation of venus_x/y/z.</span>
-    <span class="n">venus_cf</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">make_cfunc</span><span class="p">([</span><span class="n">venus_x</span><span class="p">,</span> <span class="n">venus_y</span><span class="p">,</span> <span class="n">venus_z</span><span class="p">],</span> <span class="n">compact_mode</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">venus_cf</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">make_cfunc</span><span class="p">([</span><span class="n">venus_x</span><span class="p">,</span> <span class="n">venus_y</span><span class="p">,</span> <span class="n">venus_z</span><span class="p">],</span> <span class="p">[</span><span class="n">tm</span><span class="p">],</span> <span class="n">compact_mode</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     
     <span class="c1"># Run the evaluation.</span>
     <span class="n">vsop_states</span> <span class="o">=</span> <span class="n">venus_cf</span><span class="p">(</span><span class="n">dates</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">)))</span>

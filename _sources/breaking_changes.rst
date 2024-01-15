@@ -13,6 +13,21 @@ heyoka.py 4 includes several backwards-incompatible changes.
 API/behaviour changes
 ~~~~~~~~~~~~~~~~~~~~~
 
+A more explicit API
+^^^^^^^^^^^^^^^^^^^
+
+Several functions and classes have been changed to explicitly require
+the user to pass a list of variables in input. The previous behaviour, where
+heyoka.py would try to automatically infer a list of variables from other
+input arguments, turned out to be in practice confusing and a source of bugs.
+
+The affected APIs include:
+
+- :ref:`compiled functions <cfunc_tut>`, which now require the list of input
+  variables to be always supplied by the user.
+
+The tutorials and the documentation have been updated accordingly.
+
 Changes to :py:func:`~heyoka.make_vars()`
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -64,8 +79,8 @@ a matter of:
 - accounting for the fact that batch propagations now return a tuple of two elements
   rather than a single value.
 
-``propagate_grid()``
-^^^^^^^^^^^^^^^^^^^^
+Changes to ``propagate_grid()``
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 The ``propagate_grid()`` methods of the adaptive integrators now require the first element of the
 time grid to be equal to the current integrator time. Previously, in case of a difference between the

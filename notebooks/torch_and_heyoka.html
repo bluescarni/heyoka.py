@@ -612,7 +612,7 @@ document.write(`
 <p>Good! Just to be sure, we now verify the output is the same at inference? Let’s first compile the network so that we can run inference:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">model_heyoka_compiled</span><span class="o">=</span><span class="n">hk</span><span class="o">.</span><span class="n">make_cfunc</span><span class="p">(</span><span class="n">model_heyoka</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">model_heyoka_compiled</span><span class="o">=</span><span class="n">hk</span><span class="o">.</span><span class="n">make_cfunc</span><span class="p">(</span><span class="n">model_heyoka</span><span class="p">,</span> <span class="p">[</span><span class="n">inp_1</span><span class="p">,</span> <span class="n">inp_2</span><span class="p">,</span> <span class="n">inp_3</span><span class="p">,</span> <span class="n">inp_4</span><span class="p">])</span>
 </pre></div>
 </div>
 </div>

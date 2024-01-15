@@ -458,10 +458,11 @@ document.write(`
                 <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#bchanges-4-0-0">4.0.0</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#api-behaviour-changes">API/behaviour changes</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#a-more-explicit-api">A more explicit API</a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#changes-to-make-vars">Changes to <code class="xref py py-func docutils literal notranslate"><span class="pre">make_vars()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#terminal-events-callbacks">Terminal events callbacks</a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#step-callbacks-and-propagate">Step callbacks and <code class="docutils literal notranslate"><span class="pre">propagate_*()</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#propagate-grid"><code class="docutils literal notranslate"><span class="pre">propagate_grid()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#changes-to-propagate-grid">Changes to <code class="docutils literal notranslate"><span class="pre">propagate_grid()</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -489,6 +490,19 @@ document.write(`
 <p>heyoka.py 4 includes several backwards-incompatible changes.</p>
 <section id="api-behaviour-changes">
 <h3>API/behaviour changes<a class="headerlink" href="#api-behaviour-changes" title="Link to this heading">#</a></h3>
+<section id="a-more-explicit-api">
+<h4>A more explicit API<a class="headerlink" href="#a-more-explicit-api" title="Link to this heading">#</a></h4>
+<p>Several functions and classes have been changed to explicitly require
+the user to pass a list of variables in input. The previous behaviour, where
+heyoka.py would try to automatically infer a list of variables from other
+input arguments, turned out to be in practice confusing and a source of bugs.</p>
+<p>The affected APIs include:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="notebooks/compiled_functions.html#cfunc-tut"><span class="std std-ref">compiled functions</span></a>, which now require the list of input
+variables to be always supplied by the user.</p></li>
+</ul>
+<p>The tutorials and the documentation have been updated accordingly.</p>
+</section>
 <section id="changes-to-make-vars">
 <h4>Changes to <a class="reference internal" href="autosummary_generated/heyoka.make_vars.html#heyoka.make_vars" title="heyoka.make_vars"><code class="xref py py-func docutils literal notranslate"><span class="pre">make_vars()</span></code></a><a class="headerlink" href="#changes-to-make-vars" title="Link to this heading">#</a></h4>
 <p>The <a class="reference internal" href="autosummary_generated/heyoka.make_vars.html#heyoka.make_vars" title="heyoka.make_vars"><code class="xref py py-func docutils literal notranslate"><span class="pre">make_vars()</span></code></a> function now returns a single expression (rather than a list of expressions)
@@ -533,8 +547,8 @@ of scalar propagations,</p></li>
 rather than a single value.</p></li>
 </ul>
 </section>
-<section id="propagate-grid">
-<h4><code class="docutils literal notranslate"><span class="pre">propagate_grid()</span></code><a class="headerlink" href="#propagate-grid" title="Link to this heading">#</a></h4>
+<section id="changes-to-propagate-grid">
+<h4>Changes to <code class="docutils literal notranslate"><span class="pre">propagate_grid()</span></code><a class="headerlink" href="#changes-to-propagate-grid" title="Link to this heading">#</a></h4>
 <p>The <code class="docutils literal notranslate"><span class="pre">propagate_grid()</span></code> methods of the adaptive integrators now require the first element of the
 time grid to be equal to the current integrator time. Previously, in case of a difference between the
 integrator time and the first grid point, heyoka.py would propagate the state of the system up to the
@@ -679,10 +693,11 @@ time, and its value will be -1 for negative derivative,
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#bchanges-4-0-0">4.0.0</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#api-behaviour-changes">API/behaviour changes</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#a-more-explicit-api">A more explicit API</a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#changes-to-make-vars">Changes to <code class="xref py py-func docutils literal notranslate"><span class="pre">make_vars()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#terminal-events-callbacks">Terminal events callbacks</a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#step-callbacks-and-propagate">Step callbacks and <code class="docutils literal notranslate"><span class="pre">propagate_*()</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#propagate-grid"><code class="docutils literal notranslate"><span class="pre">propagate_grid()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#changes-to-propagate-grid">Changes to <code class="docutils literal notranslate"><span class="pre">propagate_grid()</span></code></a></li>
 </ul>
 </li>
 </ul>
