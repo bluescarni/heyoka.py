@@ -60,8 +60,10 @@ void expose_batch_integrator_impl(py::module_ &m, const std::string &suffix)
     using t_ev_t = hey::t_event_batch<T>;
     using nt_ev_t = hey::nt_event_batch<T>;
 
+    using sys_t = std::vector<std::pair<hey::expression, hey::expression>>;
+
     // Implementation of the ctor.
-    auto tab_ctor_impl = [](const auto &sys, const py::iterable &state_ob, std::optional<py::iterable> time_ob,
+    auto tab_ctor_impl = [](const sys_t &sys, const py::iterable &state_ob, std::optional<py::iterable> time_ob,
                             std::optional<py::iterable> pars_ob, T tol, bool high_accuracy, bool compact_mode,
                             std::vector<t_ev_t> tes, std::vector<nt_ev_t> ntes, bool parallel_mode, unsigned opt_level,
                             bool force_avx512, bool slp_vectorize, bool fast_math) {
@@ -175,21 +177,14 @@ void expose_batch_integrator_impl(py::module_ &m, const std::string &suffix)
     py::class_<hey::taylor_adaptive_batch<T>> tab_c(m, fmt::format("taylor_adaptive_batch_{}", suffix).c_str(),
                                                     py::dynamic_attr{});
 
-    using variant_t
-        = std::variant<std::vector<std::pair<hey::expression, hey::expression>>, std::vector<hey::expression>>;
-
     tab_c
-        .def(py::init([tab_ctor_impl](const variant_t &sys, const py::iterable &state, std::optional<py::iterable> time,
+        .def(py::init([tab_ctor_impl](const sys_t &sys, const py::iterable &state, std::optional<py::iterable> time,
                                       std::optional<py::iterable> pars, T tol, bool high_accuracy, bool compact_mode,
                                       std::vector<t_ev_t> tes, std::vector<nt_ev_t> ntes, bool parallel_mode,
                                       unsigned opt_level, bool force_avx512, bool slp_vectorize, bool fast_math) {
-                 return std::visit(
-                     [&](const auto &value) {
-                         return tab_ctor_impl(value, state, std::move(time), std::move(pars), tol, high_accuracy,
-                                              compact_mode, std::move(tes), std::move(ntes), parallel_mode, opt_level,
-                                              force_avx512, slp_vectorize, fast_math);
-                     },
-                     sys);
+                 return tab_ctor_impl(sys, state, std::move(time), std::move(pars), tol, high_accuracy, compact_mode,
+                                      std::move(tes), std::move(ntes), parallel_mode, opt_level, force_avx512,
+                                      slp_vectorize, fast_math);
              }),
              "sys"_a, "state"_a, "time"_a = py::none{}, "pars"_a = py::none{}, "tol"_a.noconvert() = static_cast<T>(0),
              "high_accuracy"_a = false, "compact_mode"_a = false, "t_events"_a = py::list{}, "nt_events"_a = py::list{},
