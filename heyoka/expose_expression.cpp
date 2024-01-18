@@ -541,17 +541,23 @@ void expose_expression(py::module_ &m)
     dtens_cl.def_property_readonly("nouts", &hey::dtens::get_nouts);
     dtens_cl.def_property_readonly("args", &hey::dtens::get_args);
     // Lookup/contains.
-    dtens_cl.def("__getitem__", [](const hey::dtens &dt, const hey::dtens::v_idx_t &v_idx) {
-        const auto it = dt.find(v_idx);
+    dtens_cl.def(
+        "__getitem__", [](const hey::dtens &dt, const std::variant<hey::dtens::v_idx_t, hey::dtens::sv_idx_t> &v_idx_) {
+            return std::visit(
+                [&](const auto &v_idx) {
+                    const auto it = dt.find(v_idx);
 
-        if (it == dt.end()) {
-            py_throw(
-                PyExc_KeyError,
-                fmt::format("Cannot locate the derivative corresponding the the vector of indices {}", v_idx).c_str());
-        }
+                    if (it == dt.end()) {
+                        py_throw(PyExc_KeyError,
+                                 fmt::format("Cannot locate the derivative corresponding the the vector of indices {}",
+                                             v_idx)
+                                     .c_str());
+                    }
 
-        return it->second;
-    });
+                    return it->second;
+                },
+                v_idx_);
+        });
     dtens_cl.def("__getitem__", [](const hey::dtens &dt, hey::dtens::size_type idx) {
         if (idx >= dt.size()) {
             py_throw(PyExc_IndexError,
@@ -565,7 +571,9 @@ void expose_expression(py::module_ &m)
         return detail::dtens_t_it{&dt}(dt.begin()[s_idx]);
     });
     dtens_cl.def("__contains__",
-                 [](const hey::dtens &dt, const hey::dtens::v_idx_t &v_idx) { return dt.find(v_idx) != dt.end(); });
+                 [](const hey::dtens &dt, const std::variant<hey::dtens::v_idx_t, hey::dtens::sv_idx_t> &v_idx_) {
+                     return std::visit([&](const auto &v_idx) { return dt.find(v_idx) != dt.end(); }, v_idx_);
+                 });
     // Iterator.
     dtens_cl.def(
         "__iter__",
@@ -582,7 +590,10 @@ void expose_expression(py::module_ &m)
         py::keep_alive<0, 1>{});
     // index_of().
     dtens_cl.def(
-        "index_of", [](const hey::dtens &dt, const hey::dtens::v_idx_t &v_idx) { return dt.index_of(v_idx); },
+        "index_of",
+        [](const hey::dtens &dt, const std::variant<hey::dtens::v_idx_t, hey::dtens::sv_idx_t> &v_idx_) {
+            return std::visit([&](const auto &v_idx) { return dt.index_of(v_idx); }, v_idx_);
+        },
         "vidx"_a);
     // get_derivatives().
     dtens_cl.def(
@@ -621,14 +632,9 @@ void expose_expression(py::module_ &m)
     m.def(
         "diff_tensors",
         [](const std::vector<hey::expression> &v_ex,
-           const std::variant<hey::diff_args, std::vector<hey::expression>> &diff_args, std::uint32_t diff_order) {
-            return std::visit(
-                [&v_ex, diff_order](const auto &v) {
-                    return hey::diff_tensors(v_ex, hey::kw::diff_args = v, hey::kw::diff_order = diff_order);
-                },
-                diff_args);
-        },
-        "func"_a, "diff_args"_a = hey::diff_args::vars, "diff_order"_a = static_cast<std::uint32_t>(1));
+           const std::variant<hey::diff_args, std::vector<hey::expression>> &diff_args,
+           std::uint32_t diff_order) { return hey::diff_tensors(v_ex, diff_args, hey::kw::diff_order = diff_order); },
+        "func"_a, "diff_args"_a, "diff_order"_a = static_cast<std::uint32_t>(1));
 }
 
 } // namespace heyoka_py

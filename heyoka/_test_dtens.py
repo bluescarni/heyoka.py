@@ -15,21 +15,21 @@ class dtens_test_case(_ut.TestCase):
 
         x, y = make_vars("x", "y")
 
-        dt = diff_tensors([x - y])
+        dt = diff_tensors([x - y], [x, y])
         self.assertEqual(dt.gradient, [ex(1.0), ex(-1.0)])
 
     def test_jacobian(self):
-        from . import diff_tensors, make_vars, expression as ex
+        from . import diff_tensors, make_vars, expression as ex, diff_args
         import numpy as np
 
         x, y = make_vars("x", "y")
 
-        dt = diff_tensors([x - y, -x + y])
+        dt = diff_tensors([x - y, -x + y], [x, y])
         self.assertTrue(
             np.all(dt.jacobian == np.array([[ex(1.0), ex(-1.0)], [ex(-1.0), ex(1.0)]]))
         )
 
-        dt = diff_tensors([x - y, -x + y, -x - y])
+        dt = diff_tensors([x - y, -x + y, -x - y], diff_args.vars)
         self.assertTrue(
             np.all(
                 dt.jacobian
@@ -113,7 +113,7 @@ class dtens_test_case(_ut.TestCase):
 
         x, y = make_vars("x", "y")
 
-        dt = diff_tensors([x + y])
+        dt = diff_tensors([x + y], [x, y])
         self.assertEqual(len(dt), 3)
         self.assertEqual(dt.args, [x, y])
         self.assertEqual(dt.nouts, 1)
