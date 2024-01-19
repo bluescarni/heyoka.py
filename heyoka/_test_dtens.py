@@ -59,6 +59,12 @@ class dtens_test_case(_ut.TestCase):
             "Cannot locate the derivative corresponding the the vector of indices"
             in str(cm.exception)
         )
+        with self.assertRaises(KeyError) as cm:
+            dt[1, [(0, 2), (1, 3)]]
+        self.assertTrue(
+            "Cannot locate the derivative corresponding the the vector of indices"
+            in str(cm.exception)
+        )
         with self.assertRaises(IndexError) as cm:
             dt[1]
         self.assertTrue(
@@ -66,6 +72,7 @@ class dtens_test_case(_ut.TestCase):
             in str(cm.exception)
         )
         self.assertFalse([1, 2, 3] in dt)
+        self.assertFalse((1, [(0, 2), (1, 3)]) in dt)
 
         rc = getrefcount(dt)
         it = dt.__iter__()
@@ -77,6 +84,7 @@ class dtens_test_case(_ut.TestCase):
         self.assertEqual(list(dt), [])
 
         self.assertEqual(dt.index_of(vidx=[1, 2, 3]), 0)
+        self.assertEqual(dt.index_of(vidx=(1, [(0, 2), (1, 3)])), 0)
 
         self.assertEqual(dt.get_derivatives(0), [])
         self.assertEqual(dt.get_derivatives(1), [])
