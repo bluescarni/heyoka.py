@@ -45,7 +45,7 @@ cd $HEYOKA_PY_PROJECT_DIR
 
 cd doc
 
-make html linkcheck
+make html linkcheck doctest
 
 set +e
 set +x

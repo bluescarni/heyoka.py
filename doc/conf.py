@@ -36,6 +36,7 @@ extensions = ["myst_nb",
               "sphinx.ext.intersphinx",
               "sphinx.ext.autodoc",
               "sphinx.ext.autosummary",
+              "sphinx.ext.doctest",
               ]
 
 intersphinx_mapping = {

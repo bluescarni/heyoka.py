@@ -99,10 +99,10 @@ struct dtens_t_it {
 
         // Sanity check on the number of diff variables
         // inferred from the sparse vector.
-        assert(ret.size() - 1u <= dt->get_nvars());
+        assert(ret.size() - 1u <= dt->get_nargs());
 
         // Pad missing values at the end of ret.
-        ret.resize(boost::safe_numerics::safe<decltype(ret.size())>(dt->get_nvars()) + 1);
+        ret.resize(boost::safe_numerics::safe<decltype(ret.size())>(dt->get_nargs()) + 1);
 
         return std::make_pair(std::move(ret), ex);
     }
@@ -525,8 +525,8 @@ void expose_expression(py::module_ &m)
     m.attr("par") = hey::detail::par_impl{};
 
     // dtens.
-    py::class_<hey::dtens> dtens_cl(m, "dtens", py::dynamic_attr{});
-    dtens_cl.def(py::init<>());
+    py::class_<hey::dtens> dtens_cl(m, "dtens", py::dynamic_attr{}, docstrings::dtens().c_str());
+    dtens_cl.def(py::init<>(), docstrings::dtens_init().c_str());
     // Total number of derivatives.
     dtens_cl.def("__len__", &hey::dtens::size);
     // Repr.
@@ -536,10 +536,10 @@ void expose_expression(py::module_ &m)
         return oss.str();
     });
     // Read-only properties.
-    dtens_cl.def_property_readonly("order", &hey::dtens::get_order);
-    dtens_cl.def_property_readonly("nvars", &hey::dtens::get_nvars);
-    dtens_cl.def_property_readonly("nouts", &hey::dtens::get_nouts);
-    dtens_cl.def_property_readonly("args", &hey::dtens::get_args);
+    dtens_cl.def_property_readonly("order", &hey::dtens::get_order, docstrings::dtens_order().c_str());
+    dtens_cl.def_property_readonly("nargs", &hey::dtens::get_nargs, docstrings::dtens_nargs().c_str());
+    dtens_cl.def_property_readonly("nouts", &hey::dtens::get_nouts, docstrings::dtens_nouts().c_str());
+    dtens_cl.def_property_readonly("args", &hey::dtens::get_args, docstrings::dtens_args().c_str());
     // Lookup/contains.
     dtens_cl.def(
         "__getitem__", [](const hey::dtens &dt, const std::variant<hey::dtens::v_idx_t, hey::dtens::sv_idx_t> &v_idx_) {
@@ -594,7 +594,7 @@ void expose_expression(py::module_ &m)
         [](const hey::dtens &dt, const std::variant<hey::dtens::v_idx_t, hey::dtens::sv_idx_t> &v_idx_) {
             return std::visit([&](const auto &v_idx) { return dt.index_of(v_idx); }, v_idx_);
         },
-        "vidx"_a);
+        "vidx"_a, docstrings::dtens_index_of().c_str());
     // get_derivatives().
     dtens_cl.def(
         "get_derivatives",
@@ -606,16 +606,19 @@ void expose_expression(py::module_ &m)
 
             return std::vector(t_begin, t_end);
         },
-        "diff_order"_a, "component"_a = py::none{});
+        "diff_order"_a, "component"_a = py::none{}, docstrings::dtens_get_derivatives().c_str());
     // Gradient.
-    dtens_cl.def_property_readonly("gradient", &hey::dtens::get_gradient);
+    dtens_cl.def_property_readonly("gradient", &hey::dtens::get_gradient, docstrings::dtens_gradient().c_str());
     // Jacobian.
-    dtens_cl.def_property_readonly("jacobian", [](const hey::dtens &dt) {
-        auto jac = py::array(py::cast(dt.get_jacobian()));
+    dtens_cl.def_property_readonly(
+        "jacobian",
+        [](const hey::dtens &dt) {
+            auto jac = py::array(py::cast(dt.get_jacobian()));
 
-        return jac.reshape(py::array::ShapeContainer{boost::numeric_cast<py::ssize_t>(dt.get_nouts()),
-                                                     boost::numeric_cast<py::ssize_t>(dt.get_nvars())});
-    });
+            return jac.reshape(py::array::ShapeContainer{boost::numeric_cast<py::ssize_t>(dt.get_nouts()),
+                                                         boost::numeric_cast<py::ssize_t>(dt.get_nargs())});
+        },
+        docstrings::dtens_jacobian().c_str());
     // Copy/deepcopy.
     dtens_cl.def("__copy__", copy_wrapper<hey::dtens>);
     dtens_cl.def("__deepcopy__", deepcopy_wrapper<hey::dtens>, "memo"_a);
@@ -623,10 +626,10 @@ void expose_expression(py::module_ &m)
     dtens_cl.def(py::pickle(&pickle_getstate_wrapper<hey::dtens>, &pickle_setstate_wrapper<hey::dtens>));
 
     // diff_args enum.
-    py::enum_<hey::diff_args>(m, "diff_args")
-        .value("vars", hey::diff_args::vars)
-        .value("params", hey::diff_args::params)
-        .value("all", hey::diff_args::all);
+    py::enum_<hey::diff_args>(m, "diff_args", docstrings::diff_args().c_str())
+        .value("vars", hey::diff_args::vars, docstrings::diff_args_vars().c_str())
+        .value("params", hey::diff_args::params, docstrings::diff_args_pars().c_str())
+        .value("all", hey::diff_args::all, docstrings::diff_args_all().c_str());
 
     // diff_tensors().
     m.def(
@@ -634,7 +637,7 @@ void expose_expression(py::module_ &m)
         [](const std::vector<hey::expression> &v_ex,
            const std::variant<hey::diff_args, std::vector<hey::expression>> &diff_args,
            std::uint32_t diff_order) { return hey::diff_tensors(v_ex, diff_args, hey::kw::diff_order = diff_order); },
-        "func"_a, "diff_args"_a, "diff_order"_a = static_cast<std::uint32_t>(1));
+        "func"_a, "diff_args"_a, "diff_order"_a = static_cast<std::uint32_t>(1), docstrings::diff_tensors().c_str());
 }
 
 } // namespace heyoka_py

@@ -104,7 +104,7 @@ examples_others
 :maxdepth: 2
 :caption: API reference
 
-api_integrators
 api_exsys
+api_integrators
 api_lagham
 ```
