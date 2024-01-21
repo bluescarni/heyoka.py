@@ -4,10 +4,10 @@
 .. currentmodule:: heyoka
 
 .. autoclass:: expression
+   :members:
+   :special-members: __init__
 
    
-   .. automethod:: __init__
-
    
    .. rubric:: Methods
 

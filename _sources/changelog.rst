@@ -25,6 +25,10 @@ New
 Changes
 ~~~~~~~
 
+- **BREAKING**: it is now mandatory to supply a list of differentiation
+  arguments to :func:`~heyoka.diff_tensors()`
+  (`#164 <https://github.com/bluescarni/heyoka.py/pull/164>`__).
+  This is a :ref:`breaking change <bchanges_4_0_0>`.
 - **BREAKING**: :ref:`compiled functions <cfunc_tut>` now require
   the list of input variables to be always supplied by the user
   (`#162 <https://github.com/bluescarni/heyoka.py/pull/162>`__).
