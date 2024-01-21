@@ -24,7 +24,9 @@ input arguments, turned out to be in practice confusing and a source of bugs.
 The affected APIs include:
 
 - :ref:`compiled functions <cfunc_tut>`, which now require the list of input
-  variables to be always supplied by the user.
+  variables to be always supplied by the user;
+- :func:`~heyoka.diff_tensors()`, which now requires an explicit list of differentiation
+  arguments to be always provided by the user.
 
 The tutorials and the documentation have been updated accordingly.
 

@@ -15,21 +15,21 @@ class dtens_test_case(_ut.TestCase):
 
         x, y = make_vars("x", "y")
 
-        dt = diff_tensors([x - y])
+        dt = diff_tensors([x - y], [x, y])
         self.assertEqual(dt.gradient, [ex(1.0), ex(-1.0)])
 
     def test_jacobian(self):
-        from . import diff_tensors, make_vars, expression as ex
+        from . import diff_tensors, make_vars, expression as ex, diff_args
         import numpy as np
 
         x, y = make_vars("x", "y")
 
-        dt = diff_tensors([x - y, -x + y])
+        dt = diff_tensors([x - y, -x + y], [x, y])
         self.assertTrue(
             np.all(dt.jacobian == np.array([[ex(1.0), ex(-1.0)], [ex(-1.0), ex(1.0)]]))
         )
 
-        dt = diff_tensors([x - y, -x + y, -x - y])
+        dt = diff_tensors([x - y, -x + y, -x - y], diff_args.vars)
         self.assertTrue(
             np.all(
                 dt.jacobian
@@ -51,10 +51,16 @@ class dtens_test_case(_ut.TestCase):
         self.assertEqual(len(dt), 0)
         self.assertEqual(dt.args, [])
         self.assertEqual(dt.nouts, 0)
-        self.assertEqual(dt.nvars, 0)
+        self.assertEqual(dt.nargs, 0)
         self.assertEqual(dt.order, 0)
         with self.assertRaises(KeyError) as cm:
             dt[1, 2, 3]
+        self.assertTrue(
+            "Cannot locate the derivative corresponding the the vector of indices"
+            in str(cm.exception)
+        )
+        with self.assertRaises(KeyError) as cm:
+            dt[1, [(0, 2), (1, 3)]]
         self.assertTrue(
             "Cannot locate the derivative corresponding the the vector of indices"
             in str(cm.exception)
@@ -66,6 +72,7 @@ class dtens_test_case(_ut.TestCase):
             in str(cm.exception)
         )
         self.assertFalse([1, 2, 3] in dt)
+        self.assertFalse((1, [(0, 2), (1, 3)]) in dt)
 
         rc = getrefcount(dt)
         it = dt.__iter__()
@@ -77,6 +84,7 @@ class dtens_test_case(_ut.TestCase):
         self.assertEqual(list(dt), [])
 
         self.assertEqual(dt.index_of(vidx=[1, 2, 3]), 0)
+        self.assertEqual(dt.index_of(vidx=(1, [(0, 2), (1, 3)])), 0)
 
         self.assertEqual(dt.get_derivatives(0), [])
         self.assertEqual(dt.get_derivatives(1), [])
@@ -89,21 +97,21 @@ class dtens_test_case(_ut.TestCase):
         self.assertEqual(len(dt2), 0)
         self.assertEqual(dt2.args, [])
         self.assertEqual(dt2.nouts, 0)
-        self.assertEqual(dt2.nvars, 0)
+        self.assertEqual(dt2.nargs, 0)
         self.assertEqual(dt2.order, 0)
 
         dt2 = copy(dt)
         self.assertEqual(len(dt2), 0)
         self.assertEqual(dt2.args, [])
         self.assertEqual(dt2.nouts, 0)
-        self.assertEqual(dt2.nvars, 0)
+        self.assertEqual(dt2.nargs, 0)
         self.assertEqual(dt2.order, 0)
 
         dt2 = deepcopy(dt)
         self.assertEqual(len(dt2), 0)
         self.assertEqual(dt2.args, [])
         self.assertEqual(dt2.nouts, 0)
-        self.assertEqual(dt2.nvars, 0)
+        self.assertEqual(dt2.nargs, 0)
         self.assertEqual(dt2.order, 0)
 
     def test_diff_tensors(self):
@@ -113,11 +121,11 @@ class dtens_test_case(_ut.TestCase):
 
         x, y = make_vars("x", "y")
 
-        dt = diff_tensors([x + y])
+        dt = diff_tensors([x + y], [x, y])
         self.assertEqual(len(dt), 3)
         self.assertEqual(dt.args, [x, y])
         self.assertEqual(dt.nouts, 1)
-        self.assertEqual(dt.nvars, 2)
+        self.assertEqual(dt.nargs, 2)
         self.assertEqual(dt.order, 1)
         self.assertEqual(dt[0, 0, 0], x + y)
         self.assertEqual(dt[1], ([0, 1, 0], expression(1.0)))
@@ -146,7 +154,7 @@ class dtens_test_case(_ut.TestCase):
         self.assertEqual(len(dt), 3)
         self.assertEqual(dt.args, [x])
         self.assertEqual(dt.nouts, 1)
-        self.assertEqual(dt.nvars, 1)
+        self.assertEqual(dt.nargs, 1)
         self.assertEqual(dt.order, 2)
         self.assertEqual(dt[0, 0], x + y)
         self.assertEqual(dt[0, 1], expression(1.0))
@@ -158,7 +166,7 @@ class dtens_test_case(_ut.TestCase):
         self.assertEqual(len(dt), 3)
         self.assertEqual(dt.args, [par[0]])
         self.assertEqual(dt.nouts, 1)
-        self.assertEqual(dt.nvars, 1)
+        self.assertEqual(dt.nargs, 1)
         self.assertEqual(dt.order, 2)
         self.assertEqual(dt[0, 0], x + y + 2.0 * par[0])
         self.assertEqual(dt[0, 1], expression(2.0))
@@ -168,7 +176,7 @@ class dtens_test_case(_ut.TestCase):
         self.assertEqual(len(dt), 10)
         self.assertEqual(dt.args, [x, y, par[0]])
         self.assertEqual(dt.nouts, 1)
-        self.assertEqual(dt.nvars, 3)
+        self.assertEqual(dt.nargs, 3)
         self.assertEqual(dt.order, 2)
         self.assertEqual(dt[0, 0, 0, 0], x + y + 2.0 * par[0])
         self.assertEqual(dt[0, 1, 0, 0], expression(1.0))
@@ -182,7 +190,7 @@ class dtens_test_case(_ut.TestCase):
         self.assertEqual(len(dt), 10)
         self.assertEqual(dt.args, [x, y, par[0]])
         self.assertEqual(dt.nouts, 1)
-        self.assertEqual(dt.nvars, 3)
+        self.assertEqual(dt.nargs, 3)
         self.assertEqual(dt.order, 2)
         self.assertEqual(dt[0, 0, 0, 0], x + y + 2.0 * par[0])
         self.assertEqual(dt[0, 1, 0, 0], expression(1.0))
@@ -196,7 +204,7 @@ class dtens_test_case(_ut.TestCase):
         self.assertEqual(len(dt), 10)
         self.assertEqual(dt.args, [x, y, par[0]])
         self.assertEqual(dt.nouts, 1)
-        self.assertEqual(dt.nvars, 3)
+        self.assertEqual(dt.nargs, 3)
         self.assertEqual(dt.order, 2)
         self.assertEqual(dt[0, 0, 0, 0], x + y + 2.0 * par[0])
         self.assertEqual(dt[0, 1, 0, 0], expression(1.0))
@@ -211,7 +219,7 @@ class dtens_test_case(_ut.TestCase):
         self.assertEqual(len(dt), 10)
         self.assertEqual(dt.args, [x, y, par[0]])
         self.assertEqual(dt.nouts, 1)
-        self.assertEqual(dt.nvars, 3)
+        self.assertEqual(dt.nargs, 3)
         self.assertEqual(dt.order, 2)
         self.assertEqual(dt[0, 0, 0, 0], x + y + 2.0 * par[0])
         self.assertEqual(dt[0, 1, 0, 0], expression(1.0))

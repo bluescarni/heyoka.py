@@ -49,9 +49,9 @@ cd doc
 # as we don't want to prevent the docs upload
 # in case of transient network errors.
 if [[ "${CIRCLE_BRANCH}" == "main" ]]; then
-    make html
+    make html doctest
 else
-    make html linkcheck
+    make html linkcheck doctest
 fi
 
 if [[ ! -z "${CI_PULL_REQUEST}" ]]; then

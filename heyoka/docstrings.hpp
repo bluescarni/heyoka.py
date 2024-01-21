@@ -16,6 +16,23 @@ namespace heyoka_py::docstrings
 
 // Expression system.
 std::string make_vars();
+std::string diff_tensors();
+
+std::string dtens();
+std::string dtens_init();
+std::string dtens_get_derivatives();
+std::string dtens_order();
+std::string dtens_index_of();
+std::string dtens_args();
+std::string dtens_gradient();
+std::string dtens_jacobian();
+std::string dtens_nouts();
+std::string dtens_nargs();
+
+std::string diff_args();
+std::string diff_args_vars();
+std::string diff_args_pars();
+std::string diff_args_all();
 
 // Lagrangian/Hamiltonian mechanics.
 std::string lagrangian();
