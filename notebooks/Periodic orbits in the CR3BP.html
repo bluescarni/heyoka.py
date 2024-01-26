@@ -735,7 +735,7 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>--- 11.18139934539795 seconds --- to build the Taylor integrator
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>--- 14.274664640426636 seconds --- to build the Taylor integrator
 </pre></div>
 </div>
 </div>
@@ -766,7 +766,7 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>--- 0.049408674240112305 seconds --- to propagate
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>--- 0.05044221878051758 seconds --- to propagate
 </pre></div>
 </div>
 </div>
@@ -824,7 +824,7 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;matplotlib.collections.PathCollection at 0x7f58f028ffa0&gt;
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;matplotlib.collections.PathCollection at 0x7fec80311c60&gt;
 </pre></div>
 </div>
 <img alt="../_images/de0d9b784e67d433c81e1c6d68b5b937452559993089914853f0e1f45dbc1669.png" src="../_images/de0d9b784e67d433c81e1c6d68b5b937452559993089914853f0e1f45dbc1669.png" />
@@ -997,22 +997,22 @@ document.write(`
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>error was: 0.0012972874386999722
 condition number is: 16558416262.120907
-new error is: 0.001126849965069169
-error was: 0.001126849965069169
-condition number is: 112029239.50893934
-new error is: 0.005318388912959757
-error was: 0.005318388912959757
-condition number is: 97382195.72485192
-new error is: 0.0008512521425610938
-error was: 0.0008512521425610938
-condition number is: 208596161.6087695
-new error is: 6.615966094672848e-06
-error was: 6.615966094672848e-06
-condition number is: 33988164.67865295
-new error is: 6.542923483972517e-08
-error was: 6.542923483972517e-08
-condition number is: 5547005157.257222
-new error is: 1.844168530369353e-12
+new error is: 0.001126849965099878
+error was: 0.001126849965099878
+condition number is: 112029239.5084326
+new error is: 0.005318388913942381
+error was: 0.005318388913942381
+condition number is: 97382195.71016975
+new error is: 0.0008512521426848299
+error was: 0.0008512521426848299
+condition number is: 208596161.5615835
+new error is: 6.615966335712827e-06
+error was: 6.615966335712827e-06
+condition number is: 33988164.717789754
+new error is: 6.542947405895616e-08
+error was: 6.542947405895616e-08
+condition number is: 5547007072.775402
+new error is: 1.1554575798028065e-12
 </pre></div>
 </div>
 </div>
@@ -1079,8 +1079,8 @@ new error is: 1.844168530369353e-12
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>mu:  0.01215057
-Initial condition: [-8.3660628428124639e-01, 6.8716716925632383e-05, 0.0000000000000000e+00, -2.3615601898389701e-05, -8.3919863036678266e-01, 0.0000000000000000e+00]
-Period: 2.6915996001662497e+00
+Initial condition: [-8.3660628428621509e-01, 6.8716712682996952e-05, 0.0000000000000000e+00, -2.3615600446411853e-05, -8.3919863032995268e-01, 0.0000000000000000e+00]
+Period: 2.6915996001656333e+00
 </pre></div>
 </div>
 <img alt="../_images/7a44bf7a2547ea1d3bbea540e8a737be4e895a8dd6ff3f10f78a0dd276c3054f.png" src="../_images/7a44bf7a2547ea1d3bbea540e8a737be4e895a8dd6ff3f10f78a0dd276c3054f.png" />
@@ -1239,7 +1239,7 @@ Period: 2.6915996001662497e+00
 <div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(-0.005, 0.005)
 </pre></div>
 </div>
-<img alt="../_images/17680a3a3d7f1a8a033ff5df275db666a9b6bcba60f7eb26009cbcfe441b573d.png" src="../_images/17680a3a3d7f1a8a033ff5df275db666a9b6bcba60f7eb26009cbcfe441b573d.png" />
+<img alt="../_images/70472d6ae6e2f5ad066eebbd6bc45924166576a777451a5d9dd1ba803b9d5ab5.png" src="../_images/70472d6ae6e2f5ad066eebbd6bc45924166576a777451a5d9dd1ba803b9d5ab5.png" />
 </div>
 </div>
 <p>It’s nearly closed, but not that well …. it will need a correction … but we can call the same iterations we made previously when we closed the first initial guess, remember?</p>
@@ -1252,15 +1252,15 @@ Period: 2.6915996001662497e+00
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>error was: 0.00027699803739455515
-condition number is: 15781425.08539112
-new error is: 9.461222658847807e-07
-error was: 9.461222658847807e-07
-condition number is: 78777881309.70691
-new error is: 6.062196318473753e-09
-error was: 6.062196318473753e-09
-condition number is: 861551117697.6293
-new error is: 3.427171981558372e-14
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>error was: 0.0002778017858373232
+condition number is: 15736750.479053257
+new error is: 9.515237218310069e-07
+error was: 9.515237218310069e-07
+condition number is: 78502468502.11208
+new error is: 6.172117716412237e-09
+error was: 6.172117716412237e-09
+condition number is: 845787128847.9476
+new error is: 1.794792454124966e-13
 </pre></div>
 </div>
 </div>
@@ -1323,7 +1323,7 @@ new error is: 3.427171981558372e-14
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/4632867b8873ae91f7dea3a5da5ed96be650ff335ebe43ce5cb6c1e11aa1bb3f.png" src="../_images/4632867b8873ae91f7dea3a5da5ed96be650ff335ebe43ce5cb6c1e11aa1bb3f.png" />
+<img alt="../_images/c4c731c243dee2aa3fa531af4f930b54a8d1d689cbdf1a2717af57a144c42127.png" src="../_images/c4c731c243dee2aa3fa531af4f930b54a8d1d689cbdf1a2717af57a144c42127.png" />
 </div>
 </div>
 <p>Found it! In order to do this in a loop, though, we will need to do better as eventually this will fail as the continuation parameter
