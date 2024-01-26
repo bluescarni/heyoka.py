@@ -36,7 +36,7 @@
 
 #endif
 
-#include <heyoka/taylor.hpp>
+#include <heyoka/continuous_output.hpp>
 
 #include "common_utils.hpp"
 #include "custom_casters.hpp"
