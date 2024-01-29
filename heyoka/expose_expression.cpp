@@ -12,6 +12,7 @@
 #include <cstdint>
 #include <functional>
 #include <iterator>
+#include <map>
 #include <optional>
 #include <sstream>
 #include <string>
@@ -298,7 +299,7 @@ void expose_expression(py::module_ &m)
         "subs",
         [](const v_ex_t &arg,
            const std::variant<std::unordered_map<std::string, hey::expression>,
-                              std::unordered_map<hey::expression, hey::expression>> &smap,
+                              std::map<hey::expression, hey::expression>> &smap,
            bool normalise) {
             return std::visit(
                 [normalise](const auto &a, const auto &m) -> v_ex_t { return hey::subs(a, m, normalise); }, arg, smap);
