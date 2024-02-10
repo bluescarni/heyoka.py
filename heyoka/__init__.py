@@ -144,7 +144,7 @@ def make_cfunc(fn, vars, **kwargs):
     fp_type = kwargs.pop("fp_type", float)
     fp_suffix = _fp_to_suffix(fp_type)
 
-    return getattr(core, "_add_cfunc{}".format(fp_suffix))(fn, vars, **kwargs)
+    return getattr(core, "cfunc{}".format(fp_suffix))(fn, vars, **kwargs)
 
 
 def nt_event(ex, callback, **kwargs):
