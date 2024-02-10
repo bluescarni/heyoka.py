@@ -217,6 +217,66 @@ class cfunc_test_case(_ut.TestCase):
                 in str(cm.exception)
             )
 
+            # Check with wrong dtypes.
+            if fp_t != float:
+                with self.assertRaises(TypeError) as cm:
+                    fn(
+                        np.zeros((2, 5), dtype=float),
+                        pars=np.zeros((2, 5), dtype=fp_t),
+                        time=np.zeros((1,), dtype=fp_t),
+                    )
+                self.assertTrue(
+                    "Invalid dtype detected for the inputs of a compiled function: the expected dtype "
+                    in str(cm.exception)
+                )
+
+                with self.assertRaises(TypeError) as cm:
+                    fn(
+                        np.zeros((2, 5), dtype=fp_t),
+                        pars=np.zeros((2, 5), dtype=float),
+                        time=np.zeros((1,), dtype=fp_t),
+                    )
+                self.assertTrue(
+                    "Invalid dtype detected for the parameters of a compiled function: the expected dtype "
+                    in str(cm.exception)
+                )
+
+                with self.assertRaises(TypeError) as cm:
+                    fn(
+                        np.zeros((2, 5), dtype=fp_t),
+                        pars=np.zeros((2, 5), dtype=fp_t),
+                        time=np.zeros((1,), dtype=fp_t),
+                        outputs=np.zeros((3, 5), dtype=float),
+                    )
+                self.assertTrue(
+                    "Invalid dtype detected for the outputs of a compiled function: the expected dtype "
+                    in str(cm.exception)
+                )
+
+                with self.assertRaises(TypeError) as cm:
+                    fn(
+                        np.zeros((2, 5), dtype=fp_t),
+                        pars=np.zeros((2, 5), dtype=fp_t),
+                        time=np.zeros((1,), dtype=float),
+                    )
+                self.assertTrue(
+                    "Invalid dtype detected for the time values of a compiled function: the expected dtype "
+                    in str(cm.exception)
+                )
+
+            # Non-contiguous time array.
+            tarr = np.zeros((10,), dtype=fp_t)
+            with self.assertRaises(ValueError) as cm:
+                fn(
+                    np.zeros((2, 5), dtype=fp_t),
+                    pars=np.zeros((2, 5), dtype=fp_t),
+                    time=tarr[::2],
+                )
+            self.assertTrue(
+                "Invalid time array detected: the array is not C-style contiguous, please consider using numpy.ascontiguousarray() to turn it into one"
+                in str(cm.exception)
+            )
+
             for nevals in range(0, 10):
                 fn = make_cfunc(func, vars=[y, x], fp_type=fp_t)
 
@@ -847,6 +907,54 @@ class cfunc_test_case(_ut.TestCase):
                 fn(inputs=inputs, pars=pars, outputs=outputs[::2], time=fp_t(3))
             self.assertTrue(
                 "Invalid outputs array detected: the array is not C-style contiguous, please consider using numpy.ascontiguousarray() to turn it into one"
+                in str(cm.exception)
+            )
+
+            # Check with wrong dtypes.
+            if fp_t != float:
+                with self.assertRaises(TypeError) as cm:
+                    fn(
+                        np.zeros((2,), dtype=float),
+                        pars=np.zeros((2,), dtype=fp_t),
+                        time=fp_t(),
+                    )
+                self.assertTrue(
+                    "Invalid dtype detected for the inputs of a compiled function: the expected dtype "
+                    in str(cm.exception)
+                )
+
+                with self.assertRaises(TypeError) as cm:
+                    fn(
+                        np.zeros((2,), dtype=fp_t),
+                        pars=np.zeros((2,), dtype=float),
+                        time=fp_t(),
+                    )
+                self.assertTrue(
+                    "Invalid dtype detected for the parameters of a compiled function: the expected dtype "
+                    in str(cm.exception)
+                )
+
+                with self.assertRaises(TypeError) as cm:
+                    fn(
+                        np.zeros((2,), dtype=fp_t),
+                        pars=np.zeros((2,), dtype=fp_t),
+                        time=fp_t(),
+                        outputs=np.zeros((3,), dtype=float),
+                    )
+                self.assertTrue(
+                    "Invalid dtype detected for the outputs of a compiled function: the expected dtype "
+                    in str(cm.exception)
+                )
+
+            # Time as an array instead of scalar.
+            with self.assertRaises(TypeError) as cm:
+                fn(
+                    np.zeros((2,), dtype=fp_t),
+                    pars=np.zeros((2,), dtype=fp_t),
+                    time=np.zeros((1,), dtype=fp_t),
+                )
+            self.assertTrue(
+                "The time value cannot be an array when evaluating a compiled function over a single set of inputs, it should be a scalar instead"
                 in str(cm.exception)
             )
 

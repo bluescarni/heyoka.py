@@ -91,6 +91,16 @@ class mp_test_case(_ut.TestCase):
             in str(cm.exception)
         )
 
+        # Test in single eval mode with wrong precision for the time value.
+        inputs = np.array([real(1, prec), real(2, prec)])
+        pars = np.array([real(3, prec), real(4, prec)])
+        with self.assertRaises(ValueError) as cm:
+            fn(inputs=inputs, pars=pars, time=real("1.1", prec - 1))
+        self.assertTrue(
+            f"An invalid time value was passed for the evaluation of a compiled function in multiprecision mode: the time value has a precision of {prec-1}, while the expected precision is {prec} instead"
+            in str(cm.exception)
+        )
+
         # Test multieval too.
         inputs = np.array(
             [[real(1, prec), real(-1, prec)], [real(2, prec), real(-2, prec)]]
