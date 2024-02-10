@@ -66,20 +66,30 @@ class mp_test_case(_ut.TestCase):
         self.assertEqual(out[2], inputs[1] + inputs[0] + pars[1] + real("1.1", prec))
 
         # Test with overlapping arrays.
-        out = fn(inputs=inputs, pars=inputs, time=real("1.1", prec))
-        self.assertEqual(out[0], np.sin(inputs[1] + inputs[0]))
-        self.assertEqual(out[1], inputs[1] - inputs[0])
-        self.assertEqual(out[2], inputs[1] + inputs[0] + inputs[1] + real("1.1", prec))
+        with self.assertRaises(ValueError) as cm:
+            fn(inputs=inputs, pars=inputs, time=real("1.1", prec))
+        self.assertTrue(
+            "Potential memory overlaps detected when attempting to evaluate a compiled function: please make sure that all input arrays are distinct"
+            in str(cm.exception)
+        )
 
         # Test with non-contiguous arrays.
         inputs = np.array([real(1, prec), 0, real(2, prec), 0])
         pars = np.array([real(3, prec), 0, real(4, prec), 0])
         inputs = inputs[::2]
         pars = pars[::2]
-        out = fn(inputs=inputs, pars=pars, time=real("1.1", prec))
-        self.assertEqual(out[0], np.sin(inputs[1] + inputs[0]))
-        self.assertEqual(out[1], inputs[1] - pars[0])
-        self.assertEqual(out[2], inputs[1] + inputs[0] + pars[1] + real("1.1", prec))
+        with self.assertRaises(ValueError) as cm:
+            fn(inputs=inputs, pars=pars, time=real("1.1", prec))
+        self.assertTrue(
+            "Invalid inputs array detected: the array is not C-style contiguous, please consider using numpy.ascontiguousarray() to turn it into one"
+            in str(cm.exception)
+        )
+        with self.assertRaises(ValueError) as cm:
+            fn(inputs=np.ascontiguousarray(inputs), pars=pars, time=real("1.1", prec))
+        self.assertTrue(
+            "Invalid parameters array detected: the array is not C-style contiguous, please consider using numpy.ascontiguousarray() to turn it into one"
+            in str(cm.exception)
+        )
 
         # Test multieval too.
         inputs = np.array(
@@ -135,13 +145,18 @@ class mp_test_case(_ut.TestCase):
         inputs = inputs[:, ::2]
         pars = pars[:, ::2]
         tm = tm[::2]
-        out = fn(inputs=inputs[:], pars=pars[:], time=tm)
-        self.assertEqual(out[0, 0], np.sin(inputs[1, 0] + inputs[0, 0]))
-        self.assertEqual(out[1, 0], inputs[1, 0] - pars[0, 0])
-        self.assertEqual(out[2, 0], inputs[1, 0] + inputs[0, 0] + pars[1, 0] + tm[0])
-        self.assertEqual(out[0, 1], np.sin(inputs[1, 1] + inputs[0, 1]))
-        self.assertEqual(out[1, 1], inputs[1, 1] - pars[0, 1])
-        self.assertEqual(out[2, 1], inputs[1, 1] + inputs[0, 1] + pars[1, 1] + tm[1])
+        with self.assertRaises(ValueError) as cm:
+            fn(inputs=inputs[:], pars=pars[:], time=tm)
+        self.assertTrue(
+            "Invalid inputs array detected: the array is not C-style contiguous, please consider using numpy.ascontiguousarray() to turn it into one"
+            in str(cm.exception)
+        )
+        with self.assertRaises(ValueError) as cm:
+            fn(inputs=np.ascontiguousarray(inputs[:]), pars=pars[:], time=tm)
+        self.assertTrue(
+            "Invalid parameters array detected: the array is not C-style contiguous, please consider using numpy.ascontiguousarray() to turn it into one"
+            in str(cm.exception)
+        )
 
         # Error modes.
         inputs = np.array([real(1, prec), real(2, prec)])
@@ -157,7 +172,8 @@ class mp_test_case(_ut.TestCase):
         with self.assertRaises(ValueError) as cm:
             fn(inputs=inputs, pars=pars, time=real(42, prec - 2))
         self.assertTrue(
-            "A real with precision 235 was detected at the indices" in str(cm.exception)
+            f"An invalid time value was passed for the evaluation of a compiled function in multiprecision mode: the time value has a precision of {prec - 2}, while the expected precision is {prec} instead"
+            in str(cm.exception)
         )
 
         pars = np.array([real(3, prec), real(4, prec)])

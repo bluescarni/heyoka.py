@@ -8,31 +8,18 @@
 
 #include <heyoka/config.hpp>
 
-#include <algorithm>
 #include <cassert>
+#include <concepts>
 #include <cstddef>
 #include <cstdint>
-#include <initializer_list>
-#include <iterator>
 #include <optional>
-#include <ostream>
 #include <sstream>
-#include <string>
 #include <type_traits>
 #include <utility>
 #include <variant>
 #include <vector>
 
-#include <boost/core/demangle.hpp>
-#include <boost/numeric/conversion/cast.hpp>
-#include <boost/serialization/split_member.hpp>
-#include <boost/serialization/string.hpp>
-#include <boost/serialization/vector.hpp>
-
 #include <fmt/core.h>
-#include <fmt/ranges.h>
-
-#include <oneapi/tbb/parallel_invoke.h>
 
 #include <pybind11/numpy.h>
 #include <pybind11/pybind11.h>
@@ -42,8 +29,6 @@
 
 #include <heyoka/expression.hpp>
 #include <heyoka/kw.hpp>
-#include <heyoka/llvm_state.hpp>
-#include <heyoka/variable.hpp>
 
 #if defined(HEYOKA_HAVE_REAL128)
 
@@ -90,782 +75,438 @@ constexpr bool default_cm =
 #endif
     ;
 
-// The compiled function types.
-template <typename T>
-using cfunc_ptr_t = void (*)(T *, const T *, const T *, const T *) noexcept;
-
-template <typename T>
-using cfunc_ptr_s_t = void (*)(T *, const T *, const T *, const T *, std::size_t) noexcept;
-
-// The compiled function wrapper.
-template <typename T>
-struct cfunc {
-    using ptr_t = cfunc_ptr_t<T>;
-    using ptr_s_t = cfunc_ptr_s_t<T>;
-
-    hey::llvm_state s_scal, s_batch, s_scal_s, s_batch_s;
-    std::uint32_t simd_size = 0, nparams = 0, nouts = 0, nvars = 0;
-    bool is_time_dependent = false;
-    ptr_t fptr_scal = nullptr, fptr_batch = nullptr;
-    ptr_s_t fptr_scal_s = nullptr, fptr_batch_s = nullptr;
-    std::vector<T> buf_in, buf_out, buf_pars, buf_time;
-    long long prec = 0;
-    std::vector<hey::expression> list_var, fn, dc;
-
-    template <typename Archive>
-    void save(Archive &ar, unsigned) const
-    {
-        ar << s_scal;
-        ar << s_batch;
-        ar << s_scal_s;
-        ar << s_batch_s;
-        ar << simd_size;
-        ar << nparams;
-        ar << nouts;
-        ar << nvars;
-        ar << is_time_dependent;
-        ar << buf_in;
-        ar << buf_out;
-        ar << buf_pars;
-        ar << buf_time;
-        ar << prec;
-        ar << list_var;
-        ar << fn;
-        ar << dc;
-    }
-    template <typename Archive>
-    void load(Archive &ar, unsigned)
-    {
-        try {
-            ar >> s_scal;
-            ar >> s_batch;
-            ar >> s_scal_s;
-            ar >> s_batch_s;
-            ar >> simd_size;
-            ar >> nparams;
-            ar >> nouts;
-            ar >> nvars;
-            ar >> is_time_dependent;
-            ar >> buf_in;
-            ar >> buf_out;
-            ar >> buf_pars;
-            ar >> buf_time;
-            ar >> prec;
-            ar >> list_var;
-            ar >> fn;
-            ar >> dc;
-
-            fptr_scal = reinterpret_cast<ptr_t>(s_scal.jit_lookup("cfunc"));
-            fptr_batch = reinterpret_cast<ptr_t>(s_batch.jit_lookup("cfunc"));
-            fptr_scal_s = reinterpret_cast<ptr_s_t>(s_scal_s.jit_lookup("cfunc.strided"));
-            fptr_batch_s = reinterpret_cast<ptr_s_t>(s_batch_s.jit_lookup("cfunc.strided"));
-        } catch (...) {
-            // Restore to def-cted state before rethrowing.
-            *this = cfunc{};
-
-            throw;
-        }
-    }
-    BOOST_SERIALIZATION_SPLIT_MEMBER()
-
-    cfunc() = default;
-    explicit cfunc(hey::llvm_state s_scal, hey::llvm_state s_batch, hey::llvm_state s_scal_s, hey::llvm_state s_batch_s,
-                   std::uint32_t simd_size, std::uint32_t nparams, std::uint32_t nouts, std::uint32_t nvars,
-                   bool is_time_dependent, ptr_t fptr_scal, ptr_t fptr_batch, ptr_s_t fptr_scal_s, ptr_s_t fptr_batch_s,
-                   std::vector<T> buf_in, std::vector<T> buf_out, std::vector<T> buf_pars, std::vector<T> buf_time,
-                   long long prec, std::vector<hey::expression> list_var, std::vector<hey::expression> fn,
-                   std::vector<hey::expression> dc)
-        : s_scal(std::move(s_scal)), s_batch(std::move(s_batch)), s_scal_s(std::move(s_scal_s)),
-          s_batch_s(std::move(s_batch_s)), simd_size(simd_size), nparams(nparams), nouts(nouts), nvars(nvars),
-          is_time_dependent(is_time_dependent), fptr_scal(fptr_scal), fptr_batch(fptr_batch), fptr_scal_s(fptr_scal_s),
-          fptr_batch_s(fptr_batch_s), buf_in(std::move(buf_in)), buf_out(std::move(buf_out)),
-          buf_pars(std::move(buf_pars)), buf_time(std::move(buf_time)), prec(prec), list_var(std::move(list_var)),
-          fn(std::move(fn)), dc(std::move(dc))
-    {
-    }
-    cfunc(const cfunc &other)
-        : s_scal(other.s_scal), s_batch(other.s_batch), s_scal_s(other.s_scal_s), s_batch_s(other.s_batch_s),
-          simd_size(other.simd_size), nparams(other.nparams), nouts(other.nouts), nvars(other.nvars),
-          is_time_dependent(other.is_time_dependent), buf_in(other.buf_in), buf_out(other.buf_out),
-          buf_pars(other.buf_pars), buf_time(other.buf_time), prec(other.prec), list_var(other.list_var), fn(other.fn),
-          dc(other.dc)
-    {
-        // NOTE: don't lookup the pointers if we are copying a def-cted cfunc,
-        // just leave them null.
-        if (other.fptr_scal != nullptr) {
-            fptr_scal = reinterpret_cast<ptr_t>(s_scal.jit_lookup("cfunc"));
-            fptr_batch = reinterpret_cast<ptr_t>(s_batch.jit_lookup("cfunc"));
-            fptr_scal_s = reinterpret_cast<ptr_s_t>(s_scal_s.jit_lookup("cfunc.strided"));
-            fptr_batch_s = reinterpret_cast<ptr_s_t>(s_batch_s.jit_lookup("cfunc.strided"));
-        }
-    }
-    cfunc(cfunc &&) noexcept = default;
-    cfunc &operator=(const cfunc &other)
-    {
-        if (this != &other) {
-            *this = cfunc(other);
-        }
-        return *this;
-    }
-    cfunc &operator=(cfunc &&) noexcept = default;
-    ~cfunc() = default;
-
-    auto operator()(const py::iterable &inputs_ob, std::optional<py::iterable> outputs_ob,
-                    std::optional<py::iterable> pars_ob, std::optional<std::variant<T, py::iterable>> time_ob)
-    {
-        if (fptr_scal == nullptr) {
-            py_throw(PyExc_ValueError, "Cannot invoke a default-constructed compiled function");
-        }
-
-        using namespace pybind11::literals;
-
-        // Fetch the dtype corresponding to T.
-        const auto dt = get_dtype<T>();
-
-        // Attempt to convert the input arguments into arrays.
-        py::array inputs = inputs_ob;
-        std::optional<py::array> outputs_ = outputs_ob ? *outputs_ob : std::optional<py::array>{};
-        std::optional<py::array> pars = pars_ob ? *pars_ob : std::optional<py::array>{};
-        // NOTE: transform a time scalar on-the-fly into a numpy array for ease of handling
-        // in the logic.
-        std::optional<py::array> time = time_ob ? std::visit(
-                                            [](auto &v) {
-                                                if constexpr (std::is_same_v<T &, decltype(v)>) {
-                                                    // NOTE: for the scalar case, go through
-                                                    // a list conversion.
-                                                    py::list ret;
-                                                    ret.append(v);
-
-                                                    return py::array(ret);
-                                                } else {
-                                                    return py::array(v);
-                                                }
-                                            },
-                                            *time_ob)
-                                                : std::optional<py::array>{};
-
-        // Enforce the correct dtype for all arrays.
-        if (inputs.dtype().num() != dt) {
-            inputs = inputs.attr("astype")(py::dtype(dt), "casting"_a = "safe");
-        }
-        if (outputs_ && outputs_->dtype().num() != dt) {
-            *outputs_ = outputs_->attr("astype")(py::dtype(dt), "casting"_a = "safe");
-        }
-        if (pars && pars->dtype().num() != dt) {
-            *pars = pars->attr("astype")(py::dtype(dt), "casting"_a = "safe");
-        }
-        if (time && time->dtype().num() != dt) {
-            *time = time->attr("astype")(py::dtype(dt), "casting"_a = "safe");
-        }
-
-        // If we have params in the function, we must be provided
-        // with an array of parameter values.
-        if (nparams > 0u && !pars) {
-            py_throw(PyExc_ValueError, fmt::format("The compiled function contains {} parameter(s), but no array "
-                                                   "of parameter values was provided for evaluation",
-                                                   nparams)
-                                           .c_str());
-        }
-
-        // If the function is time-dependent, we must be provided
-        // with an array of time values.
-        if (is_time_dependent && !time) {
-            py_throw(PyExc_ValueError, "The compiled function is time-dependent, but no "
-                                       "time value(s) were provided for evaluation");
-        }
-
-        // Validate the number of dimensions for the inputs.
-        if (inputs.ndim() != 1 && inputs.ndim() != 2) {
-            py_throw(PyExc_ValueError, fmt::format("The array of inputs provided for the evaluation "
-                                                   "of a compiled function has {} dimensions, "
-                                                   "but it must have either 1 or 2 dimensions instead",
-                                                   inputs.ndim())
-                                           .c_str());
-        }
-
-        // Check the number of inputs.
-        if (boost::numeric_cast<std::uint32_t>(inputs.shape(0)) != nvars) {
-            py_throw(PyExc_ValueError, fmt::format("The array of inputs provided for the evaluation "
-                                                   "of a compiled function has size {} in the first dimension, "
-                                                   "but it must have a size of {} instead (i.e., the size in the "
-                                                   "first dimension must be equal to the number of variables)",
-                                                   inputs.shape(0), nvars)
-                                           .c_str());
-        }
-
-        // Determine if we are running one or more evaluations.
-        const auto multi_eval = inputs.ndim() == 2;
-
-        // Check that if we are doing a single evaluation, a scalar
-        // time value was passed.
-        if (time && !multi_eval && !std::holds_alternative<T>(*time_ob)) {
-            py_throw(PyExc_ValueError, "When performing a single evaluation of a compiled function, a scalar time "
-                                       "value must be provided, but an iterable object was passed instead");
-        }
-
-        // Prepare the array of outputs.
-        auto outputs = [&]() {
-            if (outputs_) {
-                // The outputs array was provided, check it.
-
-                // Check if we can write to the outputs.
-                if (!outputs_->writeable()) {
-                    py_throw(PyExc_ValueError, "The array of outputs provided for the evaluation "
-                                               "of a compiled function is not writeable");
-                }
-
-                // Validate the number of dimensions for the outputs.
-                if (outputs_->ndim() != inputs.ndim()) {
-                    py_throw(PyExc_ValueError, fmt::format("The array of outputs provided for the evaluation "
-                                                           "of a compiled function has {} dimension(s), "
-                                                           "but it must have {} dimension(s) instead (i.e., the same "
-                                                           "number of dimensions as the array of inputs)",
-                                                           outputs_->ndim(), inputs.ndim())
-                                                   .c_str());
-                }
-
-                // Check the number of outputs.
-                if (boost::numeric_cast<std::uint32_t>(outputs_->shape(0)) != nouts) {
-                    py_throw(PyExc_ValueError,
-                             fmt::format("The array of outputs provided for the evaluation "
-                                         "of a compiled function has size {} in the first dimension, "
-                                         "but it must have a size of {} instead (i.e., the size in the "
-                                         "first dimension must be equal to the number of outputs)",
-                                         outputs_->shape(0), nouts)
-                                 .c_str());
-                }
-
-                // If we are running multiple evaluations, the number must
-                // be consistent between inputs and outputs.
-                if (multi_eval && outputs_->shape(1) != inputs.shape(1)) {
-                    py_throw(PyExc_ValueError,
-                             fmt::format("The size in the second dimension for the output array provided for "
-                                         "the evaluation of a compiled function ({}) must match the size in the "
-                                         "second dimension for the array of inputs ({})",
-                                         outputs_->shape(1), inputs.shape(1))
-                                 .c_str());
-                }
-
-                return std::move(*outputs_);
-            } else {
-                // Create the outputs array.
-                if (multi_eval) {
-                    return py::array(inputs.dtype(), py::array::ShapeContainer{boost::numeric_cast<py::ssize_t>(nouts),
-                                                                               inputs.shape(1)});
-                } else {
-                    return py::array(inputs.dtype(),
-                                     py::array::ShapeContainer{boost::numeric_cast<py::ssize_t>(nouts)});
-                }
-            }
-        }();
-
-#if defined(HEYOKA_HAVE_REAL)
-
-        if constexpr (std::is_same_v<T, mppp::real>) {
-            // For mppp::real:
-            // - check that the inputs array contains values with the correct precision,
-            // - ensure that the outputs array contains constructed values with the correct
-            //   precision.
-            pyreal_check_array(inputs, boost::numeric_cast<mpfr_prec_t>(prec));
-            pyreal_ensure_array(outputs, boost::numeric_cast<mpfr_prec_t>(prec));
-        }
-
-#endif
-
-        // Check the pars array, if necessary.
-        if (pars) {
-            // Validate the number of dimensions.
-            if (pars->ndim() != inputs.ndim()) {
-                py_throw(PyExc_ValueError, fmt::format("The array of parameter values provided for the evaluation "
-                                                       "of a compiled function has {} dimension(s), "
-                                                       "but it must have {} dimension(s) instead (i.e., the same "
-                                                       "number of dimensions as the array of inputs)",
-                                                       pars->ndim(), inputs.ndim())
-                                               .c_str());
-            }
-
-            // Check the number of pars.
-            if (boost::numeric_cast<std::uint32_t>(pars->shape(0)) != nparams) {
-                py_throw(PyExc_ValueError,
-                         fmt::format("The array of parameter values provided for the evaluation "
-                                     "of a compiled function has size {} in the first dimension, "
-                                     "but it must have a size of {} instead (i.e., the size in the "
-                                     "first dimension must be equal to the number of parameters in the function)",
-                                     pars->shape(0), nparams)
-                             .c_str());
-            }
-
-            // If we are running multiple evaluations, the number must
-            // be consistent between inputs and pars.
-            if (multi_eval && pars->shape(1) != inputs.shape(1)) {
-                py_throw(PyExc_ValueError,
-                         fmt::format("The size in the second dimension for the array of parameter values "
-                                     "provided for "
-                                     "the evaluation of a compiled function ({}) must match the size in the "
-                                     "second dimension for the array of inputs ({})",
-                                     pars->shape(1), inputs.shape(1))
-                             .c_str());
-            }
-
-#if defined(HEYOKA_HAVE_REAL)
-
-            if constexpr (std::is_same_v<T, mppp::real>) {
-                // For mppp::real, check that the pars array is filled
-                // with constructed values with the correct precision.
-                pyreal_check_array(*pars, boost::numeric_cast<mpfr_prec_t>(prec));
-            }
-
-#endif
-        }
-
-        // Check the time array, if necessary.
-        if (time) {
-            // NOTE: the time array must be one-dimensional: if we are in a single-eval
-            // situation, the time was originally a scalar which was converted into a 1D
-            // array, otherwise the time was originally an iterable which was converted
-            // into an array. In the latter case, we must ensure the user did not
-            // provide a multi-dimensional array in input.
-            if (time->ndim() != 1) {
-                py_throw(PyExc_ValueError,
-                         fmt::format("An invalid time argument was passed to a compiled function: the time "
-                                     "array must be one-dimensional, but instead it has {} dimensions",
-                                     time->ndim())
-                             .c_str());
-            }
-
-            // If we are running multiple evaluations, the number must
-            // be consistent between inputs and time.
-            if (multi_eval && time->shape(0) != inputs.shape(1)) {
-                py_throw(PyExc_ValueError,
-                         fmt::format("The size of the array of time values provided for "
-                                     "the evaluation of a compiled function ({}) must match the size in the "
-                                     "second dimension for the array of inputs ({})",
-                                     time->shape(0), inputs.shape(1))
-                             .c_str());
-            }
-
-            if (!multi_eval) {
-                // NOTE: in single-eval, the time array was created from a single scalar.
-                assert(time->shape(0) == 1);
-            }
-
-#if defined(HEYOKA_HAVE_REAL)
-
-            if constexpr (std::is_same_v<T, mppp::real>) {
-                // For mppp::real, check that the time array is filled
-                // with constructed values with the correct precision.
-                pyreal_check_array(*time, boost::numeric_cast<mpfr_prec_t>(prec));
-            }
-
-#endif
-        }
-
-        // Check if we can use a zero-copy implementation. This is enabled
-        // for C-style contiguous aligned arrays guaranteed not to share any data.
-        bool zero_copy = is_npy_array_carray(inputs) && is_npy_array_carray(outputs)
-                         && (!pars || is_npy_array_carray(*pars)) && (!time || is_npy_array_carray(*time));
-        if (zero_copy) {
-            bool maybe_share_memory{};
-            if (pars) {
-                if (time) {
-                    maybe_share_memory = may_share_memory(inputs, outputs, *pars, *time);
-                } else {
-                    maybe_share_memory = may_share_memory(inputs, outputs, *pars);
-                }
-            } else {
-                if (time) {
-                    maybe_share_memory = may_share_memory(inputs, outputs, *time);
-                } else {
-                    maybe_share_memory = may_share_memory(inputs, outputs);
-                }
-            }
-
-            if (maybe_share_memory) {
-                zero_copy = false;
-            }
-        }
-
-        // Fetch pointers to the buffers, to decrease typing.
-        const auto buf_in_ptr = buf_in.data();
-        const auto buf_out_ptr = buf_out.data();
-        const auto buf_par_ptr = buf_pars.data();
-        const auto buf_time_ptr = buf_time.data();
-
-        // Run the evaluation.
-        if (multi_eval) {
-            // Signed version of the simd size.
-            const auto ss_size = boost::numeric_cast<py::ssize_t>(simd_size);
-
-            // Cache the number of evals.
-            const auto nevals = inputs.shape(1);
-
-            // Number of simd blocks in the arrays.
-            const auto n_simd_blocks = nevals / ss_size;
-
-            if (zero_copy) {
-                // Safely cast nevals to size_t to compute
-                // the stride value.
-                const auto stride = boost::numeric_cast<std::size_t>(nevals);
-
-                // Cache pointers.
-                auto *out_data = static_cast<T *>(outputs.mutable_data());
-                auto *in_data = static_cast<const T *>(inputs.data());
-                auto *par_data = pars ? static_cast<const T *>(pars->data()) : nullptr;
-                auto *time_data = time ? static_cast<const T *>(time->data()) : nullptr;
-                // NOTE: the idea of these booleans is that we want to do arithmetics
-                // on the inputs/pars/time pointers only if we **must** read from them,
-                // in which case the validation steps taken earlier ensure that
-                // arithmetics on them is safe. Otherwise, there are certain corner cases in which
-                // we might end up doing pointer arithmetics which leads to UB. For instance,
-                // if the function has no inputs and/or no parameters, then we are dealing
-                // with input and/or pars arrays of shape (0, nevals). I am not sure what
-                // kind of data pointer NumPy returns in such a case, but if NumPy, e.g.,
-                // returns nullptr, then we are committing UB.
-                // NOTE: if nevals is zero, then the two for loops below are never
-                // entered and we never end up doing arithmetics on potentially-null
-                // pointers.
-                const auto read_inputs = nvars > 0u;
-                const auto read_pars = nparams > 0u;
-                const auto read_time = is_time_dependent;
-
-                // Evaluate over the simd blocks.
-                for (py::ssize_t k = 0; k < n_simd_blocks; ++k) {
-                    const auto start_offset = k * ss_size;
-
-                    // Run the evaluation.
-                    fptr_batch_s(out_data + start_offset, read_inputs ? in_data + start_offset : nullptr,
-                                 read_pars ? par_data + start_offset : nullptr,
-                                 read_time ? time_data + start_offset : nullptr, stride);
-                }
-
-                // Handle the remainder, if present.
-                for (auto k = n_simd_blocks * ss_size; k < nevals; ++k) {
-                    fptr_scal_s(out_data + k, read_inputs ? in_data + k : nullptr, read_pars ? par_data + k : nullptr,
-                                read_time ? time_data + k : nullptr, stride);
-                }
-            } else {
-                // Unchecked access to inputs and outputs.
-                auto u_inputs = inputs.template unchecked<T, 2>();
-                auto u_outputs = outputs.template mutable_unchecked<T, 2>();
-
-                // Evaluate over the simd blocks.
-                for (py::ssize_t k = 0; k < n_simd_blocks; ++k) {
-                    // Copy over the input data.
-                    for (py::ssize_t i = 0; i < static_cast<py::ssize_t>(nvars); ++i) {
-                        for (py::ssize_t j = 0; j < ss_size; ++j) {
-                            buf_in_ptr[i * ss_size + j] = u_inputs(i, k * ss_size + j);
-                        }
-                    }
-
-                    // Copy over the pars.
-                    if (pars) {
-                        auto u_pars = pars->template unchecked<T, 2>();
-
-                        for (py::ssize_t i = 0; i < static_cast<py::ssize_t>(nparams); ++i) {
-                            for (py::ssize_t j = 0; j < ss_size; ++j) {
-                                buf_par_ptr[i * ss_size + j] = u_pars(i, k * ss_size + j);
-                            }
-                        }
-                    }
-
-                    // Copy over the time values.
-                    if (time) {
-                        auto u_time = time->template unchecked<T, 1>();
-
-                        for (py::ssize_t j = 0; j < ss_size; ++j) {
-                            buf_time_ptr[j] = u_time(k * ss_size + j);
-                        }
-                    }
-
-                    // Run the evaluation.
-                    fptr_batch(buf_out_ptr, buf_in_ptr, buf_par_ptr, buf_time_ptr);
-
-                    // Write the outputs.
-                    for (py::ssize_t i = 0; i < static_cast<py::ssize_t>(nouts); ++i) {
-                        for (py::ssize_t j = 0; j < ss_size; ++j) {
-                            u_outputs(i, k * ss_size + j) = buf_out_ptr[i * ss_size + j];
-                        }
-                    }
-                }
-
-                // Handle the remainder, if present.
-                for (auto k = n_simd_blocks * ss_size; k < nevals; ++k) {
-                    for (py::ssize_t i = 0; i < static_cast<py::ssize_t>(nvars); ++i) {
-                        buf_in_ptr[i] = u_inputs(i, k);
-                    }
-
-                    if (pars) {
-                        auto u_pars = pars->template unchecked<T, 2>();
-
-                        for (py::ssize_t i = 0; i < static_cast<py::ssize_t>(nparams); ++i) {
-                            buf_par_ptr[i] = u_pars(i, k);
-                        }
-                    }
-
-                    if (time) {
-                        auto u_time = time->template unchecked<T, 1>();
-
-                        buf_time_ptr[0] = u_time(k);
-                    }
-
-                    fptr_scal(buf_out_ptr, buf_in_ptr, buf_par_ptr, buf_time_ptr);
-
-                    for (py::ssize_t i = 0; i < static_cast<py::ssize_t>(nouts); ++i) {
-                        u_outputs(i, k) = buf_out_ptr[i];
-                    }
-                }
-            }
-        } else {
-            if (zero_copy) {
-                fptr_scal(static_cast<T *>(outputs.mutable_data()), static_cast<const T *>(inputs.data()),
-                          pars ? static_cast<const T *>(pars->data()) : nullptr,
-                          time ? static_cast<const T *>(time->data()) : nullptr);
-            } else {
-                // Copy over the input data.
-                auto u_inputs = inputs.template unchecked<T, 1>();
-                for (py::ssize_t i = 0; i < static_cast<py::ssize_t>(nvars); ++i) {
-                    buf_in_ptr[i] = u_inputs(i);
-                }
-
-                // Copy over the pars.
-                if (pars) {
-                    auto u_pars = pars->template unchecked<T, 1>();
-
-                    for (py::ssize_t i = 0; i < static_cast<py::ssize_t>(nparams); ++i) {
-                        buf_par_ptr[i] = u_pars(i);
-                    }
-                }
-
-                // Copy over the time.
-                if (time) {
-                    auto u_time = time->template unchecked<T, 1>();
-
-                    buf_time_ptr[0] = u_time(0);
-                }
-
-                // Run the evaluation.
-                fptr_scal(buf_out_ptr, buf_in_ptr, buf_par_ptr, buf_time_ptr);
-
-                // Write the outputs.
-                auto u_outputs = outputs.template mutable_unchecked<T, 1>();
-                for (py::ssize_t i = 0; i < static_cast<py::ssize_t>(nouts); ++i) {
-                    u_outputs(i) = buf_out_ptr[i];
-                }
-            }
-        }
-
-        return outputs;
-    }
-};
-
-template <typename T>
-std::ostream &operator<<(std::ostream &os, const cfunc<T> &cf)
-{
-    os << fmt::format("C++ datatype: {}\n", boost::core::demangle(typeid(T).name()));
-
-#if defined(HEYOKA_HAVE_REAL)
-
-    if constexpr (std::is_same_v<T, mppp::real>) {
-        os << fmt::format("Precision: {}\n", cf.prec);
-    }
-
-#endif
-
-    os << fmt::format("Variables: {}\n", cf.list_var);
-
-    for (decltype(cf.fn.size()) i = 0; i < cf.fn.size(); ++i) {
-        os << fmt::format("Output #{}: {}\n", i, cf.fn[i]);
-    }
-
-    return os;
-}
-
 template <typename T>
 void expose_add_cfunc_impl(py::module &m, const char *suffix)
 {
     using namespace pybind11::literals;
     namespace kw = hey::kw;
 
-    py::class_<cfunc<T>> cfunc_inst(m, fmt::format("cfunc_{}", suffix).c_str(), py::dynamic_attr{});
-    cfunc_inst.def(py::init<>());
-    cfunc_inst.def("__call__", &cfunc<T>::operator(), "inputs"_a, "outputs"_a = py::none{}, "pars"_a = py::none{},
-                   "time"_a = py::none{});
-    cfunc_inst.def_readonly("param_size", &cfunc<T>::nparams);
-    cfunc_inst.def_readonly("is_time_dependent", &cfunc<T>::is_time_dependent);
-    cfunc_inst.def_readonly("llvm_state_scalar", &cfunc<T>::s_scal);
-    cfunc_inst.def_readonly("llvm_state_scalar_s", &cfunc<T>::s_scal_s);
-    cfunc_inst.def_readonly("llvm_state_batch", &cfunc<T>::s_batch);
-    cfunc_inst.def_readonly("llvm_state_batch_s", &cfunc<T>::s_batch_s);
-    cfunc_inst.def_property_readonly("list_var", [](const cfunc<T> &cf) { return cf.list_var; });
-    cfunc_inst.def_property_readonly("fn", [](const cfunc<T> &cf) { return cf.fn; });
-    cfunc_inst.def_property_readonly("decomposition", [](const cfunc<T> &cf) { return cf.dc; });
+    py::class_<hey::cfunc<T>> cfunc_inst(m, fmt::format("cfunc_{}", suffix).c_str(), py::dynamic_attr{});
+    cfunc_inst.def(
+        py::init([](std::vector<hey::expression> fn, std::vector<hey::expression> vars, bool high_accuracy,
+                    bool compact_mode, bool parallel_mode, unsigned opt_level, bool force_avx512, bool slp_vectorize,
+                    std::uint32_t batch_size, bool fast_math, long long prec) {
+            // Forbid batch sizes > 1 for everything but double and float.
+            // NOTE: there is a similar check on the C++ side regarding mppp::real, but in Python specifically
+            // we want to be pragmatic and allow for batch operations only if we know that it makes sense
+            // performance-wise (and we also want to avoid buggy batch operations on long double).
+            if (!std::is_same_v<T, double> && !std::is_same_v<T, float> && batch_size > 1u) [[unlikely]] {
+                py_throw(PyExc_ValueError, "Batch sizes greater than 1 are not supported for this floating-point type");
+            }
+
+            // NOTE: release the GIL during compilation.
+            py::gil_scoped_release release;
+
+            return hey::cfunc<T>{std::move(fn), std::move(vars), kw::high_accuracy = high_accuracy,
+                                 kw::compact_mode = compact_mode, kw::parallel_mode = parallel_mode,
+                                 kw::opt_level = opt_level, kw::force_avx512 = force_avx512,
+                                 kw::slp_vectorize = slp_vectorize, kw::batch_size = batch_size,
+                                 kw::fast_math = fast_math, kw::prec = prec,
+                                 // NOTE: it is important to disable the prec checking
+                                 // here as we will have our own custom implementation
+                                 // of precision checking to deal with NumPy arrays.
+                                 kw::check_prec = false};
+        }),
+        "fn"_a, "vars"_a, "high_accuracy"_a.noconvert() = false, "compact_mode"_a.noconvert() = default_cm<T>,
+        "parallel_mode"_a.noconvert() = false, "opt_level"_a.noconvert() = 3, "force_avx512"_a.noconvert() = false,
+        "slp_vectorize"_a.noconvert() = false, "batch_size"_a.noconvert() = 0, "fast_math"_a.noconvert() = false,
+        "prec"_a.noconvert() = 0);
+
+    // Typedefs for the call operator.
+    using array_or_iter_t = std::variant<py::array, py::iterable>;
+    using time_arg_t = std::variant<T, array_or_iter_t>;
+
+    cfunc_inst.def(
+        "__call__",
+        [](hey::cfunc<T> &self, array_or_iter_t inputs_ob, std::optional<py::array> outputs_ob,
+           std::optional<array_or_iter_t> pars_ob, std::optional<time_arg_t> time_ob) {
+            // Fetch the dtype corresponding to T.
+            const auto dt = get_dtype<T>();
+
+            // Small helper to facilitate the conversion of an iterable into
+            // a contiguous NumPy array of type dt.
+            const auto as_carray = [dt](const py::iterable &v) {
+                using namespace pybind11::literals;
+
+                py::array ret = py::module_::import("numpy").attr("ascontiguousarray")(v, "dtype"_a = py::dtype(dt));
+
+                assert(ret.dtype().num() == dt);
+                assert(is_npy_array_carray(ret));
+
+                return ret;
+            };
+
+            // Fetch the inputs array.
+            // NOTE: this will either fetch the existing array, or convert
+            // the input iterable to a py::array on the fly.
+            const auto inputs = std::visit(
+                [&](auto &v) {
+                    if constexpr (std::same_as<std::remove_cvref_t<decltype(v)>, py::array>) {
+                        // Check the dtype.
+                        if (v.dtype().num() != dt) [[unlikely]] {
+                            py_throw(
+                                PyExc_TypeError,
+                                fmt::format(
+                                    "Invalid dtype detected for the inputs of a compiled function: the expected dtype "
+                                    "is '{}', but the dtype of the inputs array is '{}' instead",
+                                    str(py::dtype(dt)), str(v.dtype()))
+                                    .c_str());
+                        }
+
+                        // Check that the inputs array is a C-style contiguous array.
+                        if (!is_npy_array_carray(v)) [[unlikely]] {
+                            py_throw(PyExc_ValueError,
+                                     "Invalid inputs array detected: the array is not C-style contiguous, please "
+                                     "consider using numpy.ascontiguousarray() to turn it into one");
+                        }
+
+                        return std::move(v);
+                    } else {
+                        return as_carray(v);
+                    }
+                },
+                inputs_ob);
+
+            // Validate the number of dimensions for the inputs.
+            // NOTE: this needs to be done regardless of the original type of inputs_ob.
+            if (inputs.ndim() != 1 && inputs.ndim() != 2) [[unlikely]] {
+                py_throw(PyExc_ValueError, fmt::format("The array of inputs provided for the evaluation "
+                                                       "of a compiled function has {} dimensions, "
+                                                       "but it must have either 1 or 2 dimensions instead",
+                                                       inputs.ndim())
+                                               .c_str());
+            }
+
+            // Infer if we are in multieval mode from inputs.
+            const auto multieval = (inputs.ndim() == 2);
+
+            // Fetch/create/validate the outputs array.
+            auto outputs = [&]() {
+                if (outputs_ob) {
+                    auto &out = *outputs_ob;
+
+                    // Check the dtype.
+                    if (out.dtype().num() != dt) [[unlikely]] {
+                        py_throw(
+                            PyExc_TypeError,
+                            fmt::format(
+                                "Invalid dtype detected for the outputs of a compiled function: the expected dtype "
+                                "is '{}', but the dtype of the outputs array is '{}' instead",
+                                str(py::dtype(dt)), str(out.dtype()))
+                                .c_str());
+                    }
+
+                    // Check C-style contiguous array.
+                    if (!is_npy_array_carray(out)) [[unlikely]] {
+                        py_throw(PyExc_ValueError,
+                                 "Invalid outputs array detected: the array is not C-style contiguous, please "
+                                 "consider using numpy.ascontiguousarray() to turn it into one");
+                    }
+
+                    // The array must be writeable.
+                    if (!out.writeable()) [[unlikely]] {
+                        py_throw(PyExc_ValueError, "The array of outputs provided for the evaluation "
+                                                   "of a compiled function is not writeable");
+                    }
+
+                    // Validate the number of dimensions for the outputs.
+                    if (out.ndim() != inputs.ndim()) [[unlikely]] {
+                        py_throw(PyExc_ValueError,
+                                 fmt::format("The array of outputs provided for the evaluation "
+                                             "of a compiled function has {} dimension(s), "
+                                             "but it must have {} dimension(s) instead (i.e., the same "
+                                             "number of dimensions as the array of inputs)",
+                                             out.ndim(), inputs.ndim())
+                                     .c_str());
+                    }
+
+                    // NOTE: the rest of the validation is done on the C++ side.
+                    return std::move(out);
+                } else {
+                    if (multieval) {
+                        return py::array(inputs.dtype(),
+                                         py::array::ShapeContainer{boost::numeric_cast<py::ssize_t>(self.get_nouts()),
+                                                                   inputs.shape(1)});
+                    } else {
+                        return py::array(inputs.dtype(),
+                                         py::array::ShapeContainer{boost::numeric_cast<py::ssize_t>(self.get_nouts())});
+                    }
+                }
+            }();
+
+            // Fetch/create/validate the pars array.
+            const auto pars = [&]() -> std::optional<py::array> {
+                if (pars_ob) {
+                    // pars was supplied.
+                    auto pars = std::visit(
+                        [&](auto &v) {
+                            if constexpr (std::same_as<std::remove_cvref_t<decltype(v)>, py::array>) {
+                                // Check the dtype.
+                                if (v.dtype().num() != dt) [[unlikely]] {
+                                    py_throw(
+                                        PyExc_TypeError,
+                                        fmt::format("Invalid dtype detected for the parameters of a compiled "
+                                                    "function: the expected dtype "
+                                                    "is '{}', but the dtype of the parameters array is '{}' instead",
+                                                    str(py::dtype(dt)), str(v.dtype()))
+                                            .c_str());
+                                }
+
+                                // Check C-style contiguous array.
+                                if (!is_npy_array_carray(v)) [[unlikely]] {
+                                    py_throw(PyExc_ValueError,
+                                             "Invalid parameters array detected: the array is not C-style contiguous, "
+                                             "please consider using numpy.ascontiguousarray() to turn it into one");
+                                }
+
+                                return std::move(v);
+                            } else {
+                                return as_carray(v);
+                            }
+                        },
+                        *pars_ob);
+
+                    // Validate the number of dimensions.
+                    // NOTE: this needs to be done regardless of the original type of pars_ob.
+                    if (pars.ndim() != inputs.ndim()) [[unlikely]] {
+                        py_throw(PyExc_ValueError,
+                                 fmt::format("The array of parameters provided for the evaluation "
+                                             "of a compiled function has {} dimension(s), "
+                                             "but it must have {} dimension(s) instead (i.e., the same "
+                                             "number of dimensions as the array of inputs)",
+                                             pars.ndim(), inputs.ndim())
+                                     .c_str());
+                    }
+
+                    return pars;
+                } else {
+                    // No pars supplied.
+                    return {};
+                }
+            }();
+
+            // Fetch/create/validate the time value/array.
+            const auto time = [&]() -> std::optional<std::variant<T, py::array>> {
+                if (time_ob) {
+                    auto &tm = *time_ob;
+
+                    if (std::holds_alternative<T>(tm)) {
+                        if (multieval) [[unlikely]] {
+                            py_throw(PyExc_TypeError,
+                                     "The time value cannot be a scalar when evaluating a compiled function "
+                                     "over batches of inputs, it should be an array of values instead");
+                        }
+
+                        return std::move(std::get<T>(tm));
+                    }
+
+                    if (!multieval) [[unlikely]] {
+                        py_throw(PyExc_TypeError,
+                                 "The time value cannot be an array when evaluating a compiled function over a single "
+                                 "set of inputs, it should be a scalar instead");
+                    }
+
+                    auto time = std::visit(
+                        [&](auto &v) {
+                            if constexpr (std::same_as<std::remove_cvref_t<decltype(v)>, py::array>) {
+                                // Check the dtype.
+                                if (v.dtype().num() != dt) [[unlikely]] {
+                                    py_throw(PyExc_TypeError,
+                                             fmt::format("Invalid dtype detected for the time values of a compiled "
+                                                         "function: the expected dtype "
+                                                         "is '{}', but the dtype of the time array is '{}' instead",
+                                                         str(py::dtype(dt)), str(v.dtype()))
+                                                 .c_str());
+                                }
+
+                                // Check C-style contiguous array.
+                                if (!is_npy_array_carray(v)) [[unlikely]] {
+                                    py_throw(PyExc_ValueError,
+                                             "Invalid time array detected: the array is not C-style contiguous, "
+                                             "please consider using numpy.ascontiguousarray() to turn it into one");
+                                }
+
+                                return std::move(v);
+                            } else {
+                                return as_carray(v);
+                            }
+                        },
+                        std::get<array_or_iter_t>(tm));
+
+                    // Dimensionality check.
+                    // NOTE: we know are in multieval mode at this point, we need a 1D array of times.
+                    if (time.ndim() != 1) [[unlikely]] {
+                        py_throw(PyExc_ValueError, fmt::format("The array of times provided for the evaluation "
+                                                               "of a compiled function has {} dimension(s), "
+                                                               "but it must be one-dimensional instead",
+                                                               time.ndim())
+                                                       .c_str());
+                    }
+
+                    return time;
+                } else {
+                    return {};
+                }
+            }();
+
 #if defined(HEYOKA_HAVE_REAL)
-    if constexpr (std::is_same_v<T, mppp::real>) {
-        cfunc_inst.def_property_readonly("prec", [](const cfunc<T> &cf) { return cf.prec; });
-    }
+
+            // Run the checks specific for mppp::real.
+            if constexpr (std::is_same_v<T, mppp::real>) {
+                // Check that the inputs array contains values with the correct precision.
+                pyreal_check_array(inputs, self.get_prec());
+
+                // Ensure that the outputs array contains constructed values with the correct precision.
+                pyreal_ensure_array(outputs, self.get_prec());
+
+                if (pars) {
+                    // Check that the pars array is filled with constructed values with the correct precision.
+                    pyreal_check_array(*pars, self.get_prec());
+                }
+
+                if (time) {
+                    if (multieval) {
+                        // Check that the time array is filled with constructed values with the correct precision.
+                        pyreal_check_array(std::get<py::array>(*time), self.get_prec());
+                    } else {
+                        // Check that the scalar time value has the correct precision.
+                        if (std::get<mppp::real>(*time).get_prec() != self.get_prec()) [[unlikely]] {
+                            py_throw(PyExc_ValueError,
+                                     fmt::format("An invalid time value was passed for the evaluation of a compiled "
+                                                 "function in multiprecision mode: the time value has a precision of "
+                                                 "{}, while the expected precision is {} instead",
+                                                 std::get<mppp::real>(*time).get_prec(), self.get_prec())
+                                         .c_str());
+                        }
+                    }
+                }
+            }
+
 #endif
+
+            // Run the overlapping memory checks.
+            bool maybe_share_memory{};
+
+            if (pars) {
+                if (time && multieval) {
+                    maybe_share_memory = may_share_memory(inputs, outputs, *pars, std::get<py::array>(*time));
+                } else {
+                    maybe_share_memory = may_share_memory(inputs, outputs, *pars);
+                }
+            } else {
+                if (time && multieval) {
+                    maybe_share_memory = may_share_memory(inputs, outputs, std::get<py::array>(*time));
+                } else {
+                    maybe_share_memory = may_share_memory(inputs, outputs);
+                }
+            }
+
+            if (maybe_share_memory) [[unlikely]] {
+                py_throw(PyExc_ValueError, "Potential memory overlaps detected when attempting to evaluate a compiled "
+                                           "function: please make sure that all input arrays are distinct");
+            }
+
+            // Construct the mdspans and invoke the C++ function.
+            using in_1d = typename hey::cfunc<T>::in_1d;
+            using out_1d = typename hey::cfunc<T>::out_1d;
+            using in_2d = typename hey::cfunc<T>::in_2d;
+            using out_2d = typename hey::cfunc<T>::out_2d;
+
+            if (multieval) {
+                in_2d in_span{static_cast<const T *>(inputs.data()), boost::numeric_cast<std::size_t>(inputs.shape(0)),
+                              boost::numeric_cast<std::size_t>(inputs.shape(1))};
+                out_2d out_span{static_cast<T *>(outputs.mutable_data()),
+                                boost::numeric_cast<std::size_t>(outputs.shape(0)),
+                                boost::numeric_cast<std::size_t>(outputs.shape(1))};
+                // NOTE: if no pars are supplied, create a nullptr empty span in which the number
+                // of rows is zero and the number of columns is equal to the number of columns in inputs. This ensures
+                // that the C++ checks on the pars span do not fail, as the C++ code expects a correct shape if pars is
+                // supplied.
+                in_2d par_span{pars ? static_cast<const T *>(pars->data()) : nullptr,
+                               pars ? boost::numeric_cast<std::size_t>(pars->shape(0)) : 0u,
+                               pars ? boost::numeric_cast<std::size_t>(pars->shape(1))
+                                    : boost::numeric_cast<std::size_t>(inputs.shape(1))};
+
+                // NOTE: we need to branch on the presence of time because if time is not available,
+                // it is not possible to construct an empty span that satisfies the checks on the C++ side.
+                // If a time span is provided, the C++ code expects its size to be equal to nevals and,
+                // because the time span is 1d, we cannot use the same trick used in the par span of
+                // constructing an empty nullptr span with the correct second dimension.
+                if (time) {
+                    // NOTE: I am not 100% sure if pybind11 needs to call into the interpreter
+                    // when fetching data/shape from the time array. Better safe than sorry,
+                    // delay GIL unlock until next line.
+                    in_1d time_span{static_cast<const T *>(std::get<py::array>(*time).data()),
+                                    boost::numeric_cast<std::size_t>(std::get<py::array>(*time).shape(0))};
+
+                    // NOTE: release the GIL during evaluation.
+                    py::gil_scoped_release release;
+
+                    self(out_span, in_span, kw::pars = par_span, kw::time = time_span);
+                } else {
+                    // NOTE: release the GIL during evaluation.
+                    py::gil_scoped_release release;
+
+                    self(out_span, in_span, kw::pars = par_span);
+                }
+            } else {
+                in_1d in_span{static_cast<const T *>(inputs.data()), boost::numeric_cast<std::size_t>(inputs.shape(0))};
+                out_1d out_span{static_cast<T *>(outputs.mutable_data()),
+                                boost::numeric_cast<std::size_t>(outputs.shape(0))};
+                in_1d par_span{pars ? static_cast<const T *>(pars->data()) : nullptr,
+                               pars ? boost::numeric_cast<std::size_t>(pars->shape(0)) : 0u};
+
+                // NOTE: release the GIL during evaluation.
+                py::gil_scoped_release release;
+
+                if (time) {
+                    self(out_span, in_span, kw::pars = par_span, kw::time = std::move(std::get<T>(*time)));
+                } else {
+                    self(out_span, in_span, kw::pars = par_span);
+                }
+            }
+
+            return outputs;
+        },
+        "inputs"_a.noconvert(), "outputs"_a.noconvert() = py::none{}, "pars"_a.noconvert() = py::none{},
+        "time"_a.noconvert() = py::none{});
+
+    cfunc_inst.def_property_readonly("fn", &hey::cfunc<T>::get_fn);
+    cfunc_inst.def_property_readonly("vars", &hey::cfunc<T>::get_vars);
+    cfunc_inst.def_property_readonly("dc", &hey::cfunc<T>::get_dc);
+    cfunc_inst.def_property_readonly("llvm_state_scalar", &hey::cfunc<T>::get_llvm_state_scalar);
+    cfunc_inst.def_property_readonly("llvm_state_scalar_s", &hey::cfunc<T>::get_llvm_state_scalar_s);
+    cfunc_inst.def_property_readonly("llvm_state_batch_s", &hey::cfunc<T>::get_llvm_state_batch_s);
+    cfunc_inst.def_property_readonly("high_accuracy", &hey::cfunc<T>::get_high_accuracy);
+    cfunc_inst.def_property_readonly("compact_mode", &hey::cfunc<T>::get_compact_mode);
+    cfunc_inst.def_property_readonly("parallel_mode", &hey::cfunc<T>::get_parallel_mode);
+    cfunc_inst.def_property_readonly("batch_size", &hey::cfunc<T>::get_batch_size);
+    cfunc_inst.def_property_readonly("nparams", &hey::cfunc<T>::get_nparams);
+    cfunc_inst.def_property_readonly("nvars", &hey::cfunc<T>::get_nvars);
+    cfunc_inst.def_property_readonly("nouts", &hey::cfunc<T>::get_nouts);
+    cfunc_inst.def_property_readonly("is_time_dependent", &hey::cfunc<T>::is_time_dependent);
+
+#if defined(HEYOKA_HAVE_REAL)
+
+    if constexpr (std::is_same_v<T, mppp::real>) {
+        cfunc_inst.def_property_readonly("prec", &hey::cfunc<T>::get_prec);
+    }
+
+#endif
+
+    // Copy/deepcopy.
+    cfunc_inst.def("__copy__", copy_wrapper<hey::cfunc<T>>);
+    cfunc_inst.def("__deepcopy__", deepcopy_wrapper<hey::cfunc<T>>, "memo"_a);
+
+    // Pickle support.
+    cfunc_inst.def(py::pickle(&pickle_getstate_wrapper<hey::cfunc<T>>, &pickle_setstate_wrapper<hey::cfunc<T>>));
+
     // Repr.
-    cfunc_inst.def("__repr__", [](const cfunc<T> &cf) {
+    cfunc_inst.def("__repr__", [](const hey::cfunc<T> &cf) {
         std::ostringstream oss;
         oss << cf;
         return oss.str();
     });
-    // Copy/deepcopy.
-    cfunc_inst.def("__copy__", copy_wrapper<cfunc<T>>);
-    cfunc_inst.def("__deepcopy__", deepcopy_wrapper<cfunc<T>>, "memo"_a);
-    // Pickle support.
-    cfunc_inst.def(py::pickle(&pickle_getstate_wrapper<cfunc<T>>, &pickle_setstate_wrapper<cfunc<T>>));
-
-    m.def(
-        fmt::format("_add_cfunc_{}", suffix).c_str(),
-        [](std::vector<hey::expression> fn, std::vector<hey::expression> vars, bool high_accuracy, bool compact_mode,
-           bool parallel_mode, unsigned opt_level, bool force_avx512, bool slp_vectorize,
-           std::optional<std::uint32_t> batch_size, bool fast_math, long long prec) {
-            // Compute the SIMD size.
-            const auto simd_size = batch_size ? *batch_size : hey::recommended_simd_size<T>();
-
-            // Forbid batch sizes > 1 for everything but double and float.
-            if (!std::is_same_v<T, double> && !std::is_same_v<T, float> && simd_size > 1u) {
-                py_throw(PyExc_ValueError, "Batch sizes greater than 1 are not supported for this floating-point type");
-            }
-
-            // Add the compiled functions.
-            using ptr_t = cfunc_ptr_t<T>;
-            ptr_t fptr_scal = nullptr, fptr_batch = nullptr;
-            using ptr_s_t = cfunc_ptr_s_t<T>;
-            ptr_s_t fptr_scal_s = nullptr, fptr_batch_s = nullptr;
-
-            hey::llvm_state s_scal{kw::opt_level = opt_level, kw::force_avx512 = force_avx512,
-                                   kw::slp_vectorize = slp_vectorize, kw::fast_math = fast_math},
-                s_batch{s_scal}, s_scal_s{s_scal}, s_batch_s{s_scal};
-
-            // Variable to store the decomposition.
-            std::vector<hey::expression> dc;
-
-            {
-                // NOTE: release the GIL during compilation.
-                py::gil_scoped_release release;
-
-                oneapi::tbb::parallel_invoke(
-                    [&]() {
-                        // Scalar unstrided.
-                        // NOTE: we fetch the decomposition from the scalar
-                        // unstrided invocation of add_cfunc().
-                        dc = hey::add_cfunc<T>(s_scal, "cfunc", fn, vars, kw::high_accuracy = high_accuracy,
-                                               kw::compact_mode = compact_mode, kw::parallel_mode = parallel_mode,
-                                               kw::prec = prec);
-
-                        s_scal.compile();
-
-                        fptr_scal = reinterpret_cast<ptr_t>(s_scal.jit_lookup("cfunc"));
-                    },
-                    [&]() {
-                        // Batch unstrided.
-                        hey::add_cfunc<T>(s_batch, "cfunc", fn, vars, kw::batch_size = simd_size,
-                                          kw::high_accuracy = high_accuracy, kw::compact_mode = compact_mode,
-                                          kw::parallel_mode = parallel_mode, kw::prec = prec);
-
-                        s_batch.compile();
-
-                        fptr_batch = reinterpret_cast<ptr_t>(s_batch.jit_lookup("cfunc"));
-                    },
-                    [&]() {
-                        // Scalar strided.
-                        hey::add_cfunc<T>(s_scal_s, "cfunc.strided", fn, vars, kw::high_accuracy = high_accuracy,
-                                          kw::compact_mode = compact_mode, kw::parallel_mode = parallel_mode,
-                                          kw::prec = prec, kw::strided = true);
-
-                        s_scal_s.compile();
-
-                        fptr_scal_s = reinterpret_cast<ptr_s_t>(s_scal_s.jit_lookup("cfunc.strided"));
-                    },
-                    [&]() {
-                        // Batch strided.
-                        hey::add_cfunc<T>(s_batch_s, "cfunc.strided", fn, vars, kw::batch_size = simd_size,
-                                          kw::high_accuracy = high_accuracy, kw::compact_mode = compact_mode,
-                                          kw::parallel_mode = parallel_mode, kw::prec = prec, kw::strided = true);
-
-                        s_batch_s.compile();
-
-                        fptr_batch_s = reinterpret_cast<ptr_s_t>(s_batch_s.jit_lookup("cfunc.strided"));
-                    });
-            }
-
-            // Let's figure out if fn contains params and if it is time-dependent.
-            const auto nparams = hey::get_param_size(fn);
-            const auto is_time_dependent = hey::is_time_dependent(fn);
-
-            // Cache the number of variables and outputs.
-            // NOTE: static casts are fine, because add_cfunc()
-            // succeeded and that guarantees that the number of vars and outputs
-            // fits in a 32-bit int.
-            const auto nouts = static_cast<std::uint32_t>(fn.size());
-            const auto nvars = static_cast<std::uint32_t>(vars.size());
-
-            // Prepare local buffers to store inputs, outputs, pars and time
-            // during the invocation of the compiled functions.
-            // These are used only if we cannot read from/write to
-            // the numpy arrays directly.
-            std::vector<T> buf_in, buf_out, buf_pars, buf_time;
-            // NOTE: the multiplications are safe because
-            // the overflow checks we run during the compilation
-            // of the function in batch mode did not raise errors.
-            buf_in.resize(boost::numeric_cast<decltype(buf_in.size())>(nvars * simd_size));
-            buf_out.resize(boost::numeric_cast<decltype(buf_out.size())>(nouts * simd_size));
-            buf_pars.resize(boost::numeric_cast<decltype(buf_pars.size())>(nparams * simd_size));
-            buf_time.resize(boost::numeric_cast<decltype(buf_time.size())>(simd_size));
-
-#if defined(HEYOKA_HAVE_REAL)
-
-            if constexpr (std::is_same_v<T, mppp::real>) {
-                // For mppp::real, ensure that all buffers contain
-                // values with the correct precision.
-
-                for (auto &val : buf_in) {
-                    val.set_prec(boost::numeric_cast<mpfr_prec_t>(prec));
-                }
-
-                for (auto &val : buf_out) {
-                    val.set_prec(boost::numeric_cast<mpfr_prec_t>(prec));
-                }
-
-                for (auto &val : buf_pars) {
-                    val.set_prec(boost::numeric_cast<mpfr_prec_t>(prec));
-                }
-
-                for (auto &val : buf_time) {
-                    val.set_prec(boost::numeric_cast<mpfr_prec_t>(prec));
-                }
-            }
-
-#endif
-
-            return cfunc<T>{std::move(s_scal),
-                            std::move(s_batch),
-                            std::move(s_scal_s),
-                            std::move(s_batch_s),
-                            simd_size,
-                            nparams,
-                            nouts,
-                            nvars,
-                            is_time_dependent,
-                            fptr_scal,
-                            fptr_batch,
-                            fptr_scal_s,
-                            fptr_batch_s,
-                            std::move(buf_in),
-                            std::move(buf_out),
-                            std::move(buf_pars),
-                            std::move(buf_time),
-                            prec,
-                            std::move(vars),
-                            std::move(fn),
-                            std::move(dc)};
-        },
-        "fn"_a, "vars"_a, "high_accuracy"_a.noconvert() = false, "compact_mode"_a.noconvert() = default_cm<T>,
-        "parallel_mode"_a.noconvert() = false, "opt_level"_a.noconvert() = 3, "force_avx512"_a.noconvert() = false,
-        "slp_vectorize"_a.noconvert() = false, "batch_size"_a.noconvert() = py::none{},
-        "fast_math"_a.noconvert() = false, "prec"_a.noconvert() = 0);
 }
 
 } // namespace
