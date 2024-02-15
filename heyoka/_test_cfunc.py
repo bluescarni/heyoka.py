@@ -12,14 +12,14 @@ import unittest as _ut
 
 class cfunc_test_case(_ut.TestCase):
     def test_basic(self):
-        from . import make_cfunc, make_vars, cfunc_dbl, core, par, time
+        from . import cfunc, make_vars, cfunc_dbl, core, par, time
         import pickle
         from copy import copy, deepcopy
 
-        self.assertRaises(ValueError, lambda: make_cfunc([], []))
+        self.assertRaises(ValueError, lambda: cfunc([], []))
 
         x, y, z, s = make_vars("x", "y", "z", "s")
-        cf = make_cfunc([y * (x + z)], [x, y, z])
+        cf = cfunc([y * (x + z)], [x, y, z])
 
         self.assertFalse(cf.llvm_state_scalar.force_avx512)
         self.assertFalse(cf.llvm_state_scalar.slp_vectorize)
@@ -52,7 +52,7 @@ class cfunc_test_case(_ut.TestCase):
             cf.llvm_state_scalar.get_ir(),
         )
 
-        cf = make_cfunc(
+        cf = cfunc(
             [y * (x + z)], vars=[y, z, x], force_avx512=True, slp_vectorize=True
         )
         self.assertEqual(cf.vars, [y, z, x])
@@ -62,27 +62,27 @@ class cfunc_test_case(_ut.TestCase):
 
         # Tests for correct detection of number of params, time dependency
         # and list of variables.
-        cf = make_cfunc([y * (x + z), x], vars=[y, z, x])
+        cf = cfunc([y * (x + z), x], vars=[y, z, x])
         self.assertEqual(cf.nparams, 0)
-        cf = make_cfunc([y * (x + z), par[0]], vars=[y, z, x])
+        cf = cfunc([y * (x + z), par[0]], vars=[y, z, x])
         self.assertEqual(cf.nparams, 1)
-        cf = make_cfunc([y * (x + z) - par[89], par[0]], vars=[y, z, x])
+        cf = cfunc([y * (x + z) - par[89], par[0]], vars=[y, z, x])
         self.assertEqual(cf.nparams, 90)
 
-        cf = make_cfunc([y * (x + z), x], vars=[y, z, x])
+        cf = cfunc([y * (x + z), x], vars=[y, z, x])
         self.assertFalse(cf.is_time_dependent)
-        cf = make_cfunc([y * (x + z) + time, x], vars=[y, z, x])
+        cf = cfunc([y * (x + z) + time, x], vars=[y, z, x])
         self.assertTrue(cf.is_time_dependent)
-        cf = make_cfunc([y * (x + z), x + time], vars=[y, z, x])
+        cf = cfunc([y * (x + z), x + time], vars=[y, z, x])
         self.assertTrue(cf.is_time_dependent)
 
-        cf = make_cfunc([y * (x + z), x + time], [x, y, z])
+        cf = cfunc([y * (x + z), x + time], [x, y, z])
         self.assertEqual(cf.vars, [x, y, z])
-        cf = make_cfunc([y * (x + z), x + time], vars=[y, z, x])
+        cf = cfunc([y * (x + z), x + time], vars=[y, z, x])
         self.assertEqual(cf.vars, [y, z, x])
-        cf = make_cfunc([y * (x + z), x + time], vars=[y, z, x, s])
+        cf = cfunc([y * (x + z), x + time], vars=[y, z, x, s])
         self.assertEqual(cf.vars, [y, z, x, s])
-        cf = make_cfunc([y * (x + z), x + time], vars=[s, y, z, x])
+        cf = cfunc([y * (x + z), x + time], vars=[s, y, z, x])
         self.assertEqual(cf.vars, [s, y, z, x])
 
         # NOTE: test for a bug in the multiprecision
@@ -93,7 +93,7 @@ class cfunc_test_case(_ut.TestCase):
 
         real = core.real
 
-        cf = make_cfunc([y * (x + z)], [x, y, z], fp_type=real, prec=128)
+        cf = cfunc([y * (x + z)], [x, y, z], fp_type=real, prec=128)
         self.assertEqual(
             cf([real(1, 128), real(2, 128), real(3, 128)]),
             copy(cf)([real(1, 128), real(2, 128), real(3, 128)]),
@@ -105,7 +105,7 @@ class cfunc_test_case(_ut.TestCase):
 
     def test_multi(self):
         import numpy as np
-        from . import make_cfunc, make_vars, sin, par, expression, core, time
+        from . import cfunc, make_vars, sin, par, expression, core, time
         from .core import _ppc_arch
         from .test import _get_eps, _allclose
 
@@ -121,18 +121,18 @@ class cfunc_test_case(_ut.TestCase):
         func = [sin(x + y), x - par[0], x + y + par[1] * time]
 
         for fp_t in fp_types:
-            fn = make_cfunc(func, vars=[y, x], fp_type=fp_t, batch_size=0)
+            fn = cfunc(func, vars=[y, x], fp_type=fp_t, batch_size=0)
             self.assertTrue(fn.batch_size > 0)
 
             if fp_t == np.longdouble:
                 with self.assertRaises(ValueError) as cm:
-                    make_cfunc(func, vars=[y, x], fp_type=fp_t, batch_size=2)
+                    cfunc(func, vars=[y, x], fp_type=fp_t, batch_size=2)
                 self.assertTrue(
                     "Batch sizes greater than 1 are not supported for this floating-point type"
                     in str(cm.exception)
                 )
 
-            fn = make_cfunc(func, vars=[y, x], fp_type=fp_t)
+            fn = cfunc(func, vars=[y, x], fp_type=fp_t)
 
             with self.assertRaises(ValueError) as cm:
                 fn(
@@ -278,7 +278,7 @@ class cfunc_test_case(_ut.TestCase):
             )
 
             for nevals in range(0, 10):
-                fn = make_cfunc(func, vars=[y, x], fp_type=fp_t)
+                fn = cfunc(func, vars=[y, x], fp_type=fp_t)
 
                 # NOTE: deterministic seeding.
                 rng = np.random.default_rng(nevals)
@@ -317,7 +317,7 @@ class cfunc_test_case(_ut.TestCase):
                 # NOTE: simple function without pars used to test
                 # that the null pars span is created with the correct shape
                 # in a parameter-less function.
-                simple_fn = make_cfunc([x + y], vars=[x, y], fp_type=fp_t)
+                simple_fn = cfunc([x + y], vars=[x, y], fp_type=fp_t)
                 eval_arr = simple_fn(inputs=inputs)
                 self.assertTrue(
                     _allclose(
@@ -581,7 +581,7 @@ class cfunc_test_case(_ut.TestCase):
                     )
 
                 # Tests with no inputs.
-                fn = make_cfunc(
+                fn = cfunc(
                     [expression(fp_t(3)) + par[1], par[0] + time], [], fp_type=fp_t
                 )
 
@@ -659,7 +659,7 @@ class cfunc_test_case(_ut.TestCase):
                     )
                 )
 
-                fn = make_cfunc(
+                fn = cfunc(
                     [expression(fp_t(3)), expression(fp_t(4))], [], fp_type=fp_t
                 )
 
@@ -685,7 +685,7 @@ class cfunc_test_case(_ut.TestCase):
 
                 # Test case in which there are no pars but a pars array is provided anyway,
                 # with the correct shape.
-                fn = make_cfunc([x + y], [x, y], fp_type=fp_t)
+                fn = cfunc([x + y], [x, y], fp_type=fp_t)
                 inputs = rng.random((2, nevals), dtype=float).astype(fp_t)
                 eval_arr = fn(inputs=inputs, pars=np.zeros((0, nevals), dtype=fp_t))
 
@@ -716,11 +716,11 @@ class cfunc_test_case(_ut.TestCase):
         # Check throwing behaviour with long double on PPC.
         if _ppc_arch:
             with self.assertRaises(NotImplementedError):
-                make_cfunc(func, vars=[y, x], fp_type=np.longdouble)
+                cfunc(func, vars=[y, x], fp_type=np.longdouble)
 
     def test_single(self):
         import numpy as np
-        from . import make_cfunc, make_vars, sin, par, expression, core, time
+        from . import cfunc, make_vars, sin, par, expression, core, time
         from .core import _ppc_arch
         from .test import _get_eps, _allclose
 
@@ -740,7 +740,7 @@ class cfunc_test_case(_ut.TestCase):
         # etc., once we figure out how to test for them. Perhaps
         # examine the llvm states?
         for fp_t in fp_types:
-            fn = make_cfunc(func, [x, y], fp_type=fp_t)
+            fn = cfunc(func, [x, y], fp_type=fp_t)
 
             with self.assertRaises(ValueError) as cm:
                 fn([fp_t(1), fp_t(2)])
@@ -959,7 +959,7 @@ class cfunc_test_case(_ut.TestCase):
             )
 
             # Tests with no inputs.
-            fn = make_cfunc(
+            fn = cfunc(
                 [expression(fp_t(3)) + par[1], par[0] + time], [], fp_type=fp_t
             )
 
@@ -986,7 +986,7 @@ class cfunc_test_case(_ut.TestCase):
                 )
             )
 
-            fn = make_cfunc(
+            fn = cfunc(
                 [expression(fp_t(3)), expression(fp_t(4)) + time], [], fp_type=fp_t
             )
 
@@ -1020,7 +1020,7 @@ class cfunc_test_case(_ut.TestCase):
 
             # Test case in which there are no pars but a pars array is provided anyway,
             # with the correct shape.
-            fn = make_cfunc([x + y], [x, y], fp_type=fp_t)
+            fn = cfunc([x + y], [x, y], fp_type=fp_t)
             eval_arr = fn(inputs=[fp_t(1), fp_t(2)], pars=np.zeros((0,), dtype=fp_t))
 
             self.assertEqual(eval_arr[0], 3)
