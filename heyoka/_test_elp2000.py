@@ -13,11 +13,11 @@ import unittest as _ut
 class elp2000_test_case(_ut.TestCase):
     # Just a small basic test.
     def test_basic(self):
-        from . import cfunc
+        from . import make_cfunc
         from .model import elp2000_cartesian_e2000, elp2000_cartesian_fk5
 
         sol = elp2000_cartesian_e2000(thresh=1e-5)[0]
-        cf = cfunc([sol], [])
+        cf = make_cfunc([sol], [])
 
         date = 2469000.5
         self.assertAlmostEqual(
@@ -25,7 +25,7 @@ class elp2000_test_case(_ut.TestCase):
         )
 
         sol = elp2000_cartesian_fk5(thresh=1e-5)[0]
-        cf = cfunc([sol], [])
+        cf = make_cfunc([sol], [])
 
         self.assertAlmostEqual(
             cf([], time=(date - 2451545.0) / 36525)[0], -361605.7668217605

@@ -16,21 +16,21 @@ class mp_test_case(_ut.TestCase):
         if not hasattr(core, "real"):
             return
 
-        from . import real, cfunc, make_vars, sin, par, time
+        from . import real, make_cfunc, make_vars, sin, par, time
         import numpy as np
 
         x, y = make_vars("x", "y")
         func = [sin(x + y), x - par[0], x + y + par[1] + time]
 
         with self.assertRaises(ValueError) as cm:
-            cfunc(func, vars=[y, x], fp_type=real, batch_size=2)
+            make_cfunc(func, vars=[y, x], fp_type=real, batch_size=2)
         self.assertTrue(
             "Batch sizes greater than 1 are not supported for this floating-point type"
             in str(cm.exception)
         )
 
         with self.assertRaises(ValueError) as cm:
-            cfunc(func, vars=[y, x], fp_type=real, prec=-1)
+            make_cfunc(func, vars=[y, x], fp_type=real, prec=-1)
         self.assertTrue(
             "An invalid precision value of -1 was passed to add_cfunc()"
             in str(cm.exception)
@@ -38,7 +38,7 @@ class mp_test_case(_ut.TestCase):
 
         prec = 237
 
-        fn = cfunc(func, vars=[y, x], fp_type=real, prec=prec)
+        fn = make_cfunc(func, vars=[y, x], fp_type=real, prec=prec)
 
         # Initial simple test.
         inputs = np.array([real(1, prec), real(2, prec)])
