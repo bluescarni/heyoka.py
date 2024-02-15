@@ -694,7 +694,7 @@ Shape of dNdx: (2, 2)
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>--- 0.4475550651550293 seconds --- to build (jit) the Taylor integrator
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>--- 0.464125394821167 seconds --- to build (jit) the Taylor integrator
 </pre></div>
 </div>
 </div>
@@ -735,7 +735,7 @@ Shape of dNdx: (2, 2)
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>--- 0.00033354759216308594 seconds --- to propagate using the Taylor scheme
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>--- 0.00011539459228515625 seconds --- to propagate using the Taylor scheme
 </pre></div>
 </div>
 </div>
@@ -754,7 +754,7 @@ Shape of dNdx: (2, 2)
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/63421472169e01a34ab0239b7676023dad4ea4a005be404d8cc03623a6a8256b.png" src="../_images/63421472169e01a34ab0239b7676023dad4ea4a005be404d8cc03623a6a8256b.png" />
+<img alt="../_images/f1832331069f78e3cd48b987daae841dda2f350adb30c8fc307ba0ad0a183187.png" src="../_images/f1832331069f78e3cd48b987daae841dda2f350adb30c8fc307ba0ad0a183187.png" />
 </div>
 </div>
 </section>
@@ -769,7 +769,7 @@ This allows us to use identical jitted expressions also for the rhs of the case 
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Assemble the r.h.s. for scipy-integration</span>
-<span class="n">rhs</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">make_cfunc</span><span class="p">(</span><span class="n">fn</span> <span class="o">=</span> <span class="p">[</span><span class="n">it</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">it</span> <span class="ow">in</span> <span class="n">dyn</span><span class="p">],</span> <span class="n">compact_mode</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="nb">vars</span> <span class="o">=</span> <span class="n">state</span> <span class="o">+</span> <span class="nb">list</span><span class="p">(</span><span class="n">phi</span><span class="o">.</span><span class="n">flatten</span><span class="p">())</span><span class="o">+</span> <span class="nb">list</span><span class="p">(</span><span class="n">varphi</span><span class="o">.</span><span class="n">flatten</span><span class="p">()))</span>
+<span class="n">rhs</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">cfunc</span><span class="p">(</span><span class="n">fn</span> <span class="o">=</span> <span class="p">[</span><span class="n">it</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">it</span> <span class="ow">in</span> <span class="n">dyn</span><span class="p">],</span> <span class="n">compact_mode</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="nb">vars</span> <span class="o">=</span> <span class="n">state</span> <span class="o">+</span> <span class="nb">list</span><span class="p">(</span><span class="n">phi</span><span class="o">.</span><span class="n">flatten</span><span class="p">())</span><span class="o">+</span> <span class="nb">list</span><span class="p">(</span><span class="n">varphi</span><span class="o">.</span><span class="n">flatten</span><span class="p">()))</span>
 </pre></div>
 </div>
 </div>
@@ -793,7 +793,7 @@ This allows us to use identical jitted expressions also for the rhs of the case 
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>--- 0.0014979839324951172 seconds --- to propagate
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>--- 0.0021810531616210938 seconds --- to propagate
 </pre></div>
 </div>
 </div>
@@ -808,7 +808,7 @@ This allows us to use identical jitted expressions also for the rhs of the case 
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/205907a5f815b7c22b63371c3de5dce169af268cdc17829bc72d2ab46263c801.png" src="../_images/205907a5f815b7c22b63371c3de5dce169af268cdc17829bc72d2ab46263c801.png" />
+<img alt="../_images/db4c12d9e9111bf2a20bd151ce727f3824052fc896b4aeb20f891d9ace4f6d90.png" src="../_images/db4c12d9e9111bf2a20bd151ce727f3824052fc896b4aeb20f891d9ace4f6d90.png" />
 </div>
 </div>
 <p>We see a net advantage in timings using the Taylor integration scheme. Note we are here not using batch propagation, which would add an additional 2-4 factor speedup in performances.</p>

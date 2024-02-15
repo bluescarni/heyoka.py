@@ -502,8 +502,8 @@ document.write(`
   <section class="tex2jax_ignore mathjax_ignore" id="lagrange-propagation-and-the-state-transition-matrix">
 <h1>Lagrange propagation and the state transition matrix<a class="headerlink" href="#lagrange-propagation-and-the-state-transition-matrix" title="Link to this heading">#</a></h1>
 <p>In the gravitational <a class="reference external" href="https://en.wikipedia.org/wiki/Two-body_problem">two-body problem</a> it is possible to compute the state of the system at an arbitrary time from an initial state <span class="math notranslate nohighlight">\(\left( \boldsymbol{r}_0, \boldsymbol{v}_0 \right)\)</span> via the so-called Lagrange coefficients <span class="math notranslate nohighlight">\(F\)</span>, <span class="math notranslate nohighlight">\(G\)</span>, <span class="math notranslate nohighlight">\(F_t\)</span> and <span class="math notranslate nohighlight">\(G_t\)</span>:</p>
-<div class="amsmath math notranslate nohighlight" id="equation-7747f7bb-ba1f-419f-9b73-fa08d28ec9fc">
-<span class="eqno">(1)<a class="headerlink" href="#equation-7747f7bb-ba1f-419f-9b73-fa08d28ec9fc" title="Permalink to this equation">#</a></span>\[\begin{equation}
+<div class="amsmath math notranslate nohighlight" id="equation-0b6064f8-ed26-4afe-8e88-e24e87778136">
+<span class="eqno">(1)<a class="headerlink" href="#equation-0b6064f8-ed26-4afe-8e88-e24e87778136" title="Permalink to this equation">#</a></span>\[\begin{equation}
 \begin{cases}
 \boldsymbol{r} &amp; = F \boldsymbol{r}_0 + G \boldsymbol{v}_0 \\
 \boldsymbol{v} &amp; = F_t \boldsymbol{r}_0 + G_t \boldsymbol{v}_0
@@ -618,7 +618,7 @@ document.write(`
 <p>We can now proceed to create a <a class="reference internal" href="compiled_functions.html"><span class="std std-doc">compiled function</span></a> for the evaluation of the state vector at time <span class="math notranslate nohighlight">\(t\)</span>:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">cf</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">make_cfunc</span><span class="p">(</span><span class="n">pos_vel</span><span class="p">,</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">cf</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">cfunc</span><span class="p">(</span><span class="n">pos_vel</span><span class="p">,</span>
                    <span class="c1"># Specify the order in which the input</span>
                    <span class="c1"># variables are passed to the compiled</span>
                    <span class="c1"># function.</span>
@@ -714,7 +714,7 @@ document.write(`
 <p>and proceed to the creation of a compiled function for the numerical evaluation of the STM:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">cf_stm</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">make_cfunc</span><span class="p">(</span><span class="n">jac</span><span class="o">.</span><span class="n">flatten</span><span class="p">(),</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">cf_stm</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">cfunc</span><span class="p">(</span><span class="n">jac</span><span class="o">.</span><span class="n">flatten</span><span class="p">(),</span>
                        <span class="c1"># Specify the order in which the input</span>
                        <span class="c1"># variables are passed to the compiled</span>
                        <span class="c1"># function.</span>

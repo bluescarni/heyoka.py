@@ -567,7 +567,7 @@ document.write(`
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Define a compiled function for the computation</span>
 <span class="c1"># of the energy in an N-body system from its state vector.</span>
-<span class="n">en_cfunc</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">make_cfunc</span><span class="p">([</span><span class="n">hy</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">nbody_energy</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="n">masses</span><span class="o">=</span><span class="n">masses</span><span class="p">,</span> <span class="n">Gconst</span><span class="o">=</span><span class="n">G</span><span class="p">)],</span>
+<span class="n">en_cfunc</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">cfunc</span><span class="p">([</span><span class="n">hy</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">nbody_energy</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="n">masses</span><span class="o">=</span><span class="n">masses</span><span class="p">,</span> <span class="n">Gconst</span><span class="o">=</span><span class="n">G</span><span class="p">)],</span>
                          <span class="nb">vars</span><span class="o">=</span><span class="n">state_vars</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -637,7 +637,7 @@ document.write(`
  1.0583722519817735,
  36,
  None,
- &lt;__main__.proj_callback at 0x7fb5af2359c0&gt;)
+ &lt;__main__.proj_callback at 0x7faab4467130&gt;)
 </pre></div>
 </div>
 </div>
@@ -791,7 +791,7 @@ Updated  energy error: 1.3963053728083164e-11
 <p>We can now proceed to create a compiled function that will concatenate in a single vector output the value of the distance square and its gradient vector:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">objfun_cfunc</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">make_cfunc</span><span class="p">([</span><span class="n">dist2_ex</span><span class="p">]</span> <span class="o">+</span> <span class="n">grad_dist2_ex</span><span class="p">,</span> <span class="nb">vars</span><span class="o">=</span><span class="n">state_vars</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">objfun_cfunc</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">cfunc</span><span class="p">([</span><span class="n">dist2_ex</span><span class="p">]</span> <span class="o">+</span> <span class="n">grad_dist2_ex</span><span class="p">,</span> <span class="nb">vars</span><span class="o">=</span><span class="n">state_vars</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -821,7 +821,7 @@ Updated  energy error: 1.3963053728083164e-11
 
 <span class="c1"># The compiled function for the computation of the gradient</span>
 <span class="c1"># of the constraint.</span>
-<span class="n">grad_cstr_cfunc</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">make_cfunc</span><span class="p">(</span><span class="n">grad_cstr</span><span class="p">,</span> <span class="nb">vars</span><span class="o">=</span><span class="n">state_vars</span><span class="p">)</span>
+<span class="n">grad_cstr_cfunc</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">cfunc</span><span class="p">(</span><span class="n">grad_cstr</span><span class="p">,</span> <span class="nb">vars</span><span class="o">=</span><span class="n">state_vars</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>

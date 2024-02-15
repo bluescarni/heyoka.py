@@ -595,7 +595,7 @@ The same syntax can be used to instantiate a more complex case:</p>
 <p>In order to use the ffnn to make inferences, we must compile it into a cfunction. Thats easy though, specially if you have followed the <a class="reference internal" href="compiled_functions.html"><span class="std std-doc">compiled functions</span></a> tutorial:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">cf</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">make_cfunc</span><span class="p">(</span><span class="n">ffnn</span><span class="p">,</span> <span class="p">[</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">])</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">cf</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">cfunc</span><span class="p">(</span><span class="n">ffnn</span><span class="p">,</span> <span class="p">[</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">])</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">cf</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -617,7 +617,7 @@ Output #1: (p161 + (p96 * tanh((p128 + (p0 * x) + (p1 * y)))) + (p97 * tanh((p12
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([-0.03372767,  0.03050241])
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([0.54249505, 0.64593857])
 </pre></div>
 </div>
 </div>
@@ -631,7 +631,7 @@ Output #1: (p161 + (p96 * tanh((p128 + (p0 * x) + (p1 * y)))) + (p97 * tanh((p12
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[((0.0048053678368830122 * tanh((-0.33579700285353653 - (0.35111183936010637 * y) - (0.10381357617924780 * x)))) + (0.028595893703249664 * tanh(((0.078139409081563915 * y) + (0.17499737560735029 * x) - 0.21000737408614867))) + (0.030129936109455580 * tanh((0.32232705770892078 - (0.32900781999661055 * x) - (0.046269771202279597 * y)))) + (0.066764267463296556 * tanh((0.22777501771099262 - (0.25412253845360666 * y) - (0.067359176108984675 * x)))) + (0.073240398872319257 * tanh((0.30426522199809469 - (0.18460404120684326 * x) - (0.12472602260285925 * y)))) + (0.078974328334058264 * tanh((0.44246432931267210 + (0.00077450772258691458 * y) + (0.47735971355506435 * x)))) + (0.085193785007156686 * tanh((0.43364537459452801 - (0.37280713397039733 * y) - (0.32012575795208831 * x)))) + (0.10088939471641711 * tanh(((0.39112498874616941 * x) - 0.18904249283170338 - (0.13257522218476159 * y)))) + (0.12193952760263993 * tanh((0.12158018548133775 + (0.10661244976450646 * x) + (0.42022601450221886 * y)))) + ..., (0.10518113037957810 + (0.0092634792563579538 * tanh((0.37020016409997258 - (0.34927592126801854 * y) - (0.25448200476644212 * x)))) + (0.075328310841195067 * tanh((0.055020502853538877 - (0.22690745267971735 * y) - (0.0084469241399355299 * x)))) + (0.098523169080268924 * tanh(((0.078139409081563915 * y) + (0.17499737560735029 * x) - 0.21000737408614867))) + (0.098659708604166396 * tanh((0.40949433645498634 + (0.0022917217932006961 * y) - (0.16676945487184724 * x)))) + (0.16918854450083320 * tanh((0.38391483355111866 + (0.40808502142044967 * y) - (0.34928328694299748 * x)))) + (0.18944759508338127 * tanh(((0.20423919457037865 * y) + (0.45344116108174048 * x) - 0.28782716986377022))) + (0.23160482212655453 * tanh(((0.21422780529594176 * x) - 0.23826579254336389 - (0.34632401371875898 * y)))) + (0.24176221529038966 * tanh((0.29135570069084182 + (0.013561077790746001 * x) + (0.49475460291288720 * y)))) + (0.25821214020706662 * tanh((-0.15834847999729118 - (0.29231921911790038 * x) - (0.11202278807605992 * ...]
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[(0.48236281060950381 + (0.013219455256077484 * tanh((0.18216182564263317 + (0.15169144972285598 * x) + (0.41053574491168454 * y)))) + (0.021886585155468485 * tanh((0.13437791114599773 + (0.40710275837835519 * x) - (0.39507797130621158 * y)))) + (0.034681889569544766 * tanh((0.084732832131185543 + (0.042854520683152764 * x) - (0.14199765064332670 * y)))) + (0.18799536208726531 * tanh(((0.22046258272259567 * x) - 0.21213274484480427 - (0.037560993405063470 * y)))) + (0.20042106813410654 * tanh(((0.046848455089429697 * x) + (0.41818831704602932 * y) - 0.13389187181861251))) + (0.24735662136271597 * tanh((-0.12185462196529728 - (0.47051700634198435 * y) - (0.010135052596224492 * x)))) + (0.31592548425150013 * tanh((0.34951796463432838 - (0.28876459218024775 * x) - (0.096431694762762810 * y)))) + (0.32048954092005122 * tanh((0.46660421406501096 - (0.35741585821152644 * y) - (0.25708172125992956 * x)))) + (0.37966082363793807 * tanh((0.27871397531479791 + (0.32319631354381495 * x) - (0.14217224027353559 * ..., (0.46328943307630488 + (0.017151588397708029 * tanh((0.18112823620078833 + (0.23318561962207252 * y) + (0.31279738827801729 * x)))) + (0.020375464448974312 * tanh(((0.35401960234969376 * x) - 0.17829332336637649 - (0.28554190458444573 * y)))) + (0.095196865878110382 * tanh((0.18216182564263317 + (0.15169144972285598 * x) + (0.41053574491168454 * y)))) + (0.11654436334734097 * tanh(((0.22046258272259567 * x) - 0.21213274484480427 - (0.037560993405063470 * y)))) + (0.16161552925735123 * tanh((0.10170627334715110 + (0.40981645420285084 * y) - (0.24768490796849496 * x)))) + (0.18893195897456927 * tanh(((0.22912209123706295 * x) - 0.42989639060176654 - (0.089562275823510951 * y)))) + (0.20233579081287223 * tanh((0.44344957034917964 - (0.42092938487489018 * y) - (0.0019073209893438747 * x)))) + (0.32515486568942553 * tanh((0.19138636079971760 - (0.36104902058163235 * x) - (0.032956096918180799 * y)))) + (0.33457831961445605 * tanh((0.084732832131185543 + (0.042854520683152764 * x) - (0.14199765064332670 * ...]
 </pre></div>
 </div>
 </div>
@@ -639,7 +639,7 @@ Output #1: (p161 + (p96 * tanh((p128 + (p0 * x) + (p1 * y)))) + (p97 * tanh((p12
 <p>We can now recompile the function:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">cf</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">make_cfunc</span><span class="p">(</span><span class="n">ffnn</span><span class="p">,</span> <span class="p">[</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">])</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">cf</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">cfunc</span><span class="p">(</span><span class="n">ffnn</span><span class="p">,</span> <span class="p">[</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">])</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">cf</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -647,8 +647,8 @@ Output #1: (p161 + (p96 * tanh((p128 + (p0 * x) + (p1 * y)))) + (p97 * tanh((p12
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>C++ datatype: double
 Variables: [x, y]
-Output #0: ((0.0048053678368830122 * tanh((-0.33579700285353653 - (0.35111183936010637 * y) - (0.10381357617924780 * x)))) + (0.028595893703249664 * tanh(((0.078139409081563915 * y) + (0.17499737560735029 * x) - 0.21000737408614867))) + (0.030129936109455580 * tanh((0.32232705770892078 - (0.32900781999661055 * x) - (0.046269771202279597 * y)))) + (0.066764267463296556 * tanh((0.22777501771099262 - (0.25412253845360666 * y) - (0.067359176108984675 * x)))) + (0.073240398872319257 * tanh((0.30426522199809469 - (0.18460404120684326 * x) - (0.12472602260285925 * y)))) + (0.078974328334058264 * tanh((0.44246432931267210 + (0.00077450772258691458 * y) + (0.47735971355506435 * x)))) + (0.085193785007156686 * tanh((0.43364537459452801 - (0.37280713397039733 * y) - (0.32012575795208831 * x)))) + (0.10088939471641711 * tanh(((0.39112498874616941 * x) - 0.18904249283170338 - (0.13257522218476159 * y)))) + (0.12193952760263993 * tanh((0.12158018548133775 + (0.10661244976450646 * x) + (0.42022601450221886 * y)))) + ...
-Output #1: (0.10518113037957810 + (0.0092634792563579538 * tanh((0.37020016409997258 - (0.34927592126801854 * y) - (0.25448200476644212 * x)))) + (0.075328310841195067 * tanh((0.055020502853538877 - (0.22690745267971735 * y) - (0.0084469241399355299 * x)))) + (0.098523169080268924 * tanh(((0.078139409081563915 * y) + (0.17499737560735029 * x) - 0.21000737408614867))) + (0.098659708604166396 * tanh((0.40949433645498634 + (0.0022917217932006961 * y) - (0.16676945487184724 * x)))) + (0.16918854450083320 * tanh((0.38391483355111866 + (0.40808502142044967 * y) - (0.34928328694299748 * x)))) + (0.18944759508338127 * tanh(((0.20423919457037865 * y) + (0.45344116108174048 * x) - 0.28782716986377022))) + (0.23160482212655453 * tanh(((0.21422780529594176 * x) - 0.23826579254336389 - (0.34632401371875898 * y)))) + (0.24176221529038966 * tanh((0.29135570069084182 + (0.013561077790746001 * x) + (0.49475460291288720 * y)))) + (0.25821214020706662 * tanh((-0.15834847999729118 - (0.29231921911790038 * x) - (0.11202278807605992 * ...
+Output #0: (0.48236281060950381 + (0.013219455256077484 * tanh((0.18216182564263317 + (0.15169144972285598 * x) + (0.41053574491168454 * y)))) + (0.021886585155468485 * tanh((0.13437791114599773 + (0.40710275837835519 * x) - (0.39507797130621158 * y)))) + (0.034681889569544766 * tanh((0.084732832131185543 + (0.042854520683152764 * x) - (0.14199765064332670 * y)))) + (0.18799536208726531 * tanh(((0.22046258272259567 * x) - 0.21213274484480427 - (0.037560993405063470 * y)))) + (0.20042106813410654 * tanh(((0.046848455089429697 * x) + (0.41818831704602932 * y) - 0.13389187181861251))) + (0.24735662136271597 * tanh((-0.12185462196529728 - (0.47051700634198435 * y) - (0.010135052596224492 * x)))) + (0.31592548425150013 * tanh((0.34951796463432838 - (0.28876459218024775 * x) - (0.096431694762762810 * y)))) + (0.32048954092005122 * tanh((0.46660421406501096 - (0.35741585821152644 * y) - (0.25708172125992956 * x)))) + (0.37966082363793807 * tanh((0.27871397531479791 + (0.32319631354381495 * x) - (0.14217224027353559 * ...
+Output #1: (0.46328943307630488 + (0.017151588397708029 * tanh((0.18112823620078833 + (0.23318561962207252 * y) + (0.31279738827801729 * x)))) + (0.020375464448974312 * tanh(((0.35401960234969376 * x) - 0.17829332336637649 - (0.28554190458444573 * y)))) + (0.095196865878110382 * tanh((0.18216182564263317 + (0.15169144972285598 * x) + (0.41053574491168454 * y)))) + (0.11654436334734097 * tanh(((0.22046258272259567 * x) - 0.21213274484480427 - (0.037560993405063470 * y)))) + (0.16161552925735123 * tanh((0.10170627334715110 + (0.40981645420285084 * y) - (0.24768490796849496 * x)))) + (0.18893195897456927 * tanh(((0.22912209123706295 * x) - 0.42989639060176654 - (0.089562275823510951 * y)))) + (0.20233579081287223 * tanh((0.44344957034917964 - (0.42092938487489018 * y) - (0.0019073209893438747 * x)))) + (0.32515486568942553 * tanh((0.19138636079971760 - (0.36104902058163235 * x) - (0.032956096918180799 * y)))) + (0.33457831961445605 * tanh((0.084732832131185543 + (0.042854520683152764 * x) - (0.14199765064332670 * ...
 </pre></div>
 </div>
 </div>
@@ -661,7 +661,7 @@ Output #1: (0.10518113037957810 + (0.0092634792563579538 * tanh((0.3702001640999
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([-0.03372767,  0.03050241])
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([0.54249505, 0.64593857])
 </pre></div>
 </div>
 </div>
@@ -674,9 +674,9 @@ Output #1: (0.10518113037957810 + (0.0092634792563579538 * tanh((0.3702001640999
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([[-0.03372767,  0.03050241],
-       [-0.49546927,  1.20237686],
-       [-0.58555872, -0.04160467]])
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([[0.54249505, 0.64593857],
+       [0.23720381, 0.71125281],
+       [0.48146362, 0.75052056]])
 </pre></div>
 </div>
 </div>
@@ -806,10 +806,10 @@ in those cases where the ANN has been trained to describe nonlinear interactions
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[&lt;matplotlib.lines.Line2D at 0x7f27e2ebe770&gt;]
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[&lt;matplotlib.lines.Line2D at 0x7fdcabf350f0&gt;]
 </pre></div>
 </div>
-<img alt="../_images/ca3f37a22810dfabba731f637ee9dd679cc020dcdb66a28d0d36b154870dd671.png" src="../_images/ca3f37a22810dfabba731f637ee9dd679cc020dcdb66a28d0d36b154870dd671.png" />
+<img alt="../_images/7e117dbebde52641889039846b6d61ede06efbebce6eaf599f4f61e0d95f015b.png" src="../_images/7e117dbebde52641889039846b6d61ede06efbebce6eaf599f4f61e0d95f015b.png" />
 </div>
 </div>
 <p>… increasing the perturbation level:</p>
@@ -832,10 +832,10 @@ in those cases where the ANN has been trained to describe nonlinear interactions
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[&lt;matplotlib.lines.Line2D at 0x7f27a1180c40&gt;]
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[&lt;matplotlib.lines.Line2D at 0x7fdc6a19c8e0&gt;]
 </pre></div>
 </div>
-<img alt="../_images/058a5ba6277a4e07b9d2d7a307e71f6f9231fc8b18caf9bea3e3a1ccd1a45895.png" src="../_images/058a5ba6277a4e07b9d2d7a307e71f6f9231fc8b18caf9bea3e3a1ccd1a45895.png" />
+<img alt="../_images/fc35b6ec96a33f167fc25c41cd73ebb2fd81e79ab5405b313396387dc08fd9de.png" src="../_images/fc35b6ec96a33f167fc25c41cd73ebb2fd81e79ab5405b313396387dc08fd9de.png" />
 </div>
 </div>
 <p>… and thats all I wanted to tell you! But wait …. one last thing … the above system is dissipative and does not really look Hamiltonian right? The random perturbation is, well …. random. To fix this, have a look at the tutorial: <a class="reference internal" href="NeuralHamiltonianODEs.html"><span class="std std-doc">Neural Hamiltonian ODE</span></a>.</p>

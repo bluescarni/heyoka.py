@@ -535,7 +535,7 @@ f\left(x, y \right) = x^2 - y^2.
 </div>
 </div>
 </div>
-<p>We can now proceed to JIT compile <code class="docutils literal notranslate"><span class="pre">sym_func</span></code> via the <code class="docutils literal notranslate"><span class="pre">make_cfunc()</span></code> function. <code class="docutils literal notranslate"><span class="pre">make_cfunc()</span></code> takes two mandatory input arguments:</p>
+<p>We can now proceed to JIT compile <code class="docutils literal notranslate"><span class="pre">sym_func</span></code> via the <code class="docutils literal notranslate"><span class="pre">cfunc()</span></code> function. <code class="docutils literal notranslate"><span class="pre">cfunc()</span></code> takes two mandatory input arguments:</p>
 <ul class="simple">
 <li><p>the list of symbolic expressions representing the outputs of the vector function, and</p></li>
 <li><p>the list of symbolic variables representing the inputs of the function.</p></li>
@@ -543,12 +543,12 @@ f\left(x, y \right) = x^2 - y^2.
 <p>In this case, we only have a single output, <code class="docutils literal notranslate"><span class="pre">sym_func</span></code>, and two inputs, <code class="docutils literal notranslate"><span class="pre">x</span></code> and <code class="docutils literal notranslate"><span class="pre">y</span></code>:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">cf</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">make_cfunc</span><span class="p">([</span><span class="n">sym_func</span><span class="p">],</span> <span class="p">[</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">])</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">cf</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">cfunc</span><span class="p">([</span><span class="n">sym_func</span><span class="p">],</span> <span class="p">[</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">])</span>
 </pre></div>
 </div>
 </div>
 </div>
-<p>The value returned by <code class="docutils literal notranslate"><span class="pre">make_cfunc()</span></code> is a callable function object which accepts as input a NumPy array representing the values to use in the evaluation of <code class="docutils literal notranslate"><span class="pre">sym_func</span></code>:</p>
+<p>The value returned by <code class="docutils literal notranslate"><span class="pre">cfunc()</span></code> is a callable function object which accepts as input a NumPy array representing the values to use in the evaluation of <code class="docutils literal notranslate"><span class="pre">sym_func</span></code>:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Evaluate for x=1 and y=5.</span>
@@ -581,7 +581,7 @@ Output #0: (x**2.0000000000000000 - y**2.0000000000000000)
 <p>Any other ordering for the input variables is possible:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">cf2</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">make_cfunc</span><span class="p">([</span><span class="n">sym_func</span><span class="p">],</span> <span class="nb">vars</span><span class="o">=</span><span class="p">[</span><span class="n">y</span><span class="p">,</span><span class="n">x</span><span class="p">])</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">cf2</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">cfunc</span><span class="p">([</span><span class="n">sym_func</span><span class="p">],</span> <span class="nb">vars</span><span class="o">=</span><span class="p">[</span><span class="n">y</span><span class="p">,</span><span class="n">x</span><span class="p">])</span>
 
 <span class="c1"># Evaluate for x=1 and y=5.</span>
 <span class="n">cf2</span><span class="p">([</span><span class="mi">5</span><span class="p">,</span><span class="mi">1</span><span class="p">])</span>
@@ -609,8 +609,8 @@ Output #0: (x**2.0000000000000000 - y**2.0000000000000000)
 </div>
 </div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">make_cfunc()</span></code> accepts several additional keyword arguments, the most important of which is the boolean flag <code class="docutils literal notranslate"><span class="pre">compact_mode</span></code> (defaulting to <code class="docutils literal notranslate"><span class="pre">False</span></code>). Similarly to the <a class="reference internal" href="Customising%20the%20adaptive%20integrator.html"><span class="std std-doc">adaptive Taylor integrators</span></a>, you should enable <code class="docutils literal notranslate"><span class="pre">compact_mode</span></code> if you want to compile extremely large symbolic expressions that result in excessively long compilation times. The downside of <code class="docutils literal notranslate"><span class="pre">compact_mode</span></code> is a slight performance degradation due to the different code generation model adopted during the JIT compilation process.</p>
-<p>The function object returned by <code class="docutils literal notranslate"><span class="pre">make_cfunc()</span></code> also accepts several optional keyword arguments. It is possible, for instance, to pass as <code class="docutils literal notranslate"><span class="pre">outputs</span></code> argument a pre-allocated NumPy array into which the result of the evaluation will be written. This is useful to avoid the overhead of allocating new memory for the return value, if such memory is already available:</p>
+<p><code class="docutils literal notranslate"><span class="pre">cfunc()</span></code> accepts several additional keyword arguments, the most important of which is the boolean flag <code class="docutils literal notranslate"><span class="pre">compact_mode</span></code> (defaulting to <code class="docutils literal notranslate"><span class="pre">False</span></code>). Similarly to the <a class="reference internal" href="Customising%20the%20adaptive%20integrator.html"><span class="std std-doc">adaptive Taylor integrators</span></a>, you should enable <code class="docutils literal notranslate"><span class="pre">compact_mode</span></code> if you want to compile extremely large symbolic expressions that result in excessively long compilation times. The downside of <code class="docutils literal notranslate"><span class="pre">compact_mode</span></code> is a slight performance degradation due to the different code generation model adopted during the JIT compilation process.</p>
+<p>The function object returned by <code class="docutils literal notranslate"><span class="pre">cfunc()</span></code> also accepts several optional keyword arguments. It is possible, for instance, to pass as <code class="docutils literal notranslate"><span class="pre">outputs</span></code> argument a pre-allocated NumPy array into which the result of the evaluation will be written. This is useful to avoid the overhead of allocating new memory for the return value, if such memory is already available:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
@@ -643,7 +643,7 @@ Output #0: (x**2.0000000000000000 - y**2.0000000000000000)
 <span class="n">sym_func_par</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">par</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">x</span><span class="o">**</span><span class="mi">2</span><span class="o">-</span><span class="n">hy</span><span class="o">.</span><span class="n">par</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="n">y</span><span class="o">**</span><span class="mi">2</span><span class="o">+</span><span class="n">hy</span><span class="o">.</span><span class="n">par</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
 
 <span class="c1"># Compile it.</span>
-<span class="n">cf_par</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">make_cfunc</span><span class="p">([</span><span class="n">sym_func_par</span><span class="p">],</span> <span class="p">[</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">])</span>
+<span class="n">cf_par</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">cfunc</span><span class="p">([</span><span class="n">sym_func_par</span><span class="p">],</span> <span class="p">[</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">])</span>
 
 <span class="c1"># Evaluate, specifying the parameter values</span>
 <span class="n">cf_par</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span><span class="mi">5</span><span class="p">],</span> <span class="n">pars</span><span class="o">=</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="o">-</span><span class="mi">3</span><span class="p">])</span>
@@ -668,7 +668,7 @@ Output #0: (x**2.0000000000000000 - y**2.0000000000000000)
 <span class="n">sym_func_tm</span> <span class="o">=</span> <span class="n">x</span><span class="o">**</span><span class="mi">2</span><span class="o">-</span><span class="n">y</span><span class="o">**</span><span class="mi">2</span><span class="o">+</span><span class="n">hy</span><span class="o">.</span><span class="n">time</span>
 
 <span class="c1"># Compile it.</span>
-<span class="n">cf_tm</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">make_cfunc</span><span class="p">([</span><span class="n">sym_func_tm</span><span class="p">],</span> <span class="p">[</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">])</span>
+<span class="n">cf_tm</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">cfunc</span><span class="p">([</span><span class="n">sym_func_tm</span><span class="p">],</span> <span class="p">[</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">])</span>
 
 <span class="c1"># Evaluate for x=1, y=5 and time=6.</span>
 <span class="n">cf_tm</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span><span class="mi">5</span><span class="p">],</span> <span class="n">time</span><span class="o">=</span><span class="mi">6</span><span class="p">)</span>
@@ -811,7 +811,7 @@ r_{PJ} &amp;=\sqrt{\left( x -\mu + 1 \right)^2+y^2+z^2}.
 <p>Then we compile <code class="docutils literal notranslate"><span class="pre">Ham_sym</span></code>:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">Ham_cf</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">make_cfunc</span><span class="p">([</span><span class="n">Ham_sym</span><span class="p">],</span> <span class="nb">vars</span><span class="o">=</span><span class="p">[</span><span class="n">px</span><span class="p">,</span><span class="n">py</span><span class="p">,</span><span class="n">pz</span><span class="p">,</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">z</span><span class="p">])</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">Ham_cf</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">cfunc</span><span class="p">([</span><span class="n">Ham_sym</span><span class="p">],</span> <span class="nb">vars</span><span class="o">=</span><span class="p">[</span><span class="n">px</span><span class="p">,</span><span class="n">py</span><span class="p">,</span><span class="n">pz</span><span class="p">,</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">z</span><span class="p">])</span>
 </pre></div>
 </div>
 </div>
