@@ -138,8 +138,8 @@ void expose_expression(py::module_ &m)
     // Variant holding either an expression or a list of expressions.
     using v_ex_t = std::variant<hey::expression, std::vector<hey::expression>>;
 
-    py::class_<hey::expression>(m, "expression", py::dynamic_attr{})
-        .def(py::init<>())
+    py::class_<hey::expression>(m, "expression", py::dynamic_attr{}, docstrings::expression().c_str())
+        .def(py::init<>(), docstrings::expression_init().c_str())
         .def(py::init([](std::int32_t x) { return hey::expression{static_cast<double>(x)}; }), "x"_a.noconvert())
         .def(py::init<float>(), "x"_a.noconvert())
         .def(py::init<double>(), "x"_a.noconvert())
