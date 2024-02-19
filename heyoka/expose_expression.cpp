@@ -522,8 +522,9 @@ void expose_expression(py::module_ &m)
         "ex"_a, "var"_a);
 
     // Syntax sugar for creating parameters.
-    py::class_<hey::detail::par_impl>(m, "_par_generator").def("__getitem__", &hey::detail::par_impl::operator[]);
-    m.attr("par") = hey::detail::par_impl{};
+    py::class_<hey::detail::par_impl>(m, "_par_generator")
+        .def(py::init<>())
+        .def("__getitem__", &hey::detail::par_impl::operator[]);
 
     // dtens.
     py::class_<hey::dtens> dtens_cl(m, "dtens", py::dynamic_attr{}, docstrings::dtens().c_str());

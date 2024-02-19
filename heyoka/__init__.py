@@ -369,3 +369,23 @@ def _real_reduce_factory():
     # Internal factory function used in the implementation
     # of the pickle protocol for real.
     return real()
+
+# Machinery for the par generator.
+def _create_par():
+    from . import core
+
+    return core._par_generator()
+
+par = _create_par()
+"""
+Parameter factory.
+
+This global object is used to create :py:class:`~heyoka.expression` objects
+representing :ref:`runtime parameters <runtime_param>`. The parameter index
+must be passed to the index operator of the factory object.
+
+Examples:
+  >>> from heyoka import par
+  >>> p0 = par[0] # p0 will represent the parameter value at index 0
+
+"""
