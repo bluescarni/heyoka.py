@@ -10,11 +10,26 @@ Breaking changes
 
 heyoka.py 4 includes several backwards-incompatible changes.
 
-API/behaviour changes
-~~~~~~~~~~~~~~~~~~~~~
+Changes to compiled functions
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The function to create :ref:`compiled functions <cfunc_tut>` has been renamed from
+``make_cfunc()`` to simply ``cfunc()``.
+
+Compiled functions have also gained the ability to use multiple
+threads of execution during batched evaluations. As a consequence, compiled functions
+now require contiguous NumPy arrays to be passed as input/output arguments (whereas
+in previous versions compiled functions would work also with non-contiguous
+arrays). The NumPy function :py:func:`numpy.ascontiguousarray()` can be used to turn
+non-contiguous arrays into contiguous arrays.
+
+Finally, compiled functions are now stricter with respect to type conversions: if a NumPy
+array with the wrong datatype is passed as an input/output argument, an error will be raised
+(whereas previously heyoka.py would convert the array to the correct datatype on-the-fly).
+The NumPy method :py:meth:`numpy.ndarray.astype()` can be used for datatype conversions.
 
 A more explicit API
-^^^^^^^^^^^^^^^^^^^
+~~~~~~~~~~~~~~~~~~~
 
 Several functions and classes have been changed to explicitly require
 the user to pass a list of variables in input. The previous behaviour, where
@@ -31,7 +46,7 @@ The affected APIs include:
 The tutorials and the documentation have been updated accordingly.
 
 Changes to :py:func:`~heyoka.make_vars()`
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The :py:func:`~heyoka.make_vars()` function now returns a single expression (rather than a list of expressions)
 if a single argument is passed in input. This means that code such as
@@ -39,15 +54,17 @@ if a single argument is passed in input. This means that code such as
 .. code-block:: python
 
     x, = make_vars("x")
+    y = make_vars("y")[0]
 
 needs to be rewritten like this:
 
 .. code-block:: python
 
     x = make_vars("x")
+    y = make_vars("y")
 
 Terminal events callbacks
-^^^^^^^^^^^^^^^^^^^^^^^^^
+~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The second argument in the signature of callbacks for terminal events, a ``bool`` conventionally
 called ``mr``, has been removed. This flag was meant to signal the possibility of multiple roots
@@ -58,7 +75,7 @@ Adapting existing code for this API change is straightforward: you just have to 
 from the signature of a terminal event callback.
 
 Step callbacks and ``propagate_*()``
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The step callbacks that can (optionally) be passed to the ``propagate_*()`` methods of the
 adaptive integrators are now part of the return value. Specifically:
@@ -82,7 +99,7 @@ a matter of:
   rather than a single value.
 
 Changes to ``propagate_grid()``
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The ``propagate_grid()`` methods of the adaptive integrators now require the first element of the
 time grid to be equal to the current integrator time. Previously, in case of a difference between the

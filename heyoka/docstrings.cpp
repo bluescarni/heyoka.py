@@ -13,6 +13,45 @@
 namespace heyoka_py::docstrings
 {
 
+std::string expression()
+{
+    return R"(Class to represent symbolic expressions.
+
+.. note::
+
+   A :ref:`tutorial <ex_system>` explaining the use of this
+   class is available.
+
+This is the main class used to represent mathematical expressions in heyoka.
+It is a union of several *node types*:
+
+- symbolic variables,
+- mathematical constants,
+- runtime parameters,
+- n-ary functions.
+
+Expressions can be created in a variety of ways, and after construction
+they can be combined via arithmetic operators and mathematical functions
+to form new expressions of arbitrary complexity.
+
+)";
+}
+
+std::string expression_init()
+{
+    return R"(__init__(self, x: int | numpy.single | float | numpy.longdouble | str = 0.)
+
+Constructor.
+
+This constructor will initialise the expression either as a numerical
+constant (if *x* is of a numerical type) or as a variable (if *x* is
+a :py:class:`str`).
+
+:param x: the construction argument.
+
+)";
+}
+
 std::string diff_args()
 {
     return R"(Enum for selecting differentiation arguments.

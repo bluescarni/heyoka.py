@@ -24,6 +24,14 @@ Functions
    make_vars
    diff_tensors
 
+Attributes
+----------
+
+.. autosummary::
+   :toctree: autosummary_generated
+
+   par
+
 Enums
 -----
 
