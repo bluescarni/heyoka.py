@@ -19,13 +19,13 @@ The function to create :ref:`compiled functions <cfunc_tut>` has been renamed fr
 Compiled functions have also gained the ability to use multiple
 threads of execution during batched evaluations. As a consequence, compiled functions
 now require contiguous NumPy arrays to be passed as input/output arguments (whereas
-in previous heyoka.py versions compiled functions would work also with non-contiguous
+in previous versions compiled functions would work also with non-contiguous
 arrays). The NumPy function :py:func:`numpy.ascontiguousarray()` can be used to turn
 non-contiguous arrays into contiguous arrays.
 
 Finally, compiled functions are now stricter with respect to type conversions: if a NumPy
 array with the wrong datatype is passed as an input/output argument, an error will be raised
-(wheras previously heyoka.py would convert the array to the correct datatype on-the-fly).
+(whereas previously heyoka.py would convert the array to the correct datatype on-the-fly).
 The NumPy method :py:meth:`numpy.ndarray.astype()` can be used for datatype conversions.
 
 A more explicit API
