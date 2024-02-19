@@ -28,6 +28,10 @@ New
 Changes
 ~~~~~~~
 
+- **BREAKING**: the function to construct compiled functions
+  has been renamed from ``make_cfunc()`` to ``cfunc()``
+  (`#168 <https://github.com/bluescarni/heyoka.py/pull/168>`__).
+  This is a :ref:`breaking change <bchanges_4_0_0>`.
 - **BREAKING**: compiled functions now require contiguous arrays
   as input/output arguments. The compiled functions API is also now
   more restrictive with respect to on-the-fly type conversions
