@@ -25,7 +25,15 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 
+#define NO_IMPORT_ARRAY
+#define NO_IMPORT_UFUNC
+#define PY_ARRAY_UNIQUE_SYMBOL heyoka_py_ARRAY_API
+#define PY_UFUNC_UNIQUE_SYMBOL heyoka_py_UFUNC_API
+#define NPY_NO_DEPRECATED_API NPY_1_7_API_VERSION
+#define NPY_TARGET_VERSION NPY_1_22_API_VERSION
+
 #include <Python.h>
+#include <numpy/ndarrayobject.h>
 
 #include <heyoka/expression.hpp>
 #include <heyoka/kw.hpp>
@@ -223,13 +231,30 @@ void expose_add_cfunc_impl(py::module &m, const char *suffix)
                     // NOTE: the rest of the validation is done on the C++ side.
                     return std::move(out);
                 } else {
+                    // NOTE: here we use PyArray_ZEROS() directly from the NumPy C API, instead
+                    // of the py::array constructor. PyArray_ZEROS() inits the array to zeroes, while
+                    // the py::array constructor allocates without initialisation. It turns out that
+                    // at least in some cases using PyArray_ZEROS() leads to a performance increase,
+                    // and I am not 100% sure why this happens. My current hypothesis:
+                    // - PyArray_ZEROS() ends up calling calloc(), which, for large-enough allocations,
+                    //   uses internally mmap(). mmap() guarantees that the returned memory has been
+                    //   zeroed out, and for this reason the OS keeps around pre-zeroed memory for
+                    //   use by mmap(). In other words, no explicit zeroing-out of the memory actually
+                    //   takes place because the OS has already pre-prepared zeroed-out memory. This
+                    //   can be verified directly from python by comparing the runtime of numpy.zeros()
+                    //   vs numpy.ones() for large arrays sizes;
+                    // - invoking mmap() through PyArray_ZEROS() may result in the memory buffer to be
+                    //   subject to pre-fetching, so that when the compiled function is writing the
+                    //   function outputs the memory buffer has been loaded into cache already.
                     if (multieval) {
-                        return py::array(inputs.dtype(),
-                                         py::array::ShapeContainer{boost::numeric_cast<py::ssize_t>(self.get_nouts()),
-                                                                   inputs.shape(1)});
+                        const npy_intp dims[] = {boost::numeric_cast<npy_intp>(self.get_nouts()),
+                                                 boost::numeric_cast<npy_intp>(inputs.shape(1))};
+
+                        return py::reinterpret_steal<py::array>(py::handle(PyArray_ZEROS(2, dims, dt, 0)));
                     } else {
-                        return py::array(inputs.dtype(),
-                                         py::array::ShapeContainer{boost::numeric_cast<py::ssize_t>(self.get_nouts())});
+                        const npy_intp dims[] = {boost::numeric_cast<npy_intp>(self.get_nouts())};
+
+                        return py::reinterpret_steal<py::array>(py::handle(PyArray_ZEROS(1, dims, dt, 0)));
                     }
                 }
             }();
