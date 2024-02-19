@@ -248,6 +248,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../autosummary_generated/heyoka.dtens.html">heyoka.dtens</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../autosummary_generated/heyoka.make_vars.html">heyoka.make_vars</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../autosummary_generated/heyoka.diff_tensors.html">heyoka.diff_tensors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../autosummary_generated/heyoka.par.html">heyoka.par</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../autosummary_generated/heyoka.diff_args.html">heyoka.diff_args</a></li>
 </ul>
 </li>
@@ -633,10 +634,19 @@ Output #0: (x**2.0000000000000000 - y**2.0000000000000000)
 </div>
 </div>
 </div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>The ability to pass lists and other iterables as input/output arguments
+to a compiled function is offered as a convenience, but it incurs into a runtime
+cost as compiled functions need to convert the iterables into NumPy arrays
+on-the-fly before performing the evaluation.</p>
+<p>For optimal performance, consider passing NumPy arrays to the call operator
+of compiled functions in order to avoid this hidden cost.</p>
+</div>
 </section>
 <section id="functions-with-parameters">
 <h2>Functions with parameters<a class="headerlink" href="#functions-with-parameters" title="Link to this heading">#</a></h2>
-<p>It the compiled function references external parameters, the parameters array will have to be supplied during evaluation via the <code class="docutils literal notranslate"><span class="pre">pars</span></code> keyword argument:</p>
+<p>It the compiled function references <a class="reference internal" href="ODEs%20with%20parameters.html"><span class="std std-doc">external parameters</span></a>, the parameters array will have to be supplied during evaluation via the <code class="docutils literal notranslate"><span class="pre">pars</span></code> keyword argument:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># A function with 3 parameters.</span>
@@ -671,7 +681,7 @@ Output #0: (x**2.0000000000000000 - y**2.0000000000000000)
 <span class="n">cf_tm</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">cfunc</span><span class="p">([</span><span class="n">sym_func_tm</span><span class="p">],</span> <span class="p">[</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">])</span>
 
 <span class="c1"># Evaluate for x=1, y=5 and time=6.</span>
-<span class="n">cf_tm</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span><span class="mi">5</span><span class="p">],</span> <span class="n">time</span><span class="o">=</span><span class="mi">6</span><span class="p">)</span>
+<span class="n">cf_tm</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span><span class="mi">5</span><span class="p">],</span> <span class="n">time</span><span class="o">=</span><span class="mf">6.</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -787,7 +797,7 @@ r_{PJ} &amp;=\sqrt{\left( x -\mu + 1 \right)^2+y^2+z^2}.
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2.12 s ± 2.33 ms per loop (mean ± std. dev. of 7 runs, 1 loop each)
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2.16 s ± 13.2 ms per loop (mean ± std. dev. of 7 runs, 1 loop each)
 </pre></div>
 </div>
 </div>
@@ -816,6 +826,17 @@ r_{PJ} &amp;=\sqrt{\left( x -\mu + 1 \right)^2+y^2+z^2}.
 </div>
 </div>
 </div>
+<p>heyoka.py’s compiled functions support multithreaded parallelisation for batched evaluations. However, for this simple test, we will be disabling multithreaded parallelisation:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Disable parallel batched evaluations by</span>
+<span class="c1"># setting the number of threads in use by</span>
+<span class="c1"># heyoka.py to 1.</span>
+<span class="n">hy</span><span class="o">.</span><span class="n">set_nthreads</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
 <p>We can now time <code class="docutils literal notranslate"><span class="pre">Ham_cf</span></code>:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -824,7 +845,7 @@ r_{PJ} &amp;=\sqrt{\left( x -\mu + 1 \right)^2+y^2+z^2}.
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>209 ms ± 4.31 ms per loop (mean ± std. dev. of 7 runs, 1 loop each)
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>213 ms ± 1.33 ms per loop (mean ± std. dev. of 7 runs, 1 loop each)
 </pre></div>
 </div>
 </div>
@@ -833,13 +854,13 @@ r_{PJ} &amp;=\sqrt{\left( x -\mu + 1 \right)^2+y^2+z^2}.
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Pre-allocate the outputs array.</span>
-<span class="n">outputs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="n">nevals</span><span class="p">))</span>
+<span class="n">outputs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="n">nevals</span><span class="p">))</span>
 <span class="o">%</span><span class="k">timeit</span> Ham_cf(inputs,outputs=outputs)
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>178 ms ± 1.4 ms per loop (mean ± std. dev. of 7 runs, 1 loop each)
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>179 ms ± 3.17 ms per loop (mean ± std. dev. of 7 runs, 1 loop each)
 </pre></div>
 </div>
 </div>
@@ -848,7 +869,7 @@ r_{PJ} &amp;=\sqrt{\left( x -\mu + 1 \right)^2+y^2+z^2}.
 </section>
 <section id="jax">
 <h3>JAX<a class="headerlink" href="#jax" title="Link to this heading">#</a></h3>
-<p>As a last benchmark, we will be performing the same evaluation with <a class="reference external" href="https://jax.readthedocs.io/en/latest/index.html">JAX</a>. Similarly to heyoka.py, JAX offers the possibility to <a class="reference external" href="https://jax.readthedocs.io/en/latest/notebooks/quickstart.html#using-jit-to-speed-up-functions">JIT compile Python functions</a>, so we expect similar performance to heyoka.py. Note that, in order to perform a fair comparison, for the execution of this notebook we <a class="reference external" href="https://jax.readthedocs.io/en/latest/notebooks/Common_Gotchas_in_JAX.html#double-64bit-precision">enabled 64-bit floats in JAX</a> and we used JAX’s CPU backend <a class="reference external" href="https://github.com/google/jax/issues/1539">forcing a single thread of execution</a> (JAX by default uses multiple threads of execution, but heyoka.py’s compiled functions do not yet support multithreaded execution).</p>
+<p>As a last benchmark, we will be performing the same evaluation with <a class="reference external" href="https://jax.readthedocs.io/en/latest/index.html">JAX</a>. Similarly to heyoka.py, JAX offers the possibility to <a class="reference external" href="https://jax.readthedocs.io/en/latest/notebooks/quickstart.html#using-jit-to-speed-up-functions">JIT compile Python functions</a>, so we expect similar performance to heyoka.py. Note that, in order to perform a fair comparison, for the execution of this notebook we <a class="reference external" href="https://jax.readthedocs.io/en/latest/notebooks/Common_Gotchas_in_JAX.html#double-64bit-precision">enabled 64-bit floats in JAX</a> and we used JAX’s CPU backend <a class="reference external" href="https://github.com/google/jax/issues/1539">forcing a single thread of execution</a>.</p>
 <p>Let us see the jax code:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -881,11 +902,6 @@ r_{PJ} &amp;=\sqrt{\left( x -\mu + 1 \right)^2+y^2+z^2}.
 </pre></div>
 </div>
 </div>
-<div class="cell_output docutils container">
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>WARNING:absl:No GPU/TPU found, falling back to CPU. (Set TF_CPP_MIN_LOG_LEVEL=0 and rerun for more info.)
-</pre></div>
-</div>
-</div>
 </div>
 <p>We are now ready to run the benchmark:</p>
 <div class="cell docutils container">
@@ -895,7 +911,7 @@ r_{PJ} &amp;=\sqrt{\left( x -\mu + 1 \right)^2+y^2+z^2}.
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>304 ms ± 2.71 ms per loop (mean ± std. dev. of 7 runs, 1 loop each)
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>313 ms ± 1.72 ms per loop (mean ± std. dev. of 7 runs, 1 loop each)
 </pre></div>
 </div>
 </div>

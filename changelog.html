@@ -248,6 +248,7 @@
 <li class="toctree-l2"><a class="reference internal" href="autosummary_generated/heyoka.dtens.html">heyoka.dtens</a></li>
 <li class="toctree-l2"><a class="reference internal" href="autosummary_generated/heyoka.make_vars.html">heyoka.make_vars</a></li>
 <li class="toctree-l2"><a class="reference internal" href="autosummary_generated/heyoka.diff_tensors.html">heyoka.diff_tensors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="autosummary_generated/heyoka.par.html">heyoka.par</a></li>
 <li class="toctree-l2"><a class="reference internal" href="autosummary_generated/heyoka.diff_args.html">heyoka.diff_args</a></li>
 </ul>
 </li>
@@ -607,6 +608,9 @@ document.write(`
 <section id="new">
 <h3>New<a class="headerlink" href="#new" title="Link to this heading">#</a></h3>
 <ul class="simple">
+<li><p>Compiled functions now support multithreaded parallelisation
+for batched evaluations
+(<a class="reference external" href="https://github.com/bluescarni/heyoka.py/pull/168">#168</a>).</p></li>
 <li><p>Add new example on gravity-gradient stabilisation
 (<a class="reference external" href="https://github.com/bluescarni/heyoka.py/pull/159">#159</a>).</p></li>
 <li><p>Add support for Lagrangian and Hamiltonian mechanics
@@ -624,6 +628,15 @@ angular state variables to the <span class="math notranslate nohighlight">\(\lef
 <section id="changes">
 <h3>Changes<a class="headerlink" href="#changes" title="Link to this heading">#</a></h3>
 <ul class="simple">
+<li><p><strong>BREAKING</strong>: the function to construct compiled functions
+has been renamed from <code class="docutils literal notranslate"><span class="pre">make_cfunc()</span></code> to <code class="docutils literal notranslate"><span class="pre">cfunc()</span></code>
+(<a class="reference external" href="https://github.com/bluescarni/heyoka.py/pull/168">#168</a>).
+This is a <a class="reference internal" href="breaking_changes.html#bchanges-4-0-0"><span class="std std-ref">breaking change</span></a>.</p></li>
+<li><p><strong>BREAKING</strong>: compiled functions now require contiguous arrays
+as input/output arguments. The compiled functions API is also now
+more restrictive with respect to on-the-fly type conversions
+(<a class="reference external" href="https://github.com/bluescarni/heyoka.py/pull/168">#168</a>).
+These are <a class="reference internal" href="breaking_changes.html#bchanges-4-0-0"><span class="std std-ref">breaking changes</span></a>.</p></li>
 <li><p><strong>BREAKING</strong>: it is now mandatory to supply a list of differentiation
 arguments to <a class="reference internal" href="autosummary_generated/heyoka.diff_tensors.html#heyoka.diff_tensors" title="heyoka.diff_tensors"><code class="xref py py-func docutils literal notranslate"><span class="pre">diff_tensors()</span></code></a>
 (<a class="reference external" href="https://github.com/bluescarni/heyoka.py/pull/164">#164</a>).

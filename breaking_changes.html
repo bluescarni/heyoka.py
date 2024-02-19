@@ -246,6 +246,7 @@
 <li class="toctree-l2"><a class="reference internal" href="autosummary_generated/heyoka.dtens.html">heyoka.dtens</a></li>
 <li class="toctree-l2"><a class="reference internal" href="autosummary_generated/heyoka.make_vars.html">heyoka.make_vars</a></li>
 <li class="toctree-l2"><a class="reference internal" href="autosummary_generated/heyoka.diff_tensors.html">heyoka.diff_tensors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="autosummary_generated/heyoka.par.html">heyoka.par</a></li>
 <li class="toctree-l2"><a class="reference internal" href="autosummary_generated/heyoka.diff_args.html">heyoka.diff_args</a></li>
 </ul>
 </li>
@@ -454,14 +455,12 @@ document.write(`
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#bchanges-4-0-0">4.0.0</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#api-behaviour-changes">API/behaviour changes</a><ul class="nav section-nav flex-column">
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#a-more-explicit-api">A more explicit API</a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#changes-to-make-vars">Changes to <code class="xref py py-func docutils literal notranslate"><span class="pre">make_vars()</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#terminal-events-callbacks">Terminal events callbacks</a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#step-callbacks-and-propagate">Step callbacks and <code class="docutils literal notranslate"><span class="pre">propagate_*()</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#changes-to-propagate-grid">Changes to <code class="docutils literal notranslate"><span class="pre">propagate_grid()</span></code></a></li>
-</ul>
-</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#changes-to-compiled-functions">Changes to compiled functions</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#a-more-explicit-api">A more explicit API</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#changes-to-make-vars">Changes to <code class="xref py py-func docutils literal notranslate"><span class="pre">make_vars()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#terminal-events-callbacks">Terminal events callbacks</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#step-callbacks-and-propagate">Step callbacks and <code class="docutils literal notranslate"><span class="pre">propagate_*()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#changes-to-propagate-grid">Changes to <code class="docutils literal notranslate"><span class="pre">propagate_grid()</span></code></a></li>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#bchanges-1-0-0">1.0.0</a></li>
@@ -485,10 +484,23 @@ document.write(`
 <section id="bchanges-4-0-0">
 <span id="id2"></span><h2>4.0.0<a class="headerlink" href="#bchanges-4-0-0" title="Link to this heading">#</a></h2>
 <p>heyoka.py 4 includes several backwards-incompatible changes.</p>
-<section id="api-behaviour-changes">
-<h3>API/behaviour changes<a class="headerlink" href="#api-behaviour-changes" title="Link to this heading">#</a></h3>
+<section id="changes-to-compiled-functions">
+<h3>Changes to compiled functions<a class="headerlink" href="#changes-to-compiled-functions" title="Link to this heading">#</a></h3>
+<p>The function to create <a class="reference internal" href="notebooks/compiled_functions.html#cfunc-tut"><span class="std std-ref">compiled functions</span></a> has been renamed from
+<code class="docutils literal notranslate"><span class="pre">make_cfunc()</span></code> to simply <code class="docutils literal notranslate"><span class="pre">cfunc()</span></code>.</p>
+<p>Compiled functions have also gained the ability to use multiple
+threads of execution during batched evaluations. As a consequence, compiled functions
+now require contiguous NumPy arrays to be passed as input/output arguments (whereas
+in previous versions compiled functions would work also with non-contiguous
+arrays). The NumPy function <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ascontiguousarray.html#numpy.ascontiguousarray" title="(in NumPy v1.26)"><code class="xref py py-func docutils literal notranslate"><span class="pre">numpy.ascontiguousarray()</span></code></a> can be used to turn
+non-contiguous arrays into contiguous arrays.</p>
+<p>Finally, compiled functions are now stricter with respect to type conversions: if a NumPy
+array with the wrong datatype is passed as an input/output argument, an error will be raised
+(whereas previously heyoka.py would convert the array to the correct datatype on-the-fly).
+The NumPy method <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.astype.html#numpy.ndarray.astype" title="(in NumPy v1.26)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">numpy.ndarray.astype()</span></code></a> can be used for datatype conversions.</p>
+</section>
 <section id="a-more-explicit-api">
-<h4>A more explicit API<a class="headerlink" href="#a-more-explicit-api" title="Link to this heading">#</a></h4>
+<h3>A more explicit API<a class="headerlink" href="#a-more-explicit-api" title="Link to this heading">#</a></h3>
 <p>Several functions and classes have been changed to explicitly require
 the user to pass a list of variables in input. The previous behaviour, where
 heyoka.py would try to automatically infer a list of variables from other
@@ -503,19 +515,21 @@ arguments to be always provided by the user.</p></li>
 <p>The tutorials and the documentation have been updated accordingly.</p>
 </section>
 <section id="changes-to-make-vars">
-<h4>Changes to <a class="reference internal" href="autosummary_generated/heyoka.make_vars.html#heyoka.make_vars" title="heyoka.make_vars"><code class="xref py py-func docutils literal notranslate"><span class="pre">make_vars()</span></code></a><a class="headerlink" href="#changes-to-make-vars" title="Link to this heading">#</a></h4>
+<h3>Changes to <a class="reference internal" href="autosummary_generated/heyoka.make_vars.html#heyoka.make_vars" title="heyoka.make_vars"><code class="xref py py-func docutils literal notranslate"><span class="pre">make_vars()</span></code></a><a class="headerlink" href="#changes-to-make-vars" title="Link to this heading">#</a></h3>
 <p>The <a class="reference internal" href="autosummary_generated/heyoka.make_vars.html#heyoka.make_vars" title="heyoka.make_vars"><code class="xref py py-func docutils literal notranslate"><span class="pre">make_vars()</span></code></a> function now returns a single expression (rather than a list of expressions)
 if a single argument is passed in input. This means that code such as</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">x</span><span class="p">,</span> <span class="o">=</span> <span class="n">make_vars</span><span class="p">(</span><span class="s2">&quot;x&quot;</span><span class="p">)</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">make_vars</span><span class="p">(</span><span class="s2">&quot;y&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
 </pre></div>
 </div>
 <p>needs to be rewritten like this:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">x</span> <span class="o">=</span> <span class="n">make_vars</span><span class="p">(</span><span class="s2">&quot;x&quot;</span><span class="p">)</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">make_vars</span><span class="p">(</span><span class="s2">&quot;y&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
 <section id="terminal-events-callbacks">
-<h4>Terminal events callbacks<a class="headerlink" href="#terminal-events-callbacks" title="Link to this heading">#</a></h4>
+<h3>Terminal events callbacks<a class="headerlink" href="#terminal-events-callbacks" title="Link to this heading">#</a></h3>
 <p>The second argument in the signature of callbacks for terminal events, a <code class="docutils literal notranslate"><span class="pre">bool</span></code> conventionally
 called <code class="docutils literal notranslate"><span class="pre">mr</span></code>, has been removed. This flag was meant to signal the possibility of multiple roots
 in the event function within the cooldown period, but it never worked as intended and
@@ -524,7 +538,7 @@ it has thus been dropped.</p>
 from the signature of a terminal event callback.</p>
 </section>
 <section id="step-callbacks-and-propagate">
-<h4>Step callbacks and <code class="docutils literal notranslate"><span class="pre">propagate_*()</span></code><a class="headerlink" href="#step-callbacks-and-propagate" title="Link to this heading">#</a></h4>
+<h3>Step callbacks and <code class="docutils literal notranslate"><span class="pre">propagate_*()</span></code><a class="headerlink" href="#step-callbacks-and-propagate" title="Link to this heading">#</a></h3>
 <p>The step callbacks that can (optionally) be passed to the <code class="docutils literal notranslate"><span class="pre">propagate_*()</span></code> methods of the
 adaptive integrators are now part of the return value. Specifically:</p>
 <ul class="simple">
@@ -547,14 +561,13 @@ rather than a single value.</p></li>
 </ul>
 </section>
 <section id="changes-to-propagate-grid">
-<h4>Changes to <code class="docutils literal notranslate"><span class="pre">propagate_grid()</span></code><a class="headerlink" href="#changes-to-propagate-grid" title="Link to this heading">#</a></h4>
+<h3>Changes to <code class="docutils literal notranslate"><span class="pre">propagate_grid()</span></code><a class="headerlink" href="#changes-to-propagate-grid" title="Link to this heading">#</a></h3>
 <p>The <code class="docutils literal notranslate"><span class="pre">propagate_grid()</span></code> methods of the adaptive integrators now require the first element of the
 time grid to be equal to the current integrator time. Previously, in case of a difference between the
 integrator time and the first grid point, heyoka.py would propagate the state of the system up to the
 first grid point with <code class="docutils literal notranslate"><span class="pre">propagate_until()</span></code>.</p>
 <p>If you want to recover the previous behaviour, you will have to invoke manually <code class="docutils literal notranslate"><span class="pre">propagate_until(grid[0])</span></code>
 before invoking <code class="docutils literal notranslate"><span class="pre">propagate_grid()</span></code>.</p>
-</section>
 </section>
 </section>
 <section id="bchanges-1-0-0">
@@ -691,14 +704,12 @@ time, and its value will be -1 for negative derivative,
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#bchanges-4-0-0">4.0.0</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#api-behaviour-changes">API/behaviour changes</a><ul class="nav section-nav flex-column">
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#a-more-explicit-api">A more explicit API</a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#changes-to-make-vars">Changes to <code class="xref py py-func docutils literal notranslate"><span class="pre">make_vars()</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#terminal-events-callbacks">Terminal events callbacks</a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#step-callbacks-and-propagate">Step callbacks and <code class="docutils literal notranslate"><span class="pre">propagate_*()</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#changes-to-propagate-grid">Changes to <code class="docutils literal notranslate"><span class="pre">propagate_grid()</span></code></a></li>
-</ul>
-</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#changes-to-compiled-functions">Changes to compiled functions</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#a-more-explicit-api">A more explicit API</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#changes-to-make-vars">Changes to <code class="xref py py-func docutils literal notranslate"><span class="pre">make_vars()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#terminal-events-callbacks">Terminal events callbacks</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#step-callbacks-and-propagate">Step callbacks and <code class="docutils literal notranslate"><span class="pre">propagate_*()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#changes-to-propagate-grid">Changes to <code class="docutils literal notranslate"><span class="pre">propagate_grid()</span></code></a></li>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#bchanges-1-0-0">1.0.0</a></li>

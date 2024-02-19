@@ -248,6 +248,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../autosummary_generated/heyoka.dtens.html">heyoka.dtens</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../autosummary_generated/heyoka.make_vars.html">heyoka.make_vars</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../autosummary_generated/heyoka.diff_tensors.html">heyoka.diff_tensors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../autosummary_generated/heyoka.par.html">heyoka.par</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../autosummary_generated/heyoka.diff_args.html">heyoka.diff_args</a></li>
 </ul>
 </li>
@@ -750,7 +751,7 @@ document.write(`
 <p>Let us take a look at the decomposition of <span class="math notranslate nohighlight">\(\boldsymbol{f}\left(x, y, z\right)\)</span>:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">f_cf</span><span class="o">.</span><span class="n">decomposition</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">f_cf</span><span class="o">.</span><span class="n">dc</span>
 </pre></div>
 </div>
 </div>
@@ -800,7 +801,7 @@ document.write(`
 <p>And let us take a look at the decomposition:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">f_cf_fix</span><span class="o">.</span><span class="n">decomposition</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">f_cf_fix</span><span class="o">.</span><span class="n">dc</span>
 </pre></div>
 </div>
 </div>
@@ -833,7 +834,7 @@ g\left(x, y, z\right) = 2\left(x+y+z\right).
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">g_cf</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">cfunc</span><span class="p">([</span><span class="mf">2.0</span> <span class="o">*</span> <span class="p">(</span><span class="n">x</span> <span class="o">+</span> <span class="n">y</span> <span class="o">+</span> <span class="n">z</span><span class="p">)],</span> <span class="p">[</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">])</span>
-<span class="n">g_cf</span><span class="o">.</span><span class="n">decomposition</span>
+<span class="n">g_cf</span><span class="o">.</span><span class="n">dc</span>
 </pre></div>
 </div>
 </div>
@@ -855,7 +856,7 @@ g\left(x, y, z\right) = 2\left(x+y+z\right).
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">g_cf_fix</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">cfunc</span><span class="p">([</span><span class="mf">2.0</span> <span class="o">*</span> <span class="n">hy</span><span class="o">.</span><span class="n">fix</span><span class="p">(</span><span class="n">x</span> <span class="o">+</span> <span class="n">y</span> <span class="o">+</span> <span class="n">z</span><span class="p">)],</span>
                         <span class="p">[</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">])</span>
-<span class="n">g_cf_fix</span><span class="o">.</span><span class="n">decomposition</span>
+<span class="n">g_cf_fix</span><span class="o">.</span><span class="n">dc</span>
 </pre></div>
 </div>
 </div>

@@ -248,6 +248,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../autosummary_generated/heyoka.dtens.html">heyoka.dtens</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../autosummary_generated/heyoka.make_vars.html">heyoka.make_vars</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../autosummary_generated/heyoka.diff_tensors.html">heyoka.diff_tensors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../autosummary_generated/heyoka.par.html">heyoka.par</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../autosummary_generated/heyoka.diff_args.html">heyoka.diff_args</a></li>
 </ul>
 </li>
@@ -637,7 +638,7 @@ document.write(`
  1.0583722519817735,
  36,
  None,
- &lt;__main__.proj_callback at 0x7faab4467130&gt;)
+ &lt;__main__.proj_callback at 0x7f04457335b0&gt;)
 </pre></div>
 </div>
 </div>
@@ -955,8 +956,10 @@ Updated  energy error: 1.3842666877172304e-11
 <span class="n">plt</span><span class="o">.</span><span class="n">yscale</span><span class="p">(</span><span class="s1">&#39;log&#39;</span><span class="p">)</span>
 
 <span class="c1"># Compute the energy error over the time grid.</span>
-<span class="n">err_proj_hist</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">((</span><span class="n">cb</span><span class="o">.</span><span class="n">E0</span> <span class="o">-</span> <span class="n">en_cfunc</span><span class="p">(</span><span class="n">pres_proj</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">transpose</span><span class="p">())[</span><span class="mi">0</span><span class="p">])</span><span class="o">/</span><span class="n">cb</span><span class="o">.</span><span class="n">E0</span><span class="p">)</span>
-<span class="n">err_noproj_hist</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">((</span><span class="n">cb</span><span class="o">.</span><span class="n">E0</span> <span class="o">-</span> <span class="n">en_cfunc</span><span class="p">(</span><span class="n">pres_noproj</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">transpose</span><span class="p">())[</span><span class="mi">0</span><span class="p">])</span><span class="o">/</span><span class="n">cb</span><span class="o">.</span><span class="n">E0</span><span class="p">)</span>
+<span class="n">en_proj_hist</span> <span class="o">=</span> <span class="n">en_cfunc</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ascontiguousarray</span><span class="p">(</span><span class="n">pres_proj</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">transpose</span><span class="p">()))</span>
+<span class="n">err_proj_hist</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">((</span><span class="n">cb</span><span class="o">.</span><span class="n">E0</span> <span class="o">-</span> <span class="n">en_proj_hist</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">/</span><span class="n">cb</span><span class="o">.</span><span class="n">E0</span><span class="p">)</span>
+<span class="n">err_noproj_hist</span> <span class="o">=</span> <span class="n">en_cfunc</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ascontiguousarray</span><span class="p">(</span><span class="n">pres_noproj</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">transpose</span><span class="p">()))</span>
+<span class="n">err_noproj_hist</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">((</span><span class="n">cb</span><span class="o">.</span><span class="n">E0</span> <span class="o">-</span> <span class="n">err_noproj_hist</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">/</span><span class="n">cb</span><span class="o">.</span><span class="n">E0</span><span class="p">)</span>
 
 <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">t_grid</span><span class="p">,</span> <span class="n">err_proj_hist</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s1">&#39;.&#39;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;None&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;With projection&quot;</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">t_grid</span><span class="p">,</span> <span class="n">err_noproj_hist</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s1">&#39;.&#39;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;None&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Without projection&quot;</span><span class="p">)</span>
@@ -969,7 +972,7 @@ Updated  energy error: 1.3842666877172304e-11
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/cf27ff28473bfde33ae497d806fe3a0b7d89236c9754171adbdb9482bdbdd034.png" src="../_images/cf27ff28473bfde33ae497d806fe3a0b7d89236c9754171adbdb9482bdbdd034.png" />
+<img alt="../_images/6372e0c05bcf945ed254db296518c6dc442e8e6d6894d865786816ce45d45b62.png" src="../_images/6372e0c05bcf945ed254db296518c6dc442e8e6d6894d865786816ce45d45b62.png" />
 </div>
 </div>
 <p>We can indeed see how the energy error with projection is kept under the <span class="math notranslate nohighlight">\(10^{-6}\)</span> threshold.</p>

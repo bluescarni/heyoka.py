@@ -248,6 +248,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../autosummary_generated/heyoka.dtens.html">heyoka.dtens</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../autosummary_generated/heyoka.make_vars.html">heyoka.make_vars</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../autosummary_generated/heyoka.diff_tensors.html">heyoka.diff_tensors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../autosummary_generated/heyoka.par.html">heyoka.par</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../autosummary_generated/heyoka.diff_args.html">heyoka.diff_args</a></li>
 </ul>
 </li>
@@ -694,7 +695,7 @@ Shape of dNdx: (2, 2)
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>--- 0.464125394821167 seconds --- to build (jit) the Taylor integrator
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>--- 0.43198204040527344 seconds --- to build (jit) the Taylor integrator
 </pre></div>
 </div>
 </div>
@@ -735,7 +736,7 @@ Shape of dNdx: (2, 2)
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>--- 0.00011539459228515625 seconds --- to propagate using the Taylor scheme
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>--- 0.0003075599670410156 seconds --- to propagate using the Taylor scheme
 </pre></div>
 </div>
 </div>
@@ -754,7 +755,7 @@ Shape of dNdx: (2, 2)
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/f1832331069f78e3cd48b987daae841dda2f350adb30c8fc307ba0ad0a183187.png" src="../_images/f1832331069f78e3cd48b987daae841dda2f350adb30c8fc307ba0ad0a183187.png" />
+<img alt="../_images/cc5e137c52546c98e737021edab654f2a6f372d60607957b6c4aaadaf23d94c0.png" src="../_images/cc5e137c52546c98e737021edab654f2a6f372d60607957b6c4aaadaf23d94c0.png" />
 </div>
 </div>
 </section>
@@ -793,7 +794,7 @@ This allows us to use identical jitted expressions also for the rhs of the case 
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>--- 0.0021810531616210938 seconds --- to propagate
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>--- 0.0014362335205078125 seconds --- to propagate
 </pre></div>
 </div>
 </div>
@@ -808,7 +809,7 @@ This allows us to use identical jitted expressions also for the rhs of the case 
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/db4c12d9e9111bf2a20bd151ce727f3824052fc896b4aeb20f891d9ace4f6d90.png" src="../_images/db4c12d9e9111bf2a20bd151ce727f3824052fc896b4aeb20f891d9ace4f6d90.png" />
+<img alt="../_images/efe25247fec8ca3ff8bb70f458d5e5ae3165b18d3a0350a7ca05a11cd418725c.png" src="../_images/efe25247fec8ca3ff8bb70f458d5e5ae3165b18d3a0350a7ca05a11cd418725c.png" />
 </div>
 </div>
 <p>We see a net advantage in timings using the Taylor integration scheme. Note we are here not using batch propagation, which would add an additional 2-4 factor speedup in performances.</p>

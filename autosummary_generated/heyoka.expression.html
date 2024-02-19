@@ -246,6 +246,7 @@
 <li class="toctree-l2"><a class="reference internal" href="heyoka.dtens.html">heyoka.dtens</a></li>
 <li class="toctree-l2"><a class="reference internal" href="heyoka.make_vars.html">heyoka.make_vars</a></li>
 <li class="toctree-l2"><a class="reference internal" href="heyoka.diff_tensors.html">heyoka.diff_tensors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="heyoka.par.html">heyoka.par</a></li>
 <li class="toctree-l2"><a class="reference internal" href="heyoka.diff_args.html">heyoka.diff_args</a></li>
 </ul>
 </li>
@@ -473,18 +474,44 @@ document.write(`
 <dl class="py class">
 <dt class="sig sig-object py" id="heyoka.expression">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">heyoka.</span></span><span class="sig-name descname"><span class="pre">expression</span></span><a class="headerlink" href="#heyoka.expression" title="Link to this definition">#</a></dt>
-<dd><p class="rubric">Methods</p>
+<dd><p>Class to represent symbolic expressions.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>A <a class="reference internal" href="../notebooks/The%20expression%20system.html#ex-system"><span class="std std-ref">tutorial</span></a> explaining the use of this
+class is available.</p>
+</div>
+<p>This is the main class used to represent mathematical expressions in heyoka.
+It is a union of several <em>node types</em>:</p>
+<ul class="simple">
+<li><p>symbolic variables,</p></li>
+<li><p>mathematical constants,</p></li>
+<li><p>runtime parameters,</p></li>
+<li><p>n-ary functions.</p></li>
+</ul>
+<p>Expressions can be created in a variety of ways, and after construction
+they can be combined via arithmetic operators and mathematical functions
+to form new expressions of arbitrary complexity.</p>
+<p class="rubric">Methods</p>
 <table class="autosummary longtable table autosummary">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#heyoka.expression.__init__" title="heyoka.expression.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a></p></td>
-<td><p></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#heyoka.expression.__init__" title="heyoka.expression.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>(self[, x])</p></td>
+<td><p>Constructor.</p></td>
 </tr>
 </tbody>
 </table>
 <dl class="py method">
 <dt class="sig sig-object py" id="heyoka.expression.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#heyoka.expression.__init__" title="Link to this definition">#</a></dt>
-<dd></dd></dl>
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><span class="pre">int</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://numpy.org/doc/stable/reference/arrays.scalars.html#numpy.single" title="(in NumPy v1.26)"><span class="pre">numpy.single</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><span class="pre">float</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://numpy.org/doc/stable/reference/arrays.scalars.html#numpy.longdouble" title="(in NumPy v1.26)"><span class="pre">numpy.longdouble</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#heyoka.expression.__init__" title="Link to this definition">#</a></dt>
+<dd><p>Constructor.</p>
+<p>This constructor will initialise the expression either as a numerical
+constant (if <em>x</em> is of a numerical type) or as a variable (if <em>x</em> is
+a <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>x</strong> – the construction argument.</p>
+</dd>
+</dl>
+</dd></dl>
 
 </dd></dl>
 
