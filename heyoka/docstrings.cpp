@@ -39,7 +39,7 @@ to form new expressions of arbitrary complexity.
 
 std::string expression_init()
 {
-    return R"(__init__(self, x: int | numpy.single | float | numpy.longdouble | real128 | real | str = 0.)
+    return R"(__init__(self, x: int | numpy.single | float | numpy.longdouble | str = 0.)
 
 Constructor.
 
