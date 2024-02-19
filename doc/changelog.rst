@@ -9,6 +9,9 @@ Changelog
 New
 ~~~
 
+- Compiled functions now support multithreaded parallelisation
+  for batched evaluations
+  (`#168 <https://github.com/bluescarni/heyoka.py/pull/168>`__).
 - Add new example on gravity-gradient stabilisation
   (`#159 <https://github.com/bluescarni/heyoka.py/pull/159>`__).
 - Add support for Lagrangian and Hamiltonian mechanics
@@ -25,6 +28,11 @@ New
 Changes
 ~~~~~~~
 
+- **BREAKING**: compiled functions now require contiguous arrays
+  as input/output arguments. The compiled functions API is also now
+  more restrictive with respect to on-the-fly type conversions
+  (`#168 <https://github.com/bluescarni/heyoka.py/pull/168>`__).
+  These are :ref:`breaking changes <bchanges_4_0_0>`.
 - **BREAKING**: it is now mandatory to supply a list of differentiation
   arguments to :func:`~heyoka.diff_tensors()`
   (`#164 <https://github.com/bluescarni/heyoka.py/pull/164>`__).
