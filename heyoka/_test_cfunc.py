@@ -1,4 +1,4 @@
-# Copyright 2020, 2021, 2022, 2023 Francesco Biscani (bluescarni@gmail.com), Dario Izzo (dario.izzo@gmail.com)
+# Copyright 2020, 2021, 2022, 2023, 2024 Francesco Biscani (bluescarni@gmail.com), Dario Izzo (dario.izzo@gmail.com)
 #
 # This file is part of the heyoka.py library.
 #
@@ -52,9 +52,7 @@ class cfunc_test_case(_ut.TestCase):
             cf.llvm_state_scalar.get_ir(),
         )
 
-        cf = cfunc(
-            [y * (x + z)], vars=[y, z, x], force_avx512=True, slp_vectorize=True
-        )
+        cf = cfunc([y * (x + z)], vars=[y, z, x], force_avx512=True, slp_vectorize=True)
         self.assertEqual(cf.vars, [y, z, x])
 
         self.assertTrue(cf.llvm_state_scalar.force_avx512)
@@ -659,9 +657,7 @@ class cfunc_test_case(_ut.TestCase):
                     )
                 )
 
-                fn = cfunc(
-                    [expression(fp_t(3)), expression(fp_t(4))], [], fp_type=fp_t
-                )
+                fn = cfunc([expression(fp_t(3)), expression(fp_t(4))], [], fp_type=fp_t)
 
                 inputs = rng.random((0, nevals), dtype=float).astype(fp_t)
                 pars = rng.random((0, nevals), dtype=float).astype(fp_t)
@@ -959,9 +955,7 @@ class cfunc_test_case(_ut.TestCase):
             )
 
             # Tests with no inputs.
-            fn = cfunc(
-                [expression(fp_t(3)) + par[1], par[0] + time], [], fp_type=fp_t
-            )
+            fn = cfunc([expression(fp_t(3)) + par[1], par[0] + time], [], fp_type=fp_t)
 
             eval_arr = fn(
                 inputs=np.zeros((0,), dtype=fp_t), pars=[fp_t(1), fp_t(2)], time=fp_t(3)

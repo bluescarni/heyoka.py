@@ -1,4 +1,4 @@
-# Copyright 2020, 2021, 2022, 2023 Francesco Biscani (bluescarni@gmail.com), Dario Izzo (dario.izzo@gmail.com)
+# Copyright 2020, 2021, 2022, 2023, 2024 Francesco Biscani (bluescarni@gmail.com), Dario Izzo (dario.izzo@gmail.com)
 #
 # This file is part of the heyoka.py library.
 #
@@ -370,11 +370,13 @@ def _real_reduce_factory():
     # of the pickle protocol for real.
     return real()
 
+
 # Machinery for the par generator.
 def _create_par():
     from . import core
 
     return core._par_generator()
+
 
 par = _create_par()
 """
