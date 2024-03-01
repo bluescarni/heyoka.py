@@ -9,6 +9,9 @@ Changelog
 New
 ~~~
 
+- New convenience :func:`~heyoka.dtens.hessian()` method to fetch the Hessian
+  from a :class:`~heyoka.dtens` object
+  (`#171 <https://github.com/bluescarni/heyoka.py/pull/171>`__).
 - Compiled functions now support multithreaded parallelisation
   for batched evaluations
   (`#168 <https://github.com/bluescarni/heyoka.py/pull/168>`__).

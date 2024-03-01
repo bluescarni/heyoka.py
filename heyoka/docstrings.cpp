@@ -243,6 +243,25 @@ std::string dtens_jacobian()
 )";
 }
 
+std::string dtens_hessian()
+{
+    return R"(hessian(component: int) -> numpy.ndarray[expression]
+
+Hessian of a component.
+
+.. versionadded:: 4.0.0
+
+This method will return the Hessian of the selected function component as a 2D array.
+
+:param component: the index of the function component whose Hessian will be returned.
+
+:return: the Hessian of the selected component.
+
+:raises ValueError: if *component* is invalid or if the derivative order is not at least 2.
+
+)";
+}
+
 std::string diff_tensors()
 {
     return R"(diff_tensors(func: list[expression], diff_args: list[expression] | diff_args, diff_order: int = 1) -> dtens

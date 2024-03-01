@@ -28,6 +28,7 @@ std::string dtens_index_of();
 std::string dtens_args();
 std::string dtens_gradient();
 std::string dtens_jacobian();
+std::string dtens_hessian();
 std::string dtens_nouts();
 std::string dtens_nargs();
 
