@@ -503,8 +503,8 @@ document.write(`
   <section class="tex2jax_ignore mathjax_ignore" id="lagrange-propagation-and-the-state-transition-matrix">
 <h1>Lagrange propagation and the state transition matrix<a class="headerlink" href="#lagrange-propagation-and-the-state-transition-matrix" title="Link to this heading">#</a></h1>
 <p>In the gravitational <a class="reference external" href="https://en.wikipedia.org/wiki/Two-body_problem">two-body problem</a> it is possible to compute the state of the system at an arbitrary time from an initial state <span class="math notranslate nohighlight">\(\left( \boldsymbol{r}_0, \boldsymbol{v}_0 \right)\)</span> via the so-called Lagrange coefficients <span class="math notranslate nohighlight">\(F\)</span>, <span class="math notranslate nohighlight">\(G\)</span>, <span class="math notranslate nohighlight">\(F_t\)</span> and <span class="math notranslate nohighlight">\(G_t\)</span>:</p>
-<div class="amsmath math notranslate nohighlight" id="equation-b3ab1fd0-dd8d-463c-af8c-a339372230fd">
-<span class="eqno">(1)<a class="headerlink" href="#equation-b3ab1fd0-dd8d-463c-af8c-a339372230fd" title="Permalink to this equation">#</a></span>\[\begin{equation}
+<div class="amsmath math notranslate nohighlight" id="equation-879047e0-1865-4fca-8185-825be7292cbb">
+<span class="eqno">(1)<a class="headerlink" href="#equation-879047e0-1865-4fca-8185-825be7292cbb" title="Permalink to this equation">#</a></span>\[\begin{equation}
 \begin{cases}
 \boldsymbol{r} &amp; = F \boldsymbol{r}_0 + G \boldsymbol{v}_0 \\
 \boldsymbol{v} &amp; = F_t \boldsymbol{r}_0 + G_t \boldsymbol{v}_0
@@ -693,7 +693,7 @@ document.write(`
 <section id="constructing-the-stm">
 <h2>Constructing the STM<a class="headerlink" href="#constructing-the-stm" title="Link to this heading">#</a></h2>
 <p>We can now proceed to the construction of an analytical expression for the state transition matrix (STM).</p>
-<p>The STM is nothing but the Jacobian of the Lagrange propagator with respect to the initial conditions. In order to compute the derivatives, we employ the :func:<code class="docutils literal notranslate"><span class="pre">~heyoka.diff_tensors()</span></code> function as explained <a class="reference internal" href="computing_derivatives.html#computing-derivatives"><span class="std std-ref">here</span></a>:</p>
+<p>The STM is nothing but the Jacobian of the Lagrange propagator with respect to the initial conditions. In order to compute the derivatives, we employ the <a class="reference internal" href="../autosummary_generated/heyoka.diff_tensors.html#heyoka.diff_tensors" title="heyoka.diff_tensors"><code class="xref py py-func docutils literal notranslate"><span class="pre">diff_tensors()</span></code></a> function as explained <a class="reference internal" href="computing_derivatives.html#computing-derivatives"><span class="std std-ref">here</span></a>:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">dt</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">diff_tensors</span><span class="p">(</span><span class="n">pos_vel</span><span class="p">,</span>
@@ -763,7 +763,7 @@ document.write(`
 </div>
 </div>
 <p>we can indeed see that the the initial perturbation of <span class="math notranslate nohighlight">\(10^{-5}\)</span> has been amplified by a factor of <span class="math notranslate nohighlight">\(3\)</span> in the final state of <span class="math notranslate nohighlight">\(x\)</span> as predicted by the STM.</p>
-<p>Like the Lagrange propagator, the compiled function for the STM is also fully vectorised and SIMD-enabled. Note also that it is also possible via <code class="docutils literal notranslate"><span class="pre">diff_tensors()</span></code> to compute not only the Jacobian, but also higher-order tensors of derivatives (e.g., such as the Hessians).</p>
+<p>Like the Lagrange propagator, the compiled function for the STM is also fully vectorised and SIMD-enabled. Note also that it is also possible via <a class="reference internal" href="../autosummary_generated/heyoka.diff_tensors.html#heyoka.diff_tensors" title="heyoka.diff_tensors"><code class="xref py py-func docutils literal notranslate"><span class="pre">diff_tensors()</span></code></a> to compute not only the Jacobian, but also higher-order tensors of derivatives (e.g., such as the Hessians).</p>
 </section>
 </section>
 

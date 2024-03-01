@@ -15,6 +15,7 @@
    
       ~dtens.__init__
       ~dtens.get_derivatives
+      ~dtens.hessian
       ~dtens.index_of
    
    

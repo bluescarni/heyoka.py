@@ -690,6 +690,33 @@ Diff arguments    : [x, y, z]
 </div>
 </div>
 </div>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 4.0.0.</span></p>
+</div>
+<p>The convenience function <a class="reference internal" href="../autosummary_generated/heyoka.dtens.html#heyoka.dtens.hessian" title="heyoka.dtens.hessian"><code class="xref py py-func docutils literal notranslate"><span class="pre">hessian()</span></code></a> can be used to access the Hessian of a specific function component from a <a class="reference internal" href="../autosummary_generated/heyoka.dtens.html#heyoka.dtens" title="heyoka.dtens"><code class="xref py py-class docutils literal notranslate"><span class="pre">dtens</span></code></a> object. For instance:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">dt</span> <span class="o">=</span> <span class="n">hy</span><span class="o">.</span><span class="n">diff_tensors</span><span class="p">([</span><span class="n">x</span> <span class="o">*</span> <span class="n">y</span><span class="o">**</span><span class="mi">2</span> <span class="o">*</span> <span class="n">z</span><span class="o">**</span><span class="mi">3</span><span class="p">],</span> <span class="p">[</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">],</span> <span class="n">diff_order</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="c1"># Fetch the Hessian for the first (and only) component of the function.</span>
+<span class="n">dt</span><span class="o">.</span><span class="n">hessian</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([[0.0000000000000000,
+        {({(2.0000000000000000 * y)} * {z**3.0000000000000000})},
+        {({(3.0000000000000000 * z**2.0000000000000000)} * {y**2.0000000000000000})}],
+       [{({(2.0000000000000000 * y)} * {z**3.0000000000000000})},
+        {(2.0000000000000000 * {(x * z**3.0000000000000000)})},
+        {({(3.0000000000000000 * z**2.0000000000000000)} * {({x} * {(2.0000000000000000 * y)})})}],
+       [{({(3.0000000000000000 * z**2.0000000000000000)} * {y**2.0000000000000000})},
+        {({(3.0000000000000000 * z**2.0000000000000000)} * {({x} * {(2.0000000000000000 * y)})})},
+        {({(x * y**2.0000000000000000)} * {(3.0000000000000000 * {(2.0000000000000000 * z)})})}]],
+      dtype=object)
+</pre></div>
+</div>
+</div>
+</div>
 <section id="diff-vs-diff-tensors">
 <h2>diff() vs diff_tensors()<a class="headerlink" href="#diff-vs-diff-tensors" title="Link to this heading">#</a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">diff()</span></code> and <a class="reference internal" href="../autosummary_generated/heyoka.diff_tensors.html#heyoka.diff_tensors" title="heyoka.diff_tensors"><code class="xref py py-func docutils literal notranslate"><span class="pre">diff_tensors()</span></code></a> both compute symbolic derivatives, and thus produce mathematically-equivalent results. However, the symbolic structure of the expressions returned by <code class="docutils literal notranslate"><span class="pre">diff()</span></code> and <a class="reference internal" href="../autosummary_generated/heyoka.diff_tensors.html#heyoka.diff_tensors" title="heyoka.diff_tensors"><code class="xref py py-func docutils literal notranslate"><span class="pre">diff_tensors()</span></code></a> can differ in ways that have a profound impact on the runtime complexity of the numerical evaluation of the derivatives.</p>
