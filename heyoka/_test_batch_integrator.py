@@ -355,9 +355,9 @@ class batch_integrator_test_case(_ut.TestCase):
 
             # Vector overload.
             with self.assertRaises(ValueError) as cm:
-                ta.update_d_output(np.array([0.3, 0.4, 0.45, 0.46], dtype=fp_t))[0] = (
-                    fp_t(0.5)
-                )
+                ta.update_d_output(np.array([0.3, 0.4, 0.45, 0.46], dtype=fp_t))[
+                    0
+                ] = fp_t(0.5)
 
             d_out2 = ta.update_d_output(np.array([0.3, 0.4, 0.45, 0.46], dtype=fp_t))
             self.assertEqual(d_out2.shape, (2, 4))

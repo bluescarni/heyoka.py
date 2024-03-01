@@ -18,6 +18,32 @@ class dtens_test_case(_ut.TestCase):
         dt = diff_tensors([x - y], [x, y])
         self.assertEqual(dt.gradient, [ex(1.0), ex(-1.0)])
 
+    def test_hessian(self):
+        from . import diff_tensors, make_vars, expression as ex, cfunc
+        import numpy as np
+
+        x, y, z = make_vars("x", "y", "z")
+
+        dt = diff_tensors([x * y**2 * z**3], [x, y, z], diff_order=2)
+
+        h = dt.hessian(component=0)
+
+        self.assertTrue(np.all(h - h.T) == ex(0.0))
+
+        cf = cfunc(h[np.triu_indices(3)].flatten(), [x, y, z])
+
+        xval, yval, zval = 1.0, 2.0, 3.0
+
+        out = cf([xval, yval, zval])
+
+        self.assertEqual(len(out), 6)
+        self.assertEqual(out[0], 0.0)
+        self.assertEqual(out[1], 2 * yval * zval * zval * zval)
+        self.assertEqual(out[2], 3 * yval * yval * zval * zval)
+        self.assertEqual(out[3], 2 * xval * zval * zval * zval)
+        self.assertEqual(out[4], 6 * xval * yval * zval * zval)
+        self.assertEqual(out[5], 6 * xval * yval * yval * zval)
+
     def test_jacobian(self):
         from . import diff_tensors, make_vars, expression as ex, diff_args
         import numpy as np

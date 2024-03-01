@@ -621,6 +621,30 @@ void expose_expression(py::module_ &m)
                                                          boost::numeric_cast<py::ssize_t>(dt.get_nargs())});
         },
         docstrings::dtens_jacobian().c_str());
+    // Hessian.
+    dtens_cl.def(
+        "hessian",
+        [](const hey::dtens &dt, std::uint32_t component) {
+            py::list h = py::cast(dt.get_hessian(component));
+
+            // Reconstruct the Hessian from its representation as a list
+            // of component of the upper triangular part.
+            const auto nargs = dt.get_nargs();
+
+            auto np = py::module_::import("numpy");
+            auto arr1 = np.attr("full")(py::make_tuple(nargs, nargs), 0., "dtype"_a = "object");
+
+            auto ui = np.attr("triu_indices")(nargs);
+            arr1[ui] = h;
+
+            auto arr2 = arr1.attr("T").attr("copy")();
+            auto di = np.attr("diag_indices")(nargs);
+
+            arr2[di] = 0.;
+
+            return arr1 + arr2;
+        },
+        "component"_a, docstrings::dtens_hessian().c_str());
     // Copy/deepcopy.
     dtens_cl.def("__copy__", copy_wrapper<hey::dtens>);
     dtens_cl.def("__deepcopy__", deepcopy_wrapper<hey::dtens>, "memo"_a);

@@ -140,7 +140,7 @@ directly by the user.
 
 std::string dtens_get_derivatives()
 {
-    return R"(get_derivatives(order: int, component: Optional[int] = None) -> list[tuple[list[int], expression]]
+    return R"(get_derivatives(self, order: int, component: Optional[int] = None) -> list[tuple[list[int], expression]]
 
 Get the derivatives for the specified order and component.
 
@@ -196,7 +196,7 @@ std::string dtens_nargs()
 
 std::string dtens_index_of()
 {
-    return R"(index_of(vidx: list[int] | tuple[int, list[tuple[int, int]]]) -> int
+    return R"(index_of(self, vidx: list[int] | tuple[int, list[tuple[int, int]]]) -> int
 
 Get the position corresponding to the input indices vector.
 
@@ -239,6 +239,25 @@ std::string dtens_jacobian()
 :rtype: numpy.ndarray[expression]
 
 :raises ValueError: if the function has zero components or if the maximum derivative order is zero.
+
+)";
+}
+
+std::string dtens_hessian()
+{
+    return R"(hessian(self, component: int) -> numpy.ndarray[expression]
+
+Hessian of a component.
+
+.. versionadded:: 4.0.0
+
+This method will return the Hessian of the selected function component as a 2D array.
+
+:param component: the index of the function component whose Hessian will be returned.
+
+:return: the Hessian of the selected component.
+
+:raises ValueError: if *component* is invalid or if the derivative order is not at least 2.
 
 )";
 }
