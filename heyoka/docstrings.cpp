@@ -140,7 +140,7 @@ directly by the user.
 
 std::string dtens_get_derivatives()
 {
-    return R"(get_derivatives(order: int, component: Optional[int] = None) -> list[tuple[list[int], expression]]
+    return R"(get_derivatives(self, order: int, component: Optional[int] = None) -> list[tuple[list[int], expression]]
 
 Get the derivatives for the specified order and component.
 
@@ -196,7 +196,7 @@ std::string dtens_nargs()
 
 std::string dtens_index_of()
 {
-    return R"(index_of(vidx: list[int] | tuple[int, list[tuple[int, int]]]) -> int
+    return R"(index_of(self, vidx: list[int] | tuple[int, list[tuple[int, int]]]) -> int
 
 Get the position corresponding to the input indices vector.
 
@@ -245,7 +245,7 @@ std::string dtens_jacobian()
 
 std::string dtens_hessian()
 {
-    return R"(hessian(component: int) -> numpy.ndarray[expression]
+    return R"(hessian(self, component: int) -> numpy.ndarray[expression]
 
 Hessian of a component.
 
