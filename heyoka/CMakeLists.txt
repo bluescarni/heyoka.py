@@ -29,7 +29,6 @@ set(HEYOKA_PY_PYTHON_FILES
     _test_sympy.py
     _test_vsop2013.py
     _test_elp2000.py
-    _test_taylor_add_jet.py
     _test_lagham.py
     model/__init__.py
     callback/__init__.py
@@ -50,7 +49,6 @@ set(_HEYOKA_PY_CORE_SOURCES
     taylor_expose_integrator.cpp
     taylor_expose_events.cpp
     taylor_expose_c_output.cpp
-    taylor_add_jet.cpp
     common_utils.cpp
     logging.cpp
     setup_sympy.cpp

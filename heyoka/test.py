@@ -2078,7 +2078,6 @@ def run_test_suite():
         _test_sympy,
         _test_vsop2013,
         _test_elp2000,
-        _test_taylor_add_jet,
         _test_lagham,
     )
     import numpy as np
@@ -2093,9 +2092,8 @@ def run_test_suite():
 
     tl = _ut.TestLoader()
 
-    suite = tl.loadTestsFromTestCase(_test_taylor_add_jet.taylor_add_jet_test_case)
-    suite.addTest(
-        tl.loadTestsFromTestCase(_test_scalar_integrator.scalar_integrator_test_case)
+    suite = tl.loadTestsFromTestCase(
+        _test_scalar_integrator.scalar_integrator_test_case
     )
     suite.addTest(
         tl.loadTestsFromTestCase(_test_batch_integrator.batch_integrator_test_case)

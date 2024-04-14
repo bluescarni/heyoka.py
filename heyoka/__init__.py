@@ -129,15 +129,6 @@ def recommended_simd_size(fp_type=float):
     return getattr(core, "_recommended_simd_size{}".format(fp_suffix))()
 
 
-def taylor_add_jet(sys, order, **kwargs):
-    from . import core
-
-    fp_type = kwargs.pop("fp_type", float)
-    fp_suffix = _fp_to_suffix(fp_type)
-
-    return getattr(core, "_taylor_add_jet{}".format(fp_suffix))(sys, order, **kwargs)
-
-
 def cfunc(fn, vars, **kwargs):
     from . import core
 
