@@ -307,8 +307,13 @@ void expose_expression(py::module_ &m)
         "arg"_a, "smap"_a, "normalise"_a = false);
 
     // fix()/unfix().
-    m.def("fix", &hey::fix, "arg"_a);
-    m.def("fix_nn", &hey::fix_nn, "arg"_a);
+    m.def(
+        "fix", [](const v_ex_t &arg) { return std::visit([](const auto &v) -> v_ex_t { return hey::fix(v); }, arg); },
+        "arg"_a);
+    m.def(
+        "fix_nn",
+        [](const v_ex_t &arg) { return std::visit([](const auto &v) -> v_ex_t { return hey::fix_nn(v); }, arg); },
+        "arg"_a);
     m.def(
         "unfix",
         [](const v_ex_t &arg) { return std::visit([](const auto &v) -> v_ex_t { return hey::unfix(v); }, arg); },
@@ -516,10 +521,10 @@ void expose_expression(py::module_ &m)
     // Diff.
     m.def(
         "diff",
-        [](const hey::expression &ex, const std::variant<std::string, hey::expression> &var) {
-            return std::visit([&ex](const auto &v) { return hey::diff(ex, v); }, var);
+        [](const v_ex_t &arg, const std::variant<std::string, hey::expression> &var) {
+            return std::visit([](const auto &a, const auto &v) -> v_ex_t { return hey::diff(a, v); }, arg, var);
         },
-        "ex"_a, "var"_a);
+        "arg"_a, "var"_a);
 
     // Syntax sugar for creating parameters.
     py::class_<hey::detail::par_impl>(m, "_par_generator")
