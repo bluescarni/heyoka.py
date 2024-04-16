@@ -6,6 +6,12 @@ Changelog
 4.1.0 (unreleased)
 ------------------
 
+New
+~~~
+
+- Add vectorised implementations of ``diff()`` and ``fix()``
+  (`#173 <https://github.com/bluescarni/heyoka.py/pull/173>`__).
+
 4.0.0 (2024-03-03)
 ------------------
 
