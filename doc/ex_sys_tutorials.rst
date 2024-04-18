@@ -1,7 +1,7 @@
-.. _adv_tutorials:
+.. _ex_sys_tutorials:
 
-Advanced
-==================
+The expression system
+=====================
 
 .. only:: html
 
@@ -26,14 +26,5 @@ Advanced
 .. toctree::
   :maxdepth: 1
 
-  notebooks/Batch mode overview
-  notebooks/ensemble_mode.ipynb
-  notebooks/parallel_mode.ipynb
-  notebooks/ext_precision.ipynb
-  notebooks/arbitrary_precision.ipynb
-  notebooks/single_precision.ipynb
-  notebooks/lagrangian.ipynb
-  notebooks/sympy_interop.ipynb
-  notebooks/compiled_functions.ipynb
-  notebooks/pickling.ipynb
-  notebooks/jit_caching.ipynb
+  notebooks/ex_system_revisited.ipynb
+  notebooks/computing_derivatives.ipynb
