@@ -103,7 +103,7 @@ class event_classes_test_case(_ut.TestCase):
             ev = nt_event(x + v, lambda _: _, fp_type=fp_t)
 
             self.assertTrue(" non-terminal" in repr(ev))
-            self.assertTrue("(v + x)" in repr(ev))
+            self.assertTrue("(x + v)" in repr(ev))
             self.assertTrue("event_direction::any" in repr(ev))
             self.assertEqual(ev.expression, x + v)
             self.assertEqual(ev.direction, event_direction.any)
@@ -111,7 +111,7 @@ class event_classes_test_case(_ut.TestCase):
 
             ev = nt_event(ex=x + v, callback=lambda _: _, fp_type=fp_t)
             self.assertTrue(" non-terminal" in repr(ev))
-            self.assertTrue("(v + x)" in repr(ev))
+            self.assertTrue("(x + v)" in repr(ev))
             self.assertTrue("event_direction::any" in repr(ev))
             self.assertEqual(ev.expression, x + v)
             self.assertEqual(ev.direction, event_direction.any)
@@ -124,7 +124,7 @@ class event_classes_test_case(_ut.TestCase):
                 fp_type=fp_t,
             )
             self.assertTrue(" non-terminal" in repr(ev))
-            self.assertTrue("(v + x)" in repr(ev))
+            self.assertTrue("(x + v)" in repr(ev))
             self.assertTrue("event_direction::positive" in repr(ev))
             self.assertEqual(ev.expression, x + v)
             self.assertEqual(ev.direction, event_direction.positive)
@@ -137,7 +137,7 @@ class event_classes_test_case(_ut.TestCase):
                 fp_type=fp_t,
             )
             self.assertTrue(" non-terminal" in repr(ev))
-            self.assertTrue("(v + x)" in repr(ev))
+            self.assertTrue("(x + v)" in repr(ev))
             self.assertTrue("event_direction::negative" in repr(ev))
             self.assertEqual(ev.expression, x + v)
             self.assertEqual(ev.direction, event_direction.negative)
@@ -202,7 +202,7 @@ class event_classes_test_case(_ut.TestCase):
             )
             ev = pickle.loads(pickle.dumps(ev))
             self.assertTrue(" non-terminal" in repr(ev))
-            self.assertTrue("(v + x)" in repr(ev))
+            self.assertTrue("(x + v)" in repr(ev))
             self.assertTrue("event_direction::negative" in repr(ev))
 
             # Test dynamic attributes.
@@ -239,7 +239,7 @@ class event_classes_test_case(_ut.TestCase):
             ev = t_event(x + v, fp_type=fp_t)
 
             self.assertTrue(" terminal" in repr(ev))
-            self.assertTrue("(v + x)" in repr(ev))
+            self.assertTrue("(x + v)" in repr(ev))
             self.assertTrue("event_direction::any" in repr(ev))
             self.assertTrue(": no" in repr(ev))
             self.assertTrue("auto" in repr(ev))
@@ -256,7 +256,7 @@ class event_classes_test_case(_ut.TestCase):
             )
 
             self.assertTrue(" terminal" in repr(ev))
-            self.assertTrue("(v + x)" in repr(ev))
+            self.assertTrue("(x + v)" in repr(ev))
             self.assertTrue("event_direction::negative" in repr(ev))
             self.assertTrue(": no" in repr(ev))
             self.assertTrue("3" in repr(ev))
@@ -274,7 +274,7 @@ class event_classes_test_case(_ut.TestCase):
             )
 
             self.assertTrue(" terminal" in repr(ev))
-            self.assertTrue("(v + x)" in repr(ev))
+            self.assertTrue("(x + v)" in repr(ev))
             self.assertTrue("event_direction::positive" in repr(ev))
             self.assertTrue(": yes" in repr(ev))
             self.assertTrue("3" in repr(ev))
@@ -300,7 +300,7 @@ class event_classes_test_case(_ut.TestCase):
             )
 
             self.assertTrue(" terminal" in repr(ev))
-            self.assertTrue("(v + x)" in repr(ev))
+            self.assertTrue("(x + v)" in repr(ev))
             self.assertTrue("event_direction::positive" in repr(ev))
             self.assertTrue(": yes" in repr(ev))
             self.assertTrue("3" in repr(ev))
@@ -359,7 +359,7 @@ class event_classes_test_case(_ut.TestCase):
 
             ev = pickle.loads(pickle.dumps(ev))
             self.assertTrue(" terminal" in repr(ev))
-            self.assertTrue("(v + x)" in repr(ev))
+            self.assertTrue("(x + v)" in repr(ev))
             self.assertTrue("event_direction::positive" in repr(ev))
             self.assertTrue(": yes" in repr(ev))
             self.assertTrue("3" in repr(ev))
@@ -388,7 +388,7 @@ class event_classes_test_case(_ut.TestCase):
 
             ev = pickle.loads(pickle.dumps(ev))
             self.assertTrue(" terminal" in repr(ev))
-            self.assertTrue("(v + x)" in repr(ev))
+            self.assertTrue("(x + v)" in repr(ev))
             self.assertTrue("event_direction::positive" in repr(ev))
             self.assertTrue(": no" in repr(ev))
             self.assertTrue("3" in repr(ev))
@@ -427,7 +427,7 @@ class event_classes_test_case(_ut.TestCase):
         # Batch events.
         ev = nt_event_batch(x + v, lambda _: _)
         self.assertTrue(" non-terminal" in repr(ev))
-        self.assertTrue("(v + x)" in repr(ev))
+        self.assertTrue("(x + v)" in repr(ev))
         self.assertTrue("event_direction::any" in repr(ev))
         self.assertEqual(ev.expression, x + v)
         self.assertEqual(ev.direction, event_direction.any)
@@ -435,7 +435,7 @@ class event_classes_test_case(_ut.TestCase):
 
         ev = nt_event_batch(ex=x + v, callback=lambda _: _, fp_type=float)
         self.assertTrue(" non-terminal" in repr(ev))
-        self.assertTrue("(v + x)" in repr(ev))
+        self.assertTrue("(x + v)" in repr(ev))
         self.assertTrue("event_direction::any" in repr(ev))
         self.assertEqual(ev.expression, x + v)
         self.assertEqual(ev.direction, event_direction.any)
@@ -445,7 +445,7 @@ class event_classes_test_case(_ut.TestCase):
             ex=x + v, callback=lambda _: _, direction=event_direction.positive
         )
         self.assertTrue(" non-terminal" in repr(ev))
-        self.assertTrue("(v + x)" in repr(ev))
+        self.assertTrue("(x + v)" in repr(ev))
         self.assertTrue("event_direction::positive" in repr(ev))
         self.assertEqual(ev.expression, x + v)
         self.assertEqual(ev.direction, event_direction.positive)
@@ -455,7 +455,7 @@ class event_classes_test_case(_ut.TestCase):
             ex=x + v, callback=lambda _: _, direction=event_direction.negative
         )
         self.assertTrue(" non-terminal" in repr(ev))
-        self.assertTrue("(v + x)" in repr(ev))
+        self.assertTrue("(x + v)" in repr(ev))
         self.assertTrue("event_direction::negative" in repr(ev))
         self.assertEqual(ev.expression, x + v)
         self.assertEqual(ev.direction, event_direction.negative)
@@ -512,7 +512,7 @@ class event_classes_test_case(_ut.TestCase):
         )
         ev = pickle.loads(pickle.dumps(ev))
         self.assertTrue(" non-terminal" in repr(ev))
-        self.assertTrue("(v + x)" in repr(ev))
+        self.assertTrue("(x + v)" in repr(ev))
         self.assertTrue("event_direction::negative" in repr(ev))
 
         # Test dynamic attributes.
@@ -547,7 +547,7 @@ class event_classes_test_case(_ut.TestCase):
         ev = t_event_batch(x + v)
 
         self.assertTrue(" terminal" in repr(ev))
-        self.assertTrue("(v + x)" in repr(ev))
+        self.assertTrue("(x + v)" in repr(ev))
         self.assertTrue("event_direction::any" in repr(ev))
         self.assertTrue(": no" in repr(ev))
         self.assertTrue("auto" in repr(ev))
@@ -559,7 +559,7 @@ class event_classes_test_case(_ut.TestCase):
         ev = t_event_batch(x + v, direction=event_direction.negative, cooldown=fp_t(3))
 
         self.assertTrue(" terminal" in repr(ev))
-        self.assertTrue("(v + x)" in repr(ev))
+        self.assertTrue("(x + v)" in repr(ev))
         self.assertTrue("event_direction::negative" in repr(ev))
         self.assertTrue(": no" in repr(ev))
         self.assertTrue("3" in repr(ev))
@@ -576,7 +576,7 @@ class event_classes_test_case(_ut.TestCase):
         )
 
         self.assertTrue(" terminal" in repr(ev))
-        self.assertTrue("(v + x)" in repr(ev))
+        self.assertTrue("(x + v)" in repr(ev))
         self.assertTrue("event_direction::positive" in repr(ev))
         self.assertTrue(": yes" in repr(ev))
         self.assertTrue("3" in repr(ev))
@@ -598,7 +598,7 @@ class event_classes_test_case(_ut.TestCase):
         )
 
         self.assertTrue(" terminal" in repr(ev))
-        self.assertTrue("(v + x)" in repr(ev))
+        self.assertTrue("(x + v)" in repr(ev))
         self.assertTrue("event_direction::positive" in repr(ev))
         self.assertTrue(": yes" in repr(ev))
         self.assertTrue("3" in repr(ev))
@@ -651,7 +651,7 @@ class event_classes_test_case(_ut.TestCase):
 
         ev = pickle.loads(pickle.dumps(ev))
         self.assertTrue(" terminal" in repr(ev))
-        self.assertTrue("(v + x)" in repr(ev))
+        self.assertTrue("(x + v)" in repr(ev))
         self.assertTrue("event_direction::positive" in repr(ev))
         self.assertTrue(": yes" in repr(ev))
         self.assertTrue("3" in repr(ev))
@@ -675,7 +675,7 @@ class event_classes_test_case(_ut.TestCase):
 
         ev = pickle.loads(pickle.dumps(ev))
         self.assertTrue(" terminal" in repr(ev))
-        self.assertTrue("(v + x)" in repr(ev))
+        self.assertTrue("(x + v)" in repr(ev))
         self.assertTrue("event_direction::positive" in repr(ev))
         self.assertTrue(": no" in repr(ev))
         self.assertTrue("3" in repr(ev))

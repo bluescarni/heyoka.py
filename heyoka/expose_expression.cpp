@@ -297,33 +297,11 @@ void expose_expression(py::module_ &m)
     // subs().
     m.def(
         "subs",
-        [](const v_ex_t &arg,
-           const std::variant<std::unordered_map<std::string, hey::expression>,
-                              std::map<hey::expression, hey::expression>> &smap,
-           bool normalise) {
-            return std::visit(
-                [normalise](const auto &a, const auto &m) -> v_ex_t { return hey::subs(a, m, normalise); }, arg, smap);
+        [](const v_ex_t &arg, const std::variant<std::unordered_map<std::string, hey::expression>,
+                                                 std::map<hey::expression, hey::expression>> &smap) {
+            return std::visit([](const auto &a, const auto &m) -> v_ex_t { return hey::subs(a, m); }, arg, smap);
         },
-        "arg"_a, "smap"_a, "normalise"_a = false);
-
-    // fix()/unfix().
-    m.def(
-        "fix", [](const v_ex_t &arg) { return std::visit([](const auto &v) -> v_ex_t { return hey::fix(v); }, arg); },
-        "arg"_a);
-    m.def(
-        "fix_nn",
-        [](const v_ex_t &arg) { return std::visit([](const auto &v) -> v_ex_t { return hey::fix_nn(v); }, arg); },
-        "arg"_a);
-    m.def(
-        "unfix",
-        [](const v_ex_t &arg) { return std::visit([](const auto &v) -> v_ex_t { return hey::unfix(v); }, arg); },
-        "arg"_a);
-
-    // normalise().
-    m.def(
-        "normalise",
-        [](const v_ex_t &arg) { return std::visit([](const auto &v) -> v_ex_t { return hey::normalise(v); }, arg); },
-        "arg"_a);
+        "arg"_a, "smap"_a);
 
     // make_vars() helper.
     m.def(
