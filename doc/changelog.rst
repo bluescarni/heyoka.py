@@ -9,7 +9,7 @@ Changelog
 New
 ~~~
 
-- Add vectorised implementations of ``diff()`` and ``fix()``
+- Add a vectorised implementation of ``diff()``
   (`#173 <https://github.com/bluescarni/heyoka.py/pull/173>`__).
 
 Changes

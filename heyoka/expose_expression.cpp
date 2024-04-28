@@ -301,7 +301,7 @@ void expose_expression(py::module_ &m)
                                                  std::map<hey::expression, hey::expression>> &smap) {
             return std::visit([](const auto &a, const auto &m) -> v_ex_t { return hey::subs(a, m); }, arg, smap);
         },
-        "arg"_a, "smap"_a);
+        "arg"_a, "smap"_a, docstrings::expression_subs().c_str());
 
     // make_vars() helper.
     m.def(

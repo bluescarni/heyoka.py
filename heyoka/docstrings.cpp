@@ -110,7 +110,7 @@ Examples:
 
 std::string dtens()
 {
-    return R"(Derivative tensors.
+    return R"(Class to store derivative tensors.
 
 .. note::
 
@@ -361,6 +361,24 @@ An error will be raised if one or more input arguments are malformed. Specifical
 :returns: Hamilton's equations for the Hamiltonian *H*.
 
 :raises ValueError: if one or more input arguments are malformed, as explained above.
+
+)";
+}
+
+std::string expression_subs()
+{
+    return R"(subs(arg: expression | list[expression], smap: dict[str | expression, expression]) -> expression | list[expression]
+
+Substitution.
+
+This function will traverse the input expression(s) *arg* and substitute occurrences of the
+keys in *smap* with the corresponding values. String keys in *smap* are interpreted
+as variable names.
+
+:param arg: the input expression(s).
+:param smap: the substitution dictionary.
+
+:returns: the result of the substitution.
 
 )";
 }
