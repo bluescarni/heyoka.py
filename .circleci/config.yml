@@ -9,9 +9,7 @@ jobs:
     - checkout
     - run:
         name: Build and test
-        command: bash ./tools/circleci_conda_heyoka_head.sh
-        environment:
-          PYTHON_VERSION: 3.9
+        command: bash ./tools/circleci_conda_heyoka_head_39.sh
     - store_artifacts:
         path: doc/_build/html
   conda_heyoka_head_310:
@@ -22,9 +20,7 @@ jobs:
     - checkout
     - run:
         name: Build and test
-        command: bash ./tools/circleci_conda_heyoka_head.sh
-        environment:
-          PYTHON_VERSION: 3.10
+        command: bash ./tools/circleci_conda_heyoka_head_310.sh
     - store_artifacts:
         path: doc/_build/html
   conda_heyoka_head_312:
@@ -35,9 +31,7 @@ jobs:
     - checkout
     - run:
         name: Build and test
-        command: bash ./tools/circleci_conda_heyoka_head.sh
-        environment:
-          PYTHON_VERSION: 3.12
+        command: bash ./tools/circleci_conda_heyoka_head_312.sh
   conda_heyoka_head_release_310:
     docker:
     - image: cimg/base:current
