@@ -27,5 +27,5 @@ The expression system
   :maxdepth: 1
 
   notebooks/ex_system_revisited.ipynb
-  notebooks/ex_system_internals.ipynb
   notebooks/computing_derivatives.ipynb
+  notebooks/ex_system_internals.ipynb
