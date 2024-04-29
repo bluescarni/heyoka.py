@@ -113,6 +113,20 @@ py::object to_sympy_impl(std::unordered_map<const void *, py::object> &, const h
     return spy->attr("Symbol")(fmt::format("par[{}]", par.idx()), **kwa);
 }
 
+// Small helper to check if n stores
+// an integral value.
+bool is_integer(const hy::number &n)
+{
+    return std::visit(
+        [](const auto &arg) {
+            using std::trunc;
+            using std::isfinite;
+
+            return isfinite(arg) && trunc(arg) == arg;
+        },
+        n.value());
+}
+
 // Number conversion corresponds to casting to python
 // the numerical value.
 py::object to_sympy_impl(std::unordered_map<const void *, py::object> &, const hy::number &num)
@@ -120,7 +134,7 @@ py::object to_sympy_impl(std::unordered_map<const void *, py::object> &, const h
     // NOTE: if num contains an integral value, we want to convert it into a SymPy integer,
     // since several simplifications are disabled for floating-point constants:
     // https://github.com/sympy/sympy/issues/23040
-    const auto is_int = hy::is_integer(num);
+    const auto is_int = is_integer(num);
 
     return std::visit(
         [&num, is_int](const auto &x) -> py::object {
@@ -219,20 +233,14 @@ py::object to_sympy(const hy::expression &ex)
 {
     std::unordered_map<const void *, py::object> func_map;
 
-    // NOTE: unfix ex so that we don't have to deal with
-    // mapping the fix() function to SymPy.
-    return to_sympy_impl(func_map, hy::unfix(ex));
+    return to_sympy_impl(func_map, ex);
 }
 
-py::list to_sympy(const std::vector<hy::expression> &v_ex_)
+py::list to_sympy(const std::vector<hy::expression> &v_ex)
 {
     std::unordered_map<const void *, py::object> func_map;
 
     py::list retval;
-
-    // NOTE: unfix v_ex_ so that we don't have to deal with
-    // mapping the fix() function to SymPy.
-    const auto v_ex = hy::unfix(v_ex_);
 
     for (const auto &ex : v_ex) {
         retval.append(to_sympy_impl(func_map, ex));

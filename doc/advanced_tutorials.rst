@@ -35,7 +35,5 @@ Advanced
   notebooks/lagrangian.ipynb
   notebooks/sympy_interop.ipynb
   notebooks/compiled_functions.ipynb
-  notebooks/ex_system_revisited.ipynb
-  notebooks/computing_derivatives.ipynb
   notebooks/pickling.ipynb
   notebooks/jit_caching.ipynb

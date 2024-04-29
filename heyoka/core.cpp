@@ -64,7 +64,6 @@
 #include "logging.hpp"
 #include "pickle_wrappers.hpp"
 #include "setup_sympy.hpp"
-#include "taylor_add_jet.hpp"
 #include "taylor_expose_c_output.hpp"
 #include "taylor_expose_events.hpp"
 #include "taylor_expose_integrator.hpp"
@@ -219,23 +218,6 @@ PYBIND11_MODULE(core, m)
         .value("any", hey::event_direction::any)
         .value("positive", hey::event_direction::positive)
         .value("negative", hey::event_direction::negative);
-
-    // Computation of the jet of derivatives.
-    heypy::expose_taylor_add_jet_flt(m);
-    heypy::expose_taylor_add_jet_dbl(m);
-    heypy::expose_taylor_add_jet_ldbl(m);
-
-#if defined(HEYOKA_HAVE_REAL128)
-
-    heypy::expose_taylor_add_jet_f128(m);
-
-#endif
-
-#if defined(HEYOKA_HAVE_REAL)
-
-    heypy::expose_taylor_add_jet_real(m);
-
-#endif
 
     // Compiled functions.
     heypy::expose_add_cfunc_flt(m);

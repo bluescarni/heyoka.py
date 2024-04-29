@@ -110,7 +110,7 @@ Examples:
 
 std::string dtens()
 {
-    return R"(Derivative tensors.
+    return R"(Class to store derivative tensors.
 
 .. note::
 
@@ -160,9 +160,9 @@ Examples:
   >>> x, y = hy.make_vars("x", "y")
   >>> dt = hy.diff_tensors([x**2, x*y], [x, y])
   >>> dt.get_derivatives(diff_order=1) # Fetch the Jacobian.
-  [([0, 1, 0], {(2.0000000000000000 * x)}), ([0, 0, 1], 0.0000000000000000), ([1, 1, 0], {y}), ([1, 0, 1], {x})]
+  [([0, 1, 0], (2.0000000000000000 * x)), ([0, 0, 1], 0.0000000000000000), ([1, 1, 0], y), ([1, 0, 1], x)]
   >>> dt.get_derivatives(diff_order=1, component=0) # Fetch the gradient of the first component.
-  [([0, 1, 0], {(2.0000000000000000 * x)}), ([0, 0, 1], 0.0000000000000000)]
+  [([0, 1, 0], (2.0000000000000000 * x)), ([0, 0, 1], 0.0000000000000000)]
 
 )";
 }
@@ -361,6 +361,68 @@ An error will be raised if one or more input arguments are malformed. Specifical
 :returns: Hamilton's equations for the Hamiltonian *H*.
 
 :raises ValueError: if one or more input arguments are malformed, as explained above.
+
+)";
+}
+
+std::string subs()
+{
+    return R"(subs(arg: expression | list[expression], smap: dict[str | expression, expression]) -> expression | list[expression]
+
+Substitution.
+
+This function will traverse the input expression(s) *arg* and substitute occurrences of the
+keys in *smap* with the corresponding values. String keys in *smap* are interpreted
+as variable names.
+
+:param arg: the input expression(s).
+:param smap: the substitution dictionary.
+
+:returns: the result of the substitution.
+
+)";
+}
+
+std::string sum()
+{
+    return R"(sum(terms: collections.abc.Sequence[expression]) -> expression
+
+Multivariate summation.
+
+This function will create a multivariate summation containing the arguments in *terms*.
+If *terms* is empty, zero will be returned.
+
+:param terms: the input term(s).
+
+:returns: the expression representing the summation.
+
+Examples:
+  >>> from heyoka import make_vars, sum
+  >>> x, y, z = make_vars("x", "y", "z")
+  >>> sum([x, y, z])
+  (x + y + z)
+
+)";
+}
+
+std::string prod()
+{
+    return R"(prod(terms: collections.abc.Sequence[expression]) -> expression
+
+Multivariate product.
+
+This function will create a multivariate product containing the arguments in *terms*.
+If *terms* is empty, one will be returned.
+
+:param terms: the input term(s).
+
+:returns: the expression representing the product.
+
+Examples:
+  >>> from heyoka import make_vars, prod
+  >>> x, y, z = make_vars("x", "y", "z")
+  >>> prod([x, y, z])
+  (x * y * z)
 
 )";
 }

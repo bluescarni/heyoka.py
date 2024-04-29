@@ -214,17 +214,15 @@ void expose_taylor_nt_event_impl(py::module &m, const std::string &suffix)
         // Callback.
         .def_property_readonly("callback",
                                [](const ev_t &e) {
-                                   const auto ptr = e.get_callback().template extract<callback_t>();
-
-                                   // NOTE: ptr should never be null, unless
+                                   // NOTE: for non-terminal events, this should never fail, unless
                                    // the event was unpickled from a broken archive.
-                                   assert(ptr);
+                                   const auto &ref = value_ref<callback_t>(e.get_callback());
 
                                    // NOTE: returning a copy of the py::object will increase
                                    // the refcount of the underlying Python entity, which will
                                    // thus remain safe to use even if the parent event
                                    // is destroyed.
-                                   return ptr->m_obj;
+                                   return ref.m_obj;
                                })
         // Direction.
         .def_property_readonly("direction", &ev_t::get_direction)
@@ -286,11 +284,9 @@ void expose_taylor_t_event_impl(py::module &m, const std::string &suffix)
         // Callback.
         .def_property_readonly("callback",
                                [](const ev_t &e) -> py::object {
-                                   const auto ptr = e.get_callback().template extract<callback_t>();
-
                                    // NOTE: the callback could be empty, in which case
                                    // extraction returns a null pointer.
-                                   if (ptr) {
+                                   if (const auto *ptr = value_ptr<callback_t>(e.get_callback())) {
                                        // NOTE: returning a copy of the py::object will increase
                                        // the refcount of the underlying Python entity, which will
                                        // thus remain safe to use even if the parent event

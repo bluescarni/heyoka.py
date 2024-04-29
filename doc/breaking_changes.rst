@@ -3,6 +3,40 @@
 Breaking changes
 ================
 
+.. currentmodule:: heyoka
+
+.. _bchanges_5_0_0:
+
+5.0.0
+-----
+
+In heyoka.py 5, the expression system has undergone several changes.
+
+Removal of automatic simplifications
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Most automatic simplifications and normalisations in the expression
+system have been removed due to their performance impact on large and highly recursive
+computational graphs.
+
+While the removal of these automatic simplifications has not resulted in API breaks, the best
+practices for creating and manipulating expressions efficiently have changed. Please see the updated
+:ref:`tutorials <ex_sys_tutorials>` for more information.
+
+Removed/changed functions
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+As a consequence of the removal of automatic simplifications, several functions have been removed
+as they are now obsolete. These include:
+
+- the ``fix()``, ``fix_nn()`` and ``unfix()`` functions,
+- the ``normalise()`` function.
+
+Additionally, the ``normalise = True`` flag in the :func:`subs()` function has also been removed.
+
+Note that the removed functions were used mostly internally and the impact on user code is expected
+to be minimal.
+
 .. _bchanges_4_0_0:
 
 4.0.0

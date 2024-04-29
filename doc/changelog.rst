@@ -3,6 +3,30 @@
 Changelog
 =========
 
+5.0.0 (unreleased)
+------------------
+
+New
+~~~
+
+- Add a vectorised implementation of ``diff()``
+  (`#173 <https://github.com/bluescarni/heyoka.py/pull/173>`__).
+
+Changes
+~~~~~~~
+
+- Several automatic simplifications and normalisations in the expression system
+  have been removed as they caused drastic slowdowns in symbolic operations when
+  working with large and highly recursive computational graphs
+  (`#174 <https://github.com/bluescarni/heyoka.py/pull/174>`__).
+- **BREAKING**: as a consequence of the removal of most automatic simplifications,
+  several now-obsolete functions have also been removed
+  (`#174 <https://github.com/bluescarni/heyoka.py/pull/174>`__).
+  These are :ref:`breaking changes <bchanges_5_0_0>`.
+- heyoka.py now requires version 5.0.0 of the
+  heyoka C++ library
+  (`#173 <https://github.com/bluescarni/heyoka.py/pull/173>`__).
+
 4.0.0 (2024-03-03)
 ------------------
 

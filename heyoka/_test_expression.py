@@ -243,11 +243,11 @@ class expression_test_case(_ut.TestCase):
         from . import make_vars, sin, cos, diff, par
 
         x, y = make_vars("x", "y")
-        self.assertEqual(diff(cos(x * x - y), "x"), -sin(x * x - y) * (2.0 * x))
-        self.assertEqual(diff(cos(x * x - y), x), -sin(x * x - y) * (2.0 * x))
+        self.assertEqual(diff(cos(x * x - y), "x"), -sin(x * x - y) * (x + x))
+        self.assertEqual(diff(cos(x * x - y), x), -sin(x * x - y) * (x + x))
         self.assertEqual(
             diff(cos(par[0] * par[0] - y), par[0]),
-            -sin(par[0] * par[0] - y) * (2.0 * par[0]),
+            -sin(par[0] * par[0] - y) * (par[0] + par[0]),
         )
 
     def test_s11n(self):
@@ -286,7 +286,7 @@ class expression_test_case(_ut.TestCase):
         x, y, z = make_vars("x", "y", "z")
 
         self.assertEqual(len(x), 1)
-        self.assertEqual(len((x - y - z) + (y * z)), 11)
+        self.assertEqual(len((x - y - z) + (y * z)), 13)
 
     def test_hash(self):
         from . import make_vars
@@ -308,15 +308,13 @@ class expression_test_case(_ut.TestCase):
         self.assertEqual(get_variables(arg=[z - y, x + y]), ["x", "y", "z"])
 
     def test_rename_variables(self):
-        from . import make_vars, rename_variables, normalise
+        from . import make_vars, rename_variables
 
         x, y, a, b = make_vars("x", "y", "a", "b")
+        self.assertEqual(rename_variables(arg=x + y, d={"x": "b", "y": "a"}), b + a)
         self.assertEqual(
-            normalise(rename_variables(arg=x + y, d={"x": "b", "y": "a"})), a + b
-        )
-        self.assertEqual(
-            normalise(rename_variables(arg=[x - y, x + y], d={"x": "b", "y": "a"})),
-            [b - a, a + b],
+            rename_variables(arg=[x - y, x + y], d={"x": "b", "y": "a"}),
+            [b - a, b + a],
         )
 
     def test_subs(self):
@@ -324,36 +322,11 @@ class expression_test_case(_ut.TestCase):
 
         x, y, a, b = make_vars("x", "y", "a", "b")
         self.assertEqual(str(subs(arg=x + y, smap={"x": b, "y": a})), "(b + a)")
-        self.assertEqual(
-            str(subs(arg=x + y, smap={"x": b, "y": a}, normalise=True)), "(a + b)"
-        )
         self.assertEqual(str(subs(arg=x + y, smap={x: b, y: a})), "(b + a)")
-        self.assertEqual(
-            str(subs(arg=x + y, smap={x: b, y: a}, normalise=True)), "(a + b)"
-        )
         self.assertEqual(
             str(subs(arg=[x + y, x - y], smap={"x": b, "y": a})[1]), "(b - a)"
         )
-        self.assertEqual(
-            str(subs(arg=[x + y, x - y], smap={"x": b, "y": a}, normalise=True)[0]),
-            "(a + b)",
-        )
         self.assertEqual(str(subs(arg=[x + y, x - y], smap={x: b, y: a})[1]), "(b - a)")
-        self.assertEqual(
-            str(subs(arg=[x + y, x - y], smap={x: b, y: a}, normalise=True)[0]),
-            "(a + b)",
-        )
-
-    def test_fix_unfix(self):
-        from . import make_vars, fix, fix_nn, unfix, expression
-
-        x, y, a, b = make_vars("x", "y", "a", "b")
-
-        self.assertEqual(str(fix(arg=x + y)), "{(x + y)}")
-        self.assertEqual(str(fix_nn(x + y)), "{(x + y)}")
-        self.assertEqual(fix_nn(expression(1.1)), expression(1.1))
-        self.assertEqual(unfix(fix(x + y)), x + y)
-        self.assertEqual(unfix(arg=[fix(x + fix(y)), fix(x - fix(y))]), [x + y, x - y])
 
     def test_relu_wrappers(self):
         from . import make_vars, leaky_relu, leaky_relup, relu, relup

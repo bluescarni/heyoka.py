@@ -28,8 +28,6 @@ class dtens_test_case(_ut.TestCase):
 
         h = dt.hessian(component=0)
 
-        self.assertTrue(np.all(h - h.T) == ex(0.0))
-
         cf = cfunc(h[np.triu_indices(3)].flatten(), [x, y, z])
 
         xval, yval, zval = 1.0, 2.0, 3.0

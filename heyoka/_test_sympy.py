@@ -192,7 +192,7 @@ class sympy_test_case(_ut.TestCase):
 
         import sympy as spy
 
-        from . import core, make_vars, from_sympy, to_sympy, pi, sum as hsum
+        from . import core, make_vars, from_sympy, to_sympy, pi, sum as hsum, prod
 
         from .model import nbody
 
@@ -266,10 +266,10 @@ class sympy_test_case(_ut.TestCase):
             to_sympy(hsum([ha, hb, hc, hx, hy, hz])), x + y + z + a + b + c
         )
 
-        self.assertEqual(hx * hy * hz, from_sympy(x * y * z))
+        self.assertEqual(prod([hx, hy, hz]), from_sympy(x * y * z))
         self.assertEqual(to_sympy(hx * hy * hz), x * y * z)
         self.assertEqual(
-            (ha * hb) * (hc * hx) * (hy * hz), from_sympy(x * y * z * a * b * c)
+            prod([ha, hb, hc, hx, hy, hz]), from_sympy(x * y * z * a * b * c)
         )
         self.assertEqual(to_sympy(ha * hb * hc * hx * hy * hz), x * y * z * a * b * c)
 

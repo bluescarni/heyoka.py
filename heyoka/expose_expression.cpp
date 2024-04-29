@@ -297,28 +297,11 @@ void expose_expression(py::module_ &m)
     // subs().
     m.def(
         "subs",
-        [](const v_ex_t &arg,
-           const std::variant<std::unordered_map<std::string, hey::expression>,
-                              std::map<hey::expression, hey::expression>> &smap,
-           bool normalise) {
-            return std::visit(
-                [normalise](const auto &a, const auto &m) -> v_ex_t { return hey::subs(a, m, normalise); }, arg, smap);
+        [](const v_ex_t &arg, const std::variant<std::unordered_map<std::string, hey::expression>,
+                                                 std::map<hey::expression, hey::expression>> &smap) {
+            return std::visit([](const auto &a, const auto &m) -> v_ex_t { return hey::subs(a, m); }, arg, smap);
         },
-        "arg"_a, "smap"_a, "normalise"_a = false);
-
-    // fix()/unfix().
-    m.def("fix", &hey::fix, "arg"_a);
-    m.def("fix_nn", &hey::fix_nn, "arg"_a);
-    m.def(
-        "unfix",
-        [](const v_ex_t &arg) { return std::visit([](const auto &v) -> v_ex_t { return hey::unfix(v); }, arg); },
-        "arg"_a);
-
-    // normalise().
-    m.def(
-        "normalise",
-        [](const v_ex_t &arg) { return std::visit([](const auto &v) -> v_ex_t { return hey::normalise(v); }, arg); },
-        "arg"_a);
+        "arg"_a, "smap"_a, docstrings::subs().c_str());
 
     // make_vars() helper.
     m.def(
@@ -343,10 +326,10 @@ void expose_expression(py::module_ &m)
     // Math functions.
 
     // Sum.
-    m.def("sum", &hey::sum, "terms"_a);
+    m.def("sum", &hey::sum, "terms"_a, docstrings::sum().c_str());
 
     // Prod.
-    m.def("prod", &hey::prod, "terms"_a);
+    m.def("prod", &hey::prod, "terms"_a, docstrings::prod().c_str());
 
     // NOTE: need explicit casts for sqrt and exp due to the presence of overloads for number.
     m.def("sqrt", static_cast<hey::expression (*)(hey::expression)>(&hey::sqrt), "arg"_a);
@@ -516,10 +499,10 @@ void expose_expression(py::module_ &m)
     // Diff.
     m.def(
         "diff",
-        [](const hey::expression &ex, const std::variant<std::string, hey::expression> &var) {
-            return std::visit([&ex](const auto &v) { return hey::diff(ex, v); }, var);
+        [](const v_ex_t &arg, const std::variant<std::string, hey::expression> &var) {
+            return std::visit([](const auto &a, const auto &v) -> v_ex_t { return hey::diff(a, v); }, arg, var);
         },
-        "ex"_a, "var"_a);
+        "arg"_a, "var"_a);
 
     // Syntax sugar for creating parameters.
     py::class_<hey::detail::par_impl>(m, "_par_generator")

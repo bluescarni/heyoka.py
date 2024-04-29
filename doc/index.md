@@ -87,6 +87,7 @@ acknowledgement
 :caption: Tutorials
  
 basic_tutorials
+ex_sys_tutorials
 advanced_tutorials
 ```
 
