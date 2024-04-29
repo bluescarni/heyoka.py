@@ -24,6 +24,8 @@ Functions
    make_vars
    diff_tensors
    subs
+   sum
+   prod
 
 Attributes
 ----------

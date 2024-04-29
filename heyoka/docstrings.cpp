@@ -365,7 +365,7 @@ An error will be raised if one or more input arguments are malformed. Specifical
 )";
 }
 
-std::string expression_subs()
+std::string subs()
 {
     return R"(subs(arg: expression | list[expression], smap: dict[str | expression, expression]) -> expression | list[expression]
 
@@ -379,6 +379,50 @@ as variable names.
 :param smap: the substitution dictionary.
 
 :returns: the result of the substitution.
+
+)";
+}
+
+std::string sum()
+{
+    return R"(sum(terms: collections.abc.Sequence[expression]) -> expression
+
+Multivariate summation.
+
+This function will create a multivariate summation containing the arguments in *terms*.
+If *terms* is empty, zero will be returned.
+
+:param terms: the input term(s).
+
+:returns: the expression representing the summation.
+
+Examples:
+  >>> from heyoka import make_vars, sum
+  >>> x, y, z = make_vars("x", "y", "z")
+  >>> sum([x, y, z])
+  (x + y + z)
+
+)";
+}
+
+std::string prod()
+{
+    return R"(prod(terms: collections.abc.Sequence[expression]) -> expression
+
+Multivariate product.
+
+This function will create a multivariate product containing the arguments in *terms*.
+If *terms* is empty, one will be returned.
+
+:param terms: the input term(s).
+
+:returns: the expression representing the product.
+
+Examples:
+  >>> from heyoka import make_vars, prod
+  >>> x, y, z = make_vars("x", "y", "z")
+  >>> prod([x, y, z])
+  (x * y * z)
 
 )";
 }

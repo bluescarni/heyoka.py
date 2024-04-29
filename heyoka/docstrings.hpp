@@ -19,7 +19,9 @@ std::string make_vars();
 std::string diff_tensors();
 std::string expression();
 std::string expression_init();
-std::string expression_subs();
+std::string subs();
+std::string sum();
+std::string prod();
 
 std::string dtens();
 std::string dtens_init();
