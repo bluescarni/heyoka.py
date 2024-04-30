@@ -12,25 +12,25 @@ jobs:
   conda_asan:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Build
         run: bash tools/gha_conda_asan.sh
   conda_static:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Build
         run: bash tools/gha_conda_static.sh
   osx_heyoka_head:
     runs-on: macos-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Build
         run: bash tools/gha_osx_heyoka_head.sh
   osx_heyoka_head_static:
     runs-on: macos-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Build
         run: bash tools/gha_osx_heyoka_head_static.sh
   manylinux2014-py312:
@@ -41,6 +41,9 @@ jobs:
         HEYOKA_PY_BUILD_TYPE: "Python312"
         TWINE_PASSWORD: ${{ secrets.TWINE_PASSWORD }}
      steps:
+       # NOTE: don't updated to checkout@v4 here because
+       # the action does not work properly due to missing
+       # symbols on the ancient manylinux images.
        - uses: actions/checkout@v3
        - name: Build
          run: bash tools/gha_manylinux.sh
@@ -111,7 +114,7 @@ jobs:
   windows_2022_heyoka_head:
     runs-on: windows-2022
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Add msbuild to PATH
         uses: microsoft/setup-msbuild@v1.1
       - uses: conda-incubator/setup-miniconda@v2
