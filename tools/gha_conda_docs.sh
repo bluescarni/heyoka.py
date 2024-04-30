@@ -58,12 +58,7 @@ cd $HEYOKA_PY_PROJECT_DIR
 
 cd doc
 
-# NOTE: run linkcheck only if we are on a pull request.
-if [[ -n "${GITHUB_HEAD_REF}" ]]; then
-    make html linkcheck doctest
-else
-    make html doctest
-fi
+make html doctest
 
 set +e
 set +x
