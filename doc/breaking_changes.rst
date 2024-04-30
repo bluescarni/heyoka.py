@@ -29,8 +29,11 @@ Removed/changed functions
 As a consequence of the removal of automatic simplifications, several functions have been removed
 as they are now obsolete. These include:
 
-- the ``fix()``, ``fix_nn()`` and ``unfix()`` functions,
-- the ``normalise()`` function.
+- the ``fix()``, ``fix_nn()`` and ``unfix()`` functions. These functions were used
+  to temporarily disable automatic simplifications, and thus they serve no purpose
+  any more;
+- the ``normalise()`` function. This function was used to manually trigger the application
+  of automatic simplifications.
 
 Additionally, the ``normalise = True`` flag in the :func:`subs()` function has also been removed.
 
