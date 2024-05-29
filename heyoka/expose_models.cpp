@@ -409,6 +409,15 @@ void expose_models(py::module_ &m)
                                    hy::kw::activations = activations);
         },
         "inputs"_a, "nn_hidden"_a, "n_out"_a, "activations"_a);
+
+    // Cartesian to Geodesic differentiable transformation
+    m.def(
+        "_model_cart2geo",
+        [](const std::vector<hy::expression> &xyz, double ecc2, double R_eq,
+           unsigned n_iters) -> std::vector<hy::expression> {
+            return hy::model::cart2geo(xyz, hy::kw::ecc2 = ecc2, hy::kw::R_eq = R_eq, hy::kw::n_iters = n_iters);
+        },
+        "xyz"_a, "ecc2"_a, "R_eq"_a, "n_iters"_a);
 }
 
 } // namespace heyoka_py
