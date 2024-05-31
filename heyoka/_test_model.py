@@ -270,7 +270,7 @@ class model_test_case(_ut.TestCase):
         self.assertTrue("0.06250000000" in str(jac))
 
     def test_ffnn(self):
-        from . import model, make_vars, tanh, expression, par, sum as hysum
+        from . import model, make_vars, expression, par, sum as hysum
 
         x, y = make_vars("x", "y")
 
@@ -285,3 +285,22 @@ class model_test_case(_ut.TestCase):
 
         my_ffnn4 = model.ffnn([x], [], 1, [linear], [1.2, 1.3])
         self.assertEqual(my_ffnn4[0], expression(1.3) + (expression(1.2) * x))
+        
+    def test_cart2geo(self):
+        from . import model, make_vars, cfunc
+        
+        x, y, z = make_vars("x", "y", "z")
+        geodesic1 = model.cart2geo([x,y,z], ecc2 = 0.13, R_eq = 60., n_iters = 1)
+        geodesic2 = model.cart2geo([x,y,z])
+        
+        # We test on all inputs (no defaults)
+        geodesic1_cf = cfunc(geodesic1, vars = [x,y,z])
+        self.assertTrue((geodesic1_cf([1,-1,1])[0] + 59.791916138446254)**2 < 1e-12**2)
+        self.assertTrue((geodesic1_cf([1,-1,1])[1] + 0.2053312550471871)**2 < 1e-12**2)
+        self.assertTrue((geodesic1_cf([1,-1,1])[2] + 0.7853981633974483)**2 < 1e-12**2)
+        
+        # We test that the default values are correctly set
+        geodesic2_cf = cfunc(geodesic2, vars = [x,y,z])
+        self.assertTrue((geodesic2_cf([6000000,6000000,6000000])[0] - 4021307.660867557)**2 < 1e-12**2)
+        self.assertTrue((geodesic2_cf([6000000,6000000,6000000])[1] - 0.6174213396277664)**2 < 1e-12**2)
+        self.assertTrue((geodesic2_cf([6000000,6000000,6000000])[2] - 0.7853981633974483)**2 < 1e-12**2)

@@ -417,7 +417,36 @@ void expose_models(py::module_ &m)
            unsigned n_iters) -> std::vector<hy::expression> {
             return hy::model::cart2geo(xyz, hy::kw::ecc2 = ecc2, hy::kw::R_eq = R_eq, hy::kw::n_iters = n_iters);
         },
-        "xyz"_a, "ecc2"_a, "R_eq"_a, "n_iters"_a);
+        "xyz"_a,
+        "ecc2"_a = 1
+                   - hy::model::detail::b_earth * hy::model::detail::b_earth
+                         / (hy::model::detail::a_earth * hy::model::detail::a_earth),
+        "R_eq"_a = hy::model::detail::a_earth, "n_iters"_a = 4u);
+
+    // Thermospheric model NRLMSISE00
+    m.def(
+        "_model_nrlmsise00_tn",
+        [](const std::vector<hy::expression> &geodetic, const hy::expression &f107, const hy::expression &f107a,
+           const hy::expression &ap, const hy::expression &time) -> hy::expression {
+            return hy::model::nrlmsise00_tn(hy::kw::geodetic = geodetic, hy::kw::f107 = f107, hy::kw::f107a = f107a,
+                                            hy::kw::ap = ap, hy::kw::time = time);
+        },
+        "geodetic"_a, "f107"_a, "f107a"_a, "ap"_a, "time"_a);
+
+    // Thermospheric model JB08
+    m.def(
+        "_model_jb08_tn",
+        [](const std::vector<hy::expression> &geodetic, const hy::expression &f107, const hy::expression &f107a,
+           const hy::expression &s107, const hy::expression &s107a, const hy::expression &m107,
+           const hy::expression &m107a, const hy::expression &y107a, const hy::expression &y107,
+           const hy::expression &dDstdT, const hy::expression &time) -> hy::expression {
+            return hy::model::jb08_tn(hy::kw::geodetic = geodetic, hy::kw::f107 = f107, hy::kw::f107a = f107a,
+                                      hy::kw::s107 = s107, hy::kw::s107a = s107a, hy::kw::m107 = m107,
+                                      hy::kw::m107a = m107a, hy::kw::y107 = y107, hy::kw::y107a = y107a,
+                                      hy::kw::dDstdT = dDstdT, hy::kw::time = time);
+        },
+        "geodetic"_a, "f107"_a, "f107a"_a, "s107"_a, "s107a"_a, "m107"_a, "m107a"_a, "y107"_a, "y107a"_a, "dDstdT"_a,
+        "time"_a);
 }
 
 } // namespace heyoka_py
