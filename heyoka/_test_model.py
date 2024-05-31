@@ -304,3 +304,18 @@ class model_test_case(_ut.TestCase):
         self.assertTrue((geodesic2_cf([6000000,6000000,6000000])[0] - 4021307.660867557)**2 < 1e-12**2)
         self.assertTrue((geodesic2_cf([6000000,6000000,6000000])[1] - 0.6174213396277664)**2 < 1e-12**2)
         self.assertTrue((geodesic2_cf([6000000,6000000,6000000])[2] - 0.7853981633974483)**2 < 1e-12**2)
+        
+    def test_nrlmsise00(self):
+        from . import model, make_vars, cfunc, time
+        
+        h, lat, lon, f107, f107a, ap = make_vars("h", "lat", "lon", "f107", "f107a", "ap")
+        nrlmsise00 = model.nrlmsise00_tn(geodetic = [h, lat, lon], f107 = f107, f107a = f107a, ap=ap, time = time/86400)
+        nrlmsise00_cf = cfunc([nrlmsise00], vars=[h,lat,lon,f107, f107a, ap])
+        
+        # We test on zero time
+        self.assertTrue((nrlmsise00_cf([600, 1.2, 3.9,  21.2, 12.2, 22.], time=0.)[0] - 9.599548606663777e-15)**2 < 1e-12**2)
+        # We test some days later
+        self.assertTrue((nrlmsise00_cf([234, 4.5, 1.02, 4, 3, 5], time=123.23 * 86400.)[0] - 3.549961466488851e-11)**2 < 1e-12**2)
+
+        
+
