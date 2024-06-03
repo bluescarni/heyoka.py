@@ -6,6 +6,7 @@
 // Public License v. 2.0. If a copy of the MPL was not distributed
 // with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+#include "docstrings.hpp"
 #include <heyoka/config.hpp>
 
 #include <algorithm>
@@ -421,7 +422,7 @@ void expose_models(py::module_ &m)
         "ecc2"_a = 1
                    - hy::model::detail::b_earth * hy::model::detail::b_earth
                          / (hy::model::detail::a_earth * hy::model::detail::a_earth),
-        "R_eq"_a = hy::model::detail::a_earth, "n_iters"_a = 4u);
+        "R_eq"_a = hy::model::detail::a_earth, "n_iters"_a = 4u, docstrings::cart2geo().c_str());
 
     // Thermospheric model NRLMSISE00
     m.def(
@@ -431,7 +432,7 @@ void expose_models(py::module_ &m)
             return hy::model::nrlmsise00_tn(hy::kw::geodetic = geodetic, hy::kw::f107 = f107, hy::kw::f107a = f107a,
                                             hy::kw::ap = ap, hy::kw::time = time);
         },
-        "geodetic"_a, "f107"_a, "f107a"_a, "ap"_a, "time"_a);
+        "geodetic"_a, "f107"_a, "f107a"_a, "ap"_a, "time"_a, docstrings::nrlmsise00_tn().c_str());
 
     // Thermospheric model JB08
     m.def(
@@ -446,7 +447,7 @@ void expose_models(py::module_ &m)
                                       hy::kw::dDstdT = dDstdT, hy::kw::time = time);
         },
         "geodetic"_a, "f107"_a, "f107a"_a, "s107"_a, "s107a"_a, "m107"_a, "m107a"_a, "y107"_a, "y107a"_a, "dDstdT"_a,
-        "time"_a);
+        "time"_a, docstrings::jb08_tn().c_str());
 }
 
 } // namespace heyoka_py

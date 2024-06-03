@@ -427,4 +427,111 @@ Examples:
 )";
 }
 
+// Models
+std::string cart2geo()
+{
+    return R"(cart2geo(xyz: list[expression], ecc2: float = 0.006694379990197619, R_eq: float = 6378137.0, n_iters: int = 4) -> list[expression]
+
+Produces the expression of the Cartesian coordinates a function of Geodetic Coordinates.
+
+.. note::
+
+   A :ref:`tutorial <nrlmsise00_tn>` showcasing also the use of this
+   function is available.
+
+This function will compute the expressions of the Geodetic coordinates as a function of Cartesian coordinates using
+the Hirvonen and Moritz iterations (see "Physical Geodesy" by Heiskanen and Moritz pp.181-183).
+
+A few checks are run on the input arguments. Specifically:
+
+- the number of Cartesian variable (i.e., the length of *xyz*) must be three,
+- *ecc2* must be finite and positive,
+- *R_eq* must be finite and positive,
+- *n_iters* must be positive
+
+:param xyz: expressions for the Cartesian components. [units consistent with *R_eq*]
+:param ecc2: the reference ellipsoid eccentricity squared.
+:param R_eq: the reference ellipsoid equatorial radius in meters. [units consistent with *xyz*]
+:param n_iters: number of Hirvonen and Moritz iterations of the inversion algorithm.
+
+
+:returns: the expressions for the geodetic coordinates [alt, lat, lon]. *alt* in the same units as *xyz* and *R_eq*, *lat* in [-pi/2, pi/2] and *lon* in [-pi,pi]
+
+:raises ValueError: if one or more input arguments are malformed, as explained above.
+
+)";
+}
+
+std::string nrlmsise00_tn()
+{
+    return R"(nrlmsise00_tn(geodetic: list[expression], f107: expression, f107a: expression, ap: expression, time: expression) -> expression
+
+Produces the expression of the thermospheric density as a function of geodetic coordinates and weather indexes.
+The expression is approximated by an artificial neural network (a thermoNET) trained over NRLMSISE00 data. 
+
+.. note::
+   
+   The thermoNET parameters are published in the work:
+   Izzo, Dario, Giacomo Acciarini, and Francesco Biscani. 
+   "NeuralODEs for VLEO simulations: Introducing thermoNET for Thermosphere Modeling." arXiv preprint arXiv:2405.19384 (2024).
+
+
+.. note::
+
+   A :ref:`tutorial <nrlmsise00_tn>` showcasing the use of this
+   function is available.
+
+A few checks are run on the input arguments. Specifically:
+
+- the number of geodesic variables (i.e., the length of *geodetic*) must be three,
+
+:param geodetic: expressions for the Geodetic components. [h, lat, lon] with h in km and lat in [-pi/2, pi/2].
+:param f107: the F10.7 index.
+:param f107a: the F10.7 averaged index.
+:param ap: the AP index.
+:param time: number of fractional days passed since 1st of January.
+
+:returns: the thermospheric density in [kg / m^3] as predicted by the NRLMSISE00 thermoNET model.
+
+:raises ValueError: if one or more input arguments are malformed, as explained above.
+
+)";
+}
+
+std::string jb08_tn()
+{
+    return R"(jb08_tn(geodetic: list[expression], f107: expression, f107a: expression, s107: expression, s107a: expression, m107: expression, m107a: expression, y107: expression, y107a: expression, dDstdT: expression, time: expression) -> expression
+
+Produces the expression of the thermospheric density as a function of geodetic coordinates and weather indexes.
+The expression is approximated by an artificial neural network (a thermoNET) trained over JB08 data. 
+
+.. note::
+   
+   The thermoNET parameters are published in the work:
+   Izzo, Dario, Giacomo Acciarini, and Francesco Biscani. 
+   "NeuralODEs for VLEO simulations: Introducing thermoNET for Thermosphere Modeling." arXiv preprint arXiv:2405.19384 (2024).
+
+A few checks are run on the input arguments. Specifically:
+
+- the number of geodesic variables (i.e., the length of *geodetic*) must be three,
+
+:param geodetic: expressions for the Geodetic components. [h, lat, lon] with h in km and lat in [-pi/2, pi/2].
+:param f107: the F10.7 index.
+:param f107a: the F10.7 averaged index.
+:param s107: the S10.7 index.
+:param s107a: the S10.7 averaged index.
+:param m107: the M10.7 index.
+:param m107a: the M10.7 averaged index.
+:param y107: the Y10.7 index.
+:param y107a: the Y10.7 averaged index.
+:param dDstdT: the dDstdT index.
+:param time: number of fractional days passed since 1st of January.
+
+:returns: the thermospheric density in [kg / m^3] as predicted by the JB08 thermoNET model.
+
+:raises ValueError: if one or more input arguments are malformed, as explained above.
+
+)";
+}
+
 } // namespace heyoka_py::docstrings

@@ -44,6 +44,11 @@ std::string diff_args_all();
 std::string lagrangian();
 std::string hamiltonian();
 
+// Models
+std::string cart2geo();
+std::string nrlmsise00_tn();
+std::string jb08_tn();
+
 } // namespace heyoka_py::docstrings
 
 #endif
