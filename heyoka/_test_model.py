@@ -285,37 +285,138 @@ class model_test_case(_ut.TestCase):
 
         my_ffnn4 = model.ffnn([x], [], 1, [linear], [1.2, 1.3])
         self.assertEqual(my_ffnn4[0], expression(1.3) + (expression(1.2) * x))
-        
+
     def test_cart2geo(self):
         from . import model, make_vars, cfunc
-        
+
         x, y, z = make_vars("x", "y", "z")
-        geodesic1 = model.cart2geo([x,y,z], ecc2 = 0.13, R_eq = 60., n_iters = 1)
-        geodesic2 = model.cart2geo([x,y,z])
-        
+        geodesic1 = model.cart2geo([x, y, z], ecc2=0.13, R_eq=60.0, n_iters=1)
+        geodesic2 = model.cart2geo([x, y, z])
+
         # We test on all inputs (no defaults)
-        geodesic1_cf = cfunc(geodesic1, vars = [x,y,z])
-        self.assertTrue((geodesic1_cf([1,-1,1])[0] + 59.791916138446254)**2 < 1e-12**2)
-        self.assertTrue((geodesic1_cf([1,-1,1])[1] + 0.2053312550471871)**2 < 1e-12**2)
-        self.assertTrue((geodesic1_cf([1,-1,1])[2] + 0.7853981633974483)**2 < 1e-12**2)
-        
+        geodesic1_cf = cfunc(geodesic1, vars=[x, y, z])
+        self.assertTrue(
+            (geodesic1_cf([1, -1, 1])[0] + 59.791916138446254) ** 2 < 1e-12**2
+        )
+        self.assertTrue(
+            (geodesic1_cf([1, -1, 1])[1] + 0.2053312550471871) ** 2 < 1e-12**2
+        )
+        self.assertTrue(
+            (geodesic1_cf([1, -1, 1])[2] + 0.7853981633974483) ** 2 < 1e-12**2
+        )
+
         # We test that the default values are correctly set
-        geodesic2_cf = cfunc(geodesic2, vars = [x,y,z])
-        self.assertTrue((geodesic2_cf([6000000,6000000,6000000])[0] - 4021307.660867557)**2 < 1e-12**2)
-        self.assertTrue((geodesic2_cf([6000000,6000000,6000000])[1] - 0.6174213396277664)**2 < 1e-12**2)
-        self.assertTrue((geodesic2_cf([6000000,6000000,6000000])[2] - 0.7853981633974483)**2 < 1e-12**2)
-        
+        geodesic2_cf = cfunc(geodesic2, vars=[x, y, z])
+        self.assertTrue(
+            (geodesic2_cf([6000000, 6000000, 6000000])[0] - 4021307.660867557) ** 2
+            < 1e-12**2
+        )
+        self.assertTrue(
+            (geodesic2_cf([6000000, 6000000, 6000000])[1] - 0.6174213396277664) ** 2
+            < 1e-12**2
+        )
+        self.assertTrue(
+            (geodesic2_cf([6000000, 6000000, 6000000])[2] - 0.7853981633974483) ** 2
+            < 1e-12**2
+        )
+
     def test_nrlmsise00(self):
         from . import model, make_vars, cfunc, time
-        
-        h, lat, lon, f107, f107a, ap = make_vars("h", "lat", "lon", "f107", "f107a", "ap")
-        nrlmsise00 = model.nrlmsise00_tn(geodetic = [h, lat, lon], f107 = f107, f107a = f107a, ap=ap, time = time/86400)
-        nrlmsise00_cf = cfunc([nrlmsise00], vars=[h,lat,lon,f107, f107a, ap])
-        
+
+        h, lat, lon, f107, f107a, ap = make_vars(
+            "h", "lat", "lon", "f107", "f107a", "ap"
+        )
+        nrlmsise00 = model.nrlmsise00_tn(
+            geodetic=[h, lat, lon], f107=f107, f107a=f107a, ap=ap, time=time / 86400
+        )
+        nrlmsise00_cf = cfunc([nrlmsise00], vars=[h, lat, lon, f107, f107a, ap])
+
         # We test on zero time
-        self.assertTrue((nrlmsise00_cf([600, 1.2, 3.9,  21.2, 12.2, 22.], time=0.)[0] - 9.599548606663777e-15)**2 < 1e-12**2)
+        self.assertTrue(
+            (
+                nrlmsise00_cf([600, 1.2, 3.9, 21.2, 12.2, 22.0], time=0.0)[0]
+                - 9.599548606663777e-15
+            )
+            ** 2
+            < 1e-12**2
+        )
         # We test some days later
-        self.assertTrue((nrlmsise00_cf([234, 4.5, 1.02, 4, 3, 5], time=123.23 * 86400.)[0] - 3.549961466488851e-11)**2 < 1e-12**2)
+        self.assertTrue(
+            (
+                nrlmsise00_cf([234, 4.5, 1.02, 4, 3, 5], time=123.23 * 86400.0)[0]
+                - 3.549961466488851e-11
+            )
+            ** 2
+            < 1e-12**2
+        )
 
-        
+    def test_jb08(self):
+        from . import model, make_vars, cfunc, time
 
+        h, lat, lon, f107a, f107, s107a, s107, m107a, m107, y107a, y107, dDstdT = (
+            make_vars(
+                "h",
+                "lat",
+                "lon",
+                "f107a",
+                "f107",
+                "s107a",
+                "s107",
+                "m107a",
+                "m107",
+                "y107a",
+                "y107",
+                "dDstdT",
+            )
+        )
+        jb08 = model.jb08_tn(
+            geodetic=[h, lat, lon],
+            f107=f107,
+            f107a=f107a,
+            s107=s107,
+            s107a=s107a,
+            m107=m107,
+            m107a=m107a,
+            y107=y107,
+            y107a=y107a,
+            dDstdT=dDstdT,
+            time=time / 86400,
+        )
+        jb08_cf = cfunc(
+            [jb08],
+            vars=[
+                h,
+                lat,
+                lon,
+                f107a,
+                f107,
+                s107a,
+                s107,
+                m107a,
+                m107,
+                y107a,
+                y107,
+                dDstdT,
+            ],
+        )
+
+        # We test on zero time
+        self.assertTrue(
+            (
+                jb08_cf([600, 1.2, 3.9, 3, 4, 5, 6, 7, 8, 9, 10, 11], time=0.0)[0]
+                - 6.805408788157112e-15
+            )
+            ** 2
+            < 1e-12**2
+        )
+        # We test some days later
+        self.assertTrue(
+            (
+                jb08_cf(
+                    [234, 4.5, 1.02, 11, 10, 9, 8, 7, 6, 5, 4, 3], time=123.23 * 86400.0
+                )[0]
+                - 1.3364825974582714e-11
+            )
+            ** 2
+            < 1e-12**2
+        )
