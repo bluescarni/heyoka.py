@@ -436,7 +436,7 @@ Produces the expression of the Cartesian coordinates a function of Geodetic Coor
 
 .. note::
 
-   A :ref:`tutorial <nrlmsise00_tn>` showcasing also the use of this
+   A :ref:`tutorial <Thermonets>` showcasing also the use of this
    function is available.
 
 This function will compute the expressions of the Geodetic coordinates as a function of Cartesian coordinates using
@@ -478,7 +478,7 @@ The expression is approximated by an artificial neural network (a thermoNET) tra
 
 .. note::
 
-   A :ref:`tutorial <nrlmsise00_tn>` showcasing the use of this
+   A :ref:`tutorial <Thermonets>` showcasing the use of this
    function is available.
 
 A few checks are run on the input arguments. Specifically:
@@ -510,6 +510,11 @@ The expression is approximated by an artificial neural network (a thermoNET) tra
    The thermoNET parameters are published in the work:
    Izzo, Dario, Giacomo Acciarini, and Francesco Biscani. 
    "NeuralODEs for VLEO simulations: Introducing thermoNET for Thermosphere Modeling." arXiv preprint arXiv:2405.19384 (2024).
+   
+.. note::
+
+   A :ref:`tutorial <Thermonets>` showcasing the use of this
+   function is available.
 
 A few checks are run on the input arguments. Specifically:
 
