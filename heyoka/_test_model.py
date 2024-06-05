@@ -327,7 +327,7 @@ class model_test_case(_ut.TestCase):
             "h", "lat", "lon", "f107", "f107a", "ap"
         )
         nrlmsise00 = model.nrlmsise00_tn(
-            geodetic=[h, lat, lon], f107=f107, f107a=f107a, ap=ap, time=time / 86400
+            geodetic=[h, lat, lon], f107=f107, f107a=f107a, ap=ap, time_expr=time / 86400
         )
         nrlmsise00_cf = cfunc([nrlmsise00], vars=[h, lat, lon, f107, f107a, ap])
 
@@ -380,7 +380,7 @@ class model_test_case(_ut.TestCase):
             y107=y107,
             y107a=y107a,
             dDstdT=dDstdT,
-            time=time / 86400,
+            time_expr=time / 86400,
         )
         jb08_cf = cfunc(
             [jb08],

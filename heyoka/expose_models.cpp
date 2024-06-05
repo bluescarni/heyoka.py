@@ -339,44 +339,44 @@ void expose_models(py::module_ &m)
     m.def(
         "_model_vsop2013_elliptic",
         [](std::uint32_t pl_idx, std::uint32_t var_idx, hy::expression t_expr, double thresh) {
-            return hy::model::vsop2013_elliptic(pl_idx, var_idx, hy::kw::time = std::move(t_expr),
+            return hy::model::vsop2013_elliptic(pl_idx, var_idx, hy::kw::time_expr = std::move(t_expr),
                                                 hy::kw::thresh = thresh);
         },
         "pl_idx"_a, "var_idx"_a = 0, "time"_a = hy::time, "thresh"_a.noconvert() = 1e-9);
     m.def(
         "_model_vsop2013_cartesian",
         [](std::uint32_t pl_idx, hy::expression t_expr, double thresh) {
-            return hy::model::vsop2013_cartesian(pl_idx, hy::kw::time = std::move(t_expr), hy::kw::thresh = thresh);
+            return hy::model::vsop2013_cartesian(pl_idx, hy::kw::time_expr = std::move(t_expr), hy::kw::thresh = thresh);
         },
-        "pl_idx"_a, "time"_a = hy::time, "thresh"_a.noconvert() = 1e-9);
+        "pl_idx"_a, "time_expr"_a = hy::time, "thresh"_a.noconvert() = 1e-9);
     m.def(
         "_model_vsop2013_cartesian_icrf",
         [](std::uint32_t pl_idx, hy::expression t_expr, double thresh) {
-            return hy::model::vsop2013_cartesian_icrf(pl_idx, hy::kw::time = std::move(t_expr),
+            return hy::model::vsop2013_cartesian_icrf(pl_idx, hy::kw::time_expr = std::move(t_expr),
                                                       hy::kw::thresh = thresh);
         },
-        "pl_idx"_a, "time"_a = hy::time, "thresh"_a.noconvert() = 1e-9);
+        "pl_idx"_a, "time_expr"_a = hy::time, "thresh"_a.noconvert() = 1e-9);
     m.def("_model_get_vsop2013_mus", &hy::model::get_vsop2013_mus);
 
     // ELP2000.
     m.def(
         "_model_elp2000_spherical",
         [](hy::expression t_expr, double thresh) {
-            return hy::model::elp2000_spherical(hy::kw::time = std::move(t_expr), hy::kw::thresh = thresh);
+            return hy::model::elp2000_spherical(hy::kw::time_expr = std::move(t_expr), hy::kw::thresh = thresh);
         },
-        "time"_a = hy::time, "thresh"_a.noconvert() = 1e-6);
+        "time_expr"_a = hy::time, "thresh"_a.noconvert() = 1e-6);
     m.def(
         "_model_elp2000_cartesian_e2000",
         [](hy::expression t_expr, double thresh) {
-            return hy::model::elp2000_cartesian_e2000(hy::kw::time = std::move(t_expr), hy::kw::thresh = thresh);
+            return hy::model::elp2000_cartesian_e2000(hy::kw::time_expr = std::move(t_expr), hy::kw::thresh = thresh);
         },
-        "time"_a = hy::time, "thresh"_a.noconvert() = 1e-6);
+        "time_expr"_a = hy::time, "thresh"_a.noconvert() = 1e-6);
     m.def(
         "_model_elp2000_cartesian_fk5",
         [](hy::expression t_expr, double thresh) {
-            return hy::model::elp2000_cartesian_fk5(hy::kw::time = std::move(t_expr), hy::kw::thresh = thresh);
+            return hy::model::elp2000_cartesian_fk5(hy::kw::time_expr = std::move(t_expr), hy::kw::thresh = thresh);
         },
-        "time"_a = hy::time, "thresh"_a.noconvert() = 1e-6);
+        "time_expr"_a = hy::time, "thresh"_a.noconvert() = 1e-6);
     m.def("_model_get_elp2000_mus", &hy::model::get_elp2000_mus);
 
     // CR3BP.
@@ -430,9 +430,9 @@ void expose_models(py::module_ &m)
         [](const std::vector<hy::expression> &geodetic, const hy::expression &f107, const hy::expression &f107a,
            const hy::expression &ap, const hy::expression &time) -> hy::expression {
             return hy::model::nrlmsise00_tn(hy::kw::geodetic = geodetic, hy::kw::f107 = f107, hy::kw::f107a = f107a,
-                                            hy::kw::ap = ap, hy::kw::time = time);
+                                            hy::kw::ap = ap, hy::kw::time_expr = time);
         },
-        "geodetic"_a, "f107"_a, "f107a"_a, "ap"_a, "time"_a, docstrings::nrlmsise00_tn().c_str());
+        "geodetic"_a, "f107"_a, "f107a"_a, "ap"_a, "time_expr"_a, docstrings::nrlmsise00_tn().c_str());
 
     // Thermospheric model JB08
     m.def(
@@ -444,10 +444,10 @@ void expose_models(py::module_ &m)
             return hy::model::jb08_tn(hy::kw::geodetic = geodetic, hy::kw::f107 = f107, hy::kw::f107a = f107a,
                                       hy::kw::s107 = s107, hy::kw::s107a = s107a, hy::kw::m107 = m107,
                                       hy::kw::m107a = m107a, hy::kw::y107 = y107, hy::kw::y107a = y107a,
-                                      hy::kw::dDstdT = dDstdT, hy::kw::time = time);
+                                      hy::kw::dDstdT = dDstdT, hy::kw::time_expr = time);
         },
         "geodetic"_a, "f107"_a, "f107a"_a, "s107"_a, "s107a"_a, "m107"_a, "m107a"_a, "y107"_a, "y107a"_a, "dDstdT"_a,
-        "time"_a, docstrings::jb08_tn().c_str());
+        "time_expr"_a, docstrings::jb08_tn().c_str());
 }
 
 } // namespace heyoka_py
