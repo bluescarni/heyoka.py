@@ -101,7 +101,8 @@ nb_execution_excludepatterns = [
     "compiled_functions.ipynb",
     "Pseudo arc-length continuation*",
     "torch_and_heyoka*",
-    "differentiable_atm*"
+    "differentiable_atm*",
+    "thermoNETs*"
     ]
 
 latex_engine = "xelatex"
