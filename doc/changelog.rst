@@ -199,10 +199,10 @@ New
 - Implement an in-memory cache for ``llvm_state``. The cache is used
   to avoid re-optimising and re-compiling LLVM code which has
   already been optimised and compiled during the program execution
-  (`#132 <https://github.com/bluescarni/heyoka.py/pull/132>`__).
+  (`#134 <https://github.com/bluescarni/heyoka.py/pull/134>`__).
 - It is now possible to get the LLVM bitcode of
   an ``llvm_state``
-  (`#132 <https://github.com/bluescarni/heyoka.py/pull/132>`__).
+  (`#134 <https://github.com/bluescarni/heyoka.py/pull/134>`__).
 
 1.0.0 (2023-08-11)
 ------------------
