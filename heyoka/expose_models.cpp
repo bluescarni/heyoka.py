@@ -6,6 +6,7 @@
 // Public License v. 2.0. If a copy of the MPL was not distributed
 // with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+#include "docstrings.hpp"
 #include <heyoka/config.hpp>
 
 #include <algorithm>
@@ -338,44 +339,45 @@ void expose_models(py::module_ &m)
     m.def(
         "_model_vsop2013_elliptic",
         [](std::uint32_t pl_idx, std::uint32_t var_idx, hy::expression t_expr, double thresh) {
-            return hy::model::vsop2013_elliptic(pl_idx, var_idx, hy::kw::time = std::move(t_expr),
+            return hy::model::vsop2013_elliptic(pl_idx, var_idx, hy::kw::time_expr = std::move(t_expr),
                                                 hy::kw::thresh = thresh);
         },
-        "pl_idx"_a, "var_idx"_a = 0, "time"_a = hy::time, "thresh"_a.noconvert() = 1e-9);
+        "pl_idx"_a, "var_idx"_a = 0, "time_expr"_a = hy::time, "thresh"_a.noconvert() = 1e-9);
     m.def(
         "_model_vsop2013_cartesian",
         [](std::uint32_t pl_idx, hy::expression t_expr, double thresh) {
-            return hy::model::vsop2013_cartesian(pl_idx, hy::kw::time = std::move(t_expr), hy::kw::thresh = thresh);
+            return hy::model::vsop2013_cartesian(pl_idx, hy::kw::time_expr = std::move(t_expr),
+                                                 hy::kw::thresh = thresh);
         },
-        "pl_idx"_a, "time"_a = hy::time, "thresh"_a.noconvert() = 1e-9);
+        "pl_idx"_a, "time_expr"_a = hy::time, "thresh"_a.noconvert() = 1e-9);
     m.def(
         "_model_vsop2013_cartesian_icrf",
         [](std::uint32_t pl_idx, hy::expression t_expr, double thresh) {
-            return hy::model::vsop2013_cartesian_icrf(pl_idx, hy::kw::time = std::move(t_expr),
+            return hy::model::vsop2013_cartesian_icrf(pl_idx, hy::kw::time_expr = std::move(t_expr),
                                                       hy::kw::thresh = thresh);
         },
-        "pl_idx"_a, "time"_a = hy::time, "thresh"_a.noconvert() = 1e-9);
+        "pl_idx"_a, "time_expr"_a = hy::time, "thresh"_a.noconvert() = 1e-9);
     m.def("_model_get_vsop2013_mus", &hy::model::get_vsop2013_mus);
 
     // ELP2000.
     m.def(
         "_model_elp2000_spherical",
         [](hy::expression t_expr, double thresh) {
-            return hy::model::elp2000_spherical(hy::kw::time = std::move(t_expr), hy::kw::thresh = thresh);
+            return hy::model::elp2000_spherical(hy::kw::time_expr = std::move(t_expr), hy::kw::thresh = thresh);
         },
-        "time"_a = hy::time, "thresh"_a.noconvert() = 1e-6);
+        "time_expr"_a = hy::time, "thresh"_a.noconvert() = 1e-6);
     m.def(
         "_model_elp2000_cartesian_e2000",
         [](hy::expression t_expr, double thresh) {
-            return hy::model::elp2000_cartesian_e2000(hy::kw::time = std::move(t_expr), hy::kw::thresh = thresh);
+            return hy::model::elp2000_cartesian_e2000(hy::kw::time_expr = std::move(t_expr), hy::kw::thresh = thresh);
         },
-        "time"_a = hy::time, "thresh"_a.noconvert() = 1e-6);
+        "time_expr"_a = hy::time, "thresh"_a.noconvert() = 1e-6);
     m.def(
         "_model_elp2000_cartesian_fk5",
         [](hy::expression t_expr, double thresh) {
-            return hy::model::elp2000_cartesian_fk5(hy::kw::time = std::move(t_expr), hy::kw::thresh = thresh);
+            return hy::model::elp2000_cartesian_fk5(hy::kw::time_expr = std::move(t_expr), hy::kw::thresh = thresh);
         },
-        "time"_a = hy::time, "thresh"_a.noconvert() = 1e-6);
+        "time_expr"_a = hy::time, "thresh"_a.noconvert() = 1e-6);
     m.def("_model_get_elp2000_mus", &hy::model::get_elp2000_mus);
 
     // CR3BP.
@@ -409,6 +411,44 @@ void expose_models(py::module_ &m)
                                    hy::kw::activations = activations);
         },
         "inputs"_a, "nn_hidden"_a, "n_out"_a, "activations"_a);
+
+    // Cartesian to Geodesic differentiable transformation
+    m.def(
+        "_model_cart2geo",
+        [](const std::vector<hy::expression> &xyz, double ecc2, double R_eq,
+           unsigned n_iters) -> std::vector<hy::expression> {
+            return hy::model::cart2geo(xyz, hy::kw::ecc2 = ecc2, hy::kw::R_eq = R_eq, hy::kw::n_iters = n_iters);
+        },
+        "xyz"_a,
+        "ecc2"_a = 1
+                   - hy::model::detail::b_earth * hy::model::detail::b_earth
+                         / (hy::model::detail::a_earth * hy::model::detail::a_earth),
+        "R_eq"_a = hy::model::detail::a_earth, "n_iters"_a = 4u, docstrings::cart2geo().c_str());
+
+    // Thermospheric model NRLMSISE00
+    m.def(
+        "_model_nrlmsise00_tn",
+        [](const std::vector<hy::expression> &geodetic, const hy::expression &f107, const hy::expression &f107a,
+           const hy::expression &ap, const hy::expression &time) -> hy::expression {
+            return hy::model::nrlmsise00_tn(hy::kw::geodetic = geodetic, hy::kw::f107 = f107, hy::kw::f107a = f107a,
+                                            hy::kw::ap = ap, hy::kw::time_expr = time);
+        },
+        "geodetic"_a, "f107"_a, "f107a"_a, "ap"_a, "time_expr"_a, docstrings::nrlmsise00_tn().c_str());
+
+    // Thermospheric model JB08
+    m.def(
+        "_model_jb08_tn",
+        [](const std::vector<hy::expression> &geodetic, const hy::expression &f107, const hy::expression &f107a,
+           const hy::expression &s107, const hy::expression &s107a, const hy::expression &m107,
+           const hy::expression &m107a, const hy::expression &y107a, const hy::expression &y107,
+           const hy::expression &dDstdT, const hy::expression &time) -> hy::expression {
+            return hy::model::jb08_tn(hy::kw::geodetic = geodetic, hy::kw::f107 = f107, hy::kw::f107a = f107a,
+                                      hy::kw::s107 = s107, hy::kw::s107a = s107a, hy::kw::m107 = m107,
+                                      hy::kw::m107a = m107a, hy::kw::y107 = y107, hy::kw::y107a = y107a,
+                                      hy::kw::dDstdT = dDstdT, hy::kw::time_expr = time);
+        },
+        "geodetic"_a, "f107"_a, "f107a"_a, "s107"_a, "s107a"_a, "m107"_a, "m107a"_a, "y107"_a, "y107a"_a, "dDstdT"_a,
+        "time_expr"_a, docstrings::jb08_tn().c_str());
 }
 
 } // namespace heyoka_py

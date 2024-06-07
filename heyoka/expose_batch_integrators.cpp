@@ -192,8 +192,7 @@ void expose_batch_integrator_impl(py::module_ &m, const std::string &suffix)
              "parallel_mode"_a = false, "opt_level"_a.noconvert() = 3, "force_avx512"_a.noconvert() = false,
              "slp_vectorize"_a.noconvert() = false, "fast_math"_a.noconvert() = false)
         .def_property_readonly("decomposition", &hey::taylor_adaptive_batch<T>::get_decomposition)
-        .def_property_readonly("state_vars", &hey::taylor_adaptive_batch<T>::get_state_vars)
-        .def_property_readonly("rhs", &hey::taylor_adaptive_batch<T>::get_rhs)
+        .def_property_readonly("sys", &hey::taylor_adaptive_batch<T>::get_sys)
         .def(
             "step", [](hey::taylor_adaptive_batch<T> &ta, bool wtc) { ta.step(wtc); }, "write_tc"_a = false)
         .def(

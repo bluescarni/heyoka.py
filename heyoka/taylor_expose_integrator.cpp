@@ -187,8 +187,7 @@ void expose_taylor_integrator_impl(py::module &m, const std::string &suffix)
             },
             "t"_a.noconvert(), "rel_time"_a = false)
         .def_property_readonly("decomposition", &hey::taylor_adaptive<T>::get_decomposition)
-        .def_property_readonly("state_vars", &hey::taylor_adaptive<T>::get_state_vars)
-        .def_property_readonly("rhs", &hey::taylor_adaptive<T>::get_rhs)
+        .def_property_readonly("sys", &hey::taylor_adaptive<T>::get_sys)
         .def_property("time", &hey::taylor_adaptive<T>::get_time, &hey::taylor_adaptive<T>::set_time)
         .def_property("dtime", &hey::taylor_adaptive<T>::get_dtime,
                       [](hey::taylor_adaptive<T> &ta, std::pair<T, T> p) { ta.set_dtime(p.first, p.second); })

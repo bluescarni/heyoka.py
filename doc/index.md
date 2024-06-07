@@ -108,4 +108,5 @@ examples_others
 api_exsys
 api_integrators
 api_lagham
+api_model
 ```
