@@ -5,6 +5,9 @@ Models
 
 .. currentmodule:: heyoka.model
 
+Functions
+---------
+
 .. autosummary::
    :toctree: autosummary_generated
 

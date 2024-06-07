@@ -447,15 +447,15 @@ A few checks are run on the input arguments. Specifically:
 - the number of Cartesian variable (i.e., the length of *xyz*) must be three,
 - *ecc2* must be finite and positive,
 - *R_eq* must be finite and positive,
-- *n_iters* must be positive
+- *n_iters* must be positive.
 
 :param xyz: expressions for the Cartesian components. [units consistent with *R_eq*]
 :param ecc2: the reference ellipsoid eccentricity squared.
 :param R_eq: the reference ellipsoid equatorial radius in meters. [units consistent with *xyz*]
 :param n_iters: number of Hirvonen and Moritz iterations of the inversion algorithm.
 
-
-:returns: the expressions for the geodetic coordinates [alt, lat, lon]. *alt* in the same units as *xyz* and *R_eq*, *lat* in [-pi/2, pi/2] and *lon* in [-pi,pi]
+:returns: the expressions for the geodetic coordinates [alt, lat, lon]. *alt* in the same units as *xyz* and *R_eq*,
+  *lat* in :math:`\left[ -\frac{\pi}{2}, \frac{\pi}{2} \right]` and *lon* in :math:`\left[ -\pi, \pi \right]`.
 
 :raises ValueError: if one or more input arguments are malformed, as explained above.
 
@@ -475,17 +475,15 @@ The expression is approximated by an artificial neural network (a thermoNET) tra
    Izzo, Dario, Giacomo Acciarini, and Francesco Biscani. 
    "NeuralODEs for VLEO simulations: Introducing thermoNET for Thermosphere Modeling." arXiv preprint arXiv:2405.19384 (2024).
 
-
 .. note::
 
    A :ref:`tutorial <Thermonets>` showcasing the use of this
    function is available.
 
-A few checks are run on the input arguments. Specifically:
+A few checks are run on the input arguments. Specifically, the number of geodesic variables (i.e., the length of *geodetic*)
+must be three.
 
-- the number of geodesic variables (i.e., the length of *geodetic*) must be three,
-
-:param geodetic: expressions for the Geodetic components. [h, lat, lon] with h in km and lat in [-pi/2, pi/2].
+:param geodetic: expressions for the Geodetic components. [h, lat, lon] with h in km and lat in :math:`\left[ -\frac{\pi}{2}, \frac{\pi}{2} \right]`.
 :param f107: the F10.7 index.
 :param f107a: the F10.7 averaged index.
 :param ap: the AP index.
@@ -516,11 +514,9 @@ The expression is approximated by an artificial neural network (a thermoNET) tra
    A :ref:`tutorial <Thermonets>` showcasing the use of this
    function is available.
 
-A few checks are run on the input arguments. Specifically:
+A few checks are run on the input arguments. Specifically, the number of geodesic variables (i.e., the length of *geodetic*) must be three.
 
-- the number of geodesic variables (i.e., the length of *geodetic*) must be three,
-
-:param geodetic: expressions for the Geodetic components. [h, lat, lon] with h in km and lat in [-pi/2, pi/2].
+:param geodetic: expressions for the Geodetic components. [h, lat, lon] with h in km and lat in :math:`\left[ -\frac{\pi}{2}, \frac{\pi}{2} \right]`.
 :param f107: the F10.7 index.
 :param f107a: the F10.7 averaged index.
 :param s107: the S10.7 index.
