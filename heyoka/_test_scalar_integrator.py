@@ -152,8 +152,7 @@ class scalar_integrator_test_case(_ut.TestCase):
             self.assertTrue(ta.with_events)
             self.assertFalse(ta.compact_mode)
             self.assertFalse(ta.high_accuracy)
-            self.assertEqual(ta.state_vars, [x, v])
-            self.assertEqual(ta.rhs, [v, -9.8 * sin(x)])
+            self.assertEqual(ta.sys, sys)
 
             ta = taylor_adaptive(
                 sys=sys,
