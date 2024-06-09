@@ -58,6 +58,7 @@ set(_HEYOKA_PY_CORE_SOURCES
     dtypes.cpp
     custom_casters.cpp
     expose_expression.cpp
+    expose_var_ode_sys.cpp
     expose_batch_integrators.cpp
     numpy_memory.cpp
     expose_models.cpp

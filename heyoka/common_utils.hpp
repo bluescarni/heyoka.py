@@ -12,6 +12,7 @@
 #include <array>
 #include <cstddef>
 #include <string>
+#include <utility>
 
 #if defined(__GLIBCXX__)
 
@@ -24,6 +25,7 @@
 
 #include <Python.h>
 
+#include <heyoka/expression.hpp>
 #include <heyoka/number.hpp>
 
 // NOTE: implementation of Py_SET_TYPE() for Python < 3.9. See:
@@ -197,6 +199,20 @@ bool with_pybind11_eh(const F &f)
         return detail::with_pybind11_eh_impl();
     }
 }
+
+// Functor to transform on-the-fly the content of a dtens
+// from sparse format into dense format.
+struct dtens_t_it {
+    const heyoka::dtens *dt = nullptr;
+
+    std::pair<heyoka::dtens::v_idx_t, heyoka::expression>
+    operator()(const std::pair<heyoka::dtens::sv_idx_t, heyoka::expression> &) const;
+
+    // Helper to implement the conversion from sparse to dense format.
+    static heyoka::dtens::v_idx_t sparse_to_dense(const heyoka::dtens::sv_idx_t &, heyoka::dtens::v_idx_t::size_type);
+};
+
+py::array as_carray(const py::iterable &, int);
 
 } // namespace heyoka_py
 

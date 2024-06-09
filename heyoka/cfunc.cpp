@@ -123,19 +123,6 @@ void expose_add_cfunc_impl(py::module &m, const char *suffix)
             // Fetch the dtype corresponding to T.
             const auto dt = get_dtype<T>();
 
-            // Small helper to facilitate the conversion of an iterable into
-            // a contiguous NumPy array of type dt.
-            const auto as_carray = [dt](const py::iterable &v) {
-                using namespace pybind11::literals;
-
-                py::array ret = py::module_::import("numpy").attr("ascontiguousarray")(v, "dtype"_a = py::dtype(dt));
-
-                assert(ret.dtype().num() == dt);
-                assert(is_npy_array_carray(ret));
-
-                return ret;
-            };
-
             // Fetch the inputs array.
             // NOTE: this will either fetch the existing array, or convert
             // the input iterable to a py::array on the fly.
@@ -162,7 +149,7 @@ void expose_add_cfunc_impl(py::module &m, const char *suffix)
 
                         return std::move(v);
                     } else {
-                        return as_carray(v);
+                        return as_carray(v, dt);
                     }
                 },
                 inputs_ob);
@@ -261,7 +248,7 @@ void expose_add_cfunc_impl(py::module &m, const char *suffix)
 
                                 return std::move(v);
                             } else {
-                                return as_carray(v);
+                                return as_carray(v, dt);
                             }
                         },
                         *pars_ob);
@@ -328,7 +315,7 @@ void expose_add_cfunc_impl(py::module &m, const char *suffix)
 
                                 return std::move(v);
                             } else {
-                                return as_carray(v);
+                                return as_carray(v, dt);
                             }
                         },
                         std::get<array_or_iter_t>(tm));

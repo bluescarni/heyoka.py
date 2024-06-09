@@ -9,8 +9,13 @@
 #include <heyoka/config.hpp>
 
 #include <cassert>
+#include <cstdint>
 #include <exception>
 #include <string>
+#include <utility>
+
+#include <boost/numeric/conversion/cast.hpp>
+#include <boost/safe_numerics/safe_integer.hpp>
 
 #include <pybind11/numpy.h>
 #include <pybind11/pybind11.h>
@@ -33,6 +38,7 @@
 
 #endif
 
+#include <heyoka/expression.hpp>
 #include <heyoka/number.hpp>
 
 #include "common_utils.hpp"
@@ -107,5 +113,63 @@ bool with_pybind11_eh_impl()
 }
 
 } // namespace detail
+
+std::pair<heyoka::dtens::v_idx_t, heyoka::expression>
+dtens_t_it::operator()(const std::pair<heyoka::dtens::sv_idx_t, heyoka::expression> &p) const
+{
+    const auto &[sv_idx, ex] = p;
+
+    return std::make_pair(
+        sparse_to_dense(sv_idx, boost::numeric_cast<heyoka::dtens::v_idx_t::size_type>(dt->get_nargs())), ex);
+}
+
+heyoka::dtens::v_idx_t dtens_t_it::sparse_to_dense(const heyoka::dtens::sv_idx_t &sv_idx,
+                                                   heyoka::dtens::v_idx_t::size_type nargs)
+{
+    // Init the dense vector from the component index.
+    heyoka::dtens::v_idx_t ret{sv_idx.first};
+
+    // Transform the sparse index/order pairs into dense format.
+    // NOTE: no overflow check needed on ++idx because dtens ensures that
+    // the number of variables can be represented by std::uint32_t.
+    std::uint32_t idx = 0;
+    for (auto it = sv_idx.second.begin(); it != sv_idx.second.end(); ++idx) {
+        if (it->first == idx) {
+            // The current index shows up in the sparse vector,
+            // fetch the corresponding order and move to the next
+            // element of the sparse vector.
+            ret.push_back(it->second);
+            assert(it->second != 0u);
+            ++it;
+        } else {
+            // The current index does not show up in the sparse
+            // vector, set the order to zero.
+            ret.push_back(0);
+        }
+    }
+
+    // Sanity check on the number of diff variables
+    // inferred from the sparse vector.
+    assert(ret.size() - 1u <= nargs);
+
+    // Pad missing values at the end of ret.
+    ret.resize(boost::safe_numerics::safe<decltype(ret.size())>(nargs) + 1);
+
+    return ret;
+}
+
+// Small helper to facilitate the conversion of an iterable into
+// a contiguous NumPy array of type dt.
+py::array as_carray(const py::iterable &v, int dt)
+{
+    using namespace pybind11::literals;
+
+    py::array ret = py::module_::import("numpy").attr("ascontiguousarray")(v, "dtype"_a = py::dtype(dt));
+
+    assert(ret.dtype().num() == dt);
+    assert(is_npy_array_carray(ret));
+
+    return ret;
+}
 
 } // namespace heyoka_py
