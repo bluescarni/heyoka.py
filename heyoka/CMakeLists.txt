@@ -31,6 +31,7 @@ set(HEYOKA_PY_PYTHON_FILES
     _test_elp2000.py
     _test_lagham.py
     _test_var_ode_sys.py
+    _test_var_integrator.py
     model/__init__.py
     callback/__init__.py
 )

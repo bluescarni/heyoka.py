@@ -606,7 +606,7 @@ void expose_batch_integrator_impl(py::module_ &m, const std::string &suffix)
                  // NOTE: this needs to be done regardless of the original type of in.
                  if (inputs.ndim() != 2) [[unlikely]] {
                      py_throw(PyExc_ValueError, fmt::format("The array of inputs provided for the evaluation "
-                                                            "of a Taylor map has {} dimensions, "
+                                                            "of a Taylor map has {} dimension(s), "
                                                             "but it must have 2 dimensions instead",
                                                             inputs.ndim())
                                                     .c_str());
@@ -615,16 +615,16 @@ void expose_batch_integrator_impl(py::module_ &m, const std::string &suffix)
                  // Validate the shape for the inputs.
                  if (boost::numeric_cast<std::uint32_t>(inputs.shape(0)) != ta->get_n_orig_sv()) [[unlikely]] {
                      py_throw(PyExc_ValueError, fmt::format("The array of inputs provided for the evaluation "
-                                                            "of a Taylor map has {} rows, "
-                                                            "but it must have {} rows instead",
+                                                            "of a Taylor map has {} row(s), "
+                                                            "but it must have {} row(s) instead",
                                                             inputs.shape(0), ta->get_n_orig_sv())
                                                     .c_str());
                  }
 
                  if (boost::numeric_cast<std::uint32_t>(inputs.shape(1)) != ta->get_batch_size()) [[unlikely]] {
                      py_throw(PyExc_ValueError, fmt::format("The array of inputs provided for the evaluation "
-                                                            "of a Taylor map has {} columns, "
-                                                            "but it must have {} columns instead",
+                                                            "of a Taylor map has {} column(s), "
+                                                            "but it must have {} column(s) instead",
                                                             inputs.shape(1), ta->get_batch_size())
                                                     .c_str());
                  }
