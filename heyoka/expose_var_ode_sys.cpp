@@ -15,7 +15,9 @@
 
 #include <heyoka/var_ode_sys.hpp>
 
+#include "common_utils.hpp"
 #include "expose_var_ode_sys.hpp"
+#include "pickle_wrappers.hpp"
 
 namespace heyoka_py
 {
@@ -34,7 +36,8 @@ void expose_var_ode_sys(py::module_ &m)
         .value("params", hey::var_args::params)
         .value("time", hey::var_args::time)
         .value("all", hey::var_args::all)
-        .def("__or__", [](hey::var_args a, hey::var_args b) { return a | b; });
+        .def("__or__", [](hey::var_args a, hey::var_args b) { return a | b; })
+        .def("__and__", [](hey::var_args a, hey::var_args b) { return a & b; });
 
     // var_ode_sys class.
     py::class_<hey::var_ode_sys> v_cl(m, "var_ode_sys", py::dynamic_attr{});
@@ -46,6 +49,11 @@ void expose_var_ode_sys(py::module_ &m)
     v_cl.def_property_readonly("vargs", &hey::var_ode_sys::get_vargs);
     v_cl.def_property_readonly("n_orig_sv", &hey::var_ode_sys::get_n_orig_sv);
     v_cl.def_property_readonly("order", &hey::var_ode_sys::get_order);
+    // Copy/deepcopy.
+    v_cl.def("__copy__", copy_wrapper<hey::var_ode_sys>);
+    v_cl.def("__deepcopy__", deepcopy_wrapper<hey::var_ode_sys>, "memo"_a);
+    // Pickle support.
+    v_cl.def(py::pickle(&pickle_getstate_wrapper<hey::var_ode_sys>, &pickle_setstate_wrapper<hey::var_ode_sys>));
 }
 
 } // namespace heyoka_py
