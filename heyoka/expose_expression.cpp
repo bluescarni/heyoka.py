@@ -434,6 +434,19 @@ void expose_expression(py::module_ &m)
         },
         "y"_a.noconvert(), "x"_a.noconvert());
 
+    // dfun().
+    m.def(
+        "dfun",
+        [](std::string name, std::vector<hey::expression> args,
+           std::optional<std::vector<std::pair<std::uint32_t, std::uint32_t>>> didx) {
+            if (didx) {
+                return hey::dfun(std::move(name), std::move(args), std::move(*didx));
+            } else {
+                return hey::dfun(std::move(name), std::move(args));
+            }
+        },
+        "name"_a, "args"_a, "didx"_a = py::none{});
+
     // Time.
     m.attr("time") = hey::time;
 
