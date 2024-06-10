@@ -560,10 +560,10 @@ equations will be formulated.
 If *args* is of type :class:`~heyoka.var_args`, then the variational equations will be constructed
 with respect to arguments deduced from *sys*. E.g., if *sys* contains the two state variables
 :math:`x` and :math:`y` and *args* is the *vars* enumerator of :class:`~heyoka.var_args`, then
-the variational equations will be formuated with respect to the initial conditions of
+the variational equations will be formulated with respect to the initial conditions of
 :math:`x` and :math:`y`. Similarly, if *sys* contains two parameters ``par[0]`` and ``par[1]``
 and *args* is the *params* enumerator of :class:`~heyoka.var_args`, then
-the variational equations will be formuated with respect to the two parameters.
+the variational equations will be formulated with respect to the two parameters.
 
 If *args* is a list of :class:`~heyoka.expression`, then the variational equations will be formulated
 with respect to the quantities contained in the list. Specifically:
@@ -575,9 +575,9 @@ with respect to the quantities contained in the list. Specifically:
 
 Several checks are run on the input arguments. Specifically:
 
-- *sys* must be a valid ODE system,
+- *sys* must be a valid ODE system;
 - if *args* is of type :class:`~heyoka.var_args`, it must be either one of the valid enumerators
-  or a combination of the valid enumerators,
+  or a combination of the valid enumerators;
 - if *args* is a list of expressions:
 
   - it must not be empty,
