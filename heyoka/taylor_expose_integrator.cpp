@@ -378,6 +378,7 @@ void expose_taylor_integrator_impl(py::module &m, const std::string &suffix)
         .def_property_readonly("n_orig_sv", &hey::taylor_adaptive<T>::get_n_orig_sv)
         .def_property_readonly("is_variational", &hey::taylor_adaptive<T>::is_variational)
         .def_property_readonly("vargs", &hey::taylor_adaptive<T>::get_vargs)
+        .def_property_readonly("vorder", &hey::taylor_adaptive<T>::get_vorder)
         .def_property_readonly("tstate", &fetch_tstate<T>)
         .def(
             "get_vslice",
