@@ -107,6 +107,7 @@ examples_others
 
 api_exsys
 api_integrators
+api_var_ode_sys
 api_lagham
 api_model
 ```

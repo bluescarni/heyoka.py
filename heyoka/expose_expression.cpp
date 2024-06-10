@@ -448,7 +448,7 @@ void expose_expression(py::module_ &m)
         "name"_a, "args"_a, "didx"_a = py::none{});
 
     // Time.
-    m.attr("time") = hey::time;
+    m.attr("_time") = hey::time;
 
     // pi.
     m.attr("pi") = hey::pi;

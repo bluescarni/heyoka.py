@@ -44,10 +44,23 @@ std::string diff_args_all();
 std::string lagrangian();
 std::string hamiltonian();
 
-// Models
+// Models.
 std::string cart2geo();
 std::string nrlmsise00_tn();
 std::string jb08_tn();
+
+// var_ode_sys() and related.
+std::string var_args();
+std::string var_args_vars();
+std::string var_args_params();
+std::string var_args_time();
+std::string var_args_all();
+std::string var_ode_sys();
+std::string var_ode_sys_init();
+std::string var_ode_sys_sys();
+std::string var_ode_sys_vargs();
+std::string var_ode_sys_n_orig_sv();
+std::string var_ode_sys_order();
 
 } // namespace heyoka_py::docstrings
 

@@ -34,3 +34,4 @@ Basic
   notebooks/Non-autonomous systems.ipynb
   notebooks/Dense output.ipynb
   notebooks/Event detection
+  notebooks/var_ode_sys.ipynb

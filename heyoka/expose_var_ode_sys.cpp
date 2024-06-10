@@ -16,6 +16,7 @@
 #include <heyoka/var_ode_sys.hpp>
 
 #include "common_utils.hpp"
+#include "docstrings.hpp"
 #include "expose_var_ode_sys.hpp"
 #include "pickle_wrappers.hpp"
 
@@ -31,24 +32,25 @@ void expose_var_ode_sys(py::module_ &m)
     using namespace pybind11::literals;
 
     // var_args enum.
-    py::enum_<hey::var_args>(m, "var_args", py::arithmetic())
-        .value("vars", hey::var_args::vars)
-        .value("params", hey::var_args::params)
-        .value("time", hey::var_args::time)
-        .value("all", hey::var_args::all)
+    py::enum_<hey::var_args>(m, "var_args", docstrings::var_args().c_str())
+        .value("vars", hey::var_args::vars, docstrings::var_args_vars().c_str())
+        .value("params", hey::var_args::params, docstrings::var_args_params().c_str())
+        .value("time", hey::var_args::time, docstrings::var_args_time().c_str())
+        .value("all", hey::var_args::all, docstrings::var_args_all().c_str())
         .def("__or__", [](hey::var_args a, hey::var_args b) { return a | b; })
         .def("__and__", [](hey::var_args a, hey::var_args b) { return a & b; });
 
     // var_ode_sys class.
-    py::class_<hey::var_ode_sys> v_cl(m, "var_ode_sys", py::dynamic_attr{});
+    py::class_<hey::var_ode_sys> v_cl(m, "var_ode_sys", py::dynamic_attr{}, docstrings::var_ode_sys().c_str());
     v_cl.def(py::init([](const std::vector<std::pair<hey::expression, hey::expression>> &sys,
                          const std::variant<hey::var_args, std::vector<hey::expression>> &args,
                          std::uint32_t order) { return hey::var_ode_sys(sys, args, order); }),
-             "sys"_a, "args"_a, "order"_a = static_cast<std::uint32_t>(1));
-    v_cl.def_property_readonly("sys", &hey::var_ode_sys::get_sys);
-    v_cl.def_property_readonly("vargs", &hey::var_ode_sys::get_vargs);
-    v_cl.def_property_readonly("n_orig_sv", &hey::var_ode_sys::get_n_orig_sv);
-    v_cl.def_property_readonly("order", &hey::var_ode_sys::get_order);
+             "sys"_a, "args"_a, "order"_a = static_cast<std::uint32_t>(1), docstrings::var_ode_sys_init().c_str());
+    v_cl.def_property_readonly("sys", &hey::var_ode_sys::get_sys, docstrings::var_ode_sys_sys().c_str());
+    v_cl.def_property_readonly("vargs", &hey::var_ode_sys::get_vargs, docstrings::var_ode_sys_vargs().c_str());
+    v_cl.def_property_readonly("n_orig_sv", &hey::var_ode_sys::get_n_orig_sv,
+                               docstrings::var_ode_sys_n_orig_sv().c_str());
+    v_cl.def_property_readonly("order", &hey::var_ode_sys::get_order, docstrings::var_ode_sys_order().c_str());
     // Copy/deepcopy.
     v_cl.def("__copy__", copy_wrapper<hey::var_ode_sys>);
     v_cl.def("__deepcopy__", deepcopy_wrapper<hey::var_ode_sys>, "memo"_a);

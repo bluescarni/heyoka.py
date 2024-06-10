@@ -535,4 +535,147 @@ A few checks are run on the input arguments. Specifically, the number of geodesi
 )";
 }
 
+std::string var_ode_sys()
+{
+    return R"(Class to represent variational ODE systems.
+
+.. note::
+
+   A :ref:`tutorial <var_ode_sys>` explaining the use of this
+   class is available.
+
+)";
+}
+
+std::string var_ode_sys_init()
+{
+    return R"(__init__(self, sys: list[tuple[expression, expression]], args: var_args | list[expression], order: int = 1)
+
+Constructor.
+
+A variational ODE system is constructed from two mandatory arguments: the original ODE system
+*sys* and an *args* parameter representing the quantities with respect to which the variational
+equations will be formulated.
+
+If *args* is of type :class:`~heyoka.var_args`, then the variational equations will be constructed
+with respect to arguments deduced from *sys*. E.g., if *sys* contains the two state variables
+:math:`x` and :math:`y` and *args* is the *vars* enumerator of :class:`~heyoka.var_args`, then
+the variational equations will be formuated with respect to the initial conditions of
+:math:`x` and :math:`y`. Similarly, if *sys* contains two parameters ``par[0]`` and ``par[1]``
+and *args* is the *params* enumerator of :class:`~heyoka.var_args`, then
+the variational equations will be formuated with respect to the two parameters.
+
+If *args* is a list of :class:`~heyoka.expression`, then the variational equations will be formulated
+with respect to the quantities contained in the list. Specifically:
+
+- variable expression are used to request derivatives with respect to the intial conditions
+  for that state variable;
+- parameter expressions are used to request derivatives with respect to those parameters;
+- :attr:`heyoka.time` is used to request the derivative with respect to the initial integration time.
+
+Several checks are run on the input arguments. Specifically:
+
+- *sys* must be a valid ODE system,
+- if *args* is of type :class:`~heyoka.var_args`, it must be either one of the valid enumerators
+  or a combination of the valid enumerators,
+- if *args* is a list of expressions:
+
+  - it must not be empty,
+  - it must consists only of variables, parameters or the :attr:`heyoka.time` placeholder,
+  - it must not contain duplicates,
+  - any variable expression must refer to a state variable in *sys*.
+
+Additionally, the differentiation order *order* must be at least 1.
+
+:param sys: the input ODE system.
+:param args: the variational arguments.
+:param order: the differentiation order.
+
+:raises ValueError: if one or more input arguments are malformed, as explained above.
+
+)";
+}
+
+std::string var_ode_sys_sys()
+{
+    return R"(The full system of equations (including partials).
+
+:rtype: list[tuple[expression, expression]]
+
+)";
+}
+
+std::string var_ode_sys_vargs()
+{
+    return R"(The list of variational arguments.
+
+:rtype: list[expression]
+
+)";
+}
+
+std::string var_ode_sys_n_orig_sv()
+{
+    return R"(The number of original state variables.
+
+:rtype: int
+
+)";
+}
+
+std::string var_ode_sys_order()
+{
+    return R"(The differentitation order.
+
+:rtype: int
+
+)";
+}
+
+std::string var_args()
+{
+    return R"(Enum for selecting variational arguments.
+
+Values of this enum can be used in the constructor of :class:`~heyoka.var_ode_sys()` to select
+the arguments with respect to which the variational equations will be formulated.
+
+The enumerators can be combined with the logical OR ``|`` operator.
+
+Examples:
+  >>> from heyoka import var_args
+  >>> va = var_args.vars | var_args.params # Select differentiation wrt all initial conditions and parameters
+  >>> var_args.vars | var_args.params | var_args.time == var_args.all
+  True
+
+)";
+}
+
+std::string var_args_vars()
+{
+    return R"(Differentiate with respect to the initial conditions of all state variables.
+
+)";
+}
+
+std::string var_args_params()
+{
+    return R"(Differentiate with respect to all runtime parameters.
+
+)";
+}
+
+std::string var_args_time()
+{
+    return R"(Differentiate with respect to the initial integration time.
+
+)";
+}
+
+std::string var_args_all()
+{
+    return R"(Differentiate with respect to the initial conditions of all state variables, all runtime parameters and the initial integration time.
+
+)";
+}
+
 } // namespace heyoka_py::docstrings

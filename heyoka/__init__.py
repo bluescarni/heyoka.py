@@ -382,3 +382,19 @@ Examples:
   >>> p0 = par[0] # p0 will represent the parameter value at index 0
 
 """
+
+# Machinery for the time attribute.
+def _create_time():
+    from . import core
+
+    return core._time
+
+
+time = _create_time()
+"""
+Time placeholder.
+
+This global object is an :py:class:`~heyoka.expression` which is used to represent
+time (i.e., the independent variable) in differential equations.
+
+"""
