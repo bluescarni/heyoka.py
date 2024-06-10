@@ -37,6 +37,7 @@ class var_integrator_test_case(_ut.TestCase):
         self.assertTrue(ta.dim > 2)
         self.assertEqual(ta.n_orig_sv, 2)
         self.assertTrue(ta.is_variational)
+        self.assertEqual(ta.vorder, 2)
         self.assertEqual(ta.vargs, [x, v])
 
         # Check that the refcount increases by when accessing tstate.
@@ -157,6 +158,7 @@ class var_integrator_test_case(_ut.TestCase):
         self.assertTrue(ta.dim > 2)
         self.assertEqual(ta.n_orig_sv, 2)
         self.assertTrue(ta.is_variational)
+        self.assertEqual(ta.vorder, 2)
         self.assertEqual(ta.vargs, [x, v])
 
         # Check that the refcount increases by when accessing tstate.
