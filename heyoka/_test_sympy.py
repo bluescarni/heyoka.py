@@ -192,7 +192,16 @@ class sympy_test_case(_ut.TestCase):
 
         import sympy as spy
 
-        from . import core, make_vars, from_sympy, to_sympy, pi, sum as hsum, prod
+        from . import (
+            core,
+            make_vars,
+            from_sympy,
+            to_sympy,
+            pi,
+            sum as hsum,
+            prod,
+            time as htime,
+        )
 
         from .model import nbody
 
@@ -320,8 +329,8 @@ class sympy_test_case(_ut.TestCase):
 
         self.assertEqual(to_sympy(core.sigmoid(hx + hy)), 1.0 / (1.0 + spy.exp(-x - y)))
 
-        self.assertEqual(core.time, from_sympy(spy.Function("heyoka_time")()))
-        self.assertEqual(to_sympy(core.time), spy.Function("heyoka_time")())
+        self.assertEqual(htime, from_sympy(spy.Function("heyoka_time")()))
+        self.assertEqual(to_sympy(htime), spy.Function("heyoka_time")())
 
         with self.assertRaises(TypeError) as cm:
             from_sympy(abs(x))
