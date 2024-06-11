@@ -9,6 +9,11 @@ Changelog
 New
 ~~~
 
+- Add support for variational ODE systems and Taylor map computation
+  (`#177 <https://github.com/bluescarni/heyoka.py/pull/177>`__).
+- Add thermonets: neural, differentiable, high-performance
+  models for the Earth's thermosphere density
+  (`#176 <https://github.com/bluescarni/heyoka.py/pull/176>`__).
 - Add a vectorised implementation of ``diff()``
   (`#173 <https://github.com/bluescarni/heyoka.py/pull/173>`__).
 
