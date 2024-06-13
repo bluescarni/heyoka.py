@@ -6,9 +6,12 @@
 // Public License v. 2.0. If a copy of the MPL was not distributed
 // with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+#include <cassert>
+#include <concepts>
 #include <cstddef>
 #include <cstdint>
 #include <optional>
+#include <ranges>
 #include <sstream>
 #include <string>
 #include <utility>
@@ -31,6 +34,7 @@
 #include <heyoka/llvm_state.hpp>
 #include <heyoka/step_callback.hpp>
 #include <heyoka/taylor.hpp>
+#include <heyoka/var_ode_sys.hpp>
 
 #include "common_utils.hpp"
 #include "custom_casters.hpp"
@@ -43,6 +47,7 @@ namespace heyoka_py
 {
 
 namespace py = pybind11;
+namespace hey = heyoka;
 
 namespace detail
 {
@@ -50,10 +55,29 @@ namespace detail
 namespace
 {
 
+// Helper to fetch the tstate from a variational integrator.
+// Extracted here for re-use.
+template <typename T>
+auto fetch_tstate(const py::object &o)
+{
+    const auto *ta = py::cast<const hey::taylor_adaptive_batch<T> *>(o);
+
+    assert(ta->get_tstate().size() % ta->get_batch_size() == 0u);
+    const auto n_orig_sv = boost::numeric_cast<py::ssize_t>(ta->get_n_orig_sv());
+    const auto bs = boost::numeric_cast<py::ssize_t>(ta->get_batch_size());
+
+    auto ret
+        = py::array(py::dtype(get_dtype<T>()), py::array::ShapeContainer{n_orig_sv, bs}, ta->get_tstate().data(), o);
+
+    // Ensure the returned array is read-only.
+    ret.attr("flags").attr("writeable") = false;
+
+    return ret;
+}
+
 template <typename T>
 void expose_batch_integrator_impl(py::module_ &m, const std::string &suffix)
 {
-    namespace hey = heyoka;
     namespace kw = hey::kw;
     using namespace pybind11::literals;
 
@@ -64,10 +88,11 @@ void expose_batch_integrator_impl(py::module_ &m, const std::string &suffix)
     using sys_t = std::vector<std::pair<hey::expression, hey::expression>>;
 
     // Implementation of the ctor.
-    auto tab_ctor_impl = [](const sys_t &sys, const py::iterable &state_ob, std::optional<py::iterable> time_ob,
-                            std::optional<py::iterable> pars_ob, T tol, bool high_accuracy, bool compact_mode,
-                            std::vector<t_ev_t> tes, std::vector<nt_ev_t> ntes, bool parallel_mode, unsigned opt_level,
-                            bool force_avx512, bool slp_vectorize, bool fast_math) {
+    auto tab_ctor_impl = [](std::variant<sys_t, hey::var_ode_sys> vsys, const py::iterable &state_ob,
+                            std::optional<py::iterable> time_ob, std::optional<py::iterable> pars_ob, T tol,
+                            bool high_accuracy, bool compact_mode, std::vector<t_ev_t> tes, std::vector<nt_ev_t> ntes,
+                            bool parallel_mode, unsigned opt_level, bool force_avx512, bool slp_vectorize,
+                            bool fast_math) {
         // Fetch the dtype corresponding to T.
         const auto dt = get_dtype<T>();
 
@@ -115,77 +140,83 @@ void expose_batch_integrator_impl(py::module_ &m, const std::string &suffix)
             pars = py::cast<std::vector<T>>(pars_arr.attr("flatten")());
         }
 
-        if (time_ob) {
-            // Times provided.
-            py::array time_arr = *time_ob;
-            if (time_arr.ndim() != 1 || boost::numeric_cast<std::uint32_t>(time_arr.shape(0)) != batch_size) {
-                py_throw(PyExc_ValueError,
-                         fmt::format("Invalid time vector passed to the constructor of a batch integrator: "
-                                     "the expected array shape is ({}), but the input array has either the wrong "
-                                     "number of dimensions or the wrong shape",
-                                     batch_size)
-                             .c_str());
-            }
-            auto time = py::cast<std::vector<T>>(time_arr);
+        return std::visit(
+            [&](auto &sys) {
+                if (time_ob) {
+                    // Times provided.
+                    py::array time_arr = *time_ob;
+                    if (time_arr.ndim() != 1 || boost::numeric_cast<std::uint32_t>(time_arr.shape(0)) != batch_size) {
+                        py_throw(
+                            PyExc_ValueError,
+                            fmt::format("Invalid time vector passed to the constructor of a batch integrator: "
+                                        "the expected array shape is ({}), but the input array has either the wrong "
+                                        "number of dimensions or the wrong shape",
+                                        batch_size)
+                                .c_str());
+                    }
+                    auto time = py::cast<std::vector<T>>(time_arr);
 
-            // NOTE: GIL release is fine here even if the events contain
-            // Python objects, as the event vectors are moved in
-            // upon construction and thus we should never end up calling
-            // into the interpreter.
-            py::gil_scoped_release release;
+                    // NOTE: GIL release is fine here even if the events contain
+                    // Python objects, as the event vectors are moved in
+                    // upon construction and thus we should never end up calling
+                    // into the interpreter.
+                    py::gil_scoped_release release;
 
-            return hey::taylor_adaptive_batch<T>{sys,
-                                                 std::move(state),
-                                                 batch_size,
-                                                 kw::time = std::move(time),
-                                                 kw::tol = tol,
-                                                 kw::high_accuracy = high_accuracy,
-                                                 kw::compact_mode = compact_mode,
-                                                 kw::pars = std::move(pars),
-                                                 kw::t_events = std::move(tes),
-                                                 kw::nt_events = std::move(ntes),
-                                                 kw::parallel_mode = parallel_mode,
-                                                 kw::opt_level = opt_level,
-                                                 kw::force_avx512 = force_avx512,
-                                                 kw::slp_vectorize = slp_vectorize,
-                                                 kw::fast_math = fast_math};
-        } else {
-            // Times not provided.
+                    return hey::taylor_adaptive_batch<T>{std::move(sys),
+                                                         std::move(state),
+                                                         batch_size,
+                                                         kw::time = std::move(time),
+                                                         kw::tol = tol,
+                                                         kw::high_accuracy = high_accuracy,
+                                                         kw::compact_mode = compact_mode,
+                                                         kw::pars = std::move(pars),
+                                                         kw::t_events = std::move(tes),
+                                                         kw::nt_events = std::move(ntes),
+                                                         kw::parallel_mode = parallel_mode,
+                                                         kw::opt_level = opt_level,
+                                                         kw::force_avx512 = force_avx512,
+                                                         kw::slp_vectorize = slp_vectorize,
+                                                         kw::fast_math = fast_math};
+                } else {
+                    // Times not provided.
 
-            // NOTE: GIL release is fine here even if the events contain
-            // Python objects, as the event vectors are moved in
-            // upon construction and thus we should never end up calling
-            // into the interpreter.
-            py::gil_scoped_release release;
+                    // NOTE: GIL release is fine here even if the events contain
+                    // Python objects, as the event vectors are moved in
+                    // upon construction and thus we should never end up calling
+                    // into the interpreter.
+                    py::gil_scoped_release release;
 
-            return hey::taylor_adaptive_batch<T>{sys,
-                                                 std::move(state),
-                                                 batch_size,
-                                                 kw::tol = tol,
-                                                 kw::high_accuracy = high_accuracy,
-                                                 kw::compact_mode = compact_mode,
-                                                 kw::pars = std::move(pars),
-                                                 kw::t_events = std::move(tes),
-                                                 kw::nt_events = std::move(ntes),
-                                                 kw::parallel_mode = parallel_mode,
-                                                 kw::opt_level = opt_level,
-                                                 kw::force_avx512 = force_avx512,
-                                                 kw::slp_vectorize = slp_vectorize,
-                                                 kw::fast_math = fast_math};
-        }
+                    return hey::taylor_adaptive_batch<T>{std::move(sys),
+                                                         std::move(state),
+                                                         batch_size,
+                                                         kw::tol = tol,
+                                                         kw::high_accuracy = high_accuracy,
+                                                         kw::compact_mode = compact_mode,
+                                                         kw::pars = std::move(pars),
+                                                         kw::t_events = std::move(tes),
+                                                         kw::nt_events = std::move(ntes),
+                                                         kw::parallel_mode = parallel_mode,
+                                                         kw::opt_level = opt_level,
+                                                         kw::force_avx512 = force_avx512,
+                                                         kw::slp_vectorize = slp_vectorize,
+                                                         kw::fast_math = fast_math};
+                }
+            },
+            vsys);
     };
 
     py::class_<hey::taylor_adaptive_batch<T>> tab_c(m, fmt::format("taylor_adaptive_batch_{}", suffix).c_str(),
                                                     py::dynamic_attr{});
 
     tab_c
-        .def(py::init([tab_ctor_impl](const sys_t &sys, const py::iterable &state, std::optional<py::iterable> time,
-                                      std::optional<py::iterable> pars, T tol, bool high_accuracy, bool compact_mode,
-                                      std::vector<t_ev_t> tes, std::vector<nt_ev_t> ntes, bool parallel_mode,
-                                      unsigned opt_level, bool force_avx512, bool slp_vectorize, bool fast_math) {
-                 return tab_ctor_impl(sys, state, std::move(time), std::move(pars), tol, high_accuracy, compact_mode,
-                                      std::move(tes), std::move(ntes), parallel_mode, opt_level, force_avx512,
-                                      slp_vectorize, fast_math);
+        .def(py::init([tab_ctor_impl](std::variant<sys_t, hey::var_ode_sys> vsys, const py::iterable &state,
+                                      std::optional<py::iterable> time, std::optional<py::iterable> pars, T tol,
+                                      bool high_accuracy, bool compact_mode, std::vector<t_ev_t> tes,
+                                      std::vector<nt_ev_t> ntes, bool parallel_mode, unsigned opt_level,
+                                      bool force_avx512, bool slp_vectorize, bool fast_math) {
+                 return tab_ctor_impl(std::move(vsys), state, std::move(time), std::move(pars), tol, high_accuracy,
+                                      compact_mode, std::move(tes), std::move(ntes), parallel_mode, opt_level,
+                                      force_avx512, slp_vectorize, fast_math);
              }),
              "sys"_a, "state"_a, "time"_a = py::none{}, "pars"_a = py::none{}, "tol"_a.noconvert() = static_cast<T>(0),
              "high_accuracy"_a = false, "compact_mode"_a = false, "t_events"_a = py::list{}, "nt_events"_a = py::list{},
@@ -509,6 +540,103 @@ void expose_batch_integrator_impl(py::module_ &m, const std::string &suffix)
         .def_property_readonly("compact_mode", &hey::taylor_adaptive_batch<T>::get_compact_mode)
         .def_property_readonly("high_accuracy", &hey::taylor_adaptive_batch<T>::get_high_accuracy)
         .def_property_readonly("with_events", &hey::taylor_adaptive_batch<T>::with_events)
+        // Variational-specific bits.
+        .def_property_readonly("n_orig_sv", &hey::taylor_adaptive_batch<T>::get_n_orig_sv)
+        .def_property_readonly("is_variational", &hey::taylor_adaptive_batch<T>::is_variational)
+        .def_property_readonly("vargs", &hey::taylor_adaptive_batch<T>::get_vargs)
+        .def_property_readonly("vorder", &hey::taylor_adaptive_batch<T>::get_vorder)
+        .def_property_readonly("tstate", &fetch_tstate<T>)
+        .def(
+            "get_vslice",
+            [](const hey::taylor_adaptive_batch<T> &ta, std::uint32_t order, std::optional<std::uint32_t> component) {
+                const auto ret = component ? ta.get_vslice(*component, order) : ta.get_vslice(order);
+
+                return py::slice(boost::numeric_cast<py::ssize_t>(ret.first),
+                                 boost::numeric_cast<py::ssize_t>(ret.second), {});
+            },
+            "order"_a, "component"_a = py::none{})
+        .def(
+            "get_mindex",
+            [](const hey::taylor_adaptive_batch<T> &ta, std::uint32_t i) {
+                const auto &ret = ta.get_mindex(i);
+
+                return dtens_t_it::sparse_to_dense(
+                    ret, boost::numeric_cast<heyoka::dtens::v_idx_t::size_type>(ta.get_vargs().size()));
+            },
+            "i"_a)
+        .def("eval_taylor_map",
+             [](py::object &o, std::variant<py::array, py::iterable> in) {
+                 auto *ta = py::cast<hey::taylor_adaptive_batch<T> *>(o);
+
+                 // Fetch the dtype corresponding to T.
+                 const auto dt = get_dtype<T>();
+
+                 // Fetch the inputs array.
+                 // NOTE: this will either fetch the existing array, or convert
+                 // the input iterable to a py::array on the fly.
+                 const auto inputs = std::visit(
+                     [&]<typename U>(U &v) {
+                         if constexpr (std::same_as<U, py::array>) {
+                             // Check the dtype.
+                             if (v.dtype().num() != dt) [[unlikely]] {
+                                 py_throw(
+                                     PyExc_TypeError,
+                                     fmt::format(
+                                         "Invalid dtype detected for the inputs of a Taylor map evaluation: the "
+                                         "expected dtype is '{}', but the dtype of the inputs array is '{}' instead",
+                                         str(py::dtype(dt)), str(v.dtype()))
+                                         .c_str());
+                             }
+
+                             // Check that the inputs array is a C-style contiguous array.
+                             if (!is_npy_array_carray(v)) [[unlikely]] {
+                                 py_throw(PyExc_ValueError,
+                                          "Invalid inputs array detected in a Taylor map evaluation: the array is not "
+                                          "C-style contiguous, please "
+                                          "consider using numpy.ascontiguousarray() to turn it into one");
+                             }
+
+                             return std::move(v);
+                         } else {
+                             return as_carray(v, dt);
+                         }
+                     },
+                     in);
+
+                 // Validate the number of dimensions for the inputs.
+                 // NOTE: this needs to be done regardless of the original type of in.
+                 if (inputs.ndim() != 2) [[unlikely]] {
+                     py_throw(PyExc_ValueError, fmt::format("The array of inputs provided for the evaluation "
+                                                            "of a Taylor map has {} dimension(s), "
+                                                            "but it must have 2 dimensions instead",
+                                                            inputs.ndim())
+                                                    .c_str());
+                 }
+
+                 // Validate the shape for the inputs.
+                 if (boost::numeric_cast<std::uint32_t>(inputs.shape(0)) != ta->get_n_orig_sv()) [[unlikely]] {
+                     py_throw(PyExc_ValueError, fmt::format("The array of inputs provided for the evaluation "
+                                                            "of a Taylor map has {} row(s), "
+                                                            "but it must have {} row(s) instead",
+                                                            inputs.shape(0), ta->get_n_orig_sv())
+                                                    .c_str());
+                 }
+
+                 if (boost::numeric_cast<std::uint32_t>(inputs.shape(1)) != ta->get_batch_size()) [[unlikely]] {
+                     py_throw(PyExc_ValueError, fmt::format("The array of inputs provided for the evaluation "
+                                                            "of a Taylor map has {} column(s), "
+                                                            "but it must have {} column(s) instead",
+                                                            inputs.shape(1), ta->get_batch_size())
+                                                    .c_str());
+                 }
+
+                 // Run the evaluation.
+                 const auto *data_ptr = static_cast<const T *>(inputs.data());
+                 ta->eval_taylor_map(std::ranges::subrange(data_ptr, data_ptr + inputs.size()));
+
+                 // Return the tstate.
+                 return fetch_tstate<T>(o);
+             })
         // Event detection.
         .def_property_readonly("with_events", &hey::taylor_adaptive_batch<T>::with_events)
         .def_property_readonly("te_cooldowns", &hey::taylor_adaptive_batch<T>::get_te_cooldowns)

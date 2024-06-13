@@ -327,7 +327,11 @@ class model_test_case(_ut.TestCase):
             "h", "lat", "lon", "f107", "f107a", "ap"
         )
         nrlmsise00 = model.nrlmsise00_tn(
-            geodetic=[h, lat, lon], f107=f107, f107a=f107a, ap=ap, time_expr=time / 86400
+            geodetic=[h, lat, lon],
+            f107=f107,
+            f107a=f107a,
+            ap=ap,
+            time_expr=time / 86400,
         )
         nrlmsise00_cf = cfunc([nrlmsise00], vars=[h, lat, lon, f107, f107a, ap])
 
@@ -353,21 +357,32 @@ class model_test_case(_ut.TestCase):
     def test_jb08(self):
         from . import model, make_vars, cfunc, time
 
-        h, lat, lon, f107a, f107, s107a, s107, m107a, m107, y107a, y107, dDstdT = (
-            make_vars(
-                "h",
-                "lat",
-                "lon",
-                "f107a",
-                "f107",
-                "s107a",
-                "s107",
-                "m107a",
-                "m107",
-                "y107a",
-                "y107",
-                "dDstdT",
-            )
+        (
+            h,
+            lat,
+            lon,
+            f107a,
+            f107,
+            s107a,
+            s107,
+            m107a,
+            m107,
+            y107a,
+            y107,
+            dDstdT,
+        ) = make_vars(
+            "h",
+            "lat",
+            "lon",
+            "f107a",
+            "f107",
+            "s107a",
+            "s107",
+            "m107a",
+            "m107",
+            "y107a",
+            "y107",
+            "dDstdT",
         )
         jb08 = model.jb08_tn(
             geodetic=[h, lat, lon],

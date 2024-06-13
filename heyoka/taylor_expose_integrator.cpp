@@ -10,9 +10,11 @@
 
 #include <algorithm>
 #include <cassert>
+#include <concepts>
 #include <cstddef>
-#include <initializer_list>
+#include <cstdint>
 #include <optional>
+#include <ranges>
 #include <sstream>
 #include <string>
 #include <tuple>
@@ -49,6 +51,7 @@
 #include <heyoka/llvm_state.hpp>
 #include <heyoka/step_callback.hpp>
 #include <heyoka/taylor.hpp>
+#include <heyoka/var_ode_sys.hpp>
 
 #include "common_utils.hpp"
 #include "custom_casters.hpp"
@@ -56,6 +59,12 @@
 #include "pickle_wrappers.hpp"
 #include "step_cb_utils.hpp"
 #include "taylor_expose_integrator.hpp"
+
+#if defined(HEYOKA_HAVE_REAL)
+
+#include "expose_real.hpp"
+
+#endif
 
 namespace heyoka_py
 {
@@ -78,6 +87,22 @@ constexpr bool default_cm =
 #endif
     ;
 
+// Helper to fetch the tstate from a variational integrator.
+// Extracted here for re-use.
+template <typename T>
+auto fetch_tstate(const py::object &o)
+{
+    const auto *ta = py::cast<const hey::taylor_adaptive<T> *>(o);
+    auto ret = py::array(py::dtype(get_dtype<T>()),
+                         py::array::ShapeContainer{boost::numeric_cast<py::ssize_t>(ta->get_tstate().size())},
+                         ta->get_tstate().data(), o);
+
+    // Ensure the returned array is read-only.
+    ret.attr("flags").attr("writeable") = false;
+
+    return ret;
+}
+
 // Implementation of the exposition of the scalar integrators.
 template <typename T>
 void expose_taylor_integrator_impl(py::module &m, const std::string &suffix)
@@ -91,30 +116,35 @@ void expose_taylor_integrator_impl(py::module &m, const std::string &suffix)
     using sys_t = std::vector<std::pair<hey::expression, hey::expression>>;
 
     py::class_<hey::taylor_adaptive<T>> cl(m, (fmt::format("taylor_adaptive_{}", suffix)).c_str(), py::dynamic_attr{});
-    cl.def(py::init([](const sys_t &sys, std::vector<T> state, T time, std::vector<T> pars, T tol, bool high_accuracy,
-                       bool compact_mode, std::vector<t_ev_t> tes, std::vector<nt_ev_t> ntes, bool parallel_mode,
-                       unsigned opt_level, bool force_avx512, bool slp_vectorize, bool fast_math, long long prec) {
+    cl.def(py::init([](std::variant<sys_t, hey::var_ode_sys> vsys, std::vector<T> state, T time, std::vector<T> pars,
+                       T tol, bool high_accuracy, bool compact_mode, std::vector<t_ev_t> tes, std::vector<nt_ev_t> ntes,
+                       bool parallel_mode, unsigned opt_level, bool force_avx512, bool slp_vectorize, bool fast_math,
+                       long long prec) {
                // NOTE: GIL release is fine here even if the events contain
                // Python objects, as the event vectors are moved in
                // upon construction and thus we should never end up calling
                // into the interpreter.
                py::gil_scoped_release release;
 
-               return hey::taylor_adaptive<T>{sys,
-                                              std::move(state),
-                                              kw::time = time,
-                                              kw::tol = tol,
-                                              kw::high_accuracy = high_accuracy,
-                                              kw::compact_mode = compact_mode,
-                                              kw::pars = std::move(pars),
-                                              kw::t_events = std::move(tes),
-                                              kw::nt_events = std::move(ntes),
-                                              kw::parallel_mode = parallel_mode,
-                                              kw::opt_level = opt_level,
-                                              kw::force_avx512 = force_avx512,
-                                              kw::slp_vectorize = slp_vectorize,
-                                              kw::fast_math = fast_math,
-                                              kw::prec = prec};
+               return std::visit(
+                   [&](auto &sys) {
+                       return hey::taylor_adaptive<T>{std::move(sys),
+                                                      std::move(state),
+                                                      kw::time = time,
+                                                      kw::tol = tol,
+                                                      kw::high_accuracy = high_accuracy,
+                                                      kw::compact_mode = compact_mode,
+                                                      kw::pars = std::move(pars),
+                                                      kw::t_events = std::move(tes),
+                                                      kw::nt_events = std::move(ntes),
+                                                      kw::parallel_mode = parallel_mode,
+                                                      kw::opt_level = opt_level,
+                                                      kw::force_avx512 = force_avx512,
+                                                      kw::slp_vectorize = slp_vectorize,
+                                                      kw::fast_math = fast_math,
+                                                      kw::prec = prec};
+                   },
+                   vsys);
            }),
            "sys"_a, "state"_a.noconvert(), "time"_a.noconvert() = static_cast<T>(0), "pars"_a.noconvert() = py::list{},
            "tol"_a.noconvert() = static_cast<T>(0), "high_accuracy"_a = false, "compact_mode"_a = default_cm<T>,
@@ -344,6 +374,105 @@ void expose_taylor_integrator_impl(py::module &m, const std::string &suffix)
         .def_property_readonly("compact_mode", &hey::taylor_adaptive<T>::get_compact_mode)
         .def_property_readonly("high_accuracy", &hey::taylor_adaptive<T>::get_high_accuracy)
         .def_property_readonly("with_events", &hey::taylor_adaptive<T>::with_events)
+        // Variational-specific bits.
+        .def_property_readonly("n_orig_sv", &hey::taylor_adaptive<T>::get_n_orig_sv)
+        .def_property_readonly("is_variational", &hey::taylor_adaptive<T>::is_variational)
+        .def_property_readonly("vargs", &hey::taylor_adaptive<T>::get_vargs)
+        .def_property_readonly("vorder", &hey::taylor_adaptive<T>::get_vorder)
+        .def_property_readonly("tstate", &fetch_tstate<T>)
+        .def(
+            "get_vslice",
+            [](const hey::taylor_adaptive<T> &ta, std::uint32_t order, std::optional<std::uint32_t> component) {
+                const auto ret = component ? ta.get_vslice(*component, order) : ta.get_vslice(order);
+
+                return py::slice(boost::numeric_cast<py::ssize_t>(ret.first),
+                                 boost::numeric_cast<py::ssize_t>(ret.second), {});
+            },
+            "order"_a, "component"_a = py::none{})
+        .def(
+            "get_mindex",
+            [](const hey::taylor_adaptive<T> &ta, std::uint32_t i) {
+                const auto &ret = ta.get_mindex(i);
+
+                return dtens_t_it::sparse_to_dense(
+                    ret, boost::numeric_cast<heyoka::dtens::v_idx_t::size_type>(ta.get_vargs().size()));
+            },
+            "i"_a)
+        .def("eval_taylor_map",
+             [](py::object &o, std::variant<py::array, py::iterable> in) {
+                 auto *ta = py::cast<hey::taylor_adaptive<T> *>(o);
+
+                 // Fetch the dtype corresponding to T.
+                 const auto dt = get_dtype<T>();
+
+                 // Fetch the inputs array.
+                 // NOTE: this will either fetch the existing array, or convert
+                 // the input iterable to a py::array on the fly.
+                 const auto inputs = std::visit(
+                     [&]<typename U>(U &v) {
+                         if constexpr (std::same_as<U, py::array>) {
+                             // Check the dtype.
+                             if (v.dtype().num() != dt) [[unlikely]] {
+                                 py_throw(
+                                     PyExc_TypeError,
+                                     fmt::format(
+                                         "Invalid dtype detected for the inputs of a Taylor map evaluation: the "
+                                         "expected dtype is '{}', but the dtype of the inputs array is '{}' instead",
+                                         str(py::dtype(dt)), str(v.dtype()))
+                                         .c_str());
+                             }
+
+                             // Check that the inputs array is a C-style contiguous array.
+                             if (!is_npy_array_carray(v)) [[unlikely]] {
+                                 py_throw(PyExc_ValueError,
+                                          "Invalid inputs array detected in a Taylor map evaluation: the array is not "
+                                          "C-style contiguous, please "
+                                          "consider using numpy.ascontiguousarray() to turn it into one");
+                             }
+
+                             return std::move(v);
+                         } else {
+                             return as_carray(v, dt);
+                         }
+                     },
+                     in);
+
+                 // Validate the number of dimensions for the inputs.
+                 // NOTE: this needs to be done regardless of the original type of in.
+                 if (inputs.ndim() != 1) [[unlikely]] {
+                     py_throw(PyExc_ValueError, fmt::format("The array of inputs provided for the evaluation "
+                                                            "of a Taylor map has {} dimensions, "
+                                                            "but it must have 1 dimension instead",
+                                                            inputs.ndim())
+                                                    .c_str());
+                 }
+
+                 // Validate the shape for the inputs.
+                 if (boost::numeric_cast<std::uint32_t>(inputs.shape(0)) != ta->get_n_orig_sv()) [[unlikely]] {
+                     py_throw(PyExc_ValueError, fmt::format("The array of inputs provided for the evaluation "
+                                                            "of a Taylor map has {} elements, "
+                                                            "but it must have {} elements instead",
+                                                            inputs.shape(0), ta->get_n_orig_sv())
+                                                    .c_str());
+                 }
+
+#if defined(HEYOKA_HAVE_REAL)
+
+                 // Run the checks specific for mppp::real.
+                 if constexpr (std::same_as<T, mppp::real>) {
+                     // Check that the inputs array contains values with the correct precision.
+                     pyreal_check_array(inputs, ta->get_prec());
+                 }
+
+#endif
+
+                 // Run the evaluation.
+                 const auto *data_ptr = static_cast<const T *>(inputs.data());
+                 ta->eval_taylor_map(std::ranges::subrange(data_ptr, data_ptr + inputs.shape(0)));
+
+                 // Return the tstate.
+                 return fetch_tstate<T>(o);
+             })
         // Event detection.
         .def_property_readonly("with_events", &hey::taylor_adaptive<T>::with_events)
         .def_property_readonly("te_cooldowns", &hey::taylor_adaptive<T>::get_te_cooldowns)

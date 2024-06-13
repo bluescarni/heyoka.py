@@ -342,3 +342,14 @@ class expression_test_case(_ut.TestCase):
         self.assertEqual(leaky_relup(0.0)(x * y), relup(x * y))
         self.assertEqual(leaky_relu(0.1)(x * y + y), relu(x * y + y, 0.1))
         self.assertEqual(leaky_relup(0.1)(x * y + y), relup(x * y + y, 0.1))
+
+    def test_dfun(self):
+        from . import make_vars, dfun
+
+        x, y = make_vars("x", "y")
+
+        self.assertEqual(str(dfun("f", [x, y])), "(∂^0 f)")
+        self.assertEqual(
+            str(dfun(name="f", args=[x, y], didx=[(0, 3), (1, 5)])),
+            "(∂^8 f)/(∂a0^3 ∂a1^5)",
+        )

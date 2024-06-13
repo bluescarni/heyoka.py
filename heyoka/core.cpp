@@ -61,6 +61,7 @@
 #include "expose_models.hpp"
 #include "expose_real.hpp"
 #include "expose_real128.hpp"
+#include "expose_var_ode_sys.hpp"
 #include "logging.hpp"
 #include "pickle_wrappers.hpp"
 #include "setup_sympy.hpp"
@@ -196,6 +197,9 @@ PYBIND11_MODULE(core, m)
 
     // Expression.
     heypy::expose_expression(m);
+
+    // var_ode_sys.
+    heypy::expose_var_ode_sys(m);
 
     // Models.
     heypy::expose_models(m);

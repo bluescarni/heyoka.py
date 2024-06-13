@@ -34,6 +34,7 @@ Attributes
    :toctree: autosummary_generated
 
    par
+   time
 
 Enums
 -----
