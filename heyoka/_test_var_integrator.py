@@ -47,6 +47,10 @@ class var_integrator_test_case(_ut.TestCase):
         self.assertEqual(ts.shape, (2,))
         self.assertTrue(np.all(ts == [0.0, 0.0]))
 
+        # Test that tstate cannot be written to.
+        with self.assertRaises(ValueError) as cm:
+            ta.tstate[0] = 0.5
+
         self.assertEqual(ta.get_vslice(order=0), slice(0, 2, None))
         self.assertEqual(ta.get_vslice(order=0, component=1), slice(1, 2, None))
 
@@ -167,6 +171,10 @@ class var_integrator_test_case(_ut.TestCase):
         self.assertEqual(getrefcount(ta), rc + 1)
         self.assertEqual(ts.shape, (2, 2))
         self.assertTrue(np.all(ts == [[0.0, 0.0], [0.0, 0.0]]))
+
+        # Test that tstate cannot be written to.
+        with self.assertRaises(ValueError) as cm:
+            ta.tstate[0] = 0.5
 
         self.assertEqual(ta.get_vslice(order=0), slice(0, 2, None))
         self.assertEqual(ta.get_vslice(order=0, component=1), slice(1, 2, None))
