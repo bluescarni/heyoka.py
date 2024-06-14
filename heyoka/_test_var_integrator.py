@@ -280,4 +280,8 @@ class var_integrator_test_case(_ut.TestCase):
         )
 
         # This would throw.
-        self.assertTrue(np.all(ta.state[:2] == ta.eval_taylor_map([[0.0, 0.0] * 3])))
+        self.assertTrue(
+            np.all(
+                ta.state[:2] == ta.eval_taylor_map([[0.0, 0.0], [0.0, 0.0], [0.0, 0.0]])
+            )
+        )
