@@ -614,11 +614,11 @@ void expose_batch_integrator_impl(py::module_ &m, const std::string &suffix)
                  }
 
                  // Validate the shape for the inputs.
-                 if (boost::numeric_cast<std::uint32_t>(inputs.shape(0)) != ta->get_n_orig_sv()) [[unlikely]] {
+                 if (boost::numeric_cast<std::uint32_t>(inputs.shape(0)) != ta->get_vargs().size()) [[unlikely]] {
                      py_throw(PyExc_ValueError, fmt::format("The array of inputs provided for the evaluation "
                                                             "of a Taylor map has {} row(s), "
                                                             "but it must have {} row(s) instead",
-                                                            inputs.shape(0), ta->get_n_orig_sv())
+                                                            inputs.shape(0), ta->get_vargs().size())
                                                     .c_str());
                  }
 

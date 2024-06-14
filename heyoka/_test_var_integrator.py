@@ -234,3 +234,54 @@ class var_integrator_test_case(_ut.TestCase):
             "The array of inputs provided for the evaluation of a Taylor map has 1 column(s), but it must have 2 column(s) instead"
             in str(cm.exception)
         )
+
+    def test_size_check_bug(self):
+        # BUG: wrong size check on the input for a Taylor map (the size is checked against
+        # the number of original state variables instead of the number of variational arguments).
+
+        from . import (
+            make_vars,
+            var_ode_sys,
+            var_args,
+            cos,
+            sin,
+            par,
+            time,
+            taylor_adaptive_batch,
+            taylor_adaptive,
+            core,
+        )
+        import numpy as np
+
+        x, v = make_vars("x", "v")
+
+        orig_sys = [(x, v), (v, cos(time) - par[0] * v - sin(x))]
+
+        vsys = var_ode_sys(orig_sys, var_args.vars | var_args.params, order=2)
+
+        ta = taylor_adaptive(
+            vsys,
+            [0.2, 0.3],
+            pars=[0.4],
+            time=0.5,
+            compact_mode=True,
+        )
+
+        # This would throw.
+        self.assertTrue(np.all(ta.state[:2] == ta.eval_taylor_map([0.0, 0.0, 0.0])))
+
+        # Test the batch case too.
+        ta = taylor_adaptive_batch(
+            vsys,
+            [[0.2, 0.21], [0.3, 0.31]],
+            pars=[[0.4, 0.41]],
+            time=[0.5, 0.51],
+            compact_mode=True,
+        )
+
+        # This would throw.
+        self.assertTrue(
+            np.all(
+                ta.state[:2] == ta.eval_taylor_map([[0.0, 0.0], [0.0, 0.0], [0.0, 0.0]])
+            )
+        )
