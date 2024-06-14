@@ -3,6 +3,15 @@
 Changelog
 =========
 
+5.0.1 (2024-06-14)
+------------------
+
+Fix
+~~~
+
+- Fix an input size check that would wrongly throw on valid code
+  (`#179 <https://github.com/bluescarni/heyoka.py/pull/179>`__).
+
 5.0.0 (2024-06-13)
 ------------------
 
