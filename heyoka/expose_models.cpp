@@ -46,6 +46,7 @@
 
 #include "common_utils.hpp"
 #include "custom_casters.hpp"
+#include "docstrings.hpp"
 #include "dtypes.hpp"
 #include "expose_models.hpp"
 
@@ -207,7 +208,7 @@ void expose_models(py::module_ &m)
 
     // A variant containing either an expression or a numerical/string
     // type from which an expression can be constructed.
-    using vex_t = std::variant<hy::expression, std::string, double, long double
+    using vex_t = std::variant<hy::expression, std::string, float, double, long double
 #if defined(HEYOKA_HAVE_REAL128)
                                ,
                                mppp::real128
@@ -276,7 +277,8 @@ void expose_models(py::module_ &m)
             return detail::fixed_centres_impl(hy::model::fixed_centres, Gconst, masses, positions);
         },
         "Gconst"_a.noconvert() = 1., "masses"_a.noconvert() = py::list{},
-        "positions"_a = py::array{py::dtype(get_dtype<double>()), py::array::ShapeContainer{0, 3}});
+        "positions"_a = py::array{py::dtype(get_dtype<double>()), py::array::ShapeContainer{0, 3}},
+        docstrings::fixed_centres().c_str());
     m.def(
         "_model_fixed_centres_energy",
         [](const vex_t &Gconst, const std::vector<vex_t> &masses, const py::iterable &positions) {
