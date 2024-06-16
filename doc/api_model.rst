@@ -14,3 +14,4 @@ Functions
    cart2geo
    nrlmsise00_tn
    jb08_tn
+   fixed_centres
