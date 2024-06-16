@@ -105,6 +105,9 @@ nb_execution_excludepatterns = [
     "thermoNETs*"
     ]
 
+# Force printing traceback to stderr on execution error.
+nb_execution_show_tb = True
+
 latex_engine = "xelatex"
 
 myst_enable_extensions = [
