@@ -262,7 +262,7 @@ void expose_models(py::module_ &m)
     m.def(
         "_model_pendulum",
         [](const vex_t &gconst, const vex_t &l) { return detail::pendulum_impl(hy::model::pendulum, gconst, l); },
-        "gconst"_a.noconvert() = 1., "length"_a.noconvert() = 1.);
+        "gconst"_a.noconvert() = 1., "length"_a.noconvert() = 1., docstrings::pendulum().c_str());
     m.def(
         "_model_pendulum_energy",
         [](const vex_t &gconst, const vex_t &l) {

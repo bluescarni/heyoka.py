@@ -706,4 +706,28 @@ Several checks are run on the input arguments:
 )";
 }
 
+std::string pendulum()
+{
+    return R"(pendulum(gconst: expression | str | numpy.single | float | numpy.longdouble = 1., length: expression | str | numpy.single | float | numpy.longdouble = 1.) -> list[tuple[expression, expression]]
+
+Produces the expression for the dynamics of the simple pendulum.
+
+The gravitational constant is *gconst*, while the length of the pendulum is *length*.
+In the return value, the angle with respect to the downwards vertical is represented by
+the state variable ``x``, while its time derivative is represented by the state
+variable ``v``.
+
+:param gconst: the gravitational constant.
+:param length: the length of the pendulum.
+
+:returns: the dynamics of the simple pendulum.
+
+Examples:
+  >>> from heyoka import model
+  >>> model.pendulum()
+  [(x, v), (v, -sin(x))]
+
+)";
+}
+
 } // namespace heyoka_py::docstrings

@@ -49,6 +49,7 @@ std::string cart2geo();
 std::string nrlmsise00_tn();
 std::string jb08_tn();
 std::string fixed_centres();
+std::string pendulum();
 
 // var_ode_sys() and related.
 std::string var_args();
