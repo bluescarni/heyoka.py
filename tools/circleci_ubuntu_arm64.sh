@@ -14,7 +14,7 @@ wget https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge
 export deps_dir=$HOME/local
 export PATH="$HOME/miniforge/bin:$PATH"
 bash miniforge.sh -b -p $HOME/miniforge
-mamba create -y -q -p $deps_dir cxx-compiler c-compiler cmake llvmdev tbb-devel tbb astroquery libboost-devel 'mppp=1.*' sleef fmt spdlog python=3.10 pybind11 numpy mpmath sympy scipy cloudpickle myst-nb matplotlib 'sphinx=7.*' 'sphinx-book-theme=1.*'
+mamba create -y -q -p $deps_dir cxx-compiler c-compiler cmake llvmdev tbb-devel tbb astroquery libboost-devel 'mppp=1.*' sleef fmt spdlog python=3.10 pybind11 'numpy<2' mpmath sympy scipy cloudpickle myst-nb matplotlib 'sphinx=7.*' 'sphinx-book-theme=1.*'
 source activate $deps_dir
 
 # Checkout, build and install heyoka's HEAD.

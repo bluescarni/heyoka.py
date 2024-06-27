@@ -100,6 +100,7 @@ advanced_tutorials
 examples_astro
 examples_event
 examples_ml
+examples_var_ode_sys
 examples_others
 ```
 

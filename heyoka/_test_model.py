@@ -101,6 +101,7 @@ class model_test_case(_ut.TestCase):
 
     def test_fixed_centres(self):
         from . import model, make_vars, expression as ex, sqrt
+        from numpy import single
 
         x, y, z, vx, vy, vz = make_vars("x", "y", "z", "vx", "vy", "vz")
 
@@ -139,6 +140,15 @@ class model_test_case(_ut.TestCase):
             "The positions array in a fixed centres model could not be converted into an array of expressions - please make sure that the array's values can be converted into heyoka expressions"
             in str(cm.exception)
         )
+
+        # Run also a small test with single-precision values.
+        dyn = model.fixed_centres(
+            Gconst=single(1.5), masses=[single(1.1)], positions=[[1.0, 2.0, 3.0]]
+        )
+
+        self.assertEqual(dyn[0][0], x)
+        self.assertEqual(dyn[0][1], ex("vx"))
+        self.assertTrue("1.10000002" in repr(dyn))
 
     def test_nbody(self):
         from . import model, expression, sqrt, make_vars

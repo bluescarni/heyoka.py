@@ -678,4 +678,56 @@ std::string var_args_all()
 )";
 }
 
+std::string fixed_centres()
+{
+    return R"(fixed_centres(Gconst: expression | str | numpy.single | float | numpy.longdouble = 1., masses:  collections.abc.Sequence[expression | str | numpy.single | float | numpy.longdouble] = [], positions: collections.abc.Iterable = numpy.empty((0, 3), dtype=float)) -> list[tuple[expression, expression]]
+
+Produces the expression for the dynamics in a fixed-centres problem.
+
+In the fixed-centres problem, a test particle moves in the Newtonian gravitational field generated
+by a number of massive particles whose positions are fixed in space. The test particle's Cartesian position and
+velocity are represented by the variables ``[x, y, z]`` and ``[vx, vy, vz]`` respectively.
+
+Several checks are run on the input arguments:
+
+- *positions* must be convertible into an ``N x 3`` array, with each row containing
+  the Cartesian position vector of a mass,
+- the number of elements in *masses* must be equal to the number of three-dimensional
+  position vectors in *positions*.
+
+:param Gconst: the gravitational constant.
+:param masses: the list of mass values (one for each particle).
+:param positions: the positions of the particles.
+
+:returns: the dynamics of the Newtonian fixed centres problem.
+
+:raises ValueError: if one or more input arguments are malformed, as explained above.
+
+)";
+}
+
+std::string pendulum()
+{
+    return R"(pendulum(gconst: expression | str | numpy.single | float | numpy.longdouble = 1., length: expression | str | numpy.single | float | numpy.longdouble = 1.) -> list[tuple[expression, expression]]
+
+Produces the expression for the dynamics of the simple pendulum.
+
+The gravitational constant is *gconst*, while the length of the pendulum is *length*.
+In the return value, the angle with respect to the downwards vertical is represented by
+the state variable ``x``, while its time derivative is represented by the state
+variable ``v``.
+
+:param gconst: the gravitational constant.
+:param length: the length of the pendulum.
+
+:returns: the dynamics of the simple pendulum.
+
+Examples:
+  >>> from heyoka import model
+  >>> model.pendulum()
+  [(x, v), (v, -sin(x))]
+
+)";
+}
+
 } // namespace heyoka_py::docstrings
