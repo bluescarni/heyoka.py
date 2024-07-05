@@ -14,6 +14,13 @@ New
 - Add tutorial on solving inversion problems with the variational equations
   (`#181 <https://github.com/bluescarni/heyoka.py/pull/181>`__).
 
+Changes
+~~~~~~~
+
+- heyoka.py now requires version 5.1.0 of the
+  heyoka C++ library
+  (`#183 <https://github.com/bluescarni/heyoka.py/pull/183>`__).
+
 5.0.1 (2024-06-14)
 ------------------
 
