@@ -3,6 +3,17 @@
 Changelog
 =========
 
+5.1.0 (unreleased)
+------------------
+
+New
+~~~
+
+- Add tutorial on Taylor map inversion
+  (`#182 <https://github.com/bluescarni/heyoka.py/pull/182>`__).
+- Add tutorial on solving inversion problems with the variational equations
+  (`#181 <https://github.com/bluescarni/heyoka.py/pull/181>`__).
+
 5.0.1 (2024-06-14)
 ------------------
 
