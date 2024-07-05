@@ -730,4 +730,47 @@ Examples:
 )";
 }
 
+std::string sgp4_model()
+{
+    return R"(sgp4() -> list[expression]
+
+Produces the expression for the SGP4 propagator.
+
+.. versionadded:: 5.1.0
+
+SGP4 is a widely-used analytical propagator for the dynamics of Earth-orbiting satellites,
+described in detail in the `spacetrack report #3 <https://celestrak.org/NORAD/documentation/spacetrk.pdf>`__.
+It takes in input a `two-line element set (TLE) <https://en.wikipedia.org/wiki/Two-line_element_set>`__ and
+a time delta, and returns the Cartesian state vector (position and velocity) of the spacecraft at the specified
+time in the True Equator Mean Equinox (TEME) reference frame.
+
+This function will return 6 expressions corresponding to the cartesian state of the
+spacecraft according to the SGP4 algorithm. The expressions are formulated in terms of the
+following input variables:
+
+- ``n0``: the mean motion from the TLE (in [rad / min]),
+- ``e0``: the eccentricity from the TLE,
+- ``i0``: the inclination from the TLE (in [rad]),
+- ``node0``: the right ascension of the ascending node from the TLE (in [rad]),
+- ``omega0``: the argument of perigee from the TLE (in [rad]),
+- ``m0``: the mean anomaly from the TLE (in [rad]),
+- ``bstar``: the `BSTAR <https://en.wikipedia.org/wiki/BSTAR>`__ drag term from
+  the TLE (in the same unit as given in the TLE),
+- ``tsince``: the time elapsed from the TLE epoch (in [min]).
+
+The first three expressions returned by this function are the cartesian coordinates
+``x, y, z`` of the satellite in [km]. The last three expressions are the cartesian
+velocities ``vx, vy, vz`` in [km / s].
+
+.. note::
+
+   Currently this function does not implement the deep-space part of the
+   SGP4 algorithm and consequently it should not be used with satellites
+   whose orbital period is greater than 225 minutes.
+
+:returns: the Cartesian state vector of an Earth-orbiting satellite according to the SGP4 algorithm.
+
+)";
+}
+
 } // namespace heyoka_py::docstrings

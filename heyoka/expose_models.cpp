@@ -451,6 +451,9 @@ void expose_models(py::module_ &m)
         },
         "geodetic"_a, "f107"_a, "f107a"_a, "s107"_a, "s107a"_a, "m107"_a, "m107a"_a, "y107"_a, "y107a"_a, "dDstdT"_a,
         "time_expr"_a, docstrings::jb08_tn().c_str());
+
+    // sgp4.
+    m.def("_model_sgp4", &hy::model::sgp4, docstrings::sgp4_model().c_str());
 }
 
 } // namespace heyoka_py
