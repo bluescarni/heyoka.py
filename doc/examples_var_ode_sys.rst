@@ -28,3 +28,4 @@ Variational equations
 
   notebooks/tmap_pendulum
   notebooks/learning_mascons
+  notebooks/map_inversion
