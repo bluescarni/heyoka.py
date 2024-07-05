@@ -432,7 +432,7 @@ std::string cart2geo()
 {
     return R"(cart2geo(xyz: list[expression], ecc2: float = 0.006694379990197619, R_eq: float = 6378137.0, n_iters: int = 4) -> list[expression]
 
-Produces the expression of the Cartesian coordinates a function of Geodetic Coordinates.
+Produces the expression of the Cartesian coordinates as a function of geodetic coordinates.
 
 .. note::
 
@@ -767,6 +767,10 @@ velocities ``vx, vy, vz`` in [km / s].
    Currently this function does not implement the deep-space part of the
    SGP4 algorithm and consequently it should not be used with satellites
    whose orbital period is greater than 225 minutes.
+
+.. seealso::
+
+   `NORAD Two-Line Element Set Format <https://celestrak.org/NORAD/documentation/tle-fmt.php>`_
 
 :returns: the Cartesian state vector of an Earth-orbiting satellite according to the SGP4 algorithm.
 

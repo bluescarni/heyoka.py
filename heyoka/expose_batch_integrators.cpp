@@ -220,8 +220,7 @@ void expose_batch_integrator_impl(py::module_ &m, const std::string &suffix)
              }),
              "sys"_a, "state"_a, "time"_a = py::none{}, "pars"_a = py::none{}, "tol"_a.noconvert() = static_cast<T>(0),
              "high_accuracy"_a = false, "compact_mode"_a = false, "t_events"_a = py::list{}, "nt_events"_a = py::list{},
-             "parallel_mode"_a = false, "opt_level"_a.noconvert() = 3, "force_avx512"_a.noconvert() = false,
-             "slp_vectorize"_a.noconvert() = false, "fast_math"_a.noconvert() = false)
+             "parallel_mode"_a = false, HEYOKA_PY_LLVM_STATE_ARGS)
         .def_property_readonly("decomposition", &hey::taylor_adaptive_batch<T>::get_decomposition)
         .def_property_readonly("sys", &hey::taylor_adaptive_batch<T>::get_sys)
         .def(
