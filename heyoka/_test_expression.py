@@ -353,3 +353,56 @@ class expression_test_case(_ut.TestCase):
             str(dfun(name="f", args=[x, y], didx=[(0, 3), (1, 5)])),
             "(∂^8 f)/(∂a0^3 ∂a1^5)",
         )
+
+    def test_relational(self):
+        from . import make_vars, lt, eq
+
+        x, y = make_vars("x", "y")
+
+        self.assertEqual(str(lt(x, y)), "(x < y)")
+        self.assertEqual(str(eq(x, y)), "(x == y)")
+        self.assertTrue("(x == 1.00" in str(eq(x, 1.0)))
+        self.assertTrue("0000 == x)" in str(eq(1.0, x)))
+
+        with self.assertRaises(TypeError) as cm:
+            lt(1.0, 1.0)
+        self.assertTrue(
+            "At least one of the arguments of lt() must be an expression"
+            in str(cm.exception)
+        )
+
+    def test_logical(self):
+        from . import make_vars, logical_and, logical_or
+
+        x, y = make_vars("x", "y")
+
+        self.assertEqual(str(logical_and([x, y])), "logical_and(x, y)")
+        self.assertEqual(str(logical_or([x, y])), "logical_or(x, y)")
+
+    def test_select(self):
+        from . import make_vars, select
+        import numpy as np
+
+        x, y = make_vars("x", "y")
+
+        self.assertEqual(str(select(x, y, x)), "select(x, y, x)")
+
+        self.assertTrue("select(1.0000" in str(select(1.0, y, x)))
+        self.assertTrue("000, y, x)" in str(select(1.0, y, x)))
+
+        self.assertTrue("select(1.0000" in str(select(1.0, y, 2.0)))
+        self.assertTrue("000, y, 2.000" in str(select(1.0, y, 2.0)))
+
+        with self.assertRaises(TypeError) as cm:
+            select(1.0, 1.0, 1.0)
+        self.assertTrue(
+            "At least one of the arguments of select() must be an expression"
+            in str(cm.exception)
+        )
+
+        with self.assertRaises(TypeError) as cm:
+            select(1.0, y, np.longdouble(2.0))
+        self.assertTrue(
+            "The numerical arguments of select() must be all of the same type"
+            in str(cm.exception)
+        )
