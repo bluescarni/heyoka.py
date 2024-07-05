@@ -14,7 +14,13 @@ wget https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge
 export deps_dir=$HOME/local
 export PATH="$HOME/miniforge/bin:$PATH"
 bash miniforge.sh -b -p $HOME/miniforge
-mamba create -y -p $deps_dir python=3.10 c-compiler cxx-compiler git pybind11 'numpy<2' mpmath cmake llvmdev tbb-devel tbb astroquery libboost-devel 'mppp=1.*' sleef fmt spdlog myst-nb matplotlib sympy scipy pykep cloudpickle 'sphinx=7.*' 'sphinx-book-theme=1.*'
+# NOTE: the scipy pin is necessary otherwise the
+# notebooks do not execute correctly due to pykep
+# using deprecated scipy functions.
+mamba create -y -p $deps_dir python=3.10 c-compiler cxx-compiler git pybind11 'numpy<2' \
+    mpmath cmake llvmdev tbb-devel tbb astroquery libboost-devel 'mppp=1.*' \
+    sleef fmt spdlog myst-nb matplotlib sympy 'scipy<1.14' pykep cloudpickle \
+    'sphinx=7.*' 'sphinx-book-theme=1.*'
 source activate $deps_dir
 
 export HEYOKA_PY_PROJECT_DIR=`pwd`

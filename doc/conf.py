@@ -102,9 +102,7 @@ nb_execution_excludepatterns = [
     "Pseudo arc-length continuation*",
     "torch_and_heyoka*",
     "differentiable_atm*",
-    "thermoNETs*",
-    # NOTE: this is temporary due to pykep failure.
-    "Comparing coordinate systems*"
+    "thermoNETs*"
     ]
 
 # Force printing traceback to stderr on execution error.
