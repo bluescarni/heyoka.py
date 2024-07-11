@@ -650,6 +650,8 @@ std::string var_args()
 {
     return R"(Enum for selecting variational arguments.
 
+.. versionadded:: 5.0.0
+
 Values of this enum can be used in the constructor of :class:`~heyoka.var_ode_sys()` to select
 the arguments with respect to which the variational equations will be formulated.
 
