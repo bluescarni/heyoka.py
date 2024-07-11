@@ -301,6 +301,8 @@ std::string lagrangian()
     
 Formulate the Euler-Lagrange equations for a Lagrangian.
 
+.. versionadded:: 4.0.0
+
 .. note::
 
    A :ref:`tutorial <lagham_tut>` illustrating the use of this function is available.
@@ -337,6 +339,8 @@ std::string hamiltonian()
     return R"(hamiltonian(H: expression, qs: list[expression], ps: list[expression]) -> list[tuple[expression, expression]]
     
 Formulate Hamilton's equations for a Hamiltonian.
+
+.. versionadded:: 4.0.0
 
 .. note::
 
@@ -434,6 +438,8 @@ std::string cart2geo()
 
 Produces the expression of the Cartesian coordinates as a function of geodetic coordinates.
 
+.. versionadded:: 4.0.0
+
 .. note::
 
    A :ref:`tutorial <Thermonets>` showcasing also the use of this
@@ -464,9 +470,12 @@ A few checks are run on the input arguments. Specifically:
 
 std::string nrlmsise00_tn()
 {
-    return R"(nrlmsise00_tn(geodetic: list[expression], f107: expression, f107a: expression, ap: expression, time: expression) -> expression
+    return R"(nrlmsise00_tn(geodetic: list[expression], f107: expression, f107a: expression, ap: expression, time_expr: expression) -> expression
 
 Produces the expression of the thermospheric density as a function of geodetic coordinates and weather indexes.
+
+.. versionadded:: 4.0.0
+
 The expression is approximated by an artificial neural network (a thermoNET) trained over NRLMSISE00 data. 
 
 .. note::
@@ -487,7 +496,7 @@ must be three.
 :param f107: the F10.7 index.
 :param f107a: the F10.7 averaged index.
 :param ap: the AP index.
-:param time: number of fractional days passed since 1st of January.
+:param time_expr: number of fractional days passed since 1st of January.
 
 :returns: the thermospheric density in [kg / m^3] as predicted by the NRLMSISE00 thermoNET model.
 
@@ -498,9 +507,12 @@ must be three.
 
 std::string jb08_tn()
 {
-    return R"(jb08_tn(geodetic: list[expression], f107: expression, f107a: expression, s107: expression, s107a: expression, m107: expression, m107a: expression, y107: expression, y107a: expression, dDstdT: expression, time: expression) -> expression
+    return R"(jb08_tn(geodetic: list[expression], f107: expression, f107a: expression, s107: expression, s107a: expression, m107: expression, m107a: expression, y107: expression, y107a: expression, dDstdT: expression, time_expr: expression) -> expression
 
 Produces the expression of the thermospheric density as a function of geodetic coordinates and weather indexes.
+
+.. versionadded:: 4.0.0
+
 The expression is approximated by an artificial neural network (a thermoNET) trained over JB08 data. 
 
 .. note::
@@ -526,7 +538,7 @@ A few checks are run on the input arguments. Specifically, the number of geodesi
 :param y107: the Y10.7 index.
 :param y107a: the Y10.7 averaged index.
 :param dDstdT: the dDstdT index.
-:param time: number of fractional days passed since 1st of January.
+:param time_expr: number of fractional days passed since 1st of January.
 
 :returns: the thermospheric density in [kg / m^3] as predicted by the JB08 thermoNET model.
 
@@ -538,6 +550,8 @@ A few checks are run on the input arguments. Specifically, the number of geodesi
 std::string var_ode_sys()
 {
     return R"(Class to represent variational ODE systems.
+
+.. versionadded:: 5.0.0
 
 .. note::
 
