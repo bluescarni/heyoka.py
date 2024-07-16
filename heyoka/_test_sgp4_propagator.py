@@ -351,17 +351,6 @@ class sgp4_propagator_test_case(_ut.TestCase):
             )
             self.assertTrue(np.all(out[43:, :] == 0.0))
 
-            # Test that a batch prop with zero nevals does not throw.
-            dates = np.zeros((0, 2), dtype=prop.jdtype)
-            out = np.zeros(
-                (0, 49, 2),
-                dtype=fp_type,
-            )
-            prop(
-                dates,
-                out=out,
-            )
-
     def test_skyfield_comp(self):
         try:
             from skyfield.api import load

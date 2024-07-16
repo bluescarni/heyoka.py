@@ -14,6 +14,7 @@
 #include <iostream>
 #include <limits>
 #include <optional>
+#include <stdexcept>
 #include <type_traits>
 #include <typeindex>
 #include <typeinfo>
@@ -127,8 +128,8 @@ bool is_integer(const hy::number &n)
         n.value());
 }
 
-// Number conversion corresponds to casting to python
-// the numerical value.
+// Number conversion corresponds to creating a SymPy number from the
+// original value.
 py::object to_sympy_impl(std::unordered_map<const void *, py::object> &, const hy::number &num)
 {
     // NOTE: if num contains an integral value, we want to convert it into a SymPy integer,
@@ -137,7 +138,7 @@ py::object to_sympy_impl(std::unordered_map<const void *, py::object> &, const h
     const auto is_int = is_integer(num);
 
     return std::visit(
-        [&num, is_int](const auto &x) -> py::object {
+        [&num, is_int]<typename T>(const T &x) -> py::object {
             using std::isfinite;
 
             // NOTE: forbid conversion if the value is not finite.
@@ -147,7 +148,7 @@ py::object to_sympy_impl(std::unordered_map<const void *, py::object> &, const h
             }
 
 #if defined(HEYOKA_HAVE_REAL128)
-            if constexpr (std::is_same_v<std::remove_cv_t<std::remove_reference_t<decltype(x)>>, mppp::real128>) {
+            if constexpr (std::is_same_v<T, mppp::real128>) {
                 if (is_int) {
                     return spy->attr("Integer")(static_cast<mppp::integer<1>>(x).to_string());
                 } else {
@@ -157,7 +158,7 @@ py::object to_sympy_impl(std::unordered_map<const void *, py::object> &, const h
 #endif
 
 #if defined(HEYOKA_HAVE_REAL)
-            if constexpr (std::is_same_v<std::remove_cv_t<std::remove_reference_t<decltype(x)>>, mppp::real>) {
+            if constexpr (std::is_same_v<T, mppp::real>) {
                 if (is_int) {
                     return spy->attr("Integer")(static_cast<mppp::integer<1>>(x).to_string());
                 } else {
@@ -166,7 +167,7 @@ py::object to_sympy_impl(std::unordered_map<const void *, py::object> &, const h
             }
 #endif
 
-            if constexpr (std::is_floating_point_v<std::remove_cv_t<std::remove_reference_t<decltype(x)>>>) {
+            if constexpr (std::is_floating_point_v<T>) {
                 if (is_int) {
 #if defined(HEYOKA_HAVE_REAL128) || defined(HEYOKA_HAVE_REAL)
                     return spy->attr("Integer")(static_cast<mppp::integer<1>>(x).to_string());
@@ -176,10 +177,14 @@ py::object to_sympy_impl(std::unordered_map<const void *, py::object> &, const h
                     // if this becomes an issue we will have to find a better solution.
                     return spy->attr("Integer")(boost::numeric_cast<std::int64_t>(x));
 #endif
+                } else {
+                    return spy->attr("Float")(py::cast(x));
                 }
             }
 
-            return py::cast(x);
+            // NOTE: we should never end up here.
+            throw std::invalid_argument(
+                "An unsupported C++ floating-point type was detected while trying to convert an expression to sympy");
         },
         num.value());
 }

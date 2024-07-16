@@ -92,7 +92,7 @@ class sympy_test_case(_ut.TestCase):
 
             self.assertEqual(
                 to_sympy(expression((2**40 + 1) / (2**128))),
-                Rational(2**40 + 1, 2**128),
+                float(Rational(2**40 + 1, 2**128)),
             )
             self.assertEqual(
                 from_sympy(Rational(2**40 + 1, 2**128)),
@@ -122,7 +122,10 @@ class sympy_test_case(_ut.TestCase):
                                 np.longdouble(2**expo + 1) / np.longdouble(2**128)
                             )
                         ),
-                        Rational(2**expo + 1, 2**128),
+                        Float(
+                            Rational(2**expo + 1, 2**128),
+                            precision=np.finfo(np.longdouble).nmant + 1,
+                        ),
                     )
                     self.assertEqual(
                         from_sympy(Rational(2**expo + 1, 2**128)),
@@ -152,7 +155,7 @@ class sympy_test_case(_ut.TestCase):
             expo = 100
             self.assertEqual(
                 to_sympy(expression(real128(2**expo + 1) / real128(2**128))),
-                Rational(2**expo + 1, 2**128),
+                Float(Rational(2**expo + 1, 2**128), precision=113),
             )
             self.assertEqual(
                 from_sympy(Rational(2**expo + 1, 2**128)),
