@@ -16,7 +16,7 @@ export PATH="$HOME/miniforge/bin:$PATH"
 bash miniforge.sh -b -p $HOME/miniforge
 mamba create -y -p $deps_dir c-compiler cxx-compiler python=3.10 git pybind11 \
     ninja 'numpy<2' mpmath cmake llvmdev tbb-devel tbb astroquery libboost-devel \
-    'mppp=1.*' sleef fmt spdlog myst-nb matplotlib sympy scipy pykep cloudpickle \
+    'mppp=1.*' sleef 'fmt<11' skyfield spdlog myst-nb matplotlib sympy scipy pykep cloudpickle \
     'sphinx=7.*' 'sphinx-book-theme=1.*'
 source activate $deps_dir
 
