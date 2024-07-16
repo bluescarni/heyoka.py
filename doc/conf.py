@@ -102,7 +102,10 @@ nb_execution_excludepatterns = [
     "Pseudo arc-length continuation*",
     "torch_and_heyoka*",
     "differentiable_atm*",
-    "thermoNETs*"
+    "thermoNETs*",
+    # NOTE: the sgp4 notebook runs
+    # some benchmarks.
+    "sgp4_propagator*",
     ]
 
 # Force printing traceback to stderr on execution error.

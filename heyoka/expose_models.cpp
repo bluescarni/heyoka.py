@@ -454,6 +454,7 @@ void expose_models(py::module_ &m)
 
     // sgp4.
     m.def("_model_sgp4", &hy::model::sgp4, docstrings::sgp4_model().c_str());
+    expose_sgp4_propagators(m);
 }
 
 } // namespace heyoka_py

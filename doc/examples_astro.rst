@@ -43,3 +43,4 @@ Celestial mechanics and astrodynamics
   notebooks/tides_spokes
   notebooks/lagrangian_propagator
   notebooks/gg_stab
+  notebooks/sgp4_propagator

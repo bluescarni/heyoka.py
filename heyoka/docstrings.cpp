@@ -8,6 +8,8 @@
 
 #include <string>
 
+#include <fmt/core.h>
+
 #include "docstrings.hpp"
 
 namespace heyoka_py::docstrings
@@ -754,15 +756,22 @@ Produces the expression for the SGP4 propagator.
 
 .. versionadded:: 5.1.0
 
+.. note::
+
+   This is a low-level function for advanced use cases. If you are looking for a fast,
+   high-level SGP4 propagator supporting parallel and batched operations, please refer
+   to :func:`~heyoka.model.sgp4_propagator()`.
+
 SGP4 is a widely-used analytical propagator for the dynamics of Earth-orbiting satellites,
 described in detail in the `spacetrack report #3 <https://celestrak.org/NORAD/documentation/spacetrk.pdf>`__.
 It takes in input a `two-line element set (TLE) <https://en.wikipedia.org/wiki/Two-line_element_set>`__ and
 a time delta, and returns the Cartesian state vector (position and velocity) of the spacecraft at the specified
 time in the True Equator Mean Equinox (TEME) reference frame.
 
-This function will return 6 expressions corresponding to the cartesian state of the
-spacecraft according to the SGP4 algorithm. The expressions are formulated in terms of the
-following input variables:
+This function will return 7 expressions: the first 6 correspond to the Cartesian state (position and
+velocity respectively) of the spacecraft according to the SGP4 algorithm, while the last expression
+represents an error code which, if nonzero, signals the occurrence of an error in the SGP4 propagation
+routine. The expressions are formulated in terms of the following 8 input variables:
 
 - ``n0``: the mean motion from the TLE (in [rad / min]),
 - ``e0``: the eccentricity from the TLE,
@@ -774,9 +783,15 @@ following input variables:
   the TLE (in the same unit as given in the TLE),
 - ``tsince``: the time elapsed from the TLE epoch (in [min]).
 
-The first three expressions returned by this function are the cartesian coordinates
-``x, y, z`` of the satellite in [km]. The last three expressions are the cartesian
-velocities ``vx, vy, vz`` in [km / s].
+The Cartesian coordinates ``x, y, z`` of the satellite are returned in [km], while the velocities ``vx, vy, vz``
+are returned in [km / s]. When nonzero, the error code can assume the following values:
+
+- 1: the mean eccentricity is outside the range [0.0, 1.0],
+- 2: the mean mean motion is less than zero,
+- 3: the perturbed eccentricity is outside the range [0.0, 1.0],
+- 4: the semilatus rectum is less than zero,
+- 5: the satellite was underground (**NOTE**: this error code is no longer in use),
+- 6: the satellite has decayed.
 
 .. note::
 
@@ -788,9 +803,232 @@ velocities ``vx, vy, vz`` in [km / s].
 
    `NORAD Two-Line Element Set Format <https://celestrak.org/NORAD/documentation/tle-fmt.php>`_
 
-:returns: the Cartesian state vector of an Earth-orbiting satellite according to the SGP4 algorithm.
+:returns: the Cartesian state vector of an Earth-orbiting satellite according to the SGP4 algorithm,
+   plus an error code.
 
 )";
+}
+
+std::string sgp4_propagator(const std::string &p)
+{
+    return fmt::format(R"(SGP4 propagator ({} precision).
+
+.. versionadded:: 5.1.0
+
+.. note::
+
+   A :ref:`tutorial <tut_sgp4_propagator>` explaining the use of this class
+   is available.
+
+)",
+                       p);
+}
+
+std::string sgp4_propagator_init()
+{
+    return R"(__init__(self, sat_list: list, diff_order: int = 0, **kwargs)
+
+Constructor.
+
+.. note::
+
+   Instead of using this constructor, consider using the factory function
+   :py:func:`~heyoka.model.sgp4_propagator()`.
+
+The constructor will initialise the propagator from *sat_list*, which must be a list
+of TLEs represented as ``Satrec`` objects from the `sgp4 Python module <https://pypi.org/project/sgp4/>`__.
+
+The *diff_order* argument indicates the desired differentiation order. If equal to 0, then
+derivatives are disabled.
+
+*kwargs* can optionally contain keyword arguments from the :ref:`api_common_kwargs_llvm` set
+and the :ref:`api_common_kwargs_cfunc` set.
+
+:param sat_list: the list of TLEs.
+:param diff_order: the derivatives order.
+
+:raises ImportError: if the sgp4 Python module is not available.
+:raises TypeError: if one or more elements in *sat_list* is not a ``Satrec`` object.
+:raises ValueError: if a satellite with an orbital period above 225 minutes is detected.
+
+)";
+}
+
+std::string sgp4_propagator_jdtype(const std::string &tp)
+{
+    return fmt::format(R"(Data type representing Julian dates with a fractional component.
+
+This is a :ref:`structured NumPy datatype<numpy:defining-structured-types>` consisting of
+two fields of type :py:class:`{}`, the first one called ``jd`` and representing a Julian date,
+the second one called ``frac`` representing a fractional correction to ``jd`` (so that the full
+Julian date is ``jd + frac``).
+
+:rtype: numpy.dtype
+
+)",
+                       tp);
+}
+
+std::string sgp4_propagator_nsats()
+{
+    return R"(The total number of satellites.
+
+:rtype: int
+
+)";
+}
+
+std::string sgp4_propagator_nouts()
+{
+    return R"(The total number of outputs, including the derivatives.
+
+:rtype: int
+
+)";
+}
+
+std::string sgp4_propagator_diff_args()
+{
+    return R"(The list of differentiation arguments.
+
+.. note::
+
+   This property is available only if derivatives were requested on construction.
+
+:rtype: list[expression]
+
+)";
+}
+
+std::string sgp4_propagator_diff_order()
+{
+    return R"(The differentiation order.
+
+:rtype: int
+
+)";
+}
+
+std::string sgp4_propagator_sat_data(const std::string &suffix, const std::string &tp)
+{
+    return fmt::format(R"(The TLE data.
+
+A 9 x :py:attr:`~heyoka.model.sgp4_propagator_{}.nsats` array containing the TLE orbital
+elements, the BSTAR coefficient and the TLE epoch (with fractional correction) of each satellite.
+
+The rows contain the following quantities:
+
+0. the mean motion from the TLE (in [rad / min]),
+1. the eccentricity from the TLE,
+2. the inclination from the TLE (in [rad]),
+3. the right ascension of the ascending node from the TLE (in [rad]),
+4. the argument of perigee from the TLE (in [rad]),
+5. the mean anomaly from the TLE (in [rad]),
+6. the `BSTAR <https://en.wikipedia.org/wiki/BSTAR>`__ drag term from
+   the TLE (in the same unit as given in the TLE),
+7. the reference epoch from the TLE (as a Julian date),
+8. a fractional correction to the epoch (in Julian days).
+
+:rtype: numpy.ndarray[{}]
+
+)",
+                       suffix, tp);
+}
+
+std::string sgp4_propagator_get_dslice()
+{
+    return R"(get_dslice(self, order: int, component: int | None = None) -> slice
+
+Fetch a slice of derivatives.
+
+.. note::
+
+   This method is available only if derivatives were requested on construction.
+
+This method will return a slice representing the range of indices containing the derivatives
+of order *order* in the result of a propagation. If *component* is :py:data:`None`, then the output
+range encompasses the derivatives of all the propagated quantities. Otherwise, the output range
+includes only the derivatives of the *component*-th propagated quantity.
+
+:param order: the differentiation order.
+:param component: the component to consider.
+
+:returns: a range of indices into the output of a propagation containing the requested derivatives.
+
+)";
+}
+
+std::string sgp4_propagator_get_mindex(const std::string &suffix)
+{
+    return fmt::format(R"(get_mindex(self, i: int) -> list[int]
+
+Fetch a differentiation multiindex.
+
+.. note::
+
+   This method is available only if derivatives were requested on construction.
+
+This method will return the differentiation multiindex corresponding to the *i*-th row
+of the propagation output of a differentiable SGP4 propagator.
+
+The multiindex begins with the component index (that is, the index of the output quantity
+whose derivatives have been computed). The remaining indices are the differentiation
+orders with respect to the quantities listed in :py:attr:`~heyoka.model.sgp4_propagator_{}.diff_args`.
+
+For instance, if the return value is ``[2, 0, 1, 0, 0, 0, 0]``, the multiindex refers
+to the first-order derivative of the output quantity at index 2 (i.e., the Cartesian :math:`z` coordinate)
+with respect to the second differentiation argument.
+
+:param i: the input index.
+
+:returns: a differentiation multiindex.
+
+)",
+                       suffix);
+}
+
+std::string sgp4_propagator_call(const std::string &suffix, const std::string &tp)
+{
+    return fmt::format(
+        R"(__call__(self, times: numpy.ndarray, out: numpy.ndarray[{1}] | None = None) -> numpy.ndarray[{1}]
+
+Propagation.
+
+The call operator will propagate the states of all the satellites (and, if requested, their derivatives)
+up to the specified *times*.
+
+The *times* array can contain either floating-point values (of type :py:class:`{1}`),
+or Julian dates (represented via the :py:attr:`~heyoka.model.sgp4_propagator_{0}.jdtype` type). In the former case,
+the input *times* will be interpreted as minutes elapsed since the TLE reference epochs (which in general differ
+from satellite to satellite). In the latter case, the states will be propagated up to the specified Julian dates.
+
+*times* can be either a one-dimensional array, or a two-dimensional one. In the former case (scalar propagation),
+its length must be exactly :py:attr:`~heyoka.model.sgp4_propagator_{0}.nsats` (i.e., one time/date per satellite).
+In the latter case (batch-mode propagation), the number of columns must be exactly
+:py:attr:`~heyoka.model.sgp4_propagator_{0}.nsats`, while the number of rows represents how many propagations
+per satellite will be performed.
+
+The return value is either a two-dimensional (scalar propagation) or three-dimensional (batch-mode propagation)
+array. In the former case, the number of rows will be equal to :py:attr:`~heyoka.model.sgp4_propagator_{0}.nouts`, while the
+number of columns will be equal to :py:attr:`~heyoka.model.sgp4_propagator_{0}.nsats`. In the latter case,
+the first dimension will be equal to the number of propagations performed per satellite, the second dimension
+will be equal to :py:attr:`~heyoka.model.sgp4_propagator_{0}.nouts`, and the third dimension will be equal to
+:py:attr:`~heyoka.model.sgp4_propagator_{0}.nsats`.
+
+If an *out* array with the correct data type and shape is provided, it will be used as the return
+value. Otherwise, a new array will be returned.
+
+All input arguments must be C-style contiguous arrays, with no memory overlap between *times* and *out*.
+
+:param times: the propagation times/dates.
+:param out: the output array.
+
+:returns: the result of the propagation.
+
+:raises ValueError: if an invalid input array is detected, as explained above. 
+
+)",
+        suffix, tp);
 }
 
 } // namespace heyoka_py::docstrings
