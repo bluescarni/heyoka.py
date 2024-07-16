@@ -55,7 +55,7 @@ fi
 # Python mandatory deps.
 /opt/python/${PYTHON_DIR}/bin/pip install numpy==${NUMPY_VERSION} cloudpickle
 # Python optional deps.
-/opt/python/${PYTHON_DIR}/bin/pip install sympy mpmath
+/opt/python/${PYTHON_DIR}/bin/pip install sympy mpmath skyfield
 
 # In the pagmo2/manylinux2014_x86_64_with_deps:latest image in dockerhub
 # the working directory is /root/install, we will install heyoka there.
