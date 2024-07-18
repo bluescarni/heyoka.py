@@ -191,9 +191,12 @@ void expose_sgp4_propagator_impl(py::module_ &m, const std::string &suffix)
            std::optional<py::array_t<T>> out) -> py::array_t<T> {
             auto np = py::module_::import("numpy");
 
+            // NOTE: here we are repeating several checks which are redundant with
+            // checks already performed on the C++ side, with the goal of providing better
+            // error messages.
             return std::visit(
                 [&]<typename U>(py::array_t<U> &in_arr) {
-                    // Check the number of dimensions for the input array.
+                    // Checks on the input array.
                     const auto in_ndim = in_arr.ndim();
                     if (in_ndim != 1 && in_ndim != 2) [[unlikely]] {
                         py_throw(
@@ -205,19 +208,31 @@ void expose_sgp4_propagator_impl(py::module_ &m, const std::string &suffix)
                                 .c_str());
                     }
 
-                    // In batch mode, the number of input columns must match the number of satellites.
-                    if (in_ndim == 2 && in_arr.shape(1) != boost::numeric_cast<py::ssize_t>(prop.get_nsats()))
-                        [[unlikely]] {
-                        py_throw(
-                            PyExc_ValueError,
-                            fmt::format("Invalid times/dates array detected as an input for the call operator of "
-                                        "an sgp4 propagator in batch mode: the number of satellites inferred from the "
-                                        "times/dates array is {}, but the propagator contains {} satellite(s) instead",
-                                        in_arr.shape(1), prop.get_nsats())
-                                .c_str());
+                    if (in_ndim == 1) {
+                        // In scalar mode, the number of elements must match the number of satellites.
+                        if (in_arr.shape(0) != boost::numeric_cast<py::ssize_t>(prop.get_nsats())) [[unlikely]] {
+                            py_throw(PyExc_ValueError,
+                                     fmt::format(
+                                         "Invalid times/dates array detected as an input for the call operator of "
+                                         "an sgp4 propagator: the number of satellites inferred from the "
+                                         "times/dates array is {}, but the propagator contains {} satellite(s) instead",
+                                         in_arr.shape(0), prop.get_nsats())
+                                         .c_str());
+                        }
+                    } else {
+                        // In batch mode, the number of input columns must match the number of satellites.
+                        if (in_arr.shape(1) != boost::numeric_cast<py::ssize_t>(prop.get_nsats())) [[unlikely]] {
+                            py_throw(PyExc_ValueError,
+                                     fmt::format(
+                                         "Invalid times/dates array detected as an input for the call operator of "
+                                         "an sgp4 propagator in batch mode: the number of satellites inferred from the "
+                                         "times/dates array is {}, but the propagator contains {} satellite(s) instead",
+                                         in_arr.shape(1), prop.get_nsats())
+                                         .c_str());
+                        }
                     }
 
-                    // NOTE: we need a C array in both scalar and batch mode.
+                    // We need a C array in both scalar and batch mode.
                     if (!is_npy_array_carray(in_arr)) [[unlikely]] {
                         py_throw(PyExc_ValueError,
                                  "Invalid times/dates array detected as an input for the call operator of "
@@ -340,13 +355,16 @@ void expose_sgp4_propagator_impl(py::module_ &m, const std::string &suffix)
                     }
 
                     // Create the spans and invoke the call operator.
-                    const auto nsats = boost::numeric_cast<std::size_t>(prop.get_nsats());
-                    const auto nouts = boost::numeric_cast<std::size_t>(prop.get_nouts());
                     if (n_evals) {
                         // Batch mode.
-                        typename prop_t::out_3d out_span(out->mutable_data(), *n_evals, nouts, nsats);
+                        typename prop_t::out_3d out_span(out->mutable_data(),
+                                                         boost::numeric_cast<std::size_t>(out->shape(0)),
+                                                         boost::numeric_cast<std::size_t>(out->shape(1)),
+                                                         boost::numeric_cast<std::size_t>(out->shape(2)));
 
-                        typename prop_t::template in_2d<U> in_span(in_arr.data(), *n_evals, nsats);
+                        typename prop_t::template in_2d<U> in_span(in_arr.data(),
+                                                                   boost::numeric_cast<std::size_t>(in_arr.shape(0)),
+                                                                   boost::numeric_cast<std::size_t>(in_arr.shape(1)));
 
                         // NOTE: release the GIL during propagation.
                         py::gil_scoped_release release;
@@ -354,9 +372,12 @@ void expose_sgp4_propagator_impl(py::module_ &m, const std::string &suffix)
                         prop(out_span, in_span);
                     } else {
                         // Scalar mode.
-                        typename prop_t::out_2d out_span(out->mutable_data(), nouts, nsats);
+                        typename prop_t::out_2d out_span(out->mutable_data(),
+                                                         boost::numeric_cast<std::size_t>(out->shape(0)),
+                                                         boost::numeric_cast<std::size_t>(out->shape(1)));
 
-                        typename prop_t::template in_1d<U> in_span(in_arr.data(), nsats);
+                        typename prop_t::template in_1d<U> in_span(in_arr.data(),
+                                                                   boost::numeric_cast<std::size_t>(in_arr.shape(0)));
 
                         // NOTE: release the GIL during propagation.
                         py::gil_scoped_release release;

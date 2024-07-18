@@ -159,6 +159,15 @@ class sgp4_propagator_test_case(_ut.TestCase):
                 in str(cm.exception)
             )
 
+            with self.assertRaises(ValueError) as cm:
+                prop(np.zeros((1, ), dtype=fp_type))
+            self.assertTrue(
+                "Invalid times/dates array detected as an input for the call operator of "
+                "an sgp4 propagator: the number of satellites inferred from the "
+                "times/dates array is 1, but the propagator contains 2 satellite(s) instead"
+                in str(cm.exception)
+            )
+
             tmp = np.zeros((10, 2), dtype=fp_type)
             tmp2 = tmp[::2, :]
 
