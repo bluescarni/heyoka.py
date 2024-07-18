@@ -160,7 +160,7 @@ class sgp4_propagator_test_case(_ut.TestCase):
             )
 
             with self.assertRaises(ValueError) as cm:
-                prop(np.zeros((1, ), dtype=fp_type))
+                prop(np.zeros((1,), dtype=fp_type))
             self.assertTrue(
                 "Invalid times/dates array detected as an input for the call operator of "
                 "an sgp4 propagator: the number of satellites inferred from the "
@@ -359,6 +359,17 @@ class sgp4_propagator_test_case(_ut.TestCase):
                 out=out,
             )
             self.assertTrue(np.all(out[43:, :] == 0.0))
+
+            # Test that a batch prop with zero nevals does not throw.
+            dates = np.zeros((0, 2), dtype=prop.jdtype)
+            out = np.zeros(
+                (0, 49, 2),
+                dtype=fp_type,
+            )
+            prop(
+                dates,
+                out=out,
+            )
 
     def test_skyfield_comp(self):
         try:

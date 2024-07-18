@@ -129,9 +129,7 @@ class sympy_test_case(_ut.TestCase):
                     )
                     self.assertEqual(
                         from_sympy(Rational(2**expo + 1, 2**128)),
-                        expression(
-                            np.longdouble(2**expo + 1) / np.longdouble(2**128)
-                        ),
+                        expression(np.longdouble(2**expo + 1) / np.longdouble(2**128)),
                     )
 
         # Too high precision.
