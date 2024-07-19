@@ -40,7 +40,7 @@ class sgp4_propagator_test_case(_ut.TestCase):
         with self.assertRaises(TypeError) as cm:
             sgp4_propagator([sat1, 1])
         self.assertTrue(
-            "Invalid object encountered while building an sgp4 propagator: a list of sgp4 "
+            "Invalid object encountered in the satellite data for an sgp4 propagator: a list of sgp4 "
             "Satrec objects is expected, but an object of type '<class 'int'>' was detected instead at index 1"
             in str(cm.exception)
         )
@@ -438,3 +438,51 @@ class sgp4_propagator_test_case(_ut.TestCase):
 
             # Check the error codes.
             self.assertTrue(np.all(e[:, 0] == sv[-1, :].T))
+
+    def test_replace_sat_data(self):
+        try:
+            from sgp4.api import Satrec
+        except ImportError:
+            return
+
+        from copy import deepcopy
+        from .model import sgp4_propagator
+        import numpy as np
+
+        s1 = sgp4_propagator_test_case.s1
+        t1 = sgp4_propagator_test_case.t1
+
+        s2 = sgp4_propagator_test_case.s2
+        t2 = sgp4_propagator_test_case.t2
+
+        sat1 = Satrec.twoline2rv(s1, t1)
+        sat2 = Satrec.twoline2rv(s2, t2)
+
+        prop = sgp4_propagator([sat1, sat2])
+
+        orig_sat_data = deepcopy(prop.sat_data)
+
+        prop.replace_sat_data([sat2, sat1])
+
+        self.assertTrue(np.all(prop.sat_data[:, 1] == orig_sat_data[:, 0]))
+        self.assertTrue(np.all(prop.sat_data[:, 0] == orig_sat_data[:, 1]))
+
+        new_sat_data = deepcopy(prop.sat_data)
+
+        with self.assertRaises(TypeError) as cm:
+            prop.replace_sat_data([sat1, 1])
+        self.assertTrue(
+            "Invalid object encountered in the satellite data for an sgp4 propagator: a list of sgp4 "
+            "Satrec objects is expected, but an object of type '<class 'int'>' was detected instead at index 1"
+            in str(cm.exception)
+        )
+
+        with self.assertRaises(ValueError) as cm:
+            prop.replace_sat_data([sat1])
+        self.assertTrue(
+            "Invalid array provided to replace_sat_data(): the number of "
+            "columns (1) does not match the number of satellites (2)"
+            in str(cm.exception)
+        )
+
+        self.assertTrue(np.all(prop.sat_data == new_sat_data))

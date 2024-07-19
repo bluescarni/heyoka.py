@@ -6,6 +6,7 @@
 // Public License v. 2.0. If a copy of the MPL was not distributed
 // with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+#include <cassert>
 #include <concepts>
 #include <cstddef>
 #include <cstdint>
@@ -49,6 +50,47 @@ namespace detail
 namespace
 {
 
+// Helper to turn a list of sgp4 satellites into a satellite data vector suitable for
+// use in the C++ sgp4_propagator API.
+template <typename T>
+auto sat_list_to_vector(py::list sat_list)
+{
+    // Import the Satrec class from the sgp4 module.
+    py::object satrec = py::module_::import("sgp4.api").attr("Satrec");
+
+    // Prepare the output vector.
+    std::vector<T> retval;
+    const auto n_sats = boost::safe_numerics::safe<decltype(retval.size())>(py::len(sat_list));
+    retval.resize(n_sats * 9);
+
+    // Fill it in.
+    py::object isinst = builtins().attr("isinstance");
+    for (decltype(retval.size()) i = 0; i < n_sats; ++i) {
+        auto sat_obj = sat_list[boost::numeric_cast<py::size_t>(i)];
+
+        if (!py::cast<bool>(isinst(sat_obj, satrec))) [[unlikely]] {
+            py_throw(
+                PyExc_TypeError,
+                fmt::format("Invalid object encountered in the satellite data for an sgp4 propagator: a list of sgp4 "
+                            "Satrec objects is expected, but an object of type '{}' was detected instead at index {}",
+                            str(type(sat_obj)), i)
+                    .c_str());
+        }
+
+        retval[i] = static_cast<T>(sat_obj.attr("no_kozai").template cast<double>());
+        retval[i + n_sats] = static_cast<T>(sat_obj.attr("ecco").template cast<double>());
+        retval[i + n_sats * 2] = static_cast<T>(sat_obj.attr("inclo").template cast<double>());
+        retval[i + n_sats * 3] = static_cast<T>(sat_obj.attr("nodeo").template cast<double>());
+        retval[i + n_sats * 4] = static_cast<T>(sat_obj.attr("argpo").template cast<double>());
+        retval[i + n_sats * 5] = static_cast<T>(sat_obj.attr("mo").template cast<double>());
+        retval[i + n_sats * 6] = static_cast<T>(sat_obj.attr("bstar").template cast<double>());
+        retval[i + n_sats * 7] = static_cast<T>(sat_obj.attr("jdsatepoch").template cast<double>());
+        retval[i + n_sats * 8] = static_cast<T>(sat_obj.attr("jdsatepochF").template cast<double>());
+    }
+
+    return retval;
+}
+
 template <typename T>
 void expose_sgp4_propagator_impl(py::module_ &m, const std::string &suffix)
 {
@@ -64,71 +106,42 @@ void expose_sgp4_propagator_impl(py::module_ &m, const std::string &suffix)
 
     py::class_<prop_t> prop_cl(m, fmt::format("_model_sgp4_propagator_{}", suffix).c_str(), py::dynamic_attr{},
                                docstrings::sgp4_propagator(std::same_as<T, double> ? "double" : "single").c_str());
-    prop_cl.def(
-        py::init([](py::list sat_list, std::uint32_t diff_order, bool high_accuracy, bool compact_mode,
-                    bool parallel_mode, std::uint32_t batch_size, long long, unsigned opt_level, bool force_avx512,
-                    bool slp_vectorize, bool fast_math) {
-            // Check that the sgp4 module is available.
-            py::module_ sgp4_api;
-            try {
-                sgp4_api = py::module_::import("sgp4.api");
-            } catch (...) {
-                py_throw(PyExc_ImportError,
-                         "The Python module 'sgp4' must be installed in order to be able to build sgp4 propagators");
-            }
-            py::object satrec = sgp4_api.attr("Satrec");
+    prop_cl.def(py::init([](py::list sat_list, std::uint32_t diff_order, bool high_accuracy, bool compact_mode,
+                            bool parallel_mode, std::uint32_t batch_size, long long, unsigned opt_level,
+                            bool force_avx512, bool slp_vectorize, bool fast_math) {
+                    // Check that the sgp4 module is available.
+                    try {
+                        py::module_::import("sgp4.api");
+                    } catch (...) {
+                        py_throw(
+                            PyExc_ImportError,
+                            "The Python module 'sgp4' must be installed in order to be able to build sgp4 propagators");
+                    }
 
-            // Prepare the numpy array for the satellite data.
-            const auto n_sats = boost::numeric_cast<py::ssize_t>(py::len(sat_list));
-            auto sat_arr = py::array_t<T>(py::array::ShapeContainer{static_cast<py::ssize_t>(9), n_sats});
+                    // Turn sat_list into a data vector.
+                    const auto sat_data = sat_list_to_vector<T>(sat_list);
+                    assert(sat_data.size() % 9u == 0u);
 
-            // Fill it in.
-            auto acc = sat_arr.template mutable_unchecked<2>();
-            py::object isinst = builtins().attr("isinstance");
-            for (py::ssize_t i = 0; i < n_sats; ++i) {
-                auto sat_obj = sat_list[boost::numeric_cast<py::size_t>(i)];
+                    // Create the input span for the constructor.
+                    using span_t = hy::mdspan<const T, hy::extents<std::size_t, 9, std::dynamic_extent>>;
+                    const span_t in(sat_data.data(), boost::numeric_cast<std::size_t>(sat_data.size()) / 9u);
 
-                if (!py::cast<bool>(isinst(sat_obj, satrec))) [[unlikely]] {
-                    py_throw(
-                        PyExc_TypeError,
-                        fmt::format(
-                            "Invalid object encountered while building an sgp4 propagator: a list of sgp4 "
-                            "Satrec objects is expected, but an object of type '{}' was detected instead at index {}",
-                            str(type(sat_obj)), i)
-                            .c_str());
-                }
+                    // NOTE: release the GIL during compilation.
+                    py::gil_scoped_release release;
 
-                acc(0, i) = static_cast<T>(sat_obj.attr("no_kozai").cast<double>());
-                acc(1, i) = static_cast<T>(sat_obj.attr("ecco").cast<double>());
-                acc(2, i) = static_cast<T>(sat_obj.attr("inclo").cast<double>());
-                acc(3, i) = static_cast<T>(sat_obj.attr("nodeo").cast<double>());
-                acc(4, i) = static_cast<T>(sat_obj.attr("argpo").cast<double>());
-                acc(5, i) = static_cast<T>(sat_obj.attr("mo").cast<double>());
-                acc(6, i) = static_cast<T>(sat_obj.attr("bstar").cast<double>());
-                acc(7, i) = static_cast<T>(sat_obj.attr("jdsatepoch").cast<double>());
-                acc(8, i) = static_cast<T>(sat_obj.attr("jdsatepochF").cast<double>());
-            }
-
-            // Create the input span for the constructor.
-            using span_t = hy::mdspan<const T, hy::extents<std::size_t, 9, std::dynamic_extent>>;
-            span_t in(sat_arr.data(), boost::numeric_cast<std::size_t>(sat_arr.shape(1)));
-
-            // NOTE: release the GIL during compilation.
-            py::gil_scoped_release release;
-
-            return prop_t{in,
-                          kw::diff_order = diff_order,
-                          kw::high_accuracy = high_accuracy,
-                          kw::compact_mode = compact_mode,
-                          kw::parallel_mode = parallel_mode,
-                          kw::batch_size = batch_size,
-                          kw::opt_level = opt_level,
-                          kw::force_avx512 = force_avx512,
-                          kw::slp_vectorize = slp_vectorize,
-                          kw::fast_math = fast_math};
-        }),
-        "sat_list"_a.noconvert(), "diff_order"_a.noconvert() = static_cast<std::uint32_t>(0),
-        HEYOKA_PY_CFUNC_ARGS(false), HEYOKA_PY_LLVM_STATE_ARGS, docstrings::sgp4_propagator_init().c_str());
+                    return prop_t{in,
+                                  kw::diff_order = diff_order,
+                                  kw::high_accuracy = high_accuracy,
+                                  kw::compact_mode = compact_mode,
+                                  kw::parallel_mode = parallel_mode,
+                                  kw::batch_size = batch_size,
+                                  kw::opt_level = opt_level,
+                                  kw::force_avx512 = force_avx512,
+                                  kw::slp_vectorize = slp_vectorize,
+                                  kw::fast_math = fast_math};
+                }),
+                "sat_list"_a.noconvert(), "diff_order"_a.noconvert() = static_cast<std::uint32_t>(0),
+                HEYOKA_PY_CFUNC_ARGS(false), HEYOKA_PY_LLVM_STATE_ARGS, docstrings::sgp4_propagator_init().c_str());
     prop_cl.def_property_readonly(
         "jdtype",
         [](const prop_t &) -> py::object {
@@ -166,6 +179,20 @@ void expose_sgp4_propagator_impl(py::module_ &m, const std::string &suffix)
             return ret;
         },
         docstrings::sgp4_propagator_sat_data(suffix, std::same_as<T, double> ? "float" : "numpy.single").c_str());
+    prop_cl.def(
+        "replace_sat_data",
+        [](prop_t &prop, py::list sat_list) {
+            // Turn sat_list into a data vector.
+            const auto sat_data = sat_list_to_vector<T>(sat_list);
+            assert(sat_data.size() % 9u == 0u);
+
+            // Create the input span for the setter.
+            using span_t = hy::mdspan<const T, hy::extents<std::size_t, 9, std::dynamic_extent>>;
+            const span_t in(sat_data.data(), boost::numeric_cast<std::size_t>(sat_data.size()) / 9u);
+
+            prop.replace_sat_data(in);
+        },
+        "sat_list"_a.noconvert(), docstrings::sgp4_propagator_replace_sat_data().c_str());
     prop_cl.def(
         "get_dslice",
         [](const prop_t &prop, std::uint32_t order, std::optional<std::uint32_t> component) {

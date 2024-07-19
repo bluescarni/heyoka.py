@@ -1031,4 +1031,28 @@ All input arguments must be C-style contiguous arrays, with no memory overlap be
         suffix, tp);
 }
 
+std::string sgp4_propagator_replace_sat_data()
+{
+    return R"(replace_sat_data(self, sat_list: list) -> None
+
+Replace the TLE data.
+
+This method will replace the TLE data in the propagator with the data from *sat_list*.
+As usual, *sat_list* must be a list of TLEs represented as ``Satrec`` objects
+from the `sgp4 Python module <https://pypi.org/project/sgp4/>`__.
+
+The number of satellites in *sat_list* must be equal to the number of satellites
+in the propagator - that is, it is not possible to change the total number of satellites
+in the propagator via this method.
+
+:param sat_list: the new list of TLEs.
+
+:raises TypeError: if one or more elements in *sat_list* is not a ``Satrec`` object.
+:raises ValueError: if a satellite with an orbital period above 225 minutes is detected.
+:raises ValueError: if the number of satellites in *sat_list* differs from the number of satellites
+   in the propagator.
+
+)";
+}
+
 } // namespace heyoka_py::docstrings

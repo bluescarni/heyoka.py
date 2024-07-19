@@ -77,6 +77,7 @@ std::string sgp4_propagator_sat_data(const std::string &, const std::string &);
 std::string sgp4_propagator_get_dslice();
 std::string sgp4_propagator_get_mindex(const std::string &);
 std::string sgp4_propagator_call(const std::string &, const std::string &);
+std::string sgp4_propagator_replace_sat_data();
 
 } // namespace heyoka_py::docstrings
 
