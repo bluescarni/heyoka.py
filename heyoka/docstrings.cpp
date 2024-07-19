@@ -975,7 +975,7 @@ The multiindex begins with the component index (that is, the index of the output
 whose derivatives have been computed). The remaining indices are the differentiation
 orders with respect to the quantities listed in :py:attr:`~heyoka.model.sgp4_propagator_{}.diff_args`.
 
-For instance, if the return value is ``[2, 0, 1, 0, 0, 0, 0]``, the multiindex refers
+For instance, if the return value is ``[2, 0, 1, 0, 0, 0, 0, 0]``, the multiindex refers
 to the first-order derivative of the output quantity at index 2 (i.e., the Cartesian :math:`z` coordinate)
 with respect to the second differentiation argument.
 

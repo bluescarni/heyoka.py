@@ -109,10 +109,11 @@ class sgp4_propagator_test_case(_ut.TestCase):
         # A couple of tests with the derivatives.
         prop = sgp4_propagator([sat1, sat2], diff_order=1)
         self.assertEqual(
-            prop.diff_args, make_vars("n0", "e0", "i0", "node0", "omega0", "m0")
+            prop.diff_args,
+            make_vars("n0", "e0", "i0", "node0", "omega0", "m0", "bstar"),
         )
-        self.assertEqual(prop.get_dslice(order=1), slice(7, 49, None))
-        self.assertEqual(prop.get_mindex(7), [0, 1, 0, 0, 0, 0, 0])
+        self.assertEqual(prop.get_dslice(order=1), slice(7, 56, None))
+        self.assertEqual(prop.get_mindex(7), [0, 1, 0, 0, 0, 0, 0, 0])
 
     def test_propagation(self):
         try:
@@ -251,12 +252,12 @@ class sgp4_propagator_test_case(_ut.TestCase):
                 "Invalid output array detected in the call operator of "
                 "an sgp4 propagator: the first dimension has a "
                 "size of 48, but a "
-                "size of 49 (i.e., equal to the number of outputs for each "
+                "size of 56 (i.e., equal to the number of outputs for each "
                 "propagation) is required instead" in str(cm.exception)
             )
 
             out = np.zeros(
-                (49, 1),
+                (56, 1),
                 dtype=fp_type,
             )
             with self.assertRaises(ValueError) as cm:
@@ -274,7 +275,7 @@ class sgp4_propagator_test_case(_ut.TestCase):
 
             # Batch mode errors.
             out = np.zeros(
-                (49, 1),
+                (56, 1),
                 dtype=fp_type,
             )
             with self.assertRaises(ValueError) as cm:
@@ -289,7 +290,7 @@ class sgp4_propagator_test_case(_ut.TestCase):
             )
 
             out = np.zeros(
-                (9, 49, 1),
+                (9, 56, 1),
                 dtype=fp_type,
             )
             with self.assertRaises(ValueError) as cm:
@@ -317,12 +318,12 @@ class sgp4_propagator_test_case(_ut.TestCase):
                 "Invalid output array detected in the call operator of "
                 "an sgp4 propagator in batch mode: the second dimension has a "
                 "size of 48, but a "
-                "size of 49 (i.e., equal to the number of outputs for each "
+                "size of 56 (i.e., equal to the number of outputs for each "
                 "propagation) is required instead" in str(cm.exception)
             )
 
             out = np.zeros(
-                (10, 49, 0),
+                (10, 56, 0),
                 dtype=fp_type,
             )
             with self.assertRaises(ValueError) as cm:
@@ -341,14 +342,14 @@ class sgp4_propagator_test_case(_ut.TestCase):
             # Run a simple propagation to the TLE epoch, check
             # that all derivatives wrt the error codes are zero.
             out = np.zeros(
-                (49, 2),
+                (56, 2),
                 dtype=fp_type,
             )
             prop(
                 np.zeros((2,), dtype=fp_type),
                 out=out,
             )
-            self.assertTrue(np.all(out[43:, :] == 0.0))
+            self.assertTrue(np.all(out[49:, :] == 0.0))
 
             # Same with a jdate.
             dates = np.zeros((2,), dtype=prop.jdtype)
@@ -358,12 +359,12 @@ class sgp4_propagator_test_case(_ut.TestCase):
                 dates,
                 out=out,
             )
-            self.assertTrue(np.all(out[43:, :] == 0.0))
+            self.assertTrue(np.all(out[49:, :] == 0.0))
 
             # Test that a batch prop with zero nevals does not throw.
             dates = np.zeros((0, 2), dtype=prop.jdtype)
             out = np.zeros(
-                (0, 49, 2),
+                (0, 56, 2),
                 dtype=fp_type,
             )
             prop(
