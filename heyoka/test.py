@@ -2081,6 +2081,7 @@ def run_test_suite():
         _test_lagham,
         _test_var_ode_sys,
         _test_var_integrator,
+        _test_sgp4_propagator,
     )
     import numpy as np
     from .model import nbody
@@ -2103,6 +2104,9 @@ def run_test_suite():
     suite.addTest(tl.loadTestsFromTestCase(_test_var_ode_sys.var_ode_sys_test_case))
     suite.addTest(
         tl.loadTestsFromTestCase(_test_var_integrator.var_integrator_test_case)
+    )
+    suite.addTest(
+        tl.loadTestsFromTestCase(_test_sgp4_propagator.sgp4_propagator_test_case)
     )
     suite.addTest(tl.loadTestsFromTestCase(_test_lagham.lagham_test_case))
     suite.addTest(tl.loadTestsFromTestCase(_test_vsop2013.vsop2013_test_case))

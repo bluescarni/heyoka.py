@@ -18,6 +18,8 @@ namespace py = pybind11;
 
 void expose_models(py::module_ &);
 
+void expose_sgp4_propagators(py::module_ &);
+
 } // namespace heyoka_py
 
 #endif

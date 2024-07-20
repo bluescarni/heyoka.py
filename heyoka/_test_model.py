@@ -445,3 +445,8 @@ class model_test_case(_ut.TestCase):
             ** 2
             < 1e-12**2
         )
+
+    def test_sgp4(self):
+        from .model import sgp4
+
+        self.assertEqual(len(sgp4()), 7)

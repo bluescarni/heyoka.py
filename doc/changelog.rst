@@ -3,6 +3,36 @@
 Changelog
 =========
 
+5.1.0 (unreleased)
+------------------
+
+New
+~~~
+
+- Add a fully differentiable implementation of the SGP4 analytical propagator
+  (`#183 <https://github.com/bluescarni/heyoka.py/pull/183>`__).
+- Add the ``select()`` primitive to the expression system
+  (`#183 <https://github.com/bluescarni/heyoka.py/pull/183>`__).
+- Add relational and logical operators to the expression system
+  (`#183 <https://github.com/bluescarni/heyoka.py/pull/183>`__).
+- Add tutorial on Taylor map inversion
+  (`#182 <https://github.com/bluescarni/heyoka.py/pull/182>`__).
+- Add tutorial on solving inversion problems with the variational equations
+  (`#181 <https://github.com/bluescarni/heyoka.py/pull/181>`__).
+
+Changes
+~~~~~~~
+
+- heyoka.py now requires version 5.1.0 of the
+  heyoka C++ library
+  (`#183 <https://github.com/bluescarni/heyoka.py/pull/183>`__).
+
+Fix
+~~~
+
+- Fix test failures when using recent SymPy versions
+  (`#183 <https://github.com/bluescarni/heyoka.py/pull/183>`__).
+
 5.0.1 (2024-06-14)
 ------------------
 

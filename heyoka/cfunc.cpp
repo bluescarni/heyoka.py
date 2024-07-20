@@ -82,35 +82,33 @@ void expose_add_cfunc_impl(py::module &m, const char *suffix)
     namespace kw = hey::kw;
 
     py::class_<hey::cfunc<T>> cfunc_inst(m, fmt::format("cfunc_{}", suffix).c_str(), py::dynamic_attr{});
-    cfunc_inst.def(
-        py::init([](std::vector<hey::expression> fn, std::vector<hey::expression> vars, bool high_accuracy,
-                    bool compact_mode, bool parallel_mode, unsigned opt_level, bool force_avx512, bool slp_vectorize,
-                    std::uint32_t batch_size, bool fast_math, long long prec) {
-            // Forbid batch sizes > 1 for everything but double and float.
-            // NOTE: there is a similar check on the C++ side regarding mppp::real, but in Python specifically
-            // we want to be pragmatic and allow for batch operations only if we know that it makes sense
-            // performance-wise (and we also want to avoid buggy batch operations on long double).
-            if (!std::is_same_v<T, double> && !std::is_same_v<T, float> && batch_size > 1u) [[unlikely]] {
-                py_throw(PyExc_ValueError, "Batch sizes greater than 1 are not supported for this floating-point type");
-            }
+    cfunc_inst.def(py::init([](std::vector<hey::expression> fn, std::vector<hey::expression> vars, bool high_accuracy,
+                               bool compact_mode, bool parallel_mode, std::uint32_t batch_size, long long prec,
+                               unsigned opt_level, bool force_avx512, bool slp_vectorize, bool fast_math) {
+                       // Forbid batch sizes > 1 for everything but double and float.
+                       // NOTE: there is a similar check on the C++ side regarding mppp::real, but in Python
+                       // specifically we want to be pragmatic and allow for batch operations only if we know that it
+                       // makes sense performance-wise (and we also want to avoid buggy batch operations on long
+                       // double).
+                       if (!std::is_same_v<T, double> && !std::is_same_v<T, float> && batch_size > 1u) [[unlikely]] {
+                           py_throw(PyExc_ValueError,
+                                    "Batch sizes greater than 1 are not supported for this floating-point type");
+                       }
 
-            // NOTE: release the GIL during compilation.
-            py::gil_scoped_release release;
+                       // NOTE: release the GIL during compilation.
+                       py::gil_scoped_release release;
 
-            return hey::cfunc<T>{std::move(fn), std::move(vars), kw::high_accuracy = high_accuracy,
-                                 kw::compact_mode = compact_mode, kw::parallel_mode = parallel_mode,
-                                 kw::opt_level = opt_level, kw::force_avx512 = force_avx512,
-                                 kw::slp_vectorize = slp_vectorize, kw::batch_size = batch_size,
-                                 kw::fast_math = fast_math, kw::prec = prec,
-                                 // NOTE: it is important to disable the prec checking
-                                 // here as we will have our own custom implementation
-                                 // of precision checking to deal with NumPy arrays.
-                                 kw::check_prec = false};
-        }),
-        "fn"_a, "vars"_a, "high_accuracy"_a.noconvert() = false, "compact_mode"_a.noconvert() = default_cm<T>,
-        "parallel_mode"_a.noconvert() = false, "opt_level"_a.noconvert() = 3, "force_avx512"_a.noconvert() = false,
-        "slp_vectorize"_a.noconvert() = false, "batch_size"_a.noconvert() = 0, "fast_math"_a.noconvert() = false,
-        "prec"_a.noconvert() = 0);
+                       return hey::cfunc<T>{std::move(fn), std::move(vars), kw::high_accuracy = high_accuracy,
+                                            kw::compact_mode = compact_mode, kw::parallel_mode = parallel_mode,
+                                            kw::opt_level = opt_level, kw::force_avx512 = force_avx512,
+                                            kw::slp_vectorize = slp_vectorize, kw::batch_size = batch_size,
+                                            kw::fast_math = fast_math, kw::prec = prec,
+                                            // NOTE: it is important to disable the prec checking
+                                            // here as we will have our own custom implementation
+                                            // of precision checking to deal with NumPy arrays.
+                                            kw::check_prec = false};
+                   }),
+                   "fn"_a, "vars"_a, HEYOKA_PY_CFUNC_ARGS(default_cm<T>), HEYOKA_PY_LLVM_STATE_ARGS);
 
     // Typedefs for the call operator.
     using array_or_iter_t = std::variant<py::array, py::iterable>;

@@ -9,6 +9,7 @@
 #include <heyoka/config.hpp>
 
 #include <cassert>
+#include <concepts>
 #include <cstdint>
 #include <functional>
 #include <iterator>
@@ -318,6 +319,71 @@ void expose_expression(py::module_ &m)
                                  mppp::real
 #endif
                                  >;
+
+    // Relational operators.
+#define HEYOKA_PY_EXPOSE_REL(op)                                                                                       \
+    m.def(                                                                                                             \
+        #op,                                                                                                           \
+        [](const mvf_arg &x, const mvf_arg &y) {                                                                       \
+            return std::visit(                                                                                         \
+                []<typename T, typename U>(const T &a, const U &b) -> hey::expression {                                \
+                    if constexpr (!std::same_as<T, hey::expression> && !std::same_as<U, hey::expression>) {            \
+                        py_throw(PyExc_TypeError, "At least one of the arguments of " #op "() must be an expression"); \
+                    } else {                                                                                           \
+                        return hey::op(a, b);                                                                          \
+                    }                                                                                                  \
+                },                                                                                                     \
+                x, y);                                                                                                 \
+        },                                                                                                             \
+        "x"_a.noconvert(), "y"_a.noconvert())
+
+    HEYOKA_PY_EXPOSE_REL(eq);
+    HEYOKA_PY_EXPOSE_REL(neq);
+    HEYOKA_PY_EXPOSE_REL(lt);
+    HEYOKA_PY_EXPOSE_REL(gt);
+    HEYOKA_PY_EXPOSE_REL(lte);
+    HEYOKA_PY_EXPOSE_REL(gte);
+
+#undef HEYOKA_PY_EXPOSE_REL
+
+    // Logical operators.
+    m.def("logical_and", &hey::logical_and, "terms"_a);
+    m.def("logical_or", &hey::logical_or, "terms"_a);
+
+    // select().
+    m.def(
+        "select",
+        [](const mvf_arg &c, const mvf_arg &t, const mvf_arg &f) {
+            return std::visit(
+                []<typename T, typename U, typename V>(const T &a, const U &b, const V &c) -> hey::expression {
+                    constexpr auto tp1_num = static_cast<int>(!std::same_as<T, hey::expression>);
+                    constexpr auto tp2_num = static_cast<int>(!std::same_as<U, hey::expression>);
+                    constexpr auto tp3_num = static_cast<int>(!std::same_as<V, hey::expression>);
+
+                    constexpr auto n_num = tp1_num + tp2_num + tp3_num;
+
+                    if constexpr (n_num == 3) {
+                        py_throw(PyExc_TypeError, "At least one of the arguments of select() must be an expression");
+                    } else if constexpr (n_num == 2) {
+                        constexpr auto flag = tp1_num + (tp2_num << 1) + (tp3_num << 2);
+
+                        if constexpr (flag == 6 && std::same_as<V, U>) {
+                            return hey::select(a, b, c);
+                        } else if constexpr (flag == 5 && std::same_as<T, V>) {
+                            return hey::select(a, b, c);
+                        } else if constexpr (flag == 3 && std::same_as<T, U>) {
+                            return hey::select(a, b, c);
+                        } else {
+                            py_throw(PyExc_TypeError,
+                                     "The numerical arguments of select() must be all of the same type");
+                        }
+                    } else {
+                        return hey::select(a, b, c);
+                    }
+                },
+                c, t, f);
+        },
+        "c"_a.noconvert(), "t"_a.noconvert(), "f"_a.noconvert());
 
     // kepE().
     m.def(

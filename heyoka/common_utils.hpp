@@ -214,6 +214,15 @@ struct dtens_t_it {
 
 py::array as_carray(const py::iterable &, int);
 
+// Macros to avoid repetitions in commonly-used keyword arguments.
+#define HEYOKA_PY_LLVM_STATE_ARGS                                                                                      \
+    "opt_level"_a.noconvert() = 3, "force_avx512"_a.noconvert() = false, "slp_vectorize"_a.noconvert() = false,        \
+    "fast_math"_a.noconvert() = false
+
+#define HEYOKA_PY_CFUNC_ARGS(default_cm)                                                                               \
+    "high_accuracy"_a.noconvert() = false, "compact_mode"_a.noconvert() = default_cm,                                  \
+    "parallel_mode"_a.noconvert() = false, "batch_size"_a.noconvert() = 0, "prec"_a.noconvert() = 0
+
 } // namespace heyoka_py
 
 #endif

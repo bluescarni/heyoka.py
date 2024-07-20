@@ -42,7 +42,7 @@ else
 fi
 
 # The heyoka version to be used for releases.
-export HEYOKA_VERSION_RELEASE="5.0.0"
+export HEYOKA_VERSION_RELEASE="5.1.0"
 
 # Check if this is a release build.
 if [[ "${GITHUB_REF}" == "refs/tags/v"* ]]; then
@@ -55,7 +55,7 @@ fi
 # Python mandatory deps.
 /opt/python/${PYTHON_DIR}/bin/pip install numpy==${NUMPY_VERSION} cloudpickle
 # Python optional deps.
-/opt/python/${PYTHON_DIR}/bin/pip install sympy mpmath
+/opt/python/${PYTHON_DIR}/bin/pip install sympy mpmath skyfield
 
 # In the pagmo2/manylinux2014_x86_64_with_deps:latest image in dockerhub
 # the working directory is /root/install, we will install heyoka there.

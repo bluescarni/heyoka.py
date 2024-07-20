@@ -148,9 +148,8 @@ void expose_taylor_integrator_impl(py::module &m, const std::string &suffix)
            }),
            "sys"_a, "state"_a.noconvert(), "time"_a.noconvert() = static_cast<T>(0), "pars"_a.noconvert() = py::list{},
            "tol"_a.noconvert() = static_cast<T>(0), "high_accuracy"_a = false, "compact_mode"_a = default_cm<T>,
-           "t_events"_a = py::list{}, "nt_events"_a = py::list{}, "parallel_mode"_a = false,
-           "opt_level"_a.noconvert() = 3, "force_avx512"_a.noconvert() = false, "slp_vectorize"_a.noconvert() = false,
-           "fast_math"_a.noconvert() = false, "prec"_a.noconvert() = 0)
+           "t_events"_a = py::list{}, "nt_events"_a = py::list{}, "parallel_mode"_a = false, HEYOKA_PY_LLVM_STATE_ARGS,
+           "prec"_a.noconvert() = 0)
         .def_property_readonly(
             "state",
             [](py::object &o) {

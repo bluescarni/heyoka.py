@@ -16,7 +16,7 @@ export PATH="$HOME/miniconda/bin:$PATH"
 bash miniconda.sh -b -p $HOME/miniconda
 conda config --add channels conda-forge
 conda config --set channel_priority strict
-conda create -y -q -p $deps_dir python=3.10 git pybind11 'numpy<2' mpmath cmake llvmdev tbb-devel tbb libboost-devel 'mppp=1.*' sleef fmt spdlog sympy cloudpickle c-compiler cxx-compiler numba zlib
+conda create -y -q -p $deps_dir python=3.10 git pybind11 'numpy<2' mpmath cmake llvmdev tbb-devel tbb libboost-devel 'mppp=1.*' sleef 'fmt<11' skyfield spdlog sympy cloudpickle c-compiler cxx-compiler numba zlib
 source activate $deps_dir
 
 # Checkout, build and install heyoka's HEAD.
