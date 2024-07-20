@@ -23,6 +23,8 @@ New
 Changes
 ~~~~~~~
 
+- The binary wheels are now built on top of ``manylinux_2_28``
+  (`#183 <https://github.com/bluescarni/heyoka.py/pull/183>`__).
 - heyoka.py now requires version 5.1.0 of the
   heyoka C++ library
   (`#183 <https://github.com/bluescarni/heyoka.py/pull/183>`__).
