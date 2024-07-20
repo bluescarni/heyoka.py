@@ -23,6 +23,8 @@ New
 Changes
 ~~~~~~~
 
+- The minimum supported SymPy version is now 1.13.0
+  (`#183 <https://github.com/bluescarni/heyoka.py/pull/183>`__).
 - The binary wheels are now built on top of ``manylinux_2_28``
   (`#183 <https://github.com/bluescarni/heyoka.py/pull/183>`__).
 - heyoka.py now requires version 5.1.0 of the
