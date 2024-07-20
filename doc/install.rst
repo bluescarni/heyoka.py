@@ -24,9 +24,9 @@ heyoka.py has several Python and C++ dependencies. On the C++ side, heyoka.py de
 On the Python side, heyoka.py requires at least Python 3.5
 (Python 2.x is **not** supported) and depends on:
 
-* `NumPy <https://numpy.org/>`__ (**mandatory**),
+* `NumPy <https://numpy.org/>`__ (version <2, **mandatory**),
 * `cloudpickle <https://github.com/cloudpipe/cloudpickle>`__ (**mandatory**),
-* `SymPy <https://www.sympy.org/en/index.html>`__ and `mpmath <https://mpmath.org/>`__
+* `SymPy <https://www.sympy.org/en/index.html>`__ (version >=1.13.0) and `mpmath <https://mpmath.org/>`__
   (*optional*, for converting heyoka.py expressions to/from SymPy expressions).
 
 The tested and supported CPU architectures at this time are x86-64, 64-bit ARM and 64-bit PowerPC.
