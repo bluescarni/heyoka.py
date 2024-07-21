@@ -17,7 +17,7 @@ jobs:
         id: set-up-homebrew
         uses: Homebrew/actions/setup-homebrew@master
       - name: Install deps via Homebrew
-        run: brew install sleef llvm gmp mpfr tbb@2021.10.0 fmt@10.2.1 spdlog@1.13.0
+        run: brew install sleef llvm gmp mpfr tbb fmt@10.2.1 spdlog@1.13.0
   # conda_asan:
   #   runs-on: ubuntu-latest
   #   steps:
