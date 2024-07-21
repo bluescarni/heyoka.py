@@ -9,144 +9,151 @@ on:
     branches:
       - main
 jobs:
-  conda_asan:
-    runs-on: ubuntu-latest
+  osx_14_wheels:
+    runs-on: macos-14
     steps:
       - uses: actions/checkout@v4
-      - name: Build
-        run: bash tools/gha_conda_asan.sh
-  conda_static:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Build
-        run: bash tools/gha_conda_static.sh
-  osx_heyoka_head:
-    runs-on: macos-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Build
-        run: bash tools/gha_osx_heyoka_head.sh
-  osx_heyoka_head_static:
-    runs-on: macos-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Build
-        run: bash tools/gha_osx_heyoka_head_static.sh
-  manylinux228_x86_64-py312:
-     runs-on: ubuntu-latest
-     container:
-      image: pagmo2/manylinux228_x86_64_with_deps:latest
-      env:
-        HEYOKA_PY_BUILD_TYPE: "Python312"
-        TWINE_PASSWORD: ${{ secrets.TWINE_PASSWORD }}
-     steps:
-       # NOTE: don't updated to checkout@v4 here because
-       # the action does not work properly due to missing
-       # symbols on the ancient manylinux images.
-       - uses: actions/checkout@v3
-       - name: Build
-         run: bash tools/gha_manylinux.sh
-       - uses: actions/upload-artifact@v3
-         with:
-           name: wheel_312
-           path: build/wheel/dist2/*.whl
-  manylinux228_x86_64-py311:
-     runs-on: ubuntu-latest
-     container:
-      image: pagmo2/manylinux228_x86_64_with_deps:latest
-      env:
-        HEYOKA_PY_BUILD_TYPE: "Python311"
-        TWINE_PASSWORD: ${{ secrets.TWINE_PASSWORD }}
-     steps:
-       - uses: actions/checkout@v3
-       - name: Build
-         run: bash tools/gha_manylinux.sh
-       - uses: actions/upload-artifact@v3
-         with:
-           name: wheel_311
-           path: build/wheel/dist2/*.whl
-  manylinux228_x86_64-py310:
-     runs-on: ubuntu-latest
-     container:
-      image: pagmo2/manylinux228_x86_64_with_deps:latest
-      env:
-        HEYOKA_PY_BUILD_TYPE: "Python310"
-        TWINE_PASSWORD: ${{ secrets.TWINE_PASSWORD }}
-     steps:
-       - uses: actions/checkout@v3
-       - name: Build
-         run: bash tools/gha_manylinux.sh
-       - uses: actions/upload-artifact@v3
-         with:
-           name: wheel_310
-           path: build/wheel/dist2/*.whl
-  manylinux228_x86_64-py39:
-     runs-on: ubuntu-latest
-     container:
-      image: pagmo2/manylinux228_x86_64_with_deps:latest
-      env:
-        HEYOKA_PY_BUILD_TYPE: "Python39"
-        TWINE_PASSWORD: ${{ secrets.TWINE_PASSWORD }}
-     steps:
-       - uses: actions/checkout@v3
-       - name: Build
-         run: bash tools/gha_manylinux.sh
-       - uses: actions/upload-artifact@v3
-         with:
-           name: wheel_39
-           path: build/wheel/dist2/*.whl
-  manylinux228_x86_64-py38:
-     runs-on: ubuntu-latest
-     container:
-      image: pagmo2/manylinux228_x86_64_with_deps:latest
-      env:
-        HEYOKA_PY_BUILD_TYPE: "Python38"
-        TWINE_PASSWORD: ${{ secrets.TWINE_PASSWORD }}
-     steps:
-       - uses: actions/checkout@v3
-       - name: Build
-         run: bash tools/gha_manylinux.sh
-       - uses: actions/upload-artifact@v3
-         with:
-           name: wheel_38
-           path: build/wheel/dist2/*.whl
-  windows_2022_heyoka_head:
-    runs-on: windows-2022
-    steps:
-      - uses: actions/checkout@v4
-      - uses: conda-incubator/setup-miniconda@v3
-        with:
-          auto-update-conda: true
-          python-version: "3.10"
-          channels: conda-forge
-          channel-priority: strict
-      - uses: ilammy/msvc-dev-cmd@v1
-      - name: Build
-        shell: pwsh
-        run: |
-          conda install -y python=3.10 git pybind11 numpy<2 cmake llvmdev tbb-devel tbb astroquery libboost-devel fmt<11 skyfield spdlog sleef sympy cloudpickle zlib libzlib 'mppp=1.*' numba
-          git clone --depth 1 https://github.com/bluescarni/heyoka.git heyoka_cpp
-          cd heyoka_cpp
-          mkdir build
-          cd build
-          cmake .. -G "Visual Studio 17 2022" -A x64 -DCMAKE_PREFIX_PATH=C:\Miniconda\envs\test\Library -DCMAKE_INSTALL_PREFIX=C:\Miniconda\envs\test\Library -DBoost_NO_BOOST_CMAKE=ON -DHEYOKA_ENABLE_IPO=yes -DHEYOKA_WITH_SLEEF=yes -DHEYOKA_WITH_MPPP=yes
-          cmake --build . --config Release --target install -j2
-          cd ..
-          cd ..
-          mkdir build
-          cd build
-          cmake .. -G "Visual Studio 17 2022" -A x64 -DCMAKE_PREFIX_PATH=C:\Miniconda\envs\test\Library -DCMAKE_INSTALL_PREFIX=C:\Miniconda\envs\test\Library -DBoost_NO_BOOST_CMAKE=ON -DHEYOKA_PY_ENABLE_IPO=yes
-          cmake --build . --config Release --target install -j2
-          cd ..
-          cd tools
-          python ci_test_runner.py --with-numba
-  binder_cache:
-    runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main'
-    steps:
-    - name: cache binder build on mybinder.org
-      uses: jupyterhub/repo2docker-action@master
-      with:
-        NO_PUSH: true
-        MYBINDERORG_TAG: ${{ github.event.ref }} # This builds the container on mybinder.org with the branch that was pushed on.
+      - name: Set up Homebrew
+        id: set-up-homebrew
+        uses: Homebrew/actions/setup-homebrew@master
+  # conda_asan:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - name: Build
+  #       run: bash tools/gha_conda_asan.sh
+  # conda_static:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - name: Build
+  #       run: bash tools/gha_conda_static.sh
+  # osx_heyoka_head:
+  #   runs-on: macos-latest
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - name: Build
+  #       run: bash tools/gha_osx_heyoka_head.sh
+  # osx_heyoka_head_static:
+  #   runs-on: macos-latest
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - name: Build
+  #       run: bash tools/gha_osx_heyoka_head_static.sh
+  # manylinux228_x86_64-py312:
+  #    runs-on: ubuntu-latest
+  #    container:
+  #     image: pagmo2/manylinux228_x86_64_with_deps:latest
+  #     env:
+  #       HEYOKA_PY_BUILD_TYPE: "Python312"
+  #       TWINE_PASSWORD: ${{ secrets.TWINE_PASSWORD }}
+  #    steps:
+  #      # NOTE: don't updated to checkout@v4 here because
+  #      # the action does not work properly due to missing
+  #      # symbols on the ancient manylinux images.
+  #      - uses: actions/checkout@v3
+  #      - name: Build
+  #        run: bash tools/gha_manylinux.sh
+  #      - uses: actions/upload-artifact@v3
+  #        with:
+  #          name: wheel_312
+  #          path: build/wheel/dist2/*.whl
+  # manylinux228_x86_64-py311:
+  #    runs-on: ubuntu-latest
+  #    container:
+  #     image: pagmo2/manylinux228_x86_64_with_deps:latest
+  #     env:
+  #       HEYOKA_PY_BUILD_TYPE: "Python311"
+  #       TWINE_PASSWORD: ${{ secrets.TWINE_PASSWORD }}
+  #    steps:
+  #      - uses: actions/checkout@v3
+  #      - name: Build
+  #        run: bash tools/gha_manylinux.sh
+  #      - uses: actions/upload-artifact@v3
+  #        with:
+  #          name: wheel_311
+  #          path: build/wheel/dist2/*.whl
+  # manylinux228_x86_64-py310:
+  #    runs-on: ubuntu-latest
+  #    container:
+  #     image: pagmo2/manylinux228_x86_64_with_deps:latest
+  #     env:
+  #       HEYOKA_PY_BUILD_TYPE: "Python310"
+  #       TWINE_PASSWORD: ${{ secrets.TWINE_PASSWORD }}
+  #    steps:
+  #      - uses: actions/checkout@v3
+  #      - name: Build
+  #        run: bash tools/gha_manylinux.sh
+  #      - uses: actions/upload-artifact@v3
+  #        with:
+  #          name: wheel_310
+  #          path: build/wheel/dist2/*.whl
+  # manylinux228_x86_64-py39:
+  #    runs-on: ubuntu-latest
+  #    container:
+  #     image: pagmo2/manylinux228_x86_64_with_deps:latest
+  #     env:
+  #       HEYOKA_PY_BUILD_TYPE: "Python39"
+  #       TWINE_PASSWORD: ${{ secrets.TWINE_PASSWORD }}
+  #    steps:
+  #      - uses: actions/checkout@v3
+  #      - name: Build
+  #        run: bash tools/gha_manylinux.sh
+  #      - uses: actions/upload-artifact@v3
+  #        with:
+  #          name: wheel_39
+  #          path: build/wheel/dist2/*.whl
+  # manylinux228_x86_64-py38:
+  #    runs-on: ubuntu-latest
+  #    container:
+  #     image: pagmo2/manylinux228_x86_64_with_deps:latest
+  #     env:
+  #       HEYOKA_PY_BUILD_TYPE: "Python38"
+  #       TWINE_PASSWORD: ${{ secrets.TWINE_PASSWORD }}
+  #    steps:
+  #      - uses: actions/checkout@v3
+  #      - name: Build
+  #        run: bash tools/gha_manylinux.sh
+  #      - uses: actions/upload-artifact@v3
+  #        with:
+  #          name: wheel_38
+  #          path: build/wheel/dist2/*.whl
+  # windows_2022_heyoka_head:
+  #   runs-on: windows-2022
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - uses: conda-incubator/setup-miniconda@v3
+  #       with:
+  #         auto-update-conda: true
+  #         python-version: "3.10"
+  #         channels: conda-forge
+  #         channel-priority: strict
+  #     - uses: ilammy/msvc-dev-cmd@v1
+  #     - name: Build
+  #       shell: pwsh
+  #       run: |
+  #         conda install -y python=3.10 git pybind11 numpy<2 cmake llvmdev tbb-devel tbb astroquery libboost-devel fmt<11 skyfield spdlog sleef sympy cloudpickle zlib libzlib 'mppp=1.*' numba
+  #         git clone --depth 1 https://github.com/bluescarni/heyoka.git heyoka_cpp
+  #         cd heyoka_cpp
+  #         mkdir build
+  #         cd build
+  #         cmake .. -G "Visual Studio 17 2022" -A x64 -DCMAKE_PREFIX_PATH=C:\Miniconda\envs\test\Library -DCMAKE_INSTALL_PREFIX=C:\Miniconda\envs\test\Library -DBoost_NO_BOOST_CMAKE=ON -DHEYOKA_ENABLE_IPO=yes -DHEYOKA_WITH_SLEEF=yes -DHEYOKA_WITH_MPPP=yes
+  #         cmake --build . --config Release --target install -j2
+  #         cd ..
+  #         cd ..
+  #         mkdir build
+  #         cd build
+  #         cmake .. -G "Visual Studio 17 2022" -A x64 -DCMAKE_PREFIX_PATH=C:\Miniconda\envs\test\Library -DCMAKE_INSTALL_PREFIX=C:\Miniconda\envs\test\Library -DBoost_NO_BOOST_CMAKE=ON -DHEYOKA_PY_ENABLE_IPO=yes
+  #         cmake --build . --config Release --target install -j2
+  #         cd ..
+  #         cd tools
+  #         python ci_test_runner.py --with-numba
+  # binder_cache:
+  #   runs-on: ubuntu-latest
+  #   if: github.ref == 'refs/heads/main'
+  #   steps:
+  #   - name: cache binder build on mybinder.org
+  #     uses: jupyterhub/repo2docker-action@master
+  #     with:
+  #       NO_PUSH: true
+  #       MYBINDERORG_TAG: ${{ github.event.ref }} # This builds the container on mybinder.org with the branch that was pushed on.
