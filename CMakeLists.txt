@@ -155,7 +155,16 @@ endif()
 string(REGEX MATCH "([0-9]+)\.([0-9]+)" _HEYOKA_PY_NPY_MAJOR_MINOR ${Python3_NumPy_VERSION})
 message(STATUS "NumPy major.minor version: ${_HEYOKA_PY_NPY_MAJOR_MINOR}")
 
-set(HEYOKA_PY_INSTALL_PATH "" CACHE STRING "heyoka module installation path")
+if (DEFINED SKBUILD)
+    # If we're using scikit-build-core, set install path to the current
+    # directory since skbuild will be handling the installation.
+    set(HEYOKA_PY_INSTALL_PATH "." CACHE STRING "heyoka module installation path")
+
+    # Also ensure shared libraries can be found in RPATH.
+    set(CMAKE_INSTALL_RPATH_USE_LINK_PATH ON)
+else()
+    set(HEYOKA_PY_INSTALL_PATH "" CACHE STRING "heyoka module installation path")
+endif()
 mark_as_advanced(HEYOKA_PY_INSTALL_PATH)
 unset(_HEYOKA_PY_PYTHON3_COMPONENTS)
 
