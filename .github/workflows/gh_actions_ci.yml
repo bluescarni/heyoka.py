@@ -41,13 +41,10 @@ jobs:
         HEYOKA_PY_BUILD_TYPE: "Python312"
         TWINE_PASSWORD: ${{ secrets.TWINE_PASSWORD }}
      steps:
-       # NOTE: don't updated to checkout@v4 here because
-       # the action does not work properly due to missing
-       # symbols on the ancient manylinux images.
-       - uses: actions/checkout@v3
+       - uses: actions/checkout@v4
        - name: Build
          run: bash tools/gha_manylinux.sh
-       - uses: actions/upload-artifact@v3
+       - uses: actions/upload-artifact@v4
          with:
            name: wheel_312
            path: build/wheel/dist2/*.whl
@@ -59,10 +56,10 @@ jobs:
         HEYOKA_PY_BUILD_TYPE: "Python311"
         TWINE_PASSWORD: ${{ secrets.TWINE_PASSWORD }}
      steps:
-       - uses: actions/checkout@v3
+       - uses: actions/checkout@v4
        - name: Build
          run: bash tools/gha_manylinux.sh
-       - uses: actions/upload-artifact@v3
+       - uses: actions/upload-artifact@v4
          with:
            name: wheel_311
            path: build/wheel/dist2/*.whl
@@ -74,10 +71,10 @@ jobs:
         HEYOKA_PY_BUILD_TYPE: "Python310"
         TWINE_PASSWORD: ${{ secrets.TWINE_PASSWORD }}
      steps:
-       - uses: actions/checkout@v3
+       - uses: actions/checkout@v4
        - name: Build
          run: bash tools/gha_manylinux.sh
-       - uses: actions/upload-artifact@v3
+       - uses: actions/upload-artifact@v4
          with:
            name: wheel_310
            path: build/wheel/dist2/*.whl
@@ -89,10 +86,10 @@ jobs:
         HEYOKA_PY_BUILD_TYPE: "Python39"
         TWINE_PASSWORD: ${{ secrets.TWINE_PASSWORD }}
      steps:
-       - uses: actions/checkout@v3
+       - uses: actions/checkout@v4
        - name: Build
          run: bash tools/gha_manylinux.sh
-       - uses: actions/upload-artifact@v3
+       - uses: actions/upload-artifact@v4
          with:
            name: wheel_39
            path: build/wheel/dist2/*.whl
@@ -104,10 +101,10 @@ jobs:
         HEYOKA_PY_BUILD_TYPE: "Python38"
         TWINE_PASSWORD: ${{ secrets.TWINE_PASSWORD }}
      steps:
-       - uses: actions/checkout@v3
+       - uses: actions/checkout@v4
        - name: Build
          run: bash tools/gha_manylinux.sh
-       - uses: actions/upload-artifact@v3
+       - uses: actions/upload-artifact@v4
          with:
            name: wheel_38
            path: build/wheel/dist2/*.whl
