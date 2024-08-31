@@ -111,6 +111,9 @@ nb_execution_excludepatterns = [
 # Force printing traceback to stderr on execution error.
 nb_execution_show_tb = True
 
+# Set a longer timeout for notebook execution.
+nb_execution_timeout = 120
+
 latex_engine = "xelatex"
 
 myst_enable_extensions = [
