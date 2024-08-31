@@ -118,14 +118,14 @@ jobs:
       - uses: conda-incubator/setup-miniconda@v3
         with:
           auto-update-conda: true
-          python-version: "3.10"
+          python-version: "3.12"
           channels: conda-forge
           channel-priority: strict
       - uses: ilammy/msvc-dev-cmd@v1
       - name: Build
         shell: pwsh
         run: |
-          conda install -y python=3.10 git pybind11 numpy<2 cmake llvmdev tbb-devel tbb astroquery libboost-devel fmt<11 skyfield spdlog sleef sympy cloudpickle zlib libzlib 'mppp=1.*' numba
+          conda install -y python=3.12 git pybind11 numpy<2 cmake llvmdev tbb-devel tbb astroquery libboost-devel fmt<11 skyfield spdlog sleef sympy cloudpickle zlib libzlib 'mppp=1.*' numba
           git clone --depth 1 https://github.com/bluescarni/heyoka.git heyoka_cpp
           cd heyoka_cpp
           mkdir build
