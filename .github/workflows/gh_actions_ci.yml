@@ -137,7 +137,7 @@ jobs:
           cmake --build . --config Release --target install -j2
           cd ..
           cd tools
-          python ci_test_runner.py
+          python ci_test_runner.py --with-numba
   binder_cache:
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
