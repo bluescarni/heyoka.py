@@ -108,7 +108,7 @@ template <typename T>
 void expose_taylor_integrator_impl(py::module &m, const std::string &suffix)
 {
     using namespace py::literals;
-    namespace kw = heyoka::kw;
+    namespace kw = hey::kw;
 
     using t_ev_t = hey::t_event<T>;
     using nt_ev_t = hey::nt_event<T>;
@@ -119,7 +119,7 @@ void expose_taylor_integrator_impl(py::module &m, const std::string &suffix)
     cl.def(py::init([](std::variant<sys_t, hey::var_ode_sys> vsys, std::vector<T> state, T time, std::vector<T> pars,
                        T tol, bool high_accuracy, bool compact_mode, std::vector<t_ev_t> tes, std::vector<nt_ev_t> ntes,
                        bool parallel_mode, unsigned opt_level, bool force_avx512, bool slp_vectorize, bool fast_math,
-                       long long prec) {
+                       hey::code_model code_model, bool parjit, long long prec) {
                // NOTE: GIL release is fine here even if the events contain
                // Python objects, as the event vectors are moved in
                // upon construction and thus we should never end up calling
@@ -142,7 +142,9 @@ void expose_taylor_integrator_impl(py::module &m, const std::string &suffix)
                                                       kw::force_avx512 = force_avx512,
                                                       kw::slp_vectorize = slp_vectorize,
                                                       kw::fast_math = fast_math,
-                                                      kw::prec = prec};
+                                                      kw::prec = prec,
+                                                      kw::code_model = code_model,
+                                                      kw::parjit = parjit};
                    },
                    vsys);
            }),
@@ -480,7 +482,7 @@ void expose_taylor_integrator_impl(py::module &m, const std::string &suffix)
         .def_property_readonly("nt_events", &hey::taylor_adaptive<T>::get_nt_events);
 
     // Expose the llvm state getter.
-    expose_llvm_state_property(cl);
+    expose_llvm_state_property_ta(cl);
 
 #if defined(HEYOKA_HAVE_REAL)
 

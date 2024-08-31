@@ -21,8 +21,8 @@ class cfunc_test_case(_ut.TestCase):
         x, y, z, s = make_vars("x", "y", "z", "s")
         cf = cfunc([y * (x + z)], [x, y, z])
 
-        self.assertFalse(cf.llvm_state_scalar.force_avx512)
-        self.assertFalse(cf.llvm_state_scalar.slp_vectorize)
+        self.assertTrue(all(not _.force_avx512 for _ in cf.llvm_states))
+        self.assertTrue(all(not _.slp_vectorize for _ in cf.llvm_states))
 
         self.assertEqual(cf([1, 2, 3]), copy(cf)([1, 2, 3]))
         self.assertEqual(cf([1, 2, 3]), deepcopy(cf)([1, 2, 3]))
@@ -31,32 +31,27 @@ class cfunc_test_case(_ut.TestCase):
         self.assertEqual(cf.vars, [x, y, z])
         self.assertEqual(cf.fn, [y * (x + z)])
         self.assertEqual(len(cf.dc), 6)
-        self.assertNotEqual(len(cf.llvm_state_scalar.get_ir()), 0)
+        self.assertTrue(all(len(_.get_ir()) != 0 for _ in cf.llvm_states))
         self.assertEqual(deepcopy(cf).vars, [x, y, z])
         self.assertEqual(deepcopy(cf).fn, [y * (x + z)])
         self.assertEqual(deepcopy(cf).dc, cf.dc)
         self.assertEqual(
-            deepcopy(cf).llvm_state_scalar.get_ir(), cf.llvm_state_scalar.get_ir()
-        )
-        self.assertEqual(
-            deepcopy(cf).llvm_state_scalar_s.get_ir(), cf.llvm_state_scalar_s.get_ir()
-        )
-        self.assertEqual(
-            deepcopy(cf).llvm_state_batch_s.get_ir(), cf.llvm_state_batch_s.get_ir()
+            [_.get_ir() for _ in deepcopy(cf).llvm_states],
+            [_.get_ir() for _ in cf.llvm_states],
         )
         self.assertEqual(pickle.loads(pickle.dumps(cf)).vars, [x, y, z])
         self.assertEqual(pickle.loads(pickle.dumps(cf)).fn, [y * (x + z)])
         self.assertEqual(pickle.loads(pickle.dumps(cf)).dc, cf.dc)
         self.assertEqual(
-            pickle.loads(pickle.dumps(cf)).llvm_state_scalar.get_ir(),
-            cf.llvm_state_scalar.get_ir(),
+            [_.get_ir() for _ in pickle.loads(pickle.dumps(cf)).llvm_states],
+            [_.get_ir() for _ in cf.llvm_states],
         )
 
         cf = cfunc([y * (x + z)], vars=[y, z, x], force_avx512=True, slp_vectorize=True)
         self.assertEqual(cf.vars, [y, z, x])
 
-        self.assertTrue(cf.llvm_state_scalar.force_avx512)
-        self.assertTrue(cf.llvm_state_scalar.slp_vectorize)
+        self.assertTrue(all(_.force_avx512 for _ in cf.llvm_states))
+        self.assertTrue(all(_.slp_vectorize for _ in cf.llvm_states))
 
         # Tests for correct detection of number of params, time dependency
         # and list of variables.

@@ -11,8 +11,10 @@
 
 #include <array>
 #include <cstddef>
+#include <functional>
 #include <string>
 #include <utility>
+#include <variant>
 
 #if defined(__GLIBCXX__)
 
@@ -22,10 +24,12 @@
 
 #include <pybind11/numpy.h>
 #include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
 
 #include <Python.h>
 
 #include <heyoka/expression.hpp>
+#include <heyoka/llvm_state.hpp>
 #include <heyoka/number.hpp>
 
 // NOTE: implementation of Py_SET_TYPE() for Python < 3.9. See:
@@ -55,6 +59,21 @@ std::string str(const py::handle &);
 [[noreturn]] void py_throw(PyObject *, const char *);
 
 bool callable(const py::handle &);
+
+// Helper to expose the llvm_state getter
+// for a Taylor integrator.
+template <typename T>
+inline void expose_llvm_state_property_ta(py::class_<T> &c)
+{
+    c.def_property_readonly("llvm_state", [](const T &self) {
+        const auto &st = self.get_llvm_state();
+
+        using ret_t = std::variant<std::reference_wrapper<const heyoka::llvm_state>,
+                                   std::reference_wrapper<const heyoka::llvm_multi_state>>;
+
+        return std::visit([](const auto &v) -> ret_t { return std::cref(v); }, st);
+    });
+}
 
 // Helper to expose the llvm_state getter
 // for a generic object.
@@ -217,7 +236,8 @@ py::array as_carray(const py::iterable &, int);
 // Macros to avoid repetitions in commonly-used keyword arguments.
 #define HEYOKA_PY_LLVM_STATE_ARGS                                                                                      \
     "opt_level"_a.noconvert() = 3, "force_avx512"_a.noconvert() = false, "slp_vectorize"_a.noconvert() = false,        \
-    "fast_math"_a.noconvert() = false
+    "fast_math"_a.noconvert() = false, "code_model"_a.noconvert() = heyoka::code_model::small,                         \
+    "parjit"_a.noconvert() = heyoka::detail::default_parjit
 
 #define HEYOKA_PY_CFUNC_ARGS(default_cm)                                                                               \
     "high_accuracy"_a.noconvert() = false, "compact_mode"_a.noconvert() = default_cm,                                  \

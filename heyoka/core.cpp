@@ -164,16 +164,24 @@ PYBIND11_MODULE(core, m)
         }
     });
 
+    // code_model enum.
+    py::enum_<hey::code_model>(m, "code_model")
+        .value("tiny", hey::code_model::tiny)
+        .value("small", hey::code_model::small)
+        .value("kernel", hey::code_model::kernel)
+        .value("medium", hey::code_model::medium)
+        .value("large", hey::code_model::large);
+
     // LLVM state.
     py::class_<hey::llvm_state>(m, "llvm_state", py::dynamic_attr{})
         .def("get_ir", &hey::llvm_state::get_ir)
         .def("get_bc", [](const hey::llvm_state &s) { return py::bytes(s.get_bc()); })
         .def("get_object_code", [](const hey::llvm_state &s) { return py::bytes(s.get_object_code()); })
-        // NOTE: make these read-only for the moment.
         .def_property_readonly("opt_level", &hey::llvm_state::get_opt_level)
         .def_property_readonly("fast_math", [](const hey::llvm_state &s) { return s.fast_math(); })
         .def_property_readonly("force_avx512", [](const hey::llvm_state &s) { return s.force_avx512(); })
         .def_property_readonly("slp_vectorize", &hey::llvm_state::get_slp_vectorize)
+        .def_property_readonly("code_model", &hey::llvm_state::get_code_model)
         // Repr.
         .def("__repr__",
              [](const hey::llvm_state &s) {
@@ -194,6 +202,49 @@ PYBIND11_MODULE(core, m)
             "memcache_limit", [](const py::object &) { return hey::llvm_state::get_memcache_limit(); },
             [](const py::object &, std::size_t limit) { hey::llvm_state::set_memcache_limit(limit); })
         .def_static("clear_memcache", &hey::llvm_state::clear_memcache);
+
+    // LLVM multi state.
+    py::class_<hey::llvm_multi_state>(m, "llvm_multi_state", py::dynamic_attr{})
+        .def("get_ir", &hey::llvm_multi_state::get_ir)
+        .def("get_bc",
+             [](const hey::llvm_multi_state &s) {
+                 py::list ret;
+
+                 for (const auto &cur_bc : s.get_bc()) {
+                     ret.append(py::bytes(cur_bc));
+                 }
+
+                 return ret;
+             })
+        .def("get_object_code",
+             [](const hey::llvm_multi_state &s) {
+                 py::list ret;
+
+                 for (const auto &cur_ob : s.get_object_code()) {
+                     ret.append(py::bytes(cur_ob));
+                 }
+
+                 return ret;
+             })
+        .def_property_readonly("opt_level", &hey::llvm_multi_state::get_opt_level)
+        .def_property_readonly("fast_math", [](const hey::llvm_multi_state &s) { return s.fast_math(); })
+        .def_property_readonly("force_avx512", [](const hey::llvm_multi_state &s) { return s.force_avx512(); })
+        .def_property_readonly("slp_vectorize", &hey::llvm_multi_state::get_slp_vectorize)
+        .def_property_readonly("parjit", &hey::llvm_multi_state::get_parjit)
+        .def_property_readonly("code_model", &hey::llvm_multi_state::get_code_model)
+        // Repr.
+        .def("__repr__",
+             [](const hey::llvm_multi_state &s) {
+                 std::ostringstream oss;
+                 oss << s;
+                 return oss.str();
+             })
+        // Copy/deepcopy.
+        .def("__copy__", heypy::copy_wrapper<hey::llvm_multi_state>)
+        .def("__deepcopy__", heypy::deepcopy_wrapper<hey::llvm_multi_state>, "memo"_a)
+        // Pickle support.
+        .def(py::pickle(&heypy::pickle_getstate_wrapper<hey::llvm_multi_state>,
+                        &heypy::pickle_setstate_wrapper<hey::llvm_multi_state>));
 
     // Expression.
     heypy::expose_expression(m);

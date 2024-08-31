@@ -92,7 +92,7 @@ void expose_batch_integrator_impl(py::module_ &m, const std::string &suffix)
                             std::optional<py::iterable> time_ob, std::optional<py::iterable> pars_ob, T tol,
                             bool high_accuracy, bool compact_mode, std::vector<t_ev_t> tes, std::vector<nt_ev_t> ntes,
                             bool parallel_mode, unsigned opt_level, bool force_avx512, bool slp_vectorize,
-                            bool fast_math) {
+                            bool fast_math, hey::code_model code_model, bool parjit) {
         // Fetch the dtype corresponding to T.
         const auto dt = get_dtype<T>();
 
@@ -176,7 +176,9 @@ void expose_batch_integrator_impl(py::module_ &m, const std::string &suffix)
                                                          kw::opt_level = opt_level,
                                                          kw::force_avx512 = force_avx512,
                                                          kw::slp_vectorize = slp_vectorize,
-                                                         kw::fast_math = fast_math};
+                                                         kw::fast_math = fast_math,
+                                                         kw::code_model = code_model,
+                                                         kw::parjit = parjit};
                 } else {
                     // Times not provided.
 
@@ -199,7 +201,9 @@ void expose_batch_integrator_impl(py::module_ &m, const std::string &suffix)
                                                          kw::opt_level = opt_level,
                                                          kw::force_avx512 = force_avx512,
                                                          kw::slp_vectorize = slp_vectorize,
-                                                         kw::fast_math = fast_math};
+                                                         kw::fast_math = fast_math,
+                                                         kw::code_model = code_model,
+                                                         kw::parjit = parjit};
                 }
             },
             vsys);
@@ -213,10 +217,11 @@ void expose_batch_integrator_impl(py::module_ &m, const std::string &suffix)
                                       std::optional<py::iterable> time, std::optional<py::iterable> pars, T tol,
                                       bool high_accuracy, bool compact_mode, std::vector<t_ev_t> tes,
                                       std::vector<nt_ev_t> ntes, bool parallel_mode, unsigned opt_level,
-                                      bool force_avx512, bool slp_vectorize, bool fast_math) {
+                                      bool force_avx512, bool slp_vectorize, bool fast_math, hey::code_model code_model,
+                                      bool parjit) {
                  return tab_ctor_impl(std::move(vsys), state, std::move(time), std::move(pars), tol, high_accuracy,
                                       compact_mode, std::move(tes), std::move(ntes), parallel_mode, opt_level,
-                                      force_avx512, slp_vectorize, fast_math);
+                                      force_avx512, slp_vectorize, fast_math, code_model, parjit);
              }),
              "sys"_a, "state"_a, "time"_a = py::none{}, "pars"_a = py::none{}, "tol"_a.noconvert() = static_cast<T>(0),
              "high_accuracy"_a = false, "compact_mode"_a = false, "t_events"_a = py::list{}, "nt_events"_a = py::list{},
@@ -658,7 +663,7 @@ void expose_batch_integrator_impl(py::module_ &m, const std::string &suffix)
                         &pickle_setstate_wrapper<hey::taylor_adaptive_batch<T>>));
 
     // Expose the llvm state getter.
-    expose_llvm_state_property(tab_c);
+    expose_llvm_state_property_ta(tab_c);
 }
 
 } // namespace
