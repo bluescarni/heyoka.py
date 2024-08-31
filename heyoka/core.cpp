@@ -396,24 +396,6 @@ PYBIND11_MODULE(core, m)
 #endif
         heypy::detail::tbb_gc.reset();
     }));
-
-    std::set_terminate([]() {
-        try {
-            std::exception_ptr eptr{std::current_exception()};
-            if (eptr) {
-                std::rethrow_exception(eptr);
-            } else {
-                std::cerr << "Exiting without exception\n";
-            }
-        } catch (const std::exception &ex) {
-            std::cerr << "Exception: " << ex.what() << std::endl;
-            std::cout << "Exception: " << ex.what() << std::endl;
-        } catch (...) {
-            std::cerr << "Unknown exception caught" << std::endl;
-            std::cout << "Unknown exception caught" << std::endl;
-        }
-        std::exit(EXIT_FAILURE);
-    });
 }
 
 #if defined(__clang__)
