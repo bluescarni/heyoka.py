@@ -122,7 +122,7 @@ jobs:
       - name: Build
         shell: pwsh
         run: |
-          conda install -y clang ninja python=3.12 git pybind11 numpy<2 cmake llvmdev tbb-devel tbb astroquery libboost-devel fmt skyfield spdlog sleef sympy cloudpickle zlib libzlib 'mppp=1.*' numba
+          conda install -y clang ninja python=3.12 git pybind11 numpy<2 cmake llvmdev tbb-devel tbb astroquery libboost-devel<=1.84 fmt skyfield spdlog sleef sympy cloudpickle zlib libzlib 'mppp=1.*' numba
           git clone --depth 1 https://github.com/bluescarni/heyoka.git heyoka_cpp
           cd heyoka_cpp
           mkdir build
