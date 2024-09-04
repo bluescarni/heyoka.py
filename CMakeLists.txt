@@ -166,8 +166,19 @@ if(${pybind11_VERSION} VERSION_LESS "2.10")
 endif()
 
 # Boost.
+# NOTE: we look for Boost in CONFIG mode first, as that has become the official supported way
+# of locating Boost in recent Boost/CMake versions. If we fail, we try again in
+# MODULE mode as last resort.
 # NOTE: need 1.69 for safe numerics.
-find_package(Boost 1.69 REQUIRED serialization)
+find_package(Boost 1.69 QUIET COMPONENTS serialization CONFIG)
+if(NOT ${Boost_FOUND})
+    message(STATUS "Boost not found in CONFIG mode, retrying in MODULE mode.")
+    find_package(Boost 1.69 QUIET MODULE COMPONENTS serialization)
+endif()
+if(NOT ${Boost_FOUND})
+    message(FATAL_ERROR "Could not locate Boost in either CONFIG or MODULE mode.")
+endif()
+message(STATUS "Found Boost version ${Boost_VERSION}.")
 
 # Mandatory dependency on TBB.
 find_package(TBB REQUIRED CONFIG)
