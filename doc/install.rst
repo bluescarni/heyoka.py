@@ -21,8 +21,7 @@ heyoka.py has several Python and C++ dependencies. On the C++ side, heyoka.py de
   :ref:`heyoka <hy:installation>` and :ref:`mp++ <mppp:installation>` installation
   instructions).
 
-On the Python side, heyoka.py requires at least Python 3.5
-(Python 2.x is **not** supported) and depends on:
+On the Python side, heyoka.py requires at least Python 3.5 and depends on:
 
 * `NumPy <https://numpy.org/>`__ (version <2, **mandatory**),
 * `cloudpickle <https://github.com/cloudpipe/cloudpickle>`__ (**mandatory**),
@@ -87,6 +86,13 @@ heyoka.py. In order to install heyoka.py using pkg, execute the following comman
 
 Installation from source
 ------------------------
+
+.. warning::
+
+   When installing from source, it is important to ensure that the compiler that was used
+   to build heyoka.py's dependencies is ABI-compatible with the compiler that is being used
+   to build heyoka.py. Mixing incompatible compilers will likely lead to hard-to-diagnose
+   build and/or runtime issues.
 
 heyoka.py is written in modern C++, and it requires a compiler able to understand
 at least C++20. The library is regularly tested on
