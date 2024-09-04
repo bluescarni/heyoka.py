@@ -128,13 +128,13 @@ jobs:
           mkdir build
           cd build
           cmake .. -G "Visual Studio 17 2022" -A x64 -DCMAKE_PREFIX_PATH=C:\Miniconda\envs\test\Library -DCMAKE_INSTALL_PREFIX=C:\Miniconda\envs\test\Library -DHEYOKA_ENABLE_IPO=yes -DHEYOKA_WITH_SLEEF=yes -DHEYOKA_WITH_MPPP=yes
-          cmake --build . --target install -j4
+          cmake --build . --config Release --target install -j4
           cd ..
           cd ..
           mkdir build
           cd build
           cmake .. -G "Visual Studio 17 2022" -A x64 -DCMAKE_PREFIX_PATH=C:\Miniconda\envs\test\Library -DCMAKE_INSTALL_PREFIX=C:\Miniconda\envs\test\Library -DHEYOKA_PY_ENABLE_IPO=yes
-          cmake --build . --target install -j4
+          cmake --build . --config Release --target install -j4
           cd ..
           cd tools
           python ci_test_runner.py --with-numba
