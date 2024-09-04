@@ -2095,9 +2095,7 @@ def run_test_suite():
 
     tl = _ut.TestLoader()
 
-    suite = tl.loadTestsFromTestCase(
-        _test_scalar_integrator.scalar_integrator_test_case
-    )
+    suite = tl.loadTestsFromTestCase(_test_model.model_test_case)
     suite.addTest(
         tl.loadTestsFromTestCase(_test_batch_integrator.batch_integrator_test_case)
     )
@@ -2113,7 +2111,9 @@ def run_test_suite():
     suite.addTest(tl.loadTestsFromTestCase(_test_elp2000.elp2000_test_case))
     suite.addTest(tl.loadTestsFromTestCase(_test_dtens.dtens_test_case))
     suite.addTest(tl.loadTestsFromTestCase(_test_mp.mp_test_case))
-    suite.addTest(tl.loadTestsFromTestCase(_test_model.model_test_case))
+    suite.addTest(
+        tl.loadTestsFromTestCase(_test_scalar_integrator.scalar_integrator_test_case)
+    )
     suite.addTest(tl.loadTestsFromTestCase(_test_real.real_test_case))
     suite.addTest(tl.loadTestsFromTestCase(_test_real128.real128_test_case))
     suite.addTest(tl.loadTestsFromTestCase(_test_cfunc.cfunc_test_case))

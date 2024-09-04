@@ -32,7 +32,7 @@ class mp_test_case(_ut.TestCase):
         with self.assertRaises(ValueError) as cm:
             cfunc(func, vars=[y, x], fp_type=real, prec=-1)
         self.assertTrue(
-            "An invalid precision value of -1 was passed to add_cfunc()"
+            "An invalid precision value of -1 was passed to make_multi_cfunc()"
             in str(cm.exception)
         )
 

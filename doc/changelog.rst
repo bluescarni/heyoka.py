@@ -3,6 +3,33 @@
 Changelog
 =========
 
+6.0.0 (unreleased)
+------------------
+
+New
+~~~
+
+- Implement parallel compilation for Taylor integrators
+  and compiled functions
+  (`#188 <https://github.com/bluescarni/heyoka.py/pull/188>`__).
+- Add the possibility of specifying the LLVM code model
+  used for JIT compilation
+  (`#188 <https://github.com/bluescarni/heyoka.py/pull/188>`__).
+
+Changes
+~~~~~~~
+
+- heyoka.py now requires version 6.0.0 of the
+  heyoka C++ library
+  (`#188 <https://github.com/bluescarni/heyoka.py/pull/188>`__).
+
+Fix
+~~~
+
+- Fix build system warnings when using recent versions of
+  CMake and Boost
+  (`#188 <https://github.com/bluescarni/heyoka.py/pull/188>`__).
+
 5.1.0 (2024-07-23)
 ------------------
 
