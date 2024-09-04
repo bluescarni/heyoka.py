@@ -106,42 +106,44 @@ void expose_sgp4_propagator_impl(py::module_ &m, const std::string &suffix)
 
     py::class_<prop_t> prop_cl(m, fmt::format("_model_sgp4_propagator_{}", suffix).c_str(), py::dynamic_attr{},
                                docstrings::sgp4_propagator(std::same_as<T, double> ? "double" : "single").c_str());
-    prop_cl.def(py::init([](py::list sat_list, std::uint32_t diff_order, bool high_accuracy, bool compact_mode,
-                            bool parallel_mode, std::uint32_t batch_size, long long, unsigned opt_level,
-                            bool force_avx512, bool slp_vectorize, bool fast_math) {
-                    // Check that the sgp4 module is available.
-                    try {
-                        py::module_::import("sgp4.api");
-                    } catch (...) {
-                        py_throw(
-                            PyExc_ImportError,
-                            "The Python module 'sgp4' must be installed in order to be able to build sgp4 propagators");
-                    }
+    prop_cl.def(
+        py::init([](py::list sat_list, std::uint32_t diff_order, bool high_accuracy, bool compact_mode,
+                    bool parallel_mode, std::uint32_t batch_size, long long, unsigned opt_level, bool force_avx512,
+                    bool slp_vectorize, bool fast_math, hy::code_model code_model, bool parjit) {
+            // Check that the sgp4 module is available.
+            try {
+                py::module_::import("sgp4.api");
+            } catch (...) {
+                py_throw(PyExc_ImportError,
+                         "The Python module 'sgp4' must be installed in order to be able to build sgp4 propagators");
+            }
 
-                    // Turn sat_list into a data vector.
-                    const auto sat_data = sat_list_to_vector<T>(sat_list);
-                    assert(sat_data.size() % 9u == 0u);
+            // Turn sat_list into a data vector.
+            const auto sat_data = sat_list_to_vector<T>(sat_list);
+            assert(sat_data.size() % 9u == 0u);
 
-                    // Create the input span for the constructor.
-                    using span_t = hy::mdspan<const T, hy::extents<std::size_t, 9, std::dynamic_extent>>;
-                    const span_t in(sat_data.data(), boost::numeric_cast<std::size_t>(sat_data.size()) / 9u);
+            // Create the input span for the constructor.
+            using span_t = hy::mdspan<const T, hy::extents<std::size_t, 9, std::dynamic_extent>>;
+            const span_t in(sat_data.data(), boost::numeric_cast<std::size_t>(sat_data.size()) / 9u);
 
-                    // NOTE: release the GIL during compilation.
-                    py::gil_scoped_release release;
+            // NOTE: release the GIL during compilation.
+            py::gil_scoped_release release;
 
-                    return prop_t{in,
-                                  kw::diff_order = diff_order,
-                                  kw::high_accuracy = high_accuracy,
-                                  kw::compact_mode = compact_mode,
-                                  kw::parallel_mode = parallel_mode,
-                                  kw::batch_size = batch_size,
-                                  kw::opt_level = opt_level,
-                                  kw::force_avx512 = force_avx512,
-                                  kw::slp_vectorize = slp_vectorize,
-                                  kw::fast_math = fast_math};
-                }),
-                "sat_list"_a.noconvert(), "diff_order"_a.noconvert() = static_cast<std::uint32_t>(0),
-                HEYOKA_PY_CFUNC_ARGS(false), HEYOKA_PY_LLVM_STATE_ARGS, docstrings::sgp4_propagator_init().c_str());
+            return prop_t{in,
+                          kw::diff_order = diff_order,
+                          kw::high_accuracy = high_accuracy,
+                          kw::compact_mode = compact_mode,
+                          kw::parallel_mode = parallel_mode,
+                          kw::batch_size = batch_size,
+                          kw::opt_level = opt_level,
+                          kw::force_avx512 = force_avx512,
+                          kw::slp_vectorize = slp_vectorize,
+                          kw::fast_math = fast_math,
+                          kw::code_model = code_model,
+                          kw::parjit = parjit};
+        }),
+        "sat_list"_a.noconvert(), "diff_order"_a.noconvert() = static_cast<std::uint32_t>(0),
+        HEYOKA_PY_CFUNC_ARGS(false), HEYOKA_PY_LLVM_STATE_ARGS, docstrings::sgp4_propagator_init().c_str());
     prop_cl.def_property_readonly(
         "jdtype",
         [](const prop_t &) -> py::object {
