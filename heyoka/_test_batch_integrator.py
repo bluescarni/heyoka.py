@@ -525,6 +525,17 @@ class batch_integrator_test_case(_ut.TestCase):
             self.assertFalse(ta.llvm_state.force_avx512)
             self.assertEqual(ta.llvm_state.opt_level, 3)
 
+            # Test with an empty initial state.
+            ta = taylor_adaptive_batch(
+                sys=sys,
+                state=np.empty((0, 2), dtype=fp_t),
+                compact_mode=True,
+                high_accuracy=True,
+                fp_type=fp_t,
+            )
+
+            self.assertTrue(np.all(ta.state == np.zeros((2, 2), dtype=fp_t)))
+
             # Test the custom llvm_state flags.
             ta = taylor_adaptive_batch(
                 sys=sys,

@@ -101,7 +101,7 @@ def _fp_to_suffix(fp_t):
     )
 
 
-def taylor_adaptive(sys, state, **kwargs):
+def taylor_adaptive(sys, state=[], **kwargs):
     from . import core
 
     fp_type = kwargs.pop("fp_type", float)
