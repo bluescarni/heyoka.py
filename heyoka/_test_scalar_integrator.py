@@ -173,6 +173,22 @@ class scalar_integrator_test_case(_ut.TestCase):
             self.assertFalse(ta.high_accuracy)
             self.assertEqual(ta.sys, sys)
 
+            # Test init without a state.
+            ta = taylor_adaptive(
+                sys=sys,
+                fp_type=fp_t,
+            )
+
+            self.assertTrue(np.all(ta.state == [0, 0]))
+
+            ta = taylor_adaptive(
+                sys=sys,
+                state=[],
+                fp_type=fp_t,
+            )
+
+            self.assertTrue(np.all(ta.state == [0, 0]))
+
             ta = taylor_adaptive(
                 sys=sys,
                 state=[fp_t(0.0), fp_t(0.25)],
