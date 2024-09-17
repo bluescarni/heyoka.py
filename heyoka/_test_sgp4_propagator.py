@@ -431,10 +431,12 @@ class sgp4_propagator_test_case(_ut.TestCase):
             # - generated an error code, or
             # - ended up farther than 8000km from the Earth, or
             # - contain non-finite positional data.
-            mask = np.logical_and(
-                e[:, 0] == 0,
-                np.linalg.norm(r[:, 0, :], axis=1) < 8000,
-                np.all(np.isfinite(r[:, 0, :]), axis=1),
+            mask = np.logical_and.reduce(
+                (
+                    e[:, 0] == 0,
+                    np.linalg.norm(r[:, 0, :], axis=1) < 8000,
+                    np.all(np.isfinite(r[:, 0, :]), axis=1),
+                )
             )
 
             # Compute the positional errors in meters, and sort them.
