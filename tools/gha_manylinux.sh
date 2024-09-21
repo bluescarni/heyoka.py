@@ -55,7 +55,7 @@ else
 fi
 
 # Python mandatory deps.
-/opt/python/${PYTHON_DIR}/bin/pip install numpy==${NUMPY_VERSION} cloudpickle
+/opt/python/${PYTHON_DIR}/bin/pip install numpy==${NUMPY_VERSION} cloudpickle setuptools
 # Python optional deps.
 /opt/python/${PYTHON_DIR}/bin/pip install sympy mpmath skyfield
 
