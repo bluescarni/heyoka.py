@@ -165,12 +165,12 @@ PYBIND11_MODULE(core, m)
     });
 
     // code_model enum.
-    py::enum_<hey::code_model>(m, "code_model")
-        .value("tiny", hey::code_model::tiny)
-        .value("small", hey::code_model::small)
-        .value("kernel", hey::code_model::kernel)
-        .value("medium", hey::code_model::medium)
-        .value("large", hey::code_model::large);
+    py::enum_<hey::code_model>(m, "code_model", docstrings::code_model().c_str())
+        .value("tiny", hey::code_model::tiny, docstrings::code_model_tiny().c_str())
+        .value("small", hey::code_model::small, docstrings::code_model_small().c_str())
+        .value("kernel", hey::code_model::kernel, docstrings::code_model_kernel().c_str())
+        .value("medium", hey::code_model::medium, docstrings::code_model_medium().c_str())
+        .value("large", hey::code_model::large, docstrings::code_model_large().c_str());
 
     // LLVM state.
     py::class_<hey::llvm_state>(m, "llvm_state", py::dynamic_attr{})
