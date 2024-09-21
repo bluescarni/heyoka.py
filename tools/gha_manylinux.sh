@@ -55,6 +55,8 @@ else
 fi
 
 # Python mandatory deps.
+# NOTE: explicit installation of setuptools is apparently
+# needed in Python 3.13.
 /opt/python/${PYTHON_DIR}/bin/pip install numpy==${NUMPY_VERSION} cloudpickle setuptools
 # Python optional deps.
 /opt/python/${PYTHON_DIR}/bin/pip install sympy mpmath skyfield

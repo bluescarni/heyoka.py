@@ -47,6 +47,7 @@ These are keyword arguments influencing just-in-time (JIT) compilation via LLVM.
   to be used for JIT compilation. The default code model is ``small``.
 
   .. versionadded:: 6.0.0
+
 - ``parjit``: a boolean flag indicating that the JIT compilation process should be
   parallelised. This flag has an effect only when compact mode is enabled. The default value is ``False``.
 

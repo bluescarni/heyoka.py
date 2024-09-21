@@ -9,6 +9,8 @@ Changelog
 New
 ~~~
 
+- Add wheels for Python 3.13
+  (`#193 <https://github.com/bluescarni/heyoka.py/pull/193>`__).
 - Non-number exponents for the ``pow()`` function
   are now supported in Taylor integrators
   (`#189 <https://github.com/bluescarni/heyoka.py/pull/189>`__).
