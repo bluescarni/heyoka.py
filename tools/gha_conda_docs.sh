@@ -17,7 +17,7 @@ bash miniforge.sh -b -p $HOME/miniforge
 # NOTE: the scipy pin is necessary otherwise the
 # notebooks do not execute correctly due to pykep
 # using deprecated scipy functions.
-mamba create -y -p $deps_dir c-compiler cxx-compiler python=3.10 git pybind11 \
+conda create -y -p $deps_dir c-compiler cxx-compiler python=3.10 git pybind11 \
     ninja 'numpy<2' mpmath cmake llvmdev tbb-devel tbb astroquery libboost-devel \
     'mppp=1.*' sleef 'fmt<11' skyfield spdlog myst-nb matplotlib sympy 'scipy<1.14' pykep cloudpickle \
     'sphinx=7.*' 'sphinx-book-theme=1.*'
@@ -35,8 +35,7 @@ cmake -G Ninja ../ \
     -DCMAKE_INSTALL_PREFIX=$deps_dir \
     -DCMAKE_PREFIX_PATH=$deps_dir \
     -DHEYOKA_WITH_MPPP=yes \
-    -DHEYOKA_WITH_SLEEF=yes \
-    -DBoost_NO_BOOST_CMAKE=ON
+    -DHEYOKA_WITH_SLEEF=yes
 
 ninja -v install
 
@@ -48,8 +47,7 @@ cd build
 cmake -G Ninja ../ \
     -DCMAKE_INSTALL_PREFIX=$deps_dir \
     -DCMAKE_PREFIX_PATH=$deps_dir \
-    -DHEYOKA_PY_ENABLE_IPO=yes \
-    -DBoost_NO_BOOST_CMAKE=ON
+    -DHEYOKA_PY_ENABLE_IPO=yes
 
 ninja -v install
 

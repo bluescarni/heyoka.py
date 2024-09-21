@@ -26,6 +26,8 @@ elif [[ ${HEYOKA_PY_BUILD_TYPE} == *311* ]]; then
 	PYTHON_DIR="cp311-cp311"
 elif [[ ${HEYOKA_PY_BUILD_TYPE} == *312* ]]; then
 	PYTHON_DIR="cp312-cp312"
+elif [[ ${HEYOKA_PY_BUILD_TYPE} == *313* ]]; then
+	PYTHON_DIR="cp313-cp313"
 else
 	echo "Invalid build type: ${HEYOKA_PY_BUILD_TYPE}"
 	exit 1
@@ -35,7 +37,7 @@ fi
 echo "PYTHON_DIR: ${PYTHON_DIR}"
 
 # The numpy version heyoka.py will be built against.
-if [[ ${HEYOKA_PY_BUILD_TYPE} == *312* ]]; then
+if [[ ${HEYOKA_PY_BUILD_TYPE} == *312* || ${HEYOKA_PY_BUILD_TYPE} == *313* ]]; then
 	export NUMPY_VERSION="1.26.*"
 else
 	export NUMPY_VERSION="1.24.*"
@@ -53,7 +55,9 @@ else
 fi
 
 # Python mandatory deps.
-/opt/python/${PYTHON_DIR}/bin/pip install numpy==${NUMPY_VERSION} cloudpickle
+# NOTE: explicit installation of setuptools is apparently
+# needed in Python 3.13.
+/opt/python/${PYTHON_DIR}/bin/pip install numpy==${NUMPY_VERSION} cloudpickle setuptools
 # Python optional deps.
 /opt/python/${PYTHON_DIR}/bin/pip install sympy mpmath skyfield
 
@@ -73,8 +77,7 @@ fi
 
 mkdir build
 cd build
-cmake -DBoost_NO_BOOST_CMAKE=ON \
-    -DHEYOKA_WITH_MPPP=yes \
+cmake -DHEYOKA_WITH_MPPP=yes \
     -DHEYOKA_WITH_SLEEF=yes \
     -DHEYOKA_ENABLE_IPO=ON \
     -DHEYOKA_FORCE_STATIC_LLVM=yes \
@@ -86,8 +89,7 @@ make -j4 install
 cd ${GITHUB_WORKSPACE}
 mkdir build
 cd build
-cmake -DBoost_NO_BOOST_CMAKE=ON \
-	-DCMAKE_BUILD_TYPE=Release \
+cmake -DCMAKE_BUILD_TYPE=Release \
 	-DHEYOKA_PY_ENABLE_IPO=ON \
 	-DPython3_EXECUTABLE=/opt/python/${PYTHON_DIR}/bin/python ../;
 make -j4 install

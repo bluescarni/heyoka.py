@@ -33,6 +33,21 @@ jobs:
       - uses: actions/checkout@v4
       - name: Build
         run: bash tools/gha_osx_heyoka_head_static.sh
+  manylinux228_x86_64-py313:
+     runs-on: ubuntu-latest
+     container:
+      image: pagmo2/manylinux228_x86_64_with_deps:latest
+      env:
+        HEYOKA_PY_BUILD_TYPE: "Python313"
+        TWINE_PASSWORD: ${{ secrets.TWINE_PASSWORD }}
+     steps:
+       - uses: actions/checkout@v4
+       - name: Build
+         run: bash tools/gha_manylinux.sh
+       - uses: actions/upload-artifact@v4
+         with:
+           name: wheel_313
+           path: build/wheel/dist2/*.whl
   manylinux228_x86_64-py312:
      runs-on: ubuntu-latest
      container:

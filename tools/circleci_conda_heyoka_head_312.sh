@@ -14,7 +14,7 @@ wget https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge
 export deps_dir=$HOME/local
 export PATH="$HOME/miniforge/bin:$PATH"
 bash miniforge.sh -b -p $HOME/miniforge
-mamba create -y -p $deps_dir python=3.12 c-compiler cxx-compiler git pybind11 'numpy<2' mpmath cmake llvmdev tbb-devel tbb libboost-devel 'mppp=1.*' sleef 'fmt<11' skyfield spdlog sympy cloudpickle
+conda create -y -p $deps_dir python=3.12 c-compiler cxx-compiler git pybind11 'numpy<2' mpmath cmake llvmdev tbb-devel tbb libboost-devel 'mppp=1.*' sleef 'fmt<11' skyfield spdlog sympy cloudpickle
 source activate $deps_dir
 
 # Checkout, build and install heyoka's HEAD.
@@ -23,7 +23,7 @@ cd heyoka_cpp
 mkdir build
 cd build
 
-cmake ../ -DCMAKE_INSTALL_PREFIX=$deps_dir -DCMAKE_PREFIX_PATH=$deps_dir -DCMAKE_BUILD_TYPE=Debug -DHEYOKA_WITH_MPPP=yes -DHEYOKA_WITH_SLEEF=yes -DBoost_NO_BOOST_CMAKE=ON
+cmake ../ -DCMAKE_INSTALL_PREFIX=$deps_dir -DCMAKE_PREFIX_PATH=$deps_dir -DCMAKE_BUILD_TYPE=Debug -DHEYOKA_WITH_MPPP=yes -DHEYOKA_WITH_SLEEF=yes
 make -j4 VERBOSE=1 install
 
 cd ../../
@@ -32,7 +32,7 @@ cd ../../
 mkdir build
 cd build
 
-cmake ../ -DCMAKE_INSTALL_PREFIX=$deps_dir -DCMAKE_PREFIX_PATH=$deps_dir -DCMAKE_BUILD_TYPE=Debug -DHEYOKA_PY_ENABLE_IPO=yes -DBoost_NO_BOOST_CMAKE=ON
+cmake ../ -DCMAKE_INSTALL_PREFIX=$deps_dir -DCMAKE_PREFIX_PATH=$deps_dir -DCMAKE_BUILD_TYPE=Debug -DHEYOKA_PY_ENABLE_IPO=yes
 make -j4 VERBOSE=1 install
 
 cd ../tools
