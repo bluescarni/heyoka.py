@@ -26,6 +26,8 @@ elif [[ ${HEYOKA_PY_BUILD_TYPE} == *311* ]]; then
 	PYTHON_DIR="cp311-cp311"
 elif [[ ${HEYOKA_PY_BUILD_TYPE} == *312* ]]; then
 	PYTHON_DIR="cp312-cp312"
+elif [[ ${HEYOKA_PY_BUILD_TYPE} == *313* ]]; then
+	PYTHON_DIR="cp313-cp313"
 else
 	echo "Invalid build type: ${HEYOKA_PY_BUILD_TYPE}"
 	exit 1
@@ -35,7 +37,7 @@ fi
 echo "PYTHON_DIR: ${PYTHON_DIR}"
 
 # The numpy version heyoka.py will be built against.
-if [[ ${HEYOKA_PY_BUILD_TYPE} == *312* ]]; then
+if [[ ${HEYOKA_PY_BUILD_TYPE} == *312* || ${HEYOKA_PY_BUILD_TYPE} == *313* ]]; then
 	export NUMPY_VERSION="1.26.*"
 else
 	export NUMPY_VERSION="1.24.*"
