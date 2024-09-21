@@ -73,8 +73,7 @@ fi
 
 mkdir build
 cd build
-cmake -DBoost_NO_BOOST_CMAKE=ON \
-    -DHEYOKA_WITH_MPPP=yes \
+cmake -DHEYOKA_WITH_MPPP=yes \
     -DHEYOKA_WITH_SLEEF=yes \
     -DHEYOKA_ENABLE_IPO=ON \
     -DHEYOKA_FORCE_STATIC_LLVM=yes \
@@ -86,8 +85,7 @@ make -j4 install
 cd ${GITHUB_WORKSPACE}
 mkdir build
 cd build
-cmake -DBoost_NO_BOOST_CMAKE=ON \
-	-DCMAKE_BUILD_TYPE=Release \
+cmake -DCMAKE_BUILD_TYPE=Release \
 	-DHEYOKA_PY_ENABLE_IPO=ON \
 	-DPython3_EXECUTABLE=/opt/python/${PYTHON_DIR}/bin/python ../;
 make -j4 install

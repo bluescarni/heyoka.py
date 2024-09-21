@@ -35,8 +35,7 @@ cmake -G Ninja ../ \
     -DCMAKE_INSTALL_PREFIX=$deps_dir \
     -DCMAKE_PREFIX_PATH=$deps_dir \
     -DHEYOKA_WITH_MPPP=yes \
-    -DHEYOKA_WITH_SLEEF=yes \
-    -DBoost_NO_BOOST_CMAKE=ON
+    -DHEYOKA_WITH_SLEEF=yes
 
 ninja -v install
 
@@ -48,8 +47,7 @@ cd build
 cmake -G Ninja ../ \
     -DCMAKE_INSTALL_PREFIX=$deps_dir \
     -DCMAKE_PREFIX_PATH=$deps_dir \
-    -DHEYOKA_PY_ENABLE_IPO=yes \
-    -DBoost_NO_BOOST_CMAKE=ON
+    -DHEYOKA_PY_ENABLE_IPO=yes
 
 ninja -v install
 

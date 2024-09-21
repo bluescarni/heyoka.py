@@ -19,7 +19,7 @@ conda install -y python=3.10 pybind11 'numpy<2' cmake heyoka libboost-devel
 mkdir build
 cd build
 
-cmake ../ -DCMAKE_INSTALL_PREFIX=$deps_dir -DCMAKE_PREFIX_PATH=$deps_dir -DCMAKE_BUILD_TYPE=Debug -DHEYOKA_PY_ENABLE_IPO=yes -DBoost_NO_BOOST_CMAKE=ON
+cmake ../ -DCMAKE_INSTALL_PREFIX=$deps_dir -DCMAKE_PREFIX_PATH=$deps_dir -DCMAKE_BUILD_TYPE=Debug -DHEYOKA_PY_ENABLE_IPO=yes
 make -j2 VERBOSE=1 install
 
 cd ../tools
