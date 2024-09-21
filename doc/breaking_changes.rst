@@ -5,6 +5,21 @@ Breaking changes
 
 .. currentmodule:: heyoka
 
+.. _bchanges_6_0_0:
+
+6.0.0
+-----
+
+API/behaviour changes
+~~~~~~~~~~~~~~~~~~~~~
+
+In heyoka.py 6.0.0, the array of parameter values passed to the constructor
+of a Taylor integrator must either be empty (in which case the parameter
+values will be zero-inited), or it must have the correct size.
+
+In previous versions, heyoka.py would pad with zeroes the array of parameter values
+if its size was less than the correct one.
+
 .. _bchanges_5_0_0:
 
 5.0.0
