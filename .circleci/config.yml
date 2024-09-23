@@ -34,7 +34,7 @@ jobs:
         command: bash ./tools/circleci_conda_heyoka_head_312.sh
   ubuntu_arm64:
     machine:
-      image: ubuntu-2004:202101-01
+      image: ubuntu-2204:current
     resource_class: arm.large
     steps:
     - checkout

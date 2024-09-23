@@ -12,17 +12,24 @@ import unittest as _ut
 
 class cfunc_test_case(_ut.TestCase):
     def test_basic(self):
-        from . import cfunc, make_vars, cfunc_dbl, core, par, time
+        from . import cfunc, make_vars, cfunc_dbl, core, par, time, code_model
         import pickle
         from copy import copy, deepcopy
+        from sys import getrefcount
 
         self.assertRaises(ValueError, lambda: cfunc([], []))
 
         x, y, z, s = make_vars("x", "y", "z", "s")
         cf = cfunc([y * (x + z)], [x, y, z])
 
-        self.assertFalse(cf.llvm_state_scalar.force_avx512)
-        self.assertFalse(cf.llvm_state_scalar.slp_vectorize)
+        # Ensure that when extracting the llvm states
+        # the ref count of cf is properly updated.
+        rc = getrefcount(cf)
+        tmp = cf.llvm_states
+        self.assertEqual(getrefcount(cf), rc + 3)
+
+        self.assertTrue(all(not _.force_avx512 for _ in cf.llvm_states))
+        self.assertTrue(all(not _.slp_vectorize for _ in cf.llvm_states))
 
         self.assertEqual(cf([1, 2, 3]), copy(cf)([1, 2, 3]))
         self.assertEqual(cf([1, 2, 3]), deepcopy(cf)([1, 2, 3]))
@@ -31,32 +38,42 @@ class cfunc_test_case(_ut.TestCase):
         self.assertEqual(cf.vars, [x, y, z])
         self.assertEqual(cf.fn, [y * (x + z)])
         self.assertEqual(len(cf.dc), 6)
-        self.assertNotEqual(len(cf.llvm_state_scalar.get_ir()), 0)
+        self.assertTrue(all(len(_.get_ir()) != 0 for _ in cf.llvm_states))
         self.assertEqual(deepcopy(cf).vars, [x, y, z])
         self.assertEqual(deepcopy(cf).fn, [y * (x + z)])
         self.assertEqual(deepcopy(cf).dc, cf.dc)
         self.assertEqual(
-            deepcopy(cf).llvm_state_scalar.get_ir(), cf.llvm_state_scalar.get_ir()
-        )
-        self.assertEqual(
-            deepcopy(cf).llvm_state_scalar_s.get_ir(), cf.llvm_state_scalar_s.get_ir()
-        )
-        self.assertEqual(
-            deepcopy(cf).llvm_state_batch_s.get_ir(), cf.llvm_state_batch_s.get_ir()
+            [_.get_ir() for _ in deepcopy(cf).llvm_states],
+            [_.get_ir() for _ in cf.llvm_states],
         )
         self.assertEqual(pickle.loads(pickle.dumps(cf)).vars, [x, y, z])
         self.assertEqual(pickle.loads(pickle.dumps(cf)).fn, [y * (x + z)])
         self.assertEqual(pickle.loads(pickle.dumps(cf)).dc, cf.dc)
         self.assertEqual(
-            pickle.loads(pickle.dumps(cf)).llvm_state_scalar.get_ir(),
-            cf.llvm_state_scalar.get_ir(),
+            [_.get_ir() for _ in pickle.loads(pickle.dumps(cf)).llvm_states],
+            [_.get_ir() for _ in cf.llvm_states],
         )
 
-        cf = cfunc([y * (x + z)], vars=[y, z, x], force_avx512=True, slp_vectorize=True)
-        self.assertEqual(cf.vars, [y, z, x])
+        # Construct with custom LLVM settings too.
+        cf = cfunc(
+            [y * (x + z)],
+            vars=[y, z, x],
+            force_avx512=True,
+            slp_vectorize=True,
+            compact_mode=True,
+            parjit=False,
+            code_model=code_model.large,
+        )
 
-        self.assertTrue(cf.llvm_state_scalar.force_avx512)
-        self.assertTrue(cf.llvm_state_scalar.slp_vectorize)
+        rc = getrefcount(cf)
+        tmp = cf.llvm_states
+        self.assertEqual(getrefcount(cf), rc + 1)
+
+        self.assertEqual(cf.vars, [y, z, x])
+        self.assertTrue(cf.llvm_states.force_avx512)
+        self.assertTrue(cf.llvm_states.slp_vectorize)
+        self.assertFalse(cf.llvm_states.parjit)
+        self.assertEqual(cf.llvm_states.code_model, code_model.large)
 
         # Tests for correct detection of number of params, time dependency
         # and list of variables.

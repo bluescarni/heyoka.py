@@ -1055,4 +1055,52 @@ in the propagator via this method.
 )";
 }
 
+std::string code_model()
+{
+    return R"(Enum for selecting the LLVM code model used during JIT compilation.
+
+.. versionadded:: 6.0.0
+
+The default code model used by heyoka.py is ``small``. Large computational graphs may require the
+use of the ``large`` code model. Note that currently only the ``small`` and ``large``
+code models are supported on all platforms.
+
+)";
+}
+
+std::string code_model_tiny()
+{
+    return R"(Tiny code model (corresponds to ``llvm::CodeModel::Model::Tiny``).
+
+)";
+}
+
+std::string code_model_small()
+{
+    return R"(Small code model (corresponds to ``llvm::CodeModel::Model::Small``).
+
+)";
+}
+
+std::string code_model_kernel()
+{
+    return R"(Kernel code model (corresponds to ``llvm::CodeModel::Model::Kernel``).
+
+)";
+}
+
+std::string code_model_medium()
+{
+    return R"(Medium code model (corresponds to ``llvm::CodeModel::Model::Medium``).
+
+)";
+}
+
+std::string code_model_large()
+{
+    return R"(Large code model (corresponds to ``llvm::CodeModel::Model::Large``).
+
+)";
+}
+
 } // namespace heyoka_py::docstrings

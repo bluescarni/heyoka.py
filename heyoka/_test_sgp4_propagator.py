@@ -26,7 +26,7 @@ class sgp4_propagator_test_case(_ut.TestCase):
         from .model import sgp4_propagator
         from pickle import loads, dumps
         from copy import copy, deepcopy
-        from . import make_vars
+        from . import make_vars, code_model
 
         s1 = sgp4_propagator_test_case.s1
         t1 = sgp4_propagator_test_case.t1
@@ -106,8 +106,14 @@ class sgp4_propagator_test_case(_ut.TestCase):
         self.assertEqual(cprop.sat_data[6, 0], 0.14841e-3)
         self.assertEqual(cprop.sat_data[6, 1], 0.46268e-3)
 
-        # A couple of tests with the derivatives.
-        prop = sgp4_propagator([sat1, sat2], diff_order=1)
+        # A couple of tests with the derivatives and custom llvm settings.
+        prop = sgp4_propagator(
+            [sat1, sat2],
+            diff_order=1,
+            parjit=False,
+            compact_mode=True,
+            code_model=code_model.large,
+        )
         self.assertEqual(
             prop.diff_args,
             make_vars("n0", "e0", "i0", "node0", "omega0", "m0", "bstar"),
@@ -425,10 +431,12 @@ class sgp4_propagator_test_case(_ut.TestCase):
             # - generated an error code, or
             # - ended up farther than 8000km from the Earth, or
             # - contain non-finite positional data.
-            mask = np.logical_and(
-                e[:, 0] == 0,
-                np.linalg.norm(r[:, 0, :], axis=1) < 8000,
-                np.all(np.isfinite(r[:, 0, :]), axis=1),
+            mask = np.logical_and.reduce(
+                (
+                    e[:, 0] == 0,
+                    np.linalg.norm(r[:, 0, :], axis=1) < 8000,
+                    np.all(np.isfinite(r[:, 0, :]), axis=1),
+                )
             )
 
             # Compute the positional errors in meters, and sort them.

@@ -3,6 +3,49 @@
 Changelog
 =========
 
+6.0.0 (2024-09-21)
+------------------
+
+New
+~~~
+
+- Add wheels for Python 3.13
+  (`#193 <https://github.com/bluescarni/heyoka.py/pull/193>`__).
+- Non-number exponents for the ``pow()`` function
+  are now supported in Taylor integrators
+  (`#189 <https://github.com/bluescarni/heyoka.py/pull/189>`__).
+- It is now possible to initialise a scalar Taylor integrator
+  with an empty initial state vector, or a batch integrator
+  with a 2D state vector whose first dimension is zero. This will result
+  in zero-initialization of the state vector
+  (`#189 <https://github.com/bluescarni/heyoka.py/pull/189>`__).
+- Implement parallel compilation for Taylor integrators
+  and compiled functions
+  (`#188 <https://github.com/bluescarni/heyoka.py/pull/188>`__).
+- Add the possibility of specifying the LLVM code model
+  used for JIT compilation
+  (`#188 <https://github.com/bluescarni/heyoka.py/pull/188>`__).
+
+Changes
+~~~~~~~
+
+- **BREAKING**: the array of parameter values passed to the
+  constructor of a Taylor integrator must now either be empty
+  (in which case the parameter values will be zero-inited),
+  or have the correct size
+  (`#189 <https://github.com/bluescarni/heyoka.py/pull/189>`__).
+  This is a :ref:`breaking change <bchanges_6_0_0>`.
+- heyoka.py now requires version 6.0.0 of the
+  heyoka C++ library
+  (`#188 <https://github.com/bluescarni/heyoka.py/pull/188>`__).
+
+Fix
+~~~
+
+- Fix build system warnings when using recent versions of
+  CMake and Boost
+  (`#188 <https://github.com/bluescarni/heyoka.py/pull/188>`__).
+
 5.1.0 (2024-07-23)
 ------------------
 

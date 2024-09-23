@@ -267,7 +267,7 @@ class sympy_test_case(_ut.TestCase):
         self.assertEqual(to_sympy(hx + hy + hz), x + y + z)
         self.assertEqual(to_sympy(hsum([hx, hy, hz])), x + y + z)
         self.assertEqual(to_sympy(hsum([hx])), x)
-        self.assertEqual(to_sympy(hsum([])), 0.0)
+        self.assertEqual(to_sympy(hsum([])), 0)
         self.assertEqual(
             hsum([ha, hb, hc, hx, hy, hz]), from_sympy(x + y + z + a + b + c)
         )

@@ -79,6 +79,14 @@ std::string sgp4_propagator_get_mindex(const std::string &);
 std::string sgp4_propagator_call(const std::string &, const std::string &);
 std::string sgp4_propagator_replace_sat_data();
 
+// code_model enum.
+std::string code_model();
+std::string code_model_tiny();
+std::string code_model_small();
+std::string code_model_kernel();
+std::string code_model_medium();
+std::string code_model_large();
+
 } // namespace heyoka_py::docstrings
 
 #endif

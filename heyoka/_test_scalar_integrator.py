@@ -15,20 +15,39 @@ class scalar_integrator_test_case(_ut.TestCase):
         # are correctly propagated through the integrator
         # constructor.
 
-        from . import taylor_adaptive
+        from . import taylor_adaptive, code_model
         from .model import pendulum
+        from sys import getrefcount
 
         ta = taylor_adaptive(pendulum(), [0.0, 0.0])
+
+        # Check correct reference count handling of the
+        # llvm_state property.
+        rc = getrefcount(ta)
+        tmp = ta.llvm_state
+        self.assertEqual(getrefcount(ta), rc + 1)
 
         self.assertFalse(ta.llvm_state.force_avx512)
         self.assertFalse(ta.llvm_state.slp_vectorize)
 
         ta = taylor_adaptive(
-            pendulum(), [0.0, 0.0], force_avx512=True, slp_vectorize=True
+            pendulum(),
+            [0.0, 0.0],
+            force_avx512=True,
+            slp_vectorize=True,
+            parjit=True,
+            compact_mode=True,
+            code_model=code_model.large,
         )
+
+        rc = getrefcount(ta)
+        tmp = ta.llvm_state
+        self.assertEqual(getrefcount(ta), rc + 1)
 
         self.assertTrue(ta.llvm_state.force_avx512)
         self.assertTrue(ta.llvm_state.slp_vectorize)
+        self.assertTrue(ta.llvm_state.parjit)
+        self.assertEqual(ta.llvm_state.code_model, code_model.large)
 
     def test_type_conversions(self):
         # Test to check automatic conversions of std::vector<T>
@@ -153,6 +172,22 @@ class scalar_integrator_test_case(_ut.TestCase):
             self.assertFalse(ta.compact_mode)
             self.assertFalse(ta.high_accuracy)
             self.assertEqual(ta.sys, sys)
+
+            # Test init without a state.
+            ta = taylor_adaptive(
+                sys=sys,
+                fp_type=fp_t,
+            )
+
+            self.assertTrue(np.all(ta.state == [0, 0]))
+
+            ta = taylor_adaptive(
+                sys=sys,
+                state=[],
+                fp_type=fp_t,
+            )
+
+            self.assertTrue(np.all(ta.state == [0, 0]))
 
             ta = taylor_adaptive(
                 sys=sys,

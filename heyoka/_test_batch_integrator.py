@@ -15,20 +15,38 @@ class batch_integrator_test_case(_ut.TestCase):
         # are correctly propagated through the integrator
         # constructor.
 
-        from . import taylor_adaptive_batch
+        from . import taylor_adaptive_batch, code_model
         from .model import pendulum
+        from sys import getrefcount
 
         ta = taylor_adaptive_batch(pendulum(), [[0.0, 0.0], [0.0, 0.0]])
+
+        # Check correct reference count handling of the
+        # llvm_state property.
+        rc = getrefcount(ta)
+        tmp = ta.llvm_state
+        self.assertEqual(getrefcount(ta), rc + 1)
 
         self.assertFalse(ta.llvm_state.force_avx512)
         self.assertFalse(ta.llvm_state.slp_vectorize)
 
         ta = taylor_adaptive_batch(
-            pendulum(), [[0.0, 0.0], [0.0, 0.0]], force_avx512=True, slp_vectorize=True
+            pendulum(),
+            [[0.0, 0.0], [0.0, 0.0]],
+            force_avx512=True,
+            slp_vectorize=True,
+            parjit=True,
+            compact_mode=True,
+            code_model=code_model.large,
         )
+
+        rc = getrefcount(ta)
+        tmp = ta.llvm_state
+        self.assertEqual(getrefcount(ta), rc + 1)
 
         self.assertTrue(ta.llvm_state.force_avx512)
         self.assertTrue(ta.llvm_state.slp_vectorize)
+        self.assertEqual(ta.llvm_state.code_model, code_model.large)
 
     def test_type_conversions(self):
         # Test to check automatic conversions of std::vector<T>
@@ -506,6 +524,17 @@ class batch_integrator_test_case(_ut.TestCase):
             self.assertFalse(ta.llvm_state.fast_math)
             self.assertFalse(ta.llvm_state.force_avx512)
             self.assertEqual(ta.llvm_state.opt_level, 3)
+
+            # Test with an empty initial state.
+            ta = taylor_adaptive_batch(
+                sys=sys,
+                state=np.empty((0, 2), dtype=fp_t),
+                compact_mode=True,
+                high_accuracy=True,
+                fp_type=fp_t,
+            )
+
+            self.assertTrue(np.all(ta.state == np.zeros((2, 2), dtype=fp_t)))
 
             # Test the custom llvm_state flags.
             ta = taylor_adaptive_batch(

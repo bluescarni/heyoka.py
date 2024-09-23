@@ -32,7 +32,7 @@ class mp_test_case(_ut.TestCase):
         with self.assertRaises(ValueError) as cm:
             cfunc(func, vars=[y, x], fp_type=real, prec=-1)
         self.assertTrue(
-            "An invalid precision value of -1 was passed to add_cfunc()"
+            "An invalid precision value of -1 was passed to make_multi_cfunc()"
             in str(cm.exception)
         )
 
@@ -422,7 +422,7 @@ class mp_test_case(_ut.TestCase):
 
         self.assertTrue(ta.compact_mode)
 
-        self.assertEqual(ta.prec, 237)
+        self.assertEqual(ta.prec, prec)
 
         def compute_energy(sv):
             return (sv[1] * sv[1]) / 2 + 9.8 * (1 - np.cos(sv[0]))
@@ -443,7 +443,7 @@ class mp_test_case(_ut.TestCase):
             prec=prec,
         )
 
-        self.assertEqual(ta.prec, 237)
+        self.assertEqual(ta.prec, prec)
 
         # Compact mode disabled.
         ta2 = taylor_adaptive(
@@ -586,3 +586,31 @@ class mp_test_case(_ut.TestCase):
 
         arr = np.empty((1, 0, 3), dtype=real)
         self.assertEqual(arr.size, 0)
+
+        # Empty init state with explicit precision.
+        ta = taylor_adaptive(
+            [(x, v), (v, -9.8 * sin(x))],
+            fp_type=real,
+            prec=prec,
+        )
+
+        self.assertEqual(ta.prec, prec)
+        self.assertTrue(np.all(ta.state == [0, 0]))
+
+        ta = taylor_adaptive(
+            [(x, v), (v, -9.8 * sin(x))],
+            [],
+            fp_type=real,
+            prec=prec,
+        )
+
+        self.assertEqual(ta.prec, prec)
+        self.assertTrue(np.all(ta.state == [0, 0]))
+
+        # Empty init state without explicit precision.
+        with self.assertRaises(ValueError) as cm:
+            ta = taylor_adaptive(
+                [(x, v), (v, -9.8 * sin(x))],
+                fp_type=real,
+            )
+        self.assertTrue("we cannot deduce the desired precision" in str(cm.exception))

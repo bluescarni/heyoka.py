@@ -106,10 +106,16 @@ nb_execution_excludepatterns = [
     # NOTE: the sgp4 notebook runs
     # some benchmarks.
     "sgp4_propagator*",
+    # NOTE: high order variational equations
+    # take too long in debug mode.
+    "oppenheimer_volkoff*",
     ]
 
 # Force printing traceback to stderr on execution error.
 nb_execution_show_tb = True
+
+# Set a longer timeout for notebook execution.
+nb_execution_timeout = 120
 
 latex_engine = "xelatex"
 
