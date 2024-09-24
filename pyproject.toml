@@ -43,4 +43,4 @@ sgp4 = ["skyfield"]
 # binary wheels.
 wheel.packages = []
 # Enable IPO.
-cmake.args = ["-DHEYOKA_PY_ENABLE_IPO=ON"]
+cmake.define.HEYOKA_PY_ENABLE_IPO = "ON"
