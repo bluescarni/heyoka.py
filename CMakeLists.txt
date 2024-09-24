@@ -156,9 +156,8 @@ endif()
 if((heyoka_WITH_REAL OR heyoka_WITH_REAL128) AND ${Python3_NumPy_VERSION} VERSION_GREATER_EQUAL 2)
     message(FATAL_ERROR "NumPy 2 is not supported when building with support for quadruple-precision or arbitrary-precision computations")
 endif()
-# Extract the major.minor version of NumPy for use in the wheel configuration.
-string(REGEX MATCH "([0-9]+)\.([0-9]+)" _HEYOKA_PY_NPY_MAJOR_MINOR ${Python3_NumPy_VERSION})
-message(STATUS "NumPy major.minor version: ${_HEYOKA_PY_NPY_MAJOR_MINOR}")
+message(STATUS "NumPy version: ${Python3_NumPy_VERSION}")
+unset(_HEYOKA_PY_PYTHON3_COMPONENTS)
 
 if (DEFINED SKBUILD)
     # If we're using scikit-build-core, set install path to the current
@@ -171,7 +170,6 @@ else()
     set(HEYOKA_PY_INSTALL_PATH "" CACHE STRING "heyoka module installation path")
 endif()
 mark_as_advanced(HEYOKA_PY_INSTALL_PATH)
-unset(_HEYOKA_PY_PYTHON3_COMPONENTS)
 
 # pybind11.
 find_package(pybind11 REQUIRED CONFIG)
@@ -208,6 +206,3 @@ endif()
 
 # Add the module directory.
 add_subdirectory(heyoka)
-
-# Cleanup.
-unset(_HEYOKA_PY_NPY_MAJOR_MINOR)

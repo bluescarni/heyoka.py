@@ -15,7 +15,7 @@ git config --global --add safe.directory ${GITHUB_WORKSPACE}
 BRANCH_NAME=`git rev-parse --abbrev-ref HEAD`
 echo "BRANCH_NAME: ${BRANCH_NAME}"
 
-# Read for what python wheels have to be built.
+# Detect the Python version.
 if [[ ${HEYOKA_PY_BUILD_TYPE} == *38* ]]; then
 	PYTHON_DIR="cp38-cp38"
 elif [[ ${HEYOKA_PY_BUILD_TYPE} == *39* ]]; then
@@ -33,15 +33,8 @@ else
 	exit 1
 fi
 
-# Report the inferred directory whwere python is found.
+# Report the inferred directory where python is found.
 echo "PYTHON_DIR: ${PYTHON_DIR}"
-
-# The numpy version heyoka.py will be built against.
-if [[ ${HEYOKA_PY_BUILD_TYPE} == *312* || ${HEYOKA_PY_BUILD_TYPE} == *313* ]]; then
-	export NUMPY_VERSION="1.26.*"
-else
-	export NUMPY_VERSION="1.24.*"
-fi
 
 # The heyoka version to be used for releases.
 export HEYOKA_VERSION_RELEASE="6.0.0"
@@ -54,15 +47,7 @@ else
 	echo "Non-tag build detected"
 fi
 
-# Python mandatory deps.
-# NOTE: explicit installation of setuptools is apparently
-# needed in Python 3.13.
-/opt/python/${PYTHON_DIR}/bin/pip install numpy==${NUMPY_VERSION} cloudpickle setuptools
-# Python optional deps.
-/opt/python/${PYTHON_DIR}/bin/pip install sympy mpmath skyfield
-
-# In the pagmo2/manylinux2014_x86_64_with_deps:latest image in dockerhub
-# the working directory is /root/install, we will install heyoka there.
+# In the manylinux image in dockerhub the working directory is /root/install, we will install heyoka there.
 cd /root/install
 
 # Install heyoka.
@@ -85,30 +70,19 @@ cmake -DHEYOKA_WITH_MPPP=yes \
     -DCMAKE_BUILD_TYPE=Release ../;
 make -j4 install
 
-# Install heyoka.py.
+# Build the heyoka.py wheel.
 cd ${GITHUB_WORKSPACE}
-mkdir build
-cd build
-cmake -DCMAKE_BUILD_TYPE=Release \
-	-DHEYOKA_PY_ENABLE_IPO=ON \
-	-DPython3_EXECUTABLE=/opt/python/${PYTHON_DIR}/bin/python ../;
-make -j4 install
-
-# Making the wheel and installing it
-cd wheel
-# Move the installed heyoka.py files into the current dir.
-mv `/opt/python/${PYTHON_DIR}/bin/python -c 'import site; print(site.getsitepackages()[0])'`/heyoka ./
-# Create the wheel and repair it.
+pip wheel . -v
+# Repair it.
 # NOTE: this is temporary because some libraries in the docker
 # image are installed in lib64 rather than lib and they are
 # not picked up properly by the linker.
 export LD_LIBRARY_PATH="/usr/local/lib64:/usr/local/lib"
-/opt/python/${PYTHON_DIR}/bin/python setup.py bdist_wheel
-auditwheel repair dist/heyoka* -w ./dist2
+auditwheel repair ./heyoka*.whl -w ./repaired_wheel
 # Try to install it and run the tests.
 unset LD_LIBRARY_PATH
 cd /
-/opt/python/${PYTHON_DIR}/bin/pip install ${GITHUB_WORKSPACE}/build/wheel/dist2/heyoka*
+/opt/python/${PYTHON_DIR}/bin/pip install ${GITHUB_WORKSPACE}/repaired_wheel/heyoka*
 cd ${GITHUB_WORKSPACE}/tools
 /opt/python/${PYTHON_DIR}/bin/python ci_test_runner.py
 cd /
