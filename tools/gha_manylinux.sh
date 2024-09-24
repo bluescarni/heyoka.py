@@ -72,7 +72,7 @@ make -j4 install
 
 # Build the heyoka.py wheel.
 cd ${GITHUB_WORKSPACE}
-pip wheel . -v
+/opt/python/${PYTHON_DIR}/bin/pip wheel . -v
 # Repair it.
 # NOTE: this is temporary because some libraries in the docker
 # image are installed in lib64 rather than lib and they are
