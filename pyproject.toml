@@ -37,3 +37,8 @@ Repository = "https://github.com/bluescarni/heyoka.py"
 [project.optional-dependencies]
 sympy = ["sympy", "mpmath"]
 sgp4 = ["skyfield"]
+
+[tool.scikit-build]
+# Avoid copying the C++ source files when building
+# binary wheels.
+wheel.packages = []
