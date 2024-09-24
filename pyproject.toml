@@ -3,20 +3,17 @@ build-backend = 'scikit_build_core.build'
 requires = ['scikit-build-core', 'pybind11', 'numpy < 2']
 
 [project]
-name = 'heyoka.py'
-version = '5.1.0'
+name = 'heyoka'
+version = '6.0.0'
 description = "Python library for ODE integration via Taylor's method and LLVM"
 readme = 'README.md'
 requires-python = '>=3.5'
-dependencies = [
-    'cloudpickle',
-    'numpy < 2',
-]
+dependencies = ['cloudpickle', 'numpy < 2']
 authors = [
-    {name = 'Francesco Biscarni', email = 'bluescarni@gmail.com'},
-    {name = 'Dario Izzo'},
+    { name = 'Francesco Biscarni', email = 'bluescarni@gmail.com' },
+    { name = 'Dario Izzo' },
 ]
-license = {text = 'MPL-2.0'}
+license = { text = 'MPL-2.0' }
 classifiers = [
     # How mature is this project? Common values are
     #   3 - Alpha
@@ -34,5 +31,9 @@ classifiers = [
 keywords = ['science', 'math', 'physics', 'ode']
 
 [project.urls]
-Documentation = "https://bluescarni.github.io/heyoka.py/index.html" 
-Repository = "https://github.com/bluescarni/heyoka.py" 
+Documentation = "https://bluescarni.github.io/heyoka.py/index.html"
+Repository = "https://github.com/bluescarni/heyoka.py"
+
+[project.optional-dependencies]
+sympy = ["sympy", "mpmath"]
+sgp4 = ["skyfield"]
