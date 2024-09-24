@@ -42,3 +42,5 @@ sgp4 = ["skyfield"]
 # Avoid copying the C++ source files when building
 # binary wheels.
 wheel.packages = []
+# Enable IPO.
+cmake.args = ["-DHEYOKA_PY_ENABLE_IPO=ON"]
