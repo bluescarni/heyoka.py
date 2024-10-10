@@ -6,9 +6,18 @@ Changelog
 6.1.0 (unreleased)
 ------------------
 
+New
+~~~
+
+- Add a proper ``pyproject.toml`` file and use it to produce
+  the binary wheels
+  (`#195 <https://github.com/bluescarni/heyoka.py/pull/195>`__).
+
 Fix
 ~~~
 
+- Do not open the heyoka.py compiled module with ``RTLD_GLOBAL``
+  (`#197 <https://github.com/bluescarni/heyoka.py/pull/197>`__).
 - Workaround for a clang 17 issue that would result in
   runtime exceptions during (de)serialisation
   (`#196 <https://github.com/bluescarni/heyoka.py/pull/196>`__).
