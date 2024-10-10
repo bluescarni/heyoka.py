@@ -19,7 +19,7 @@ bash miniforge.sh -b -p $HOME/miniforge
 # using deprecated scipy functions.
 conda create -y -p $deps_dir python=3.10 c-compiler cxx-compiler git pybind11 'numpy<2' \
     mpmath cmake llvmdev tbb-devel tbb astroquery libboost-devel 'mppp=1.*' \
-    sleef 'fmt<11' skyfield spdlog myst-nb matplotlib sympy 'scipy<1.14' pykep cloudpickle \
+    sleef fmt skyfield spdlog myst-nb matplotlib sympy 'scipy<1.14' pykep cloudpickle \
     'sphinx=7.*' 'sphinx-book-theme=1.*'
 source activate $deps_dir
 
