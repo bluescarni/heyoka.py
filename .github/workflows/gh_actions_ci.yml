@@ -47,7 +47,7 @@ jobs:
        - uses: actions/upload-artifact@v4
          with:
            name: wheel_313
-           path: build/wheel/dist2/*.whl
+           path: repaired_wheel/*.whl
   manylinux228_x86_64-py312:
      runs-on: ubuntu-latest
      container:
@@ -62,7 +62,7 @@ jobs:
        - uses: actions/upload-artifact@v4
          with:
            name: wheel_312
-           path: build/wheel/dist2/*.whl
+           path: repaired_wheel/*.whl
   manylinux228_x86_64-py311:
      runs-on: ubuntu-latest
      container:
@@ -77,7 +77,7 @@ jobs:
        - uses: actions/upload-artifact@v4
          with:
            name: wheel_311
-           path: build/wheel/dist2/*.whl
+           path: repaired_wheel/*.whl
   manylinux228_x86_64-py310:
      runs-on: ubuntu-latest
      container:
@@ -92,7 +92,7 @@ jobs:
        - uses: actions/upload-artifact@v4
          with:
            name: wheel_310
-           path: build/wheel/dist2/*.whl
+           path: repaired_wheel/*.whl
   manylinux228_x86_64-py39:
      runs-on: ubuntu-latest
      container:
@@ -107,7 +107,7 @@ jobs:
        - uses: actions/upload-artifact@v4
          with:
            name: wheel_39
-           path: build/wheel/dist2/*.whl
+           path: repaired_wheel/*.whl
   manylinux228_x86_64-py38:
      runs-on: ubuntu-latest
      container:
@@ -122,7 +122,7 @@ jobs:
        - uses: actions/upload-artifact@v4
          with:
            name: wheel_38
-           path: build/wheel/dist2/*.whl
+           path: repaired_wheel/*.whl
   windows_2022_heyoka_head:
     runs-on: windows-2022
     steps:
