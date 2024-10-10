@@ -4,15 +4,12 @@ requires = ['scikit-build-core', 'numpy >= 1.22, < 2']
 
 [project]
 name = 'heyoka'
-version = '6.1.1'
+version = '6.1.2'
 description = "Python library for ODE integration via Taylor's method and LLVM"
 readme = 'README.md'
 requires-python = '>=3.5'
 dependencies = ['cloudpickle', 'numpy >= 1.22, < 2']
-authors = [
-    { name = 'Francesco Biscarni', email = 'bluescarni@gmail.com' },
-    { name = 'Dario Izzo' },
-]
+authors = [{ name = 'Francesco Biscarni', email = 'bluescarni@gmail.com' }]
 license = { text = 'MPL-2.0' }
 classifiers = [
     # How mature is this project? Common values are
