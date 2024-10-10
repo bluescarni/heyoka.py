@@ -90,7 +90,7 @@ cd /
 # Upload to PyPI.
 if [[ "${HEYOKA_PY_RELEASE_BUILD}" == "yes" ]]; then
 	/opt/python/${PYTHON_DIR}/bin/pip install twine
-	/opt/python/${PYTHON_DIR}/bin/twine upload -u __token__ ${GITHUB_WORKSPACE}/build/wheel/dist2/heyoka*
+	/opt/python/${PYTHON_DIR}/bin/twine upload -u __token__ ${GITHUB_WORKSPACE}/repaired_wheel/heyoka*
 fi
 
 set +e
