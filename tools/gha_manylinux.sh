@@ -70,27 +70,45 @@ cmake -DHEYOKA_WITH_MPPP=yes \
     -DCMAKE_BUILD_TYPE=Release ../;
 make -j4 install
 
-# Build the heyoka.py wheel.
 cd ${GITHUB_WORKSPACE}
-/opt/python/${PYTHON_DIR}/bin/pip wheel . -v
-# Repair it.
+
 # NOTE: this is temporary because some libraries in the docker
 # image are installed in lib64 rather than lib and they are
 # not picked up properly by the linker.
 export LD_LIBRARY_PATH="/usr/local/lib64:/usr/local/lib"
-auditwheel repair ./heyoka*.whl -w ./repaired_wheel
-# Try to install it and run the tests.
-unset LD_LIBRARY_PATH
-cd /
-/opt/python/${PYTHON_DIR}/bin/pip install ${GITHUB_WORKSPACE}/repaired_wheel/heyoka*
-cd ${GITHUB_WORKSPACE}/tools
-/opt/python/${PYTHON_DIR}/bin/python ci_test_runner.py
-cd /
 
-# Upload to PyPI.
-if [[ "${HEYOKA_PY_RELEASE_BUILD}" == "yes" ]]; then
-	/opt/python/${PYTHON_DIR}/bin/pip install twine
-	/opt/python/${PYTHON_DIR}/bin/twine upload -u __token__ ${GITHUB_WORKSPACE}/repaired_wheel/heyoka*
+if [[ "${HEYOKA_PY_BUILD_SDIST}" == "yes" ]]; then
+	# Build the heyoka.py sdist.
+	/opt/python/${PYTHON_DIR}/bin/python -m build . --sdist
+	# Try to install it and run the tests.
+	/opt/python/${PYTHON_DIR}/bin/pip install dist/heyoka*
+	cd ${GITHUB_WORKSPACE}/tools
+	/opt/python/${PYTHON_DIR}/bin/python ci_test_runner.py
+	cd /
+
+	# Upload to PyPI.
+	if [[ "${HEYOKA_PY_RELEASE_BUILD}" == "yes" ]]; then
+		/opt/python/${PYTHON_DIR}/bin/pip install twine
+		/opt/python/${PYTHON_DIR}/bin/twine upload -u __token__ ${GITHUB_WORKSPACE}/dist/heyoka*
+	fi
+else
+	# Build the heyoka.py wheel.
+	/opt/python/${PYTHON_DIR}/bin/pip wheel . -v
+	# Repair it.
+	auditwheel repair ./heyoka*.whl -w ./repaired_wheel
+	# Try to install it and run the tests.
+	unset LD_LIBRARY_PATH
+	cd /
+	/opt/python/${PYTHON_DIR}/bin/pip install ${GITHUB_WORKSPACE}/repaired_wheel/heyoka*
+	cd ${GITHUB_WORKSPACE}/tools
+	/opt/python/${PYTHON_DIR}/bin/python ci_test_runner.py
+	cd /
+
+	# Upload to PyPI.
+	if [[ "${HEYOKA_PY_RELEASE_BUILD}" == "yes" ]]; then
+		/opt/python/${PYTHON_DIR}/bin/pip install twine
+		/opt/python/${PYTHON_DIR}/bin/twine upload -u __token__ ${GITHUB_WORKSPACE}/repaired_wheel/heyoka*
+	fi
 fi
 
 set +e
