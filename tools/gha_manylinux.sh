@@ -79,7 +79,7 @@ export LD_LIBRARY_PATH="/usr/local/lib64:/usr/local/lib"
 
 if [[ "${HEYOKA_PY_BUILD_SDIST}" == "yes" ]]; then
 	# Build the heyoka.py sdist.
-	/opt/python/${PYTHON_DIR}/bin/python -m build . --sdist -v
+	/opt/python/${PYTHON_DIR}/bin/python -m build . --sdist
 	# Try to install it and run the tests.
 	/opt/python/${PYTHON_DIR}/bin/pip install dist/heyoka*
 	cd ${GITHUB_WORKSPACE}/tools
