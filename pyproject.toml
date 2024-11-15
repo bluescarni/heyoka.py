@@ -4,7 +4,7 @@ requires = ['scikit-build-core', 'pybind11 >= 2.10', 'numpy >= 1.22, < 2']
 
 [project]
 name = 'heyoka'
-version = '6.1.2'
+version = '6.1.3'
 description = "Python library for ODE integration via Taylor's method and LLVM"
 readme = 'README.md'
 requires-python = '>=3.5'
