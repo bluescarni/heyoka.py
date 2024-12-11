@@ -3,6 +3,15 @@
 Changelog
 =========
 
+6.1.3 (unreleased)
+------------------
+
+New
+~~~
+
+- Upload the source distribution to PyPI
+  (`#203 <https://github.com/bluescarni/heyoka.py/pull/203>`__).
+
 6.1.2 (2024-10-10)
 ------------------
 
