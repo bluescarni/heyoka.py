@@ -9,3 +9,4 @@ Numerical integrators
    :toctree: autosummary_generated
 
    taylor_adaptive
+   taylor_adaptive_batch
