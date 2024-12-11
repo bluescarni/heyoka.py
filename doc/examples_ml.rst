@@ -28,7 +28,8 @@ Machine Learning
 
   notebooks/ffnn
   notebooks/torch_and_heyoka
-  notebooks/NeuralODEs
+  notebooks/NeuralODEs_I
+  notebooks/NeuralODEs_II
   notebooks/NeuralHamiltonianODEs
   notebooks/thermoNETs
   notebooks/differentiable_atmosphere
