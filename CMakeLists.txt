@@ -144,17 +144,13 @@ find_package(Python3 QUIET REQUIRED COMPONENTS ${_HEYOKA_PY_PYTHON3_COMPONENTS})
 
 message(STATUS "Python3 interpreter: ${Python3_EXECUTABLE}")
 message(STATUS "Python3 installation directory: ${Python3_SITEARCH}")
-if(${Python3_VERSION_MINOR} LESS 5)
-    message(FATAL_ERROR "The minimum supported version of Python is 3.5, but version 3.${Python3_VERSION_MINOR} was found instead")
+# NOTE: Python 3.9 seems like the absolute minimum for NumPy 2.
+if(${Python3_VERSION_MINOR} LESS 9)
+    message(FATAL_ERROR "The minimum supported version of Python is 3.9, but version 3.${Python3_VERSION_MINOR} was found instead")
 endif()
-# NOTE: mppp::real support requires NumPy 1.22 at least.
-if(heyoka_WITH_REAL AND ${Python3_NumPy_VERSION} LESS 1.22)
-    message(FATAL_ERROR "The minimum version of NumPy required for supporting arbitrary-precision computations is 1.22, but version ${Python3_NumPy_VERSION} was found instead")
-endif()
-# NOTE: NumPy 2 not supported yet if we are building with support
-# for mppp::real or mppp::real128.
-if((heyoka_WITH_REAL OR heyoka_WITH_REAL128) AND ${Python3_NumPy_VERSION} VERSION_GREATER_EQUAL 2)
-    message(FATAL_ERROR "NumPy 2 is not supported when building with support for quadruple-precision or arbitrary-precision computations")
+# We support only NumPy>=2.
+if((heyoka_WITH_REAL OR heyoka_WITH_REAL128) AND ${Python3_NumPy_VERSION} VERSION_LESS 2)
+    message(FATAL_ERROR "NumPy>=2 is required when building with support for quadruple-precision or arbitrary-precision computations")
 endif()
 message(STATUS "NumPy version: ${Python3_NumPy_VERSION}")
 unset(_HEYOKA_PY_PYTHON3_COMPONENTS)

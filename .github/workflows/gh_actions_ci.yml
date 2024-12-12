@@ -124,21 +124,6 @@ jobs:
          with:
            name: wheel_39
            path: repaired_wheel/*.whl
-  manylinux228_x86_64-py38:
-     runs-on: ubuntu-latest
-     container:
-      image: pagmo2/manylinux228_x86_64_with_deps:latest
-      env:
-        HEYOKA_PY_BUILD_TYPE: "Python38"
-        TWINE_PASSWORD: ${{ secrets.TWINE_PASSWORD }}
-     steps:
-       - uses: actions/checkout@v4
-       - name: Build
-         run: bash tools/gha_manylinux.sh
-       - uses: actions/upload-artifact@v4
-         with:
-           name: wheel_38
-           path: repaired_wheel/*.whl
   windows_2022_heyoka_head:
     runs-on: windows-2022
     steps:
