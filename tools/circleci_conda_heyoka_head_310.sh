@@ -44,5 +44,11 @@ cd ../tools
 
 python ci_test_runner.py
 
+cd $HEYOKA_PY_PROJECT_DIR
+
+cd doc
+
+make html doctest
+
 set +e
 set +x
