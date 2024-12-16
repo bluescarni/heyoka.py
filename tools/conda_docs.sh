@@ -22,6 +22,10 @@ source activate $deps_dir
 
 export HEYOKA_PY_PROJECT_DIR=`pwd`
 
+# Clear the compilation flags set up by conda.
+unset CXXFLAGS
+unset CFLAGS
+
 # Checkout, build and install heyoka's HEAD.
 git clone --depth 1 https://github.com/bluescarni/heyoka.git heyoka_cpp
 cd heyoka_cpp
@@ -30,9 +34,11 @@ cd build
 
 cmake -G Ninja ../ \
     -DCMAKE_INSTALL_PREFIX=$deps_dir \
+    -DCMAKE_BUILD_TYPE=Debug \
     -DCMAKE_PREFIX_PATH=$deps_dir \
     -DHEYOKA_WITH_MPPP=yes \
-    -DHEYOKA_WITH_SLEEF=yes
+    -DHEYOKA_WITH_SLEEF=yes \
+    -DCMAKE_CXX_FLAGS_DEBUG="-g -Og"
 
 ninja -v install
 
@@ -43,8 +49,9 @@ cd build
 
 cmake -G Ninja ../ \
     -DCMAKE_INSTALL_PREFIX=$deps_dir \
+    -DCMAKE_BUILD_TYPE=Debug \
     -DCMAKE_PREFIX_PATH=$deps_dir \
-    -DHEYOKA_PY_ENABLE_IPO=yes
+    -DCMAKE_CXX_FLAGS_DEBUG="-g -Og"
 
 ninja -v install
 
