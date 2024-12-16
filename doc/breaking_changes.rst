@@ -5,6 +5,18 @@ Breaking changes
 
 .. currentmodule:: heyoka
 
+.. _bchanges_7_0_0:
+
+7.0.0
+-----
+
+Updated Python dependencies
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+heyoka.py now depends on NumPy>=2. This is due to changes introduced by NumPy 2 in the DType API,
+which make it unfeasible to support both NumPy 1 and 2 at the same time.
+As a further consequence, support for Python<3.9 has also been dropped.
+
 .. _bchanges_6_0_0:
 
 6.0.0
@@ -206,7 +218,7 @@ before invoking ``propagate_grid()``.
   the ``propagate_until()`` method, but an integral value was passed instead.
   The solution is to use ``propagate_until(10.)`` instead.
   In a similar fashion, if your code
-  is raising :py:exc:`TypeError` exceptions with heyoka.py >=0.19,
+  is raising :py:exc:`TypeError` exceptions with heyoka.py>=0.19,
   the solution is to ensure that values of the correct
   type are passed to the heyoka.py API (especially whenever floating-point arguments
   are expected).
