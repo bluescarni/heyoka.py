@@ -14,7 +14,7 @@ wget https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge
 export deps_dir=$HOME/local
 export PATH="$HOME/miniforge/bin:$PATH"
 bash miniforge.sh -b -p $HOME/miniforge
-conda create -y -p $deps_dir c-compiler cxx-compiler python=3.12 git pybind11 \
+conda create -y -p $deps_dir c-compiler cxx-compiler python=${PY_VERSION} git pybind11 \
     ninja 'numpy>=2' mpmath cmake llvmdev tbb-devel tbb astroquery libboost-devel \
     'mppp=2.*' sleef fmt skyfield spdlog myst-nb matplotlib sympy scipy pykep cloudpickle \
     'sphinx=7.*' 'sphinx-book-theme=1.*'
