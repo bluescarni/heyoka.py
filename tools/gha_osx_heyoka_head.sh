@@ -13,7 +13,7 @@ export PATH="$HOME/miniconda/bin:$PATH"
 bash miniconda.sh -b -p $HOME/miniconda
 conda create -y -p $deps_dir python=3.11 c-compiler cxx-compiler git pybind11 'numpy<2' \
     cmake llvmdev tbb-devel tbb astroquery libboost-devel sleef fmt skyfield \
-    spdlog sympy cloudpickle 'mppp=1.*' 'clang<19' 'clangxx<19'
+    spdlog sympy cloudpickle 'mppp=2.*' 'clang<19' 'clangxx<19'
 source activate $deps_dir
 
 # Checkout, build and install heyoka's HEAD.

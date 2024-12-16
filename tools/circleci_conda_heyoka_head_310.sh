@@ -18,7 +18,7 @@ bash miniforge.sh -b -p $HOME/miniforge
 # notebooks do not execute correctly due to pykep
 # using deprecated scipy functions.
 conda create -y -p $deps_dir python=3.10 c-compiler cxx-compiler git pybind11 'numpy<2' \
-    mpmath cmake llvmdev tbb-devel tbb astroquery libboost-devel 'mppp=1.*' \
+    mpmath cmake llvmdev tbb-devel tbb astroquery libboost-devel 'mppp=2.*' \
     sleef fmt skyfield spdlog myst-nb matplotlib sympy 'scipy<1.14' pykep cloudpickle \
     'sphinx=7.*' 'sphinx-book-theme=1.*'
 source activate $deps_dir
