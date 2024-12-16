@@ -40,7 +40,7 @@ cmake -G Ninja ../ \
     -DHEYOKA_WITH_SLEEF=yes \
     -DCMAKE_CXX_FLAGS_DEBUG="-g -Og"
 
-ninja -v install
+ninja -j2 -v install
 
 cd ../../
 
@@ -53,7 +53,7 @@ cmake -G Ninja ../ \
     -DCMAKE_PREFIX_PATH=$deps_dir \
     -DCMAKE_CXX_FLAGS_DEBUG="-g -Og"
 
-ninja -v install
+ninja -j2 -v install
 
 cd ../tools
 
