@@ -7,11 +7,11 @@ set -x
 set -e
 
 # Install conda+deps.
-wget https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-MacOSX-x86_64.sh -O miniconda.sh
+wget https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-${HEYOKA_PY_CONDA_ARCH}.sh -O miniconda.sh
 export deps_dir=$HOME/local
 export PATH="$HOME/miniconda/bin:$PATH"
 bash miniconda.sh -b -p $HOME/miniconda
-conda create -y -p $deps_dir python=3.11 c-compiler cxx-compiler git pybind11 'numpy>=2' \
+conda create -y -p $deps_dir python=${HEYOKA_PY_PY_VERSION} c-compiler cxx-compiler git pybind11 'numpy>=2' \
     ninja cmake llvmdev tbb-devel tbb astroquery libboost-devel sleef fmt skyfield \
     spdlog sympy cloudpickle 'mppp=2.*'
 source activate $deps_dir
