@@ -1,32 +1,6 @@
 version: 2.1
 
 jobs:
-  conda_heyoka_head_311:
-    docker:
-    - image: cimg/base:current
-    resource_class: large
-    steps:
-    - checkout
-    - run:
-        name: Build and test
-        command: bash ./tools/conda_docs.sh
-        environment:
-          PY_VERSION: "3.11"
-    - store_artifacts:
-        path: doc/_build/html
-  conda_heyoka_head_310:
-    docker:
-    - image: cimg/base:current
-    resource_class: large
-    steps:
-    - checkout
-    - run:
-        name: Build and test
-        command: bash ./tools/conda_docs.sh
-        environment:
-          PY_VERSION: "3.10"
-    - store_artifacts:
-        path: doc/_build/html
   conda_heyoka_head_312:
     docker:
     - image: cimg/base:current
