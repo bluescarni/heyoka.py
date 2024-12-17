@@ -27,13 +27,16 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
+    env:
+      HEYOKA_PY_PY_VERSION: "3.12"
+      HEYOKA_PY_CONDA_ARCH: "Linux-x86_64"
     steps:
       - name: Checkout
         uses: actions/checkout@v4
       - name: Setup Pages
         uses: actions/configure-pages@v4
       - name: Build docs
-        run: bash tools/gha_conda_docs.sh
+        run: bash tools/conda_docs.sh
       - name: Upload docs
         uses: actions/upload-pages-artifact@v3
         with:

@@ -9,7 +9,7 @@ Dependencies
 heyoka.py has several Python and C++ dependencies. On the C++ side, heyoka.py depends on:
 
 * the `heyoka C++ library <https://github.com/bluescarni/heyoka>`__,
-  version 6.1.x (**mandatory**),
+  version 7.0.x (**mandatory**),
 * the `Boost <https://www.boost.org/>`__ C++ libraries (**mandatory**),
 * the `{fmt} <https://fmt.dev/latest/index.html>`__ library (**mandatory**),
 * the `TBB <https://github.com/oneapi-src/oneTBB>`__ library (**mandatory**),
@@ -21,12 +21,14 @@ heyoka.py has several Python and C++ dependencies. On the C++ side, heyoka.py de
   :ref:`heyoka <hy:installation>` and :ref:`mp++ <mppp:installation>` installation
   instructions).
 
-On the Python side, heyoka.py requires at least Python 3.5 and depends on:
+On the Python side, heyoka.py requires at least Python 3.9 and depends on:
 
-* `NumPy <https://numpy.org/>`__ (version <2, **mandatory**),
+* `NumPy <https://numpy.org/>`__ (version >=2, **mandatory**),
 * `cloudpickle <https://github.com/cloudpipe/cloudpickle>`__ (**mandatory**),
 * `SymPy <https://www.sympy.org/en/index.html>`__ (version >=1.13.0) and `mpmath <https://mpmath.org/>`__
-  (*optional*, for converting heyoka.py expressions to/from SymPy expressions).
+  (*optional*, for converting heyoka.py expressions to/from SymPy expressions),
+* `skyfield <https://rhodesmill.org/skyfield/>`__ (*optional*, needed by the
+  :ref:`SGP4 propagator <tut_sgp4_propagator>`).
 
 The tested and supported CPU architectures at this time are x86-64, 64-bit ARM and 64-bit PowerPC.
 
@@ -58,16 +60,21 @@ your conda installation.
 pip
 ^^^
 
-A heyoka.py package for x86-64 Linux is available on `PyPI <https://pypi.org/project/heyoka/>`__.
-You can install it via ``pip``:
+heyoka.py packages are available on `PyPI <https://pypi.org/project/heyoka/>`__.
+You can install them via ``pip``:
 
 .. code-block:: console
 
    $ pip install heyoka
 
-.. warning::
+We currently offer prebuilt binary wheels for x86-64 Linux, along with a source distribution (sdist).
+When using the sdist for installation, you are responsible for managing the installation of the C++ dependencies.
 
-   heyoka.py relies on a stack of C++ dependencies which are bundled in the ``pip`` package.
+We plan to add in the near future prebuilt wheels for additional operating systems and CPU architectures.
+
+.. note::
+
+   heyoka.py relies on a stack of C++ dependencies which are bundled in the prebuilt binary wheels.
    There is a non-negligible chance of conflicts with other packages which might also depend on and bundle
    the same C++ libraries, which can lead to unpredictable runtime errors and hard-to-diagnose
    issues.

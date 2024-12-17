@@ -3,6 +3,28 @@
 Changelog
 =========
 
+7.0.0 (unreleased)
+------------------
+
+New
+~~~
+
+- Upload the source distribution to PyPI
+  (`#203 <https://github.com/bluescarni/heyoka.py/pull/203>`__).
+
+Changes
+~~~~~~~
+
+- heyoka.py now requires version 7.0.0 of the
+  heyoka C++ library
+  (`#206 <https://github.com/bluescarni/heyoka.py/pull/206>`__).
+- **BREAKING**: heyoka.py now requires Python >= 3.9
+  (`#206 <https://github.com/bluescarni/heyoka.py/pull/206>`__).
+  This is a :ref:`breaking change <bchanges_7_0_0>`.
+- **BREAKING**: heyoka.py now requires NumPy >= 2
+  (`#206 <https://github.com/bluescarni/heyoka.py/pull/206>`__).
+  This is a :ref:`breaking change <bchanges_7_0_0>`.
+
 6.1.2 (2024-10-10)
 ------------------
 

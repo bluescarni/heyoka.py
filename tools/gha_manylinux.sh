@@ -16,9 +16,7 @@ BRANCH_NAME=`git rev-parse --abbrev-ref HEAD`
 echo "BRANCH_NAME: ${BRANCH_NAME}"
 
 # Detect the Python version.
-if [[ ${HEYOKA_PY_BUILD_TYPE} == *38* ]]; then
-	PYTHON_DIR="cp38-cp38"
-elif [[ ${HEYOKA_PY_BUILD_TYPE} == *39* ]]; then
+if [[ ${HEYOKA_PY_BUILD_TYPE} == *39* ]]; then
 	PYTHON_DIR="cp39-cp39"
 elif [[ ${HEYOKA_PY_BUILD_TYPE} == *310* ]]; then
 	PYTHON_DIR="cp310-cp310"
@@ -37,7 +35,7 @@ fi
 echo "PYTHON_DIR: ${PYTHON_DIR}"
 
 # The heyoka version to be used for releases.
-export HEYOKA_VERSION_RELEASE="6.1.0"
+export HEYOKA_VERSION_RELEASE="7.0.0"
 
 # Check if this is a release build.
 if [[ "${GITHUB_REF}" == "refs/tags/v"* ]]; then
@@ -70,27 +68,45 @@ cmake -DHEYOKA_WITH_MPPP=yes \
     -DCMAKE_BUILD_TYPE=Release ../;
 make -j4 install
 
-# Build the heyoka.py wheel.
 cd ${GITHUB_WORKSPACE}
-/opt/python/${PYTHON_DIR}/bin/pip wheel . -v
-# Repair it.
+
 # NOTE: this is temporary because some libraries in the docker
 # image are installed in lib64 rather than lib and they are
 # not picked up properly by the linker.
 export LD_LIBRARY_PATH="/usr/local/lib64:/usr/local/lib"
-auditwheel repair ./heyoka*.whl -w ./repaired_wheel
-# Try to install it and run the tests.
-unset LD_LIBRARY_PATH
-cd /
-/opt/python/${PYTHON_DIR}/bin/pip install ${GITHUB_WORKSPACE}/repaired_wheel/heyoka*
-cd ${GITHUB_WORKSPACE}/tools
-/opt/python/${PYTHON_DIR}/bin/python ci_test_runner.py
-cd /
 
-# Upload to PyPI.
-if [[ "${HEYOKA_PY_RELEASE_BUILD}" == "yes" ]]; then
-	/opt/python/${PYTHON_DIR}/bin/pip install twine
-	/opt/python/${PYTHON_DIR}/bin/twine upload -u __token__ ${GITHUB_WORKSPACE}/repaired_wheel/heyoka*
+if [[ "${HEYOKA_PY_BUILD_SDIST}" == "yes" ]]; then
+	# Build the heyoka.py sdist.
+	/opt/python/${PYTHON_DIR}/bin/python -m build . --sdist
+	# Try to install it and run the tests.
+	/opt/python/${PYTHON_DIR}/bin/pip install dist/heyoka*
+	cd ${GITHUB_WORKSPACE}/tools
+	/opt/python/${PYTHON_DIR}/bin/python ci_test_runner.py
+	cd /
+
+	# Upload to PyPI.
+	if [[ "${HEYOKA_PY_RELEASE_BUILD}" == "yes" ]]; then
+		/opt/python/${PYTHON_DIR}/bin/pip install twine
+		/opt/python/${PYTHON_DIR}/bin/twine upload -u __token__ ${GITHUB_WORKSPACE}/dist/heyoka*
+	fi
+else
+	# Build the heyoka.py wheel.
+	/opt/python/${PYTHON_DIR}/bin/pip wheel . -v
+	# Repair it.
+	auditwheel repair ./heyoka*.whl -w ./repaired_wheel
+	# Try to install it and run the tests.
+	unset LD_LIBRARY_PATH
+	cd /
+	/opt/python/${PYTHON_DIR}/bin/pip install ${GITHUB_WORKSPACE}/repaired_wheel/heyoka*
+	cd ${GITHUB_WORKSPACE}/tools
+	/opt/python/${PYTHON_DIR}/bin/python ci_test_runner.py
+	cd /
+
+	# Upload to PyPI.
+	if [[ "${HEYOKA_PY_RELEASE_BUILD}" == "yes" ]]; then
+		/opt/python/${PYTHON_DIR}/bin/pip install twine
+		/opt/python/${PYTHON_DIR}/bin/twine upload -u __token__ ${GITHUB_WORKSPACE}/repaired_wheel/heyoka*
+	fi
 fi
 
 set +e

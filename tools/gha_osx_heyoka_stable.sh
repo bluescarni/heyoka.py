@@ -13,7 +13,7 @@ export PATH="$HOME/miniconda/bin:$PATH"
 bash miniconda.sh -b -p $HOME/miniconda
 conda create -y -q -p $deps_dir
 source activate $deps_dir
-conda install -y python=3.10 pybind11 'numpy<2' cmake heyoka libboost-devel
+conda install -y python=3.10 pybind11 'numpy>=2' cmake heyoka libboost-devel
 
 # Create the build dir and cd into it.
 mkdir build

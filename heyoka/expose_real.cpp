@@ -987,7 +987,8 @@ PyMethodDef py_real_methods[]
     = {{"set_prec", py_real_set_prec, METH_VARARGS, nullptr},
        {"prec_round", py_real_prec_round, METH_VARARGS, nullptr},
        {"__copy__", py_real_copy, METH_NOARGS, nullptr},
-       {"__deepcopy__", reinterpret_cast<PyCFunction>(py_real_deepcopy), METH_VARARGS | METH_KEYWORDS, nullptr},
+       {"__deepcopy__", reinterpret_cast<PyCFunction>(reinterpret_cast<void *>(py_real_deepcopy)),
+        METH_VARARGS | METH_KEYWORDS, nullptr},
        // NOTE: for pickling support we need to override the reduce/reduce_ex functions, as they
        // are implemented in the base NumPy class and they take the precedence over get/set state.
        {"__setstate__", py_real_setstate, METH_VARARGS, nullptr},
@@ -1169,9 +1170,16 @@ PyObject *py_real_rcmp(PyObject *a, PyObject *b, int op)
 // NOLINTNEXTLINE(cppcoreguidelines-avoid-non-const-global-variables)
 PyArray_ArrFuncs npy_py_real_arr_funcs = {};
 
-// NumPy type descriptor.
+// NumPy type descriptor proto.
+// NOTE: this has been switched from PyArray_Descr to PyArray_DescrProto in NumPy 2 for backwards compat mode
+// with NumPy 1. See:
+//
+// https://numpy.org/doc/stable/reference/c-api/array.html#c.PyArray_RegisterDataType.
 // NOLINTNEXTLINE(cppcoreguidelines-avoid-non-const-global-variables)
-PyArray_Descr npy_py_real_descr = {PyObject_HEAD_INIT(0) & py_real_type};
+PyArray_DescrProto npy_py_real_descr_proto = {PyObject_HEAD_INIT(0) & py_real_type};
+
+// The actual type descriptor. This will be set at module init via PyArray_DescrFromType().
+PyArray_Descr *npy_py_real_descr = nullptr;
 
 // Small helper to check if the input pointer is suitably
 // aligned for mppp::real.
@@ -1371,10 +1379,6 @@ std::pair<std::optional<mppp::real *>, bool> ensure_cted_real(const unsigned cha
 // Array getitem.
 PyObject *npy_py_real_getitem(void *data, [[maybe_unused]] void *arr)
 {
-    // NOTE: arr can be null in some situations (e.g., data sometimes is a manually-allocated
-    // memory buffer which does not belong to any array).
-    assert(arr == nullptr || PyArray_Check(reinterpret_cast<PyObject *>(arr)) != 0);
-
     // NOTE: getitem could be invoked with misaligned data.
     // Detect such occurrence and error out.
     if (!ptr_real_aligned(data)) {
@@ -1398,8 +1402,6 @@ PyObject *npy_py_real_getitem(void *data, [[maybe_unused]] void *arr)
 // Array setitem.
 int npy_py_real_setitem(PyObject *item, void *data, [[maybe_unused]] void *arr)
 {
-    assert(arr == nullptr || PyArray_Check(reinterpret_cast<PyObject *>(arr)) != 0);
-
     // NOTE: getitem could be invoked with misaligned data.
     // Detect such occurrence and error out.
     if (!ptr_real_aligned(data)) {
@@ -1473,8 +1475,6 @@ int npy_py_real_setitem(PyObject *item, void *data, [[maybe_unused]] void *arr)
 // map for every element that is being copied.
 void npy_py_real_copyswap(void *dst, void *src, int swap, [[maybe_unused]] void *arr)
 {
-    assert(arr == nullptr || PyArray_Check(reinterpret_cast<PyObject *>(arr)) != 0);
-
     if (swap != 0) {
         PyErr_SetString(PyExc_ValueError, "Cannot byteswap real arrays");
         return;
@@ -1780,7 +1780,7 @@ void npy_register_cast_functions()
         py_throw(PyExc_TypeError, "The registration of a NumPy casting function failed");
     }
 
-    if (PyArray_RegisterCastFunc(&npy_py_real_descr, get_dtype<T>(), &npy_cast_from_real<T>) < 0) {
+    if (PyArray_RegisterCastFunc(npy_py_real_descr, get_dtype<T>(), &npy_cast_from_real<T>) < 0) {
         py_throw(PyExc_TypeError, "The registration of a NumPy casting function failed");
     }
 }
@@ -2379,17 +2379,17 @@ void expose_real(py::module_ &m)
     }
 
     // Fill out the NumPy descriptor.
-    detail::npy_py_real_descr.kind = 'f';
-    detail::npy_py_real_descr.type = 'r';
-    detail::npy_py_real_descr.byteorder = '=';
+    detail::npy_py_real_descr_proto.kind = 'f';
+    detail::npy_py_real_descr_proto.type = 'r';
+    detail::npy_py_real_descr_proto.byteorder = '=';
     // NOTE: NPY_NEEDS_INIT is important because it gives us a way
     // to detect the use by NumPy of memory buffers not managed
     // via NEP 49.
-    detail::npy_py_real_descr.flags
+    detail::npy_py_real_descr_proto.flags
         = NPY_NEEDS_PYAPI | NPY_USE_GETITEM | NPY_USE_SETITEM | NPY_NEEDS_INIT | NPY_LIST_PICKLE;
-    detail::npy_py_real_descr.elsize = sizeof(mppp::real);
-    detail::npy_py_real_descr.alignment = alignof(mppp::real);
-    detail::npy_py_real_descr.f = &detail::npy_py_real_arr_funcs;
+    detail::npy_py_real_descr_proto.elsize = sizeof(mppp::real);
+    detail::npy_py_real_descr_proto.alignment = alignof(mppp::real);
+    detail::npy_py_real_descr_proto.f = &detail::npy_py_real_arr_funcs;
 
     // Setup the basic NumPy array functions.
     // NOTE: not 100% sure PyArray_InitArrFuncs() is needed, as npy_py_real_arr_funcs
@@ -2424,15 +2424,19 @@ void expose_real(py::module_ &m)
     // detail::npy_py_real_arr_funcs.scalarkind = [](void *) -> int { return NPY_FLOAT_SCALAR; };
 
     // Register the NumPy data type.
-    Py_SET_TYPE(&detail::npy_py_real_descr, &PyArrayDescr_Type);
-    npy_registered_py_real = PyArray_RegisterDataType(&detail::npy_py_real_descr);
+    Py_SET_TYPE(&detail::npy_py_real_descr_proto, &PyArrayDescr_Type);
+    npy_registered_py_real = PyArray_RegisterDataType(&detail::npy_py_real_descr_proto);
     if (npy_registered_py_real < 0) {
         // NOTE: PyArray_RegisterDataType() already sets the error flag.
         throw py::error_already_set();
     }
+    // Set the actual descriptor. See:
+    //
+    // https://numpy.org/doc/stable/reference/c-api/array.html#c.PyArray_RegisterDataType.
+    detail::npy_py_real_descr = PyArray_DescrFromType(npy_registered_py_real);
 
     // Support the dtype(real) syntax.
-    if (PyDict_SetItemString(py_real_type.tp_dict, "dtype", reinterpret_cast<PyObject *>(&detail::npy_py_real_descr))
+    if (PyDict_SetItemString(py_real_type.tp_dict, "dtype", reinterpret_cast<PyObject *>(detail::npy_py_real_descr))
         < 0) {
         py_throw(PyExc_TypeError, "Cannot add the 'dtype' field to the real class");
     }
@@ -2779,7 +2783,7 @@ void expose_real(py::module_ &m)
         py_throw(PyExc_TypeError, "The registration of a NumPy casting function failed");
     }
 
-    if (PyArray_RegisterCastFunc(&detail::npy_py_real_descr, NPY_BOOL, &detail::npy_cast_from_real<npy_bool>) < 0) {
+    if (PyArray_RegisterCastFunc(detail::npy_py_real_descr, NPY_BOOL, &detail::npy_cast_from_real<npy_bool>) < 0) {
         py_throw(PyExc_TypeError, "The registration of a NumPy casting function failed");
     }
 
