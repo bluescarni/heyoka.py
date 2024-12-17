@@ -26,7 +26,5 @@ workflows:
   version: 2.1
   all_builds:
     jobs:
-    - conda_heyoka_head_311
-    - conda_heyoka_head_310
     - conda_heyoka_head_312
     - ubuntu_arm64
