@@ -987,7 +987,8 @@ PyMethodDef py_real_methods[]
     = {{"set_prec", py_real_set_prec, METH_VARARGS, nullptr},
        {"prec_round", py_real_prec_round, METH_VARARGS, nullptr},
        {"__copy__", py_real_copy, METH_NOARGS, nullptr},
-       {"__deepcopy__", reinterpret_cast<PyCFunction>(py_real_deepcopy), METH_VARARGS | METH_KEYWORDS, nullptr},
+       {"__deepcopy__", reinterpret_cast<PyCFunction>(reinterpret_cast<void *>(py_real_deepcopy)),
+        METH_VARARGS | METH_KEYWORDS, nullptr},
        // NOTE: for pickling support we need to override the reduce/reduce_ex functions, as they
        // are implemented in the base NumPy class and they take the precedence over get/set state.
        {"__setstate__", py_real_setstate, METH_VARARGS, nullptr},
