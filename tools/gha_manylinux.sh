@@ -16,9 +16,7 @@ BRANCH_NAME=`git rev-parse --abbrev-ref HEAD`
 echo "BRANCH_NAME: ${BRANCH_NAME}"
 
 # Detect the Python version.
-if [[ ${HEYOKA_PY_BUILD_TYPE} == *38* ]]; then
-	PYTHON_DIR="cp38-cp38"
-elif [[ ${HEYOKA_PY_BUILD_TYPE} == *39* ]]; then
+if [[ ${HEYOKA_PY_BUILD_TYPE} == *39* ]]; then
 	PYTHON_DIR="cp39-cp39"
 elif [[ ${HEYOKA_PY_BUILD_TYPE} == *310* ]]; then
 	PYTHON_DIR="cp310-cp310"
@@ -37,7 +35,7 @@ fi
 echo "PYTHON_DIR: ${PYTHON_DIR}"
 
 # The heyoka version to be used for releases.
-export HEYOKA_VERSION_RELEASE="6.1.0"
+export HEYOKA_VERSION_RELEASE="7.0.0"
 
 # Check if this is a release build.
 if [[ "${GITHUB_REF}" == "refs/tags/v"* ]]; then

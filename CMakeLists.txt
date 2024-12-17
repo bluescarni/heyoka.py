@@ -2,6 +2,12 @@
 # required by heyoka.
 cmake_minimum_required(VERSION 3.18.0)
 
+if(${CMAKE_VERSION} VERSION_GREATER_EQUAL 3.31.0)
+    # NOTE: adopt the new behaviour for this policy:
+    # https://cmake.org/cmake/help/latest/policy/CMP0177.html
+    cmake_policy(SET CMP0177 NEW)
+endif()
+
 # Set default build type to "Release".
 # NOTE: this should be done before the project command since the latter can set
 # CMAKE_BUILD_TYPE itself (it does so for nmake).
@@ -11,7 +17,7 @@ if(NOT CMAKE_BUILD_TYPE)
 	FORCE)
 endif()
 
-project(heyoka.py VERSION 6.1.3 LANGUAGES CXX C)
+project(heyoka.py VERSION 7.0.0 LANGUAGES CXX C)
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake" "${CMAKE_CURRENT_SOURCE_DIR}/cmake/yacma")
 
@@ -118,7 +124,7 @@ find_package(fmt REQUIRED CONFIG)
 message(STATUS "fmt version: ${fmt_VERSION}")
 
 # heyoka.
-find_package(heyoka 6.1.0 REQUIRED CONFIG)
+find_package(heyoka 7.0.0 REQUIRED CONFIG)
 
 # Python.
 
@@ -144,17 +150,13 @@ find_package(Python3 QUIET REQUIRED COMPONENTS ${_HEYOKA_PY_PYTHON3_COMPONENTS})
 
 message(STATUS "Python3 interpreter: ${Python3_EXECUTABLE}")
 message(STATUS "Python3 installation directory: ${Python3_SITEARCH}")
-if(${Python3_VERSION_MINOR} LESS 5)
-    message(FATAL_ERROR "The minimum supported version of Python is 3.5, but version 3.${Python3_VERSION_MINOR} was found instead")
+# NOTE: Python 3.9 seems like the absolute minimum for NumPy 2.
+if(${Python3_VERSION_MINOR} LESS 9)
+    message(FATAL_ERROR "The minimum supported version of Python is 3.9, but version 3.${Python3_VERSION_MINOR} was found instead")
 endif()
-# NOTE: mppp::real support requires NumPy 1.22 at least.
-if(heyoka_WITH_REAL AND ${Python3_NumPy_VERSION} LESS 1.22)
-    message(FATAL_ERROR "The minimum version of NumPy required for supporting arbitrary-precision computations is 1.22, but version ${Python3_NumPy_VERSION} was found instead")
-endif()
-# NOTE: NumPy 2 not supported yet if we are building with support
-# for mppp::real or mppp::real128.
-if((heyoka_WITH_REAL OR heyoka_WITH_REAL128) AND ${Python3_NumPy_VERSION} VERSION_GREATER_EQUAL 2)
-    message(FATAL_ERROR "NumPy 2 is not supported when building with support for quadruple-precision or arbitrary-precision computations")
+# We support only NumPy>=2.
+if((heyoka_WITH_REAL OR heyoka_WITH_REAL128) AND ${Python3_NumPy_VERSION} VERSION_LESS 2)
+    message(FATAL_ERROR "NumPy>=2 is required when building with support for quadruple-precision or arbitrary-precision computations")
 endif()
 message(STATUS "NumPy version: ${Python3_NumPy_VERSION}")
 unset(_HEYOKA_PY_PYTHON3_COMPONENTS)

@@ -21,14 +21,38 @@ jobs:
       - uses: actions/checkout@v4
       - name: Build
         run: bash tools/gha_conda_static.sh
-  osx_heyoka_head:
-    runs-on: macos-latest
+  osx_heyoka_head_x86_64:
+    runs-on: macos-13
+    env:
+      HEYOKA_PY_PY_VERSION: "3.12"
+      HEYOKA_PY_CONDA_ARCH: "MacOSX-x86_64"
     steps:
       - uses: actions/checkout@v4
       - name: Build
         run: bash tools/gha_osx_heyoka_head.sh
-  osx_heyoka_head_static:
-    runs-on: macos-latest
+  osx_heyoka_head_x86_64_static:
+    runs-on: macos-13
+    env:
+      HEYOKA_PY_PY_VERSION: "3.12"
+      HEYOKA_PY_CONDA_ARCH: "MacOSX-x86_64"
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build
+        run: bash tools/gha_osx_heyoka_head_static.sh
+  osx_heyoka_head_arm64:
+    runs-on: macos-14
+    env:
+      HEYOKA_PY_PY_VERSION: "3.12"
+      HEYOKA_PY_CONDA_ARCH: "MacOSX-arm64"
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build
+        run: bash tools/gha_osx_heyoka_head.sh
+  osx_heyoka_head_arm64_static:
+    runs-on: macos-14
+    env:
+      HEYOKA_PY_PY_VERSION: "3.12"
+      HEYOKA_PY_CONDA_ARCH: "MacOSX-arm64"
     steps:
       - uses: actions/checkout@v4
       - name: Build
@@ -124,21 +148,6 @@ jobs:
          with:
            name: wheel_39
            path: repaired_wheel/*.whl
-  manylinux228_x86_64-py38:
-     runs-on: ubuntu-latest
-     container:
-      image: pagmo2/manylinux228_x86_64_with_deps:latest
-      env:
-        HEYOKA_PY_BUILD_TYPE: "Python38"
-        TWINE_PASSWORD: ${{ secrets.TWINE_PASSWORD }}
-     steps:
-       - uses: actions/checkout@v4
-       - name: Build
-         run: bash tools/gha_manylinux.sh
-       - uses: actions/upload-artifact@v4
-         with:
-           name: wheel_38
-           path: repaired_wheel/*.whl
   windows_2022_heyoka_head:
     runs-on: windows-2022
     steps:
@@ -153,7 +162,7 @@ jobs:
       - name: Build
         shell: pwsh
         run: |
-          conda install -y python=3.12 git pybind11 numpy<2 cmake llvmdev tbb-devel tbb astroquery libboost-devel fmt skyfield spdlog sleef sympy cloudpickle zlib libzlib 'mppp=1.*' numba
+          conda install -y python=3.12 git pybind11 numpy>=2 cmake llvmdev tbb-devel tbb astroquery libboost-devel fmt skyfield spdlog sleef sympy cloudpickle zlib libzlib 'mppp=2.*' numba
           git clone --depth 1 https://github.com/bluescarni/heyoka.git heyoka_cpp
           cd heyoka_cpp
           mkdir build

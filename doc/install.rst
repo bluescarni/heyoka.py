@@ -9,7 +9,7 @@ Dependencies
 heyoka.py has several Python and C++ dependencies. On the C++ side, heyoka.py depends on:
 
 * the `heyoka C++ library <https://github.com/bluescarni/heyoka>`__,
-  version 6.1.x (**mandatory**),
+  version 7.0.x (**mandatory**),
 * the `Boost <https://www.boost.org/>`__ C++ libraries (**mandatory**),
 * the `{fmt} <https://fmt.dev/latest/index.html>`__ library (**mandatory**),
 * the `TBB <https://github.com/oneapi-src/oneTBB>`__ library (**mandatory**),
@@ -21,9 +21,9 @@ heyoka.py has several Python and C++ dependencies. On the C++ side, heyoka.py de
   :ref:`heyoka <hy:installation>` and :ref:`mp++ <mppp:installation>` installation
   instructions).
 
-On the Python side, heyoka.py requires at least Python 3.5 and depends on:
+On the Python side, heyoka.py requires at least Python 3.9 and depends on:
 
-* `NumPy <https://numpy.org/>`__ (version <2, **mandatory**),
+* `NumPy <https://numpy.org/>`__ (version >=2, **mandatory**),
 * `cloudpickle <https://github.com/cloudpipe/cloudpickle>`__ (**mandatory**),
 * `SymPy <https://www.sympy.org/en/index.html>`__ (version >=1.13.0) and `mpmath <https://mpmath.org/>`__
   (*optional*, for converting heyoka.py expressions to/from SymPy expressions),
