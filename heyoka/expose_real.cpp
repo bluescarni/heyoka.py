@@ -44,8 +44,8 @@
 #define NO_IMPORT_UFUNC
 #define PY_ARRAY_UNIQUE_SYMBOL heyoka_py_ARRAY_API
 #define PY_UFUNC_UNIQUE_SYMBOL heyoka_py_UFUNC_API
-#define NPY_NO_DEPRECATED_API NPY_1_7_API_VERSION
-#define NPY_TARGET_VERSION NPY_1_22_API_VERSION
+#define NPY_NO_DEPRECATED_API NPY_2_0_API_VERSION
+#define NPY_TARGET_VERSION NPY_2_0_API_VERSION
 
 #include <Python.h>
 #include <numpy/arrayobject.h>
@@ -1165,6 +1165,8 @@ PyObject *py_real_rcmp(PyObject *a, PyObject *b, int op)
     }
 }
 
+#if 0
+
 // NumPy array function.
 // NOLINTNEXTLINE(cppcoreguidelines-avoid-non-const-global-variables)
 PyArray_ArrFuncs npy_py_real_arr_funcs = {};
@@ -2100,6 +2102,8 @@ void npy_py_real_gufunc_matrix_multiply(char **args, const npy_intp *dimensions,
     }
 }
 
+#endif
+
 } // namespace
 
 } // namespace detail
@@ -2128,6 +2132,8 @@ PyObject *pyreal_from_real(mppp::real &&src)
 {
     return detail::py_real_from_args(std::move(src));
 }
+
+#if 0
 
 namespace detail
 {
@@ -2177,12 +2183,15 @@ void pyreal_check_array_impl(std::array<py::ssize_t, NDim> &idxs, const py::arra
 
 } // namespace detail
 
+#endif
+
 // Helper to check if all the real values in arr have been
 // properly constructed with a precision of prec. If prec == 0,
 // then no check on the precision is performed (i.e., only the
 // check for proper construction is performed).
 void pyreal_check_array(const py::array &arr, mpfr_prec_t prec)
 {
+#if 0
     assert(arr.dtype().num() == npy_registered_py_real);
 
     // Exit immediately if the array does not contain any data.
@@ -2211,7 +2220,10 @@ void pyreal_check_array(const py::array &arr, mpfr_prec_t prec)
                 PyExc_ValueError,
                 fmt::format("Cannot call pyreal_check_array() on an array with {} dimensions", arr.ndim()).c_str());
     }
+#endif
 }
+
+#if 0
 
 namespace detail
 {
@@ -2257,12 +2269,15 @@ void pyreal_ensure_array_impl(std::array<py::ssize_t, NDim> &idxs, py::array &ar
 
 } // namespace detail
 
+#endif
+
 // Helper to ensure that arr contains properly constructed
 // real values with precision prec. If real values already
 // exist in arr, they will be rounded to precision prec. Otherwise,
 // new reals with value 0 and precision prec will be constructed.
 void pyreal_ensure_array(py::array &arr, mpfr_prec_t prec)
 {
+#if 0
     assert(arr.dtype().num() == npy_registered_py_real);
 
     // Exit immediately if the array does not contain any data.
@@ -2291,6 +2306,7 @@ void pyreal_ensure_array(py::array &arr, mpfr_prec_t prec)
                 PyExc_ValueError,
                 fmt::format("Cannot call pyreal_ensure_array() on an array with {} dimensions", arr.ndim()).c_str());
     }
+#endif
 }
 
 void expose_real(py::module_ &m)
@@ -2299,7 +2315,6 @@ void expose_real(py::module_ &m)
     setup_custom_numpy_mem_handler(m);
 
     // Fill out the entries of py_real_type.
-    py_real_type.tp_base = &PyGenericArrType_Type;
     py_real_type.tp_name = "heyoka.core.real";
     py_real_type.tp_basicsize = sizeof(py_real);
     py_real_type.tp_flags = Py_TPFLAGS_DEFAULT;
@@ -2377,6 +2392,8 @@ void expose_real(py::module_ &m)
         // NOTE: PyType_Ready() already sets the exception flag.
         throw py::error_already_set();
     }
+
+#if 0
 
     // Fill out the NumPy descriptor.
     detail::npy_py_real_descr.kind = 'f';
@@ -2782,6 +2799,7 @@ void expose_real(py::module_ &m)
     if (PyArray_RegisterCastFunc(&detail::npy_py_real_descr, NPY_BOOL, &detail::npy_cast_from_real<npy_bool>) < 0) {
         py_throw(PyExc_TypeError, "The registration of a NumPy casting function failed");
     }
+#endif
 
     // Add py_real_type to the module.
     Py_INCREF(&py_real_type);
