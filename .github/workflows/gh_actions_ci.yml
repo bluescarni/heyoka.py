@@ -48,7 +48,7 @@ jobs:
       - uses: actions/checkout@v4
       - name: Build
         run: bash tools/gha_osx_heyoka_head.sh
-  osx_heyoka_head_arm64:
+  osx_heyoka_head_arm64_static:
     runs-on: macos-latest
     env:
       HEYOKA_PY_PY_VERSION: "3.12"

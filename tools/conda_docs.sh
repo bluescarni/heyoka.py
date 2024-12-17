@@ -16,9 +16,14 @@ export PATH="$HOME/miniforge/bin:$PATH"
 bash miniforge.sh -b -p $HOME/miniforge
 conda create -y -p $deps_dir c-compiler cxx-compiler python=${HEYOKA_PY_PY_VERSION} git pybind11 \
     ninja 'numpy>=2' mpmath cmake llvmdev tbb-devel tbb astroquery libboost-devel \
-    'mppp=2.*' sleef fmt skyfield spdlog myst-nb matplotlib sympy scipy pykep cloudpickle \
+    'mppp=2.*' sleef fmt skyfield spdlog myst-nb matplotlib sympy scipy cloudpickle \
     'sphinx=7.*' 'sphinx-book-theme=1.*'
 source activate $deps_dir
+
+# NOTE: pykep not on linux arm64 yet.
+if [ "$HEYOKA_PY_CONDA_ARCH" == "Linux-x86_64" ]; then
+    conda install -y pykep
+fi
 
 export HEYOKA_PY_PROJECT_DIR=`pwd`
 
@@ -59,11 +64,11 @@ cd ../tools
 
 python ci_test_runner.py
 
-cd $HEYOKA_PY_PROJECT_DIR
-
-cd doc
-
-make html doctest
+if [ "$HEYOKA_PY_CONDA_ARCH" == "Linux-x86_64" ]; then
+    cd $HEYOKA_PY_PROJECT_DIR
+    cd doc
+    make html doctest
+fi
 
 set +e
 set +x
