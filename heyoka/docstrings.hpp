@@ -50,7 +50,8 @@ std::string nrlmsise00_tn();
 std::string jb08_tn();
 std::string fixed_centres();
 std::string pendulum();
-std::string sgp4_model();
+std::string sgp4();
+std::string sgp4_is_deepspace();
 
 // var_ode_sys() and related.
 std::string var_args();
