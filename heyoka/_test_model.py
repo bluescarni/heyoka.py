@@ -447,6 +447,32 @@ class model_test_case(_ut.TestCase):
         )
 
     def test_sgp4(self):
+        from . import par, time as tm
         from .model import sgp4
 
         self.assertEqual(len(sgp4()), 7)
+        self.assertEqual(len(sgp4([])), 7)
+
+        # Test also with custom inputs.
+        self.assertEqual(len(sgp4(["a", "b", "c", "d", "e", "f", par[0], tm])), 7)
+
+    def test_gpe_is_deep_space(self):
+        try:
+            from sgp4.api import Satrec
+        except ImportError:
+            return
+
+        from .model import gpe_is_deep_space
+
+        # A non-deepspace TLE.
+        s1 = "1 00045U 60007A   24187.45810325  .00000504  00000-0  14841-3 0  9992"
+        t1 = "2 00045  66.6943  81.3521 0257384 317.3173  40.8180 14.34783636277898"
+        sat = Satrec.twoline2rv(s1, t1)
+
+        self.assertFalse(gpe_is_deep_space(sat.no_kozai, sat.ecco, sat.inclo))
+
+        # A deepspace TLE.
+        t1 = "2 00045  66.6943  81.3521 0257384 317.3173  40.8180 6.34783636277898"
+        sat = Satrec.twoline2rv(s1, t1)
+
+        self.assertTrue(gpe_is_deep_space(sat.no_kozai, sat.ecco, sat.inclo))
