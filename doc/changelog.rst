@@ -9,6 +9,9 @@ Changelog
 New
 ~~~
 
+- Expose the ``get_params()`` function, which returns a list of
+  parameters for an input expression or list of expressions
+  (`#207 <https://github.com/bluescarni/heyoka.py/pull/207>`__).
 - New function :func:`~heyoka.model.gpe_is_deep_space()` to detect
   deep-space GPEs
   (`#207 <https://github.com/bluescarni/heyoka.py/pull/207>`__).
