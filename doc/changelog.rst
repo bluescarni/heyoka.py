@@ -9,12 +9,22 @@ Changelog
 New
 ~~~
 
+- New function :func:`~heyoka.model.gpe_is_deep_space()` to detect
+  deep-space GPEs
+  (`#207 <https://github.com/bluescarni/heyoka.py/pull/207>`__).
 - Upload the source distribution to PyPI
   (`#203 <https://github.com/bluescarni/heyoka.py/pull/203>`__).
 
 Changes
 ~~~~~~~
 
+- Small tweaks to the behaviour of the SGP4 propagator: non-normalised double-length
+  Julian dates are now accepted, deep-space GPEs do not result in exceptions any more,
+  and performance improvements for the
+  :func:`~heyoka.model.sgp4_propagator_dbl.replace_sat_data()` function
+  (`#207 <https://github.com/bluescarni/heyoka.py/pull/207>`__).
+- The parallel compilation feature has been temporarily disabled due to several LLVM bugs
+  (`#206 <https://github.com/bluescarni/heyoka.py/pull/206>`__).
 - heyoka.py now requires version 7.0.0 of the
   heyoka C++ library
   (`#206 <https://github.com/bluescarni/heyoka.py/pull/206>`__).
