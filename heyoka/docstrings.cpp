@@ -756,7 +756,7 @@ Produces the expressions for the SGP4 propagator.
 
 .. versionadded:: 5.1.0
 
-.. versionchanged:: 7.0.0
+.. versionadded:: 7.0.0
 
    This function now optionally accepts a list of input expressions.
 
@@ -818,8 +818,8 @@ routine. The Cartesian coordinates ``x, y, z`` of the satellite are returned in 
 
    `NORAD Two-Line Element Set Format <https://celestrak.org/NORAD/documentation/tle-fmt.php>`_
 
-:returns: the Cartesian state vector of an Earth-orbiting satellite according to the SGP4 algorithm,
-   plus an error code.
+:returns: a list of 7 expressions representing the Cartesian state vector of an Earth-orbiting
+   satellite and an error code, as functions of the *inputs*.
 
 :raises ValueError: if the list of inputs has a length other than 0 or 8.
 
@@ -870,7 +870,7 @@ Constructor.
 
 .. note::
 
-   Instead of using this constructor, consider using the factory function
+   As an alternative to this constructor, consider using the factory function
    :py:func:`~heyoka.model.sgp4_propagator()`.
 
 The constructor will initialise the propagator from *sat_list*, which must be a list
@@ -888,7 +888,6 @@ and the :ref:`api_common_kwargs_cfunc` set.
 
 :raises ImportError: if the sgp4 Python module is not available.
 :raises TypeError: if one or more elements in *sat_list* is not a ``Satrec`` object.
-:raises ValueError: if a satellite with an orbital period above 225 minutes is detected.
 
 )";
 }
@@ -1086,7 +1085,6 @@ in the propagator via this method.
 :param sat_list: the new list of GPEs.
 
 :raises TypeError: if one or more elements in *sat_list* is not a ``Satrec`` object.
-:raises ValueError: if a satellite with an orbital period above 225 minutes is detected.
 :raises ValueError: if the number of satellites in *sat_list* differs from the number of satellites
    in the propagator.
 
