@@ -469,8 +469,8 @@ void expose_models(py::module_ &m)
         },
         "inputs"_a.noconvert() = py::none{}, docstrings::sgp4().c_str());
     expose_sgp4_propagators(m);
-    m.def("_model_sgp4_is_deep_space", &hy::model::sgp4_is_deep_space, "n0"_a.noconvert(), "e0"_a.noconvert(),
-          "i0"_a.noconvert(), docstrings::sgp4_is_deepspace().c_str());
+    m.def("_model_gpe_is_deep_space", &hy::model::gpe_is_deep_space, "n0"_a.noconvert(), "e0"_a.noconvert(),
+          "i0"_a.noconvert(), docstrings::gpe_is_deep_space().c_str());
 }
 
 } // namespace heyoka_py

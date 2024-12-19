@@ -51,7 +51,7 @@ std::string jb08_tn();
 std::string fixed_centres();
 std::string pendulum();
 std::string sgp4();
-std::string sgp4_is_deepspace();
+std::string gpe_is_deep_space();
 
 // var_ode_sys() and related.
 std::string var_args();

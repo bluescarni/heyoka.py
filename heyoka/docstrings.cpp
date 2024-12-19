@@ -811,7 +811,7 @@ routine. The Cartesian coordinates ``x, y, z`` of the satellite are returned in 
    Currently this function does not implement the deep-space part of the
    SGP4 algorithm (aka SDP4), and consequently it should not be used with satellites
    whose orbital period is greater than 225 minutes. You can use the
-   :py:func:`~heyoka.model.sgp4_is_deep_space()` function to check whether
+   :py:func:`~heyoka.model.gpe_is_deep_space()` function to check whether
    a GPE is deep-space or not.
 
 .. seealso::
@@ -826,9 +826,9 @@ routine. The Cartesian coordinates ``x, y, z`` of the satellite are returned in 
 )";
 }
 
-std::string sgp4_is_deepspace()
+std::string gpe_is_deep_space()
 {
-    return R"(sgp4_is_deep_space(n0: float, e0: float, i0: float) -> bool
+    return R"(gpe_is_deep_space(n0: float, e0: float, i0: float) -> bool
 
 Check whether a GPE is deep-space.
 
