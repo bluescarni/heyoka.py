@@ -39,11 +39,9 @@ cd build
 
 cmake -G Ninja ../ \
     -DCMAKE_INSTALL_PREFIX=$deps_dir \
-    -DCMAKE_BUILD_TYPE=Debug \
     -DCMAKE_PREFIX_PATH=$deps_dir \
     -DHEYOKA_WITH_MPPP=yes \
-    -DHEYOKA_WITH_SLEEF=yes \
-    -DCMAKE_CXX_FLAGS_DEBUG="-g -Og"
+    -DHEYOKA_WITH_SLEEF=yes
 
 ninja -j2 -v install
 
