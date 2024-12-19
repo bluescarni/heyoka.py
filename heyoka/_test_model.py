@@ -472,7 +472,7 @@ class model_test_case(_ut.TestCase):
         self.assertFalse(gpe_is_deep_space(sat.no_kozai, sat.ecco, sat.inclo))
 
         # A deepspace TLE.
-        t1 = "2 00045  66.6943  81.3521 0257384 317.3173  40.8180 6.34783636277898"
+        t1 = "2 00045  66.6943  81.3521 0257384 317.3173  40.8180  6.34783636277898"
         sat = Satrec.twoline2rv(s1, t1)
 
         self.assertTrue(gpe_is_deep_space(sat.no_kozai, sat.ecco, sat.inclo))
