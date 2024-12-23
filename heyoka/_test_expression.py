@@ -406,3 +406,14 @@ class expression_test_case(_ut.TestCase):
             "The numerical arguments of select() must be all of the same type"
             in str(cm.exception)
         )
+
+    def test_get_params(self):
+        from . import make_vars, par, get_params
+
+        x, y = make_vars("x", "y")
+
+        self.assertEqual(get_params(x + y), [])
+        self.assertEqual(get_params(x + par[42]), [par[42]])
+
+        self.assertEqual(get_params([x + y, x - y]), [])
+        self.assertEqual(get_params([x + par[42], par[1] - y]), [par[1], par[42]])

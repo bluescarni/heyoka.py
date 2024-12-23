@@ -391,7 +391,7 @@ as variable names.
 
 std::string sum()
 {
-    return R"(sum(terms: collections.abc.Sequence[expression]) -> expression
+    return R"(sum(terms: list[expression]) -> expression
 
 Multivariate summation.
 
@@ -413,7 +413,7 @@ Examples:
 
 std::string prod()
 {
-    return R"(prod(terms: collections.abc.Sequence[expression]) -> expression
+    return R"(prod(terms: list[expression]) -> expression
 
 Multivariate product.
 
@@ -698,9 +698,9 @@ std::string var_args_all()
 
 std::string fixed_centres()
 {
-    return R"(fixed_centres(Gconst: expression | str | numpy.single | float | numpy.longdouble = 1., masses:  collections.abc.Sequence[expression | str | numpy.single | float | numpy.longdouble] = [], positions: collections.abc.Iterable = numpy.empty((0, 3), dtype=float)) -> list[tuple[expression, expression]]
+    return R"(fixed_centres(Gconst: expression = 1., masses:  list[expression] = [], positions: collections.abc.Iterable = numpy.empty((0, 3), dtype=float)) -> list[tuple[expression, expression]]
 
-Produces the expression for the dynamics in a fixed-centres problem.
+Produces the expressions for the dynamics in a fixed-centres problem.
 
 In the fixed-centres problem, a test particle moves in the Newtonian gravitational field generated
 by a number of massive particles whose positions are fixed in space. The test particle's Cartesian position and
@@ -708,7 +708,7 @@ velocity are represented by the variables ``[x, y, z]`` and ``[vx, vy, vz]`` res
 
 Several checks are run on the input arguments:
 
-- *positions* must be convertible into an ``N x 3`` array, with each row containing
+- *positions* must be (convertible into) an ``N x 3`` array, with each row containing
   the Cartesian position vector of a mass,
 - the number of elements in *masses* must be equal to the number of three-dimensional
   position vectors in *positions*.
@@ -726,7 +726,7 @@ Several checks are run on the input arguments:
 
 std::string pendulum()
 {
-    return R"(pendulum(gconst: expression | str | numpy.single | float | numpy.longdouble = 1., length: expression | str | numpy.single | float | numpy.longdouble = 1.) -> list[tuple[expression, expression]]
+    return R"(pendulum(gconst: expression = 1., length: expression = 1.) -> list[tuple[expression, expression]]
 
 Produces the expression for the dynamics of the simple pendulum.
 
@@ -748,13 +748,17 @@ Examples:
 )";
 }
 
-std::string sgp4_model()
+std::string sgp4()
 {
-    return R"(sgp4() -> list[expression]
+    return R"(sgp4(inputs: list[expression] | None = None) -> list[expression]
 
-Produces the expression for the SGP4 propagator.
+Produces the expressions for the SGP4 propagator.
 
 .. versionadded:: 5.1.0
+
+.. versionadded:: 7.0.0
+
+   This function now optionally accepts a list of input expressions.
 
 .. note::
 
@@ -763,28 +767,37 @@ Produces the expression for the SGP4 propagator.
    to :func:`~heyoka.model.sgp4_propagator()`.
 
 SGP4 is a widely-used analytical propagator for the dynamics of Earth-orbiting satellites,
-described in detail in the `spacetrack report #3 <https://celestrak.org/NORAD/documentation/spacetrk.pdf>`__.
-It takes in input a `two-line element set (TLE) <https://en.wikipedia.org/wiki/Two-line_element_set>`__ and
-a time delta, and returns the Cartesian state vector (position and velocity) of the spacecraft at the specified
-time in the True Equator Mean Equinox (TEME) reference frame.
+described in detail in the `spacetrack report #3 <https://celestrak.org/NORAD/documentation/spacetrk.pdf>`__
+(see also the `update from 2006 <https://celestrak.org/publications/AIAA/2006-6753/AIAA-2006-6753-Rev3.pdf>`__,
+on which this implementation is based).
+
+SGP4 takes in input a general perturbations element set (GPE), for instance in the form of
+a `two-line element set (aka TLE) <https://en.wikipedia.org/wiki/Two-line_element_set>`__, and
+a time delta relative to the epoch in the GPE. It returns the Cartesian state vector
+(position and velocity) of the spacecraft at the specified time in the True Equator Mean Equinox
+(TEME) reference frame.
+
+If *inputs* is provided and it has nonzero length, it must be a list of 8 expressions,
+which must represent, respectively:
+
+- ``n0``: the mean motion from the GPE (in [rad / min]),
+- ``e0``: the eccentricity from the GPE,
+- ``i0``: the inclination from the GPE (in [rad]),
+- ``node0``: the right ascension of the ascending node from the GPE (in [rad]),
+- ``omega0``: the argument of perigee from the GPE (in [rad]),
+- ``m0``: the mean anomaly from the GPE (in [rad]),
+- ``bstar``: the `BSTAR <https://en.wikipedia.org/wiki/BSTAR>`__ drag term from
+  the GPE (in the same unit as given in the GPE),
+- ``tsince``: the time elapsed from the GPE epoch (in [min]).
+
+If *inputs* is not provided or it has a length of zero, 8 variable expressions named
+``["n0", "e0", "i0", "node0", "omega0", "m0", "bstar", "tsince"]`` will be used as inputs.
 
 This function will return 7 expressions: the first 6 correspond to the Cartesian state (position and
 velocity respectively) of the spacecraft according to the SGP4 algorithm, while the last expression
 represents an error code which, if nonzero, signals the occurrence of an error in the SGP4 propagation
-routine. The expressions are formulated in terms of the following 8 input variables:
-
-- ``n0``: the mean motion from the TLE (in [rad / min]),
-- ``e0``: the eccentricity from the TLE,
-- ``i0``: the inclination from the TLE (in [rad]),
-- ``node0``: the right ascension of the ascending node from the TLE (in [rad]),
-- ``omega0``: the argument of perigee from the TLE (in [rad]),
-- ``m0``: the mean anomaly from the TLE (in [rad]),
-- ``bstar``: the `BSTAR <https://en.wikipedia.org/wiki/BSTAR>`__ drag term from
-  the TLE (in the same unit as given in the TLE),
-- ``tsince``: the time elapsed from the TLE epoch (in [min]).
-
-The Cartesian coordinates ``x, y, z`` of the satellite are returned in [km], while the velocities ``vx, vy, vz``
-are returned in [km / s]. When nonzero, the error code can assume the following values:
+routine. The Cartesian coordinates ``x, y, z`` of the satellite are returned in [km], while the velocities
+``vx, vy, vz`` are returned in [km / s]. When nonzero, the error code can assume the following values:
 
 - 1: the mean eccentricity is outside the range [0.0, 1.0],
 - 2: the mean mean motion is less than zero,
@@ -796,15 +809,40 @@ are returned in [km / s]. When nonzero, the error code can assume the following 
 .. note::
 
    Currently this function does not implement the deep-space part of the
-   SGP4 algorithm and consequently it should not be used with satellites
-   whose orbital period is greater than 225 minutes.
+   SGP4 algorithm (aka SDP4), and consequently it should not be used with satellites
+   whose orbital period is greater than 225 minutes. You can use the
+   :py:func:`~heyoka.model.gpe_is_deep_space()` function to check whether
+   a GPE is deep-space or not.
 
 .. seealso::
 
    `NORAD Two-Line Element Set Format <https://celestrak.org/NORAD/documentation/tle-fmt.php>`_
 
-:returns: the Cartesian state vector of an Earth-orbiting satellite according to the SGP4 algorithm,
-   plus an error code.
+:returns: a list of 7 expressions representing the Cartesian state vector of an Earth-orbiting
+   satellite and an error code, as functions of the *inputs*.
+
+:raises ValueError: if the list of inputs has a length other than 0 or 8.
+
+)";
+}
+
+std::string gpe_is_deep_space()
+{
+    return R"(gpe_is_deep_space(n0: float, e0: float, i0: float) -> bool
+
+Check whether a GPE is deep-space.
+
+.. versionadded:: 7.0.0
+
+This function takes in input the mean motion, eccentricity and inclination from a general
+perturbations element set (GPE), and determines whether or not the propagation of the GPE
+requires the SDP4 deep-space algorithm.
+
+:param n0: the mean motion from the GPE (in [rad / min]).
+:param e0: the eccentricity from the GPE.
+:param i0: the inclination from the GPE (in [rad]).
+
+:returns: a flag signalling whether or not the input GPE requires deep-space propagation.
 
 )";
 }
@@ -832,11 +870,12 @@ Constructor.
 
 .. note::
 
-   Instead of using this constructor, consider using the factory function
+   As an alternative to this constructor, consider using the factory function
    :py:func:`~heyoka.model.sgp4_propagator()`.
 
 The constructor will initialise the propagator from *sat_list*, which must be a list
-of TLEs represented as ``Satrec`` objects from the `sgp4 Python module <https://pypi.org/project/sgp4/>`__.
+of general perturbations element sets (GPEs) represented as ``Satrec`` objects from the
+`sgp4 Python module <https://pypi.org/project/sgp4/>`__.
 
 The *diff_order* argument indicates the desired differentiation order. If equal to 0, then
 derivatives are disabled.
@@ -844,12 +883,11 @@ derivatives are disabled.
 *kwargs* can optionally contain keyword arguments from the :ref:`api_common_kwargs_llvm` set
 and the :ref:`api_common_kwargs_cfunc` set.
 
-:param sat_list: the list of TLEs.
+:param sat_list: the list of satellites.
 :param diff_order: the derivatives order.
 
 :raises ImportError: if the sgp4 Python module is not available.
 :raises TypeError: if one or more elements in *sat_list* is not a ``Satrec`` object.
-:raises ValueError: if a satellite with an orbital period above 225 minutes is detected.
 
 )";
 }
@@ -911,22 +949,21 @@ std::string sgp4_propagator_diff_order()
 
 std::string sgp4_propagator_sat_data(const std::string &suffix, const std::string &tp)
 {
-    return fmt::format(R"(The TLE data.
+    return fmt::format(R"(The GPE data.
 
-A 9 x :py:attr:`~heyoka.model.sgp4_propagator_{}.nsats` array containing the TLE orbital
-elements, the BSTAR coefficient and the TLE epoch (with fractional correction) of each satellite.
+A 9 x :py:attr:`~heyoka.model.sgp4_propagator_{}.nsats` array containing the general
+perturbations element sets (GPEs) of each satellite.
 
 The rows contain the following quantities:
 
-0. the mean motion from the TLE (in [rad / min]),
-1. the eccentricity from the TLE,
-2. the inclination from the TLE (in [rad]),
-3. the right ascension of the ascending node from the TLE (in [rad]),
-4. the argument of perigee from the TLE (in [rad]),
-5. the mean anomaly from the TLE (in [rad]),
-6. the `BSTAR <https://en.wikipedia.org/wiki/BSTAR>`__ drag term from
-   the TLE (in the same unit as given in the TLE),
-7. the reference epoch from the TLE (as a Julian date),
+0. the mean motion (in [rad / min]),
+1. the eccentricity,
+2. the inclination (in [rad]),
+3. the right ascension of the ascending node (in [rad]),
+4. the argument of perigee (in [rad]),
+5. the mean anomaly (in [rad]),
+6. the `BSTAR <https://en.wikipedia.org/wiki/BSTAR>`__ drag term (in the same unit as given in the GPE),
+7. the reference epoch (as a Julian date),
 8. a fractional correction to the epoch (in Julian days).
 
 :rtype: numpy.ndarray[{}]
@@ -999,7 +1036,7 @@ up to the specified *times*.
 
 The *times* array can contain either floating-point values (of type :py:class:`{1}`),
 or Julian dates (represented via the :py:attr:`~heyoka.model.sgp4_propagator_{0}.jdtype` type). In the former case,
-the input *times* will be interpreted as minutes elapsed since the TLE reference epochs (which in general differ
+the input *times* will be interpreted as minutes elapsed since the GPE reference epochs (which in general differ
 from satellite to satellite). In the latter case, the states will be propagated up to the specified Julian dates.
 
 *times* can be either a one-dimensional array, or a two-dimensional one. In the former case (scalar propagation),
@@ -1035,20 +1072,19 @@ std::string sgp4_propagator_replace_sat_data()
 {
     return R"(replace_sat_data(self, sat_list: list) -> None
 
-Replace the TLE data.
+Replace the GPE data.
 
-This method will replace the TLE data in the propagator with the data from *sat_list*.
-As usual, *sat_list* must be a list of TLEs represented as ``Satrec`` objects
+This method will replace the GPE data in the propagator with the data from *sat_list*.
+As usual, *sat_list* must be a list of GPEs represented as ``Satrec`` objects
 from the `sgp4 Python module <https://pypi.org/project/sgp4/>`__.
 
 The number of satellites in *sat_list* must be equal to the number of satellites
 in the propagator - that is, it is not possible to change the total number of satellites
 in the propagator via this method.
 
-:param sat_list: the new list of TLEs.
+:param sat_list: the new list of GPEs.
 
 :raises TypeError: if one or more elements in *sat_list* is not a ``Satrec`` object.
-:raises ValueError: if a satellite with an orbital period above 225 minutes is detected.
 :raises ValueError: if the number of satellites in *sat_list* differs from the number of satellites
    in the propagator.
 

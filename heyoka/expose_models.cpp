@@ -6,7 +6,6 @@
 // Public License v. 2.0. If a copy of the MPL was not distributed
 // with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-#include "docstrings.hpp"
 #include <heyoka/config.hpp>
 
 #include <algorithm>
@@ -453,8 +452,25 @@ void expose_models(py::module_ &m)
         "time_expr"_a, docstrings::jb08_tn().c_str());
 
     // sgp4.
-    m.def("_model_sgp4", &hy::model::sgp4, docstrings::sgp4_model().c_str());
+    m.def(
+        "_model_sgp4",
+        [](const std::optional<std::vector<vex_t>> &inputs_) {
+            if (inputs_) {
+                std::vector<hy::expression> inputs;
+                inputs.reserve(inputs_->size());
+                std::ranges::transform(*inputs_, std::back_inserter(inputs), [](const auto &vex) {
+                    return std::visit([](const auto &v) { return hy::expression(v); }, vex);
+                });
+
+                return hy::model::sgp4(inputs);
+            } else {
+                return hy::model::sgp4();
+            }
+        },
+        "inputs"_a.noconvert() = py::none{}, docstrings::sgp4().c_str());
     expose_sgp4_propagators(m);
+    m.def("_model_gpe_is_deep_space", &hy::model::gpe_is_deep_space, "n0"_a.noconvert(), "e0"_a.noconvert(),
+          "i0"_a.noconvert(), docstrings::gpe_is_deep_space().c_str());
 }
 
 } // namespace heyoka_py

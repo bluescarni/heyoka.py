@@ -40,8 +40,8 @@ def sgp4_propagator(
 
     This function will construct an SGP4 propagator from the input arguments.
 
-    The only mandatory argument is *sat_list*, which must be a list
-    of TLEs represented as ``Satrec`` objects from the `sgp4 Python module <https://pypi.org/project/sgp4/>`__.
+    The only mandatory argument is *sat_list*, which must be a list of general perturbations element set (GPEs)
+    represented as ``Satrec`` objects from the `sgp4 Python module <https://pypi.org/project/sgp4/>`__.
 
     The *diff_order* argument indicates the desired differentiation order. If equal to 0, then
     derivatives are disabled.
@@ -53,7 +53,7 @@ def sgp4_propagator(
     *kwargs* can also optionally contain keyword arguments from the :ref:`api_common_kwargs_llvm` set
     and the :ref:`api_common_kwargs_cfunc` set.
 
-    :param sat_list: the list of TLEs.
+    :param sat_list: the list of GPEs.
     :param diff_order: the derivatives order.
 
     :raises TypeError: if an unsupported :ref:`fp_type <api_common_kwargs_fp_type>` is specified.

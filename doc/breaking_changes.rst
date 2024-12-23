@@ -10,8 +10,8 @@ Breaking changes
 7.0.0
 -----
 
-Updated Python dependencies
-~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Updated Python and NumPy requirements
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 heyoka.py now depends on NumPy>=2. This is due to changes introduced by NumPy 2 in the DType API,
 which make it unfeasible to support both NumPy 1 and 2 at the same time.

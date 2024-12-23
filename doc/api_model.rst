@@ -27,4 +27,5 @@ Functions
    fixed_centres
    pendulum
    sgp4
+   gpe_is_deep_space
    sgp4_propagator

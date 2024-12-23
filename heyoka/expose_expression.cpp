@@ -70,6 +70,7 @@ namespace py = pybind11;
 // be there when doing mixed-mode arithmetic between real and float32 for instance.
 // Perhaps something to do with pybind11's conversion machinery (since the exposition
 // of real does not use pybind11)?
+// NOTE: this may be solved in the new NumPy 2 dtype API, need to check at one point.
 void expose_expression(py::module_ &m)
 {
     namespace hey = heyoka;
@@ -230,6 +231,11 @@ void expose_expression(py::module_ &m)
         "get_variables",
         [](const v_ex_t &arg) { return std::visit([](const auto &v) { return hey::get_variables(v); }, arg); },
         "arg"_a);
+
+    // get_params().
+    m.def(
+        "get_params",
+        [](const v_ex_t &arg) { return std::visit([](const auto &v) { return hey::get_params(v); }, arg); }, "arg"_a);
 
     // rename_variables().
     m.def(

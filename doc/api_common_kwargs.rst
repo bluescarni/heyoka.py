@@ -55,12 +55,10 @@ These are keyword arguments influencing just-in-time (JIT) compilation via LLVM.
 
   .. warning::
 
-     Due to several LLVM issues around parallel JIT compilation, the ``parjit`` flag is currently **off**
-     by default on Unix platforms and completely **disabled** on Windows. Turning on ``parjit`` on Unix
-     platforms is considered safe but can very rarely result in a runtime exception being thrown.
+     Due to several LLVM issues around parallel JIT compilation, the ``parjit`` flag has temporarily been disabled.
 
-     We expect the ``parjit`` feature to become more stable in later LLVM releases, at which point it will
-     be turned on by default.
+     We expect the parallel compilation feature to become more stable in later LLVM releases, at which point
+     the ``parjit`` flag will be re-enabled.
 
 .. _api_common_kwargs_cfunc:
 
