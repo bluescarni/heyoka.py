@@ -23,9 +23,11 @@ Changes
 
 - Small tweaks to the behaviour of the SGP4 propagator: non-normalised double-length
   Julian dates are now accepted, deep-space GPEs do not result in exceptions any more,
-  and performance improvements for the
-  :func:`~heyoka.model.sgp4_propagator_dbl.replace_sat_data()` function
-  (`#207 <https://github.com/bluescarni/heyoka.py/pull/207>`__).
+  performance improvements for the
+  :func:`~heyoka.model.sgp4_propagator_dbl.replace_sat_data()` function,
+  the satellite data can now be passed as a NumPy array
+  (`#208 <https://github.com/bluescarni/heyoka.py/pull/208>`__,
+  `#207 <https://github.com/bluescarni/heyoka.py/pull/207>`__).
 - The parallel compilation feature has been temporarily disabled due to several LLVM bugs
   (`#206 <https://github.com/bluescarni/heyoka.py/pull/206>`__).
 - heyoka.py now requires version 7.0.0 of the
