@@ -862,9 +862,9 @@ std::string sgp4_propagator(const std::string &p)
                        p);
 }
 
-std::string sgp4_propagator_init()
+std::string sgp4_propagator_init(const std::string &tp)
 {
-    return R"(__init__(self, sat_list: list, diff_order: int = 0, **kwargs)
+    return fmt::format(R"(__init__(self, sat_list: list | numpy.ndarray[{0}], diff_order: int = 0, **kwargs)
 
 Constructor.
 
@@ -873,9 +873,31 @@ Constructor.
    As an alternative to this constructor, consider using the factory function
    :py:func:`~heyoka.model.sgp4_propagator()`.
 
-The constructor will initialise the propagator from *sat_list*, which must be a list
+The constructor will initialise the propagator from *sat_list*, which must be either a list
 of general perturbations element sets (GPEs) represented as ``Satrec`` objects from the
-`sgp4 Python module <https://pypi.org/project/sgp4/>`__.
+`sgp4 Python module <https://pypi.org/project/sgp4/>`__, or a 2D array.
+
+In the former case, the GPE data is taken directly from the ``Satrec`` objects.
+In the latter case, *sat_list* is expected to be a 9 x ``n`` C-style contiguous
+array, where ``n`` is the total number of satellites and the rows contain the following
+GPE data:
+
+0. the mean motion (in [rad / min]),
+1. the eccentricity,
+2. the inclination (in [rad]),
+3. the right ascension of the ascending node (in [rad]),
+4. the argument of perigee (in [rad]),
+5. the mean anomaly (in [rad]),
+6. the `BSTAR <https://en.wikipedia.org/wiki/BSTAR>`__ drag term (in the same unit as given in the GPE),
+7. the reference epoch (as a Julian date),
+8. a fractional correction to the epoch (in Julian days).
+
+When *sat_list* is a list of ``Satrec`` objects, the GPE epochs are represented as UTC Julian dates,
+and consequently UTC Julian dates must also be used during propagation. Please note
+that the use of UTC Julian dates as a scale of time will produce slightly incorrect results when
+propagating across leap seconds, as explained in the :ref:`tutorial<tut_sgp4_propagator_epochs>`.
+
+If *sat_list* is a 2D array, the epochs must be provided as Julian dates in the terrestrial time scale.
 
 The *diff_order* argument indicates the desired differentiation order. If equal to 0, then
 derivatives are disabled.
@@ -883,13 +905,15 @@ derivatives are disabled.
 *kwargs* can optionally contain keyword arguments from the :ref:`api_common_kwargs_llvm` set
 and the :ref:`api_common_kwargs_cfunc` set.
 
-:param sat_list: the list of satellites.
+:param sat_list: the GPE data.
 :param diff_order: the derivatives order.
 
-:raises ImportError: if the sgp4 Python module is not available.
-:raises TypeError: if one or more elements in *sat_list* is not a ``Satrec`` object.
+:raises ImportError: if *sat_list* is a list and the sgp4 Python module is not available.
+:raises TypeError: if *sat_list* is a list and one or more of its elements is not a ``Satrec`` object.
+:raises ValueError: if *sat_list* is an invalid array, as explained above.
 
-)";
+)",
+                       tp);
 }
 
 std::string sgp4_propagator_jdtype(const std::string &tp)
@@ -1037,7 +1061,8 @@ up to the specified *times*.
 The *times* array can contain either floating-point values (of type :py:class:`{1}`),
 or Julian dates (represented via the :py:attr:`~heyoka.model.sgp4_propagator_{0}.jdtype` type). In the former case,
 the input *times* will be interpreted as minutes elapsed since the GPE reference epochs (which in general differ
-from satellite to satellite). In the latter case, the states will be propagated up to the specified Julian dates.
+from satellite to satellite). In the latter case, the states will be propagated up to the specified Julian dates,
+which must be provided in the same scale of time as the GPE epochs used in the construction of the propagator.
 
 *times* can be either a one-dimensional array, or a two-dimensional one. In the former case (scalar propagation),
 its length must be exactly :py:attr:`~heyoka.model.sgp4_propagator_{0}.nsats` (i.e., one time/date per satellite).
@@ -1068,27 +1093,30 @@ All input arguments must be C-style contiguous arrays, with no memory overlap be
         suffix, tp);
 }
 
-std::string sgp4_propagator_replace_sat_data()
+std::string sgp4_propagator_replace_sat_data(const std::string &suffix, const std::string &tp)
 {
-    return R"(replace_sat_data(self, sat_list: list) -> None
+    return fmt::format(R"(replace_sat_data(self, sat_list: list | numpy.ndarray[{1}]) -> None
 
 Replace the GPE data.
 
 This method will replace the GPE data in the propagator with the data from *sat_list*.
-As usual, *sat_list* must be a list of GPEs represented as ``Satrec`` objects
-from the `sgp4 Python module <https://pypi.org/project/sgp4/>`__.
+*sat_list* must be either a list of GPEs represented as ``Satrec`` objects
+from the `sgp4 Python module <https://pypi.org/project/sgp4/>`__, or a 2D NumPy array.
+See the documentation of the :py:meth:`constructor <heyoka.model.sgp4_propagator_{0}.__init__>`
+for more information on *sat_list*.
 
 The number of satellites in *sat_list* must be equal to the number of satellites
 in the propagator - that is, it is not possible to change the total number of satellites
 in the propagator via this method.
 
-:param sat_list: the new list of GPEs.
+:param sat_list: the new GPE data.
 
-:raises TypeError: if one or more elements in *sat_list* is not a ``Satrec`` object.
-:raises ValueError: if the number of satellites in *sat_list* differs from the number of satellites
-   in the propagator.
+:raises TypeError: if *sat_list* is a list and one or more of its elements is not a ``Satrec`` object.
+:raises ValueError: if *sat_list* is an invalid array or if the number of satellites in *sat_list* differs
+   from the number of satellites in the propagator.
 
-)";
+)",
+                       suffix, tp);
 }
 
 std::string code_model()

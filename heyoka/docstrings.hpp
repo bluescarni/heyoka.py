@@ -68,7 +68,7 @@ std::string var_ode_sys_order();
 
 // sgp4 propagator.
 std::string sgp4_propagator(const std::string &);
-std::string sgp4_propagator_init();
+std::string sgp4_propagator_init(const std::string &);
 std::string sgp4_propagator_jdtype(const std::string &);
 std::string sgp4_propagator_nsats();
 std::string sgp4_propagator_nouts();
@@ -78,7 +78,7 @@ std::string sgp4_propagator_sat_data(const std::string &, const std::string &);
 std::string sgp4_propagator_get_dslice();
 std::string sgp4_propagator_get_mindex(const std::string &);
 std::string sgp4_propagator_call(const std::string &, const std::string &);
-std::string sgp4_propagator_replace_sat_data();
+std::string sgp4_propagator_replace_sat_data(const std::string &, const std::string &);
 
 // code_model enum.
 std::string code_model();
