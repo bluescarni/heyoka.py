@@ -47,7 +47,8 @@ class model_test_case(_ut.TestCase):
                 omega=[0.0, 0.0, 3.0],
             )
         self.assertTrue(
-            "Invalid positions array in a mascon model: the number of dimensions must be 2, but it is 1 instead"
+            "Invalid positions array in a mascon model: the number of dimensions must"
+            " be 2, but it is 1 instead"
             in str(cm.exception)
         )
 
@@ -59,7 +60,8 @@ class model_test_case(_ut.TestCase):
                 omega=[0.0, 0.0, 3.0],
             )
         self.assertTrue(
-            "Invalid positions array in a mascon model: the number of columns must be 3, but it is 4 instead"
+            "Invalid positions array in a mascon model: the number of columns must be"
+            " 3, but it is 4 instead"
             in str(cm.exception)
         )
 
@@ -71,7 +73,9 @@ class model_test_case(_ut.TestCase):
                 omega=[0.0, 0.0, 3.0],
             )
         self.assertTrue(
-            "The positions array in a mascon model could not be converted into an array of expressions - please make sure that the array's values can be converted into heyoka expressions"
+            "The positions array in a mascon model could not be converted into an array"
+            " of expressions - please make sure that the array's values can be"
+            " converted into heyoka expressions"
             in str(cm.exception)
         )
 
@@ -121,7 +125,8 @@ class model_test_case(_ut.TestCase):
         with self.assertRaises(ValueError) as cm:
             model.fixed_centres(Gconst=1.5, masses=[1.1], positions=[1.0, 2.0, 3.0])
         self.assertTrue(
-            "Invalid positions array in a fixed centres model: the number of dimensions must be 2, but it is 1 instead"
+            "Invalid positions array in a fixed centres model: the number of dimensions"
+            " must be 2, but it is 1 instead"
             in str(cm.exception)
         )
 
@@ -130,14 +135,17 @@ class model_test_case(_ut.TestCase):
                 Gconst=1.5, masses=[1.1], positions=[[1.0, 2.0, 3.0, 4.0]]
             )
         self.assertTrue(
-            "Invalid positions array in a fixed centres model: the number of columns must be 3, but it is 4 instead"
+            "Invalid positions array in a fixed centres model: the number of columns"
+            " must be 3, but it is 4 instead"
             in str(cm.exception)
         )
 
         with self.assertRaises(TypeError) as cm:
             model.fixed_centres(Gconst=1.5, masses=[1.1], positions=[[{}, {}, {}]])
         self.assertTrue(
-            "The positions array in a fixed centres model could not be converted into an array of expressions - please make sure that the array's values can be converted into heyoka expressions"
+            "The positions array in a fixed centres model could not be converted into"
+            " an array of expressions - please make sure that the array's values can be"
+            " converted into heyoka expressions"
             in str(cm.exception)
         )
 

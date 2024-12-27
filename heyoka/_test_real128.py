@@ -96,7 +96,8 @@ class real128_test_case(_ut.TestCase):
         with self.assertRaises(ValueError) as cm:
             real128("hello world")
         self.assertTrue(
-            "The string 'hello world' does not represent a valid quadruple-precision floating-point value"
+            "The string 'hello world' does not represent a valid quadruple-precision"
+            " floating-point value"
             in str(cm.exception)
         )
 
@@ -351,7 +352,8 @@ class real128_test_case(_ut.TestCase):
         with self.assertRaises(TypeError) as cm:
             arr = np.array(["1.1"], dtype=np.dtype(real128))
         self.assertTrue(
-            'Cannot invoke __setitem__() on a real128 array with an input value of type "str"'
+            "Cannot invoke __setitem__() on a real128 array with an input value of type"
+            ' "str"'
             in str(cm.exception)
         )
 

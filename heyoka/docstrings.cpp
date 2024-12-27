@@ -868,6 +868,10 @@ std::string sgp4_propagator_init(const std::string &tp)
 
 Constructor.
 
+.. versionadded:: 7.0.0
+
+   This function now also accepts *sat_list* as a NumPy array.
+
 .. note::
 
    As an alternative to this constructor, consider using the factory function
@@ -1098,6 +1102,10 @@ std::string sgp4_propagator_replace_sat_data(const std::string &suffix, const st
     return fmt::format(R"(replace_sat_data(self, sat_list: list | numpy.ndarray[{1}]) -> None
 
 Replace the GPE data.
+
+.. versionadded:: 7.0.0
+
+   This function now also accepts *sat_list* as a NumPy array.
 
 This method will replace the GPE data in the propagator with the data from *sat_list*.
 *sat_list* must be either a list of GPEs represented as ``Satrec`` objects

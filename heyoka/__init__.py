@@ -54,9 +54,8 @@ if _with_real():
 def _fp_to_suffix(fp_t):
     if not isinstance(fp_t, type):
         raise TypeError(
-            'A Python type was expected in input, but an object of type "{}" was provided instead'.format(
-                type(fp_t)
-            )
+            'A Python type was expected in input, but an object of type "{}" was'
+            " provided instead".format(type(fp_t))
         )
 
     if fp_t in _fp_to_suffix_dict:
@@ -145,7 +144,8 @@ def from_sympy(ex, s_dict={}):
 
     if not _with_sympy:
         raise ImportError(
-            "The 'from_sympy()' function is not available because sympy is not installed"
+            "The 'from_sympy()' function is not available because sympy is not"
+            " installed"
         )
 
     from sympy import Basic
@@ -153,9 +153,8 @@ def from_sympy(ex, s_dict={}):
 
     if not isinstance(ex, Basic):
         raise TypeError(
-            "The 'ex' parameter must be a sympy expression but it is of type {} instead".format(
-                type(ex)
-            )
+            "The 'ex' parameter must be a sympy expression but it is of type {} instead"
+            .format(type(ex))
         )
 
     if not isinstance(s_dict, dict):
@@ -210,16 +209,14 @@ def set_serialization_backend(name):
 
     if not isinstance(name, str):
         raise TypeError(
-            "The serialization backend must be specified as a string, but an object of type {} was provided instead".format(
-                type(name)
-            )
+            "The serialization backend must be specified as a string, but an object of"
+            " type {} was provided instead".format(type(name))
         )
 
     if not name in _s11n_backend_map:
         raise ValueError(
-            "The serialization backend '{}' is not valid. The valid backends are: {}".format(
-                name, list(_s11n_backend_map.keys())
-            )
+            "The serialization backend '{}' is not valid. The valid backends are: {}"
+            .format(name, list(_s11n_backend_map.keys()))
         )
 
     new_backend = _s11n_backend_map[name]
@@ -239,9 +236,8 @@ def _ensemble_propagate_generic(tp, ta, arg, n_iter, gen, **kwargs):
 
     if not isinstance(n_iter, int):
         raise TypeError(
-            "The n_iter parameter must be an integer, but an object of type {} was provided instead".format(
-                type(n_iter)
-            )
+            "The n_iter parameter must be an integer, but an object of type {} was"
+            " provided instead".format(type(n_iter))
         )
 
     if n_iter < 0:
@@ -260,21 +256,22 @@ def _ensemble_propagate_generic(tp, ta, arg, n_iter, gen, **kwargs):
     if tp == "until" or tp == "for":
         if is_iterable(arg):
             raise TypeError(
-                "Cannot perform an ensemble propagate_until/for(): the final epoch/time interval must be a scalar, not an iterable object"
+                "Cannot perform an ensemble propagate_until/for(): the final epoch/time"
+                " interval must be a scalar, not an iterable object"
             )
     else:
         arg = np.array(arg)
 
         if arg.ndim != 1:
             raise ValueError(
-                "Cannot perform an ensemble propagate_grid(): the input time grid must be one-dimensional, but instead it has {} dimensions".format(
-                    arg.ndim
-                )
+                "Cannot perform an ensemble propagate_grid(): the input time grid must"
+                " be one-dimensional, but instead it has {} dimensions".format(arg.ndim)
             )
 
     if "max_delta_t" in kwargs and is_iterable(kwargs["max_delta_t"]):
         raise TypeError(
-            'Cannot perform an ensemble propagate_until/for/grid(): the "max_delta_t" argument must be a scalar, not an iterable object'
+            'Cannot perform an ensemble propagate_until/for/grid(): the "max_delta_t"'
+            " argument must be a scalar, not an iterable object"
         )
 
     # Parallelisation algorithm.
@@ -292,9 +289,8 @@ def _ensemble_propagate_generic(tp, ta, arg, n_iter, gen, **kwargs):
         return _ensemble_propagate_process(tp, ta, arg, n_iter, gen, **kwargs)
 
     raise ValueError(
-        "The parallelisation algorithm must be one of {}, but '{}' was provided instead".format(
-            allowed_algos, algo
-        )
+        "The parallelisation algorithm must be one of {}, but '{}' was provided instead"
+        .format(allowed_algos, algo)
     )
 
 

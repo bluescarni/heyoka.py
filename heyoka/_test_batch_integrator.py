@@ -213,7 +213,8 @@ class batch_integrator_test_case(_ut.TestCase):
                 ta.state[:] = ic
                 ta.propagate_for(fp_t(10.0), callback=broken_cb())
             self.assertTrue(
-                "The call operator of a step callback is expected to return a boolean, but a value of type"
+                "The call operator of a step callback is expected to return a boolean,"
+                " but a value of type"
                 in str(cm.exception)
             )
 
@@ -319,7 +320,8 @@ class batch_integrator_test_case(_ut.TestCase):
                 ta.state[:] = ic
                 ta.propagate_until(fp_t(10.0), callback=broken_cb())
             self.assertTrue(
-                "The call operator of a step callback is expected to return a boolean, but a value of type"
+                "The call operator of a step callback is expected to return a boolean,"
+                " but a value of type"
                 in str(cm.exception)
             )
 
@@ -709,16 +711,18 @@ class batch_integrator_test_case(_ut.TestCase):
             with self.assertRaises(ValueError) as cm:
                 ta.propagate_grid(np.array([], dtype=fp_t))
             self.assertTrue(
-                "Invalid grid passed to the propagate_grid() method of a batch integrator: "
-                "the expected number of dimensions is 2, but the input array has a dimension of 1"
+                "Invalid grid passed to the propagate_grid() method of a batch"
+                " integrator: the expected number of dimensions is 2, but the input"
+                " array has a dimension of 1"
                 in str(cm.exception)
             )
 
             with self.assertRaises(ValueError) as cm:
                 ta.propagate_grid(np.array([[1, 2], [3, 4]], dtype=fp_t))
             self.assertTrue(
-                "Invalid grid passed to the propagate_grid() method of a batch integrator: "
-                "the shape must be (n, 4) but the number of columns is 2 instead"
+                "Invalid grid passed to the propagate_grid() method of a batch"
+                " integrator: the shape must be (n, 4) but the number of columns is 2"
+                " instead"
                 in str(cm.exception)
             )
 
@@ -837,7 +841,8 @@ class batch_integrator_test_case(_ut.TestCase):
                 ta.propagate_until(grid[0, :])
                 ta.propagate_grid(grid, callback=broken_cb())
             self.assertTrue(
-                "The call operator of a step callback is expected to return a boolean, but a value of type"
+                "The call operator of a step callback is expected to return a boolean,"
+                " but a value of type"
                 in str(cm.exception)
             )
 

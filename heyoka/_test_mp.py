@@ -69,7 +69,8 @@ class mp_test_case(_ut.TestCase):
         with self.assertRaises(ValueError) as cm:
             fn(inputs=inputs, pars=inputs, time=real("1.1", prec))
         self.assertTrue(
-            "Potential memory overlaps detected when attempting to evaluate a compiled function: please make sure that all input arrays are distinct"
+            "Potential memory overlaps detected when attempting to evaluate a compiled"
+            " function: please make sure that all input arrays are distinct"
             in str(cm.exception)
         )
 
@@ -81,13 +82,15 @@ class mp_test_case(_ut.TestCase):
         with self.assertRaises(ValueError) as cm:
             fn(inputs=inputs, pars=pars, time=real("1.1", prec))
         self.assertTrue(
-            "Invalid inputs array detected: the array is not C-style contiguous, please consider using numpy.ascontiguousarray() to turn it into one"
+            "Invalid inputs array detected: the array is not C-style contiguous, please"
+            " consider using numpy.ascontiguousarray() to turn it into one"
             in str(cm.exception)
         )
         with self.assertRaises(ValueError) as cm:
             fn(inputs=np.ascontiguousarray(inputs), pars=pars, time=real("1.1", prec))
         self.assertTrue(
-            "Invalid parameters array detected: the array is not C-style contiguous, please consider using numpy.ascontiguousarray() to turn it into one"
+            "Invalid parameters array detected: the array is not C-style contiguous,"
+            " please consider using numpy.ascontiguousarray() to turn it into one"
             in str(cm.exception)
         )
 
@@ -97,7 +100,9 @@ class mp_test_case(_ut.TestCase):
         with self.assertRaises(ValueError) as cm:
             fn(inputs=inputs, pars=pars, time=real("1.1", prec - 1))
         self.assertTrue(
-            f"An invalid time value was passed for the evaluation of a compiled function in multiprecision mode: the time value has a precision of {prec-1}, while the expected precision is {prec} instead"
+            "An invalid time value was passed for the evaluation of a compiled"
+            " function in multiprecision mode: the time value has a precision of"
+            f" {prec-1}, while the expected precision is {prec} instead"
             in str(cm.exception)
         )
 
@@ -158,13 +163,15 @@ class mp_test_case(_ut.TestCase):
         with self.assertRaises(ValueError) as cm:
             fn(inputs=inputs[:], pars=pars[:], time=tm)
         self.assertTrue(
-            "Invalid inputs array detected: the array is not C-style contiguous, please consider using numpy.ascontiguousarray() to turn it into one"
+            "Invalid inputs array detected: the array is not C-style contiguous, please"
+            " consider using numpy.ascontiguousarray() to turn it into one"
             in str(cm.exception)
         )
         with self.assertRaises(ValueError) as cm:
             fn(inputs=np.ascontiguousarray(inputs[:]), pars=pars[:], time=tm)
         self.assertTrue(
-            "Invalid parameters array detected: the array is not C-style contiguous, please consider using numpy.ascontiguousarray() to turn it into one"
+            "Invalid parameters array detected: the array is not C-style contiguous,"
+            " please consider using numpy.ascontiguousarray() to turn it into one"
             in str(cm.exception)
         )
 
@@ -182,7 +189,9 @@ class mp_test_case(_ut.TestCase):
         with self.assertRaises(ValueError) as cm:
             fn(inputs=inputs, pars=pars, time=real(42, prec - 2))
         self.assertTrue(
-            f"An invalid time value was passed for the evaluation of a compiled function in multiprecision mode: the time value has a precision of {prec - 2}, while the expected precision is {prec} instead"
+            "An invalid time value was passed for the evaluation of a compiled"
+            " function in multiprecision mode: the time value has a precision of"
+            f" {prec - 2}, while the expected precision is {prec} instead"
             in str(cm.exception)
         )
 

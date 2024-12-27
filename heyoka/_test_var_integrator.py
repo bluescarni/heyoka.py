@@ -85,21 +85,24 @@ class var_integrator_test_case(_ut.TestCase):
         with self.assertRaises(ValueError) as cm:
             ta.eval_taylor_map(np.array([0.0, 0.0, 0.0, 0.0])[::2])
         self.assertTrue(
-            "Invalid inputs array detected in a Taylor map evaluation: the array is not C-style contiguous, please "
+            "Invalid inputs array detected in a Taylor map evaluation: the array is not"
+            " C-style contiguous, please "
             in str(cm.exception)
         )
 
         with self.assertRaises(ValueError) as cm:
             ta.eval_taylor_map(np.array([[0.0, 0.0], [0.0, 0.0]]))
         self.assertTrue(
-            "The array of inputs provided for the evaluation of a Taylor map has 2 dimensions, "
+            "The array of inputs provided for the evaluation of a Taylor map has 2"
+            " dimensions, "
             in str(cm.exception)
         )
 
         with self.assertRaises(ValueError) as cm:
             ta.eval_taylor_map(np.array([0.0, 0.0, 0.0, 0.0]))
         self.assertTrue(
-            "The array of inputs provided for the evaluation of a Taylor map has 4 elements, "
+            "The array of inputs provided for the evaluation of a Taylor map has 4"
+            " elements, "
             in str(cm.exception)
         )
 
@@ -210,28 +213,32 @@ class var_integrator_test_case(_ut.TestCase):
         with self.assertRaises(ValueError) as cm:
             ta.eval_taylor_map(np.array([0.0, 0.0, 0.0, 0.0])[::2])
         self.assertTrue(
-            "Invalid inputs array detected in a Taylor map evaluation: the array is not C-style contiguous, please "
+            "Invalid inputs array detected in a Taylor map evaluation: the array is not"
+            " C-style contiguous, please "
             in str(cm.exception)
         )
 
         with self.assertRaises(ValueError) as cm:
             ta.eval_taylor_map(np.array([0.0, 0.0]))
         self.assertTrue(
-            "The array of inputs provided for the evaluation of a Taylor map has 1 dimension(s), "
+            "The array of inputs provided for the evaluation of a Taylor map has 1"
+            " dimension(s), "
             in str(cm.exception)
         )
 
         with self.assertRaises(ValueError) as cm:
             ta.eval_taylor_map(np.array([[0.0, 0.0]]))
         self.assertTrue(
-            "The array of inputs provided for the evaluation of a Taylor map has 1 row(s), but it must have 2 row(s) instead"
+            "The array of inputs provided for the evaluation of a Taylor map has 1"
+            " row(s), but it must have 2 row(s) instead"
             in str(cm.exception)
         )
 
         with self.assertRaises(ValueError) as cm:
             ta.eval_taylor_map(np.array([[0.0], [0.0]]))
         self.assertTrue(
-            "The array of inputs provided for the evaluation of a Taylor map has 1 column(s), but it must have 2 column(s) instead"
+            "The array of inputs provided for the evaluation of a Taylor map has 1"
+            " column(s), but it must have 2 column(s) instead"
             in str(cm.exception)
         )
 
