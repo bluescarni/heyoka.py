@@ -1921,7 +1921,8 @@ class real_test_case(_ut.TestCase):
         with self.assertRaises(ValueError) as cm:
             real(prec=32)
         self.assertTrue(
-            "Cannot construct a real from a precision only - a value must also be supplied"
+            "Cannot construct a real from a precision only - a value must also be"
+            " supplied"
             in str(cm.exception)
         )
 
@@ -2084,7 +2085,8 @@ class real_test_case(_ut.TestCase):
         with self.assertRaises(ValueError) as cm:
             real("hello world", prec=233)
         self.assertTrue(
-            "The string 'hello world' cannot be interpreted as a floating-point value in base 10"
+            "The string 'hello world' cannot be interpreted as a floating-point value"
+            " in base 10"
             in str(cm.exception)
         )
 

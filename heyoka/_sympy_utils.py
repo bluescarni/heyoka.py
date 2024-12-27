@@ -39,7 +39,8 @@ def _from_sympy_number(ex):
         and not is_rational
     ):
         raise TypeError(
-            "Only floating-point, integer and (some) rational numbers can be converted from sympy"
+            "Only floating-point, integer and (some) rational numbers can be converted"
+            " from sympy"
         )
 
     from . import expression
@@ -54,7 +55,8 @@ def _from_sympy_number(ex):
         den = ex.q
         if not (den & (den - 1) == 0):
             raise ValueError(
-                "Cannot convert from sympy a rational number whose denominator is not a power of 2"
+                "Cannot convert from sympy a rational number whose denominator is not a"
+                " power of 2"
             )
 
         # The needed precision is given by the bit size of the
@@ -132,9 +134,8 @@ def _from_sympy_number(ex):
         return expression(retval)
 
     raise ValueError(
-        "Cannot convert the number {} from sympy exactly: the required precision ({}) is too high".format(
-            ex, prec
-        )
+        "Cannot convert the number {} from sympy exactly: the required precision ({})"
+        " is too high".format(ex, prec)
     )
 
 

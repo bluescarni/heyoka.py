@@ -179,18 +179,16 @@ class event_classes_test_case(_ut.TestCase):
             with self.assertRaises(TypeError) as cm:
                 nt_event(ex=x + v, callback=3, fp_type=fp_t)
             self.assertTrue(
-                "An object of type '{}' cannot be used as an event callback because it is not callable".format(
-                    str(type(3))
-                )
+                "An object of type '{}' cannot be used as an event callback because it"
+                " is not callable".format(str(type(3)))
                 in str(cm.exception)
             )
 
             with self.assertRaises(TypeError) as cm:
                 nt_event(ex=x + v, callback=None, fp_type=fp_t)
             self.assertTrue(
-                "An object of type '{}' cannot be used as an event callback because it is not callable".format(
-                    str(type(None))
-                )
+                "An object of type '{}' cannot be used as an event callback because it"
+                " is not callable".format(str(type(None)))
                 in str(cm.exception)
             )
 
@@ -343,9 +341,8 @@ class event_classes_test_case(_ut.TestCase):
             with self.assertRaises(TypeError) as cm:
                 t_event(x + v, callback=3, fp_type=fp_t)
             self.assertTrue(
-                "An object of type '{}' cannot be used as an event callback because it is not callable".format(
-                    str(type(3))
-                )
+                "An object of type '{}' cannot be used as an event callback because it"
+                " is not callable".format(str(type(3)))
                 in str(cm.exception)
             )
 
@@ -492,18 +489,16 @@ class event_classes_test_case(_ut.TestCase):
         with self.assertRaises(TypeError) as cm:
             nt_event_batch(ex=x + v, callback=3)
         self.assertTrue(
-            "An object of type '{}' cannot be used as an event callback because it is not callable".format(
-                str(type(3))
-            )
+            "An object of type '{}' cannot be used as an event callback because it is"
+            " not callable".format(str(type(3)))
             in str(cm.exception)
         )
 
         with self.assertRaises(TypeError) as cm:
             nt_event_batch(ex=x + v, callback=None)
         self.assertTrue(
-            "An object of type '{}' cannot be used as an event callback because it is not callable".format(
-                str(type(None))
-            )
+            "An object of type '{}' cannot be used as an event callback because it is"
+            " not callable".format(str(type(None)))
             in str(cm.exception)
         )
 
@@ -636,9 +631,8 @@ class event_classes_test_case(_ut.TestCase):
         with self.assertRaises(TypeError) as cm:
             t_event_batch(x + v, callback=3)
         self.assertTrue(
-            "An object of type '{}' cannot be used as an event callback because it is not callable".format(
-                str(type(3))
-            )
+            "An object of type '{}' cannot be used as an event callback because it is"
+            " not callable".format(str(type(3)))
             in str(cm.exception)
         )
 
@@ -1576,7 +1570,8 @@ class c_output_test_case(_ut.TestCase):
             with self.assertRaises(ValueError) as cm:
                 c_out(np.zeros((1, 1, 1), dtype=fp_t))
             self.assertTrue(
-                "Invalid time array passed to a continuous_output_batch object: the number of dimensions must be 1 or 2, but it is 3 instead"
+                "Invalid time array passed to a continuous_output_batch object: the"
+                " number of dimensions must be 1 or 2, but it is 3 instead"
                 in str(cm.exception)
             )
 
@@ -1584,19 +1579,22 @@ class c_output_test_case(_ut.TestCase):
             with self.assertRaises(ValueError) as cm:
                 c_out(np.zeros((1,), dtype=fp_t))
             self.assertTrue(
-                "Invalid time array passed to a continuous_output_batch object: the length must be 4 but it is 1 instead"
+                "Invalid time array passed to a continuous_output_batch object: the"
+                " length must be 4 but it is 1 instead"
                 in str(cm.exception)
             )
             with self.assertRaises(ValueError) as cm:
                 c_out(np.zeros((0,), dtype=fp_t))
             self.assertTrue(
-                "Invalid time array passed to a continuous_output_batch object: the length must be 4 but it is 0 instead"
+                "Invalid time array passed to a continuous_output_batch object: the"
+                " length must be 4 but it is 0 instead"
                 in str(cm.exception)
             )
             with self.assertRaises(ValueError) as cm:
                 c_out(np.zeros((5,), dtype=fp_t))
             self.assertTrue(
-                "Invalid time array passed to a continuous_output_batch object: the length must be 4 but it is 5 instead"
+                "Invalid time array passed to a continuous_output_batch object: the"
+                " length must be 4 but it is 5 instead"
                 in str(cm.exception)
             )
 
@@ -1646,7 +1644,8 @@ class c_output_test_case(_ut.TestCase):
             with self.assertRaises(ValueError) as cm:
                 c_out(np.zeros((5, 3), dtype=fp_t))
             self.assertTrue(
-                "Invalid time array passed to a continuous_output_batch object: the number of columns must be 4 but it is 3 instead"
+                "Invalid time array passed to a continuous_output_batch object: the"
+                " number of columns must be 4 but it is 3 instead"
                 in str(cm.exception)
             )
 
@@ -1922,7 +1921,8 @@ class c_output_test_case(_ut.TestCase):
             with self.assertRaises(ValueError) as cm:
                 c_out([[fp_t(0)], [fp_t(1)], [fp_t(2)]])
             self.assertTrue(
-                "Invalid time array passed to a continuous_output object: the number of dimensions must be 1, but it is 2 instead"
+                "Invalid time array passed to a continuous_output object: the number of"
+                " dimensions must be 1, but it is 2 instead"
                 in str(cm.exception)
             )
 

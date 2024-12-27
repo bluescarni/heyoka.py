@@ -295,7 +295,8 @@ class scalar_integrator_test_case(_ut.TestCase):
                     [fp_t(0.0), fp_t(1.0), fp_t(2.0)], callback=broken_cb()
                 )
             self.assertTrue(
-                "The call operator of a step callback is expected to return a boolean, but a value of type"
+                "The call operator of a step callback is expected to return a boolean,"
+                " but a value of type"
                 in str(cm.exception)
             )
 

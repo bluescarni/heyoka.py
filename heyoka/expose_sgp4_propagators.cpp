@@ -91,6 +91,39 @@ auto sat_list_to_vector(py::list sat_list)
     return retval;
 }
 
+// Helper to validate a satellite list provided as a 2D
+// NumPy array. A span into v will be returned.
+template <typename T>
+auto sat_list_array_to_span(const py::array_t<T> &v)
+{
+    namespace hy = heyoka;
+
+    // Check that the input array is C style and contiguous.
+    if (!is_npy_array_carray(v)) [[unlikely]] {
+        py_throw(PyExc_ValueError,
+                 "Invalid array of input GPEs detected in an sgp4 propagator: the array is not C-style "
+                 "contiguous, please consider using numpy.ascontiguousarray() to turn it into one");
+    }
+
+    // Check dimensionality and shape.
+    if (v.ndim() != 2) [[unlikely]] {
+        py_throw(PyExc_ValueError, fmt::format("The array of input GPEs for an sgp4 propagator must have 2 "
+                                               "dimensions, but the supplied array has {} dimension(s) instead",
+                                               v.ndim())
+                                       .c_str());
+    }
+    if (v.shape(0) != 9) [[unlikely]] {
+        py_throw(PyExc_ValueError, fmt::format("The array of input GPEs for an sgp4 propagator must have 9 "
+                                               "rows, but the supplied array has {} row(s) instead",
+                                               v.shape(0))
+                                       .c_str());
+    }
+
+    // Create the input span for the constructor.
+    using span_t = hy::mdspan<const T, hy::extents<std::size_t, 9, std::dynamic_extent>>;
+    return span_t(v.data(), boost::numeric_cast<std::size_t>(v.shape(1)));
+}
+
 template <typename T>
 void expose_sgp4_propagator_impl(py::module_ &m, const std::string &suffix)
 {
@@ -107,43 +140,70 @@ void expose_sgp4_propagator_impl(py::module_ &m, const std::string &suffix)
     py::class_<prop_t> prop_cl(m, fmt::format("_model_sgp4_propagator_{}", suffix).c_str(), py::dynamic_attr{},
                                docstrings::sgp4_propagator(std::same_as<T, double> ? "double" : "single").c_str());
     prop_cl.def(
-        py::init([](py::list sat_list, std::uint32_t diff_order, bool high_accuracy, bool compact_mode,
-                    bool parallel_mode, std::uint32_t batch_size, long long, unsigned opt_level, bool force_avx512,
-                    bool slp_vectorize, bool fast_math, hy::code_model code_model, bool parjit) {
-            // Check that the sgp4 module is available.
-            try {
-                py::module_::import("sgp4.api");
-            } catch (...) {
-                py_throw(PyExc_ImportError,
-                         "The Python module 'sgp4' must be installed in order to be able to build sgp4 propagators");
-            }
+        py::init([](std::variant<py::list, py::array_t<T>> sat_list, std::uint32_t diff_order, bool high_accuracy,
+                    bool compact_mode, bool parallel_mode, std::uint32_t batch_size, long long, unsigned opt_level,
+                    bool force_avx512, bool slp_vectorize, bool fast_math, hy::code_model code_model, bool parjit) {
+            return std::visit(
+                [&]<typename V>(const V &v) {
+                    if constexpr (std::same_as<V, py::list>) {
+                        // Check that the sgp4 module is available.
+                        try {
+                            py::module_::import("sgp4.api");
+                        } catch (...) {
+                            py_throw(PyExc_ImportError,
+                                     "The Python module 'sgp4' must be installed in order to be "
+                                     "able to build sgp4 propagators from a list of satellite objects");
+                        }
 
-            // Turn sat_list into a data vector.
-            const auto sat_data = sat_list_to_vector<T>(sat_list);
-            assert(sat_data.size() % 9u == 0u);
+                        // Turn sat_list into a data vector.
+                        const auto sat_data = sat_list_to_vector<T>(v);
+                        assert(sat_data.size() % 9u == 0u);
 
-            // Create the input span for the constructor.
-            using span_t = hy::mdspan<const T, hy::extents<std::size_t, 9, std::dynamic_extent>>;
-            const span_t in(sat_data.data(), boost::numeric_cast<std::size_t>(sat_data.size()) / 9u);
+                        // Create the input span for the constructor.
+                        using span_t = hy::mdspan<const T, hy::extents<std::size_t, 9, std::dynamic_extent>>;
+                        const span_t in(sat_data.data(), boost::numeric_cast<std::size_t>(sat_data.size()) / 9u);
 
-            // NOTE: release the GIL during compilation.
-            py::gil_scoped_release release;
+                        // NOTE: release the GIL during compilation.
+                        py::gil_scoped_release release;
 
-            return prop_t{in,
-                          kw::diff_order = diff_order,
-                          kw::high_accuracy = high_accuracy,
-                          kw::compact_mode = compact_mode,
-                          kw::parallel_mode = parallel_mode,
-                          kw::batch_size = batch_size,
-                          kw::opt_level = opt_level,
-                          kw::force_avx512 = force_avx512,
-                          kw::slp_vectorize = slp_vectorize,
-                          kw::fast_math = fast_math,
-                          kw::code_model = code_model,
-                          kw::parjit = parjit};
+                        return prop_t{in,
+                                      kw::diff_order = diff_order,
+                                      kw::high_accuracy = high_accuracy,
+                                      kw::compact_mode = compact_mode,
+                                      kw::parallel_mode = parallel_mode,
+                                      kw::batch_size = batch_size,
+                                      kw::opt_level = opt_level,
+                                      kw::force_avx512 = force_avx512,
+                                      kw::slp_vectorize = slp_vectorize,
+                                      kw::fast_math = fast_math,
+                                      kw::code_model = code_model,
+                                      kw::parjit = parjit};
+                    } else {
+                        // Check v and fetch a span to it.
+                        const auto in = sat_list_array_to_span(v);
+
+                        // NOTE: release the GIL during compilation.
+                        py::gil_scoped_release release;
+
+                        return prop_t{in,
+                                      kw::diff_order = diff_order,
+                                      kw::high_accuracy = high_accuracy,
+                                      kw::compact_mode = compact_mode,
+                                      kw::parallel_mode = parallel_mode,
+                                      kw::batch_size = batch_size,
+                                      kw::opt_level = opt_level,
+                                      kw::force_avx512 = force_avx512,
+                                      kw::slp_vectorize = slp_vectorize,
+                                      kw::fast_math = fast_math,
+                                      kw::code_model = code_model,
+                                      kw::parjit = parjit};
+                    }
+                },
+                sat_list);
         }),
         "sat_list"_a.noconvert(), "diff_order"_a.noconvert() = static_cast<std::uint32_t>(0),
-        HEYOKA_PY_CFUNC_ARGS(false), HEYOKA_PY_LLVM_STATE_ARGS, docstrings::sgp4_propagator_init().c_str());
+        HEYOKA_PY_CFUNC_ARGS(false), HEYOKA_PY_LLVM_STATE_ARGS,
+        docstrings::sgp4_propagator_init(std::same_as<T, double> ? "float" : "numpy.single").c_str());
     prop_cl.def_property_readonly(
         "jdtype",
         [](const prop_t &) -> py::object {
@@ -183,18 +243,31 @@ void expose_sgp4_propagator_impl(py::module_ &m, const std::string &suffix)
         docstrings::sgp4_propagator_sat_data(suffix, std::same_as<T, double> ? "float" : "numpy.single").c_str());
     prop_cl.def(
         "replace_sat_data",
-        [](prop_t &prop, py::list sat_list) {
-            // Turn sat_list into a data vector.
-            const auto sat_data = sat_list_to_vector<T>(sat_list);
-            assert(sat_data.size() % 9u == 0u);
+        [](prop_t &prop, std::variant<py::list, py::array_t<T>> sat_list) {
+            std::visit(
+                [&prop]<typename V>(const V &v) {
+                    if constexpr (std::same_as<V, py::list>) {
+                        // Turn sat_list into a data vector.
+                        const auto sat_data = sat_list_to_vector<T>(v);
+                        assert(sat_data.size() % 9u == 0u);
 
-            // Create the input span for the setter.
-            using span_t = hy::mdspan<const T, hy::extents<std::size_t, 9, std::dynamic_extent>>;
-            const span_t in(sat_data.data(), boost::numeric_cast<std::size_t>(sat_data.size()) / 9u);
+                        // Create the input span for the setter.
+                        using span_t = hy::mdspan<const T, hy::extents<std::size_t, 9, std::dynamic_extent>>;
+                        const span_t in(sat_data.data(), boost::numeric_cast<std::size_t>(sat_data.size()) / 9u);
 
-            prop.replace_sat_data(in);
+                        prop.replace_sat_data(in);
+                    } else {
+                        // Check v and fetch a span to it.
+                        const auto in = sat_list_array_to_span(v);
+
+                        prop.replace_sat_data(in);
+                    }
+                },
+                sat_list);
         },
-        "sat_list"_a.noconvert(), docstrings::sgp4_propagator_replace_sat_data().c_str());
+        "sat_list"_a.noconvert(),
+        docstrings::sgp4_propagator_replace_sat_data(suffix, std::same_as<T, double> ? "float" : "numpy.single")
+            .c_str());
     prop_cl.def(
         "get_dslice",
         [](const prop_t &prop, std::uint32_t order, std::optional<std::uint32_t> component) {
