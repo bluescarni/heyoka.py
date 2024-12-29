@@ -9,7 +9,7 @@ description = "Python library for ODE integration via Taylor's method and LLVM"
 readme = 'README.md'
 requires-python = '>=3.9'
 dependencies = ['cloudpickle', 'numpy >= 2']
-authors = [{ name = 'Francesco Biscarni', email = 'bluescarni@gmail.com' }]
+authors = [{ name = 'Francesco Biscani', email = 'bluescarni@gmail.com' }]
 license = { text = 'MPL-2.0' }
 classifiers = [
     # How mature is this project? Common values are
