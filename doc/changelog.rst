@@ -3,6 +3,18 @@
 Changelog
 =========
 
+7.0.1 (unreleased)
+------------------
+
+Fix
+~~~
+
+- Exclude the docs from the sdist build in order to limit the size
+  of the tarball
+  (`#210 <https://github.com/bluescarni/heyoka.py/pull/210>`__).
+- Fix unit test failure in Python 3.13
+  (`#210 <https://github.com/bluescarni/heyoka.py/pull/210>`__).
+
 7.0.0 (2024-12-28)
 ------------------
 
