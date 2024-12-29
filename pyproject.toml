@@ -41,3 +41,5 @@ sgp4 = ["skyfield"]
 wheel.packages = []
 # Enable IPO.
 cmake.define.HEYOKA_PY_ENABLE_IPO = "ON"
+# Do not include the docs in the sdist.
+sdist.exclude = ["doc"]
