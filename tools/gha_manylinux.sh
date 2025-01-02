@@ -35,7 +35,7 @@ fi
 echo "PYTHON_DIR: ${PYTHON_DIR}"
 
 # The heyoka version to be used for releases.
-export HEYOKA_VERSION_RELEASE="7.0.0"
+export HEYOKA_VERSION_RELEASE="7.2.0"
 
 # Check if this is a release build.
 if [[ "${GITHUB_REF}" == "refs/tags/v"* ]]; then
