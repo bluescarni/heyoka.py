@@ -608,5 +608,5 @@ class sgp4_propagator_test_case(_ut.TestCase):
         res2 = prop(np.array([1440.0 * 10 + 1 / 60.0]))
 
         # Check closeness.
-        self.assertTrue(np.allclose(res1[0, :3], res2[0, :3], atol=1e-12))
-        self.assertTrue(np.allclose(res1[0, 3:], res2[0, 3:], atol=1e-15))
+        self.assertTrue(np.allclose(res1[:3, 0], res2[:3, 0], atol=1e-12))
+        self.assertTrue(np.allclose(res1[3:, 0], res2[3:, 0], atol=1e-15))
