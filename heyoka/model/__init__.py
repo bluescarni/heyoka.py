@@ -65,12 +65,8 @@ def sgp4_propagator(
     7. the reference epoch (as a Julian date),
     8. a fractional correction to the epoch (in Julian days).
 
-    When *sat_list* is a list of ``Satrec`` objects, the GPE epochs are represented as UTC Julian dates,
-    and consequently UTC Julian dates must also be used during propagation. Please note
-    that the use of UTC Julian dates as a scale of time will produce slightly incorrect results when
-    propagating across leap seconds, as explained in the :ref:`tutorial<tut_sgp4_propagator_epochs>`.
-
-    If *sat_list* is a 2D array, the epochs must be provided as Julian dates in the terrestrial time scale.
+    Epochs must be provided in the UTC scale of time, following the convention that days in which
+    leap seconds are added/removed are 1 second longer/shorter than one SI day.
 
     The *diff_order* argument indicates the desired differentiation order. If equal to 0, then
     derivatives are disabled.

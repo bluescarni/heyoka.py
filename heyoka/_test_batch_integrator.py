@@ -214,8 +214,7 @@ class batch_integrator_test_case(_ut.TestCase):
                 ta.propagate_for(fp_t(10.0), callback=broken_cb())
             self.assertTrue(
                 "The call operator of a step callback is expected to return a boolean,"
-                " but a value of type"
-                in str(cm.exception)
+                " but a value of type" in str(cm.exception)
             )
 
             # Callback with pre_hook().
@@ -321,8 +320,7 @@ class batch_integrator_test_case(_ut.TestCase):
                 ta.propagate_until(fp_t(10.0), callback=broken_cb())
             self.assertTrue(
                 "The call operator of a step callback is expected to return a boolean,"
-                " but a value of type"
-                in str(cm.exception)
+                " but a value of type" in str(cm.exception)
             )
 
             # Callback with pre_hook().
@@ -713,8 +711,7 @@ class batch_integrator_test_case(_ut.TestCase):
             self.assertTrue(
                 "Invalid grid passed to the propagate_grid() method of a batch"
                 " integrator: the expected number of dimensions is 2, but the input"
-                " array has a dimension of 1"
-                in str(cm.exception)
+                " array has a dimension of 1" in str(cm.exception)
             )
 
             with self.assertRaises(ValueError) as cm:
@@ -722,8 +719,7 @@ class batch_integrator_test_case(_ut.TestCase):
             self.assertTrue(
                 "Invalid grid passed to the propagate_grid() method of a batch"
                 " integrator: the shape must be (n, 4) but the number of columns is 2"
-                " instead"
-                in str(cm.exception)
+                " instead" in str(cm.exception)
             )
 
             # Run a simple scalar/batch comparison.
@@ -747,7 +743,7 @@ class batch_integrator_test_case(_ut.TestCase):
             self.assertTrue(bres[0] is None)
 
             for idx, cur_ta in enumerate(tas):
-                cur_ta.propagate_until(grid[0, idx]),
+                (cur_ta.propagate_until(grid[0, idx]),)
 
             sres = [
                 tas[0].propagate_grid(grid[:, 0]),
@@ -842,8 +838,7 @@ class batch_integrator_test_case(_ut.TestCase):
                 ta.propagate_grid(grid, callback=broken_cb())
             self.assertTrue(
                 "The call operator of a step callback is expected to return a boolean,"
-                " but a value of type"
-                in str(cm.exception)
+                " but a value of type" in str(cm.exception)
             )
 
             # Callback with pre_hook().

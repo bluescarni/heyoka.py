@@ -144,8 +144,7 @@ class cfunc_test_case(_ut.TestCase):
                     cfunc(func, vars=[y, x], fp_type=fp_t, batch_size=2)
                 self.assertTrue(
                     "Batch sizes greater than 1 are not supported for this"
-                    " floating-point type"
-                    in str(cm.exception)
+                    " floating-point type" in str(cm.exception)
                 )
 
             fn = cfunc(func, vars=[y, x], fp_type=fp_t)
@@ -176,8 +175,7 @@ class cfunc_test_case(_ut.TestCase):
             self.assertTrue(
                 "The array of parameter values provided for the evaluation of a"
                 " compiled function has 4 column(s), but the expected number of columns"
-                " deduced from the outputs array is 5"
-                in str(cm.exception)
+                " deduced from the outputs array is 5" in str(cm.exception)
             )
 
             nw_arr = np.zeros((3, 5), dtype=fp_t)
@@ -191,8 +189,7 @@ class cfunc_test_case(_ut.TestCase):
                 )
             self.assertTrue(
                 "The array of outputs provided for the evaluation of a compiled"
-                " function is not writeable"
-                in str(cm.exception)
+                " function is not writeable" in str(cm.exception)
             )
 
             with self.assertRaises(ValueError) as cm:
@@ -202,8 +199,7 @@ class cfunc_test_case(_ut.TestCase):
                 )
             self.assertTrue(
                 "An array of time values must be provided in order to evaluate a"
-                " time-dependent function"
-                in str(cm.exception)
+                " time-dependent function" in str(cm.exception)
             )
 
             with self.assertRaises(TypeError) as cm:
@@ -239,8 +235,7 @@ class cfunc_test_case(_ut.TestCase):
             self.assertTrue(
                 "The array of time values provided for the evaluation of a compiled"
                 " function has a size of 6, but the expected size deduced from the"
-                " outputs array is 5"
-                in str(cm.exception)
+                " outputs array is 5" in str(cm.exception)
             )
 
             # Check with wrong dtypes.
@@ -253,8 +248,7 @@ class cfunc_test_case(_ut.TestCase):
                     )
                 self.assertTrue(
                     "Invalid dtype detected for the inputs of a compiled function: the"
-                    " expected dtype "
-                    in str(cm.exception)
+                    " expected dtype " in str(cm.exception)
                 )
 
                 with self.assertRaises(TypeError) as cm:
@@ -265,8 +259,7 @@ class cfunc_test_case(_ut.TestCase):
                     )
                 self.assertTrue(
                     "Invalid dtype detected for the parameters of a compiled function:"
-                    " the expected dtype "
-                    in str(cm.exception)
+                    " the expected dtype " in str(cm.exception)
                 )
 
                 with self.assertRaises(TypeError) as cm:
@@ -278,8 +271,7 @@ class cfunc_test_case(_ut.TestCase):
                     )
                 self.assertTrue(
                     "Invalid dtype detected for the outputs of a compiled function: the"
-                    " expected dtype "
-                    in str(cm.exception)
+                    " expected dtype " in str(cm.exception)
                 )
 
                 with self.assertRaises(TypeError) as cm:
@@ -290,8 +282,7 @@ class cfunc_test_case(_ut.TestCase):
                     )
                 self.assertTrue(
                     "Invalid dtype detected for the time values of a compiled function:"
-                    " the expected dtype "
-                    in str(cm.exception)
+                    " the expected dtype " in str(cm.exception)
                 )
 
             # Non-contiguous time array.
@@ -527,16 +518,14 @@ class cfunc_test_case(_ut.TestCase):
                     self.assertTrue(
                         "Potential memory overlaps detected when attempting to evaluate"
                         " a compiled function: please make sure that all input arrays"
-                        " are distinct"
-                        in str(cm.exception)
+                        " are distinct" in str(cm.exception)
                     )
                     with self.assertRaises(ValueError) as cm:
                         fn(inputs=inputs, pars=pars, time=pars[0, :])
                     self.assertTrue(
                         "Potential memory overlaps detected when attempting to evaluate"
                         " a compiled function: please make sure that all input arrays"
-                        " are distinct"
-                        in str(cm.exception)
+                        " are distinct" in str(cm.exception)
                     )
 
                 # Test with arrays which are not C style.
@@ -604,8 +593,7 @@ class cfunc_test_case(_ut.TestCase):
                     self.assertTrue(
                         "Invalid inputs array detected: the array is not C-style"
                         " contiguous, please consider using numpy.ascontiguousarray()"
-                        " to turn it into one"
-                        in str(cm.exception)
+                        " to turn it into one" in str(cm.exception)
                     )
 
                     pars = rng.random((4, nevals), dtype=float).astype(fp_t)
@@ -615,8 +603,7 @@ class cfunc_test_case(_ut.TestCase):
                     self.assertTrue(
                         "Invalid inputs array detected: the array is not C-style"
                         " contiguous, please consider using numpy.ascontiguousarray()"
-                        " to turn it into one"
-                        in str(cm.exception)
+                        " to turn it into one" in str(cm.exception)
                     )
 
                 # Tests with no inputs.
@@ -784,8 +771,7 @@ class cfunc_test_case(_ut.TestCase):
             self.assertTrue(
                 "The array of parameter values provided for the evaluation of a"
                 " compiled function has 0 element(s), but the number of parameters in"
-                " the function is 2"
-                in str(cm.exception)
+                " the function is 2" in str(cm.exception)
             )
 
             with self.assertRaises(ValueError) as cm:
@@ -800,8 +786,7 @@ class cfunc_test_case(_ut.TestCase):
                 fn([fp_t(0)], pars=[fp_t(0)], time=fp_t(0))
             self.assertTrue(
                 "Invalid inputs array passed to a cfunc: the number of function inputs"
-                " is 2, but the inputs array has a size of 1"
-                in str(cm.exception)
+                " is 2, but the inputs array has a size of 1" in str(cm.exception)
             )
 
             with self.assertRaises(ValueError) as cm:
@@ -826,8 +811,7 @@ class cfunc_test_case(_ut.TestCase):
             self.assertTrue(
                 "The array of parameter values provided for the evaluation of a"
                 " compiled function has 0 element(s), but the number of parameters in"
-                " the function is 2"
-                in str(cm.exception)
+                " the function is 2" in str(cm.exception)
             )
 
             with self.assertRaises(ValueError) as cm:
@@ -837,8 +821,7 @@ class cfunc_test_case(_ut.TestCase):
                 )
             self.assertTrue(
                 "A time value must be provided in order to evaluate a time-dependent"
-                " function"
-                in str(cm.exception)
+                " function" in str(cm.exception)
             )
 
             eval_arr = fn([fp_t(1), fp_t(2)], pars=[fp_t(-5), fp_t(1)], time=fp_t(3))
@@ -916,8 +899,7 @@ class cfunc_test_case(_ut.TestCase):
             self.assertTrue(
                 "Potential memory overlaps detected when attempting to evaluate a"
                 " compiled function: please make sure that all input arrays are"
-                " distinct"
-                in str(cm.exception)
+                " distinct" in str(cm.exception)
             )
 
             with self.assertRaises(ValueError) as cm:
@@ -925,8 +907,7 @@ class cfunc_test_case(_ut.TestCase):
             self.assertTrue(
                 "Potential memory overlaps detected when attempting to evaluate a"
                 " compiled function: please make sure that all input arrays are"
-                " distinct"
-                in str(cm.exception)
+                " distinct" in str(cm.exception)
             )
 
             # Test with arrays which are not C style.
@@ -948,8 +929,7 @@ class cfunc_test_case(_ut.TestCase):
             self.assertTrue(
                 "Invalid parameters array detected: the array is not C-style"
                 " contiguous, please consider using numpy.ascontiguousarray() to turn"
-                " it into one"
-                in str(cm.exception)
+                " it into one" in str(cm.exception)
             )
 
             inputs = np.array([fp_t(1), fp_t(2)])
@@ -973,8 +953,7 @@ class cfunc_test_case(_ut.TestCase):
                     )
                 self.assertTrue(
                     "Invalid dtype detected for the inputs of a compiled function: the"
-                    " expected dtype "
-                    in str(cm.exception)
+                    " expected dtype " in str(cm.exception)
                 )
 
                 with self.assertRaises(TypeError) as cm:
@@ -985,8 +964,7 @@ class cfunc_test_case(_ut.TestCase):
                     )
                 self.assertTrue(
                     "Invalid dtype detected for the parameters of a compiled function:"
-                    " the expected dtype "
-                    in str(cm.exception)
+                    " the expected dtype " in str(cm.exception)
                 )
 
                 with self.assertRaises(TypeError) as cm:
@@ -998,8 +976,7 @@ class cfunc_test_case(_ut.TestCase):
                     )
                 self.assertTrue(
                     "Invalid dtype detected for the outputs of a compiled function: the"
-                    " expected dtype "
-                    in str(cm.exception)
+                    " expected dtype " in str(cm.exception)
                 )
 
             # Time as an array instead of scalar.

@@ -408,32 +408,28 @@ class ensemble_test_case(_ut.TestCase):
             ensemble_propagate_until(ta, [20.0], 10, gen)
         self.assertTrue(
             "Cannot perform an ensemble propagate_until/for(): the final epoch/time"
-            " interval must be a scalar, not an iterable object"
-            in str(cm.exception)
+            " interval must be a scalar, not an iterable object" in str(cm.exception)
         )
 
         with self.assertRaises(TypeError) as cm:
             ensemble_propagate_for(ta, [20.0], 10, gen)
         self.assertTrue(
             "Cannot perform an ensemble propagate_until/for(): the final epoch/time"
-            " interval must be a scalar, not an iterable object"
-            in str(cm.exception)
+            " interval must be a scalar, not an iterable object" in str(cm.exception)
         )
 
         with self.assertRaises(ValueError) as cm:
             ensemble_propagate_grid(ta, [[20.0, 20.0]], 10, gen)
         self.assertTrue(
             "Cannot perform an ensemble propagate_grid(): the input time grid must be"
-            " one-dimensional, but instead it has 2 dimensions"
-            in str(cm.exception)
+            " one-dimensional, but instead it has 2 dimensions" in str(cm.exception)
         )
 
         with self.assertRaises(TypeError) as cm:
             ensemble_propagate_until(ta, 20.0, 10, gen, max_delta_t=[10])
         self.assertTrue(
             'Cannot perform an ensemble propagate_until/for/grid(): the "max_delta_t"'
-            " argument must be a scalar, not an iterable object"
-            in str(cm.exception)
+            " argument must be a scalar, not an iterable object" in str(cm.exception)
         )
 
         # NOTE: check that the chunksize option is not recognised
