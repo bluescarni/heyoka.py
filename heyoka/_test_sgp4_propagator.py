@@ -579,3 +579,34 @@ class sgp4_propagator_test_case(_ut.TestCase):
         # Init the propagator and verify its gpe data matches prop.
         prop.replace_sat_data(gpe_data)
         self.assertTrue(np.all(prop.sat_data == orig_prop.sat_data))
+
+    def test_leap_second(self):
+        # Test with a TLE close to a leap second day.
+        try:
+            from sgp4.api import Satrec
+        except ImportError:
+            return
+
+        from .model import sgp4_propagator
+        import numpy as np
+
+        s = "1 00045U 60007A   05363.79166667  .00000504  00000-0  14841-3 0  9992"
+        t = "2 00045  66.6943  81.3521 0257384 317.3173  40.8180 14.34783636277898"
+
+        sat = Satrec.twoline2rv(s, t)
+
+        prop = sgp4_propagator([sat])
+
+        # Propagate for 10 Julian days, well past year's end.
+        dates = np.zeros((1,), dtype=prop.jdtype)
+        dates["jd"] = sat.jdsatepoch + 10
+        dates["frac"] = sat.jdsatepochF
+        res1 = prop(dates)
+
+        # Propagate with a tsince of 10 days plus 1 second
+        # (the leap second).
+        res2 = prop(np.array([1440.0 * 10 + 1 / 60.0]))
+
+        # Check closeness.
+        self.assertTrue(np.allclose(res1[0, :3], res2[0, :3], atol=1e-12))
+        self.assertTrue(np.allclose(res1[0, 3:], res2[0, 3:], atol=1e-15))
