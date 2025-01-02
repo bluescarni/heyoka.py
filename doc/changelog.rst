@@ -3,6 +3,19 @@
 Changelog
 =========
 
+7.2.0 (2025-01-02)
+------------------
+
+Changes
+~~~~~~~
+
+- Clarify that epochs and dates have to be provided to the SGP4
+  propagator in the UTC scale of time
+  (`#213 <https://github.com/bluescarni/heyoka.py/pull/213>`__).
+- heyoka.py now requires version 7.2.0 of the
+  heyoka C++ library
+  (`#213 <https://github.com/bluescarni/heyoka.py/pull/213>`__).
+
 7.0.1 (2024-12-29)
 ------------------
 
