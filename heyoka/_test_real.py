@@ -1922,8 +1922,7 @@ class real_test_case(_ut.TestCase):
             real(prec=32)
         self.assertTrue(
             "Cannot construct a real from a precision only - a value must also be"
-            " supplied"
-            in str(cm.exception)
+            " supplied" in str(cm.exception)
         )
 
         # Check that the precision argument must be of the correct type.
@@ -2086,8 +2085,7 @@ class real_test_case(_ut.TestCase):
             real("hello world", prec=233)
         self.assertTrue(
             "The string 'hello world' cannot be interpreted as a floating-point value"
-            " in base 10"
-            in str(cm.exception)
+            " in base 10" in str(cm.exception)
         )
 
         with self.assertRaises(ValueError) as cm:

@@ -48,8 +48,7 @@ class model_test_case(_ut.TestCase):
             )
         self.assertTrue(
             "Invalid positions array in a mascon model: the number of dimensions must"
-            " be 2, but it is 1 instead"
-            in str(cm.exception)
+            " be 2, but it is 1 instead" in str(cm.exception)
         )
 
         with self.assertRaises(ValueError) as cm:
@@ -61,8 +60,7 @@ class model_test_case(_ut.TestCase):
             )
         self.assertTrue(
             "Invalid positions array in a mascon model: the number of columns must be"
-            " 3, but it is 4 instead"
-            in str(cm.exception)
+            " 3, but it is 4 instead" in str(cm.exception)
         )
 
         with self.assertRaises(TypeError) as cm:
@@ -75,8 +73,7 @@ class model_test_case(_ut.TestCase):
         self.assertTrue(
             "The positions array in a mascon model could not be converted into an array"
             " of expressions - please make sure that the array's values can be"
-            " converted into heyoka expressions"
-            in str(cm.exception)
+            " converted into heyoka expressions" in str(cm.exception)
         )
 
         # Run also a test with parametric mass.
@@ -126,8 +123,7 @@ class model_test_case(_ut.TestCase):
             model.fixed_centres(Gconst=1.5, masses=[1.1], positions=[1.0, 2.0, 3.0])
         self.assertTrue(
             "Invalid positions array in a fixed centres model: the number of dimensions"
-            " must be 2, but it is 1 instead"
-            in str(cm.exception)
+            " must be 2, but it is 1 instead" in str(cm.exception)
         )
 
         with self.assertRaises(ValueError) as cm:
@@ -136,8 +132,7 @@ class model_test_case(_ut.TestCase):
             )
         self.assertTrue(
             "Invalid positions array in a fixed centres model: the number of columns"
-            " must be 3, but it is 4 instead"
-            in str(cm.exception)
+            " must be 3, but it is 4 instead" in str(cm.exception)
         )
 
         with self.assertRaises(TypeError) as cm:
@@ -145,8 +140,7 @@ class model_test_case(_ut.TestCase):
         self.assertTrue(
             "The positions array in a fixed centres model could not be converted into"
             " an array of expressions - please make sure that the array's values can be"
-            " converted into heyoka expressions"
-            in str(cm.exception)
+            " converted into heyoka expressions" in str(cm.exception)
         )
 
         # Run also a small test with single-precision values.
@@ -262,10 +256,8 @@ class model_test_case(_ut.TestCase):
         self.assertEqual(
             en,
             (
-                (
-                    (2.0000000000000000 * v**2)
-                    + (8.0000000000000000 * (1.0000000000000000 - cos(x)))
-                )
+                (2.0000000000000000 * v**2)
+                + (8.0000000000000000 * (1.0000000000000000 - cos(x)))
             ),
         )
 

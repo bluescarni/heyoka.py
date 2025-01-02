@@ -93,8 +93,7 @@ class dtens_test_case(_ut.TestCase):
             dt[1]
         self.assertTrue(
             "The derivative at index 1 was requested, but the total number of"
-            " derivatives is 0"
-            in str(cm.exception)
+            " derivatives is 0" in str(cm.exception)
         )
         self.assertFalse([1, 2, 3] in dt)
         self.assertFalse((1, [(0, 2), (1, 3)]) in dt)

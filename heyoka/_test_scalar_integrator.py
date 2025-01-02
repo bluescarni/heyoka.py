@@ -296,8 +296,7 @@ class scalar_integrator_test_case(_ut.TestCase):
                 )
             self.assertTrue(
                 "The call operator of a step callback is expected to return a boolean,"
-                " but a value of type"
-                in str(cm.exception)
+                " but a value of type" in str(cm.exception)
             )
 
             # Callback with pre_hook().

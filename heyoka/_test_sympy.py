@@ -69,8 +69,7 @@ class sympy_test_case(_ut.TestCase):
             from_sympy(Rational(3, 5))
         self.assertTrue(
             "Cannot convert from sympy a rational number whose denominator is not a"
-            " power of 2"
-            in str(cm.exception)
+            " power of 2" in str(cm.exception)
         )
 
         # From integer.

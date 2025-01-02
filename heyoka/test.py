@@ -1580,22 +1580,19 @@ class c_output_test_case(_ut.TestCase):
                 c_out(np.zeros((1,), dtype=fp_t))
             self.assertTrue(
                 "Invalid time array passed to a continuous_output_batch object: the"
-                " length must be 4 but it is 1 instead"
-                in str(cm.exception)
+                " length must be 4 but it is 1 instead" in str(cm.exception)
             )
             with self.assertRaises(ValueError) as cm:
                 c_out(np.zeros((0,), dtype=fp_t))
             self.assertTrue(
                 "Invalid time array passed to a continuous_output_batch object: the"
-                " length must be 4 but it is 0 instead"
-                in str(cm.exception)
+                " length must be 4 but it is 0 instead" in str(cm.exception)
             )
             with self.assertRaises(ValueError) as cm:
                 c_out(np.zeros((5,), dtype=fp_t))
             self.assertTrue(
                 "Invalid time array passed to a continuous_output_batch object: the"
-                " length must be 4 but it is 5 instead"
-                in str(cm.exception)
+                " length must be 4 but it is 5 instead" in str(cm.exception)
             )
 
             # Contiguous single batch.
@@ -1645,8 +1642,7 @@ class c_output_test_case(_ut.TestCase):
                 c_out(np.zeros((5, 3), dtype=fp_t))
             self.assertTrue(
                 "Invalid time array passed to a continuous_output_batch object: the"
-                " number of columns must be 4 but it is 3 instead"
-                in str(cm.exception)
+                " number of columns must be 4 but it is 3 instead" in str(cm.exception)
             )
 
             b_check_tm = np.repeat(check_tm, 5, axis=0).reshape((4, 5)).T
@@ -1922,8 +1918,7 @@ class c_output_test_case(_ut.TestCase):
                 c_out([[fp_t(0)], [fp_t(1)], [fp_t(2)]])
             self.assertTrue(
                 "Invalid time array passed to a continuous_output object: the number of"
-                " dimensions must be 1, but it is 2 instead"
-                in str(cm.exception)
+                " dimensions must be 1, but it is 2 instead" in str(cm.exception)
             )
 
             self.assertTrue(np.all(c_out.output == tmp[2]))

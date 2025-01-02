@@ -896,12 +896,8 @@ GPE data:
 7. the reference epoch (as a Julian date),
 8. a fractional correction to the epoch (in Julian days).
 
-When *sat_list* is a list of ``Satrec`` objects, the GPE epochs are represented as UTC Julian dates,
-and consequently UTC Julian dates must also be used during propagation. Please note
-that the use of UTC Julian dates as a scale of time will produce slightly incorrect results when
-propagating across leap seconds, as explained in the :ref:`tutorial<tut_sgp4_propagator_epochs>`.
-
-If *sat_list* is a 2D array, the epochs must be provided as Julian dates in the terrestrial time scale.
+Epochs must be provided in the UTC scale of time, following the convention that days in which
+leap seconds are added/removed are 1 second longer/shorter than one SI day.
 
 The *diff_order* argument indicates the desired differentiation order. If equal to 0, then
 derivatives are disabled.
@@ -1066,7 +1062,7 @@ The *times* array can contain either floating-point values (of type :py:class:`{
 or Julian dates (represented via the :py:attr:`~heyoka.model.sgp4_propagator_{0}.jdtype` type). In the former case,
 the input *times* will be interpreted as minutes elapsed since the GPE reference epochs (which in general differ
 from satellite to satellite). In the latter case, the states will be propagated up to the specified Julian dates,
-which must be provided in the same scale of time as the GPE epochs used in the construction of the propagator.
+which must be provided in the UTC scale of time.
 
 *times* can be either a one-dimensional array, or a two-dimensional one. In the former case (scalar propagation),
 its length must be exactly :py:attr:`~heyoka.model.sgp4_propagator_{0}.nsats` (i.e., one time/date per satellite).

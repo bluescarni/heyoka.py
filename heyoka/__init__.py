@@ -153,8 +153,9 @@ def from_sympy(ex, s_dict={}):
 
     if not isinstance(ex, Basic):
         raise TypeError(
-            "The 'ex' parameter must be a sympy expression but it is of type {} instead"
-            .format(type(ex))
+            "The 'ex' parameter must be a sympy expression but it is of type {} instead".format(
+                type(ex)
+            )
         )
 
     if not isinstance(s_dict, dict):
@@ -215,8 +216,9 @@ def set_serialization_backend(name):
 
     if not name in _s11n_backend_map:
         raise ValueError(
-            "The serialization backend '{}' is not valid. The valid backends are: {}"
-            .format(name, list(_s11n_backend_map.keys()))
+            "The serialization backend '{}' is not valid. The valid backends are: {}".format(
+                name, list(_s11n_backend_map.keys())
+            )
         )
 
     new_backend = _s11n_backend_map[name]
@@ -289,8 +291,9 @@ def _ensemble_propagate_generic(tp, ta, arg, n_iter, gen, **kwargs):
         return _ensemble_propagate_process(tp, ta, arg, n_iter, gen, **kwargs)
 
     raise ValueError(
-        "The parallelisation algorithm must be one of {}, but '{}' was provided instead"
-        .format(allowed_algos, algo)
+        "The parallelisation algorithm must be one of {}, but '{}' was provided instead".format(
+            allowed_algos, algo
+        )
     )
 
 

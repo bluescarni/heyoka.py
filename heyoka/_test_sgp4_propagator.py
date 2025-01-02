@@ -43,8 +43,7 @@ class sgp4_propagator_test_case(_ut.TestCase):
         self.assertTrue(
             "Invalid object encountered in the satellite data for an sgp4 propagator: a"
             " list of sgp4 Satrec objects is expected, but an object of type '<class"
-            " 'int'>' was detected instead at index 1"
-            in str(cm.exception)
+            " 'int'>' was detected instead at index 1" in str(cm.exception)
         )
 
         prop = sgp4_propagator([sat1, sat2])
@@ -57,8 +56,7 @@ class sgp4_propagator_test_case(_ut.TestCase):
             prop.diff_args
         self.assertTrue(
             "The function 'get_diff_args()' cannot be invoked on an sgp4 propagator"
-            " without derivatives"
-            in str(cm.exception)
+            " without derivatives" in str(cm.exception)
         )
 
         self.assertEqual(prop.sat_data.shape, (9, 2))
@@ -75,16 +73,14 @@ class sgp4_propagator_test_case(_ut.TestCase):
             prop.get_dslice(order=1)
         self.assertTrue(
             "The function 'get_dslice()' cannot be invoked on an sgp4 propagator"
-            " without derivatives"
-            in str(cm.exception)
+            " without derivatives" in str(cm.exception)
         )
 
         with self.assertRaises(ValueError) as cm:
             prop.get_mindex(i=0)
         self.assertTrue(
             "The function 'get_mindex()' cannot be invoked on an sgp4 propagator"
-            " without derivatives"
-            in str(cm.exception)
+            " without derivatives" in str(cm.exception)
         )
 
         self.assertTrue("SGP4 propagator" in repr(prop))
@@ -131,23 +127,20 @@ class sgp4_propagator_test_case(_ut.TestCase):
             sgp4_propagator(np.zeros((2, 2), dtype=float))
         self.assertTrue(
             "The array of input GPEs for an sgp4 propagator must have 9 rows, but the"
-            " supplied array has 2 row(s) instead"
-            in str(cm.exception)
+            " supplied array has 2 row(s) instead" in str(cm.exception)
         )
         with self.assertRaises(ValueError) as cm:
             sgp4_propagator(np.zeros((2,), dtype=float))
         self.assertTrue(
             "The array of input GPEs for an sgp4 propagator must have 2 dimensions, but"
-            " the supplied array has 1 dimension(s) instead"
-            in str(cm.exception)
+            " the supplied array has 1 dimension(s) instead" in str(cm.exception)
         )
         with self.assertRaises(ValueError) as cm:
             sgp4_propagator(np.zeros((18, 2), dtype=float)[::2])
         self.assertTrue(
             "Invalid array of input GPEs detected in an sgp4 propagator: the array is"
             " not C-style contiguous, please consider using numpy.ascontiguousarray()"
-            " to turn it into one"
-            in str(cm.exception)
+            " to turn it into one" in str(cm.exception)
         )
 
         # Construct a GPE data array from the satellites sat1 and sat2.
@@ -205,8 +198,7 @@ class sgp4_propagator_test_case(_ut.TestCase):
             self.assertTrue(
                 "A times/dates array with 1 or 2 dimensions is expected as an input for"
                 " the call operator of an sgp4 propagator, but an array with 0"
-                " dimensions was provided instead"
-                in str(cm.exception)
+                " dimensions was provided instead" in str(cm.exception)
             )
 
             with self.assertRaises(ValueError) as cm:
@@ -214,8 +206,7 @@ class sgp4_propagator_test_case(_ut.TestCase):
             self.assertTrue(
                 "A times/dates array with 1 or 2 dimensions is expected as an input for"
                 " the call operator of an sgp4 propagator, but an array with 3"
-                " dimensions was provided instead"
-                in str(cm.exception)
+                " dimensions was provided instead" in str(cm.exception)
             )
 
             with self.assertRaises(ValueError) as cm:
@@ -224,8 +215,7 @@ class sgp4_propagator_test_case(_ut.TestCase):
                 "Invalid times/dates array detected as an input for the call operator"
                 " of an sgp4 propagator in batch mode: the number of satellites"
                 " inferred from the times/dates array is 5, but the propagator contains"
-                " 2 satellite(s) instead"
-                in str(cm.exception)
+                " 2 satellite(s) instead" in str(cm.exception)
             )
 
             with self.assertRaises(ValueError) as cm:
@@ -234,8 +224,7 @@ class sgp4_propagator_test_case(_ut.TestCase):
                 "Invalid times/dates array detected as an input for the call operator"
                 " of an sgp4 propagator: the number of satellites inferred from the"
                 " times/dates array is 1, but the propagator contains 2 satellite(s)"
-                " instead"
-                in str(cm.exception)
+                " instead" in str(cm.exception)
             )
 
             tmp = np.zeros((10, 2), dtype=fp_type)
@@ -306,8 +295,7 @@ class sgp4_propagator_test_case(_ut.TestCase):
             self.assertTrue(
                 "Invalid output array detected in the call operator of "
                 "an sgp4 propagator: the array has 1 dimension(s), "
-                "but 2 dimensions are expected instead"
-                in str(cm.exception)
+                "but 2 dimensions are expected instead" in str(cm.exception)
             )
 
             out = np.zeros(
@@ -324,8 +312,7 @@ class sgp4_propagator_test_case(_ut.TestCase):
                 "an sgp4 propagator: the first dimension has a "
                 "size of 48, but a "
                 "size of 56 (i.e., equal to the number of outputs for each "
-                "propagation) is required instead"
-                in str(cm.exception)
+                "propagation) is required instead" in str(cm.exception)
             )
 
             out = np.zeros(
@@ -342,8 +329,7 @@ class sgp4_propagator_test_case(_ut.TestCase):
                 "an sgp4 propagator: the second dimension has a "
                 "size of 1, but a "
                 "size of 2 (i.e., equal to the total number of satellites) is "
-                "required instead"
-                in str(cm.exception)
+                "required instead" in str(cm.exception)
             )
 
             # Batch mode errors.
@@ -359,8 +345,7 @@ class sgp4_propagator_test_case(_ut.TestCase):
             self.assertTrue(
                 "Invalid output array detected in the call operator of "
                 "an sgp4 propagator in batch mode: the array has 2 dimension(s), "
-                "but 3 dimensions are expected instead"
-                in str(cm.exception)
+                "but 3 dimensions are expected instead" in str(cm.exception)
             )
 
             out = np.zeros(
@@ -376,8 +361,7 @@ class sgp4_propagator_test_case(_ut.TestCase):
                 "Invalid output array detected in the call operator of an sgp4"
                 " propagator in batch mode: the first dimension has a size of 9, but a"
                 " size of 10 (i.e., equal to the number of evaluations) is required"
-                " instead"
-                in str(cm.exception)
+                " instead" in str(cm.exception)
             )
 
             out = np.zeros(
@@ -394,8 +378,7 @@ class sgp4_propagator_test_case(_ut.TestCase):
                 "an sgp4 propagator in batch mode: the second dimension has a "
                 "size of 48, but a "
                 "size of 56 (i.e., equal to the number of outputs for each "
-                "propagation) is required instead"
-                in str(cm.exception)
+                "propagation) is required instead" in str(cm.exception)
             )
 
             out = np.zeros(
@@ -412,8 +395,7 @@ class sgp4_propagator_test_case(_ut.TestCase):
                 "an sgp4 propagator in batch mode: the third dimension has a "
                 "size of 0, but a "
                 "size of 2 (i.e., equal to the total number of satellites) is "
-                "required instead"
-                in str(cm.exception)
+                "required instead" in str(cm.exception)
             )
 
             # Run a simple propagation to the TLE epoch, check
@@ -555,8 +537,7 @@ class sgp4_propagator_test_case(_ut.TestCase):
         self.assertTrue(
             "Invalid object encountered in the satellite data for an sgp4 propagator: a"
             " list of sgp4 Satrec objects is expected, but an object of type '<class"
-            " 'int'>' was detected instead at index 1"
-            in str(cm.exception)
+            " 'int'>' was detected instead at index 1" in str(cm.exception)
         )
 
         with self.assertRaises(ValueError) as cm:
@@ -598,3 +579,34 @@ class sgp4_propagator_test_case(_ut.TestCase):
         # Init the propagator and verify its gpe data matches prop.
         prop.replace_sat_data(gpe_data)
         self.assertTrue(np.all(prop.sat_data == orig_prop.sat_data))
+
+    def test_leap_second(self):
+        # Test with a TLE close to a leap second day.
+        try:
+            from sgp4.api import Satrec
+        except ImportError:
+            return
+
+        from .model import sgp4_propagator
+        import numpy as np
+
+        s = "1 00045U 60007A   05363.79166667  .00000504  00000-0  14841-3 0  9992"
+        t = "2 00045  66.6943  81.3521 0257384 317.3173  40.8180 14.34783636277898"
+
+        sat = Satrec.twoline2rv(s, t)
+
+        prop = sgp4_propagator([sat])
+
+        # Propagate for 10 Julian days, well past year's end.
+        dates = np.zeros((1,), dtype=prop.jdtype)
+        dates["jd"] = sat.jdsatepoch + 10
+        dates["frac"] = sat.jdsatepochF
+        res1 = prop(dates)
+
+        # Propagate with a tsince of 10 days plus 1 second
+        # (the leap second).
+        res2 = prop(np.array([1440.0 * 10 + 1 / 60.0]))
+
+        # Check closeness.
+        self.assertTrue(np.allclose(res1[:3, 0], res2[:3, 0], atol=1e-12))
+        self.assertTrue(np.allclose(res1[3:, 0], res2[3:, 0], atol=1e-15))
