@@ -3,6 +3,15 @@
 Changelog
 =========
 
+7.2.1 (2025-01-07)
+------------------
+
+Fix
+~~~
+
+- Work around a thread-safety issue in the erfa routines used
+  to convert between UTC and TAI Julian dates.
+
 7.2.0 (2025-01-02)
 ------------------
 
