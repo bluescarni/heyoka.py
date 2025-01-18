@@ -204,6 +204,9 @@ void expose_sgp4_propagator_impl(py::module_ &m, const std::string &suffix)
         "sat_list"_a.noconvert(), "diff_order"_a.noconvert() = static_cast<std::uint32_t>(0),
         HEYOKA_PY_CFUNC_ARGS(false), HEYOKA_PY_LLVM_STATE_ARGS,
         docstrings::sgp4_propagator_init(std::same_as<T, double> ? "float" : "numpy.single").c_str());
+    // NOTE: this should be a static property, but at the moment doing this will mess up
+    // the documentation as sphinx will not pick up the docstring properly. Either we are
+    // doing something wrong in the docstring format or it is a genuine sphinx issue.
     prop_cl.def_property_readonly(
         "jdtype",
         [](const prop_t &) -> py::object {
