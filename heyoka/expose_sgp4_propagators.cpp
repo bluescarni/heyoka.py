@@ -204,9 +204,9 @@ void expose_sgp4_propagator_impl(py::module_ &m, const std::string &suffix)
         "sat_list"_a.noconvert(), "diff_order"_a.noconvert() = static_cast<std::uint32_t>(0),
         HEYOKA_PY_CFUNC_ARGS(false), HEYOKA_PY_LLVM_STATE_ARGS,
         docstrings::sgp4_propagator_init(std::same_as<T, double> ? "float" : "numpy.single").c_str());
-    prop_cl.def_property_readonly(
+    prop_cl.def_property_readonly_static(
         "jdtype",
-        [](const prop_t &) -> py::object {
+        [](const py::object &) -> py::object {
             auto np = py::module_::import("numpy");
 
             py::object dtype = np.attr("dtype");
