@@ -158,8 +158,9 @@ void expose_batch_integrator_impl(py::module_ &m, const std::string &suffix)
 
                     // NOTE: GIL release is fine here even if the events contain
                     // Python objects, as the event vectors are moved in
-                    // upon construction and thus we should never end up calling
-                    // into the interpreter.
+                    // upon construction and thus we never end up calling
+                    // into the interpreter. Also, due to mandatory copy elision,
+                    // we never end up making a copy of the return value.
                     py::gil_scoped_release release;
 
                     return hey::taylor_adaptive_batch<T>{std::move(sys),
@@ -184,8 +185,9 @@ void expose_batch_integrator_impl(py::module_ &m, const std::string &suffix)
 
                     // NOTE: GIL release is fine here even if the events contain
                     // Python objects, as the event vectors are moved in
-                    // upon construction and thus we should never end up calling
-                    // into the interpreter.
+                    // upon construction and thus we never end up calling
+                    // into the interpreter. Also, due to mandatory copy elision,
+                    // we never end up making a copy of the return value.
                     py::gil_scoped_release release;
 
                     return hey::taylor_adaptive_batch<T>{std::move(sys),

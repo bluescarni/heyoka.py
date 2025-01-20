@@ -123,7 +123,8 @@ void expose_taylor_integrator_impl(py::module &m, const std::string &suffix)
                // NOTE: GIL release is fine here even if the events contain
                // Python objects, as the event vectors are moved in
                // upon construction and thus we should never end up calling
-               // into the interpreter.
+               // into the interpreter. Also, due to mandatory copy elision,
+               // we never end up making a copy of the return value.
                py::gil_scoped_release release;
 
                return std::visit(
