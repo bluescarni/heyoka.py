@@ -3,6 +3,17 @@
 Changelog
 =========
 
+7.2.2 (unreleased)
+------------------
+
+Changes
+~~~~~~~
+
+- Add Linux aarch64 wheels
+  (`#219 <https://github.com/bluescarni/heyoka.py/pull/219>`__).
+- Remove wheels for Python 3.9
+  (`#219 <https://github.com/bluescarni/heyoka.py/pull/219>`__).
+
 7.2.1 (2025-01-07)
 ------------------
 

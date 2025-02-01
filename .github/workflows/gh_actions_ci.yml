@@ -86,7 +86,7 @@ jobs:
          run: bash tools/gha_manylinux.sh
        - uses: actions/upload-artifact@v4
          with:
-           name: wheel_313
+           name: wheel_313_linux_x86_64
            path: repaired_wheel/*.whl
   manylinux228_x86_64-py312:
      runs-on: ubuntu-latest
@@ -101,7 +101,7 @@ jobs:
          run: bash tools/gha_manylinux.sh
        - uses: actions/upload-artifact@v4
          with:
-           name: wheel_312
+           name: wheel_312_linux_x86_64
            path: repaired_wheel/*.whl
   manylinux228_x86_64-py311:
      runs-on: ubuntu-latest
@@ -116,7 +116,7 @@ jobs:
          run: bash tools/gha_manylinux.sh
        - uses: actions/upload-artifact@v4
          with:
-           name: wheel_311
+           name: wheel_311_linux_x86_64
            path: repaired_wheel/*.whl
   manylinux228_x86_64-py310:
      runs-on: ubuntu-latest
@@ -131,14 +131,14 @@ jobs:
          run: bash tools/gha_manylinux.sh
        - uses: actions/upload-artifact@v4
          with:
-           name: wheel_310
+           name: wheel_310_linux_x86_64
            path: repaired_wheel/*.whl
-  manylinux228_x86_64-py39:
-     runs-on: ubuntu-latest
+  manylinux228_aarch64-py313:
+     runs-on: ubuntu-24.04-arm
      container:
-      image: pagmo2/manylinux228_x86_64_with_deps:latest
+      image: pagmo2/manylinux228_aarch64_with_deps:latest
       env:
-        HEYOKA_PY_BUILD_TYPE: "Python39"
+        HEYOKA_PY_BUILD_TYPE: "Python313"
         TWINE_PASSWORD: ${{ secrets.TWINE_PASSWORD }}
      steps:
        - uses: actions/checkout@v4
@@ -146,7 +146,52 @@ jobs:
          run: bash tools/gha_manylinux.sh
        - uses: actions/upload-artifact@v4
          with:
-           name: wheel_39
+           name: wheel_313_linux_aarch64
+           path: repaired_wheel/*.whl
+  manylinux228_aarch64-py312:
+     runs-on: ubuntu-24.04-arm
+     container:
+      image: pagmo2/manylinux228_aarch64_with_deps:latest
+      env:
+        HEYOKA_PY_BUILD_TYPE: "Python312"
+        TWINE_PASSWORD: ${{ secrets.TWINE_PASSWORD }}
+     steps:
+       - uses: actions/checkout@v4
+       - name: Build
+         run: bash tools/gha_manylinux.sh
+       - uses: actions/upload-artifact@v4
+         with:
+           name: wheel_312_linux_aarch64
+           path: repaired_wheel/*.whl
+  manylinux228_aarch64-py311:
+     runs-on: ubuntu-24.04-arm
+     container:
+      image: pagmo2/manylinux228_aarch64_with_deps:latest
+      env:
+        HEYOKA_PY_BUILD_TYPE: "Python311"
+        TWINE_PASSWORD: ${{ secrets.TWINE_PASSWORD }}
+     steps:
+       - uses: actions/checkout@v4
+       - name: Build
+         run: bash tools/gha_manylinux.sh
+       - uses: actions/upload-artifact@v4
+         with:
+           name: wheel_311_linux_aarch64
+           path: repaired_wheel/*.whl
+  manylinux228_aarch64-py310:
+     runs-on: ubuntu-24.04-arm
+     container:
+      image: pagmo2/manylinux228_aarch64_with_deps:latest
+      env:
+        HEYOKA_PY_BUILD_TYPE: "Python310"
+        TWINE_PASSWORD: ${{ secrets.TWINE_PASSWORD }}
+     steps:
+       - uses: actions/checkout@v4
+       - name: Build
+         run: bash tools/gha_manylinux.sh
+       - uses: actions/upload-artifact@v4
+         with:
+           name: wheel_310_linux_aarch64
            path: repaired_wheel/*.whl
   windows_2022_heyoka_head:
     runs-on: windows-2022
