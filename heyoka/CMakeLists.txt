@@ -61,6 +61,7 @@ set(_HEYOKA_PY_CORE_SOURCES
     expose_models.cpp
     expose_sgp4_propagators.cpp
     expose_callbacks.cpp
+    expose_eop_data.cpp
     step_cb_utils.cpp
     docstrings.cpp
 )

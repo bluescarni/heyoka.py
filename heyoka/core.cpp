@@ -57,6 +57,7 @@
 #include "dtypes.hpp"
 #include "expose_batch_integrators.hpp"
 #include "expose_callbacks.hpp"
+#include "expose_eop_data.hpp"
 #include "expose_expression.hpp"
 #include "expose_models.hpp"
 #include "expose_real.hpp"
@@ -251,6 +252,9 @@ PYBIND11_MODULE(core, m)
 
     // var_ode_sys.
     heypy::expose_var_ode_sys(m);
+
+    // EOP data.
+    heypy::expose_eop_data(m);
 
     // Models.
     heypy::expose_models(m);
