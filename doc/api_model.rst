@@ -32,6 +32,8 @@ Functions
    delta_tdb_tt
    rot_fk5j2000_icrs
    rot_icrs_fk5j2000
+   era
+   erap
 
 Attributes
 ----------

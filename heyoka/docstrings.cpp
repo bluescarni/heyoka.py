@@ -1347,4 +1347,53 @@ axes of the FK5 frame at J2000.
 )";
 }
 
+std::string era()
+{
+    return R"(era(time_expr: heyoka.expression = heyoka.time, eop_data: heyoka.eop_data = heyoka.eop_data()) -> heyoka.expression
+
+Earth rotation angle.
+
+This function will return an expression representing the `Earth rotation angle (ERA) <https://en.wikipedia.org/wiki/Sidereal_time#ERA>`__
+as a function of the input time expression *time_expr*. *time_expr* is expected to represent the number of Julian centuries elapsed
+since the epoch of J2000 in the `terrestrial time scale (TT) <https://en.wikipedia.org/wiki/Terrestrial_Time>`__. *eop_data* is
+the Earth orientation parameters dataset to be used for the computation.
+
+The ERA is modelled as a piecewise linear function of time, where the switch points are given by the dates in *eop_data*. Evaluation
+of the ERA outside the dates range of *eop_data* will produce a value of ``NaN``.
+
+The ERA is returned in radians, reduced to the :math:`\left[0, 2\pi\right]` range.
+
+:param time_expr: the input time expression.
+:param eop_data: the EOP data to be used for the computation.
+
+:returns: an expression for the ERA as a function of time.
+
+)";
+}
+
+std::string erap()
+{
+    return R"(erap(time_expr: heyoka.expression = heyoka.time, eop_data: heyoka.eop_data = heyoka.eop_data()) -> heyoka.expression
+
+Derivative of the Earth rotation angle.
+
+This function will return an expression representing the first-order derivative of the
+`Earth rotation angle (ERA) <https://en.wikipedia.org/wiki/Sidereal_time#ERA>`__
+as a function of the input time expression *time_expr*. *time_expr* is expected to represent the number of Julian centuries elapsed
+since the epoch of J2000 in the `terrestrial time scale (TT) <https://en.wikipedia.org/wiki/Terrestrial_Time>`__. *eop_data* is
+the Earth orientation parameters dataset to be used for the computation.
+
+The derivative of the ERA is modelled as a piecewise constant function of time, where the switch points are given by the dates
+in *eop_data*. Evaluation outside the dates range of *eop_data* will produce a value of ``NaN``.
+
+The derivative of the ERA is returned in radians per Julian century (TT).
+
+:param time_expr: the input time expression.
+:param eop_data: the EOP data to be used for the computation.
+
+:returns: an expression for the derivative of the ERA as a function of time.
+
+)";
+}
+
 } // namespace heyoka_py::docstrings

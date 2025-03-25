@@ -504,13 +504,13 @@ void expose_models(py::module_ &m)
         [](const vex_t &time_expr, const hy::eop_data &data) {
             return hy::model::era(hy::kw::time_expr = detail::ex_from_variant(time_expr), hy::kw::eop_data = data);
         },
-        "time_expr"_a = hy::time, "eop_data"_a = hy::eop_data());
+        "time_expr"_a = hy::time, "eop_data"_a = hy::eop_data(), docstrings::era().c_str());
     m.def(
         "_model_erap",
         [](const vex_t &time_expr, const hy::eop_data &data) {
             return hy::model::erap(hy::kw::time_expr = detail::ex_from_variant(time_expr), hy::kw::eop_data = data);
         },
-        "time_expr"_a = hy::time, "eop_data"_a = hy::eop_data());
+        "time_expr"_a = hy::time, "eop_data"_a = hy::eop_data(), docstrings::erap().c_str());
 }
 
 } // namespace heyoka_py

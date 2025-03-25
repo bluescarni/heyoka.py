@@ -55,6 +55,8 @@ std::string gpe_is_deep_space();
 std::string delta_tdb_tt();
 std::string rot_fk5j2000_icrs();
 std::string rot_icrs_fk5j2000();
+std::string era();
+std::string erap();
 
 // var_ode_sys() and related.
 std::string var_args();
