@@ -480,7 +480,7 @@ void expose_models(py::module_ &m)
     m.def(
         "_model_delta_tdb_tt",
         [](const vex_t &time_expr) { return hy::model::delta_tdb_tt(detail::ex_from_variant(time_expr)); },
-        "time_expr"_a.noconvert() = hy::time);
+        "time_expr"_a.noconvert() = hy::time, docstrings::delta_tdb_tt().c_str());
 
     // Frame transformations.
     m.def(
@@ -489,14 +489,14 @@ void expose_models(py::module_ &m)
             return hy::model::rot_fk5j2000_icrs(
                 {detail::ex_from_variant(xyz[0]), detail::ex_from_variant(xyz[1]), detail::ex_from_variant(xyz[2])});
         },
-        "xyz"_a);
+        "xyz"_a, docstrings::rot_fk5j2000_icrs().c_str());
     m.def(
         "_model_rot_icrs_fk5j2000",
         [](const std::array<vex_t, 3> &xyz) {
             return hy::model::rot_icrs_fk5j2000(
                 {detail::ex_from_variant(xyz[0]), detail::ex_from_variant(xyz[1]), detail::ex_from_variant(xyz[2])});
         },
-        "xyz"_a);
+        "xyz"_a, docstrings::rot_icrs_fk5j2000().c_str());
 
     // era/erap.
     m.def(

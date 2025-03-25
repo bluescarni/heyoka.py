@@ -19,6 +19,7 @@
 #include <heyoka/eop_data.hpp>
 
 #include "common_utils.hpp"
+#include "docstrings.hpp"
 #include "expose_eop_data.hpp"
 #include "pickle_wrappers.hpp"
 
@@ -38,21 +39,26 @@ void expose_eop_data(py::module_ &m)
     m.attr("eop_data_row") = py::dtype::of<eop_data_row>();
 
     // Expose the eop_data class.
-    py::class_<hy::eop_data> eop_data_class(m, "eop_data", py::dynamic_attr{});
-    eop_data_class.def(py::init<>());
-    eop_data_class.def_property_readonly("table", [](const py::object &o) {
-        auto *edata = py::cast<const hy::eop_data *>(o);
-        const auto &table = edata->get_table();
+    py::class_<hy::eop_data> eop_data_class(m, "eop_data", py::dynamic_attr{}, docstrings::eop_data().c_str());
+    eop_data_class.def(py::init<>(), docstrings::eop_data_init().c_str());
+    eop_data_class.def_property_readonly(
+        "table",
+        [](const py::object &o) {
+            auto *edata = py::cast<const hy::eop_data *>(o);
+            const auto &table = edata->get_table();
 
-        auto ret = py::array_t<eop_data_row>(boost::numeric_cast<py::ssize_t>(table.size()), table.data(), o);
+            auto ret = py::array_t<eop_data_row>(boost::numeric_cast<py::ssize_t>(table.size()), table.data(), o);
 
-        // Ensure the returned array is read-only.
-        ret.attr("flags").attr("writeable") = false;
+            // Ensure the returned array is read-only.
+            ret.attr("flags").attr("writeable") = false;
 
-        return ret;
-    });
-    eop_data_class.def_property_readonly("timestamp", &hy::eop_data::get_timestamp);
-    eop_data_class.def_property_readonly("identifier", &hy::eop_data::get_identifier);
+            return ret;
+        },
+        docstrings::eop_data_table().c_str());
+    eop_data_class.def_property_readonly("timestamp", &hy::eop_data::get_timestamp,
+                                         docstrings::eop_data_timestamp().c_str());
+    eop_data_class.def_property_readonly("identifier", &hy::eop_data::get_identifier,
+                                         docstrings::eop_data_identifier().c_str());
     eop_data_class.def_static(
         "fetch_latest_iers_rapid",
         [](const std::string &filename) {
@@ -61,13 +67,16 @@ void expose_eop_data(py::module_ &m)
 
             return hy::eop_data::fetch_latest_iers_rapid(filename);
         },
-        "filename"_a = "finals2000A.all");
-    eop_data_class.def_static("fetch_latest_iers_long_term", []() {
-        // NOTE: release the GIL during download.
-        py::gil_scoped_release release;
+        "filename"_a = "finals2000A.all", docstrings::eop_data_fetch_latest_iers_rapid().c_str());
+    eop_data_class.def_static(
+        "fetch_latest_iers_long_term",
+        []() {
+            // NOTE: release the GIL during download.
+            py::gil_scoped_release release;
 
-        return hy::eop_data::fetch_latest_iers_long_term();
-    });
+            return hy::eop_data::fetch_latest_iers_long_term();
+        },
+        docstrings::eop_data_fetch_latest_iers_long_term().c_str());
     // Repr.
     eop_data_class.def("__repr__", [](const hy::eop_data &data) {
         return fmt::format("N of rows : {}\nTimestamp : {}\nIdentifier: {}\n", data.get_table().size(),
