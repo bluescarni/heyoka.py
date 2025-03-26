@@ -1266,7 +1266,7 @@ A string uniquely identifying the source of EOP data.
 
 std::string eop_data_fetch_latest_iers_rapid()
 {
-    return R"(fetch_latest_iers_rapid(filename: str = 'finals2000A.all') -> heyoka.eop_data
+    return R"(fetch_latest_iers_rapid(filename: str = 'finals2000A.all') -> eop_data
 
 Fetch the latest IERS EOP rapid data.
 
@@ -1298,7 +1298,7 @@ for more information about the content of these files.
 
 std::string eop_data_fetch_latest_iers_long_term()
 {
-    return R"(fetch_latest_iers_long_term() -> heyoka.eop_data
+    return R"(fetch_latest_iers_long_term() -> eop_data
 
 Fetch the latest IERS EOP long-term data.
 
@@ -1315,9 +1315,11 @@ from 1962 up to (roughly) the present time. Note that long-term data does **not*
 
 std::string rot_fk5j2000_icrs()
 {
-    return R"(rot_fk5j2000_icrs(xyz: typing.Iterable[heyoka.expression]) -> list[heyoka.expression]
+    return R"(rot_fk5j2000_icrs(xyz: typing.Iterable[expression]) -> list[expression]
 
 Rotation from FK5 to ICRS.
+
+.. versionadded:: 7.3.0
 
 This function will rotate the input Cartesian coordinates *xyz* from the axes of the FK5 frame at J2000
 to the axes of the `ICRS <https://en.wikipedia.org/wiki/International_Celestial_Reference_System_and_its_realizations>`__
@@ -1332,9 +1334,11 @@ frame.
 
 std::string rot_icrs_fk5j2000()
 {
-    return R"(rot_icrs_fk5j2000(xyz: typing.Iterable[heyoka.expression]) -> list[heyoka.expression]
+    return R"(rot_icrs_fk5j2000(xyz: typing.Iterable[expression]) -> list[expression]
 
 Rotation from ICRS to FK5.
+
+.. versionadded:: 7.3.0
 
 This function will rotate the input Cartesian coordinates *xyz* from the axes of the
 `ICRS <https://en.wikipedia.org/wiki/International_Celestial_Reference_System_and_its_realizations>`__ frame to the 
@@ -1349,9 +1353,11 @@ axes of the FK5 frame at J2000.
 
 std::string era()
 {
-    return R"(era(time_expr: heyoka.expression = heyoka.time, eop_data: heyoka.eop_data = heyoka.eop_data()) -> heyoka.expression
+    return R"(era(time_expr: expression = heyoka.time, eop_data: eop_data = eop_data()) -> expression
 
 Earth rotation angle.
+
+.. versionadded:: 7.3.0
 
 This function will return an expression representing the `Earth rotation angle (ERA) <https://en.wikipedia.org/wiki/Sidereal_time#ERA>`__
 as a function of the input time expression *time_expr*. *time_expr* is expected to represent the number of Julian centuries elapsed
@@ -1373,18 +1379,19 @@ The ERA is returned in radians, reduced to the :math:`\left[0, 2\pi\right]` rang
 
 std::string erap()
 {
-    return R"(erap(time_expr: heyoka.expression = heyoka.time, eop_data: heyoka.eop_data = heyoka.eop_data()) -> heyoka.expression
+    return R"(erap(time_expr: expression = heyoka.time, eop_data: eop_data = eop_data()) -> expression
 
 Derivative of the Earth rotation angle.
 
-This function will return an expression representing the first-order derivative of the
-`Earth rotation angle (ERA) <https://en.wikipedia.org/wiki/Sidereal_time#ERA>`__
+.. versionadded:: 7.3.0
+
+This function will return an expression representing the first-order derivative of :py:func:`~heyoka.model.era()`
 as a function of the input time expression *time_expr*. *time_expr* is expected to represent the number of Julian centuries elapsed
 since the epoch of J2000 in the `terrestrial time scale (TT) <https://en.wikipedia.org/wiki/Terrestrial_Time>`__. *eop_data* is
 the Earth orientation parameters dataset to be used for the computation.
 
-The derivative of the ERA is modelled as a piecewise constant function of time, where the switch points are given by the dates
-in *eop_data*. Evaluation outside the dates range of *eop_data* will produce a value of ``NaN``.
+The derivative of the Earth rotation angle (ERA) is modelled as a piecewise constant function of time, where the switch
+points are given by the dates in *eop_data*. Evaluation outside the dates range of *eop_data* will produce a value of ``NaN``.
 
 The derivative of the ERA is returned in radians per Julian century (TT).
 
