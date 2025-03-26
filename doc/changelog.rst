@@ -3,6 +3,25 @@
 Changelog
 =========
 
+7.3.0 (unreleased)
+------------------
+
+New
+~~~
+
+- Introduce class to represent, manage and update EOP data
+  (`#222 <https://github.com/bluescarni/heyoka.py/pull/222>`__).
+- New models: time conversions, frame transformations, Earth
+  rotation angle
+  (`#222 <https://github.com/bluescarni/heyoka.py/pull/222>`__).
+
+Changes
+~~~~~~~
+
+- heyoka.py now requires version 7.3.0 of the
+  heyoka C++ library
+  (`#222 <https://github.com/bluescarni/heyoka.py/pull/222>`__).
+
 7.2.2 (2025-02-01)
 ------------------
 
