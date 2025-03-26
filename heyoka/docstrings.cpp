@@ -698,7 +698,7 @@ std::string var_args_all()
 
 std::string fixed_centres()
 {
-    return R"(fixed_centres(Gconst: expression = 1., masses:  list[expression] = [], positions: collections.abc.Iterable = numpy.empty((0, 3), dtype=float)) -> list[tuple[expression, expression]]
+    return R"(fixed_centres(Gconst: expression = 1., masses:  list[expression] = [], positions: typing.Iterable = numpy.empty((0, 3), dtype=float)) -> list[tuple[expression, expression]]
 
 Produces the expressions for the dynamics in a fixed-centres problem.
 
