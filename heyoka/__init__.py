@@ -36,7 +36,7 @@ def _with_real():
     return hasattr(core, "real")
 
 
-from numpy import float32 as _f32, float64 as _f64, longdouble as _ld
+from numpy import float32 as _f32, float64 as _f64, longdouble as _ld, dtype as _dtype
 
 _fp_to_suffix_dict = {_f32: "_flt", _f64: "_dbl", float: "_dbl", _ld: "_ldbl"}
 
@@ -356,7 +356,7 @@ def _create_time():
     return core._time
 
 
-time = _create_time()
+time: expression = _create_time()
 """
 Time placeholder.
 
@@ -364,3 +364,19 @@ This global object is an :py:class:`~heyoka.expression` which is used to represe
 time (i.e., the independent variable) in differential equations.
 
 """
+
+eop_data_row: _dtype = eop_data_row
+"""
+EOP data row.
+
+.. versionadded:: 7.3.0
+
+This is a :ref:`structured NumPy datatype<numpy:defining-structured-types>` used to represent
+a row of EOP data in the :py:class:`~heyoka.eop_data` class. The fields in the datatype are:
+
+- the UTC MJD,
+- the UT1-UTC difference (in seconds).
+
+"""
+
+del _dtype

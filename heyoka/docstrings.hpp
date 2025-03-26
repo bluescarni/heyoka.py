@@ -52,6 +52,11 @@ std::string fixed_centres();
 std::string pendulum();
 std::string sgp4();
 std::string gpe_is_deep_space();
+std::string delta_tdb_tt();
+std::string rot_fk5j2000_icrs();
+std::string rot_icrs_fk5j2000();
+std::string era();
+std::string erap();
 
 // var_ode_sys() and related.
 std::string var_args();
@@ -87,6 +92,15 @@ std::string code_model_small();
 std::string code_model_kernel();
 std::string code_model_medium();
 std::string code_model_large();
+
+// eop data.
+std::string eop_data();
+std::string eop_data_init();
+std::string eop_data_table();
+std::string eop_data_timestamp();
+std::string eop_data_identifier();
+std::string eop_data_fetch_latest_iers_rapid();
+std::string eop_data_fetch_latest_iers_long_term();
 
 } // namespace heyoka_py::docstrings
 

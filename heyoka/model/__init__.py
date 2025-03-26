@@ -6,7 +6,7 @@
 # Public License v. 2.0. If a copy of the MPL was not distributed
 # with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-from .. import core as _core
+from .. import core as _core, expression
 from typing import Union
 import numpy
 
@@ -23,6 +23,24 @@ for _name in _lst:
         exec(f"{_name[7:]}.__name__ = '{_name[7:]}'")
     except AttributeError:
         pass
+
+# NOTE:redefine the models which are exposed as attributes,
+# so that we can document them.
+
+delta_tt_tai: expression = delta_tt_tai
+"""
+Difference between TT and TAI.
+
+.. versionadded:: 7.3.0
+
+This expression is a constant representing the difference between `terrestrial time (TT) <https://en.wikipedia.org/wiki/Terrestrial_Time>`__
+and `international atomic time (TAI) <https://en.wikipedia.org/wiki/International_Atomic_Time>`__.
+
+This difference amounts to exactly 32.184 SI seconds.
+
+"""
+
+del expression
 
 
 def sgp4_propagator(

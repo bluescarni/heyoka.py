@@ -698,7 +698,7 @@ std::string var_args_all()
 
 std::string fixed_centres()
 {
-    return R"(fixed_centres(Gconst: expression = 1., masses:  list[expression] = [], positions: collections.abc.Iterable = numpy.empty((0, 3), dtype=float)) -> list[tuple[expression, expression]]
+    return R"(fixed_centres(Gconst: expression = 1., masses:  list[expression] = [], positions: typing.Iterable = numpy.empty((0, 3), dtype=float)) -> list[tuple[expression, expression]]
 
 Produces the expressions for the dynamics in a fixed-centres problem.
 
@@ -1167,6 +1167,238 @@ std::string code_model_medium()
 std::string code_model_large()
 {
     return R"(Large code model (corresponds to ``llvm::CodeModel::Model::Large``).
+
+)";
+}
+
+std::string delta_tdb_tt()
+{
+    return R"(delta_tdb_tt(time_expr: expression = heyoka.time) -> expression
+
+Difference between TDB and TT.
+
+.. versionadded:: 7.3.0
+
+This function will return the difference (in seconds) between
+`barycentric dynamical time (TDB) <https://en.wikipedia.org/wiki/Barycentric_Dynamical_Time>`__
+and `terrestrial time (TT) <https://en.wikipedia.org/wiki/Terrestrial_Time>`__ as a function
+of the input TDB time (expressed in seconds elapsed from the epoch of J2000).
+
+This function is implemented following the simplified approach described in the
+`NASA SPICE toolkit <https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/FORTRAN/req/time.html#The%20Relationship%20between%20TT%20and%20TDB>`__.
+Specifically, we assume a Keplerian orbit for the motion of the Earth, so that the TDB-TT difference
+is a periodic function. This approach is accurate to approximately 0.000030 seconds.
+
+.. note::
+
+   Although this function nominally takes in input a TDB time, the corresponding TT time can be used in its place
+   with no practical effects on the accuracy of the computation.
+
+:param time_expr: the number of TDB seconds elapsed from the epoch of J2000.
+
+:returns: the difference (in seconds) between TDB and TT.
+
+)";
+}
+
+std::string eop_data()
+{
+    return R"(EOP data class.
+
+.. versionadded:: 7.3.0
+
+This class is used to manage and access Earth orientation parameters data.
+
+)";
+}
+
+std::string eop_data_init()
+{
+    return R"(__init__(self)
+
+Default constructor.
+
+The default constructor initialises the EOP data with a builtin copy of the ``finals2000A.all``
+rapid data file from the `IERS datacenter <https://datacenter.iers.org/eop.php>`__.
+
+Note that the builtin EOP data is likely to be outdated. You can use functions such as
+:py:func:`~heyoka.eop_data.fetch_latest_iers_rapid()` to fetch up-to-date data from the internet.
+
+)";
+}
+
+std::string eop_data_table()
+{
+    return R"(EOP data table.
+
+This is a :ref:`structured NumPy array<numpy:defining-structured-types>` containing the raw EOP data.
+The dtype of the returned array is :py:attr:`~heyoka.eop_data_row`.
+
+:rtype: numpy.ndarray
+
+)";
+}
+
+std::string eop_data_timestamp()
+{
+    return R"(EOP data timestamp.
+
+A timestamp in string format which can be used to disambiguate between different versions of
+the same dataset.
+
+The timestamp is inferred from the timestamp of the files on the remote data servers.
+
+:rtype: str
+
+)";
+}
+
+std::string eop_data_identifier()
+{
+    return R"(EOP data identifier.
+
+A string uniquely identifying the source of EOP data.
+
+:rtype: str
+
+)";
+}
+
+std::string eop_data_fetch_latest_iers_rapid()
+{
+    return R"(fetch_latest_iers_rapid(filename: str = 'finals2000A.all') -> eop_data
+
+Fetch the latest IERS EOP rapid data.
+
+This function will download from the `IERS datacenter <https://datacenter.iers.org/eop.php>`__
+one the latest EOP rapid data files, from which it will construct and return an :py:class:`~heyoka.eop_data` instance.
+
+The *filename* argument specifies which EOP data file will be downloaded, and it can be one of:
+
+* ``"finals2000A.all"``,
+* ``"finals2000A.daily"``,
+* ``"finals2000A.daily.extended"``,
+* ``"finals2000A.data"``.
+
+These datafiles are updated frequently and they contain predictions for the future. They differ from each other mainly
+in the timespans they provide data for. For instance, ``finals2000A.all`` contains several decades worth of data,
+while ``finals2000A.daily`` contains only the most recent data.
+
+Please refer to the documentation on the `IERS datacenter website <https://datacenter.iers.org/eop.php>`__
+for more information about the content of these files.
+
+:param filename: the file to be downloaded.
+
+:returns: an :py:class:`~heyoka.eop_data` instance constructed from the remote file.
+
+:raises ValueError: if *filename* is invalid.
+
+)";
+}
+
+std::string eop_data_fetch_latest_iers_long_term()
+{
+    return R"(fetch_latest_iers_long_term() -> eop_data
+
+Fetch the latest IERS EOP long-term data.
+
+This function will download from the `IERS datacenter <https://datacenter.iers.org/eop.php>`__
+the latest EOP long-term datafile, from which it will construct and return an :py:class:`~heyoka.eop_data` instance.
+
+The file downloaded by this function is ``eopc04_20.1962-now.csv``, which contains the IAU2000A EOP data
+from 1962 up to (roughly) the present time. Note that long-term data does **not** contain predictions for the future.
+
+:returns: an :py:class:`~heyoka.eop_data` instance constructed from the remote file.
+
+)";
+}
+
+std::string rot_fk5j2000_icrs()
+{
+    return R"(rot_fk5j2000_icrs(xyz: typing.Iterable[expression]) -> list[expression]
+
+Rotation from FK5 to ICRS.
+
+.. versionadded:: 7.3.0
+
+This function will rotate the input Cartesian coordinates *xyz* from the axes of the FK5 frame at J2000
+to the axes of the `ICRS <https://en.wikipedia.org/wiki/International_Celestial_Reference_System_and_its_realizations>`__
+frame.
+
+:param xyz: the input Cartesian coordinates.
+
+:returns: the rotated Cartesian coordinates.
+
+)";
+}
+
+std::string rot_icrs_fk5j2000()
+{
+    return R"(rot_icrs_fk5j2000(xyz: typing.Iterable[expression]) -> list[expression]
+
+Rotation from ICRS to FK5.
+
+.. versionadded:: 7.3.0
+
+This function will rotate the input Cartesian coordinates *xyz* from the axes of the
+`ICRS <https://en.wikipedia.org/wiki/International_Celestial_Reference_System_and_its_realizations>`__ frame to the 
+axes of the FK5 frame at J2000.
+
+:param xyz: the input Cartesian coordinates.
+
+:returns: the rotated Cartesian coordinates.
+
+)";
+}
+
+std::string era()
+{
+    return R"(era(time_expr: expression = heyoka.time, eop_data: eop_data = eop_data()) -> expression
+
+Earth rotation angle.
+
+.. versionadded:: 7.3.0
+
+This function will return an expression representing the `Earth rotation angle (ERA) <https://en.wikipedia.org/wiki/Sidereal_time#ERA>`__
+as a function of the input time expression *time_expr*. *time_expr* is expected to represent the number of Julian centuries elapsed
+since the epoch of J2000 in the `terrestrial time scale (TT) <https://en.wikipedia.org/wiki/Terrestrial_Time>`__. *eop_data* is
+the Earth orientation parameters dataset to be used for the computation.
+
+The ERA is modelled as a piecewise linear function of time, where the switch points are given by the dates in *eop_data*. Evaluation
+of the ERA outside the dates range of *eop_data* will produce a value of ``NaN``.
+
+The ERA is returned in radians, reduced to the :math:`\left[0, 2\pi\right]` range.
+
+:param time_expr: the input time expression.
+:param eop_data: the EOP data to be used for the computation.
+
+:returns: an expression for the ERA as a function of time.
+
+)";
+}
+
+std::string erap()
+{
+    return R"(erap(time_expr: expression = heyoka.time, eop_data: eop_data = eop_data()) -> expression
+
+Derivative of the Earth rotation angle.
+
+.. versionadded:: 7.3.0
+
+This function will return an expression representing the first-order derivative of :py:func:`~heyoka.model.era()`
+as a function of the input time expression *time_expr*. *time_expr* is expected to represent the number of Julian centuries elapsed
+since the epoch of J2000 in the `terrestrial time scale (TT) <https://en.wikipedia.org/wiki/Terrestrial_Time>`__. *eop_data* is
+the Earth orientation parameters dataset to be used for the computation.
+
+The derivative of the Earth rotation angle (ERA) is modelled as a piecewise constant function of time, where the switch
+points are given by the dates in *eop_data*. Evaluation outside the dates range of *eop_data* will produce a value of ``NaN``.
+
+The derivative of the ERA is returned in radians per Julian century (TT).
+
+:param time_expr: the input time expression.
+:param eop_data: the EOP data to be used for the computation.
+
+:returns: an expression for the derivative of the ERA as a function of time.
 
 )";
 }

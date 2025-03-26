@@ -9,6 +9,7 @@
 #include <heyoka/config.hpp>
 
 #include <algorithm>
+#include <array>
 #include <cstdint>
 #include <iterator>
 #include <optional>
@@ -39,8 +40,10 @@
 
 #endif
 
+#include <heyoka/eop_data.hpp>
 #include <heyoka/expression.hpp>
 #include <heyoka/kw.hpp>
+#include <heyoka/math/time.hpp>
 #include <heyoka/models.hpp>
 
 #include "common_utils.hpp"
@@ -471,6 +474,43 @@ void expose_models(py::module_ &m)
     expose_sgp4_propagators(m);
     m.def("_model_gpe_is_deep_space", &hy::model::gpe_is_deep_space, "n0"_a.noconvert(), "e0"_a.noconvert(),
           "i0"_a.noconvert(), docstrings::gpe_is_deep_space().c_str());
+
+    // Time conversions.
+    m.attr("_model_delta_tt_tai") = hy::model::delta_tt_tai;
+    m.def(
+        "_model_delta_tdb_tt",
+        [](const vex_t &time_expr) { return hy::model::delta_tdb_tt(detail::ex_from_variant(time_expr)); },
+        "time_expr"_a.noconvert() = hy::time, docstrings::delta_tdb_tt().c_str());
+
+    // Frame transformations.
+    m.def(
+        "_model_rot_fk5j2000_icrs",
+        [](const std::array<vex_t, 3> &xyz) {
+            return hy::model::rot_fk5j2000_icrs(
+                {detail::ex_from_variant(xyz[0]), detail::ex_from_variant(xyz[1]), detail::ex_from_variant(xyz[2])});
+        },
+        "xyz"_a, docstrings::rot_fk5j2000_icrs().c_str());
+    m.def(
+        "_model_rot_icrs_fk5j2000",
+        [](const std::array<vex_t, 3> &xyz) {
+            return hy::model::rot_icrs_fk5j2000(
+                {detail::ex_from_variant(xyz[0]), detail::ex_from_variant(xyz[1]), detail::ex_from_variant(xyz[2])});
+        },
+        "xyz"_a, docstrings::rot_icrs_fk5j2000().c_str());
+
+    // era/erap.
+    m.def(
+        "_model_era",
+        [](const vex_t &time_expr, const hy::eop_data &data) {
+            return hy::model::era(hy::kw::time_expr = detail::ex_from_variant(time_expr), hy::kw::eop_data = data);
+        },
+        "time_expr"_a = hy::time, "eop_data"_a = hy::eop_data(), docstrings::era().c_str());
+    m.def(
+        "_model_erap",
+        [](const vex_t &time_expr, const hy::eop_data &data) {
+            return hy::model::erap(hy::kw::time_expr = detail::ex_from_variant(time_expr), hy::kw::eop_data = data);
+        },
+        "time_expr"_a = hy::time, "eop_data"_a = hy::eop_data(), docstrings::erap().c_str());
 }
 
 } // namespace heyoka_py
