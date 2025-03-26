@@ -476,3 +476,37 @@ class model_test_case(_ut.TestCase):
         sat = Satrec.twoline2rv(s1, t1)
 
         self.assertTrue(gpe_is_deep_space(sat.no_kozai, sat.ecco, sat.inclo))
+
+    def test_era_erap(self):
+        from . import cfunc, make_vars
+        from .model import era, erap
+        import numpy as np
+
+        x = make_vars("x")
+        cf = cfunc([era(x), erap(x)], [x])
+
+        out = cf(inputs=[0.0])
+        self.assertFalse(np.any(np.isnan(out)))
+
+    def test_rot_fk5j2000_icrs(self):
+        from . import cfunc, make_vars
+        from .model import rot_fk5j2000_icrs, rot_icrs_fk5j2000
+        import numpy as np
+
+        x, y, z = make_vars("x", "y", "z")
+        cf = cfunc(rot_fk5j2000_icrs(rot_icrs_fk5j2000([x, y, z])), [x, y, z])
+
+        out = cf(inputs=[1.0, 1.1, 1.2])
+        self.assertTrue(np.allclose(out, [1.0, 1.1, 1.2], rtol=1e-15, atol=0.0))
+
+    def test_time_conversions(self):
+        from . import cfunc, make_vars
+        from .model import delta_tdb_tt, delta_tt_tai
+        import numpy as np
+
+        x = make_vars("x")
+        cf = cfunc([delta_tdb_tt(x), delta_tt_tai], [x])
+
+        out = cf(inputs=[0.0])
+        self.assertFalse(np.isnan(out[0]))
+        self.assertTrue(np.allclose(out[1], 32.184, rtol=1e-16, atol=0.0))

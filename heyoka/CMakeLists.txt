@@ -26,6 +26,7 @@ set(HEYOKA_PY_PYTHON_FILES
     _test_var_ode_sys.py
     _test_var_integrator.py
     _test_sgp4_propagator.py
+    _test_eop_data.py
     _sgp4_test_data.py
     model/__init__.py
     callback/__init__.py
