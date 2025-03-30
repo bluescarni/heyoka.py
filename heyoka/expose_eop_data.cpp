@@ -35,7 +35,7 @@ void expose_eop_data(py::module_ &m)
 
     // Expose the eop_data_row dtype.
     using eop_data_row = hy::eop_data_row;
-    PYBIND11_NUMPY_DTYPE(eop_data_row, mjd, delta_ut1_utc);
+    PYBIND11_NUMPY_DTYPE(eop_data_row, mjd, delta_ut1_utc, pm_x, pm_y, dX, dY);
     m.attr("eop_data_row") = py::dtype::of<eop_data_row>();
 
     // Expose the eop_data class.
