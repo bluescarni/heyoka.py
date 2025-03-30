@@ -8,6 +8,8 @@
 
 #include <string>
 
+#include <boost/algorithm/string.hpp>
+
 #include <fmt/core.h>
 
 #include "docstrings.hpp"
@@ -1401,6 +1403,177 @@ The derivative of the ERA is returned in radians per Julian century (TT).
 :returns: an expression for the derivative of the ERA as a function of time.
 
 )";
+}
+
+namespace detail
+{
+
+namespace
+{
+
+std::string pm_x_y_impl(const std::string &xory)
+{
+    return fmt::format(R"(pm_{0}(time_expr: expression = heyoka.time, eop_data: eop_data = eop_data()) -> expression
+
+Polar motion ({0} component).
+
+.. versionadded:: 7.3.0
+
+This function will return an expression representing the :math:`{0}` coordinate of the `polar motion <https://en.wikipedia.org/wiki/Polar_motion>`__
+as a function of the input time expression *time_expr*. *time_expr* is expected to represent the number of Julian centuries elapsed
+since the epoch of J2000 in the `terrestrial time scale (TT) <https://en.wikipedia.org/wiki/Terrestrial_Time>`__. *eop_data* is
+the Earth orientation parameters dataset to be used for the computation.
+
+This quantity is modelled as a piecewise linear function of time, where the switch points are given by the dates in *eop_data*. Evaluation
+outside the dates range of *eop_data* will produce a value of ``NaN``.
+
+The return value is expressed in radians.
+
+:param time_expr: the input time expression.
+:param eop_data: the EOP data to be used for the computation.
+
+:returns: an expression for the {0} component of the polar motion as a function of time.
+
+)",
+                       xory);
+}
+
+std::string pm_xp_yp_impl(const std::string &xory)
+{
+    return fmt::format(R"(pm_{0}p(time_expr: expression = heyoka.time, eop_data: eop_data = eop_data()) -> expression
+
+Derivative of the polar motion ({0} component).
+
+.. versionadded:: 7.3.0
+
+This function will return an expression representing the first-order derivative of the :math:`{0}` coordinate of the
+`polar motion <https://en.wikipedia.org/wiki/Polar_motion>`__ as a function of the input time expression *time_expr*.
+*time_expr* is expected to represent the number of Julian centuries elapsed
+since the epoch of J2000 in the `terrestrial time scale (TT) <https://en.wikipedia.org/wiki/Terrestrial_Time>`__. *eop_data* is
+the Earth orientation parameters dataset to be used for the computation.
+
+This quantity is modelled as a piecewise constant function of time, where the switch
+points are given by the dates in *eop_data*. Evaluation outside the dates range of *eop_data* will produce a value of ``NaN``.
+
+The return value is expressed in radians per Julian century (TT).
+
+:param time_expr: the input time expression.
+:param eop_data: the EOP data to be used for the computation.
+
+:returns: an expression for the derivative of the {0} component of the polar motion as a function of time.
+
+)",
+                       xory);
+}
+
+} // namespace
+
+} // namespace detail
+
+std::string pm_x()
+{
+    return detail::pm_x_y_impl("x");
+}
+
+std::string pm_xp()
+{
+    return detail::pm_xp_yp_impl("x");
+}
+
+std::string pm_y()
+{
+    return detail::pm_x_y_impl("y");
+}
+
+std::string pm_yp()
+{
+    return detail::pm_xp_yp_impl("y");
+}
+
+namespace detail
+{
+
+namespace
+{
+
+std::string dX_dY_impl(const std::string &XorY)
+{
+    return fmt::format(R"(d{0}(time_expr: expression = heyoka.time, eop_data: eop_data = eop_data()) -> expression
+
+Correction to the Earth's precession/nutation model ({1} component).
+
+.. versionadded:: 7.3.0
+
+This function will return an expression representing the :math:`{1}` coordinate of the correction to the Earth's
+precession-nutation model (IAU 2000/2006) as a function of the input time expression *time_expr*. *time_expr* is
+expected to represent the number of Julian centuries elapsed since the epoch of J2000 in the
+`terrestrial time scale (TT) <https://en.wikipedia.org/wiki/Terrestrial_Time>`__. *eop_data* is
+the Earth orientation parameters dataset to be used for the computation.
+
+This quantity is modelled as a piecewise linear function of time, where the switch points are given by the dates in *eop_data*. Evaluation
+outside the dates range of *eop_data* will produce a value of ``NaN``.
+
+The return value is expressed in radians.
+
+:param time_expr: the input time expression.
+:param eop_data: the EOP data to be used for the computation.
+
+:returns: an expression for the {1} component of the correction to the Earth's precession/nutation model.
+
+)",
+                       XorY, boost::algorithm::to_lower_copy(XorY));
+}
+
+std::string dXp_dYp_impl(const std::string &XorY)
+{
+    return fmt::format(R"(d{0}p(time_expr: expression = heyoka.time, eop_data: eop_data = eop_data()) -> expression
+
+Derivative of the correction to the Earth's precession/nutation model ({1} component).
+
+.. versionadded:: 7.3.0
+
+This function will return an expression representing the first-order derivative of the :math:`{1}` coordinate of
+the correction to the Earth's precession-nutation model (IAU 2000/2006) as a function of the input time expression *time_expr*.
+*time_expr* is expected to represent the number of Julian centuries elapsed
+since the epoch of J2000 in the `terrestrial time scale (TT) <https://en.wikipedia.org/wiki/Terrestrial_Time>`__. *eop_data* is
+the Earth orientation parameters dataset to be used for the computation.
+
+This quantity is modelled as a piecewise constant function of time, where the switch
+points are given by the dates in *eop_data*. Evaluation outside the dates range of *eop_data* will produce a value of ``NaN``.
+
+The return value is expressed in radians per Julian century (TT).
+
+:param time_expr: the input time expression.
+:param eop_data: the EOP data to be used for the computation.
+
+:returns: an expression for the derivative of the {1} component of the correction to the Earth's precession/nutation model.
+
+)",
+                       XorY, boost::algorithm::to_lower_copy(XorY));
+}
+
+} // namespace
+
+} // namespace detail
+
+std::string dX()
+{
+    return detail::dX_dY_impl("X");
+}
+
+std::string dXp()
+{
+    return detail::dXp_dYp_impl("X");
+}
+
+std::string dY()
+{
+    return detail::dX_dY_impl("Y");
+}
+
+std::string dYp()
+{
+    return detail::dXp_dYp_impl("Y");
 }
 
 } // namespace heyoka_py::docstrings
