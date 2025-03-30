@@ -488,6 +488,28 @@ class model_test_case(_ut.TestCase):
         out = cf(inputs=[0.0])
         self.assertFalse(np.any(np.isnan(out)))
 
+    def test_pm(self):
+        from . import cfunc, make_vars
+        from .model import pm_x, pm_xp, pm_y, pm_yp
+        import numpy as np
+
+        x = make_vars("x")
+        cf = cfunc([pm_x(x), pm_xp(x), pm_y(x), pm_yp(x)], [x])
+
+        out = cf(inputs=[0.0])
+        self.assertFalse(np.any(np.isnan(out)))
+
+    def test_dXdY(self):
+        from . import cfunc, make_vars
+        from .model import dX, dXp, dY, dYp
+        import numpy as np
+
+        x = make_vars("x")
+        cf = cfunc([dX(x), dXp(x), dY(x), dYp(x)], [x])
+
+        out = cf(inputs=[0.0])
+        self.assertFalse(np.any(np.isnan(out)))
+
     def test_rot_fk5j2000_icrs(self):
         from . import cfunc, make_vars
         from .model import rot_fk5j2000_icrs, rot_icrs_fk5j2000
