@@ -375,7 +375,13 @@ This is a :ref:`structured NumPy datatype<numpy:defining-structured-types>` used
 a row of EOP data in the :py:class:`~heyoka.eop_data` class. The fields in the datatype are:
 
 - the UTC MJD,
-- the UT1-UTC difference (in seconds).
+- the UT1-UTC difference (in seconds),
+- the :math:`x` component of the polar motion (in arcsecs),
+- the :math:`y` component of the polar motion (in arcsecs),
+- the :math:`x` component of the correction to the IAU 2000/2006
+  precession/nutation model (in milliarcsecs),
+- the :math:`y` component of the correction to the IAU 2000/2006
+  precession/nutation model (in milliarcsecs).
 
 """
 

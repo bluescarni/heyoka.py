@@ -1289,6 +1289,11 @@ while ``finals2000A.daily`` contains only the most recent data.
 Please refer to the documentation on the `IERS datacenter website <https://datacenter.iers.org/eop.php>`__
 for more information about the content of these files.
 
+.. note::
+
+   This function will release the `global interpreter lock (GIL) <https://docs.python.org/3/glossary.html#term-global-interpreter-lock>`__
+   while downloading.
+
 :param filename: the file to be downloaded.
 
 :returns: an :py:class:`~heyoka.eop_data` instance constructed from the remote file.
@@ -1309,6 +1314,11 @@ the latest EOP long-term datafile, from which it will construct and return an :p
 
 The file downloaded by this function is ``eopc04_20.1962-now.csv``, which contains the IAU2000A EOP data
 from 1962 up to (roughly) the present time. Note that long-term data does **not** contain predictions for the future.
+
+.. note::
+
+   This function will release the `global interpreter lock (GIL) <https://docs.python.org/3/glossary.html#term-global-interpreter-lock>`__
+   while downloading.
 
 :returns: an :py:class:`~heyoka.eop_data` instance constructed from the remote file.
 
