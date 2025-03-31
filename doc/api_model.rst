@@ -34,6 +34,14 @@ Functions
    rot_icrs_fk5j2000
    era
    erap
+   pm_x
+   pm_xp
+   pm_y
+   pm_yp
+   dX
+   dXp
+   dY
+   dYp
 
 Attributes
 ----------

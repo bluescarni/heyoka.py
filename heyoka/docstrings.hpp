@@ -57,6 +57,14 @@ std::string rot_fk5j2000_icrs();
 std::string rot_icrs_fk5j2000();
 std::string era();
 std::string erap();
+std::string pm_x();
+std::string pm_xp();
+std::string pm_y();
+std::string pm_yp();
+std::string dX();
+std::string dXp();
+std::string dY();
+std::string dYp();
 
 // var_ode_sys() and related.
 std::string var_args();

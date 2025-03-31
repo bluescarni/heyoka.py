@@ -498,19 +498,29 @@ void expose_models(py::module_ &m)
         },
         "xyz"_a, docstrings::rot_icrs_fk5j2000().c_str());
 
-    // era/erap.
-    m.def(
-        "_model_era",
-        [](const vex_t &time_expr, const hy::eop_data &data) {
-            return hy::model::era(hy::kw::time_expr = detail::ex_from_variant(time_expr), hy::kw::eop_data = data);
-        },
-        "time_expr"_a = hy::time, "eop_data"_a = hy::eop_data(), docstrings::era().c_str());
-    m.def(
-        "_model_erap",
-        [](const vex_t &time_expr, const hy::eop_data &data) {
-            return hy::model::erap(hy::kw::time_expr = detail::ex_from_variant(time_expr), hy::kw::eop_data = data);
-        },
-        "time_expr"_a = hy::time, "eop_data"_a = hy::eop_data(), docstrings::erap().c_str());
+    // Use macro to expose the EOP models.
+#define HEYOKA_PY_EXPOSE_MODEL_EOP(name)                                                                               \
+    m.def(                                                                                                             \
+        "_model_" #name,                                                                                               \
+        [](const vex_t &time_expr, const hy::eop_data &data) {                                                         \
+            return hy::model::name(hy::kw::time_expr = detail::ex_from_variant(time_expr), hy::kw::eop_data = data);   \
+        },                                                                                                             \
+        "time_expr"_a = hy::time, "eop_data"_a = hy::eop_data(), docstrings::name().c_str());                          \
+    m.def(                                                                                                             \
+        "_model_" #name "p",                                                                                           \
+        [](const vex_t &time_expr, const hy::eop_data &data) {                                                         \
+            return hy::model::name##p(hy::kw::time_expr = detail::ex_from_variant(time_expr),                          \
+                                      hy::kw::eop_data = data);                                                        \
+        },                                                                                                             \
+        "time_expr"_a = hy::time, "eop_data"_a = hy::eop_data(), docstrings::name##p().c_str());
+
+    HEYOKA_PY_EXPOSE_MODEL_EOP(era);
+    HEYOKA_PY_EXPOSE_MODEL_EOP(pm_x);
+    HEYOKA_PY_EXPOSE_MODEL_EOP(pm_y);
+    HEYOKA_PY_EXPOSE_MODEL_EOP(dX);
+    HEYOKA_PY_EXPOSE_MODEL_EOP(dY);
+
+#undef HEYOKA_PY_EXPOSE_MODEL_EOP
 }
 
 } // namespace heyoka_py

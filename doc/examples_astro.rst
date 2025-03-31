@@ -44,3 +44,4 @@ Celestial mechanics and astrodynamics
   notebooks/lagrangian_propagator
   notebooks/gg_stab
   notebooks/sgp4_propagator
+  notebooks/eop_data
