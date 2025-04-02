@@ -9,6 +9,8 @@ Changelog
 New
 ~~~
 
+- Add an implementation of the IAU2000/2006 precession-nutation theory
+  (`#224 <https://github.com/bluescarni/heyoka.py/pull/224>`__).
 - Introduce class to represent, manage and update EOP data
   (`#222 <https://github.com/bluescarni/heyoka.py/pull/222>`__).
 - New models: time conversions, frame transformations, Earth orientation
