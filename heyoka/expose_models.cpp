@@ -521,6 +521,14 @@ void expose_models(py::module_ &m)
     HEYOKA_PY_EXPOSE_MODEL_EOP(dY);
 
 #undef HEYOKA_PY_EXPOSE_MODEL_EOP
+
+    // IAU2006 precession/nutation.
+    m.def(
+        "_model_iau2006",
+        [](hy::expression t_expr, double thresh) {
+            return hy::model::iau2006(hy::kw::time_expr = std::move(t_expr), hy::kw::thresh = thresh);
+        },
+        "time_expr"_a = hy::time, "thresh"_a.noconvert() = 1e-6, docstrings::iau2006().c_str());
 }
 
 } // namespace heyoka_py
