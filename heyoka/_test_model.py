@@ -532,3 +532,14 @@ class model_test_case(_ut.TestCase):
         out = cf(inputs=[0.0])
         self.assertFalse(np.isnan(out[0]))
         self.assertTrue(np.allclose(out[1], 32.184, rtol=1e-16, atol=0.0))
+
+    def test_iau2006(self):
+        from . import cfunc, make_vars
+        from .model import iau2006
+        import numpy as np
+
+        x = make_vars("x")
+        cf = cfunc(iau2006(time_expr=x, thresh=1e-6), [x])
+
+        out = cf(inputs=[0.0])
+        self.assertFalse(np.isnan(out[0]))

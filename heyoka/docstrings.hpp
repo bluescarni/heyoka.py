@@ -65,6 +65,7 @@ std::string dX();
 std::string dXp();
 std::string dY();
 std::string dYp();
+std::string iau2006();
 
 // var_ode_sys() and related.
 std::string var_args();

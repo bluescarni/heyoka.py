@@ -1586,4 +1586,44 @@ std::string dYp()
     return detail::dXp_dYp_impl("Y");
 }
 
+std::string iau2006()
+{
+    return R"(iau2006(time_expr: expression = heyoka.time, thresh: float = 1e-6) -> list[expression]
+
+IAU2000/2006 precession-nutation theory.
+
+.. versionadded:: 7.3.0
+
+This function will return a set of three expressions representing the :math:`X`, :math:`Y` and :math:`s` angles
+from the IAU2000/2006 precession-nutation theory as a function of the input time expression *time_expr*.
+
+:math:`X` and :math:`Y` are the celestial intermediate pole (CIP) coordinates in the International Celestial
+Reference System (ICRS). They describe the position of the CIP relative to the Geocentric Celestial Reference Frame
+(GCRF), which is aligned with the ICRS. :math:`s` is the Celestial Intermediate Origin (CIO) locator. It represents
+an additional rotation in the transformation between celestial and terrestrial
+reference frames. For more information about these quantities, please consult standard references such as Vallado's
+"Fundamentals of Astrodynamics" (Chapter 3) and Chapter 5 of the
+`IERS conventions <https://www.iers.org/SharedDocs/Publikationen/EN/IERS/Publications/tn/TechnNote36/tn36.pdf?__blob=publicationFile&v=1>`__.
+
+The angles are returned in radians. *time_expr* is expected to represent the number of Julian centuries elapsed since the epoch
+of J2000 in the `terrestrial time scale (TT) <https://en.wikipedia.org/wiki/Terrestrial_Time>`__.
+
+*thresh* represents the truncation threshold: trigonometric terms in the theory whose coefficients are less than *thresh* in magnitude
+will be discarded. In order to formulate the full theory without truncation, use a *thresh* value of zero.
+
+.. note::
+
+   A :ref:`tutorial <tut_iau2006>` is available showcasing the use of this function, including accuracy comparisons for
+   several values of the *thresh* argument.
+
+:param time_expr: the input time expression.
+:param thresh: the truncation threshold for the coefficients of the trigonometric series (in arcseconds).
+
+:returns: expressions for the :math:`X`, :math:`Y` and :math:`s` angles from the IAU2000/2006 precession-nutation theory.
+
+:raises ValueError: it *thresh* is negative or non-finite.
+
+)";
+}
+
 } // namespace heyoka_py::docstrings

@@ -40,6 +40,7 @@ Celestial mechanics and astrodynamics
   notebooks/ttv
   notebooks/vsop2013
   notebooks/elp2000
+  notebooks/iau2006
   notebooks/tides_spokes
   notebooks/lagrangian_propagator
   notebooks/gg_stab
