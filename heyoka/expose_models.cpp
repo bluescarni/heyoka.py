@@ -497,6 +497,26 @@ void expose_models(py::module_ &m)
                 {detail::ex_from_variant(xyz[0]), detail::ex_from_variant(xyz[1]), detail::ex_from_variant(xyz[2])});
         },
         "xyz"_a, docstrings::rot_icrs_fk5j2000().c_str());
+    m.def(
+        "_model_rot_itrs_icrs",
+        [](const std::array<vex_t, 3> &xyz, const vex_t &time_expr, double thresh, const hy::eop_data &data) {
+            return hy::model::rot_itrs_icrs(
+                {detail::ex_from_variant(xyz[0]), detail::ex_from_variant(xyz[1]), detail::ex_from_variant(xyz[2])},
+                hy::kw::time_expr = detail::ex_from_variant(time_expr), hy::kw::thresh = thresh,
+                hy::kw::eop_data = data);
+        },
+        "xyz"_a, "time_expr"_a = hy::time, "thresh"_a.noconvert() = hy::model::detail::iau2006_default_thresh,
+        "eop_data"_a = hy::eop_data(), docstrings::rot_itrs_icrs(hy::model::detail::iau2006_default_thresh).c_str());
+    m.def(
+        "_model_rot_icrs_itrs",
+        [](const std::array<vex_t, 3> &xyz, const vex_t &time_expr, double thresh, const hy::eop_data &data) {
+            return hy::model::rot_icrs_itrs(
+                {detail::ex_from_variant(xyz[0]), detail::ex_from_variant(xyz[1]), detail::ex_from_variant(xyz[2])},
+                hy::kw::time_expr = detail::ex_from_variant(time_expr), hy::kw::thresh = thresh,
+                hy::kw::eop_data = data);
+        },
+        "xyz"_a, "time_expr"_a = hy::time, "thresh"_a.noconvert() = hy::model::detail::iau2006_default_thresh,
+        "eop_data"_a = hy::eop_data(), docstrings::rot_icrs_itrs(hy::model::detail::iau2006_default_thresh).c_str());
 
     // Use macro to expose the EOP models.
 #define HEYOKA_PY_EXPOSE_MODEL_EOP(name)                                                                               \
@@ -528,7 +548,8 @@ void expose_models(py::module_ &m)
         [](hy::expression t_expr, double thresh) {
             return hy::model::iau2006(hy::kw::time_expr = std::move(t_expr), hy::kw::thresh = thresh);
         },
-        "time_expr"_a = hy::time, "thresh"_a.noconvert() = 1e-6, docstrings::iau2006().c_str());
+        "time_expr"_a = hy::time, "thresh"_a.noconvert() = hy::model::detail::iau2006_default_thresh,
+        docstrings::iau2006(hy::model::detail::iau2006_default_thresh).c_str());
 }
 
 } // namespace heyoka_py

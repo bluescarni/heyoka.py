@@ -1367,6 +1367,70 @@ axes of the FK5 frame at J2000.
 )";
 }
 
+std::string rot_itrs_icrs(double thresh)
+{
+    return fmt::format(
+        R"(rot_itrs_icrs(xyz: typing.Iterable[expression], time_expr: expression = heyoka.time, thresh: float = {}, eop_data: eop_data = eop_data()) -> list[expression]
+
+Rotation from ITRS to ICRS.
+
+.. versionadded:: 7.3.0
+
+This function will rotate the input Cartesian coordinates *xyz* from the axes of the
+`ITRS <https://en.wikipedia.org/wiki/International_Terrestrial_Reference_System_and_Frame>`__ frame to the axes of the
+`ICRS <https://en.wikipedia.org/wiki/International_Celestial_Reference_System_and_its_realizations>`__ frame.
+
+While the orientation of the ICRS is fixed in inertial space, the orientation of the ITRS is fixed relative to the Earth,
+and thus the rotation depends on the input time *time_expr* (which is expected to represent the number of Julian centuries elapsed
+since the epoch of J2000 in the `terrestrial time scale (TT) <https://en.wikipedia.org/wiki/Terrestrial_Time>`__).
+
+The rotation also requires in input an Earth orientation parameters dataset *eop_data* and a truncation threshold *thresh*
+for the IAU2000/2006 precession-nutation theory. Please see the documentation of :py:class:`~heyoka.eop_data` and
+:py:func:`~heyoka.model.iau2006()` for more information.
+
+:param xyz: the input Cartesian coordinates.
+:param time_expr: the input time expression.
+:param thresh: the truncation threshold for the IAU2000/2006 theory.
+:param eop_data: the EOP data to be used for the computation.
+
+:returns: the rotated Cartesian coordinates.
+
+)",
+        thresh);
+}
+
+std::string rot_icrs_itrs(double thresh)
+{
+    return fmt::format(
+        R"(rot_icrs_itrs(xyz: typing.Iterable[expression], time_expr: expression = heyoka.time, thresh: float = {}, eop_data: eop_data = eop_data()) -> list[expression]
+
+Rotation from ICRS to ITRS.
+
+.. versionadded:: 7.3.0
+
+This function will rotate the input Cartesian coordinates *xyz* from the axes of the
+`ICRS <https://en.wikipedia.org/wiki/International_Celestial_Reference_System_and_its_realizations>`__ frame to the axes of the
+`ITRS <https://en.wikipedia.org/wiki/International_Terrestrial_Reference_System_and_Frame>`__ frame.
+
+While the orientation of the ICRS is fixed in inertial space, the orientation of the ITRS is fixed relative to the Earth,
+and thus the rotation depends on the input time *time_expr* (which is expected to represent the number of Julian centuries elapsed
+since the epoch of J2000 in the `terrestrial time scale (TT) <https://en.wikipedia.org/wiki/Terrestrial_Time>`__).
+
+The rotation also requires in input an Earth orientation parameters dataset *eop_data* and a truncation threshold *thresh*
+for the IAU2000/2006 precession-nutation theory. Please see the documentation of :py:class:`~heyoka.eop_data` and
+:py:func:`~heyoka.model.iau2006()` for more information.
+
+:param xyz: the input Cartesian coordinates.
+:param time_expr: the input time expression.
+:param thresh: the truncation threshold for the IAU2000/2006 theory.
+:param eop_data: the EOP data to be used for the computation.
+
+:returns: the rotated Cartesian coordinates.
+
+)",
+        thresh);
+}
+
 std::string era()
 {
     return R"(era(time_expr: expression = heyoka.time, eop_data: eop_data = eop_data()) -> expression
@@ -1590,9 +1654,9 @@ std::string dYp()
     return detail::dXp_dYp_impl("Y");
 }
 
-std::string iau2006()
+std::string iau2006(double thresh)
 {
-    return R"(iau2006(time_expr: expression = heyoka.time, thresh: float = 1e-6) -> list[expression]
+    return fmt::format(R"(iau2006(time_expr: expression = heyoka.time, thresh: float = {}) -> list[expression]
 
 IAU2000/2006 precession-nutation theory.
 
@@ -1627,7 +1691,8 @@ will be discarded. In order to formulate the full theory without truncation, use
 
 :raises ValueError: it *thresh* is negative or non-finite.
 
-)";
+)",
+                       thresh);
 }
 
 } // namespace heyoka_py::docstrings

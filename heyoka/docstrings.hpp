@@ -55,6 +55,8 @@ std::string gpe_is_deep_space();
 std::string delta_tdb_tt();
 std::string rot_fk5j2000_icrs();
 std::string rot_icrs_fk5j2000();
+std::string rot_itrs_icrs(double);
+std::string rot_icrs_itrs(double);
 std::string era();
 std::string erap();
 std::string pm_x();
@@ -65,7 +67,7 @@ std::string dX();
 std::string dXp();
 std::string dY();
 std::string dYp();
-std::string iau2006();
+std::string iau2006(double);
 
 // var_ode_sys() and related.
 std::string var_args();
