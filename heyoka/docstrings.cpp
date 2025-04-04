@@ -860,6 +860,11 @@ std::string sgp4_propagator(const std::string &p)
    A :ref:`tutorial <tut_sgp4_propagator>` explaining the use of this class
    is available.
 
+.. note::
+
+   Consider using the factory function :py:func:`~heyoka.model.sgp4_propagator()`, rather
+   that constructing instances of this class by hand.
+
 )",
                        p);
 }
@@ -873,11 +878,6 @@ Constructor.
 .. versionadded:: 7.0.0
 
    This function now also accepts *sat_list* as a NumPy array.
-
-.. note::
-
-   As an alternative to this constructor, consider using the factory function
-   :py:func:`~heyoka.model.sgp4_propagator()`.
 
 The constructor will initialise the propagator from *sat_list*, which must be either a list
 of general perturbations element sets (GPEs) represented as ``Satrec`` objects from the
