@@ -1211,6 +1211,10 @@ std::string eop_data()
 
 This class is used to manage and access Earth orientation parameters data.
 
+.. note::
+
+   A :ref:`tutorial <tut_eop_data>` illustrating the use of this class is available.
+
 )";
 }
 
