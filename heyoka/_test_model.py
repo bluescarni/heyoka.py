@@ -543,3 +543,20 @@ class model_test_case(_ut.TestCase):
 
         out = cf(inputs=[0.0])
         self.assertFalse(np.isnan(out[0]))
+
+    def test_rot_itrs_icrs(self):
+        from . import cfunc, make_vars
+        from .model import rot_itrs_icrs, rot_icrs_itrs
+        import numpy as np
+
+        x, y, z = make_vars("x", "y", "z")
+        cf = cfunc(rot_icrs_itrs(rot_itrs_icrs([x, y, z])), [x, y, z])
+
+        out = cf(inputs=[1.0, 1.1, 1.2], time=0.0)
+        self.assertTrue(np.allclose(out, [1.0, 1.1, 1.2], rtol=1e-15, atol=0.0))
+
+        out = cf(inputs=[1.0, 1.1, 1.2], time=0.1)
+        self.assertTrue(np.allclose(out, [1.0, 1.1, 1.2], rtol=1e-15, atol=0.0))
+
+        out = cf(inputs=[1.0, 1.1, 1.2], time=-0.1)
+        self.assertTrue(np.allclose(out, [1.0, 1.1, 1.2], rtol=1e-15, atol=0.0))
