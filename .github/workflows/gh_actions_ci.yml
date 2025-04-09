@@ -73,6 +73,21 @@ jobs:
          with:
            name: sdist
            path: dist/*.tar.gz
+  manylinux228_x86_64-py313t:
+     runs-on: ubuntu-latest
+     container:
+      image: pagmo2/manylinux228_x86_64_with_deps:latest
+      env:
+        HEYOKA_PY_BUILD_TYPE: "Python313t"
+        TWINE_PASSWORD: ${{ secrets.TWINE_PASSWORD }}
+     steps:
+       - uses: actions/checkout@v4
+       - name: Build
+         run: bash tools/gha_manylinux.sh
+       - uses: actions/upload-artifact@v4
+         with:
+           name: wheel_313t_linux_x86_64
+           path: repaired_wheel/*.whl
   manylinux228_x86_64-py313:
      runs-on: ubuntu-latest
      container:

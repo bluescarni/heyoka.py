@@ -26,6 +26,8 @@ elif [[ ${HEYOKA_PY_BUILD_TYPE} == *312* ]]; then
 	PYTHON_DIR="cp312-cp312"
 elif [[ ${HEYOKA_PY_BUILD_TYPE} == *313* ]]; then
 	PYTHON_DIR="cp313-cp313"
+elif [[ ${HEYOKA_PY_BUILD_TYPE} == *313t* ]]; then
+	PYTHON_DIR="cp313-cp313t"
 else
 	echo "Invalid build type: ${HEYOKA_PY_BUILD_TYPE}"
 	exit 1
