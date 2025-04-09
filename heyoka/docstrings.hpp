@@ -68,6 +68,8 @@ std::string dXp();
 std::string dY();
 std::string dYp();
 std::string iau2006(double);
+std::string egm2008_pot(double, double);
+std::string egm2008_acc(double, double);
 
 // var_ode_sys() and related.
 std::string var_args();

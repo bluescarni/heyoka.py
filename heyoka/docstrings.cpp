@@ -1695,4 +1695,90 @@ will be discarded. In order to formulate the full theory without truncation, use
                        thresh);
 }
 
+std::string egm2008_pot(double def_mu, double def_a)
+{
+    return fmt::format(
+        R"(egm2008_pot(xyz: typing.Iterable[expression], n: int, m: int, mu: expression = {}, a: expression = {}) -> expression
+
+Geopotential (EGM2008).
+
+.. versionadded:: 7.3.0
+
+This function will return the value of the Earth's gravitational potential at the input Cartesian position
+*xyz* according to the `EGM2008 model <https://en.wikipedia.org/wiki/Earth_Gravitational_Model#EGM2008>`__.
+*xyz* is expected to represent the position vector (in meters) with respect to the Earth-centred Earth-fixed
+`WGS84 frame <https://en.wikipedia.org/wiki/World_Geodetic_System>`__ (which itself can be considered coincident
+with the `ITRF <https://en.wikipedia.org/wiki/International_Terrestrial_Reference_System_and_Frame>`__).
+
+*n* and *m* are, respectively, the maximum harmonic degree and order to be considered in the computation. Higher degrees
+and orders will produce more accurate values, at the cost of increased computational complexity.
+
+*mu* and *a* are, respectively, the gravitational parameter and reference Earth radius to be used in the computation.
+Both are expected to be provided in SI units. The default values are those specified in the documentation of the
+EGM2008 model.
+
+The potential will be returned in SI units.
+
+.. note::
+
+   Currently this function implements a version of EGM2008 in which the maximum degree and order
+   are capped below those of the full model.
+
+:param xyz: the position at which the potential will be evaluated.
+:param n: the maximum harmonic degree to be used in the computation.
+:param m: the maximum harmonic order to be used in the computation.
+:param mu: the Earth's gravitational parameter.
+:param a: the reference Earth radius.
+
+:returns: an expression for the geopotential at the position *xyz*.
+
+:raises ValueError: it *m* > *n* or if *n* is larger than an implementation-defined limit.
+
+)",
+        def_mu, def_a);
+}
+
+std::string egm2008_acc(double def_mu, double def_a)
+{
+    return fmt::format(
+        R"(egm2008_acc(xyz: typing.Iterable[expression], n: int, m: int, mu: expression = {}, a: expression = {}) -> list[expression]
+
+Gravitational acceleration (EGM2008).
+
+.. versionadded:: 7.3.0
+
+This function will return the value of the Earth's gravitational acceleration at the input Cartesian position
+*xyz* according to the `EGM2008 model <https://en.wikipedia.org/wiki/Earth_Gravitational_Model#EGM2008>`__.
+*xyz* is expected to represent the position vector (in meters) with respect to the Earth-centred Earth-fixed
+`WGS84 frame <https://en.wikipedia.org/wiki/World_Geodetic_System>`__ (which itself can be considered coincident
+with the `ITRF <https://en.wikipedia.org/wiki/International_Terrestrial_Reference_System_and_Frame>`__).
+
+*n* and *m* are, respectively, the maximum harmonic degree and order to be considered in the computation. Higher degrees
+and orders will produce more accurate values, at the cost of increased computational complexity.
+
+*mu* and *a* are, respectively, the gravitational parameter and reference Earth radius to be used in the computation.
+Both are expected to be provided in SI units. The default values are those specified in the documentation of the
+EGM2008 model.
+
+The Cartesian acceleration vector will be returned in SI units.
+
+.. note::
+
+   Currently this function implements a version of EGM2008 in which the maximum degree and order
+   are capped below those of the full model.
+
+:param xyz: the position at which the acceleration will be evaluated.
+:param n: the maximum harmonic degree to be used in the computation.
+:param m: the maximum harmonic order to be used in the computation.
+:param mu: the Earth's gravitational parameter.
+:param a: the reference Earth radius.
+
+:returns: an expression for the Cartesian acceleration vector due to the geopotential at the position *xyz*.
+
+:raises ValueError: it *m* > *n* or if *n* is larger than an implementation-defined limit.
+
+)",
+        def_mu, def_a);
+}
+
 } // namespace heyoka_py::docstrings

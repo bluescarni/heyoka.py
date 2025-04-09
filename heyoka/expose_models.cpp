@@ -550,6 +550,28 @@ void expose_models(py::module_ &m)
         },
         "time_expr"_a = hy::time, "thresh"_a.noconvert() = hy::model::detail::iau2006_default_thresh,
         docstrings::iau2006(hy::model::detail::iau2006_default_thresh).c_str());
+
+    // EGM2008.
+    m.def(
+        "_model_egm2008_pot",
+        [](const std::array<vex_t, 3> &xyz, std::uint32_t n, std::uint32_t m, const vex_t &mu, const vex_t &a) {
+            return hy::model::egm2008_pot(
+                {detail::ex_from_variant(xyz[0]), detail::ex_from_variant(xyz[1]), detail::ex_from_variant(xyz[2])}, n,
+                m, hy::kw::mu = detail::ex_from_variant(mu), hy::kw::a = detail::ex_from_variant(a));
+        },
+        "xyz"_a, "n"_a.noconvert(), "m"_a.noconvert(), "mu"_a = hy::model::detail::egm2008_default_mu,
+        "a"_a = hy::model::detail::egm2008_default_a,
+        docstrings::egm2008_pot(hy::model::detail::egm2008_default_mu, hy::model::detail::egm2008_default_a).c_str());
+    m.def(
+        "_model_egm2008_acc",
+        [](const std::array<vex_t, 3> &xyz, std::uint32_t n, std::uint32_t m, const vex_t &mu, const vex_t &a) {
+            return hy::model::egm2008_acc(
+                {detail::ex_from_variant(xyz[0]), detail::ex_from_variant(xyz[1]), detail::ex_from_variant(xyz[2])}, n,
+                m, hy::kw::mu = detail::ex_from_variant(mu), hy::kw::a = detail::ex_from_variant(a));
+        },
+        "xyz"_a, "n"_a.noconvert(), "m"_a.noconvert(), "mu"_a = hy::model::detail::egm2008_default_mu,
+        "a"_a = hy::model::detail::egm2008_default_a,
+        docstrings::egm2008_acc(hy::model::detail::egm2008_default_mu, hy::model::detail::egm2008_default_a).c_str());
 }
 
 } // namespace heyoka_py

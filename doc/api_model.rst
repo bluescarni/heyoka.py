@@ -45,6 +45,8 @@ Functions
    dY
    dYp
    iau2006
+   egm2008_pot
+   egm2008_acc
 
 Attributes
 ----------
