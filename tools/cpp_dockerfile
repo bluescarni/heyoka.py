@@ -1,6 +1,6 @@
+FROM docker.io/pagmo2/manylinux228_${ARCH}_with_deps
 ARG GITHUB_REF
 ARG ARCH
-FROM docker.io/pagmo2/manylinux228_${ARCH}_with_deps
 
 RUN echo "GITHUB_REF=${GITHUB_REF}"
 RUN echo "ARCH=${ARCH}"
