@@ -55,7 +55,7 @@ These are keyword arguments influencing just-in-time (JIT) compilation via LLVM.
 
   .. note::
 
-     Due to several LLVM issues around parallel JIT compilation, the ``parjit`` flag is disabled when using LLVM<20.
+     Due to several LLVM issues around parallel JIT compilation, the ``parjit`` flag is currently disabled.
 
 .. _api_common_kwargs_cfunc:
 
