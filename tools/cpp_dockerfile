@@ -1,5 +1,4 @@
 ARG ARCH
-RUN echo "ARCH=${ARCH}"
 FROM docker.io/pagmo2/manylinux228_${ARCH}_with_deps
 
 ARG GITHUB_REF
