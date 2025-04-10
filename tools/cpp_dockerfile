@@ -1,0 +1,31 @@
+ARG GITHUB_REF
+ARG ARCH
+FROM docker.io/pagmo2/manylinux228_${ARCH}_with_deps
+
+RUN echo "GITHUB_REF=${GITHUB_REF}"
+RUN echo "ARCH=${ARCH}"
+
+# The heyoka version to be used for releases.
+ARG HEYOKA_VERSION_RELEASE="7.3.0"
+RUN echo "HEYOKA_VERSION_RELEASE=${HEYOKA_VERSION_RELEASE}"
+
+RUN if [[ "${GITHUB_REF}" == "refs/tags/v"* ]]; then \
+      echo "Tag build detected" && \
+      curl -L -o heyoka.tar.gz https://github.com/bluescarni/heyoka/archive/refs/tags/v${HEYOKA_VERSION_RELEASE}.tar.gz && \
+      tar xzf heyoka.tar.gz && \
+      mv heyoka-${HEYOKA_VERSION_RELEASE} heyoka; \
+    else \
+      echo "Non-tag build detected" && \
+      git clone --depth 1 https://github.com/bluescarni/heyoka.git; \
+    fi
+
+RUN cd heyoka && \
+    mkdir build && \
+    cd build && \
+    cmake -DHEYOKA_WITH_MPPP=yes \
+            -DHEYOKA_WITH_SLEEF=yes \
+            -DHEYOKA_ENABLE_IPO=ON \
+            -DHEYOKA_FORCE_STATIC_LLVM=yes \
+            -DHEYOKA_HIDE_LLVM_SYMBOLS=yes \
+            -DCMAKE_BUILD_TYPE=Release ../ && \
+    make -j4 install

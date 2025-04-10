@@ -9,241 +9,255 @@ on:
     branches:
       - main
 jobs:
-  conda_asan:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Build
-        run: bash tools/gha_conda_asan.sh
-  conda_static:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Build
-        run: bash tools/gha_conda_static.sh
-  osx_heyoka_head_x86_64:
-    runs-on: macos-13
-    env:
-      HEYOKA_PY_PY_VERSION: "3.12"
-      HEYOKA_PY_CONDA_ARCH: "MacOSX-x86_64"
-    steps:
-      - uses: actions/checkout@v4
-      - name: Build
-        run: bash tools/gha_osx_heyoka_head.sh
-  osx_heyoka_head_x86_64_static:
-    runs-on: macos-13
-    env:
-      HEYOKA_PY_PY_VERSION: "3.12"
-      HEYOKA_PY_CONDA_ARCH: "MacOSX-x86_64"
-    steps:
-      - uses: actions/checkout@v4
-      - name: Build
-        run: bash tools/gha_osx_heyoka_head_static.sh
-  osx_heyoka_head_arm64:
-    runs-on: macos-14
-    env:
-      HEYOKA_PY_PY_VERSION: "3.12"
-      HEYOKA_PY_CONDA_ARCH: "MacOSX-arm64"
-    steps:
-      - uses: actions/checkout@v4
-      - name: Build
-        run: bash tools/gha_osx_heyoka_head.sh
-  osx_heyoka_head_arm64_static:
-    runs-on: macos-14
-    env:
-      HEYOKA_PY_PY_VERSION: "3.12"
-      HEYOKA_PY_CONDA_ARCH: "MacOSX-arm64"
-    steps:
-      - uses: actions/checkout@v4
-      - name: Build
-        run: bash tools/gha_osx_heyoka_head_static.sh
-  manylinux228_x86_64-sdist:
+  # conda_asan:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - name: Build
+  #       run: bash tools/gha_conda_asan.sh
+  # conda_static:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - name: Build
+  #       run: bash tools/gha_conda_static.sh
+  # osx_heyoka_head_x86_64:
+  #   runs-on: macos-13
+  #   env:
+  #     HEYOKA_PY_PY_VERSION: "3.12"
+  #     HEYOKA_PY_CONDA_ARCH: "MacOSX-x86_64"
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - name: Build
+  #       run: bash tools/gha_osx_heyoka_head.sh
+  # osx_heyoka_head_x86_64_static:
+  #   runs-on: macos-13
+  #   env:
+  #     HEYOKA_PY_PY_VERSION: "3.12"
+  #     HEYOKA_PY_CONDA_ARCH: "MacOSX-x86_64"
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - name: Build
+  #       run: bash tools/gha_osx_heyoka_head_static.sh
+  # osx_heyoka_head_arm64:
+  #   runs-on: macos-14
+  #   env:
+  #     HEYOKA_PY_PY_VERSION: "3.12"
+  #     HEYOKA_PY_CONDA_ARCH: "MacOSX-arm64"
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - name: Build
+  #       run: bash tools/gha_osx_heyoka_head.sh
+  # osx_heyoka_head_arm64_static:
+  #   runs-on: macos-14
+  #   env:
+  #     HEYOKA_PY_PY_VERSION: "3.12"
+  #     HEYOKA_PY_CONDA_ARCH: "MacOSX-arm64"
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - name: Build
+  #       run: bash tools/gha_osx_heyoka_head_static.sh
+  manylinux228_x86_64-cpp:
      runs-on: ubuntu-latest
-     container:
-      image: pagmo2/manylinux228_x86_64_with_deps:latest
-      env:
-        HEYOKA_PY_BUILD_TYPE: "Python312"
-        HEYOKA_PY_BUILD_SDIST: "yes"
-        TWINE_PASSWORD: ${{ secrets.TWINE_PASSWORD }}
      steps:
        - uses: actions/checkout@v4
-       - name: Build
-         run: bash tools/gha_manylinux.sh
-       - uses: actions/upload-artifact@v4
+       - name: Build and push
+         uses: docker/build-push-action@v6
          with:
-           name: sdist
-           path: dist/*.tar.gz
-  manylinux228_x86_64-py313t:
-     runs-on: ubuntu-latest
-     container:
-      image: pagmo2/manylinux228_x86_64_with_deps:latest
-      env:
-        HEYOKA_PY_BUILD_TYPE: "Python313t"
-        TWINE_PASSWORD: ${{ secrets.TWINE_PASSWORD }}
-     steps:
-       - uses: actions/checkout@v4
-       - name: Build
-         run: bash tools/gha_manylinux.sh
-       - uses: actions/upload-artifact@v4
-         with:
-           name: wheel_313t_linux_x86_64
-           path: repaired_wheel/*.whl
-  manylinux228_x86_64-py313:
-     runs-on: ubuntu-latest
-     container:
-      image: pagmo2/manylinux228_x86_64_with_deps:latest
-      env:
-        HEYOKA_PY_BUILD_TYPE: "Python313"
-        TWINE_PASSWORD: ${{ secrets.TWINE_PASSWORD }}
-     steps:
-       - uses: actions/checkout@v4
-       - name: Build
-         run: bash tools/gha_manylinux.sh
-       - uses: actions/upload-artifact@v4
-         with:
-           name: wheel_313_linux_x86_64
-           path: repaired_wheel/*.whl
-  manylinux228_x86_64-py312:
-     runs-on: ubuntu-latest
-     container:
-      image: pagmo2/manylinux228_x86_64_with_deps:latest
-      env:
-        HEYOKA_PY_BUILD_TYPE: "Python312"
-        TWINE_PASSWORD: ${{ secrets.TWINE_PASSWORD }}
-     steps:
-       - uses: actions/checkout@v4
-       - name: Build
-         run: bash tools/gha_manylinux.sh
-       - uses: actions/upload-artifact@v4
-         with:
-           name: wheel_312_linux_x86_64
-           path: repaired_wheel/*.whl
-  manylinux228_x86_64-py311:
-     runs-on: ubuntu-latest
-     container:
-      image: pagmo2/manylinux228_x86_64_with_deps:latest
-      env:
-        HEYOKA_PY_BUILD_TYPE: "Python311"
-        TWINE_PASSWORD: ${{ secrets.TWINE_PASSWORD }}
-     steps:
-       - uses: actions/checkout@v4
-       - name: Build
-         run: bash tools/gha_manylinux.sh
-       - uses: actions/upload-artifact@v4
-         with:
-           name: wheel_311_linux_x86_64
-           path: repaired_wheel/*.whl
-  manylinux228_x86_64-py310:
-     runs-on: ubuntu-latest
-     container:
-      image: pagmo2/manylinux228_x86_64_with_deps:latest
-      env:
-        HEYOKA_PY_BUILD_TYPE: "Python310"
-        TWINE_PASSWORD: ${{ secrets.TWINE_PASSWORD }}
-     steps:
-       - uses: actions/checkout@v4
-       - name: Build
-         run: bash tools/gha_manylinux.sh
-       - uses: actions/upload-artifact@v4
-         with:
-           name: wheel_310_linux_x86_64
-           path: repaired_wheel/*.whl
-  manylinux228_aarch64-py313:
-     runs-on: ubuntu-24.04-arm
-     container:
-      image: pagmo2/manylinux228_aarch64_with_deps:latest
-      env:
-        HEYOKA_PY_BUILD_TYPE: "Python313"
-        TWINE_PASSWORD: ${{ secrets.TWINE_PASSWORD }}
-     steps:
-       - uses: actions/checkout@v4
-       - name: Build
-         run: bash tools/gha_manylinux.sh
-       - uses: actions/upload-artifact@v4
-         with:
-           name: wheel_313_linux_aarch64
-           path: repaired_wheel/*.whl
-  manylinux228_aarch64-py312:
-     runs-on: ubuntu-24.04-arm
-     container:
-      image: pagmo2/manylinux228_aarch64_with_deps:latest
-      env:
-        HEYOKA_PY_BUILD_TYPE: "Python312"
-        TWINE_PASSWORD: ${{ secrets.TWINE_PASSWORD }}
-     steps:
-       - uses: actions/checkout@v4
-       - name: Build
-         run: bash tools/gha_manylinux.sh
-       - uses: actions/upload-artifact@v4
-         with:
-           name: wheel_312_linux_aarch64
-           path: repaired_wheel/*.whl
-  manylinux228_aarch64-py311:
-     runs-on: ubuntu-24.04-arm
-     container:
-      image: pagmo2/manylinux228_aarch64_with_deps:latest
-      env:
-        HEYOKA_PY_BUILD_TYPE: "Python311"
-        TWINE_PASSWORD: ${{ secrets.TWINE_PASSWORD }}
-     steps:
-       - uses: actions/checkout@v4
-       - name: Build
-         run: bash tools/gha_manylinux.sh
-       - uses: actions/upload-artifact@v4
-         with:
-           name: wheel_311_linux_aarch64
-           path: repaired_wheel/*.whl
-  manylinux228_aarch64-py310:
-     runs-on: ubuntu-24.04-arm
-     container:
-      image: pagmo2/manylinux228_aarch64_with_deps:latest
-      env:
-        HEYOKA_PY_BUILD_TYPE: "Python310"
-        TWINE_PASSWORD: ${{ secrets.TWINE_PASSWORD }}
-     steps:
-       - uses: actions/checkout@v4
-       - name: Build
-         run: bash tools/gha_manylinux.sh
-       - uses: actions/upload-artifact@v4
-         with:
-           name: wheel_310_linux_aarch64
-           path: repaired_wheel/*.whl
-  windows_2022_heyoka_head:
-    runs-on: windows-2022
-    steps:
-      - uses: actions/checkout@v4
-      - uses: conda-incubator/setup-miniconda@v3
-        with:
-          auto-update-conda: true
-          python-version: "3.12"
-          channels: conda-forge
-          channel-priority: strict
-      - uses: ilammy/msvc-dev-cmd@v1
-      - name: Build
-        shell: pwsh
-        run: |
-          conda install -y python=3.12 git pybind11 numpy>=2 cmake llvmdev tbb-devel tbb astroquery libboost-devel fmt skyfield spdlog sleef sympy cloudpickle zlib libzlib 'mppp=2.*' numba
-          git clone --depth 1 https://github.com/bluescarni/heyoka.git heyoka_cpp
-          cd heyoka_cpp
-          mkdir build
-          cd build
-          cmake .. -G "Visual Studio 17 2022" -A x64 -DCMAKE_PREFIX_PATH=C:\Miniconda\envs\test\Library -DCMAKE_INSTALL_PREFIX=C:\Miniconda\envs\test\Library -DHEYOKA_ENABLE_IPO=yes -DHEYOKA_WITH_SLEEF=yes -DHEYOKA_WITH_MPPP=yes
-          cmake --build . --config Release --target install -j4
-          cd ..
-          cd ..
-          mkdir build
-          cd build
-          cmake .. -G "Visual Studio 17 2022" -A x64 -DCMAKE_PREFIX_PATH=C:\Miniconda\envs\test\Library -DCMAKE_INSTALL_PREFIX=C:\Miniconda\envs\test\Library -DHEYOKA_PY_ENABLE_IPO=yes
-          cmake --build . --config Release --target install -j4
-          cd ..
-          cd tools
-          python ci_test_runner.py --with-numba
-  binder_cache:
-    runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main'
-    steps:
-    - name: cache binder build on mybinder.org
-      uses: jupyterhub/repo2docker-action@master
-      with:
-        NO_PUSH: true
-        MYBINDERORG_TAG: ${{ github.event.ref }} # This builds the container on mybinder.org with the branch that was pushed on.
+           build-args: |
+             GITHUB_REF=${{ github.ref }}
+             ARCH=x86_64
+           context: .
+           file: ./tools/cpp_dockerfile
+           push: true
+           tags: ghcr.io/${{ github.repository }}/cpp_lib_x86_64:latest
+  # manylinux228_x86_64-sdist:
+  #    runs-on: ubuntu-latest
+  #    container:
+  #     image: pagmo2/manylinux228_x86_64_with_deps:latest
+  #     env:
+  #       HEYOKA_PY_BUILD_TYPE: "Python312"
+  #       HEYOKA_PY_BUILD_SDIST: "yes"
+  #       TWINE_PASSWORD: ${{ secrets.TWINE_PASSWORD }}
+  #    steps:
+  #      - uses: actions/checkout@v4
+  #      - name: Build
+  #        run: bash tools/gha_manylinux.sh
+  #      - uses: actions/upload-artifact@v4
+  #        with:
+  #          name: sdist
+  #          path: dist/*.tar.gz
+  # manylinux228_x86_64-py313t:
+  #    runs-on: ubuntu-latest
+  #    container:
+  #     image: pagmo2/manylinux228_x86_64_with_deps:latest
+  #     env:
+  #       HEYOKA_PY_BUILD_TYPE: "Python313t"
+  #       TWINE_PASSWORD: ${{ secrets.TWINE_PASSWORD }}
+  #    steps:
+  #      - uses: actions/checkout@v4
+  #      - name: Build
+  #        run: bash tools/gha_manylinux.sh
+  #      - uses: actions/upload-artifact@v4
+  #        with:
+  #          name: wheel_313t_linux_x86_64
+  #          path: repaired_wheel/*.whl
+  # manylinux228_x86_64-py313:
+  #    runs-on: ubuntu-latest
+  #    container:
+  #     image: pagmo2/manylinux228_x86_64_with_deps:latest
+  #     env:
+  #       HEYOKA_PY_BUILD_TYPE: "Python313"
+  #       TWINE_PASSWORD: ${{ secrets.TWINE_PASSWORD }}
+  #    steps:
+  #      - uses: actions/checkout@v4
+  #      - name: Build
+  #        run: bash tools/gha_manylinux.sh
+  #      - uses: actions/upload-artifact@v4
+  #        with:
+  #          name: wheel_313_linux_x86_64
+  #          path: repaired_wheel/*.whl
+  # manylinux228_x86_64-py312:
+  #    runs-on: ubuntu-latest
+  #    container:
+  #     image: pagmo2/manylinux228_x86_64_with_deps:latest
+  #     env:
+  #       HEYOKA_PY_BUILD_TYPE: "Python312"
+  #       TWINE_PASSWORD: ${{ secrets.TWINE_PASSWORD }}
+  #    steps:
+  #      - uses: actions/checkout@v4
+  #      - name: Build
+  #        run: bash tools/gha_manylinux.sh
+  #      - uses: actions/upload-artifact@v4
+  #        with:
+  #          name: wheel_312_linux_x86_64
+  #          path: repaired_wheel/*.whl
+  # manylinux228_x86_64-py311:
+  #    runs-on: ubuntu-latest
+  #    container:
+  #     image: pagmo2/manylinux228_x86_64_with_deps:latest
+  #     env:
+  #       HEYOKA_PY_BUILD_TYPE: "Python311"
+  #       TWINE_PASSWORD: ${{ secrets.TWINE_PASSWORD }}
+  #    steps:
+  #      - uses: actions/checkout@v4
+  #      - name: Build
+  #        run: bash tools/gha_manylinux.sh
+  #      - uses: actions/upload-artifact@v4
+  #        with:
+  #          name: wheel_311_linux_x86_64
+  #          path: repaired_wheel/*.whl
+  # manylinux228_x86_64-py310:
+  #    runs-on: ubuntu-latest
+  #    container:
+  #     image: pagmo2/manylinux228_x86_64_with_deps:latest
+  #     env:
+  #       HEYOKA_PY_BUILD_TYPE: "Python310"
+  #       TWINE_PASSWORD: ${{ secrets.TWINE_PASSWORD }}
+  #    steps:
+  #      - uses: actions/checkout@v4
+  #      - name: Build
+  #        run: bash tools/gha_manylinux.sh
+  #      - uses: actions/upload-artifact@v4
+  #        with:
+  #          name: wheel_310_linux_x86_64
+  #          path: repaired_wheel/*.whl
+  # manylinux228_aarch64-py313:
+  #    runs-on: ubuntu-24.04-arm
+  #    container:
+  #     image: pagmo2/manylinux228_aarch64_with_deps:latest
+  #     env:
+  #       HEYOKA_PY_BUILD_TYPE: "Python313"
+  #       TWINE_PASSWORD: ${{ secrets.TWINE_PASSWORD }}
+  #    steps:
+  #      - uses: actions/checkout@v4
+  #      - name: Build
+  #        run: bash tools/gha_manylinux.sh
+  #      - uses: actions/upload-artifact@v4
+  #        with:
+  #          name: wheel_313_linux_aarch64
+  #          path: repaired_wheel/*.whl
+  # manylinux228_aarch64-py312:
+  #    runs-on: ubuntu-24.04-arm
+  #    container:
+  #     image: pagmo2/manylinux228_aarch64_with_deps:latest
+  #     env:
+  #       HEYOKA_PY_BUILD_TYPE: "Python312"
+  #       TWINE_PASSWORD: ${{ secrets.TWINE_PASSWORD }}
+  #    steps:
+  #      - uses: actions/checkout@v4
+  #      - name: Build
+  #        run: bash tools/gha_manylinux.sh
+  #      - uses: actions/upload-artifact@v4
+  #        with:
+  #          name: wheel_312_linux_aarch64
+  #          path: repaired_wheel/*.whl
+  # manylinux228_aarch64-py311:
+  #    runs-on: ubuntu-24.04-arm
+  #    container:
+  #     image: pagmo2/manylinux228_aarch64_with_deps:latest
+  #     env:
+  #       HEYOKA_PY_BUILD_TYPE: "Python311"
+  #       TWINE_PASSWORD: ${{ secrets.TWINE_PASSWORD }}
+  #    steps:
+  #      - uses: actions/checkout@v4
+  #      - name: Build
+  #        run: bash tools/gha_manylinux.sh
+  #      - uses: actions/upload-artifact@v4
+  #        with:
+  #          name: wheel_311_linux_aarch64
+  #          path: repaired_wheel/*.whl
+  # manylinux228_aarch64-py310:
+  #    runs-on: ubuntu-24.04-arm
+  #    container:
+  #     image: pagmo2/manylinux228_aarch64_with_deps:latest
+  #     env:
+  #       HEYOKA_PY_BUILD_TYPE: "Python310"
+  #       TWINE_PASSWORD: ${{ secrets.TWINE_PASSWORD }}
+  #    steps:
+  #      - uses: actions/checkout@v4
+  #      - name: Build
+  #        run: bash tools/gha_manylinux.sh
+  #      - uses: actions/upload-artifact@v4
+  #        with:
+  #          name: wheel_310_linux_aarch64
+  #          path: repaired_wheel/*.whl
+  # windows_2022_heyoka_head:
+  #   runs-on: windows-2022
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - uses: conda-incubator/setup-miniconda@v3
+  #       with:
+  #         auto-update-conda: true
+  #         python-version: "3.12"
+  #         channels: conda-forge
+  #         channel-priority: strict
+  #     - uses: ilammy/msvc-dev-cmd@v1
+  #     - name: Build
+  #       shell: pwsh
+  #       run: |
+  #         conda install -y python=3.12 git pybind11 numpy>=2 cmake llvmdev tbb-devel tbb astroquery libboost-devel fmt skyfield spdlog sleef sympy cloudpickle zlib libzlib 'mppp=2.*' numba
+  #         git clone --depth 1 https://github.com/bluescarni/heyoka.git heyoka_cpp
+  #         cd heyoka_cpp
+  #         mkdir build
+  #         cd build
+  #         cmake .. -G "Visual Studio 17 2022" -A x64 -DCMAKE_PREFIX_PATH=C:\Miniconda\envs\test\Library -DCMAKE_INSTALL_PREFIX=C:\Miniconda\envs\test\Library -DHEYOKA_ENABLE_IPO=yes -DHEYOKA_WITH_SLEEF=yes -DHEYOKA_WITH_MPPP=yes
+  #         cmake --build . --config Release --target install -j4
+  #         cd ..
+  #         cd ..
+  #         mkdir build
+  #         cd build
+  #         cmake .. -G "Visual Studio 17 2022" -A x64 -DCMAKE_PREFIX_PATH=C:\Miniconda\envs\test\Library -DCMAKE_INSTALL_PREFIX=C:\Miniconda\envs\test\Library -DHEYOKA_PY_ENABLE_IPO=yes
+  #         cmake --build . --config Release --target install -j4
+  #         cd ..
+  #         cd tools
+  #         python ci_test_runner.py --with-numba
+  # binder_cache:
+  #   runs-on: ubuntu-latest
+  #   if: github.ref == 'refs/heads/main'
+  #   steps:
+  #   - name: cache binder build on mybinder.org
+  #     uses: jupyterhub/repo2docker-action@master
+  #     with:
+  #       NO_PUSH: true
+  #       MYBINDERORG_TAG: ${{ github.event.ref }} # This builds the container on mybinder.org with the branch that was pushed on.
