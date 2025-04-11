@@ -416,18 +416,31 @@ void expose_models(py::module_ &m)
         },
         "inputs"_a, "nn_hidden"_a, "n_out"_a, "activations"_a);
 
-    // Cartesian to Geodesic differentiable transformation
+    // Cartesian<->geodetic.
     m.def(
         "_model_cart2geo",
-        [](const std::vector<hy::expression> &xyz, double ecc2, double R_eq,
-           unsigned n_iters) -> std::vector<hy::expression> {
-            return hy::model::cart2geo(xyz, hy::kw::ecc2 = ecc2, hy::kw::R_eq = R_eq, hy::kw::n_iters = n_iters);
+        [](const std::array<vex_t, 3> &xyz, double ecc2, double R_eq, unsigned n_iters) {
+            return hy::model::cart2geo(
+                {detail::ex_from_variant(xyz[0]), detail::ex_from_variant(xyz[1]), detail::ex_from_variant(xyz[2])},
+                hy::kw::ecc2 = ecc2, hy::kw::R_eq = R_eq, hy::kw::n_iters = n_iters);
         },
         "xyz"_a,
         "ecc2"_a = 1
                    - hy::model::detail::b_earth * hy::model::detail::b_earth
                          / (hy::model::detail::a_earth * hy::model::detail::a_earth),
         "R_eq"_a = hy::model::detail::a_earth, "n_iters"_a = 4u, docstrings::cart2geo().c_str());
+    m.def(
+        "_model_geo2cart",
+        [](const std::array<vex_t, 3> &geo, double ecc2, double R_eq) {
+            return hy::model::geo2cart(
+                {detail::ex_from_variant(geo[0]), detail::ex_from_variant(geo[1]), detail::ex_from_variant(geo[2])},
+                hy::kw::ecc2 = ecc2, hy::kw::R_eq = R_eq);
+        },
+        "geo"_a,
+        "ecc2"_a = 1
+                   - hy::model::detail::b_earth * hy::model::detail::b_earth
+                         / (hy::model::detail::a_earth * hy::model::detail::a_earth),
+        "R_eq"_a = hy::model::detail::a_earth, docstrings::geo2cart().c_str());
 
     // Thermospheric model NRLMSISE00
     m.def(
@@ -550,6 +563,28 @@ void expose_models(py::module_ &m)
         },
         "time_expr"_a = hy::time, "thresh"_a.noconvert() = hy::model::detail::iau2006_default_thresh,
         docstrings::iau2006(hy::model::detail::iau2006_default_thresh).c_str());
+
+    // EGM2008.
+    m.def(
+        "_model_egm2008_pot",
+        [](const std::array<vex_t, 3> &xyz, std::uint32_t n, std::uint32_t m, const vex_t &mu, const vex_t &a) {
+            return hy::model::egm2008_pot(
+                {detail::ex_from_variant(xyz[0]), detail::ex_from_variant(xyz[1]), detail::ex_from_variant(xyz[2])}, n,
+                m, hy::kw::mu = detail::ex_from_variant(mu), hy::kw::a = detail::ex_from_variant(a));
+        },
+        "xyz"_a, "n"_a.noconvert(), "m"_a.noconvert(), "mu"_a = hy::model::detail::egm2008_default_mu,
+        "a"_a = hy::model::detail::egm2008_default_a,
+        docstrings::egm2008_pot(hy::model::detail::egm2008_default_mu, hy::model::detail::egm2008_default_a).c_str());
+    m.def(
+        "_model_egm2008_acc",
+        [](const std::array<vex_t, 3> &xyz, std::uint32_t n, std::uint32_t m, const vex_t &mu, const vex_t &a) {
+            return hy::model::egm2008_acc(
+                {detail::ex_from_variant(xyz[0]), detail::ex_from_variant(xyz[1]), detail::ex_from_variant(xyz[2])}, n,
+                m, hy::kw::mu = detail::ex_from_variant(mu), hy::kw::a = detail::ex_from_variant(a));
+        },
+        "xyz"_a, "n"_a.noconvert(), "m"_a.noconvert(), "mu"_a = hy::model::detail::egm2008_default_mu,
+        "a"_a = hy::model::detail::egm2008_default_a,
+        docstrings::egm2008_acc(hy::model::detail::egm2008_default_mu, hy::model::detail::egm2008_default_a).c_str());
 }
 
 } // namespace heyoka_py

@@ -16,16 +16,18 @@ BRANCH_NAME=`git rev-parse --abbrev-ref HEAD`
 echo "BRANCH_NAME: ${BRANCH_NAME}"
 
 # Detect the Python version.
-if [[ ${HEYOKA_PY_BUILD_TYPE} == *39* ]]; then
+if [[ ${HEYOKA_PY_BUILD_TYPE} == *39 ]]; then
 	PYTHON_DIR="cp39-cp39"
-elif [[ ${HEYOKA_PY_BUILD_TYPE} == *310* ]]; then
+elif [[ ${HEYOKA_PY_BUILD_TYPE} == *310 ]]; then
 	PYTHON_DIR="cp310-cp310"
-elif [[ ${HEYOKA_PY_BUILD_TYPE} == *311* ]]; then
+elif [[ ${HEYOKA_PY_BUILD_TYPE} == *311 ]]; then
 	PYTHON_DIR="cp311-cp311"
-elif [[ ${HEYOKA_PY_BUILD_TYPE} == *312* ]]; then
+elif [[ ${HEYOKA_PY_BUILD_TYPE} == *312 ]]; then
 	PYTHON_DIR="cp312-cp312"
-elif [[ ${HEYOKA_PY_BUILD_TYPE} == *313* ]]; then
+elif [[ ${HEYOKA_PY_BUILD_TYPE} == *313 ]]; then
 	PYTHON_DIR="cp313-cp313"
+elif [[ ${HEYOKA_PY_BUILD_TYPE} == *313t ]]; then
+	PYTHON_DIR="cp313-cp313t"
 else
 	echo "Invalid build type: ${HEYOKA_PY_BUILD_TYPE}"
 	exit 1
@@ -78,6 +80,8 @@ export LD_LIBRARY_PATH="/usr/local/lib64:/usr/local/lib"
 if [[ "${HEYOKA_PY_BUILD_SDIST}" == "yes" ]]; then
 	# Build the heyoka.py sdist.
 	/opt/python/${PYTHON_DIR}/bin/python -m build . --sdist
+	# Report the size.
+	echo "sdist archive size: `du -h dist/heyoka*|awk '{print $1}'`"
 	# Try to install it and run the tests.
 	/opt/python/${PYTHON_DIR}/bin/pip install dist/heyoka*
 	cd ${GITHUB_WORKSPACE}/tools
@@ -94,6 +98,8 @@ else
 	/opt/python/${PYTHON_DIR}/bin/pip wheel . -v
 	# Repair it.
 	auditwheel repair ./heyoka*.whl -w ./repaired_wheel
+	# Report the size.
+	echo "wheel archive size: `du -h repaired_wheel/heyoka*|awk '{print $1}'`"
 	# Try to install it and run the tests.
 	unset LD_LIBRARY_PATH
 	cd /

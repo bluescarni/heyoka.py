@@ -560,3 +560,31 @@ class model_test_case(_ut.TestCase):
 
         out = cf(inputs=[1.0, 1.1, 1.2], time=-0.1)
         self.assertTrue(np.allclose(out, [1.0, 1.1, 1.2], rtol=1e-15, atol=0.0))
+
+    def test_egm2008(self):
+        from . import make_vars
+        from .model import egm2008_pot, egm2008_acc
+
+        x, y, z = make_vars("x", "y", "z")
+
+        self.assertNotEqual(
+            egm2008_pot([x, y, z], n=2, m=2), egm2008_pot([x, y, z], n=2, m=2, mu=1.2)
+        )
+        self.assertNotEqual(
+            egm2008_pot([x, y, z], n=2, m=2), egm2008_pot([x, y, z], n=2, m=2, a=1.2)
+        )
+        self.assertNotEqual(
+            egm2008_pot([x, y, z], n=2, m=2, a=1.2),
+            egm2008_pot([x, y, z], n=2, m=2, mu=1.2),
+        )
+
+        self.assertNotEqual(
+            egm2008_acc([x, y, z], n=2, m=2), egm2008_acc([x, y, z], n=2, m=2, mu=1.2)
+        )
+        self.assertNotEqual(
+            egm2008_acc([x, y, z], n=2, m=2), egm2008_acc([x, y, z], n=2, m=2, a=1.2)
+        )
+        self.assertNotEqual(
+            egm2008_acc([x, y, z], n=2, m=2, a=1.2),
+            egm2008_acc([x, y, z], n=2, m=2, mu=1.2),
+        )
