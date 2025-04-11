@@ -80,6 +80,8 @@ export LD_LIBRARY_PATH="/usr/local/lib64:/usr/local/lib"
 if [[ "${HEYOKA_PY_BUILD_SDIST}" == "yes" ]]; then
 	# Build the heyoka.py sdist.
 	/opt/python/${PYTHON_DIR}/bin/python -m build . --sdist
+	# Report the size.
+	echo "sdist archive size: `du -h dist/heyoka*|awk '{print $1}'`"
 	# Try to install it and run the tests.
 	/opt/python/${PYTHON_DIR}/bin/pip install dist/heyoka*
 	cd ${GITHUB_WORKSPACE}/tools
@@ -96,6 +98,8 @@ else
 	/opt/python/${PYTHON_DIR}/bin/pip wheel . -v
 	# Repair it.
 	auditwheel repair ./heyoka*.whl -w ./repaired_wheel
+	# Report the size.
+	echo "wheel archive size: `du -h repaired_wheel/heyoka*|awk '{print $1}'`"
 	# Try to install it and run the tests.
 	unset LD_LIBRARY_PATH
 	cd /
