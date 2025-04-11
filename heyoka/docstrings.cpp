@@ -438,9 +438,9 @@ Examples:
 // Models
 std::string cart2geo()
 {
-    return R"(cart2geo(xyz: list[expression], ecc2: float = 0.006694379990197619, R_eq: float = 6378137.0, n_iters: int = 4) -> list[expression]
+    return R"(cart2geo(xyz: typing.Iterable[expression], ecc2: float = 0.006694379990197619, R_eq: float = 6378137.0, n_iters: int = 4) -> list[expression]
 
-Produces the expression of the Cartesian coordinates as a function of geodetic coordinates.
+Transform Cartesian coordinates into geodetic coordinates.
 
 .. versionadded:: 4.0.0
 
@@ -449,23 +449,56 @@ Produces the expression of the Cartesian coordinates as a function of geodetic c
    A :ref:`tutorial <Thermonets>` showcasing also the use of this
    function is available.
 
-This function will compute the expressions of the Geodetic coordinates as a function of Cartesian coordinates using
-the Hirvonen and Moritz iterations (see "Physical Geodesy" by Heiskanen and Moritz pp.181-183).
+This function will compute the expressions of the geodetic coordinates as functions of the input Cartesian coordinates using
+the Hirvonen and Moritz iterations (see "Physical Geodesy" by Heiskanen and Moritz, pp.181-183).
 
 A few checks are run on the input arguments. Specifically:
 
 - the number of Cartesian variable (i.e., the length of *xyz*) must be three,
-- *ecc2* must be finite and positive,
+- *ecc2* must be finite and non-negative,
 - *R_eq* must be finite and positive,
 - *n_iters* must be positive.
 
-:param xyz: expressions for the Cartesian components. [units consistent with *R_eq*]
+The default values for *R_eq* and *ecc2* are taken from the `WGS84 <https://en.wikipedia.org/wiki/World_Geodetic_System>`__ model.
+
+:param xyz: expressions for the Cartesian components [units consistent with *R_eq*].
 :param ecc2: the reference ellipsoid eccentricity squared.
-:param R_eq: the reference ellipsoid equatorial radius in meters. [units consistent with *xyz*]
+:param R_eq: the reference ellipsoid equatorial radius [units consistent with *xyz*].
 :param n_iters: number of Hirvonen and Moritz iterations of the inversion algorithm.
 
 :returns: the expressions for the geodetic coordinates [alt, lat, lon]. *alt* in the same units as *xyz* and *R_eq*,
   *lat* in :math:`\left[ -\frac{\pi}{2}, \frac{\pi}{2} \right]` and *lon* in :math:`\left[ -\pi, \pi \right]`.
+
+:raises ValueError: if one or more input arguments are malformed, as explained above.
+
+)";
+}
+
+std::string geo2cart()
+{
+    return R"(geo2cart(geo: typing.Iterable[expression], ecc2: float = 0.006694379990197619, R_eq: float = 6378137.0) -> list[expression]
+
+Transform geodetic coordinates into Cartesian coordinates.
+
+.. versionadded:: 7.3.0
+
+This function will convert the input geodetic coordinates (height, latitude, longitude) into Cartesian
+coordinates. The input height is expected in the same units as *R_eq*, while latitude and longitude are
+expected in radians.
+
+A few checks are run on the input arguments. Specifically:
+
+- the number of geodetic variables (i.e., the length of *geo*) must be three,
+- *ecc2* must be finite and non-negative,
+- *R_eq* must be finite and positive.
+
+The default values for *R_eq* and *ecc2* are taken from the `WGS84 <https://en.wikipedia.org/wiki/World_Geodetic_System>`__ model.
+
+:param geo: expressions for the geodetic components.
+:param ecc2: the reference ellipsoid eccentricity squared.
+:param R_eq: the reference ellipsoid equatorial radius.
+
+:returns: the expressions for the Cartesian coordinates [x, y, z] in the same units as *R_eq*.
 
 :raises ValueError: if one or more input arguments are malformed, as explained above.
 
@@ -493,7 +526,7 @@ The expression is approximated by an artificial neural network (a thermoNET) tra
    A :ref:`tutorial <Thermonets>` showcasing the use of this
    function is available.
 
-A few checks are run on the input arguments. Specifically, the number of geodesic variables (i.e., the length of *geodetic*)
+A few checks are run on the input arguments. Specifically, the number of geodetic variables (i.e., the length of *geodetic*)
 must be three.
 
 :param geodetic: expressions for the Geodetic components. [h, lat, lon] with h in km and lat in :math:`\left[ -\frac{\pi}{2}, \frac{\pi}{2} \right]`.
@@ -530,7 +563,7 @@ The expression is approximated by an artificial neural network (a thermoNET) tra
    A :ref:`tutorial <Thermonets>` showcasing the use of this
    function is available.
 
-A few checks are run on the input arguments. Specifically, the number of geodesic variables (i.e., the length of *geodetic*) must be three.
+A few checks are run on the input arguments. Specifically, the number of geodetic variables (i.e., the length of *geodetic*) must be three.
 
 :param geodetic: expressions for the Geodetic components. [h, lat, lon] with h in km and lat in :math:`\left[ -\frac{\pi}{2}, \frac{\pi}{2} \right]`.
 :param f107: the F10.7 index.

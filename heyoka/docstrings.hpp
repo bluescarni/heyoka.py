@@ -46,6 +46,7 @@ std::string hamiltonian();
 
 // Models.
 std::string cart2geo();
+std::string geo2cart();
 std::string nrlmsise00_tn();
 std::string jb08_tn();
 std::string fixed_centres();

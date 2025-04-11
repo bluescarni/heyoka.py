@@ -22,6 +22,7 @@ Functions
    :toctree: autosummary_generated
 
    cart2geo
+   geo2cart
    nrlmsise00_tn
    jb08_tn
    fixed_centres
