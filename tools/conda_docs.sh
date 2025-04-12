@@ -16,7 +16,7 @@ export PATH="$HOME/miniforge/bin:$PATH"
 bash miniforge.sh -b -p $HOME/miniforge
 conda create -y -p $deps_dir c-compiler cxx-compiler python=${HEYOKA_PY_PY_VERSION} git pybind11 \
     ninja 'numpy>=2' mpmath cmake llvmdev tbb-devel tbb astroquery libboost-devel \
-    'mppp=2.*' sleef fmt skyfield spdlog myst-nb matplotlib sympy scipy cloudpickle \
+    'mppp=2.*' sleef fmt skyfield spdlog myst-nb matplotlib sympy scipy cartopy cloudpickle \
     'sphinx=8.*' 'sphinx-book-theme=1.*'
 source activate $deps_dir
 
