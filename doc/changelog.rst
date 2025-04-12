@@ -11,7 +11,7 @@ New
 
 - Add function to convert from geodetic to Cartesian coordinates
   (`#226 <https://github.com/bluescarni/heyoka.py/pull/226>`__).
-- Add precompiled wheel for free-threaded Python 3.13
+- Add precompiled wheels for free-threaded Python 3.13
   (`#226 <https://github.com/bluescarni/heyoka.py/pull/226>`__).
 - Add support for free-threaded Python
   (`#226 <https://github.com/bluescarni/heyoka.py/pull/226>`__).
