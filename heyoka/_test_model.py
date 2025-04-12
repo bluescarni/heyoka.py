@@ -15,8 +15,6 @@ class model_test_case(_ut.TestCase):
             model,
             make_vars,
             expression as ex,
-            sqrt,
-            sum as hysum,
             par,
         )
 
@@ -101,7 +99,7 @@ class model_test_case(_ut.TestCase):
         en = model.rotating_energy([0.0, 0.0, 3.0])
 
     def test_fixed_centres(self):
-        from . import model, make_vars, expression as ex, sqrt
+        from . import model, make_vars, expression as ex
         from numpy import single
 
         x, y, z, vx, vy, vz = make_vars("x", "y", "z", "vx", "vy", "vz")
@@ -153,7 +151,7 @@ class model_test_case(_ut.TestCase):
         self.assertTrue("1.10000002" in repr(dyn))
 
     def test_nbody(self):
-        from . import model, expression, sqrt, make_vars
+        from . import model, expression, make_vars
 
         dyn = model.nbody(2, masses=[0.0, 0.0])
 
@@ -297,9 +295,11 @@ class model_test_case(_ut.TestCase):
         self.assertEqual(my_ffnn4[0], expression(1.3) + (expression(1.2) * x))
 
     def test_cart2geo(self):
+        import numpy as np
         from . import model, make_vars, cfunc
 
         x, y, z = make_vars("x", "y", "z")
+        h, phi, lon = make_vars("h", "phi", "lon")
         geodesic1 = model.cart2geo([x, y, z], ecc2=0.13, R_eq=60.0, n_iters=1)
         geodesic2 = model.cart2geo([x, y, z])
 
@@ -328,6 +328,35 @@ class model_test_case(_ut.TestCase):
         self.assertTrue(
             (geodesic2_cf([6000000, 6000000, 6000000])[2] - 0.7853981633974483) ** 2
             < 1e-12**2
+        )
+
+        # Test the inverse too.
+        cart2_cf = cfunc(model.geo2cart([h, phi, lon]), vars=[h, phi, lon])
+        geo = geodesic2_cf([6000000, 6000000, 6000000])
+        cart = cart2_cf(geo)
+        self.assertLess(np.linalg.norm(cart - [6000000, 6000000, 6000000]), 1e-4)
+
+        # Check that the optional args are passed correctly.
+        self.assertNotEqual(
+            model.geo2cart([h, phi, lon]), model.geo2cart([h, phi, lon], R_eq=1.0)
+        )
+        self.assertNotEqual(
+            model.geo2cart([h, phi, lon]), model.geo2cart([h, phi, lon], ecc2=0.1)
+        )
+        self.assertNotEqual(
+            model.geo2cart([h, phi, lon], R_eq=1.0),
+            model.geo2cart([h, phi, lon], ecc2=0.1),
+        )
+
+        self.assertNotEqual(
+            model.cart2geo([h, phi, lon]), model.cart2geo([h, phi, lon], R_eq=1.0)
+        )
+        self.assertNotEqual(
+            model.cart2geo([h, phi, lon]), model.cart2geo([h, phi, lon], ecc2=0.1)
+        )
+        self.assertNotEqual(
+            model.cart2geo([h, phi, lon], R_eq=1.0),
+            model.cart2geo([h, phi, lon], ecc2=0.1),
         )
 
     def test_nrlmsise00(self):
