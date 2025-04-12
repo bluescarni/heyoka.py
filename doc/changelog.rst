@@ -9,6 +9,14 @@ Changelog
 New
 ~~~
 
+- Add function to convert from geodetic to Cartesian coordinates
+  (`#226 <https://github.com/bluescarni/heyoka.py/pull/226>`__).
+- Add precompiled wheels for free-threaded Python 3.13
+  (`#226 <https://github.com/bluescarni/heyoka.py/pull/226>`__).
+- Add support for free-threaded Python
+  (`#226 <https://github.com/bluescarni/heyoka.py/pull/226>`__).
+- Add an implementation of the EGM2008 geopotential model
+  (`#226 <https://github.com/bluescarni/heyoka.py/pull/226>`__).
 - Add an implementation of the IAU2000/2006 precession-nutation theory
   (`#224 <https://github.com/bluescarni/heyoka.py/pull/224>`__).
 - Introduce class to represent, manage and update EOP data

@@ -46,6 +46,7 @@ std::string hamiltonian();
 
 // Models.
 std::string cart2geo();
+std::string geo2cart();
 std::string nrlmsise00_tn();
 std::string jb08_tn();
 std::string fixed_centres();
@@ -68,6 +69,8 @@ std::string dXp();
 std::string dY();
 std::string dYp();
 std::string iau2006(double);
+std::string egm2008_pot(double, double);
+std::string egm2008_acc(double, double);
 
 // var_ode_sys() and related.
 std::string var_args();

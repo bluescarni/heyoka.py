@@ -22,6 +22,7 @@ Functions
    :toctree: autosummary_generated
 
    cart2geo
+   geo2cart
    nrlmsise00_tn
    jb08_tn
    fixed_centres
@@ -45,6 +46,8 @@ Functions
    dY
    dYp
    iau2006
+   egm2008_pot
+   egm2008_acc
 
 Attributes
 ----------

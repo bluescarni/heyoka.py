@@ -104,7 +104,7 @@ PyObject *import_numpy(PyObject *m)
 
 #endif
 
-PYBIND11_MODULE(core, m)
+PYBIND11_MODULE(core, m, pybind11::mod_gil_not_used())
 {
     using namespace pybind11::literals;
     namespace docstrings = heypy::docstrings;
