@@ -1739,7 +1739,7 @@ Geopotential (EGM2008).
 
 This function will return the value of the Earth's gravitational potential at the input Cartesian position
 *xyz* according to the `EGM2008 model <https://en.wikipedia.org/wiki/Earth_Gravitational_Model#EGM2008>`__.
-*xyz* is expected to represent the position vector (in meters) with respect to the Earth-centred Earth-fixed
+*xyz* is expected to represent the position vector with respect to the Earth-centred Earth-fixed
 `WGS84 frame <https://en.wikipedia.org/wiki/World_Geodetic_System>`__ (which itself can be considered coincident
 with the `ITRF <https://en.wikipedia.org/wiki/International_Terrestrial_Reference_System_and_Frame>`__).
 
@@ -1747,10 +1747,8 @@ with the `ITRF <https://en.wikipedia.org/wiki/International_Terrestrial_Referenc
 and orders will produce more accurate values, at the cost of increased computational complexity.
 
 *mu* and *a* are, respectively, the gravitational parameter and reference Earth radius to be used in the computation.
-Both are expected to be provided in SI units. The default values are those specified in the documentation of the
-EGM2008 model.
-
-The potential will be returned in SI units.
+Both are expected to be provided in units consistent with each other and with *xyz*. The default values (in SI units) are
+those specified in the documentation of the EGM2008 model.
 
 .. note::
 
@@ -1782,7 +1780,7 @@ Gravitational acceleration (EGM2008).
 
 This function will return the value of the Earth's gravitational acceleration at the input Cartesian position
 *xyz* according to the `EGM2008 model <https://en.wikipedia.org/wiki/Earth_Gravitational_Model#EGM2008>`__.
-*xyz* is expected to represent the position vector (in meters) with respect to the Earth-centred Earth-fixed
+*xyz* is expected to represent the position vector with respect to the Earth-centred Earth-fixed
 `WGS84 frame <https://en.wikipedia.org/wiki/World_Geodetic_System>`__ (which itself can be considered coincident
 with the `ITRF <https://en.wikipedia.org/wiki/International_Terrestrial_Reference_System_and_Frame>`__).
 
@@ -1790,10 +1788,8 @@ with the `ITRF <https://en.wikipedia.org/wiki/International_Terrestrial_Referenc
 and orders will produce more accurate values, at the cost of increased computational complexity.
 
 *mu* and *a* are, respectively, the gravitational parameter and reference Earth radius to be used in the computation.
-Both are expected to be provided in SI units. The default values are those specified in the documentation of the
-EGM2008 model.
-
-The Cartesian acceleration vector will be returned in SI units.
+Both are expected to be provided in units consistent with each other and with *xyz*. The default values (in SI units) are
+those specified in the documentation of the EGM2008 model.
 
 .. note::
 
