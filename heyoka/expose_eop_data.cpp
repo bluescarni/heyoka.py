@@ -46,12 +46,14 @@ namespace
 // exact same dtype as the PYBIND11_NUMPY_DTYPE macro.
 auto make_eop_data_row_dtype()
 {
+    using namespace pybind11::literals;
+
     const std::vector<std::string> fields = {"mjd", "delta_ut1_utc", "pm_x", "pm_y", "dX", "dY"};
     py::list dlist;
     for (const auto &field : fields) {
         dlist.append(py::make_tuple(field, "f8"));
     }
-    return py::module_::import("numpy").attr("dtype")(dlist).cast<pybind11::dtype>();
+    return py::module_::import("numpy").attr("dtype")(dlist, "align"_a = true).cast<pybind11::dtype>();
 }
 
 } // namespace

@@ -528,6 +528,17 @@ class model_test_case(_ut.TestCase):
         out = cf(inputs=[0.0])
         self.assertFalse(np.any(np.isnan(out)))
 
+    def test_sw(self):
+        from . import cfunc, make_vars
+        from .model import Ap_avg, f107, f107a_center81
+        import numpy as np
+
+        x = make_vars("x")
+        cf = cfunc([Ap_avg(x), f107(x), f107a_center81(x)], [x])
+
+        out = cf(inputs=[0.0])
+        self.assertFalse(np.any(np.isnan(out)))
+
     def test_dXdY(self):
         from . import cfunc, make_vars
         from .model import dX, dXp, dY, dYp

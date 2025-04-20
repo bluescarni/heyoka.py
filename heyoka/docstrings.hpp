@@ -71,6 +71,9 @@ std::string dYp();
 std::string iau2006(double);
 std::string egm2008_pot(double, double);
 std::string egm2008_acc(double, double);
+std::string Ap_avg();
+std::string f107();
+std::string f107a_center81();
 
 // var_ode_sys() and related.
 std::string var_args();
@@ -115,6 +118,14 @@ std::string eop_data_timestamp();
 std::string eop_data_identifier();
 std::string eop_data_fetch_latest_iers_rapid();
 std::string eop_data_fetch_latest_iers_long_term();
+
+// sw data.
+std::string sw_data();
+std::string sw_data_init();
+std::string sw_data_table();
+std::string sw_data_timestamp();
+std::string sw_data_identifier();
+std::string sw_data_fetch_latest_celestrak();
 
 } // namespace heyoka_py::docstrings
 

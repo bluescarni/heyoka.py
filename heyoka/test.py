@@ -2078,6 +2078,7 @@ def run_test_suite():
         _test_var_integrator,
         _test_sgp4_propagator,
         _test_eop_data,
+        _test_sw_data,
     )
     import numpy as np
     from .model import nbody
@@ -2127,6 +2128,7 @@ def run_test_suite():
     suite.addTest(tl.loadTestsFromTestCase(_test_sympy.sympy_test_case))
     suite.addTest(tl.loadTestsFromTestCase(_test_memcache.memcache_test_case))
     suite.addTest(tl.loadTestsFromTestCase(_test_eop_data.eop_data_test_case))
+    suite.addTest(tl.loadTestsFromTestCase(_test_sw_data.sw_data_test_case))
 
     test_result = _ut.TextTestRunner(verbosity=2).run(suite)
 

@@ -1810,4 +1810,179 @@ those specified in the documentation of the EGM2008 model.
         def_mu, def_a);
 }
 
+std::string sw_data()
+{
+    return R"(Space weather data class.
+
+.. versionadded:: 7.3.0
+
+This class is used to manage and access space weather (SW) data.
+
+.. note::
+
+   A :ref:`tutorial <tut_sw_data>` illustrating the use of this class is available.
+
+)";
+}
+
+std::string sw_data_init()
+{
+    return R"(__init__(self)
+
+Default constructor.
+
+The default constructor initialises the SW data with a builtin copy of the ``SW-All.csv``
+data file from `celestrak <https://celestrak.org/SpaceData/>`__.
+
+Note that the builtin SW data is likely to be outdated. You can use functions such as
+:py:func:`~heyoka.sw_data.fetch_latest_celestrak()` to fetch up-to-date data from the internet.
+
+)";
+}
+
+std::string sw_data_table()
+{
+    return R"(SW data table.
+
+This is a :ref:`structured NumPy array<numpy:defining-structured-types>` containing the raw SW data.
+The dtype of the returned array is :py:attr:`~heyoka.sw_data_row`.
+
+:rtype: numpy.ndarray
+
+)";
+}
+
+std::string sw_data_timestamp()
+{
+    return R"(SW data timestamp.
+
+A timestamp in string format which can be used to disambiguate between different versions of
+the same dataset.
+
+The timestamp is inferred from the timestamp of the files on the remote data servers.
+
+:rtype: str
+
+)";
+}
+
+std::string sw_data_identifier()
+{
+    return R"(SW data identifier.
+
+A string uniquely identifying the source of SW data.
+
+:rtype: str
+
+)";
+}
+
+std::string sw_data_fetch_latest_celestrak()
+{
+    return R"(fetch_latest_celestrak(long_term: bool = False) -> sw_data
+
+Fetch the latest SW data from celestrak.
+
+This function will download from `celestrak <https://celestrak.org/SpaceData/>`__
+one the latest SW data files, from which it will construct and return an :py:class:`~heyoka.sw_data` instance.
+
+The *long_term* argument indicates which SW data file will be donwloaded:
+
+* if ``True``, then the full historical dataset from 1957 up to the present time will be
+  downloaded, otherwise
+* the dataset for the last 5 years will be downloaded.
+
+Both datasets contain predictions for the near future.
+
+Please refer to the documentation on the `celestrak website <https://celestrak.org/SpaceData/>`__
+for more information about the content of these files.
+
+.. note::
+
+   This function will release the `global interpreter lock (GIL) <https://docs.python.org/3/glossary.html#term-global-interpreter-lock>`__
+   while downloading.
+
+:param long_term: flag selecting which file to be downloaded.
+
+:returns: an :py:class:`~heyoka.sw_data` instance constructed from the remote file.
+
+)";
+}
+
+std::string Ap_avg()
+{
+    return R"(Ap_avg(time_expr: expression = heyoka.time, sw_data: sw_data = sw_data()) -> expression
+
+Average of the Ap indices.
+
+.. versionadded:: 7.3.0
+
+This function will return an expression representing the average of the 8 `Ap indices <https://en.wikipedia.org/wiki/K-index>`__
+as a function of the input time expression *time_expr*. *time_expr* is
+expected to represent the number of Julian centuries elapsed since the epoch of J2000 in the
+`terrestrial time scale (TT) <https://en.wikipedia.org/wiki/Terrestrial_Time>`__. *sw_data* is
+the space weather dataset to be used for the computation.
+
+This quantity is modelled as a piecewise constant function of time, where the switch points are given by the dates in *sw_data*.
+Evaluation outside the dates range of *sw_data* will produce a value of ``NaN``.
+
+:param time_expr: the input time expression.
+:param sw_data: the SW data to be used for the computation.
+
+:returns: an expression representing the average of the Ap indices.
+
+)";
+}
+
+std::string f107()
+{
+    return R"(f107(time_expr: expression = heyoka.time, sw_data: sw_data = sw_data()) -> expression
+
+Observed 10.7-cm solar radio flux.
+
+.. versionadded:: 7.3.0
+
+This function will return an expression representing the observed 10.7-cm `solar radio flux <https://en.wikipedia.org/wiki/Solar_flux_unit>`__
+as a function of the input time expression *time_expr*. *time_expr* is
+expected to represent the number of Julian centuries elapsed since the epoch of J2000 in the
+`terrestrial time scale (TT) <https://en.wikipedia.org/wiki/Terrestrial_Time>`__. *sw_data* is
+the space weather dataset to be used for the computation.
+
+This quantity is modelled as a piecewise constant function of time, where the switch points are given by the dates in *sw_data*.
+Evaluation outside the dates range of *sw_data* will produce a value of ``NaN``.
+
+:param time_expr: the input time expression.
+:param sw_data: the SW data to be used for the computation.
+
+:returns: an expression representing the observed 10.7-cm solar radio flux.
+
+)";
+}
+
+std::string f107a_center81()
+{
+    return R"(f107a_center81(time_expr: expression = heyoka.time, sw_data: sw_data = sw_data()) -> expression
+
+Average of the 10.7-cm solar radio flux.
+
+.. versionadded:: 7.3.0
+
+This function will return an expression representing the 81-day arithmetic average of
+the observed `solar radio flux <https://en.wikipedia.org/wiki/Solar_flux_unit>`__ centred
+on the input time expression *time_expr*. *time_expr* is
+expected to represent the number of Julian centuries elapsed since the epoch of J2000 in the
+`terrestrial time scale (TT) <https://en.wikipedia.org/wiki/Terrestrial_Time>`__. *sw_data* is
+the space weather dataset to be used for the computation.
+
+This quantity is modelled as a piecewise constant function of time, where the switch points are given by the dates in *sw_data*.
+Evaluation outside the dates range of *sw_data* will produce a value of ``NaN``.
+
+:param time_expr: the input time expression.
+:param sw_data: the SW data to be used for the computation.
+
+:returns: an expression representing the 81-day arithmetic average of the observed 10.7-cm solar radio flux.
+
+)";
+}
+
 } // namespace heyoka_py::docstrings

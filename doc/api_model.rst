@@ -48,6 +48,9 @@ Functions
    iau2006
    egm2008_pot
    egm2008_acc
+   Ap_avg
+   f107
+   f107a_center81
 
 Attributes
 ----------
