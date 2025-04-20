@@ -45,6 +45,7 @@
 #include <heyoka/kw.hpp>
 #include <heyoka/math/time.hpp>
 #include <heyoka/models.hpp>
+#include <heyoka/sw_data.hpp>
 
 #include "common_utils.hpp"
 #include "custom_casters.hpp"
@@ -585,6 +586,21 @@ void expose_models(py::module_ &m)
         "xyz"_a, "n"_a.noconvert(), "m"_a.noconvert(), "mu"_a = hy::model::detail::egm2008_default_mu,
         "a"_a = hy::model::detail::egm2008_default_a,
         docstrings::egm2008_acc(hy::model::detail::egm2008_default_mu, hy::model::detail::egm2008_default_a).c_str());
+
+    // Use macro to expose the SW models.
+#define HEYOKA_PY_EXPOSE_MODEL_SW(name)                                                                                \
+    m.def(                                                                                                             \
+        "_model_" #name,                                                                                               \
+        [](const vex_t &time_expr, const hy::sw_data &data) {                                                          \
+            return hy::model::name(hy::kw::time_expr = detail::ex_from_variant(time_expr), hy::kw::sw_data = data);    \
+        },                                                                                                             \
+        "time_expr"_a = hy::time, "sw_data"_a = hy::sw_data(), docstrings::name().c_str());
+
+    HEYOKA_PY_EXPOSE_MODEL_SW(Ap_avg);
+    HEYOKA_PY_EXPOSE_MODEL_SW(f107);
+    HEYOKA_PY_EXPOSE_MODEL_SW(f107a_center81);
+
+#undef HEYOKA_PY_EXPOSE_MODEL_SW
 }
 
 } // namespace heyoka_py

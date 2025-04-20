@@ -62,6 +62,7 @@
 #include "expose_models.hpp"
 #include "expose_real.hpp"
 #include "expose_real128.hpp"
+#include "expose_sw_data.hpp"
 #include "expose_var_ode_sys.hpp"
 #include "logging.hpp"
 #include "pickle_wrappers.hpp"
@@ -255,6 +256,9 @@ PYBIND11_MODULE(core, m, pybind11::mod_gil_not_used())
 
     // EOP data.
     heypy::expose_eop_data(m);
+
+    // SW data.
+    heypy::expose_sw_data(m);
 
     // Models.
     heypy::expose_models(m);

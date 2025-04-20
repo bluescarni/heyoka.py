@@ -385,4 +385,20 @@ a row of EOP data in the :py:class:`~heyoka.eop_data` class. The fields in the d
 
 """
 
+sw_data_row: _dtype = sw_data_row
+"""
+Space weather data row.
+
+.. versionadded:: 7.3.0
+
+This is a :ref:`structured NumPy datatype<numpy:defining-structured-types>` used to represent
+a row of space weather (SW) data in the :py:class:`~heyoka.sw_data` class. The fields in the datatype are:
+
+- the UTC MJD,
+- the arithmetic average of the 8 Ap indices for the day,
+- the observed 10.7-cm solar radio flux (F10.7),
+- the 81-day arithmetic average of the observed F10.7 centred on the day.
+
+"""
+
 del _dtype

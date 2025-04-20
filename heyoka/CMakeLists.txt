@@ -27,6 +27,7 @@ set(HEYOKA_PY_PYTHON_FILES
     _test_var_integrator.py
     _test_sgp4_propagator.py
     _test_eop_data.py
+    _test_sw_data.py
     _sgp4_test_data.py
     model/__init__.py
     callback/__init__.py
@@ -63,6 +64,7 @@ set(_HEYOKA_PY_CORE_SOURCES
     expose_sgp4_propagators.cpp
     expose_callbacks.cpp
     expose_eop_data.cpp
+    expose_sw_data.cpp
     step_cb_utils.cpp
     docstrings.cpp
 )
