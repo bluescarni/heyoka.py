@@ -450,7 +450,9 @@ Transform Cartesian coordinates into geodetic coordinates.
    function is available.
 
 This function will compute the expressions of the geodetic coordinates as functions of the input Cartesian coordinates using
-the Hirvonen and Moritz iterations (see "Physical Geodesy" by Heiskanen and Moritz, pp.181-183).
+the Hirvonen and Moritz iterations (see "Physical Geodesy" by Heiskanen and Moritz, pp.181-183). The *n_iters* parameter
+selects the number of iterations - a higher number will produce a more accurate result, at a higher computational cost.
+The default value ensures an accuracy at the centimetre level on the Earth's surface.
 
 A few checks are run on the input arguments. Specifically:
 
@@ -507,19 +509,20 @@ The default values for *R_eq* and *ecc2* are taken from the `WGS84 <https://en.w
 
 std::string nrlmsise00_tn()
 {
-    return R"(nrlmsise00_tn(geodetic: list[expression], f107: expression, f107a: expression, ap: expression, time_expr: expression) -> expression
+    return R"(nrlmsise00_tn(geodetic: typing.Iterable[expression], f107: expression, f107a: expression, ap: expression, time_expr: expression) -> expression
 
-Produces the expression of the thermospheric density as a function of geodetic coordinates and weather indexes.
+Produces the expression of the thermospheric density as a function of geodetic coordinates and weather indices.
 
 .. versionadded:: 4.0.0
 
 The expression is approximated by an artificial neural network (a thermoNET) trained over NRLMSISE00 data. 
 
 .. note::
-   
+
    The thermoNET parameters are published in the work:
-   Izzo, Dario, Giacomo Acciarini, and Francesco Biscani. 
-   "NeuralODEs for VLEO simulations: Introducing thermoNET for Thermosphere Modeling." arXiv preprint arXiv:2405.19384 (2024).
+   Izzo, Dario, Giacomo Acciarini, and Francesco Biscani.
+   "NeuralODEs for VLEO simulations: Introducing thermoNET for Thermosphere Modeling"
+   (`arXiv preprint <https://arxiv.org/abs/2405.19384>`__).
 
 .. note::
 
@@ -530,9 +533,9 @@ A few checks are run on the input arguments. Specifically, the number of geodeti
 must be three.
 
 :param geodetic: expressions for the Geodetic components. [h, lat, lon] with h in km and lat in :math:`\left[ -\frac{\pi}{2}, \frac{\pi}{2} \right]`.
-:param f107: the F10.7 index.
-:param f107a: the F10.7 averaged index.
-:param ap: the AP index.
+:param f107: the F10.7 index for the day before *time_expr*.
+:param f107a: the 81-day average of the F10.7 index centred on the day of *time_expr*.
+:param ap: the AP index on the day of *time_expr*.
 :param time_expr: number of fractional days passed since 1st of January.
 
 :returns: the thermospheric density in [kg / m^3] as predicted by the NRLMSISE00 thermoNET model.
@@ -544,19 +547,20 @@ must be three.
 
 std::string jb08_tn()
 {
-    return R"(jb08_tn(geodetic: list[expression], f107: expression, f107a: expression, s107: expression, s107a: expression, m107: expression, m107a: expression, y107: expression, y107a: expression, dDstdT: expression, time_expr: expression) -> expression
+    return R"(jb08_tn(geodetic: typing.Iterable[expression], f107: expression, f107a: expression, s107: expression, s107a: expression, m107: expression, m107a: expression, y107: expression, y107a: expression, dDstdT: expression, time_expr: expression) -> expression
 
-Produces the expression of the thermospheric density as a function of geodetic coordinates and weather indexes.
+Produces the expression of the thermospheric density as a function of geodetic coordinates and weather indices.
 
 .. versionadded:: 4.0.0
 
 The expression is approximated by an artificial neural network (a thermoNET) trained over JB08 data. 
 
 .. note::
-   
+
    The thermoNET parameters are published in the work:
-   Izzo, Dario, Giacomo Acciarini, and Francesco Biscani. 
-   "NeuralODEs for VLEO simulations: Introducing thermoNET for Thermosphere Modeling." arXiv preprint arXiv:2405.19384 (2024).
+   Izzo, Dario, Giacomo Acciarini, and Francesco Biscani.
+   "NeuralODEs for VLEO simulations: Introducing thermoNET for Thermosphere Modeling"
+   (`arXiv preprint <https://arxiv.org/abs/2405.19384>`__).
    
 .. note::
 
