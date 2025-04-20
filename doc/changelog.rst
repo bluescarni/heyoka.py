@@ -9,6 +9,14 @@ Changelog
 New
 ~~~
 
+- New models: time conversions, frame transformations, Earth orientation
+  parameters (including ERA, polar motion, etc.), space weather
+  (`#227 <https://github.com/bluescarni/heyoka.py/pull/227>`__,
+  `#225 <https://github.com/bluescarni/heyoka.py/pull/225>`__,
+  `#223 <https://github.com/bluescarni/heyoka.py/pull/223>`__,
+  `#222 <https://github.com/bluescarni/heyoka.py/pull/222>`__).
+- Introduce class to represent, manage and update space weather data
+  (`#227 <https://github.com/bluescarni/heyoka.py/pull/227>`__).
 - Add function to convert from geodetic to Cartesian coordinates
   (`#226 <https://github.com/bluescarni/heyoka.py/pull/226>`__).
 - Add precompiled wheels for free-threaded Python 3.13
@@ -21,11 +29,6 @@ New
   (`#224 <https://github.com/bluescarni/heyoka.py/pull/224>`__).
 - Introduce class to represent, manage and update EOP data
   (`#222 <https://github.com/bluescarni/heyoka.py/pull/222>`__).
-- New models: time conversions, frame transformations, Earth orientation
-  parameters (including ERA, polar motion, etc.)
-  (`#225 <https://github.com/bluescarni/heyoka.py/pull/225>`__,
-  `#223 <https://github.com/bluescarni/heyoka.py/pull/223>`__,
-  `#222 <https://github.com/bluescarni/heyoka.py/pull/222>`__).
 
 Changes
 ~~~~~~~
