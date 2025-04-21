@@ -15,9 +15,6 @@ git config --global --add safe.directory ${GITHUB_WORKSPACE}
 BRANCH_NAME=`git rev-parse --abbrev-ref HEAD`
 echo "BRANCH_NAME: ${BRANCH_NAME}"
 
-yum install -y libffi-devel
-/opt/python/${PYTHON_DIR}/bin/pip install twine
-
 # Detect the Python version.
 if [[ ${HEYOKA_PY_BUILD_TYPE} == *39 ]]; then
 	PYTHON_DIR="cp39-cp39"
@@ -38,6 +35,9 @@ fi
 
 # Report the inferred directory where python is found.
 echo "PYTHON_DIR: ${PYTHON_DIR}"
+
+yum install -y libffi-devel
+/opt/python/${PYTHON_DIR}/bin/pip install twine
 
 # The heyoka version to be used for releases.
 export HEYOKA_VERSION_RELEASE="7.3.0"
