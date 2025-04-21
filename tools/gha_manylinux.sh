@@ -36,6 +36,9 @@ fi
 # Report the inferred directory where python is found.
 echo "PYTHON_DIR: ${PYTHON_DIR}"
 
+# Install uv.
+/opt/python/${PYTHON_DIR}/bin/pip install uv
+
 # The heyoka version to be used for releases.
 export HEYOKA_VERSION_RELEASE="7.3.0"
 
@@ -90,8 +93,7 @@ if [[ "${HEYOKA_PY_BUILD_SDIST}" == "yes" ]]; then
 
 	# Upload to PyPI.
 	if [[ "${HEYOKA_PY_RELEASE_BUILD}" == "yes" ]]; then
-		/opt/python/${PYTHON_DIR}/bin/pip install twine
-		/opt/python/${PYTHON_DIR}/bin/twine upload -u __token__ ${GITHUB_WORKSPACE}/dist/heyoka*
+		/opt/python/${PYTHON_DIR}/bin/uv publish -u __token__ ${GITHUB_WORKSPACE}/dist/heyoka*
 	fi
 else
 	# Build the heyoka.py wheel.
@@ -110,8 +112,7 @@ else
 
 	# Upload to PyPI.
 	if [[ "${HEYOKA_PY_RELEASE_BUILD}" == "yes" ]]; then
-		/opt/python/${PYTHON_DIR}/bin/pip install twine
-		/opt/python/${PYTHON_DIR}/bin/twine upload -u __token__ ${GITHUB_WORKSPACE}/repaired_wheel/heyoka*
+		/opt/python/${PYTHON_DIR}/bin/uv publish -u __token__ ${GITHUB_WORKSPACE}/repaired_wheel/heyoka*
 	fi
 fi
 
