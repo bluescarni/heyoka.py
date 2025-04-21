@@ -80,39 +80,34 @@ cd ${GITHUB_WORKSPACE}
 # not picked up properly by the linker.
 export LD_LIBRARY_PATH="/usr/local/lib64:/usr/local/lib"
 
+# Run the build process. This will produce both the wheel and the sdist.
+/opt/python/${PYTHON_DIR}/bin/uv build
+
 if [[ "${HEYOKA_PY_BUILD_SDIST}" == "yes" ]]; then
-	# Build the heyoka.py sdist.
-	/opt/python/${PYTHON_DIR}/bin/python -m build . --sdist
-	# Report the size.
-	echo "sdist archive size: `du -h dist/heyoka*|awk '{print $1}'`"
-	# Try to install it and run the tests.
-	/opt/python/${PYTHON_DIR}/bin/pip install dist/heyoka*
+	# Try to install the sdist and run the tests.
+	/opt/python/${PYTHON_DIR}/bin/pip install dist/heyoka*.tar.gz
 	cd ${GITHUB_WORKSPACE}/tools
 	/opt/python/${PYTHON_DIR}/bin/python ci_test_runner.py
 	cd /
 
 	# Upload to PyPI.
 	if [[ "${HEYOKA_PY_RELEASE_BUILD}" == "yes" ]]; then
-		/opt/python/${PYTHON_DIR}/bin/twine upload -u __token__ ${GITHUB_WORKSPACE}/dist/heyoka*
+		/opt/python/${PYTHON_DIR}/bin/uv publish -u __token__ ${GITHUB_WORKSPACE}/dist/heyoka*.tar.gz
 	fi
 else
-	# Build the heyoka.py wheel.
-	/opt/python/${PYTHON_DIR}/bin/uv build
-	# Repair it.
+	# Repair the wheel.
 	auditwheel repair ./heyoka*.whl -w ./repaired_wheel
-	# Report the size.
-	echo "wheel archive size: `du -h repaired_wheel/heyoka*|awk '{print $1}'`"
 	# Try to install it and run the tests.
 	unset LD_LIBRARY_PATH
 	cd /
-	/opt/python/${PYTHON_DIR}/bin/pip install ${GITHUB_WORKSPACE}/repaired_wheel/heyoka*
+	/opt/python/${PYTHON_DIR}/bin/pip install ${GITHUB_WORKSPACE}/repaired_wheel/heyoka*.whl
 	cd ${GITHUB_WORKSPACE}/tools
 	/opt/python/${PYTHON_DIR}/bin/python ci_test_runner.py
 	cd /
 
 	# Upload to PyPI.
 	if [[ "${HEYOKA_PY_RELEASE_BUILD}" == "yes" ]]; then
-		/opt/python/${PYTHON_DIR}/bin/uv publish -u __token__ ${GITHUB_WORKSPACE}/repaired_wheel/heyoka*
+		/opt/python/${PYTHON_DIR}/bin/uv publish -u __token__ ${GITHUB_WORKSPACE}/repaired_wheel/heyoka*.whl
 	fi
 fi
 
