@@ -96,7 +96,7 @@ if [[ "${HEYOKA_PY_BUILD_SDIST}" == "yes" ]]; then
 	fi
 else
 	# Repair the wheel.
-	auditwheel repair ./heyoka*.whl -w ./repaired_wheel
+	auditwheel repair dist/heyoka*.whl -w ./repaired_wheel
 	# Try to install it and run the tests.
 	unset LD_LIBRARY_PATH
 	cd /
