@@ -15,7 +15,7 @@ git config --global --add safe.directory ${GITHUB_WORKSPACE}
 BRANCH_NAME=`git rev-parse --abbrev-ref HEAD`
 echo "BRANCH_NAME: ${BRANCH_NAME}"
 
-yum install -y libffi-dev
+yum install -y libffi-devel
 /opt/python/${PYTHON_DIR}/bin/pip install twine
 
 # Detect the Python version.
