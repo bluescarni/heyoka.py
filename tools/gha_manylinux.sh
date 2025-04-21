@@ -15,6 +15,9 @@ git config --global --add safe.directory ${GITHUB_WORKSPACE}
 BRANCH_NAME=`git rev-parse --abbrev-ref HEAD`
 echo "BRANCH_NAME: ${BRANCH_NAME}"
 
+yum install -y libffi-dev
+/opt/python/${PYTHON_DIR}/bin/pip install twine
+
 # Detect the Python version.
 if [[ ${HEYOKA_PY_BUILD_TYPE} == *39 ]]; then
 	PYTHON_DIR="cp39-cp39"
@@ -90,7 +93,6 @@ if [[ "${HEYOKA_PY_BUILD_SDIST}" == "yes" ]]; then
 
 	# Upload to PyPI.
 	if [[ "${HEYOKA_PY_RELEASE_BUILD}" == "yes" ]]; then
-		/opt/python/${PYTHON_DIR}/bin/pip install twine
 		/opt/python/${PYTHON_DIR}/bin/twine upload -u __token__ ${GITHUB_WORKSPACE}/dist/heyoka*
 	fi
 else
@@ -110,7 +112,6 @@ else
 
 	# Upload to PyPI.
 	if [[ "${HEYOKA_PY_RELEASE_BUILD}" == "yes" ]]; then
-		/opt/python/${PYTHON_DIR}/bin/pip install twine
 		/opt/python/${PYTHON_DIR}/bin/twine upload -u __token__ ${GITHUB_WORKSPACE}/repaired_wheel/heyoka*
 	fi
 fi
