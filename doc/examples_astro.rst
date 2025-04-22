@@ -18,10 +18,6 @@ Celestial mechanics and astrodynamics
   notebooks/Planetary embryos
   notebooks/mercury_precession
   notebooks/ttv
-  notebooks/vsop2013
-  notebooks/elp2000
-  notebooks/iau2006
-  notebooks/egm2008
   notebooks/tides_spokes
   notebooks/lagrangian_propagator
   notebooks/gg_stab

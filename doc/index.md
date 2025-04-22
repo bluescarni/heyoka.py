@@ -96,6 +96,7 @@ notebooks/sympy_interop.ipynb
 notebooks/compiled_functions.ipynb
 tut_eop_sw
 notebooks/sgp4_propagator
+tut_theories
 notebooks/pickling.ipynb
 notebooks/jit_caching.ipynb
 ```
