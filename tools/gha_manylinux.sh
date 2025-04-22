@@ -93,7 +93,7 @@ if [[ "${HEYOKA_PY_BUILD_SDIST}" == "yes" ]]; then
 
 	# Upload to PyPI.
 	if [[ "${HEYOKA_PY_RELEASE_BUILD}" == "yes" ]]; then
-		/opt/python/${PYTHON_DIR}/bin/uv publish -u __token__ ${GITHUB_WORKSPACE}/dist/heyoka*
+		/opt/python/${PYTHON_DIR}/bin/uv publish ${GITHUB_WORKSPACE}/dist/heyoka*
 	fi
 else
 	# Build the heyoka.py wheel.
@@ -112,7 +112,7 @@ else
 
 	# Upload to PyPI.
 	if [[ "${HEYOKA_PY_RELEASE_BUILD}" == "yes" ]]; then
-		/opt/python/${PYTHON_DIR}/bin/uv publish -u __token__ ${GITHUB_WORKSPACE}/repaired_wheel/heyoka*
+		/opt/python/${PYTHON_DIR}/bin/uv publish ${GITHUB_WORKSPACE}/repaired_wheel/heyoka*
 	fi
 fi
 
