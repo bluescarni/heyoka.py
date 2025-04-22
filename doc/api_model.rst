@@ -5,36 +5,74 @@ Models
 
 .. currentmodule:: heyoka.model
 
-Classes
--------
+Dynamics
+--------
+
+Functions
+^^^^^^^^^
 
 .. autosummary::
    :toctree: autosummary_generated
-   :template: custom-class-template.rst
 
-   sgp4_propagator_dbl
-   sgp4_propagator_flt
+   fixed_centres
+   pendulum
+
+Coordinate transformations
+--------------------------
 
 Functions
----------
+^^^^^^^^^
 
 .. autosummary::
    :toctree: autosummary_generated
 
    cart2geo
    geo2cart
-   nrlmsise00_tn
-   jb08_tn
-   fixed_centres
-   pendulum
-   sgp4
-   gpe_is_deep_space
-   sgp4_propagator
-   delta_tdb_tt
    rot_fk5j2000_icrs
    rot_icrs_fk5j2000
    rot_itrs_icrs
    rot_icrs_itrs
+
+Time transformations
+--------------------
+
+Functions
+^^^^^^^^^
+
+.. autosummary::
+   :toctree: autosummary_generated
+
+   delta_tdb_tt
+
+Attributes
+^^^^^^^^^^
+
+.. autosummary::
+   :toctree: autosummary_generated
+
+   delta_tt_tai
+
+Atmospheric models
+------------------
+
+Functions
+^^^^^^^^^
+
+.. autosummary::
+   :toctree: autosummary_generated
+
+   nrlmsise00_tn
+   jb08_tn
+
+Earth orientation and space weather
+-----------------------------------
+
+Functions
+^^^^^^^^^
+
+.. autosummary::
+   :toctree: autosummary_generated
+
    era
    erap
    pm_x
@@ -45,17 +83,42 @@ Functions
    dXp
    dY
    dYp
-   iau2006
-   egm2008_pot
-   egm2008_acc
    Ap_avg
    f107
    f107a_center81
 
-Attributes
-----------
+Analytical theories and models
+------------------------------
+
+Functions
+^^^^^^^^^
 
 .. autosummary::
    :toctree: autosummary_generated
 
-   delta_tt_tai
+   iau2006
+   egm2008_pot
+   egm2008_acc
+
+SGP4 propagation
+----------------
+
+Classes
+^^^^^^^
+
+.. autosummary::
+   :toctree: autosummary_generated
+   :template: custom-class-template.rst
+
+   sgp4_propagator_dbl
+   sgp4_propagator_flt
+
+Functions
+^^^^^^^^^
+
+.. autosummary::
+   :toctree: autosummary_generated
+
+   sgp4
+   gpe_is_deep_space
+   sgp4_propagator
