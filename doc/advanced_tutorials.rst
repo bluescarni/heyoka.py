@@ -1,7 +1,7 @@
 .. _adv_tutorials:
 
 Advanced
-==================
+========
 
 .. only:: html
 
