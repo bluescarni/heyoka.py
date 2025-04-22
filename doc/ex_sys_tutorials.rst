@@ -1,7 +1,7 @@
 .. _ex_sys_tutorials:
 
-The expression system
-=====================
+More on the expression system
+=============================
 
 .. only:: html
 
