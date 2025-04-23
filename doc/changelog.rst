@@ -3,6 +3,15 @@
 Changelog
 =========
 
+7.3.4 (unreleased)
+------------------
+
+New
+~~~
+
+- Improved organisation of the documentation
+  (`#234 <https://github.com/bluescarni/heyoka.py/pull/234>`__).
+
 7.3.3 (2025-04-22)
 ------------------
 

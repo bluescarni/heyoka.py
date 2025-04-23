@@ -535,7 +535,7 @@ must be three.
 :param geodetic: expressions for the Geodetic components. [h, lat, lon] with h in km and lat in :math:`\left[ -\frac{\pi}{2}, \frac{\pi}{2} \right]`.
 :param f107: the F10.7 index for the day before *time_expr*.
 :param f107a: the 81-day average of the F10.7 index centred on the day of *time_expr*.
-:param ap: the AP index on the day of *time_expr*.
+:param ap: the average of the Ap indices on the day of *time_expr*.
 :param time_expr: number of fractional days passed since 1st of January.
 
 :returns: the thermospheric density in [kg / m^3] as predicted by the NRLMSISE00 thermoNET model.
@@ -1917,7 +1917,7 @@ std::string Ap_avg()
 {
     return R"(Ap_avg(time_expr: expression = heyoka.time, sw_data: sw_data = sw_data()) -> expression
 
-Average of the Ap indices.
+Average of the geomagnetic Ap indices.
 
 .. versionadded:: 7.3.0
 

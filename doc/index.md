@@ -86,8 +86,19 @@ acknowledgement
 :caption: Tutorials
  
 basic_tutorials
+notebooks/Event detection
+notebooks/var_ode_sys.ipynb
 ex_sys_tutorials
-advanced_tutorials
+tut_parallel_vector
+tut_prec
+notebooks/lagrangian.ipynb
+notebooks/sympy_interop.ipynb
+notebooks/compiled_functions.ipynb
+tut_eop_sw
+notebooks/sgp4_propagator
+tut_theories
+notebooks/pickling.ipynb
+notebooks/jit_caching.ipynb
 ```
 
 ```{toctree}
