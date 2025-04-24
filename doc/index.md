@@ -122,7 +122,6 @@ api_integrators
 api_var_ode_sys
 api_lagham
 api_model
-api_eop_data
-api_sw_data
+api_eop_sw_data
 api_jit
 ```
