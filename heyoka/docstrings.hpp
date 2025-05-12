@@ -127,6 +127,12 @@ std::string sw_data_timestamp();
 std::string sw_data_identifier();
 std::string sw_data_fetch_latest_celestrak();
 
+// func_args.
+std::string func_args();
+std::string func_args_init();
+std::string func_args_args();
+std::string func_args_is_shared();
+
 } // namespace heyoka_py::docstrings
 
 #endif

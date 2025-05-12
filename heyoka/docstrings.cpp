@@ -1989,4 +1989,61 @@ Evaluation outside the dates range of *sw_data* will produce a value of ``NaN``.
 )";
 }
 
+std::string func_args()
+{
+    return R"(Class to represent sets of function arguments.
+
+.. versionadded:: 8.0.0
+
+This class is used to represent the arguments of a function :py:class:`~heyoka.expression`. The arguments are
+stored internally as a :py:class:`list` of :py:class:`~heyoka.expression` and they can be accessed via the
+:py:attr:`~heyoka.func_args.args` property.
+
+Upon construction, the user can select whether the arguments are stored using value or reference semantics. In the
+former case, when the :py:class:`~heyoka.func_args` instance is copied (either directly via the use of functions such as
+:py:func:`~copy.copy()`/:py:func:`~copy.deepcopy()` or indirectly through the :py:class:`~heyoka.expression` API), a new
+copy of the list of arguments is created for each new :py:class:`~heyoka.func_args` instance. In the latter case, multiple
+copies of a :py:class:`~heyoka.func_args` contain references to a single shared instance of the list of arguments.
+
+The default behaviour throughout heyoka.py is to use value semantics. Reference semantics is used in specific situations
+where it can bring substantial performance benefits.
+
+)";
+}
+
+std::string func_args_init()
+{
+    return R"(__init__(self, args: typing.Iterable[expression] = [], shared: bool = False)
+
+Constructor.
+
+This constructor will construct an instance of :py:class:`~heyoka.func_args` storing the arguments *args*. If the
+boolean flag *shared* is ``True``, then reference semantics will be used, otherwise value semantics will be employed.
+
+:param args: the input set of arguments.
+:param shared: the boolean flag selecting value or reference semantics.
+
+)";
+}
+
+std::string func_args_args()
+{
+    return R"(The list of function arguments.
+
+:rtype: list[expression]
+
+)";
+}
+
+std::string func_args_is_shared()
+{
+    return R"(Flag signalling the use of reference or value semantics.
+
+The flag is ``True`` if reference semantics is being used to represent the arguments, ``False`` otherwise.
+
+:rtype: bool
+
+)";
+}
+
 } // namespace heyoka_py::docstrings

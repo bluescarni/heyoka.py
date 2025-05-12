@@ -417,3 +417,20 @@ class expression_test_case(_ut.TestCase):
 
         self.assertEqual(get_params([x + y, x - y]), [])
         self.assertEqual(get_params([x + par[42], par[1] - y]), [par[1], par[42]])
+
+    def test_func_args(self):
+        from . import make_vars, func_args
+
+        x, y = make_vars("x", "y")
+
+        fargs = func_args()
+        self.assertEqual(fargs.args, [])
+        self.assertFalse(fargs.is_shared)
+
+        fargs = func_args([x, y])
+        self.assertEqual(fargs.args, [x, y])
+        self.assertFalse(fargs.is_shared)
+
+        fargs = func_args(args=[x, y], shared=True)
+        self.assertEqual(fargs.args, [x, y])
+        self.assertTrue(fargs.is_shared)
