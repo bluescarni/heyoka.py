@@ -78,6 +78,9 @@ std::string vsop2013_elliptic();
 std::string vsop2013_cartesian();
 std::string vsop2013_cartesian_icrf();
 std::string get_vsop2013_mus();
+std::string elp2000_cartesian_e2000();
+std::string elp2000_cartesian_fk5();
+std::string get_elp2000_mus();
 
 // var_ode_sys() and related.
 std::string var_args();

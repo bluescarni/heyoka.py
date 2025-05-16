@@ -2227,7 +2227,96 @@ size 10 in which the indices correspond to the following bodies:
 - 8: Neptune,
 - 9: Pluto.
 
+The gravitational parameters are expressed in :math:`\mathrm{AU}^3/\mathrm{day}^2`.
+
 :returns: the gravitational parameters used by the VSOP2013 theory.
+
+)";
+}
+
+std::string elp2000_cartesian_e2000()
+{
+    return R"(elp2000_cartesian_e2000(time_expr: expression = heyoka.time, thresh: float = 1e-6) -> list[expression]
+
+Get the ELP2000 formulae (inertial mean ecliptic and equinox of J2000).
+
+.. versionadded:: 3.2.0
+
+.. note::
+
+   A :ref:`tutorial <tut_elp2000>` explaining the use of this function is available.
+
+This function will return an array of expressions representing the geocentric position of the Moon according to the
+`ELP2000 <https://en.wikipedia.org/wiki/Ephemeride_Lunaire_Parisienne>`__ analytical model. The position is returned
+in Cartesian coordinates ``[x, y, z]`` referred to the inertial mean ecliptic and equinox of J2000. The position is
+returned in kilometres.
+
+*time_expr* is the expression to be used as a time coordinate and it must represent the number of Julian centuries
+elapsed since the Julian date 2451545.0 in the `TDB time scale <https://en.wikipedia.org/wiki/Barycentric_Dynamical_Time>`__.
+A Julian century consists of exactly 36525 Julian days.
+
+*thresh* is the theory truncation threshold: larger values produce a shorter but less precise model. A value of zero
+will return the full untruncated model. *thresh* must be a finite, non-negative value.
+
+:param time_expr: the input time expression.
+:param thresh: the theory truncation threshold.
+
+:returns: an array of expressions representing the geocentric Cartesian position of the Moon according to the ELP2000 model.
+
+:raises ValueError: in case of invalid input arguments.
+
+)";
+}
+
+std::string elp2000_cartesian_fk5()
+{
+    return R"(elp2000_cartesian_fk5(time_expr: expression = heyoka.time, thresh: float = 1e-6) -> list[expression]
+
+Get the ELP2000 formulae (FK5 J2000 frame).
+
+.. versionadded:: 3.2.0
+
+.. note::
+
+   A :ref:`tutorial <tut_elp2000>` explaining the use of this function is available.
+
+This function will return an array of expressions representing the geocentric position of the Moon according to the
+`ELP2000 <https://en.wikipedia.org/wiki/Ephemeride_Lunaire_Parisienne>`__ analytical model. The position is returned
+in Cartesian coordinates ``[x, y, z]`` referred to the mean equator and rotational mean equinox of J2000 (i.e., in the
+FK5 frame of J2000). The position is returned in kilometres.
+
+*time_expr* is the expression to be used as a time coordinate and it must represent the number of Julian centuries
+elapsed since the Julian date 2451545.0 in the `TDB time scale <https://en.wikipedia.org/wiki/Barycentric_Dynamical_Time>`__.
+A Julian century consists of exactly 36525 Julian days.
+
+*thresh* is the theory truncation threshold: larger values produce a shorter but less precise model. A value of zero
+will return the full untruncated model. *thresh* must be a finite, non-negative value.
+
+:param time_expr: the input time expression.
+:param thresh: the theory truncation threshold.
+
+:returns: an array of expressions representing the geocentric Cartesian position of the Moon according to the ELP2000 model.
+
+:raises ValueError: in case of invalid input arguments.
+
+)";
+}
+
+std::string get_elp2000_mus()
+{
+    return R"(get_elp2000_mus() -> list[float]
+
+Get the gravitational parameters of the ELP2000 theory.
+
+.. versionadded:: 3.2.0
+
+This function will return the `standard gravitational parameters <https://en.wikipedia.org/wiki/Standard_gravitational_parameter>`__
+used by the `ELP2000 <https://en.wikipedia.org/wiki/Ephemeride_Lunaire_Parisienne>`__ analytical model. The parameters are returned
+in an array of size 2 containing the values for, respectively, the Earth and the Moon.
+
+The gravitational parameters are expressed in :math:`\mathrm{m}^3/\mathrm{s}^2`.
+
+:returns: the gravitational parameters used by the ELP2000 theory.
 
 )";
 }
