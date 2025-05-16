@@ -99,6 +99,10 @@ Functions
    iau2006
    egm2008_pot
    egm2008_acc
+   vsop2013_cartesian_icrf
+   vsop2013_cartesian
+   vsop2013_elliptic
+   get_vsop2013_mus
 
 SGP4 propagation
 ----------------

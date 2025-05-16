@@ -347,22 +347,24 @@ void expose_models(py::module_ &m)
             return hy::model::vsop2013_elliptic(pl_idx, var_idx, hy::kw::time_expr = std::move(t_expr),
                                                 hy::kw::thresh = thresh);
         },
-        "pl_idx"_a, "var_idx"_a = 0, "time_expr"_a = hy::time, "thresh"_a.noconvert() = 1e-9);
+        "pl_idx"_a, "var_idx"_a = 0, "time_expr"_a = hy::time, "thresh"_a.noconvert() = 1e-9,
+        docstrings::vsop2013_elliptic().c_str());
     m.def(
         "_model_vsop2013_cartesian",
         [](std::uint32_t pl_idx, hy::expression t_expr, double thresh) {
             return hy::model::vsop2013_cartesian(pl_idx, hy::kw::time_expr = std::move(t_expr),
                                                  hy::kw::thresh = thresh);
         },
-        "pl_idx"_a, "time_expr"_a = hy::time, "thresh"_a.noconvert() = 1e-9);
+        "pl_idx"_a, "time_expr"_a = hy::time, "thresh"_a.noconvert() = 1e-9, docstrings::vsop2013_cartesian().c_str());
     m.def(
         "_model_vsop2013_cartesian_icrf",
         [](std::uint32_t pl_idx, hy::expression t_expr, double thresh) {
             return hy::model::vsop2013_cartesian_icrf(pl_idx, hy::kw::time_expr = std::move(t_expr),
                                                       hy::kw::thresh = thresh);
         },
-        "pl_idx"_a, "time_expr"_a = hy::time, "thresh"_a.noconvert() = 1e-9);
-    m.def("_model_get_vsop2013_mus", &hy::model::get_vsop2013_mus);
+        "pl_idx"_a, "time_expr"_a = hy::time, "thresh"_a.noconvert() = 1e-9,
+        docstrings::vsop2013_cartesian_icrf().c_str());
+    m.def("_model_get_vsop2013_mus", &hy::model::get_vsop2013_mus, docstrings::get_vsop2013_mus().c_str());
 
     // ELP2000.
     m.def(

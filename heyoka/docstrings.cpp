@@ -2046,4 +2046,190 @@ The flag is ``True`` if reference semantics is being used to represent the argum
 )";
 }
 
+std::string vsop2013_elliptic()
+{
+    return R"(vsop2013_elliptic(pl_idx: int, var_idx: int = 0, time_expr: expression = heyoka.time, thresh: float = 1e-9) -> expression
+
+Get the VSOP2013 formulae (elliptic orbital elements).
+
+.. versionadded:: 0.15.0
+
+.. note::
+
+   A :ref:`tutorial <tut_vsop2013>` explaining the use of this function is available.
+
+This function will return an expression representing the time evolution of the heliocentric orbital
+element of a planet according to the `VSOP2013 <https://en.wikipedia.org/wiki/VSOP_model>`__ analytical
+model.
+
+*pl_idx* selects the planet and it must be one of:
+
+- 1: Mercury,
+- 2: Venus,
+- 3: Earth-Moon barycentre,
+- 4: Mars,
+- 5: Jupiter,
+- 6: Saturn,
+- 7: Uranus,
+- 8: Neptune,
+- 9: Pluto.
+
+*var_idx* selects the heliocentric orbital element and it must be one of:
+
+- 1: the semi-major axis :math:`a`,
+- 2: the `mean longitude <https://en.wikipedia.org/wiki/Mean_longitude>`__ :math:`\lambda`,
+- 3: :math:`k=e\cos\varpi`, where where :math:`e` is the eccentricity and :math:`\varpi=\Omega+\omega`
+  is the `longitude of the perihelion <https://en.wikipedia.org/wiki/Longitude_of_the_periapsis>`__,
+- 4: :math:`h=e\sin\varpi`,
+- 5: :math:`q=\sin\frac{i}{2}\cos\Omega`, where :math:`i` is the inclination and :math:`\Omega` is the
+  longitude of the ascending node,
+- 6: :math:`p=\sin\frac{i}{2}\sin\Omega`.
+
+:math:`a` is returned in AU and :math:`\lambda` in radians, while the other orbital elements are non-dimensional.
+The orbital elements are referred to the inertial frame defined by the dynamical equinox and ecliptic J2000. Note that
+this set of orbital elements is similar (but not exactly equivalent) to the
+`equinoctial orbital elements <https://adsabs.harvard.edu/full/1972CeMec...5..303B>`__.
+
+*time_expr* is the expression to be used as a time coordinate and it must represent the number of Julian millenia
+elapsed since the Julian date 2451545.0 in the `TDB time scale <https://en.wikipedia.org/wiki/Barycentric_Dynamical_Time>`__.
+A Julian millenium consists of exactly 365250 Julian days.
+
+*thresh* is the theory truncation threshold: larger values produce a shorter but less precise model. A value of zero
+will return the full untruncated model. *thresh* must be a finite, non-negative value.
+
+:param pl_idx: the input planet.
+:param var_idx: the input orbital element.
+:param time_expr: the input time expression.
+:param thresh: the theory truncation threshold.
+
+:returns: an expression for the time evolution of the orbital element of a planet according to the VSOP2013 model.
+
+:raises ValueError: in case of invalid input arguments.
+
+)";
+}
+
+std::string vsop2013_cartesian()
+{
+    return R"(vsop2013_cartesian(pl_idx: int, time_expr: expression = heyoka.time, thresh: float = 1e-9) -> list[expression]
+
+Get the VSOP2013 formulae (Cartesian state).
+
+.. versionadded:: 0.15.0
+
+.. note::
+
+   A :ref:`tutorial <tut_vsop2013>` explaining the use of this function is available.
+
+This function will return an array of expressions representing the Cartesian state of a planet according to the
+`VSOP2013 <https://en.wikipedia.org/wiki/VSOP_model>`__ analytical model. The Cartesian state consists of position and
+velocity concatenated in a 6-elements array ``[x, y, z, vx, vy, vz]`` referred to the inertial frame defined by the
+dynamical equinox and ecliptic J2000. The position is expressed in AU, the velocity in AU/day.
+
+*pl_idx* selects the planet and it must be one of:
+
+- 1: Mercury,
+- 2: Venus,
+- 3: Earth-Moon barycentre,
+- 4: Mars,
+- 5: Jupiter,
+- 6: Saturn,
+- 7: Uranus,
+- 8: Neptune,
+- 9: Pluto.
+
+*time_expr* is the expression to be used as a time coordinate and it must represent the number of Julian millenia
+elapsed since the Julian date 2451545.0 in the `TDB time scale <https://en.wikipedia.org/wiki/Barycentric_Dynamical_Time>`__.
+A Julian millenia consists of exactly 365250 Julian days.
+
+*thresh* is the theory truncation threshold: larger values produce a shorter but less precise model. A value of zero
+will return the full untruncated model. *thresh* must be a finite, non-negative value.
+
+:param pl_idx: the input planet.
+:param time_expr: the input time expression.
+:param thresh: the theory truncation threshold.
+
+:returns: an array of expressions representing the time evolution of the Cartesian state of a planet according to the VSOP2013 model.
+
+:raises ValueError: in case of invalid input arguments.
+
+)";
+}
+
+std::string vsop2013_cartesian_icrf()
+{
+    return R"(vsop2013_cartesian_icrf(pl_idx: int, time_expr: expression = heyoka.time, thresh: float = 1e-9) -> list[expression]
+
+Get the VSOP2013 formulae (ICRS Cartesian state).
+
+.. versionadded:: 0.15.0
+
+.. note::
+
+   A :ref:`tutorial <tut_vsop2013>` explaining the use of this function is available.
+
+This function will return an array of expressions representing the Cartesian state of a planet according to the
+`VSOP2013 <https://en.wikipedia.org/wiki/VSOP_model>`__ analytical model. The Cartesian state consists of position and
+velocity concatenated in a 6-elements array ``[x, y, z, vx, vy, vz]`` referred to the
+`ICRS <https://en.wikipedia.org/wiki/International_Celestial_Reference_System_and_its_realizations>`__.
+The position is expressed in AU, the velocity in AU/day.
+
+*pl_idx* selects the planet and it must be one of:
+
+- 1: Mercury,
+- 2: Venus,
+- 3: Earth-Moon barycentre,
+- 4: Mars,
+- 5: Jupiter,
+- 6: Saturn,
+- 7: Uranus,
+- 8: Neptune,
+- 9: Pluto.
+
+*time_expr* is the expression to be used as a time coordinate and it must represent the number of Julian millenia
+elapsed since the Julian date 2451545.0 in the `TDB time scale <https://en.wikipedia.org/wiki/Barycentric_Dynamical_Time>`__.
+A Julian millenia consists of exactly 365250 Julian days.
+
+*thresh* is the theory truncation threshold: larger values produce a shorter but less precise model. A value of zero
+will return the full untruncated model. *thresh* must be a finite, non-negative value.
+
+:param pl_idx: the input planet.
+:param time_expr: the input time expression.
+:param thresh: the theory truncation threshold.
+
+:returns: an array of expressions representing the time evolution of the Cartesian state of a planet according to the VSOP2013 model.
+
+:raises ValueError: in case of invalid input arguments.
+
+)";
+}
+
+std::string get_vsop2013_mus()
+{
+    return R"(get_vsop2013_mus() -> list[float]
+
+Get the gravitational parameters of the VSOP2013 theory.
+
+.. versionadded:: 0.15.0
+
+This function will return the `standard gravitational parameters <https://en.wikipedia.org/wiki/Standard_gravitational_parameter>`__
+used by the `VSOP2013 <https://en.wikipedia.org/wiki/VSOP_model>`__ analytical model. The parameters are returned in an array of
+size 10 in which the indices correspond to the following bodies:
+
+- 0: Sun,
+- 1: Mercury,
+- 2: Venus,
+- 3: Earth-Moon barycentre,
+- 4: Mars,
+- 5: Jupiter,
+- 6: Saturn,
+- 7: Uranus,
+- 8: Neptune,
+- 9: Pluto.
+
+:returns: the gravitational parameters used by the VSOP2013 theory.
+
+)";
+}
+
 } // namespace heyoka_py::docstrings
