@@ -9,12 +9,15 @@ Changelog
 New
 ~~~
 
-- Improved organisation of the documentation
-  (`#234 <https://github.com/bluescarni/heyoka.py/pull/234>`__).
+- New tutorial on third-body perturbations on an Earth-orbiting spacecraft
+  (`#236 <https://github.com/bluescarni/heyoka.py/pull/236>`__).
 
 Changes
 ~~~~~~~
 
+- Several documentation improvements
+  (`#236 <https://github.com/bluescarni/heyoka.py/pull/236>`__,
+  `#234 <https://github.com/bluescarni/heyoka.py/pull/234>`__).
 - heyoka.py now requires version 8.0.0 of the
   heyoka C++ library
   (`#236 <https://github.com/bluescarni/heyoka.py/pull/236>`__).
