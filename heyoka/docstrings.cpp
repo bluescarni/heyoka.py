@@ -1989,4 +1989,336 @@ Evaluation outside the dates range of *sw_data* will produce a value of ``NaN``.
 )";
 }
 
+std::string func_args()
+{
+    return R"(Class to represent sets of function arguments.
+
+.. versionadded:: 8.0.0
+
+This class is used to represent the arguments of a function :py:class:`~heyoka.expression`. The arguments are
+stored internally as a :py:class:`list` of :py:class:`~heyoka.expression` and they can be accessed via the
+:py:attr:`~heyoka.func_args.args` property.
+
+Upon construction, the user can select whether the arguments are stored using value or reference semantics. In the
+former case, when the :py:class:`~heyoka.func_args` instance is copied (either directly via the use of functions such as
+:py:func:`~copy.copy()`/:py:func:`~copy.deepcopy()` or indirectly through the :py:class:`~heyoka.expression` API), a new
+copy of the list of arguments is created for each new :py:class:`~heyoka.func_args` instance. In the latter case, multiple
+copies of a :py:class:`~heyoka.func_args` contain references to a single shared instance of the list of arguments.
+
+The default behaviour throughout heyoka.py is to use value semantics. Reference semantics is used in specific situations
+where it can bring substantial performance benefits.
+
+)";
+}
+
+std::string func_args_init()
+{
+    return R"(__init__(self, args: typing.Iterable[expression] = [], shared: bool = False)
+
+Constructor.
+
+This constructor will construct an instance of :py:class:`~heyoka.func_args` storing the arguments *args*. If the
+boolean flag *shared* is ``True``, then reference semantics will be used, otherwise value semantics will be employed.
+
+:param args: the input set of arguments.
+:param shared: the boolean flag selecting value or reference semantics.
+
+)";
+}
+
+std::string func_args_args()
+{
+    return R"(The list of function arguments.
+
+:rtype: list[expression]
+
+)";
+}
+
+std::string func_args_is_shared()
+{
+    return R"(Flag signalling the use of reference or value semantics.
+
+The flag is ``True`` if reference semantics is being used to represent the arguments, ``False`` otherwise.
+
+:rtype: bool
+
+)";
+}
+
+std::string vsop2013_elliptic()
+{
+    return R"(vsop2013_elliptic(pl_idx: int, var_idx: int = 0, time_expr: expression = heyoka.time, thresh: float = 1e-9) -> expression
+
+Get the VSOP2013 formulae (elliptic orbital elements).
+
+.. versionadded:: 0.15.0
+
+.. note::
+
+   A :ref:`tutorial <tut_vsop2013>` explaining the use of this function is available.
+
+This function will return an expression representing the time evolution of the heliocentric orbital
+element of a planet according to the `VSOP2013 <https://en.wikipedia.org/wiki/VSOP_model>`__ analytical
+model.
+
+*pl_idx* selects the planet and it must be one of:
+
+- 1: Mercury,
+- 2: Venus,
+- 3: Earth-Moon barycentre,
+- 4: Mars,
+- 5: Jupiter,
+- 6: Saturn,
+- 7: Uranus,
+- 8: Neptune,
+- 9: Pluto.
+
+*var_idx* selects the heliocentric orbital element and it must be one of:
+
+- 1: the semi-major axis :math:`a`,
+- 2: the `mean longitude <https://en.wikipedia.org/wiki/Mean_longitude>`__ :math:`\lambda`,
+- 3: :math:`k=e\cos\varpi`, where where :math:`e` is the eccentricity and :math:`\varpi=\Omega+\omega`
+  is the `longitude of the perihelion <https://en.wikipedia.org/wiki/Longitude_of_the_periapsis>`__,
+- 4: :math:`h=e\sin\varpi`,
+- 5: :math:`q=\sin\frac{i}{2}\cos\Omega`, where :math:`i` is the inclination and :math:`\Omega` is the
+  longitude of the ascending node,
+- 6: :math:`p=\sin\frac{i}{2}\sin\Omega`.
+
+:math:`a` is returned in AU and :math:`\lambda` in radians, while the other orbital elements are non-dimensional.
+The orbital elements are referred to the inertial frame defined by the dynamical equinox and ecliptic J2000. Note that
+this set of orbital elements is similar (but not exactly equivalent) to the
+`equinoctial orbital elements <https://adsabs.harvard.edu/full/1972CeMec...5..303B>`__.
+
+*time_expr* is the expression to be used as a time coordinate and it must represent the number of Julian millenia
+elapsed since the Julian date 2451545.0 in the `TDB time scale <https://en.wikipedia.org/wiki/Barycentric_Dynamical_Time>`__.
+A Julian millenium consists of exactly 365250 Julian days.
+
+*thresh* is the theory truncation threshold: larger values produce a shorter but less precise model. A value of zero
+will return the full untruncated model. *thresh* must be a finite, non-negative value.
+
+:param pl_idx: the input planet.
+:param var_idx: the input orbital element.
+:param time_expr: the input time expression.
+:param thresh: the theory truncation threshold.
+
+:returns: an expression for the time evolution of the orbital element of a planet according to the VSOP2013 model.
+
+:raises ValueError: in case of invalid input arguments.
+
+)";
+}
+
+std::string vsop2013_cartesian()
+{
+    return R"(vsop2013_cartesian(pl_idx: int, time_expr: expression = heyoka.time, thresh: float = 1e-9) -> list[expression]
+
+Get the VSOP2013 formulae (Cartesian state).
+
+.. versionadded:: 0.15.0
+
+.. note::
+
+   A :ref:`tutorial <tut_vsop2013>` explaining the use of this function is available.
+
+This function will return an array of expressions representing the Cartesian state of a planet according to the
+`VSOP2013 <https://en.wikipedia.org/wiki/VSOP_model>`__ analytical model. The Cartesian state consists of position and
+velocity concatenated in a 6-elements array ``[x, y, z, vx, vy, vz]`` referred to the inertial frame defined by the
+dynamical equinox and ecliptic J2000. The position is expressed in AU, the velocity in AU/day.
+
+*pl_idx* selects the planet and it must be one of:
+
+- 1: Mercury,
+- 2: Venus,
+- 3: Earth-Moon barycentre,
+- 4: Mars,
+- 5: Jupiter,
+- 6: Saturn,
+- 7: Uranus,
+- 8: Neptune,
+- 9: Pluto.
+
+*time_expr* is the expression to be used as a time coordinate and it must represent the number of Julian millenia
+elapsed since the Julian date 2451545.0 in the `TDB time scale <https://en.wikipedia.org/wiki/Barycentric_Dynamical_Time>`__.
+A Julian millenia consists of exactly 365250 Julian days.
+
+*thresh* is the theory truncation threshold: larger values produce a shorter but less precise model. A value of zero
+will return the full untruncated model. *thresh* must be a finite, non-negative value.
+
+:param pl_idx: the input planet.
+:param time_expr: the input time expression.
+:param thresh: the theory truncation threshold.
+
+:returns: an array of expressions representing the time evolution of the Cartesian state of a planet according to the VSOP2013 model.
+
+:raises ValueError: in case of invalid input arguments.
+
+)";
+}
+
+std::string vsop2013_cartesian_icrf()
+{
+    return R"(vsop2013_cartesian_icrf(pl_idx: int, time_expr: expression = heyoka.time, thresh: float = 1e-9) -> list[expression]
+
+Get the VSOP2013 formulae (ICRS Cartesian state).
+
+.. versionadded:: 0.15.0
+
+.. note::
+
+   A :ref:`tutorial <tut_vsop2013>` explaining the use of this function is available.
+
+This function will return an array of expressions representing the Cartesian state of a planet according to the
+`VSOP2013 <https://en.wikipedia.org/wiki/VSOP_model>`__ analytical model. The Cartesian state consists of position and
+velocity concatenated in a 6-elements array ``[x, y, z, vx, vy, vz]`` referred to the
+`ICRS <https://en.wikipedia.org/wiki/International_Celestial_Reference_System_and_its_realizations>`__.
+The position is expressed in AU, the velocity in AU/day.
+
+*pl_idx* selects the planet and it must be one of:
+
+- 1: Mercury,
+- 2: Venus,
+- 3: Earth-Moon barycentre,
+- 4: Mars,
+- 5: Jupiter,
+- 6: Saturn,
+- 7: Uranus,
+- 8: Neptune,
+- 9: Pluto.
+
+*time_expr* is the expression to be used as a time coordinate and it must represent the number of Julian millenia
+elapsed since the Julian date 2451545.0 in the `TDB time scale <https://en.wikipedia.org/wiki/Barycentric_Dynamical_Time>`__.
+A Julian millenia consists of exactly 365250 Julian days.
+
+*thresh* is the theory truncation threshold: larger values produce a shorter but less precise model. A value of zero
+will return the full untruncated model. *thresh* must be a finite, non-negative value.
+
+:param pl_idx: the input planet.
+:param time_expr: the input time expression.
+:param thresh: the theory truncation threshold.
+
+:returns: an array of expressions representing the time evolution of the Cartesian state of a planet according to the VSOP2013 model.
+
+:raises ValueError: in case of invalid input arguments.
+
+)";
+}
+
+std::string get_vsop2013_mus()
+{
+    return R"(get_vsop2013_mus() -> list[float]
+
+Get the gravitational parameters of the VSOP2013 theory.
+
+.. versionadded:: 0.15.0
+
+This function will return the `standard gravitational parameters <https://en.wikipedia.org/wiki/Standard_gravitational_parameter>`__
+used by the `VSOP2013 <https://en.wikipedia.org/wiki/VSOP_model>`__ analytical model. The parameters are returned in an array of
+size 10 in which the indices correspond to the following bodies:
+
+- 0: Sun,
+- 1: Mercury,
+- 2: Venus,
+- 3: Earth-Moon barycentre,
+- 4: Mars,
+- 5: Jupiter,
+- 6: Saturn,
+- 7: Uranus,
+- 8: Neptune,
+- 9: Pluto.
+
+The gravitational parameters are expressed in :math:`\mathrm{AU}^3/\mathrm{day}^2`.
+
+:returns: the gravitational parameters used by the VSOP2013 theory.
+
+)";
+}
+
+std::string elp2000_cartesian_e2000()
+{
+    return R"(elp2000_cartesian_e2000(time_expr: expression = heyoka.time, thresh: float = 1e-6) -> list[expression]
+
+Get the ELP2000 formulae (inertial mean ecliptic and equinox of J2000).
+
+.. versionadded:: 3.2.0
+
+.. note::
+
+   A :ref:`tutorial <tut_elp2000>` explaining the use of this function is available.
+
+This function will return an array of expressions representing the geocentric position of the Moon according to the
+`ELP2000 <https://en.wikipedia.org/wiki/Ephemeride_Lunaire_Parisienne>`__ analytical model. The position is returned
+in Cartesian coordinates ``[x, y, z]`` referred to the inertial mean ecliptic and equinox of J2000. The position is
+returned in kilometres.
+
+*time_expr* is the expression to be used as a time coordinate and it must represent the number of Julian centuries
+elapsed since the Julian date 2451545.0 in the `TDB time scale <https://en.wikipedia.org/wiki/Barycentric_Dynamical_Time>`__.
+A Julian century consists of exactly 36525 Julian days.
+
+*thresh* is the theory truncation threshold: larger values produce a shorter but less precise model. A value of zero
+will return the full untruncated model. *thresh* must be a finite, non-negative value.
+
+:param time_expr: the input time expression.
+:param thresh: the theory truncation threshold.
+
+:returns: an array of expressions representing the geocentric Cartesian position of the Moon according to the ELP2000 model.
+
+:raises ValueError: in case of invalid input arguments.
+
+)";
+}
+
+std::string elp2000_cartesian_fk5()
+{
+    return R"(elp2000_cartesian_fk5(time_expr: expression = heyoka.time, thresh: float = 1e-6) -> list[expression]
+
+Get the ELP2000 formulae (FK5 J2000 frame).
+
+.. versionadded:: 3.2.0
+
+.. note::
+
+   A :ref:`tutorial <tut_elp2000>` explaining the use of this function is available.
+
+This function will return an array of expressions representing the geocentric position of the Moon according to the
+`ELP2000 <https://en.wikipedia.org/wiki/Ephemeride_Lunaire_Parisienne>`__ analytical model. The position is returned
+in Cartesian coordinates ``[x, y, z]`` referred to the mean equator and rotational mean equinox of J2000 (i.e., in the
+FK5 frame of J2000). The position is returned in kilometres.
+
+*time_expr* is the expression to be used as a time coordinate and it must represent the number of Julian centuries
+elapsed since the Julian date 2451545.0 in the `TDB time scale <https://en.wikipedia.org/wiki/Barycentric_Dynamical_Time>`__.
+A Julian century consists of exactly 36525 Julian days.
+
+*thresh* is the theory truncation threshold: larger values produce a shorter but less precise model. A value of zero
+will return the full untruncated model. *thresh* must be a finite, non-negative value.
+
+:param time_expr: the input time expression.
+:param thresh: the theory truncation threshold.
+
+:returns: an array of expressions representing the geocentric Cartesian position of the Moon according to the ELP2000 model.
+
+:raises ValueError: in case of invalid input arguments.
+
+)";
+}
+
+std::string get_elp2000_mus()
+{
+    return R"(get_elp2000_mus() -> list[float]
+
+Get the gravitational parameters of the ELP2000 theory.
+
+.. versionadded:: 3.2.0
+
+This function will return the `standard gravitational parameters <https://en.wikipedia.org/wiki/Standard_gravitational_parameter>`__
+used by the `ELP2000 <https://en.wikipedia.org/wiki/Ephemeride_Lunaire_Parisienne>`__ analytical model. The parameters are returned
+in an array of size 2 containing the values for, respectively, the Earth and the Moon.
+
+The gravitational parameters are expressed in :math:`\mathrm{m}^3/\mathrm{s}^2`.
+
+:returns: the gravitational parameters used by the ELP2000 theory.
+
+)";
+}
+
 } // namespace heyoka_py::docstrings

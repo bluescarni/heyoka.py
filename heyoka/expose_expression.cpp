@@ -34,6 +34,7 @@
 #include <pybind11/stl.h>
 
 #include <heyoka/expression.hpp>
+#include <heyoka/func_args.hpp>
 #include <heyoka/kw.hpp>
 #include <heyoka/math.hpp>
 
@@ -676,6 +677,24 @@ void expose_expression(py::module_ &m)
            const std::variant<hey::diff_args, std::vector<hey::expression>> &diff_args,
            std::uint32_t diff_order) { return hey::diff_tensors(v_ex, diff_args, hey::kw::diff_order = diff_order); },
         "func"_a, "diff_args"_a, "diff_order"_a = static_cast<std::uint32_t>(1), docstrings::diff_tensors().c_str());
+
+    // func_args class.
+    py::class_<hey::func_args> func_args_cl(m, "func_args", py::dynamic_attr{}, docstrings::func_args().c_str());
+    func_args_cl.def(py::init([](std::vector<hey::expression> args, bool shared) {
+                         return hey::func_args(std::move(args), shared);
+                     }),
+                     "args"_a = std::vector<hey::expression>{}, "shared"_a = false,
+                     docstrings::func_args_init().c_str());
+    func_args_cl.def_property_readonly(
+        "args", [](const hey::func_args &fa) { return fa.get_args(); }, docstrings::func_args_args().c_str());
+    func_args_cl.def_property_readonly(
+        "is_shared", [](const hey::func_args &fa) { return static_cast<bool>(fa.get_shared_args()); },
+        docstrings::func_args_is_shared().c_str());
+    // Copy/deepcopy.
+    func_args_cl.def("__copy__", copy_wrapper<hey::func_args>);
+    func_args_cl.def("__deepcopy__", deepcopy_wrapper<hey::func_args>, "memo"_a);
+    // Pickle support.
+    func_args_cl.def(py::pickle(&pickle_getstate_wrapper<hey::func_args>, &pickle_setstate_wrapper<hey::func_args>));
 }
 
 } // namespace heyoka_py

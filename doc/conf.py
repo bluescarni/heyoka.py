@@ -32,12 +32,13 @@ release = hy.__version__
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
-extensions = ["myst_nb",
-              "sphinx.ext.intersphinx",
-              "sphinx.ext.autodoc",
-              "sphinx.ext.autosummary",
-              "sphinx.ext.doctest",
-              ]
+extensions = [
+    "myst_nb",
+    "sphinx.ext.intersphinx",
+    "sphinx.ext.autodoc",
+    "sphinx.ext.autosummary",
+    "sphinx.ext.doctest",
+]
 
 intersphinx_mapping = {
     "hy": ("https://bluescarni.github.io/heyoka", None),
@@ -103,16 +104,15 @@ nb_execution_excludepatterns = [
     "torch_and_heyoka*",
     "differentiable_atm*",
     "thermoNETs*",
-    # NOTE: the sgp4 notebook runs
-    # some benchmarks.
+    # NOTE: the sgp4 notebook runs some benchmarks.
     "sgp4_propagator*",
-    # NOTE: high order variational equations
-    # take too long in debug mode.
+    # NOTE: high order variational equations take too long in debug mode.
     "oppenheimer_volkoff*",
-    # NOTE: the neuralODE II notebook
-    # runs a stichastic graident descent which takes long
-    "NeuralODEs_II",
-    ]
+    # NOTE: the neuralODE II notebook runs a stochastic gradient descent which takes long.
+    "NeuralODEs_II*",
+    # NOTE: this notebook takes long to run.
+    "eo_third_body*",
+]
 
 # Force printing traceback to stderr on execution error.
 nb_execution_show_tb = True

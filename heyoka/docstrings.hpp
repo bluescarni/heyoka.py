@@ -74,6 +74,13 @@ std::string egm2008_acc(double, double);
 std::string Ap_avg();
 std::string f107();
 std::string f107a_center81();
+std::string vsop2013_elliptic();
+std::string vsop2013_cartesian();
+std::string vsop2013_cartesian_icrf();
+std::string get_vsop2013_mus();
+std::string elp2000_cartesian_e2000();
+std::string elp2000_cartesian_fk5();
+std::string get_elp2000_mus();
 
 // var_ode_sys() and related.
 std::string var_args();
@@ -126,6 +133,12 @@ std::string sw_data_table();
 std::string sw_data_timestamp();
 std::string sw_data_identifier();
 std::string sw_data_fetch_latest_celestrak();
+
+// func_args.
+std::string func_args();
+std::string func_args_init();
+std::string func_args_args();
+std::string func_args_is_shared();
 
 } // namespace heyoka_py::docstrings
 

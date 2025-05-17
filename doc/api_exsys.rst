@@ -13,6 +13,7 @@ Classes
    :template: custom-class-template.rst
 
    expression
+   func_args
    dtens
 
 Functions

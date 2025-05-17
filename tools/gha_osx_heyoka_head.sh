@@ -30,7 +30,8 @@ cmake ../ -G Ninja \
     -DCMAKE_INSTALL_PREFIX=$deps_dir \
     -DCMAKE_PREFIX_PATH=$deps_dir \
     -DHEYOKA_WITH_SLEEF=yes \
-    -DHEYOKA_WITH_MPPP=yes
+    -DHEYOKA_WITH_MPPP=yes \
+    -DCMAKE_CXX_FLAGS="-D_LIBCPP_DISABLE_AVAILABILITY"
 
 ninja -j2 -v install
 
@@ -42,7 +43,8 @@ cd build
 
 cmake ../ -G Ninja \
     -DCMAKE_INSTALL_PREFIX=$deps_dir \
-    -DCMAKE_PREFIX_PATH=$deps_dir
+    -DCMAKE_PREFIX_PATH=$deps_dir \
+    -DCMAKE_CXX_FLAGS="-D_LIBCPP_DISABLE_AVAILABILITY"
 
 ninja -j2 -v install
 
