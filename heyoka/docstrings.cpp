@@ -1699,6 +1699,11 @@ IAU2000/2006 precession-nutation theory.
 
 .. versionadded:: 7.3.0
 
+.. note::
+
+   A :ref:`tutorial <tut_iau2006>` is available showcasing the use of this function, including accuracy comparisons for
+   several values of the *thresh* argument.
+
 This function will return a set of three expressions representing the :math:`X`, :math:`Y` and :math:`s` angles
 from the IAU2000/2006 precession-nutation theory as a function of the input time expression *time_expr*.
 
@@ -1715,11 +1720,6 @@ of J2000 in the `terrestrial time scale (TT) <https://en.wikipedia.org/wiki/Terr
 
 *thresh* represents the truncation threshold: trigonometric terms in the theory whose coefficients are less than *thresh* in magnitude
 will be discarded. In order to formulate the full theory without truncation, use a *thresh* value of zero.
-
-.. note::
-
-   A :ref:`tutorial <tut_iau2006>` is available showcasing the use of this function, including accuracy comparisons for
-   several values of the *thresh* argument.
 
 :param time_expr: the input time expression.
 :param thresh: the truncation threshold for the coefficients of the trigonometric series (in arcseconds).
