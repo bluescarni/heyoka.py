@@ -569,9 +569,8 @@ void expose_models(py::module_ &m)
                 {detail::ex_from_variant(xyz[0]), detail::ex_from_variant(xyz[1]), detail::ex_from_variant(xyz[2])}, n,
                 m, hy::kw::mu = detail::ex_from_variant(mu), hy::kw::a = detail::ex_from_variant(a));
         },
-        "xyz"_a, "n"_a.noconvert(), "m"_a.noconvert(), "mu"_a = hy::model::detail::egm2008_default_mu,
-        "a"_a = hy::model::detail::egm2008_default_a,
-        docstrings::egm2008_pot(hy::model::detail::egm2008_default_mu, hy::model::detail::egm2008_default_a).c_str());
+        "xyz"_a, "n"_a.noconvert(), "m"_a.noconvert(), "mu"_a = hy::model::get_egm2008_mu(),
+        "a"_a = hy::model::get_egm2008_a(), docstrings::egm2008_pot().c_str());
     m.def(
         "_model_egm2008_acc",
         [](const std::array<vex_t, 3> &xyz, std::uint32_t n, std::uint32_t m, const vex_t &mu, const vex_t &a) {
@@ -579,9 +578,10 @@ void expose_models(py::module_ &m)
                 {detail::ex_from_variant(xyz[0]), detail::ex_from_variant(xyz[1]), detail::ex_from_variant(xyz[2])}, n,
                 m, hy::kw::mu = detail::ex_from_variant(mu), hy::kw::a = detail::ex_from_variant(a));
         },
-        "xyz"_a, "n"_a.noconvert(), "m"_a.noconvert(), "mu"_a = hy::model::detail::egm2008_default_mu,
-        "a"_a = hy::model::detail::egm2008_default_a,
-        docstrings::egm2008_acc(hy::model::detail::egm2008_default_mu, hy::model::detail::egm2008_default_a).c_str());
+        "xyz"_a, "n"_a.noconvert(), "m"_a.noconvert(), "mu"_a = hy::model::get_egm2008_mu(),
+        "a"_a = hy::model::get_egm2008_a(), docstrings::egm2008_acc().c_str());
+    m.def("_model_get_egm2008_mu", &hy::model::get_egm2008_mu, docstrings::get_egm2008_mu().c_str());
+    m.def("_model_get_egm2008_a", &hy::model::get_egm2008_a, docstrings::get_egm2008_a().c_str());
 
     // Use macro to expose the SW models.
 #define HEYOKA_PY_EXPOSE_MODEL_SW(name)                                                                                \

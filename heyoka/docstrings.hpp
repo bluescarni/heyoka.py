@@ -69,8 +69,8 @@ std::string dXp();
 std::string dY();
 std::string dYp();
 std::string iau2006(double);
-std::string egm2008_pot(double, double);
-std::string egm2008_acc(double, double);
+std::string egm2008_pot();
+std::string egm2008_acc();
 std::string Ap_avg();
 std::string f107();
 std::string f107a_center81();
@@ -81,6 +81,8 @@ std::string get_vsop2013_mus();
 std::string elp2000_cartesian_e2000();
 std::string elp2000_cartesian_fk5();
 std::string get_elp2000_mus();
+std::string get_egm2008_mu();
+std::string get_egm2008_a();
 
 // var_ode_sys() and related.
 std::string var_args();
