@@ -9,3 +9,4 @@ Earth orbit dynamics
    :maxdepth: 1
 
    notebooks/eo_third_body
+   notebooks/eo_geopot
