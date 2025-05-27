@@ -110,8 +110,9 @@ nb_execution_excludepatterns = [
     "oppenheimer_volkoff*",
     # NOTE: the neuralODE II notebook runs a stochastic gradient descent which takes long.
     "NeuralODEs_II*",
-    # NOTE: this notebook takes long to run.
+    # NOTE: these notebooks takes long to run.
     "eo_third_body*",
+    "eo_geopot*",
 ]
 
 # Force printing traceback to stderr on execution error.

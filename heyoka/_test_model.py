@@ -603,10 +603,11 @@ class model_test_case(_ut.TestCase):
 
     def test_egm2008(self):
         from . import make_vars
-        from .model import egm2008_pot, egm2008_acc
+        from .model import egm2008_pot, egm2008_acc, get_egm2008_mu, get_egm2008_a
 
         x, y, z = make_vars("x", "y", "z")
 
+        self.assertNotEqual(get_egm2008_mu(), get_egm2008_a())
         self.assertNotEqual(
             egm2008_pot([x, y, z], n=2, m=2), egm2008_pot([x, y, z], n=2, m=2, mu=1.2)
         )

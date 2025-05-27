@@ -449,7 +449,7 @@ Transform Cartesian coordinates into geodetic coordinates.
    A :ref:`tutorial <Thermonets>` showcasing also the use of this
    function is available.
 
-This function will compute the expressions of the geodetic coordinates as functions of the input Cartesian coordinates using
+This function will compute the expressions of the geodetic coordinates as functions of the input Cartesian coordinates *xyz* using
 the Hirvonen and Moritz iterations (see "Physical Geodesy" by Heiskanen and Moritz, pp.181-183). The *n_iters* parameter
 selects the number of iterations - a higher number will produce a more accurate result, at a higher computational cost.
 The default value ensures an accuracy at the centimetre level on the Earth's surface.
@@ -484,7 +484,7 @@ Transform geodetic coordinates into Cartesian coordinates.
 
 .. versionadded:: 7.3.0
 
-This function will convert the input geodetic coordinates (height, latitude, longitude) into Cartesian
+This function will convert the input geodetic coordinates *geo* (height, latitude, longitude) into Cartesian
 coordinates. The input height is expected in the same units as *R_eq*, while latitude and longitude are
 expected in radians.
 
@@ -1699,6 +1699,11 @@ IAU2000/2006 precession-nutation theory.
 
 .. versionadded:: 7.3.0
 
+.. note::
+
+   A :ref:`tutorial <tut_iau2006>` is available showcasing the use of this function, including accuracy comparisons for
+   several values of the *thresh* argument.
+
 This function will return a set of three expressions representing the :math:`X`, :math:`Y` and :math:`s` angles
 from the IAU2000/2006 precession-nutation theory as a function of the input time expression *time_expr*.
 
@@ -1716,11 +1721,6 @@ of J2000 in the `terrestrial time scale (TT) <https://en.wikipedia.org/wiki/Terr
 *thresh* represents the truncation threshold: trigonometric terms in the theory whose coefficients are less than *thresh* in magnitude
 will be discarded. In order to formulate the full theory without truncation, use a *thresh* value of zero.
 
-.. note::
-
-   A :ref:`tutorial <tut_iau2006>` is available showcasing the use of this function, including accuracy comparisons for
-   several values of the *thresh* argument.
-
 :param time_expr: the input time expression.
 :param thresh: the truncation threshold for the coefficients of the trigonometric series (in arcseconds).
 
@@ -1732,10 +1732,10 @@ will be discarded. In order to formulate the full theory without truncation, use
                        thresh);
 }
 
-std::string egm2008_pot(double def_mu, double def_a)
+std::string egm2008_pot()
 {
     return fmt::format(
-        R"(egm2008_pot(xyz: typing.Iterable[expression], n: int, m: int, mu: expression = {}, a: expression = {}) -> expression
+        R"(egm2008_pot(xyz: typing.Iterable[expression], n: int, m: int, mu: expression = expression(get_egm2008_mu()), a: expression = expression(get_egm2008_a())) -> expression
 
 Geopotential (EGM2008).
 
@@ -1750,9 +1750,9 @@ with the `ITRF <https://en.wikipedia.org/wiki/International_Terrestrial_Referenc
 *n* and *m* are, respectively, the maximum harmonic degree and order to be considered in the computation. Higher degrees
 and orders will produce more accurate values, at the cost of increased computational complexity.
 
-*mu* and *a* are, respectively, the gravitational parameter and reference Earth radius to be used in the computation.
-Both are expected to be provided in units consistent with each other and with *xyz*. The default values (in SI units) are
-those specified in the documentation of the EGM2008 model.
+*mu* and *a* are, respectively, the gravitational parameter and reference Earth radius to be used in the computation. Both are
+expected to be provided in units consistent with each other and with *xyz*. The default values are those returned by the
+:py:func:`~heyoka.model.get_egm2008_mu()` and :py:func:`~heyoka.model.get_egm2008_a()` functions.
 
 .. note::
 
@@ -1769,14 +1769,13 @@ those specified in the documentation of the EGM2008 model.
 
 :raises ValueError: it *m* > *n* or if *n* is larger than an implementation-defined limit.
 
-)",
-        def_mu, def_a);
+)");
 }
 
-std::string egm2008_acc(double def_mu, double def_a)
+std::string egm2008_acc()
 {
     return fmt::format(
-        R"(egm2008_acc(xyz: typing.Iterable[expression], n: int, m: int, mu: expression = {}, a: expression = {}) -> list[expression]
+        R"(egm2008_acc(xyz: typing.Iterable[expression], n: int, m: int, mu: expression = expression(get_egm2008_mu()), a: expression = expression(get_egm2008_a())) -> list[expression]
 
 Gravitational acceleration (EGM2008).
 
@@ -1791,9 +1790,9 @@ with the `ITRF <https://en.wikipedia.org/wiki/International_Terrestrial_Referenc
 *n* and *m* are, respectively, the maximum harmonic degree and order to be considered in the computation. Higher degrees
 and orders will produce more accurate values, at the cost of increased computational complexity.
 
-*mu* and *a* are, respectively, the gravitational parameter and reference Earth radius to be used in the computation.
-Both are expected to be provided in units consistent with each other and with *xyz*. The default values (in SI units) are
-those specified in the documentation of the EGM2008 model.
+*mu* and *a* are, respectively, the gravitational parameter and reference Earth radius to be used in the computation. Both are
+expected to be provided in units consistent with each other and with *xyz*. The default values are those returned by the
+:py:func:`~heyoka.model.get_egm2008_mu()` and :py:func:`~heyoka.model.get_egm2008_a()` functions.
 
 .. note::
 
@@ -1810,8 +1809,7 @@ those specified in the documentation of the EGM2008 model.
 
 :raises ValueError: it *m* > *n* or if *n* is larger than an implementation-defined limit.
 
-)",
-        def_mu, def_a);
+)");
 }
 
 std::string sw_data()
@@ -2317,6 +2315,38 @@ in an array of size 2 containing the values for, respectively, the Earth and the
 The gravitational parameters are expressed in :math:`\mathrm{m}^3/\mathrm{s}^2`.
 
 :returns: the gravitational parameters used by the ELP2000 theory.
+
+)";
+}
+
+std::string get_egm2008_mu()
+{
+    return R"(get_egm2008_mu() -> float
+
+Get the gravitational parameter of the EGM2008 model.
+
+.. versionadded:: 8.0.0
+
+This function will return the gravitational parameter used by the EGM2008 geopotential model expressed
+in :math:`\mathrm{m}^3/\mathrm{s}^2`. The value is taken from the official documentation of the EGM2008 model.
+
+:returns: the gravitational parameter used by the EGM2008 model.
+
+)";
+}
+
+std::string get_egm2008_a()
+{
+    return R"(get_egm2008_a() -> float
+
+Get Earth's reference radius in the EGM2008 model.
+
+.. versionadded:: 8.0.0
+
+This function will return the Earth's reference radius used by the EGM2008 geopotential model expressed
+in :math:`\mathrm{m}`. The value is taken from the official documentation of the EGM2008 model.
+
+:returns: Earth's reference radius in the EGM2008 model.
 
 )";
 }
