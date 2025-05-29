@@ -358,7 +358,7 @@ def _create_time():
 
 time: expression = _create_time()
 """
-Time placeholder.
+Time expression.
 
 This global object is an :py:class:`~heyoka.expression` which is used to represent
 time (i.e., the independent variable) in differential equations.

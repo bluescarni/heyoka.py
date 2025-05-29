@@ -636,7 +636,7 @@ Several checks are run on the input arguments. Specifically:
 - if *args* is a list of expressions:
 
   - it must not be empty,
-  - it must consists only of variables, parameters or the :attr:`heyoka.time` placeholder,
+  - it must consists only of variables, parameters or the :attr:`heyoka.time` expression,
   - it must not contain duplicates,
   - any variable expression must refer to a state variable in *sys*.
 
