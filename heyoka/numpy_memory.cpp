@@ -21,8 +21,6 @@
 #include <typeindex>
 #include <utility>
 
-#include <boost/safe_numerics/safe_integer.hpp>
-
 #include <pybind11/pybind11.h>
 
 #define NO_IMPORT_ARRAY
@@ -37,6 +35,8 @@
 #include <numpy/arrayscalars.h>
 #include <numpy/ndarraytypes.h>
 #include <numpy/ufuncobject.h>
+
+#include <heyoka/detail/safe_integer.hpp>
 
 #include "common_utils.hpp"
 #include "numpy_memory.hpp"

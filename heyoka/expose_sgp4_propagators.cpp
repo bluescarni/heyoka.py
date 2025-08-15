@@ -18,7 +18,6 @@
 #include <vector>
 
 #include <boost/numeric/conversion/cast.hpp>
-#include <boost/safe_numerics/safe_integer.hpp>
 
 #include <fmt/core.h>
 
@@ -28,6 +27,7 @@
 
 #include <Python.h>
 
+#include <heyoka/detail/safe_integer.hpp>
 #include <heyoka/expression.hpp>
 #include <heyoka/kw.hpp>
 #include <heyoka/mdspan.hpp>

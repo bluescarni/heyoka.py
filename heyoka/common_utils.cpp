@@ -15,7 +15,6 @@
 #include <utility>
 
 #include <boost/numeric/conversion/cast.hpp>
-#include <boost/safe_numerics/safe_integer.hpp>
 
 #include <pybind11/numpy.h>
 #include <pybind11/pybind11.h>
@@ -38,6 +37,7 @@
 
 #endif
 
+#include <heyoka/detail/safe_integer.hpp>
 #include <heyoka/expression.hpp>
 #include <heyoka/number.hpp>
 
