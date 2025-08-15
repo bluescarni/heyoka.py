@@ -355,23 +355,23 @@ void expose_batch_integrator_impl(py::module_ &m, const std::string &suffix)
 #endif
 
                         // Run the propagation.
-                        // NOTE: for batch integrators, ret is guaranteed to always have
-                        // the same size regardless of errors.
-                        decltype(ta.propagate_grid(grid_v, max_steps)) ret;
-                        {
+                        //
+                        // NOTE: for batch integrators, ret is guaranteed to always have the same size regardless of
+                        // errors.
+                        auto ret = [&]() {
                             if (cb_) {
                                 auto cb = scb_arg_to_step_callback<heyoka::step_callback_batch<T>>(*cb_);
 
                                 py::gil_scoped_release release;
-                                ret = ta.propagate_grid(std::move(grid_v), kw::max_steps = max_steps,
-                                                        kw::max_delta_t = std::move(max_dts),
-                                                        kw::callback = std::move(cb));
+                                return ta.propagate_grid(std::move(grid_v), kw::max_steps = max_steps,
+                                                         kw::max_delta_t = std::move(max_dts),
+                                                         kw::callback = std::move(cb));
                             } else {
                                 py::gil_scoped_release release;
-                                ret = ta.propagate_grid(std::move(grid_v), kw::max_steps = max_steps,
-                                                        kw::max_delta_t = std::move(max_dts));
+                                return ta.propagate_grid(std::move(grid_v), kw::max_steps = max_steps,
+                                                         kw::max_delta_t = std::move(max_dts));
                             }
-                        }
+                        }();
 
                         // Create the output array.
                         assert(std::get<1>(ret).size() == grid_v_size * ta.get_dim());

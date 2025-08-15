@@ -319,24 +319,21 @@ void expose_taylor_integrator_impl(py::module &m, const std::string &suffix)
             "propagate_grid",
             [](hey::taylor_adaptive<T> &ta, std::vector<T> grid, std::size_t max_steps, T max_delta_t,
                std::optional<scb_arg_t> cb_) {
-                decltype(ta.propagate_grid(grid, max_steps)) ret;
-
-                {
+                auto ret = [&]() {
                     if (cb_) {
                         auto cb = scb_arg_to_step_callback<heyoka::step_callback<T>>(*cb_);
 
                         py::gil_scoped_release release;
-                        ret = ta.propagate_grid(std::move(grid), kw::max_steps = max_steps,
-                                                kw::max_delta_t = max_delta_t, kw::callback = std::move(cb));
+                        return ta.propagate_grid(std::move(grid), kw::max_steps = max_steps,
+                                                 kw::max_delta_t = max_delta_t, kw::callback = std::move(cb));
                     } else {
                         py::gil_scoped_release release;
-                        ret = ta.propagate_grid(std::move(grid), kw::max_steps = max_steps,
-                                                kw::max_delta_t = max_delta_t);
+                        return ta.propagate_grid(std::move(grid), kw::max_steps = max_steps,
+                                                 kw::max_delta_t = max_delta_t);
                     }
-                }
+                }();
 
-                // Determine the number of state vectors returned
-                // (could be < grid.size() if errors arise).
+                // Determine the number of state vectors returned (could be < grid.size() if errors arise).
                 assert(std::get<5>(ret).size() % ta.get_dim() == 0u);
                 const auto nrows = boost::numeric_cast<py::ssize_t>(std::get<5>(ret).size() / ta.get_dim());
                 const auto ncols = boost::numeric_cast<py::ssize_t>(ta.get_dim());
