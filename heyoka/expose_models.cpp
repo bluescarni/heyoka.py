@@ -597,6 +597,11 @@ void expose_models(py::module_ &m)
     HEYOKA_PY_EXPOSE_MODEL_SW(f107a_center81);
 
 #undef HEYOKA_PY_EXPOSE_MODEL_SW
+
+    // dayfrac().
+    m.def(
+        "_model_dayfrac", [](const hy::expression &tm) { return hy::model::dayfrac(hy::kw::time_expr = tm); },
+        "time_expr"_a = hy::time, docstrings::dayfrac().c_str());
 }
 
 } // namespace heyoka_py

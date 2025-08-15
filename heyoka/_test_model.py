@@ -629,3 +629,12 @@ class model_test_case(_ut.TestCase):
             egm2008_acc([x, y, z], n=2, m=2, a=1.2),
             egm2008_acc([x, y, z], n=2, m=2, mu=1.2),
         )
+
+    def test_dayfrac(self):
+        from . import make_vars
+        from .model import dayfrac
+
+        self.assertEqual(str(dayfrac()), "dayfrac(t)")
+
+        x = make_vars("x")
+        self.assertEqual(str(dayfrac(time_expr=x)), "dayfrac(x)")

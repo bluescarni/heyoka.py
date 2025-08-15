@@ -2351,4 +2351,37 @@ in :math:`\mathrm{m}`. The value is taken from the official documentation of the
 )";
 }
 
+std::string dayfrac()
+{
+    return R"(dayfrac(time_expr: expression = heyoka.time) -> expression
+
+Number of fractional days elapsed since January 1st.
+
+.. versionadded:: 7.4.0
+
+The input time expression *time_expr* is assumed to represent the number of fractional
+`terrestrial time (TT) <https://en.wikipedia.org/wiki/Terrestrial_Time>`__ days elapsed since the J2000 epoch.
+
+The returned value is the number of fractional TT days elapsed since January 1st, 00:00 UTC, of the calendar year
+corresponding to *time_expr*. A fractional day is expressed as a decimal count of 24-hour days (e.g., 1.25 represents
+1 day and 6 hours).
+
+TT days are always exactly 86400 SI seconds long, so in years with leap seconds, the returned quantity may differ slightly
+from the UTC day-of-year (DOY) due to the differing length of UTC days (86399 or 86401 SI seconds). This quantity is therefore
+similar to DOY, but:
+
+- it is zero-based (Jan 1 00:00 corresponds to 0.0 rather than 1.0),
+- it is measured in TT days, not UTC days.
+
+Computation is always internally performed in double precision, even when evaluating expressions at higher numerical precision.
+This design choice reflects its intended use in applications such as thermospheric models, where the model uncertainty far
+exceeds any numerical error from double precision or small offsets from UTC DOY.
+
+:param time_expr: the number of TDB seconds elapsed from the epoch of J2000.
+
+:returns: the difference (in seconds) between TDB and TT.
+
+)";
+}
+
 } // namespace heyoka_py::docstrings
