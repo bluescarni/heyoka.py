@@ -1,6 +1,6 @@
 # NOTE: this is the minimum version currently
 # required by heyoka.
-cmake_minimum_required(VERSION 3.18.0)
+cmake_minimum_required(VERSION 3.20.0)
 
 if(${CMAKE_VERSION} VERSION_GREATER_EQUAL 3.31.0)
     # NOTE: adopt the new behaviour for this policy:

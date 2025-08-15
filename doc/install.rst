@@ -102,7 +102,7 @@ Installation from source
    build and/or runtime issues.
 
 heyoka.py is written in modern C++, and it requires a compiler able to understand
-at least C++20. The library is regularly tested on
+at least C++23. The library is regularly tested on
 a continuous integration pipeline which currently includes several
 compilers (GCC, Clang, MSVC) on several operating systems (Linux, OSX, Windows)
 and several CPU architectures (x86-64, 64-bit ARM and 64-bit PowerPC).
@@ -111,7 +111,7 @@ In addition to the C++ dependencies enumerated :ref:`earlier <installation_deps>
 installation from source requires also:
 
 * `pybind11 <https://github.com/pybind/pybind11>`__ (version >= 2.10),
-* `CMake <https://cmake.org/>`__, version 3.18 or later.
+* `CMake <https://cmake.org/>`__, version 3.20 or later.
 
 Note that heyoka.py makes use of the :ref:`NumPy C API <numpy:c-api>`
 and thus NumPy must be installed **before** compiling heyoka.py from source.
