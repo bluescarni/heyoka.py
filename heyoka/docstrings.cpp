@@ -1991,7 +1991,7 @@ std::string func_args()
 {
     return R"(Class to represent sets of function arguments.
 
-.. versionadded:: 8.0.0
+.. versionadded:: 7.4.0
 
 This class is used to represent the arguments of a function :py:class:`~heyoka.expression`. The arguments are
 stored internally as a :py:class:`list` of :py:class:`~heyoka.expression` and they can be accessed via the
@@ -2325,7 +2325,7 @@ std::string get_egm2008_mu()
 
 Get the gravitational parameter of the EGM2008 model.
 
-.. versionadded:: 8.0.0
+.. versionadded:: 7.4.0
 
 This function will return the gravitational parameter used by the EGM2008 geopotential model expressed
 in :math:`\mathrm{m}^3/\mathrm{s}^2`. The value is taken from the official documentation of the EGM2008 model.
@@ -2341,7 +2341,7 @@ std::string get_egm2008_a()
 
 Get Earth's reference radius in the EGM2008 model.
 
-.. versionadded:: 8.0.0
+.. versionadded:: 7.4.0
 
 This function will return the Earth's reference radius used by the EGM2008 geopotential model expressed
 in :math:`\mathrm{m}`. The value is taken from the official documentation of the EGM2008 model.

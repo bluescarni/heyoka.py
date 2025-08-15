@@ -3,7 +3,7 @@
 Changelog
 =========
 
-8.0.0 (unreleased)
+7.4.0 (unreleased)
 ------------------
 
 New
@@ -18,7 +18,7 @@ Changes
 - Several documentation improvements
   (`#236 <https://github.com/bluescarni/heyoka.py/pull/236>`__,
   `#234 <https://github.com/bluescarni/heyoka.py/pull/234>`__).
-- heyoka.py now requires version 8.0.0 of the
+- heyoka.py now requires version 7.4.0 of the
   heyoka C++ library
   (`#236 <https://github.com/bluescarni/heyoka.py/pull/236>`__).
 
