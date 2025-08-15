@@ -9,18 +9,40 @@ Changelog
 New
 ~~~
 
+- New :py:func:`~heyoka.model.dayfrac()` model to represent in the expression system the number
+  of fractional days elapsed since January 1st
+  (`#239 <https://github.com/bluescarni/heyoka.py/pull/239>`__).
+- Add getters for the gravitational parameter and reference Earth radius in the EGM2008 model
+  (`#238 <https://github.com/bluescarni/heyoka.py/pull/238>`__).
+- New tutorial on geopotential perturbations on an Earth-orbiting spacecraft
+  (`#237 <https://github.com/bluescarni/heyoka.py/pull/237>`__).
+- New :py:class:`~heyoka.func_args` class for the management of function arguments in the expression system
+  (`#236 <https://github.com/bluescarni/heyoka.py/pull/236>`__)
 - New tutorial on third-body perturbations on an Earth-orbiting spacecraft
   (`#236 <https://github.com/bluescarni/heyoka.py/pull/236>`__).
 
 Changes
 ~~~~~~~
 
+- General overhaul of several symbolic transformation primitives, avoiding recursion in favour of a stack-based
+  iterative approach and taking better advantage of shared function arguments sets. One visibile and important
+  outcome is a drastic performance increase in the formulation of the variational equations for neural ODEs.
+- heyoka now requires C++23 when building from source
+  (`#239 <https://github.com/bluescarni/heyoka.py/pull/239>`__).
+- heyoka now depends on CMake >= 3.20 when building from source
+  (`#239 <https://github.com/bluescarni/heyoka.py/pull/239>`__).
 - Several documentation improvements
   (`#236 <https://github.com/bluescarni/heyoka.py/pull/236>`__,
   `#234 <https://github.com/bluescarni/heyoka.py/pull/234>`__).
 - heyoka.py now requires version 7.4.0 of the
   heyoka C++ library
   (`#236 <https://github.com/bluescarni/heyoka.py/pull/236>`__).
+
+Fix
+~~~
+
+- Fix a rare occurrence of NaNs being generated when the VSOP2013 theory is used in numerical integrations.
+- Fix an argument checking bug in the Cartesian routines of the VSOP2013 theory.
 
 7.3.3 (2025-04-22)
 ------------------
