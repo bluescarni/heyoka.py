@@ -35,7 +35,6 @@
 #include <boost/archive/binary_iarchive.hpp>
 #include <boost/archive/binary_oarchive.hpp>
 #include <boost/numeric/conversion/cast.hpp>
-#include <boost/safe_numerics/safe_integer.hpp>
 
 #include <fmt/format.h>
 #include <fmt/ranges.h>
@@ -61,6 +60,8 @@
 #include <mp++/real128.hpp>
 
 #endif
+
+#include <heyoka/detail/safe_integer.hpp>
 
 #include "common_utils.hpp"
 

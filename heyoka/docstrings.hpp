@@ -83,6 +83,7 @@ std::string elp2000_cartesian_fk5();
 std::string get_elp2000_mus();
 std::string get_egm2008_mu();
 std::string get_egm2008_a();
+std::string dayfrac();
 
 // var_ode_sys() and related.
 std::string var_args();

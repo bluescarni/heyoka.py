@@ -10,6 +10,7 @@ Functions
    :toctree: autosummary_generated
 
    delta_tdb_tt
+   dayfrac
 
 Attributes
 ----------
