@@ -2377,9 +2377,9 @@ Computation is always internally performed in double precision, even when evalua
 This design choice reflects its intended use in applications such as thermospheric models, where the model uncertainty far
 exceeds any numerical error from double precision or small offsets from UTC DOY.
 
-:param time_expr: the number of TDB seconds elapsed from the epoch of J2000.
+:param time_expr: the number of TT days elapsed since the J2000 epoch.
 
-:returns: the difference (in seconds) between TDB and TT.
+:returns: the number of TT days elapsed since January 1st, 00:00 UTC, of the calendar year corresponding to *time_expr*.
 
 )";
 }
