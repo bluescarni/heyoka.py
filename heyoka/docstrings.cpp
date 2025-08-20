@@ -1468,6 +1468,78 @@ for the IAU2000/2006 precession-nutation theory. Please see the documentation of
         thresh);
 }
 
+std::string rot_itrs_teme()
+{
+    return R"(rot_itrs_teme(xyz: typing.Iterable[expression], time_expr: expression = heyoka.time, eop_data: eop_data = eop_data()) -> list[expression]
+
+Rotation from ITRS to TEME.
+
+.. versionadded:: 7.5.0
+
+This function will rotate the input Cartesian coordinates *xyz* from the axes of the
+`ITRS <https://en.wikipedia.org/wiki/International_Terrestrial_Reference_System_and_Frame>`__ frame to the axes of the
+TEME (True Equator Mean Equinox) frame.
+
+TEME is the reference frame adopted by the `SGP <https://en.wikipedia.org/wiki/Simplified_perturbations_models>`__ analytical
+models, which are used to propagate orbital motion via `two-line element sets <https://en.wikipedia.org/wiki/Two-line_element_set>`__
+produced by NORAD and NASA.
+
+Different implementations of the TEME frame exist. For clarity, this implementation follows the conventions and relations to
+other frames that are set out in :cite:`vallado2006revisiting`. Specifically, the TEME frame is realised by an initial rotation
+from the ITRS to the Pseudo-Earth fixed (PEF) frame, which removes the effects of `polar motion <https://en.wikipedia.org/wiki/Polar_motion>`__,
+followed by a rotation around the :math:`z` axis to account for the `Greenwich mean sidereal time (GMST) <https://en.wikipedia.org/wiki/Sidereal_time>`__
+(see :py:func:`~heyoka.model.gmst82()`).
+
+The rotation depends on the input time *time_expr* (which is expected to represent the number of Julian centuries elapsed
+since the epoch of J2000 in the `terrestrial time scale (TT) <https://en.wikipedia.org/wiki/Terrestrial_Time>`__) and it also
+requires in input an Earth orientation parameters dataset *eop_data*. Please see the documentation of :py:class:`~heyoka.eop_data`
+for more information.
+
+:param xyz: the input Cartesian coordinates.
+:param time_expr: the input time expression.
+:param eop_data: the EOP data to be used for the computation.
+
+:returns: the rotated Cartesian coordinates.
+
+)";
+}
+
+std::string rot_teme_itrs()
+{
+    return R"(rot_teme_itrs(xyz: typing.Iterable[expression], time_expr: expression = heyoka.time, eop_data: eop_data = eop_data()) -> list[expression]
+
+Rotation from TEME to ITRS.
+
+.. versionadded:: 7.5.0
+
+This function will rotate the input Cartesian coordinates *xyz* from the axes of the
+TEME (True Equator Mean Equinox) frame to the axes of the
+`ITRS <https://en.wikipedia.org/wiki/International_Terrestrial_Reference_System_and_Frame>`__ frame.
+
+TEME is the reference frame adopted by the `SGP <https://en.wikipedia.org/wiki/Simplified_perturbations_models>`__ analytical
+models, which are used to propagate orbital motion via `two-line element sets <https://en.wikipedia.org/wiki/Two-line_element_set>`__
+produced by NORAD and NASA.
+
+Different implementations of the TEME frame exist. For clarity, this implementation follows the conventions and relations to
+other frames that are set out in :cite:`vallado2006revisiting`. Specifically, the TEME frame is realised by an initial rotation
+from the ITRS to the Pseudo-Earth fixed (PEF) frame, which removes the effects of `polar motion <https://en.wikipedia.org/wiki/Polar_motion>`__,
+followed by a rotation around the :math:`z` axis to account for the `Greenwich mean sidereal time (GMST) <https://en.wikipedia.org/wiki/Sidereal_time>`__
+(see :py:func:`~heyoka.model.gmst82()`).
+
+The rotation depends on the input time *time_expr* (which is expected to represent the number of Julian centuries elapsed
+since the epoch of J2000 in the `terrestrial time scale (TT) <https://en.wikipedia.org/wiki/Terrestrial_Time>`__) and it also
+requires in input an Earth orientation parameters dataset *eop_data*. Please see the documentation of :py:class:`~heyoka.eop_data`
+for more information.
+
+:param xyz: the input Cartesian coordinates.
+:param time_expr: the input time expression.
+:param eop_data: the EOP data to be used for the computation.
+
+:returns: the rotated Cartesian coordinates.
+
+)";
+}
+
 std::string era()
 {
     return R"(era(time_expr: expression = heyoka.time, eop_data: eop_data = eop_data()) -> expression
@@ -1516,6 +1588,58 @@ The derivative of the ERA is returned in radians per Julian century (TT).
 :param eop_data: the EOP data to be used for the computation.
 
 :returns: an expression for the derivative of the ERA as a function of time.
+
+)";
+}
+
+std::string gmst82()
+{
+    return R"(gmst82(time_expr: expression = heyoka.time, eop_data: eop_data = eop_data()) -> expression
+
+Greenwich mean sidereal time (IAU 1982 model).
+
+.. versionadded:: 7.5.0
+
+This function will return an expression representing the `Greenwich mean sidereal time (GMST) <https://en.wikipedia.org/wiki/Sidereal_time>`__
+according to the IAU 1982 model as a function of the input time expression *time_expr*. *time_expr* is expected to represent the number of
+Julian centuries elapsed since the epoch of J2000 in the `terrestrial time scale (TT) <https://en.wikipedia.org/wiki/Terrestrial_Time>`__.
+*eop_data* is the Earth orientation parameters dataset to be used for the computation.
+
+The GMST is modelled as a piecewise linear function of time, where the switch points are given by the dates in *eop_data*. Evaluation
+of the GMST outside the dates range of *eop_data* will produce a value of ``NaN``.
+
+The GMST is returned in radians, reduced to the :math:`\left[0, 2\pi\right]` range.
+
+:param time_expr: the input time expression.
+:param eop_data: the EOP data to be used for the computation.
+
+:returns: an expression for the GMST as a function of time.
+
+)";
+}
+
+std::string gmst82p()
+{
+    return R"(gmst82p(time_expr: expression = heyoka.time, eop_data: eop_data = eop_data()) -> expression
+
+Derivative of the Greenwich mean sidereal time (IAU 1982 model).
+
+.. versionadded:: 7.5.0
+
+This function will return an expression representing the first-order derivative of :py:func:`~heyoka.model.gmst82()`
+as a function of the input time expression *time_expr*. *time_expr* is expected to represent the number of Julian centuries elapsed
+since the epoch of J2000 in the `terrestrial time scale (TT) <https://en.wikipedia.org/wiki/Terrestrial_Time>`__. *eop_data* is
+the Earth orientation parameters dataset to be used for the computation.
+
+The derivative of the Greenwich mean sidereal time (GMST) is modelled as a piecewise constant function of time, where the switch
+points are given by the dates in *eop_data*. Evaluation outside the dates range of *eop_data* will produce a value of ``NaN``.
+
+The derivative of the GMST is returned in radians per Julian century (TT).
+
+:param time_expr: the input time expression.
+:param eop_data: the EOP data to be used for the computation.
+
+:returns: an expression for the derivative of the GMST as a function of time.
 
 )";
 }
