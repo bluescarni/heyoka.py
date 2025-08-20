@@ -3,6 +3,17 @@
 Changelog
 =========
 
+7.5.0 (2025-08-20)
+------------------
+
+New
+~~~
+
+- New frame transformation: ITRS to TEME and viceversa
+  (`#241 <https://github.com/bluescarni/heyoka.py/pull/241>`__).
+- New :py:func:`~heyoka.model.gmst82()` model to represent the Greenwich mean sidereal time (IAU 1982 model)
+  (`#241 <https://github.com/bluescarni/heyoka.py/pull/241>`__).
+
 7.4.0 (2025-08-15)
 ------------------
 
