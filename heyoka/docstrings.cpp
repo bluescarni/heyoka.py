@@ -1487,7 +1487,7 @@ produced by NORAD and NASA.
 Different implementations of the TEME frame exist. For clarity, this implementation follows the conventions and relations to
 other frames that are set out in :cite:`vallado2006revisiting`. Specifically, the TEME frame is realised by an initial rotation
 from the ITRS to the Pseudo-Earth fixed (PEF) frame, which removes the effects of `polar motion <https://en.wikipedia.org/wiki/Polar_motion>`__,
-followed by a rotation around the :math:`z` axis to account for the `Greenwich mean sidereal time (GMST) <https://en.wikipedia.org/wiki/Sidereal_time>`__
+followed by a rotation around the :math:`z` axis to account for the `Greenwich mean sidereal time (GMST) <https://en.wikipedia.org/wiki/Sidereal_time#Mean_and_apparent_varieties>`__
 (see :py:func:`~heyoka.model.gmst82()`).
 
 The rotation depends on the input time *time_expr* (which is expected to represent the number of Julian centuries elapsed
@@ -1523,7 +1523,7 @@ produced by NORAD and NASA.
 Different implementations of the TEME frame exist. For clarity, this implementation follows the conventions and relations to
 other frames that are set out in :cite:`vallado2006revisiting`. Specifically, the TEME frame is realised by an initial rotation
 from the ITRS to the Pseudo-Earth fixed (PEF) frame, which removes the effects of `polar motion <https://en.wikipedia.org/wiki/Polar_motion>`__,
-followed by a rotation around the :math:`z` axis to account for the `Greenwich mean sidereal time (GMST) <https://en.wikipedia.org/wiki/Sidereal_time>`__
+followed by a rotation around the :math:`z` axis to account for the `Greenwich mean sidereal time (GMST) <https://en.wikipedia.org/wiki/Sidereal_time#Mean_and_apparent_varieties>`__
 (see :py:func:`~heyoka.model.gmst82()`).
 
 The rotation depends on the input time *time_expr* (which is expected to represent the number of Julian centuries elapsed
@@ -1600,7 +1600,7 @@ Greenwich mean sidereal time (IAU 1982 model).
 
 .. versionadded:: 7.5.0
 
-This function will return an expression representing the `Greenwich mean sidereal time (GMST) <https://en.wikipedia.org/wiki/Sidereal_time>`__
+This function will return an expression representing the `Greenwich mean sidereal time (GMST) <https://en.wikipedia.org/wiki/Sidereal_time#Mean_and_apparent_varieties>`__
 according to the IAU 1982 model as a function of the input time expression *time_expr*. *time_expr* is expected to represent the number of
 Julian centuries elapsed since the epoch of J2000 in the `terrestrial time scale (TT) <https://en.wikipedia.org/wiki/Terrestrial_Time>`__.
 *eop_data* is the Earth orientation parameters dataset to be used for the computation.
