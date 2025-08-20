@@ -94,9 +94,9 @@ class model_test_case(_ut.TestCase):
 
         self.assertTrue(len(dyn[3][1]) > 5)
 
-        pot = model.rotating_potential([0.0, 0.0, 3.0])
+        model.rotating_potential([0.0, 0.0, 3.0])
 
-        en = model.rotating_energy([0.0, 0.0, 3.0])
+        model.rotating_energy([0.0, 0.0, 3.0])
 
     def test_fixed_centres(self):
         from . import model, make_vars, expression as ex
@@ -109,11 +109,11 @@ class model_test_case(_ut.TestCase):
         self.assertEqual(dyn[0][0], x)
         self.assertEqual(dyn[0][1], ex("vx"))
 
-        en = model.fixed_centres_energy(
+        model.fixed_centres_energy(
             Gconst=1.5, masses=[1.1], positions=[[1.0, 2.0, 3.0]]
         )
 
-        pot = model.fixed_centres_potential(
+        model.fixed_centres_potential(
             Gconst=1.5, masses=[1.1], positions=[[1.0, 2.0, 3.0]]
         )
 
@@ -208,7 +208,7 @@ class model_test_case(_ut.TestCase):
         self.assertTrue("5.0000000000000" in str(en))
 
     def test_pendulum(self):
-        from . import model, expression, make_vars, sin, cos
+        from . import model, make_vars, sin, cos
 
         x, v = make_vars("x", "v")
 
@@ -282,7 +282,9 @@ class model_test_case(_ut.TestCase):
 
         x, y = make_vars("x", "y")
 
-        linear = lambda x: x
+        def linear(x):
+            return x
+
         my_ffnn1 = model.ffnn([x], [], 1, [linear])
         my_ffnn2 = model.ffnn([x, y], [], 1, [linear])
         self.assertEqual(my_ffnn1[0], (par[0] * x) + par[1])
@@ -638,3 +640,42 @@ class model_test_case(_ut.TestCase):
 
         x = make_vars("x")
         self.assertEqual(str(dayfrac(time_expr=x)), "dayfrac(x)")
+
+    def test_gmst82(self):
+        from . import make_vars
+        from .model import gmst82, gmst82p
+
+        self.assertTrue(str(gmst82()).startswith("eop_gmst82_"))
+        self.assertTrue(str(gmst82()).endswith("(t)"))
+
+        x = make_vars("x")
+        self.assertTrue(str(gmst82(time_expr=x)).endswith("(x)"))
+
+        self.assertTrue(str(gmst82p()).startswith("eop_gmst82p_"))
+        self.assertTrue(str(gmst82p(time_expr=x)).endswith("(x)"))
+
+    def test_rot_itrs_teme(self):
+        import numpy as np
+        from . import cfunc, make_vars
+        from .model import rot_itrs_teme, rot_teme_itrs
+
+        x, y, z = make_vars("x", "y", "z")
+        teme_x, teme_y, teme_z = rot_itrs_teme([x, y, z])
+        cf = cfunc([teme_x, teme_y, teme_z], [x, y, z], compact_mode=True)
+
+        itrs_x, itrs_y, itrs_z = rot_teme_itrs([x, y, z])
+        cf_inv = cfunc([itrs_x, itrs_y, itrs_z], [x, y, z], compact_mode=True)
+
+        out = cf(
+            [-5821.35967267, 2079.53567927, -2820.30734583], time=0.19938024382589065
+        )
+
+        self.assertLess(
+            np.linalg.norm(out - [-6102.44327643, -986.33201609, -2820.31307072]), 1e-5
+        )
+
+        out = cf_inv(out, time=0.19938024382589065)
+
+        self.assertLess(
+            np.linalg.norm(out - [-5821.35967267, 2079.53567927, -2820.30734583]), 1e-10
+        )

@@ -78,6 +78,7 @@ changelog
 breaking_changes
 benchmarks
 acknowledgement
+bibliography
 
 ```
 

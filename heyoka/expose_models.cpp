@@ -527,6 +527,22 @@ void expose_models(py::module_ &m)
         },
         "xyz"_a, "time_expr"_a = hy::time, "thresh"_a.noconvert() = hy::model::detail::iau2006_default_thresh,
         "eop_data"_a = hy::eop_data(), docstrings::rot_icrs_itrs(hy::model::detail::iau2006_default_thresh).c_str());
+    m.def(
+        "_model_rot_itrs_teme",
+        [](const std::array<vex_t, 3> &xyz, const vex_t &time_expr, const hy::eop_data &data) {
+            return hy::model::rot_itrs_teme(
+                {detail::ex_from_variant(xyz[0]), detail::ex_from_variant(xyz[1]), detail::ex_from_variant(xyz[2])},
+                hy::kw::time_expr = detail::ex_from_variant(time_expr), hy::kw::eop_data = data);
+        },
+        "xyz"_a, "time_expr"_a = hy::time, "eop_data"_a = hy::eop_data(), docstrings::rot_itrs_teme().c_str());
+    m.def(
+        "_model_rot_teme_itrs",
+        [](const std::array<vex_t, 3> &xyz, const vex_t &time_expr, const hy::eop_data &data) {
+            return hy::model::rot_teme_itrs(
+                {detail::ex_from_variant(xyz[0]), detail::ex_from_variant(xyz[1]), detail::ex_from_variant(xyz[2])},
+                hy::kw::time_expr = detail::ex_from_variant(time_expr), hy::kw::eop_data = data);
+        },
+        "xyz"_a, "time_expr"_a = hy::time, "eop_data"_a = hy::eop_data(), docstrings::rot_teme_itrs().c_str());
 
     // Use macro to expose the EOP models.
 #define HEYOKA_PY_EXPOSE_MODEL_EOP(name)                                                                               \
@@ -545,6 +561,7 @@ void expose_models(py::module_ &m)
         "time_expr"_a = hy::time, "eop_data"_a = hy::eop_data(), docstrings::name##p().c_str());
 
     HEYOKA_PY_EXPOSE_MODEL_EOP(era);
+    HEYOKA_PY_EXPOSE_MODEL_EOP(gmst82);
     HEYOKA_PY_EXPOSE_MODEL_EOP(pm_x);
     HEYOKA_PY_EXPOSE_MODEL_EOP(pm_y);
     HEYOKA_PY_EXPOSE_MODEL_EOP(dX);

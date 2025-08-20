@@ -38,7 +38,10 @@ extensions = [
     "sphinx.ext.autodoc",
     "sphinx.ext.autosummary",
     "sphinx.ext.doctest",
+    "sphinxcontrib.bibtex",
 ]
+
+bibtex_bibfiles = ["biblio.bib"]
 
 intersphinx_mapping = {
     "hy": ("https://bluescarni.github.io/heyoka", None),

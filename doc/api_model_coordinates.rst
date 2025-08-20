@@ -12,3 +12,5 @@ Coordinate transformations
    rot_icrs_fk5j2000
    rot_itrs_icrs
    rot_icrs_itrs
+   rot_itrs_teme
+   rot_teme_itrs

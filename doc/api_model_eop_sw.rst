@@ -8,6 +8,8 @@ Earth orientation and space weather
 
    era
    erap
+   gmst82
+   gmst82p
    pm_x
    pm_xp
    pm_y
