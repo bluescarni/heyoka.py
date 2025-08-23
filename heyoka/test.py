@@ -1010,6 +1010,39 @@ class event_detection_test_case(_ut.TestCase):
             in str(cm.exception)
         )
 
+    def test_gil_bug(self):
+        # NOTE: this is a test case for a GIL bug involving the invocation of the destructor of
+        # an event callback during the construction of a Taylor integrator.
+        #
+        # The problem was that in case of exceptions being raised during the construction of an
+        # integrator, we would end up calling the destructor of the Pythonic callback without holding
+        # the GIL.
+        from . import (
+            nt_event,
+            make_vars,
+            sin,
+            taylor_adaptive,
+        )
+
+        class cb0:
+            def __call__(self, ta, t, d_sgn):
+                pass
+
+        # Use a pendulum for testing purposes.
+        x, v = make_vars("x", "v")
+        sys = [(x, v), (v, -9.8 * sin(x))]
+
+        # Perform a throwing construction of an integrator.
+        with self.assertRaises(ValueError):
+            taylor_adaptive(
+                sys=sys,
+                # NOTE: state size is wrong here.
+                state=[0.0],
+                nt_events=[
+                    nt_event(x, cb0),
+                ],
+            )
+
     def test_scalar(self):
         from . import (
             t_event,
