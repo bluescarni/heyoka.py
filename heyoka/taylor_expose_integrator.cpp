@@ -120,11 +120,11 @@ void expose_taylor_integrator_impl(py::module &m, const std::string &suffix)
                        T tol, bool high_accuracy, bool compact_mode, std::vector<t_ev_t> tes, std::vector<nt_ev_t> ntes,
                        bool parallel_mode, unsigned opt_level, bool force_avx512, bool slp_vectorize, bool fast_math,
                        hey::code_model code_model, bool parjit, long long prec) {
-               // NOTE: GIL release is fine here even if the events contain
-               // Python objects, as the event vectors are moved in
-               // upon construction and thus we should never end up calling
-               // into the interpreter. Also, due to mandatory copy elision,
-               // we never end up making a copy of the return value.
+               // NOTE: GIL release is fine here even if the events contain Python objects, as the event vectors are
+               // moved in upon construction and thus we never end up calling into the interpreter. Also, due to
+               // mandatory copy elision, we never end up making a copy of the return value. Finally, in case of
+               // exceptions being raised in the ctor, we take care in the dtor of the event callbacks to manually
+               // re-acquire the GIL, so that accessing the interpreter during stack unwinding is safe.
                py::gil_scoped_release release;
 
                return std::visit(
