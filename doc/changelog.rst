@@ -10,7 +10,7 @@ Fix
 ~~~
 
 - Fix a Python interpreter crash/abort when exceptions are thrown during the construction
-  of integrators with events.
+  of integrators with events
   (`#243 <https://github.com/bluescarni/heyoka.py/pull/243>`__).
 
 7.5.0 (2025-08-20)
