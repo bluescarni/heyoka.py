@@ -156,11 +156,11 @@ void expose_batch_integrator_impl(py::module_ &m, const std::string &suffix)
                     }
                     auto time = py::cast<std::vector<T>>(time_arr);
 
-                    // NOTE: GIL release is fine here even if the events contain
-                    // Python objects, as the event vectors are moved in
-                    // upon construction and thus we never end up calling
-                    // into the interpreter. Also, due to mandatory copy elision,
-                    // we never end up making a copy of the return value.
+                    // NOTE: GIL release is fine here even if the events contain Python objects, as the event vectors
+                    // are moved in upon construction and thus we never end up calling into the interpreter. Also, due
+                    // to mandatory copy elision, we never end up making a copy of the return value. Finally, in case of
+                    // exceptions being raised in the ctor, we take care in the dtor of the event callbacks to manually
+                    // re-acquire the GIL, so that accessing the interpreter during stack unwinding is safe.
                     py::gil_scoped_release release;
 
                     return hey::taylor_adaptive_batch<T>{std::move(sys),
@@ -183,11 +183,11 @@ void expose_batch_integrator_impl(py::module_ &m, const std::string &suffix)
                 } else {
                     // Times not provided.
 
-                    // NOTE: GIL release is fine here even if the events contain
-                    // Python objects, as the event vectors are moved in
-                    // upon construction and thus we never end up calling
-                    // into the interpreter. Also, due to mandatory copy elision,
-                    // we never end up making a copy of the return value.
+                    // NOTE: GIL release is fine here even if the events contain Python objects, as the event vectors
+                    // are moved in upon construction and thus we never end up calling into the interpreter. Also, due
+                    // to mandatory copy elision, we never end up making a copy of the return value. Finally, in case of
+                    // exceptions being raised in the ctor, we take care in the dtor of the event callbacks to manually
+                    // re-acquire the GIL, so that accessing the interpreter during stack unwinding is safe.
                     py::gil_scoped_release release;
 
                     return hey::taylor_adaptive_batch<T>{std::move(sys),

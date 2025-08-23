@@ -65,17 +65,16 @@ namespace
 {
 
 // A wrapper for event callbacks implemented in Python.
-// The Python callback is stored as the m_obj data member.
-// This wrapper accomplishes the following goals:
-// - provide value semantics (i.e., the copy ctor
-//   performs a deep copy),
-// - ensure the GIL is acquired in the call operator,
+//
+// The Python callback is stored as the m_obj data member. This wrapper accomplishes the following goals:
+//
+// - provide value semantics (i.e., the copy ctor performs a deep copy),
+// - ensure the GIL is acquired in the call operator and in the dtor (important for stack unwinding in situations where
+//   the GIL has been manually released),
 // - provide serialisation capabilities.
-// NOTE: the deep copy behaviour can be inconvenient
-// on the Python side, but it is useful as a first line
-// of defense in ensemble propagations. By forcing a copy,
-// we are reducing the chances of data races in stateful
-// callbacks.
+//
+// NOTE: the deep copy behaviour can be inconvenient on the Python side, but it is useful as a first line of defense in
+// ensemble propagations. By forcing a copy, we are reducing the chances of data races in stateful callbacks.
 template <typename Ret, typename... Args>
 struct ev_callback {
     py::object m_obj;
@@ -93,7 +92,19 @@ struct ev_callback {
         return *this;
     }
     ev_callback &operator=(ev_callback &&) noexcept = default;
-    ~ev_callback() = default;
+    ~ev_callback()
+    {
+        // NOTE: during the construction of Taylor integrators from Python, event callbacks are being moved into the
+        // integrator object with the GIL in the released state (which is fine). If, however, the construction of the
+        // integrator throws an exception, we find ourselves in the situation of having to destroy pythonic event
+        // callbacks during stack unwinding. This will cause the interpreter to crash/abort because we are attempting to
+        // decrease reference counts while not holding the GIL. Thus, in order to avoid this, we need to re-acquire the
+        // GIL before destroying m_obj.
+        py::gil_scoped_acquire acquire;
+
+        // NOTE: we "destroy" m_obj by resetting it to the null state.
+        m_obj = py::object{};
+    }
 
     Ret operator()(Args... args)
     {
