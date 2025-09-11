@@ -1909,7 +1909,8 @@ This function will return the value of the Earth's gravitational acceleration at
 *xyz* according to the `EGM2008 model <https://en.wikipedia.org/wiki/Earth_Gravitational_Model#EGM2008>`__.
 *xyz* is expected to represent the position vector with respect to the Earth-centred Earth-fixed
 `WGS84 frame <https://en.wikipedia.org/wiki/World_Geodetic_System>`__ (which itself can be considered coincident
-with the `ITRF <https://en.wikipedia.org/wiki/International_Terrestrial_Reference_System_and_Frame>`__).
+with the `ITRF <https://en.wikipedia.org/wiki/International_Terrestrial_Reference_System_and_Frame>`__). The output
+acceleration vector is also expressed in the WGS84 frame.
 
 *n* and *m* are, respectively, the maximum harmonic degree and order to be considered in the computation. Higher degrees
 and orders will produce more accurate values, at the cost of increased computational complexity.
