@@ -519,10 +519,7 @@ The expression is approximated by an artificial neural network (a thermoNET) tra
 
 .. note::
 
-   The thermoNET parameters are published in the work:
-   Izzo, Dario, Giacomo Acciarini, and Francesco Biscani.
-   "NeuralODEs for VLEO simulations: Introducing thermoNET for Thermosphere Modeling"
-   (`arXiv preprint <https://arxiv.org/abs/2405.19384>`__).
+   The thermoNET parameters are published in :cite:`Izzo2024NeuralODEs`.
 
 .. note::
 
@@ -557,10 +554,7 @@ The expression is approximated by an artificial neural network (a thermoNET) tra
 
 .. note::
 
-   The thermoNET parameters are published in the work:
-   Izzo, Dario, Giacomo Acciarini, and Francesco Biscani.
-   "NeuralODEs for VLEO simulations: Introducing thermoNET for Thermosphere Modeling"
-   (`arXiv preprint <https://arxiv.org/abs/2405.19384>`__).
+   The thermoNET parameters are published in :cite:`Izzo2024NeuralODEs`.
    
 .. note::
 
