@@ -450,7 +450,7 @@ Transform Cartesian coordinates into geodetic coordinates.
    function is available.
 
 This function will compute the expressions of the geodetic coordinates as functions of the input Cartesian coordinates *xyz* using
-the Hirvonen and Moritz iterations (see "Physical Geodesy" by Heiskanen and Moritz, pp.181-183). The *n_iters* parameter
+the Hirvonen and Moritz iterations :cite:`Heiskanen1967`. The *n_iters* parameter
 selects the number of iterations - a higher number will produce a more accurate result, at a higher computational cost.
 The default value ensures an accuracy at the centimetre level on the Earth's surface.
 
