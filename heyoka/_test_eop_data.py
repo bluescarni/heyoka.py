@@ -12,6 +12,7 @@ import unittest as _ut
 
 class eop_data_test_case(_ut.TestCase):
     def test_basic(self):
+        from concurrent.futures import ThreadPoolExecutor
         from . import eop_data, eop_data_row
         import numpy as np
         from sys import getrefcount
@@ -53,3 +54,22 @@ class eop_data_test_case(_ut.TestCase):
         self.assertEqual(new_data.timestamp, data.timestamp)
         self.assertEqual(new_data.identifier, data.identifier)
         self.assertTrue(np.all(new_data.table == tbl))
+
+        # Small download test.
+        with ThreadPoolExecutor() as executor:
+            data1 = executor.submit(
+                eop_data.fetch_latest_iers_rapid, "usno", "finals2000A.daily"
+            )
+            data2 = executor.submit(
+                eop_data.fetch_latest_iers_rapid, "iers", "finals.all.iau2000.txt"
+            )
+
+        # Allow this block to fail in case of transient network issues.
+        try:
+            data1 = data1.result()
+            data2 = data2.result()
+
+            self.assertGreate(len(data1.table), 0)
+            self.assertGreate(len(data2.table), 0)
+        except Exception:
+            pass
