@@ -116,6 +116,7 @@ nb_execution_excludepatterns = [
     # NOTE: these notebooks takes long to run.
     "eo_third_body*",
     "eo_geopot*",
+    "eo_atmo*",
 ]
 
 # Force printing traceback to stderr on execution error.
