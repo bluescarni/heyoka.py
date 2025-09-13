@@ -3,6 +3,17 @@
 Changelog
 =========
 
+7.6.0 (unreleased)
+------------------
+
+New
+~~~
+
+- Allow to select an alternative origin for the IERS rapid EOP data
+  (`#245 <https://github.com/bluescarni/heyoka.py/pull/245>`__).
+- New notebook on atmospheric drag
+  (`#245 <https://github.com/bluescarni/heyoka.py/pull/245>`__).
+
 7.5.1 (2025-08-23)
 ------------------
 
