@@ -92,13 +92,13 @@ void expose_eop_data(py::module_ &m)
                                          docstrings::eop_data_identifier().c_str());
     eop_data_class.def_static(
         "fetch_latest_iers_rapid",
-        [](const std::string &filename) {
+        [](const std::string &origin, const std::string &filename) {
             // NOTE: release the GIL during download.
             py::gil_scoped_release release;
 
-            return hy::eop_data::fetch_latest_iers_rapid(filename);
+            return hy::eop_data::fetch_latest_iers_rapid(origin, filename);
         },
-        "filename"_a = "finals2000A.all", docstrings::eop_data_fetch_latest_iers_rapid().c_str());
+        "origin"_a = "usno", "filename"_a = "finals2000A.all", docstrings::eop_data_fetch_latest_iers_rapid().c_str());
     eop_data_class.def_static(
         "fetch_latest_iers_long_term",
         []() {

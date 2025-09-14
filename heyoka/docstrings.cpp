@@ -450,7 +450,7 @@ Transform Cartesian coordinates into geodetic coordinates.
    function is available.
 
 This function will compute the expressions of the geodetic coordinates as functions of the input Cartesian coordinates *xyz* using
-the Hirvonen and Moritz iterations (see "Physical Geodesy" by Heiskanen and Moritz, pp.181-183). The *n_iters* parameter
+the Hirvonen and Moritz iterations :cite:`Heiskanen1967`. The *n_iters* parameter
 selects the number of iterations - a higher number will produce a more accurate result, at a higher computational cost.
 The default value ensures an accuracy at the centimetre level on the Earth's surface.
 
@@ -519,10 +519,7 @@ The expression is approximated by an artificial neural network (a thermoNET) tra
 
 .. note::
 
-   The thermoNET parameters are published in the work:
-   Izzo, Dario, Giacomo Acciarini, and Francesco Biscani.
-   "NeuralODEs for VLEO simulations: Introducing thermoNET for Thermosphere Modeling"
-   (`arXiv preprint <https://arxiv.org/abs/2405.19384>`__).
+   The thermoNET parameters are published in :cite:`Izzo2024NeuralODEs`.
 
 .. note::
 
@@ -557,10 +554,7 @@ The expression is approximated by an artificial neural network (a thermoNET) tra
 
 .. note::
 
-   The thermoNET parameters are published in the work:
-   Izzo, Dario, Giacomo Acciarini, and Francesco Biscani.
-   "NeuralODEs for VLEO simulations: Introducing thermoNET for Thermosphere Modeling"
-   (`arXiv preprint <https://arxiv.org/abs/2405.19384>`__).
+   The thermoNET parameters are published in :cite:`Izzo2024NeuralODEs`.
    
 .. note::
 
@@ -1309,37 +1303,58 @@ A string uniquely identifying the source of EOP data.
 
 std::string eop_data_fetch_latest_iers_rapid()
 {
-    return R"(fetch_latest_iers_rapid(filename: str = 'finals2000A.all') -> eop_data
+    return R"(fetch_latest_iers_rapid(origin: str = 'usno', filename: str = 'finals2000A.all') -> eop_data
 
 Fetch the latest IERS EOP rapid data.
 
-This function will download from the `IERS datacenter <https://datacenter.iers.org/eop.php>`__
-one the latest EOP rapid data files, from which it will construct and return an :py:class:`~heyoka.eop_data` instance.
+This function will download one the latest IERS EOP rapid data files, from which it will construct and
+return an :py:class:`~heyoka.eop_data` instance.
 
-The *filename* argument specifies which EOP data file will be downloaded, and it can be one of:
+*origin* indicates the datacenter from which the file will be downloaded, and its possible values are
+``"usno"`` (indicating the `US Naval Observatory <https://www.cnmoc.usff.navy.mil/usno/>`__) and ``"iers"``
+(indicating the `IERS datacenter <https://datacenter.iers.org/eop.php>`__).
+
+The *filename* argument specifies which EOP data file will be downloaded. Its possible values are:
 
 * ``"finals2000A.all"``,
 * ``"finals2000A.daily"``,
 * ``"finals2000A.daily.extended"``,
-* ``"finals2000A.data"``.
+* ``"finals2000A.data"``,
 
-These datafiles are updated frequently and they contain predictions for the future. They differ from each other mainly
-in the timespans they provide data for. For instance, ``finals2000A.all`` contains several decades worth of data,
-while ``finals2000A.daily`` contains only the most recent data.
+for the ``usno`` datacenter, and
 
-Please refer to the documentation on the `IERS datacenter website <https://datacenter.iers.org/eop.php>`__
-for more information about the content of these files.
+* ``"finals.all.iau2000.txt"``,
+* ``"finals.daily.iau2000.txt"``,
+* ``"finals.data.iau2000.txt"``,
+
+for the ``iers`` datacenter. These datafiles are updated frequently and they contain predictions for the future.
+They differ from each other mainly in the timespans they provide data for. For instance, ``finals2000A.all`` and
+``finals.all.iau2000.txt`` contain several decades worth of data, while ``finals2000A.daily`` and
+``finals.daily.iau2000.txt`` contain only the most recent data.
+
+Note that there is considerable overlap between the USNO and IERS data files. For instance, at any given time,
+``finals2000A.all`` and ``finals.all.iau2000.txt`` are expected to contain exactly the same data. The ability to
+fetch the same data from multiple origins is provided in order to improve resilience against transient network
+issues.
+
+Please refer to the documentation on the `USNO <https://maia.usno.navy.mil/ser7/readme>`__ and
+`IERS <https://datacenter.iers.org/eop.php>`__ websites for more information about the content of these files.
 
 .. note::
 
    This function will release the `global interpreter lock (GIL) <https://docs.python.org/3/glossary.html#term-global-interpreter-lock>`__
    while downloading.
 
+.. versionadded:: 7.6.0
+
+   The *origin* function parameter.
+
+:param origin: the datacenter to use for the download.
 :param filename: the file to be downloaded.
 
 :returns: an :py:class:`~heyoka.eop_data` instance constructed from the remote file.
 
-:raises ValueError: if *filename* is invalid.
+:raises ValueError: if *origin* or *filename* is invalid.
 
 )";
 }
@@ -1909,7 +1924,8 @@ This function will return the value of the Earth's gravitational acceleration at
 *xyz* according to the `EGM2008 model <https://en.wikipedia.org/wiki/Earth_Gravitational_Model#EGM2008>`__.
 *xyz* is expected to represent the position vector with respect to the Earth-centred Earth-fixed
 `WGS84 frame <https://en.wikipedia.org/wiki/World_Geodetic_System>`__ (which itself can be considered coincident
-with the `ITRF <https://en.wikipedia.org/wiki/International_Terrestrial_Reference_System_and_Frame>`__).
+with the `ITRF <https://en.wikipedia.org/wiki/International_Terrestrial_Reference_System_and_Frame>`__). The output
+acceleration vector is also expressed in the WGS84 frame.
 
 *n* and *m* are, respectively, the maximum harmonic degree and order to be considered in the computation. Higher degrees
 and orders will produce more accurate values, at the cost of increased computational complexity.
