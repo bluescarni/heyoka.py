@@ -42,6 +42,7 @@
 
 #endif
 
+#include <heyoka/detail/http_download.hpp>
 #include <heyoka/exceptions.hpp>
 #include <heyoka/expression.hpp>
 #include <heyoka/hamiltonian.hpp>
@@ -404,6 +405,10 @@ PYBIND11_MODULE(core, m, pybind11::mod_gil_not_used())
 #endif
         heypy::detail::tbb_gc.reset();
     }));
+
+    // Expose in Python the getter/setter for the custom SSL verify file.
+    m.def("_get_ssl_verify_file", &hey::detail::get_ssl_verify_file);
+    m.def("_set_ssl_verify_file", &hey::detail::set_ssl_verify_file);
 }
 
 #if defined(__clang__)
