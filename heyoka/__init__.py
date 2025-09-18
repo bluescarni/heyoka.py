@@ -232,6 +232,21 @@ def get_serialization_backend():
         return _s11n_backend
 
 
+# Machinery to setup the custom SSL verify file.
+def _setup_custom_verify_file():
+    try:
+        import certifi
+    except ImportError:
+        return
+
+    from .core import _set_ssl_verify_file
+
+    _set_ssl_verify_file(certifi.where())
+
+
+_setup_custom_verify_file()
+
+
 # Ensemble propagations.
 def _ensemble_propagate_generic(tp, ta, arg, n_iter, gen, **kwargs):
     import numpy as np

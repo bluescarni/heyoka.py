@@ -3,6 +3,18 @@
 Changelog
 =========
 
+7.7.0 (2025-09-18)
+------------------
+
+New
+~~~
+
+- Improve the reporting of HTTP errors when downloading datafiles
+  (`#247 <https://github.com/bluescarni/heyoka.py/pull/247>`__).
+- Use the SSL verify file from the ``certifi`` module (if installed) as an additional
+  certificate authority
+  (`#247 <https://github.com/bluescarni/heyoka.py/pull/247>`__).
+
 7.6.0 (2025-09-14)
 ------------------
 
