@@ -8,7 +8,10 @@ version = '7.7.0'
 description = "Python library for ODE integration via Taylor's method and LLVM"
 readme = 'README.md'
 requires-python = '>=3.9'
-dependencies = ['cloudpickle', 'numpy >= 2']
+# NOTE: the certifi dep is specific to pyproject.toml. We use it in order to provide
+# an alternate SSL verify file in case the openssl library vendored into the wheel
+# is unable to use the system's certificate store due to path mismatches.
+dependencies = ['cloudpickle', 'numpy >= 2', 'certifi']
 authors = [{ name = 'Francesco Biscani', email = 'bluescarni@gmail.com' }]
 license = { text = 'MPL-2.0' }
 classifiers = [
