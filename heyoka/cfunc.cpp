@@ -120,7 +120,8 @@ void expose_add_cfunc_impl(py::module &m, const char *suffix)
     cfunc_inst.def(
         "__call__",
         [](hey::cfunc<T> &self, array_or_iter_t inputs_ob, std::optional<py::array> outputs_ob,
-           std::optional<array_or_iter_t> pars_ob, std::optional<time_arg_t> time_ob) {
+           std::optional<array_or_iter_t> pars_ob, std::optional<time_arg_t> time_ob,
+           std::optional<bool> batch_parallel) {
             // Fetch the dtype corresponding to T.
             const auto dt = get_dtype<T>();
 
@@ -430,12 +431,13 @@ void expose_add_cfunc_impl(py::module &m, const char *suffix)
                     // NOTE: release the GIL during evaluation.
                     py::gil_scoped_release release;
 
-                    self(out_span, in_span, kw::pars = par_span, kw::time = time_span);
+                    self(out_span, in_span, kw::pars = par_span, kw::time = time_span,
+                         kw::batch_parallel = batch_parallel);
                 } else {
                     // NOTE: release the GIL during evaluation.
                     py::gil_scoped_release release;
 
-                    self(out_span, in_span, kw::pars = par_span);
+                    self(out_span, in_span, kw::pars = par_span, kw::batch_parallel = batch_parallel);
                 }
             } else {
                 in_1d in_span{static_cast<const T *>(inputs.data()), boost::numeric_cast<std::size_t>(inputs.shape(0))};
@@ -457,7 +459,7 @@ void expose_add_cfunc_impl(py::module &m, const char *suffix)
             return outputs;
         },
         "inputs"_a.noconvert(), "outputs"_a.noconvert() = py::none{}, "pars"_a.noconvert() = py::none{},
-        "time"_a.noconvert() = py::none{});
+        "time"_a.noconvert() = py::none{}, "batch_parallel"_a = py::none{});
 
     cfunc_inst.def_property_readonly("fn", &hey::cfunc<T>::get_fn);
     cfunc_inst.def_property_readonly("vars", &hey::cfunc<T>::get_vars);
