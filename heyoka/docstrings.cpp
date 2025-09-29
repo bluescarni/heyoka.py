@@ -1393,6 +1393,8 @@ This function will rotate the input Cartesian coordinates *xyz* from the axes of
 to the axes of the `ICRS <https://en.wikipedia.org/wiki/International_Celestial_Reference_System_and_its_realizations>`__
 frame.
 
+The FK5 at J2000 frame is also known as "EME2000", "Mean Equator and Mean Equinox of the J2000 epoch", or just "J2000".
+
 :param xyz: the input Cartesian coordinates.
 
 :returns: the rotated Cartesian coordinates.
@@ -1411,6 +1413,8 @@ Rotation from ICRS to FK5.
 This function will rotate the input Cartesian coordinates *xyz* from the axes of the
 `ICRS <https://en.wikipedia.org/wiki/International_Celestial_Reference_System_and_its_realizations>`__ frame to the 
 axes of the FK5 frame at J2000.
+
+The FK5 at J2000 frame is also known as "EME2000", "Mean Equator and Mean Equinox of the J2000 epoch", or just "J2000".
 
 :param xyz: the input Cartesian coordinates.
 
