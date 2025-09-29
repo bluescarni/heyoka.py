@@ -6,6 +6,15 @@ Changelog
 7.8.0 (unreleased)
 ------------------
 
+New
+~~~
+
+- The call operators of the ``cfunc`` and :py:class:`~heyoka.model.sgp4_propagator` classes are now thread-safe
+  (`#247 <https://github.com/bluescarni/heyoka.py/pull/247>`__).
+- New ``batch_parallel`` keyword argument, allowing explicit control on the parallelisation
+  strategy for ``cfunc`` evaluation
+  (`#247 <https://github.com/bluescarni/heyoka.py/pull/247>`__).
+
 7.7.0 (2025-09-18)
 ------------------
 
