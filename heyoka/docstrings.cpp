@@ -1139,8 +1139,8 @@ Replace the GPE data.
 This method will replace the GPE data in the propagator with the data from *sat_list*.
 *sat_list* must be either a list of GPEs represented as ``Satrec`` objects
 from the `sgp4 Python module <https://pypi.org/project/sgp4/>`__, or a 2D NumPy array.
-See the documentation of the :py:meth:`constructor <heyoka.model.sgp4_propagator_{0}.__init__>`
-for more information on *sat_list*.
+See the documentation of the :py:meth:`~heyoka.model.sgp4_propagator_{0}.__init__()`
+method for more information on *sat_list*.
 
 The number of satellites in *sat_list* must be equal to the number of satellites
 in the propagator - that is, it is not possible to change the total number of satellites
