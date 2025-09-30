@@ -121,6 +121,7 @@ void expose_add_cfunc_impl(py::module &m, const char *suffix)
         "__call__",
         [](const hey::cfunc<T> &self, array_or_iter_t inputs_ob, std::optional<py::array> outputs_ob,
            std::optional<array_or_iter_t> pars_ob, std::optional<time_arg_t> time_ob,
+           // NOTE: batch_parallel affects only the multieval case.
            std::optional<bool> batch_parallel) {
             // Fetch the dtype corresponding to T.
             const auto dt = get_dtype<T>();
