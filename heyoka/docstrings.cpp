@@ -1089,7 +1089,7 @@ std::string sgp4_propagator_call(const std::string &suffix, const std::string &t
 Propagation.
 
 The call operator will propagate the states of all the satellites (and, if requested, their derivatives)
-up to the specified *times*.
+to the specified *times*.
 
 The *times* array can contain either floating-point values (of type :py:class:`{1}`),
 or Julian dates (represented via the :py:attr:`~heyoka.model.sgp4_propagator_{0}.jdtype` type). In the former case,
@@ -1097,10 +1097,11 @@ the input *times* will be interpreted as minutes elapsed since the GPE reference
 from satellite to satellite). In the latter case, the states will be propagated up to the specified Julian dates,
 which must be provided in the UTC scale of time.
 
-*times* can be either a one-dimensional array, or a two-dimensional one. In the former case (scalar propagation),
-its length must be exactly :py:attr:`~heyoka.model.sgp4_propagator_{0}.nsats` (i.e., one time/date per satellite).
-In the latter case (batch-mode propagation), the number of columns must be exactly
-:py:attr:`~heyoka.model.sgp4_propagator_{0}.nsats`, while the number of rows represents how many propagations
+*times* can be either a one-dimensional array, or a two-dimensional one.
+In the former case (**scalar** propagation), its length must be exactly :py:attr:`~heyoka.model.sgp4_propagator_{0}.nsats`
+That is, in scalar propagation, a single time/date per satellite is expected.
+In the latter case (**batch-mode** propagation), the number of columns must be exactly
+:py:attr:`~heyoka.model.sgp4_propagator_{0}.nsats`, while the number of rows indicates how many propagations
 per satellite will be performed.
 
 The return value is either a two-dimensional (scalar propagation) or three-dimensional (batch-mode propagation)
@@ -1114,6 +1115,10 @@ If an *out* array with the correct data type and shape is provided, it will be u
 value. Otherwise, a new array will be returned.
 
 All input arguments must be C-style contiguous arrays, with no memory overlap between *times* and *out*.
+
+.. versionchanged:: 7.8.0
+
+   This method is now thread-safe (that is, multiple threads can invoke this method on the same object concurrently).
 
 :param times: the propagation times/dates.
 :param out: the output array.
