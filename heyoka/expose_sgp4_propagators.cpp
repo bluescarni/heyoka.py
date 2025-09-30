@@ -292,7 +292,7 @@ void expose_sgp4_propagator_impl(py::module_ &m, const std::string &suffix)
         "i"_a.noconvert(), docstrings::sgp4_propagator_get_mindex(suffix).c_str());
     prop_cl.def(
         "__call__",
-        [](prop_t &prop, std::variant<py::array_t<T>, py::array_t<date_t>> tm_arr,
+        [](const prop_t &prop, std::variant<py::array_t<T>, py::array_t<date_t>> tm_arr,
            std::optional<py::array_t<T>> out) -> py::array_t<T> {
             // NOTE: here we are repeating several checks which are redundant with
             // checks already performed on the C++ side, with the goal of providing better

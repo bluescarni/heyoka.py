@@ -524,8 +524,12 @@ class sgp4_propagator_test_case(_ut.TestCase):
         orig_prop = deepcopy(prop)
 
         orig_sat_data = deepcopy(prop.sat_data)
+        orig_sat_data_ref = prop.sat_data
 
         prop.replace_sat_data([sat2, sat1])
+
+        # Check array identity.
+        self.assertTrue(np.shares_memory(prop.sat_data, orig_sat_data_ref))
 
         self.assertTrue(np.all(prop.sat_data[:, 1] == orig_sat_data[:, 0]))
         self.assertTrue(np.all(prop.sat_data[:, 0] == orig_sat_data[:, 1]))

@@ -12,7 +12,7 @@ import unittest as _ut
 
 class cfunc_test_case(_ut.TestCase):
     def test_basic(self):
-        from . import cfunc, make_vars, cfunc_dbl, core, par, time, code_model
+        from . import cfunc, make_vars, core, par, time, code_model
         import pickle
         from copy import copy, deepcopy
         from sys import getrefcount
@@ -25,7 +25,7 @@ class cfunc_test_case(_ut.TestCase):
         # Ensure that when extracting the llvm states
         # the ref count of cf is properly updated.
         rc = getrefcount(cf)
-        tmp = cf.llvm_states
+        _tmp = cf.llvm_states
         self.assertEqual(getrefcount(cf), rc + 3)
 
         self.assertTrue(all(not _.force_avx512 for _ in cf.llvm_states))
@@ -66,7 +66,7 @@ class cfunc_test_case(_ut.TestCase):
         )
 
         rc = getrefcount(cf)
-        tmp = cf.llvm_states
+        _tmp = cf.llvm_states
         self.assertEqual(getrefcount(cf), rc + 1)
 
         self.assertEqual(cf.vars, [y, z, x])
@@ -335,6 +335,16 @@ class cfunc_test_case(_ut.TestCase):
                         atol=_get_eps(fp_t) * 10,
                     )
                 )
+
+                # A couple of tests with the batch_parallel flag.
+                eval_arr2 = fn(inputs=inputs, pars=pars, time=tm, batch_parallel=True)
+                self.assertTrue(np.all(eval_arr == eval_arr2))
+
+                eval_arr2 = fn(inputs=inputs, pars=pars, time=tm, batch_parallel=False)
+                self.assertTrue(np.all(eval_arr == eval_arr2))
+
+                eval_arr2 = fn(inputs=inputs, pars=pars, time=tm, batch_parallel=None)
+                self.assertTrue(np.all(eval_arr == eval_arr2))
 
                 # NOTE: simple function without pars used to test
                 # that the null pars span is created with the correct shape
