@@ -48,10 +48,10 @@ else
 	echo "Non-tag build detected"
 fi
 
-# In the manylinux image in dockerhub the working directory is /root/install, we will install heyoka there.
+# Install heyoka.
+mkdir /root/install
 cd /root/install
 
-# Install heyoka.
 if [[ "${HEYOKA_PY_RELEASE_BUILD}" == "yes" ]]; then
 	curl -L -o heyoka.tar.gz https://github.com/bluescarni/heyoka/archive/refs/tags/v${HEYOKA_VERSION_RELEASE}.tar.gz
 	tar xzf heyoka.tar.gz
