@@ -3,6 +3,15 @@
 Changelog
 =========
 
+7.8.1 (2025-10-30)
+------------------
+
+New
+~~~
+
+- Remove wheels for Python 3.10, add wheels for Python 3.14 (including free-threaded)
+  (`#253 <https://github.com/bluescarni/heyoka.py/pull/253>`__).
+
 7.8.0 (2025-10-06)
 ------------------
 
