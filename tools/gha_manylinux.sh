@@ -38,7 +38,7 @@ echo "PYTHON_DIR: ${PYTHON_DIR}"
 /opt/python/${PYTHON_DIR}/bin/pip install uv
 
 # The heyoka version to be used for releases.
-export HEYOKA_VERSION_RELEASE="7.8.1"
+export HEYOKA_VERSION_RELEASE="7.9.0"
 
 # Check if this is a release build.
 if [[ "${GITHUB_REF}" == "refs/tags/v"* ]]; then
