@@ -108,6 +108,15 @@ void expose_eop_data(py::module_ &m)
             return hy::eop_data::fetch_latest_iers_long_term();
         },
         docstrings::eop_data_fetch_latest_iers_long_term().c_str());
+    eop_data_class.def_static(
+        "fetch_latest_celestrak",
+        [](const bool long_term) {
+            // NOTE: release the GIL during download.
+            py::gil_scoped_release release;
+
+            return hy::eop_data::fetch_latest_celestrak(long_term);
+        },
+        "long_term"_a = false, docstrings::eop_data_fetch_latest_celestrak().c_str());
     // Repr.
     eop_data_class.def("__repr__", [](const hy::eop_data &data) {
         return fmt::format("N of rows : {}\nTimestamp : {}\nIdentifier: {}\n", data.get_table().size(),

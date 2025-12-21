@@ -132,6 +132,7 @@ std::string eop_data_timestamp();
 std::string eop_data_identifier();
 std::string eop_data_fetch_latest_iers_rapid();
 std::string eop_data_fetch_latest_iers_long_term();
+std::string eop_data_fetch_latest_celestrak();
 
 // sw data.
 std::string sw_data();
