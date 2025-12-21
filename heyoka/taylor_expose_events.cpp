@@ -293,20 +293,18 @@ void expose_taylor_t_event_impl(py::module &m, const std::string &suffix)
         // Expression.
         .def_property_readonly("expression", [](const ev_t &ev) { return ev.get_expression(); })
         // Callback.
-        .def_property_readonly("callback",
-                               [](const ev_t &e) -> py::object {
-                                   // NOTE: the callback could be empty, in which case
-                                   // extraction returns a null pointer.
-                                   if (const auto *ptr = value_ptr<callback_t>(e.get_callback())) {
-                                       // NOTE: returning a copy of the py::object will increase
-                                       // the refcount of the underlying Python entity, which will
-                                       // thus remain safe to use even if the parent event
-                                       // is destroyed.
-                                       return ptr->m_obj;
-                                   } else {
-                                       return py::none{};
-                                   }
-                               })
+        .def_property_readonly(
+            "callback",
+            [](const ev_t &e) -> py::object {
+                // NOTE: for terminal events, the callback may be invalid - make sure to check.
+                if (const auto *ptr = is_valid(e.get_callback()) ? value_ptr<callback_t>(e.get_callback()) : nullptr) {
+                    // NOTE: returning a copy of the py::object will increase the refcount of the underlying Python
+                    // entity, which will thus remain safe to use even if the parent event is destroyed.
+                    return ptr->m_obj;
+                } else {
+                    return py::none{};
+                }
+            })
         // Direction.
         .def_property_readonly("direction", &ev_t::get_direction)
         // Cooldown.
@@ -456,40 +454,42 @@ using t_batch_cb_dbl = detail::ev_callback<bool, tabd &, int, std::uint32_t>;
 } // namespace heyoka_py
 
 // Register the callback wrappers in the serialisation system.
-HEYOKA_S11N_CALLABLE_EXPORT(heyoka_py::nt_cb_flt, void, heyoka::taylor_adaptive<float> &, float, int)
-HEYOKA_S11N_CALLABLE_EXPORT(heyoka_py::nt_cb_dbl, void, heyoka::taylor_adaptive<double> &, double, int)
-HEYOKA_S11N_CALLABLE_EXPORT(heyoka_py::nt_cb_ldbl, void, heyoka::taylor_adaptive<long double> &, long double, int)
+HEYOKA_S11N_CALLABLE_EXPORT(heyoka_py::nt_cb_flt, false, void, heyoka::taylor_adaptive<float> &, float, int)
+HEYOKA_S11N_CALLABLE_EXPORT(heyoka_py::nt_cb_dbl, false, void, heyoka::taylor_adaptive<double> &, double, int)
+HEYOKA_S11N_CALLABLE_EXPORT(heyoka_py::nt_cb_ldbl, false, void, heyoka::taylor_adaptive<long double> &, long double,
+                            int)
 
 #if defined(HEYOKA_HAVE_REAL128)
 
-HEYOKA_S11N_CALLABLE_EXPORT(heyoka_py::nt_cb_f128, void, heyoka::taylor_adaptive<mppp::real128> &, mppp::real128, int)
+HEYOKA_S11N_CALLABLE_EXPORT(heyoka_py::nt_cb_f128, false, void, heyoka::taylor_adaptive<mppp::real128> &, mppp::real128,
+                            int)
 
 #endif
 
 #if defined(HEYOKA_HAVE_REAL)
 
-HEYOKA_S11N_CALLABLE_EXPORT(heyoka_py::nt_cb_real, void, heyoka::taylor_adaptive<mppp::real> &, mppp::real, int)
+HEYOKA_S11N_CALLABLE_EXPORT(heyoka_py::nt_cb_real, false, void, heyoka::taylor_adaptive<mppp::real> &, mppp::real, int)
 
 #endif
 
-HEYOKA_S11N_CALLABLE_EXPORT(heyoka_py::t_cb_flt, bool, heyoka::taylor_adaptive<float> &, int)
-HEYOKA_S11N_CALLABLE_EXPORT(heyoka_py::t_cb_dbl, bool, heyoka::taylor_adaptive<double> &, int)
-HEYOKA_S11N_CALLABLE_EXPORT(heyoka_py::t_cb_ldbl, bool, heyoka::taylor_adaptive<long double> &, int)
+HEYOKA_S11N_CALLABLE_EXPORT(heyoka_py::t_cb_flt, false, bool, heyoka::taylor_adaptive<float> &, int)
+HEYOKA_S11N_CALLABLE_EXPORT(heyoka_py::t_cb_dbl, false, bool, heyoka::taylor_adaptive<double> &, int)
+HEYOKA_S11N_CALLABLE_EXPORT(heyoka_py::t_cb_ldbl, false, bool, heyoka::taylor_adaptive<long double> &, int)
 
 #if defined(HEYOKA_HAVE_REAL128)
 
-HEYOKA_S11N_CALLABLE_EXPORT(heyoka_py::t_cb_f128, bool, heyoka::taylor_adaptive<mppp::real128> &, int)
+HEYOKA_S11N_CALLABLE_EXPORT(heyoka_py::t_cb_f128, false, bool, heyoka::taylor_adaptive<mppp::real128> &, int)
 
 #endif
 
 #if defined(HEYOKA_HAVE_REAL)
 
-HEYOKA_S11N_CALLABLE_EXPORT(heyoka_py::t_cb_real, bool, heyoka::taylor_adaptive<mppp::real> &, int)
+HEYOKA_S11N_CALLABLE_EXPORT(heyoka_py::t_cb_real, false, bool, heyoka::taylor_adaptive<mppp::real> &, int)
 
 #endif
 
-HEYOKA_S11N_CALLABLE_EXPORT(heyoka_py::nt_batch_cb_flt, void, heyoka_py::tabf &, float, int, std::uint32_t)
-HEYOKA_S11N_CALLABLE_EXPORT(heyoka_py::t_batch_cb_flt, bool, heyoka_py::tabf &, int, std::uint32_t)
+HEYOKA_S11N_CALLABLE_EXPORT(heyoka_py::nt_batch_cb_flt, false, void, heyoka_py::tabf &, float, int, std::uint32_t)
+HEYOKA_S11N_CALLABLE_EXPORT(heyoka_py::t_batch_cb_flt, false, bool, heyoka_py::tabf &, int, std::uint32_t)
 
-HEYOKA_S11N_CALLABLE_EXPORT(heyoka_py::nt_batch_cb_dbl, void, heyoka_py::tabd &, double, int, std::uint32_t)
-HEYOKA_S11N_CALLABLE_EXPORT(heyoka_py::t_batch_cb_dbl, bool, heyoka_py::tabd &, int, std::uint32_t)
+HEYOKA_S11N_CALLABLE_EXPORT(heyoka_py::nt_batch_cb_dbl, false, void, heyoka_py::tabd &, double, int, std::uint32_t)
+HEYOKA_S11N_CALLABLE_EXPORT(heyoka_py::t_batch_cb_dbl, false, bool, heyoka_py::tabd &, int, std::uint32_t)

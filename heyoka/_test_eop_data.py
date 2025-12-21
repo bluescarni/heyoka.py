@@ -63,11 +63,13 @@ class eop_data_test_case(_ut.TestCase):
             data2 = executor.submit(
                 eop_data.fetch_latest_iers_rapid, "iers", "finals.all.iau2000.txt"
             )
+            data3 = executor.submit(eop_data.fetch_latest_celestrak)
 
         # Allow this block to fail in case of transient network issues.
         try:
             data1 = data1.result()
             data2 = data2.result()
+            data3 = data3.result()
 
             self.assertGreate(len(data1.table), 0)
             self.assertGreate(len(data2.table), 0)

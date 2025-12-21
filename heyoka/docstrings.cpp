@@ -1312,7 +1312,7 @@ std::string eop_data_fetch_latest_iers_rapid()
 
 Fetch the latest IERS EOP rapid data.
 
-This function will download one the latest IERS EOP rapid data files, from which it will construct and
+This function will download one the current IERS EOP rapid data files, from which it will construct and
 return an :py:class:`~heyoka.eop_data` instance.
 
 *origin* indicates the datacenter from which the file will be downloaded, and its possible values are
@@ -1371,7 +1371,7 @@ std::string eop_data_fetch_latest_iers_long_term()
 Fetch the latest IERS EOP long-term data.
 
 This function will download from the `IERS datacenter <https://datacenter.iers.org/eop.php>`__
-the latest EOP long-term datafile, from which it will construct and return an :py:class:`~heyoka.eop_data` instance.
+the current EOP long-term datafile, from which it will construct and return an :py:class:`~heyoka.eop_data` instance.
 
 The file downloaded by this function is ``eopc04_20.1962-now.csv``, which contains the IAU2000A EOP data
 from 1962 up to (roughly) the present time. Note that long-term data does **not** contain predictions for the future.
@@ -1380,6 +1380,35 @@ from 1962 up to (roughly) the present time. Note that long-term data does **not*
 
    This function will release the `global interpreter lock (GIL) <https://docs.python.org/3/glossary.html#term-global-interpreter-lock>`__
    while downloading.
+
+:returns: an :py:class:`~heyoka.eop_data` instance constructed from the remote file.
+
+)";
+}
+
+std::string eop_data_fetch_latest_celestrak()
+{
+    return R"(fetch_latest_celestrak(long_term: bool = False) -> eop_data
+
+Fetch the latest CelesTrak EOP data.
+
+.. versionadded:: 7.9.0
+
+This function will download from `CelesTrak <https://celestrak.org/>`__ one of the current EOP datafiles,
+from which it will construct and return an :py:class:`~heyoka.eop_data` instance.
+
+If *long_term* is ``True``, then the entire historical EOP dataset (dating back to 1962) is downloaded. Otherwise,
+the EOP dataset for the last 5 years is downloaded.
+
+The datasets downloaded by this function include predictions for the future. See the `CelesTrak docs <https://celestrak.org/SpaceData/EOP-format.php>`__
+for information on how the datasets are constructed.
+
+.. note::
+
+   This function will release the `global interpreter lock (GIL) <https://docs.python.org/3/glossary.html#term-global-interpreter-lock>`__
+   while downloading.
+
+:param long_term: flag to request the complete historical EOP dataset.
 
 :returns: an :py:class:`~heyoka.eop_data` instance constructed from the remote file.
 
