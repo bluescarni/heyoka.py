@@ -10,6 +10,7 @@
 
 #include <algorithm>
 #include <array>
+#include <cstddef>
 #include <cstdint>
 #include <iterator>
 #include <optional>
@@ -64,7 +65,15 @@ namespace
 
 // Small helper to turn the variant v into an expression.
 constexpr auto ex_from_variant
-    = [](const auto &v) { return std::visit([](const auto &v) { return heyoka::expression(v); }, v); };
+    = [](const auto &v) { return std::visit([](const auto &x) { return heyoka::expression(x); }, v); };
+
+template <typename T, std::size_t N>
+auto arr_ex_from_arr_variant(const std::array<T, N> &arr)
+{
+    std::array<heyoka::expression, N> retval;
+    std::ranges::transform(arr, retval.begin(), ex_from_variant);
+    return retval;
+}
 
 // Common logic to expose N-body helpers.
 template <typename Op, typename V>
@@ -619,6 +628,25 @@ void expose_models(py::module_ &m)
     m.def(
         "_model_dayfrac", [](const hy::expression &tm) { return hy::model::dayfrac(hy::kw::time_expr = tm); },
         "time_expr"_a = hy::time, docstrings::dayfrac().c_str());
+
+    // RSW frame transformations.
+#define HEYOKA_PY_EXPOSE_MODEL_FRAME_RSW(name)                                                                         \
+    m.def(                                                                                                             \
+        "_model_" #name,                                                                                               \
+        [](const std::array<vex_t, 3> &pos, const std::array<vex_t, 3> &vel, const std::array<vex_t, 3> &r,            \
+           const std::array<vex_t, 3> &v) {                                                                            \
+            auto ret = hy::model::name(detail::arr_ex_from_arr_variant(pos), detail::arr_ex_from_arr_variant(vel),     \
+                                       detail::arr_ex_from_arr_variant(r), detail::arr_ex_from_arr_variant(v));        \
+            return py::make_tuple(std::move(ret[0]), std::move(ret[1]));                                               \
+        },                                                                                                             \
+        py::kw_only(), "pos"_a, "vel"_a, "r"_a, "v"_a, docstrings::name().c_str());
+
+    HEYOKA_PY_EXPOSE_MODEL_FRAME_RSW(state_to_rsw);
+    HEYOKA_PY_EXPOSE_MODEL_FRAME_RSW(state_to_rsw_inertial);
+    HEYOKA_PY_EXPOSE_MODEL_FRAME_RSW(state_from_rsw);
+    HEYOKA_PY_EXPOSE_MODEL_FRAME_RSW(state_from_rsw_inertial);
+
+#undef HEYOKA_PY_EXPOSE_MODEL_FRAME_RSW
 }
 
 } // namespace heyoka_py

@@ -2566,4 +2566,138 @@ exceeds any numerical error from double precision or small offsets from UTC DOY.
 )";
 }
 
+std::string state_to_rsw()
+{
+    return R"(state_to_rsw(*, pos: typing.Iterable[expression], vel: typing.Iterable[expression], r: typing.Iterable[expression], v: typing.Iterable[expression]) -> tuple[list[expression], list[expression]]
+
+Convert state to the RSW frame.
+
+.. versionadded:: 7.9.0
+
+Given a state defined by Cartesian position and velocity vectors *pos* and *vel* in a non-rotating reference frame, this function
+will transform the state into the RSW frame defined by the reference position *r* and velocity *v* (which must be expressed in the
+same reference frame).
+
+The RSW frame has its origin at *r* and basis vectors:
+
+.. math::
+
+   \begin{align}
+   \hat{\boldsymbol{R}} & = \frac{\boldsymbol{r}}{\left| \boldsymbol{r} \right|},\\
+   \hat{\boldsymbol{S}} & = \hat{\boldsymbol{W}} \times \hat{\boldsymbol{R}},\\
+   \hat{\boldsymbol{W}} & = \frac{\boldsymbol{r}\times\boldsymbol{v}}{\left| \boldsymbol{r}\times\boldsymbol{v} \right|}.
+   \end{align}
+
+That is, :math:`\hat{\boldsymbol{R}}` is aligned in the direction of :math:`\boldsymbol{r}`, :math:`\hat{\boldsymbol{W}}` in the direction of the angular
+momentum :math:`\boldsymbol{r}\times\boldsymbol{v}` and :math:`\hat{\boldsymbol{S}}` completes the right-handed triad. The RSW frame is rotating and its
+origin is moving with velocity :math:`\boldsymbol{v}`.
+
+While the transformation of the position *pos* into the RSW frame is fully defined by the reference state *r* and *v*,
+the transformation of the velocity *vel* depends on the angular velocity of the RSW frame, which is not uniquely determined by
+*r* and *v* alone. Computing it correctly requires knowledge of the reference acceleration or an assumption about the frame rotation.
+
+In this function, we assume that the angular velocity of the RSW frame is
+
+.. math::
+
+   \boldsymbol{\omega} = \frac{\boldsymbol{r}\times\boldsymbol{v}}{\left|\boldsymbol{r}\right|^2},
+
+that is, the frame is rotating as-if the reference state *r* and *v* were evolving on a Keplerian orbit.
+
+.. note::
+
+   The RSW frame is also known under several other denominations, including RSW_ROTATING, RTN, RIC, LVLH, QSW and possibly others.
+
+.. seealso:: https://sanaregistry.org/r/orbit_relative_reference_frames/
+
+:param pos: the Cartesian position vector to be transformed.
+:param vel: the Cartesian velocity vector to be transformed.
+:param r: the Cartesian position of the origin of the RSW frame.
+:param v: the Cartesian velocity of the origin of the RSW frame.
+
+:returns: *pos* and *vel* transformed in the RSW reference frame defined by *r* and *v*.
+
+)";
+}
+
+std::string state_to_rsw_inertial()
+{
+    return R"(state_to_rsw_inertial(*, pos: typing.Iterable[expression], vel: typing.Iterable[expression], r: typing.Iterable[expression], v: typing.Iterable[expression]) -> tuple[list[expression], list[expression]]
+
+Convert state to the inertial RSW frame.
+
+.. versionadded:: 7.9.0
+
+The inertial RSW is an inertial (i.e., non-rotating and non-translating) variant of the RSW frame, which is itself described in detail in
+the documentation of :py:func:`~heyoka.model.state_to_rsw()`.
+
+Whereas the basis vectors :math:`\hat{\boldsymbol{R}}`, :math:`\hat{\boldsymbol{S}}` and :math:`\hat{\boldsymbol{W}}` are defined from
+*r* and *v* in the same way as in the standard RSW frame, they are assumed to be constant, and the origin is assumed to be fixed at *r*.
+
+Consequently, transforming a position to the inertial RSW frame will yield the same result as the transformation to the standard
+RSW frame, but velocity transformations will produce different results.
+
+.. note::
+
+   The inertial RSW frame is also known as RSW_INERTIAL and UVW. In certain contexts, the moniker RTN (which is usually an alias for
+   the standard RSW frame) might refer to the inertial RSW frame (e.g., this is the case in the CCSDS CDM standard).
+
+.. seealso:: https://sanaregistry.org/r/orbit_relative_reference_frames/
+
+:param pos: the Cartesian position vector to be transformed.
+:param vel: the Cartesian velocity vector to be transformed.
+:param r: the Cartesian position of the origin of the RSW frame.
+:param v: the Cartesian velocity of the origin of the RSW frame.
+
+:returns: *pos* and *vel* transformed in the inertial RSW reference frame defined by *r* and *v*.
+
+)";
+}
+
+std::string state_from_rsw()
+{
+    return R"(state_from_rsw(*, pos: typing.Iterable[expression], vel: typing.Iterable[expression], r: typing.Iterable[expression], v: typing.Iterable[expression]) -> tuple[list[expression], list[expression]]
+
+Convert state from the RSW frame.
+
+.. versionadded:: 7.9.0
+
+This function is the inverse of :py:func:`~heyoka.model.state_to_rsw()`. It takes in input a Cartesian state *pos* and *vel* in the RSW
+frame defined by *r* and *v*, and transforms it back to the frame in which *r* and *v* are defined.
+
+Please see :py:func:`~heyoka.model.state_to_rsw()` for details on how the RSW frame is defined.
+
+:param pos: the position vector in the RSW frame.
+:param vel: the velocity vector in the RSW frame.
+:param r: the Cartesian position of the origin of the RSW frame.
+:param v: the Cartesian velocity of the origin of the RSW frame.
+
+:returns: *pos* and *vel* transformed back into the original reference frame.
+
+)";
+}
+
+std::string state_from_rsw_inertial()
+{
+    return R"(state_from_rsw_inertial(*, pos: typing.Iterable[expression], vel: typing.Iterable[expression], r: typing.Iterable[expression], v: typing.Iterable[expression]) -> tuple[list[expression], list[expression]]
+
+Convert state from the inertial RSW frame.
+
+.. versionadded:: 7.9.0
+
+This function is the inverse of :py:func:`~heyoka.model.state_to_rsw_inertial()`. It takes in input a Cartesian state *pos* and *vel*
+in the inertial RSW frame defined by *r* and *v*, and transforms it back to the frame in which *r* and *v* are defined.
+
+Please see :py:func:`~heyoka.model.state_to_rsw_inertial()` for details on how the inertial RSW frame is defined.
+
+:param pos: the position vector in the inertial RSW frame.
+:param vel: the velocity vector in the inertial RSW frame.
+:param r: the Cartesian position of the origin of the inertial RSW frame.
+:param v: the Cartesian velocity of the origin of the inertial RSW frame.
+
+:returns: *pos* and *vel* transformed back into the original reference frame.
+
+)";
+}
+
 } // namespace heyoka_py::docstrings
