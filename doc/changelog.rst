@@ -14,6 +14,12 @@ New
 - Add CelesTrak as a provider of EOP data
   (`#256 <https://github.com/bluescarni/heyoka.py/pull/256>`__).
 
+Fix
+~~~
+
+- Fix a couple of compatibility issues with NumPy 2.4.0
+  (`#257 <https://github.com/bluescarni/heyoka.py/pull/257>`__).
+
 7.8.1 (2025-10-30)
 ------------------
 
