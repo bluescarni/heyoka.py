@@ -10,6 +10,7 @@
 
 #include <algorithm>
 #include <array>
+#include <cstddef>
 #include <cstdint>
 #include <iterator>
 #include <optional>
@@ -64,7 +65,16 @@ namespace
 
 // Small helper to turn the variant v into an expression.
 constexpr auto ex_from_variant
-    = [](const auto &v) { return std::visit([](const auto &v) { return heyoka::expression(v); }, v); };
+    = [](const auto &v) { return std::visit([](const auto &x) { return heyoka::expression(x); }, v); };
+
+// Small helper to turn an array of variants into an array of expressions.
+template <typename T, std::size_t N>
+std::array<heyoka::expression, N> arr_ex_from_arr_variant(const std::array<T, N> &arr)
+{
+    std::array<heyoka::expression, N> retval;
+    std::ranges::transform(arr, retval.begin(), ex_from_variant);
+    return retval;
+}
 
 // Common logic to expose N-body helpers.
 template <typename Op, typename V>
@@ -417,9 +427,8 @@ void expose_models(py::module_ &m)
     m.def(
         "_model_cart2geo",
         [](const std::array<vex_t, 3> &xyz, double ecc2, double R_eq, unsigned n_iters) {
-            return hy::model::cart2geo(
-                {detail::ex_from_variant(xyz[0]), detail::ex_from_variant(xyz[1]), detail::ex_from_variant(xyz[2])},
-                hy::kw::ecc2 = ecc2, hy::kw::R_eq = R_eq, hy::kw::n_iters = n_iters);
+            return hy::model::cart2geo(detail::arr_ex_from_arr_variant(xyz), hy::kw::ecc2 = ecc2, hy::kw::R_eq = R_eq,
+                                       hy::kw::n_iters = n_iters);
         },
         "xyz"_a,
         "ecc2"_a = 1
@@ -429,9 +438,7 @@ void expose_models(py::module_ &m)
     m.def(
         "_model_geo2cart",
         [](const std::array<vex_t, 3> &geo, double ecc2, double R_eq) {
-            return hy::model::geo2cart(
-                {detail::ex_from_variant(geo[0]), detail::ex_from_variant(geo[1]), detail::ex_from_variant(geo[2])},
-                hy::kw::ecc2 = ecc2, hy::kw::R_eq = R_eq);
+            return hy::model::geo2cart(detail::arr_ex_from_arr_variant(geo), hy::kw::ecc2 = ecc2, hy::kw::R_eq = R_eq);
         },
         "geo"_a,
         "ecc2"_a = 1
@@ -496,51 +503,47 @@ void expose_models(py::module_ &m)
     m.def(
         "_model_rot_fk5j2000_icrs",
         [](const std::array<vex_t, 3> &xyz) {
-            return hy::model::rot_fk5j2000_icrs(
-                {detail::ex_from_variant(xyz[0]), detail::ex_from_variant(xyz[1]), detail::ex_from_variant(xyz[2])});
+            return hy::model::rot_fk5j2000_icrs(detail::arr_ex_from_arr_variant(xyz));
         },
         "xyz"_a, docstrings::rot_fk5j2000_icrs().c_str());
     m.def(
         "_model_rot_icrs_fk5j2000",
         [](const std::array<vex_t, 3> &xyz) {
-            return hy::model::rot_icrs_fk5j2000(
-                {detail::ex_from_variant(xyz[0]), detail::ex_from_variant(xyz[1]), detail::ex_from_variant(xyz[2])});
+            return hy::model::rot_icrs_fk5j2000(detail::arr_ex_from_arr_variant(xyz));
         },
         "xyz"_a, docstrings::rot_icrs_fk5j2000().c_str());
     m.def(
         "_model_rot_itrs_icrs",
         [](const std::array<vex_t, 3> &xyz, const vex_t &time_expr, double thresh, const hy::eop_data &data) {
-            return hy::model::rot_itrs_icrs(
-                {detail::ex_from_variant(xyz[0]), detail::ex_from_variant(xyz[1]), detail::ex_from_variant(xyz[2])},
-                hy::kw::time_expr = detail::ex_from_variant(time_expr), hy::kw::thresh = thresh,
-                hy::kw::eop_data = data);
+            return hy::model::rot_itrs_icrs(detail::arr_ex_from_arr_variant(xyz),
+                                            hy::kw::time_expr = detail::ex_from_variant(time_expr),
+                                            hy::kw::thresh = thresh, hy::kw::eop_data = data);
         },
         "xyz"_a, "time_expr"_a = hy::time, "thresh"_a.noconvert() = hy::model::detail::iau2006_default_thresh,
         "eop_data"_a = hy::eop_data(), docstrings::rot_itrs_icrs(hy::model::detail::iau2006_default_thresh).c_str());
     m.def(
         "_model_rot_icrs_itrs",
         [](const std::array<vex_t, 3> &xyz, const vex_t &time_expr, double thresh, const hy::eop_data &data) {
-            return hy::model::rot_icrs_itrs(
-                {detail::ex_from_variant(xyz[0]), detail::ex_from_variant(xyz[1]), detail::ex_from_variant(xyz[2])},
-                hy::kw::time_expr = detail::ex_from_variant(time_expr), hy::kw::thresh = thresh,
-                hy::kw::eop_data = data);
+            return hy::model::rot_icrs_itrs(detail::arr_ex_from_arr_variant(xyz),
+                                            hy::kw::time_expr = detail::ex_from_variant(time_expr),
+                                            hy::kw::thresh = thresh, hy::kw::eop_data = data);
         },
         "xyz"_a, "time_expr"_a = hy::time, "thresh"_a.noconvert() = hy::model::detail::iau2006_default_thresh,
         "eop_data"_a = hy::eop_data(), docstrings::rot_icrs_itrs(hy::model::detail::iau2006_default_thresh).c_str());
     m.def(
         "_model_rot_itrs_teme",
         [](const std::array<vex_t, 3> &xyz, const vex_t &time_expr, const hy::eop_data &data) {
-            return hy::model::rot_itrs_teme(
-                {detail::ex_from_variant(xyz[0]), detail::ex_from_variant(xyz[1]), detail::ex_from_variant(xyz[2])},
-                hy::kw::time_expr = detail::ex_from_variant(time_expr), hy::kw::eop_data = data);
+            return hy::model::rot_itrs_teme(detail::arr_ex_from_arr_variant(xyz),
+                                            hy::kw::time_expr = detail::ex_from_variant(time_expr),
+                                            hy::kw::eop_data = data);
         },
         "xyz"_a, "time_expr"_a = hy::time, "eop_data"_a = hy::eop_data(), docstrings::rot_itrs_teme().c_str());
     m.def(
         "_model_rot_teme_itrs",
         [](const std::array<vex_t, 3> &xyz, const vex_t &time_expr, const hy::eop_data &data) {
-            return hy::model::rot_teme_itrs(
-                {detail::ex_from_variant(xyz[0]), detail::ex_from_variant(xyz[1]), detail::ex_from_variant(xyz[2])},
-                hy::kw::time_expr = detail::ex_from_variant(time_expr), hy::kw::eop_data = data);
+            return hy::model::rot_teme_itrs(detail::arr_ex_from_arr_variant(xyz),
+                                            hy::kw::time_expr = detail::ex_from_variant(time_expr),
+                                            hy::kw::eop_data = data);
         },
         "xyz"_a, "time_expr"_a = hy::time, "eop_data"_a = hy::eop_data(), docstrings::rot_teme_itrs().c_str());
 
@@ -582,18 +585,18 @@ void expose_models(py::module_ &m)
     m.def(
         "_model_egm2008_pot",
         [](const std::array<vex_t, 3> &xyz, std::uint32_t n, std::uint32_t m, const vex_t &mu, const vex_t &a) {
-            return hy::model::egm2008_pot(
-                {detail::ex_from_variant(xyz[0]), detail::ex_from_variant(xyz[1]), detail::ex_from_variant(xyz[2])}, n,
-                m, hy::kw::mu = detail::ex_from_variant(mu), hy::kw::a = detail::ex_from_variant(a));
+            return hy::model::egm2008_pot(detail::arr_ex_from_arr_variant(xyz), n, m,
+                                          hy::kw::mu = detail::ex_from_variant(mu),
+                                          hy::kw::a = detail::ex_from_variant(a));
         },
         "xyz"_a, "n"_a.noconvert(), "m"_a.noconvert(), "mu"_a = hy::model::get_egm2008_mu(),
         "a"_a = hy::model::get_egm2008_a(), docstrings::egm2008_pot().c_str());
     m.def(
         "_model_egm2008_acc",
         [](const std::array<vex_t, 3> &xyz, std::uint32_t n, std::uint32_t m, const vex_t &mu, const vex_t &a) {
-            return hy::model::egm2008_acc(
-                {detail::ex_from_variant(xyz[0]), detail::ex_from_variant(xyz[1]), detail::ex_from_variant(xyz[2])}, n,
-                m, hy::kw::mu = detail::ex_from_variant(mu), hy::kw::a = detail::ex_from_variant(a));
+            return hy::model::egm2008_acc(detail::arr_ex_from_arr_variant(xyz), n, m,
+                                          hy::kw::mu = detail::ex_from_variant(mu),
+                                          hy::kw::a = detail::ex_from_variant(a));
         },
         "xyz"_a, "n"_a.noconvert(), "m"_a.noconvert(), "mu"_a = hy::model::get_egm2008_mu(),
         "a"_a = hy::model::get_egm2008_a(), docstrings::egm2008_acc().c_str());
@@ -619,6 +622,25 @@ void expose_models(py::module_ &m)
     m.def(
         "_model_dayfrac", [](const hy::expression &tm) { return hy::model::dayfrac(hy::kw::time_expr = tm); },
         "time_expr"_a = hy::time, docstrings::dayfrac().c_str());
+
+    // RSW frame transformations.
+#define HEYOKA_PY_EXPOSE_MODEL_FRAME_RSW(name)                                                                         \
+    m.def(                                                                                                             \
+        "_model_" #name,                                                                                               \
+        [](const std::array<vex_t, 3> &pos, const std::array<vex_t, 3> &vel, const std::array<vex_t, 3> &r,            \
+           const std::array<vex_t, 3> &v) {                                                                            \
+            auto ret = hy::model::name(detail::arr_ex_from_arr_variant(pos), detail::arr_ex_from_arr_variant(vel),     \
+                                       detail::arr_ex_from_arr_variant(r), detail::arr_ex_from_arr_variant(v));        \
+            return py::make_tuple(std::move(ret[0]), std::move(ret[1]));                                               \
+        },                                                                                                             \
+        py::kw_only(), "pos"_a, "vel"_a, "r"_a, "v"_a, docstrings::name().c_str());
+
+    HEYOKA_PY_EXPOSE_MODEL_FRAME_RSW(state_to_rsw);
+    HEYOKA_PY_EXPOSE_MODEL_FRAME_RSW(state_to_rsw_inertial);
+    HEYOKA_PY_EXPOSE_MODEL_FRAME_RSW(state_from_rsw);
+    HEYOKA_PY_EXPOSE_MODEL_FRAME_RSW(state_from_rsw_inertial);
+
+#undef HEYOKA_PY_EXPOSE_MODEL_FRAME_RSW
 }
 
 } // namespace heyoka_py

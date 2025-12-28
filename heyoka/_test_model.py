@@ -679,3 +679,187 @@ class model_test_case(_ut.TestCase):
         self.assertLess(
             np.linalg.norm(out - [-5821.35967267, 2079.53567927, -2820.30734583]), 1e-10
         )
+
+    def test_rsw(self):
+        # A couple of simple tests from orekit.
+        from .model import (
+            state_to_rsw,
+            state_to_rsw_inertial,
+            state_from_rsw,
+            state_from_rsw_inertial,
+        )
+        from . import cfunc, make_vars
+        import numpy as np
+
+        pos_x, pos_y, pos_z = make_vars("pos_x", "pos_y", "pos_z")
+        vel_x, vel_y, vel_z = make_vars("vel_x", "vel_y", "vel_z")
+        x, y, z = make_vars("x", "y", "z")
+        vx, vy, vz = make_vars("vx", "vy", "vz")
+
+        # state_to_rsw().
+        pos_p, vel_p = state_to_rsw(
+            pos=[pos_x, pos_y, pos_z],
+            vel=[vel_x, vel_y, vel_z],
+            r=[x, y, z],
+            v=[vx, vy, vz],
+        )
+        cf_to_rsw = cfunc(
+            pos_p + vel_p,
+            [pos_x, pos_y, pos_z, vel_x, vel_y, vel_z, x, y, z, vx, vy, vz],
+        )
+
+        input = [
+            1.9901598679710650e06,
+            -4.3171886347018217e05,
+            6.7720686840924025e06,
+            -6.9420492298495501e03,
+            -2.1395918103707527e03,
+            1.9120431913109790e03,
+            1.9990152502378467e06,
+            -4.2466313738494366e05,
+            6.7714722017919971e06,
+            -6.9397802817958964e03,
+            -2.1318724003511638e03,
+            1.9205549571233923e03,
+        ]
+
+        output = cf_to_rsw(input)
+
+        state_orekit = np.array(
+            [
+                -1508.0546801836172,
+                10340.099985439594,
+                4400.563621644753,
+                2.6516116955953297,
+                3.7183675363633046,
+                7.9607554111462075,
+            ]
+        )
+
+        self.assertTrue(np.all(np.abs((output - state_orekit) / state_orekit) < 1e-12))
+
+        # state_to_rsw_inertial().
+        pos_p, vel_p = state_to_rsw_inertial(
+            pos=[pos_x, pos_y, pos_z],
+            vel=[vel_x, vel_y, vel_z],
+            r=[x, y, z],
+            v=[vx, vy, vz],
+        )
+        cf_to_rsw = cfunc(
+            pos_p + vel_p,
+            [pos_x, pos_y, pos_z, vel_x, vel_y, vel_z, x, y, z, vx, vy, vz],
+        )
+
+        input = [
+            1.9901598679710650e06,
+            -4.3171886347018217e05,
+            6.7720686840924025e06,
+            -6.9420492298495501e03,
+            -2.1395918103707527e03,
+            1.9120431913109790e03,
+            1.9990152502378467e06,
+            -4.2466313738494366e05,
+            6.7714722017919971e06,
+            -6.9397802817958964e03,
+            -2.1318724003511638e03,
+            1.9205549571233923e03,
+        ]
+
+        output = cf_to_rsw(input)
+
+        state_orekit = np.array(
+            [
+                -1508.0546801836172,
+                10340.099985439594,
+                4400.563621644753,
+                -3.0126937116365298,
+                7511.706686243073,
+                7.96075541114692,
+            ]
+        )
+
+        self.assertTrue(np.all(np.abs((output - state_orekit) / state_orekit) < 1e-12))
+
+        # state_from_rsw().
+        pos_p, vel_p = state_from_rsw(
+            pos=[pos_x, pos_y, pos_z],
+            vel=[vel_x, vel_y, vel_z],
+            r=[x, y, z],
+            v=[vx, vy, vz],
+        )
+        cf_to_rsw = cfunc(
+            pos_p + vel_p,
+            [pos_x, pos_y, pos_z, vel_x, vel_y, vel_z, x, y, z, vx, vy, vz],
+        )
+
+        input = [
+            -1508.0546801836172,
+            10340.099985439594,
+            4400.563621644753,
+            2.6516116955953297,
+            3.7183675363633046,
+            7.9607554111462075,
+            1.9990152502378467e06,
+            -4.2466313738494366e05,
+            6.7714722017919971e06,
+            -6.9397802817958964e03,
+            -2.1318724003511638e03,
+            1.9205549571233923e03,
+        ]
+
+        output = cf_to_rsw(input)
+
+        state_orekit = np.array(
+            [
+                1.9901598679710650e06,
+                -4.3171886347018217e05,
+                6.7720686840924025e06,
+                -6.9420492298495501e03,
+                -2.1395918103707527e03,
+                1.9120431913109790e03,
+            ]
+        )
+
+        self.assertTrue(np.all(np.abs((output - state_orekit) / state_orekit) < 1e-12))
+
+        # state_from_rsw_inertial().
+        pos_p, vel_p = state_from_rsw_inertial(
+            pos=[pos_x, pos_y, pos_z],
+            vel=[vel_x, vel_y, vel_z],
+            r=[x, y, z],
+            v=[vx, vy, vz],
+        )
+        cf_to_rsw = cfunc(
+            pos_p + vel_p,
+            [pos_x, pos_y, pos_z, vel_x, vel_y, vel_z, x, y, z, vx, vy, vz],
+        )
+
+        input = [
+            -1508.0546801836172,
+            10340.099985439594,
+            4400.563621644753,
+            -3.0126937116365298,
+            7511.706686243073,
+            7.96075541114692,
+            1.9990152502378467e06,
+            -4.2466313738494366e05,
+            6.7714722017919971e06,
+            -6.9397802817958964e03,
+            -2.1318724003511638e03,
+            1.9205549571233923e03,
+        ]
+
+        output = cf_to_rsw(input)
+
+        state_orekit = np.array(
+            [
+                1.9901598679710650e06,
+                -4.3171886347018217e05,
+                6.7720686840924025e06,
+                -6.9420492298495501e03,
+                -2.1395918103707527e03,
+                1.9120431913109790e03,
+            ]
+        )
+
+        self.assertTrue(np.all(np.abs((output - state_orekit) / state_orekit) < 1e-12))

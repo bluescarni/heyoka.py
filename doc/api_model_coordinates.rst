@@ -14,3 +14,7 @@ Coordinate transformations
    rot_icrs_itrs
    rot_itrs_teme
    rot_teme_itrs
+   state_to_rsw
+   state_to_rsw_inertial
+   state_from_rsw
+   state_from_rsw_inertial

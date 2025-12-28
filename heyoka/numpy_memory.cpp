@@ -486,6 +486,10 @@ std::optional<py::object> numpy_orig_mem_handler;
 void setup_custom_numpy_mem_handler(py::module_ &m)
 {
     m.def("install_custom_numpy_mem_handler", []() {
+        // NOTE: starting from numpy 2.4.0, we are experiencing assertion failures in the code below. Let us just
+        // disable the custom memory handler, as at one point we will have to migrate to the new dtype API anyway.
+        return;
+
         if (detail::numpy_orig_mem_handler) {
             // Don't do anything if we have already overridden
             // the memory management functions.

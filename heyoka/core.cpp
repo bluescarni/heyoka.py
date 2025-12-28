@@ -12,6 +12,7 @@
 #include <exception>
 #include <initializer_list>
 #include <iostream>
+#include <mutex>
 #include <optional>
 #include <sstream>
 #include <type_traits>
@@ -84,6 +85,11 @@ namespace
 
 // NOLINTNEXTLINE(cppcoreguidelines-avoid-non-const-global-variables)
 std::optional<oneapi::tbb::global_control> tbb_gc;
+
+// Mutex for protecting access to tbb_gc.
+//
+// NOLINTNEXTLINE(cppcoreguidelines-avoid-non-const-global-variables)
+constinit std::mutex tbb_gc_mutex;
 
 // Helper to import the NumPy API bits.
 PyObject *import_numpy(PyObject *m)
@@ -382,9 +388,9 @@ PYBIND11_MODULE(core, m, pybind11::mod_gil_not_used())
     heypy::setup_sympy(m);
 
     // Expose the helpers to get/set the number of threads in use by heyoka.py.
-    // NOTE: these are not thread-safe themselves. Should they be? If not, their
-    // thread unsafety must be highlighted in the docs.
     m.def("set_nthreads", [](std::size_t n) {
+        const std::scoped_lock lock(heypy::detail::tbb_gc_mutex);
+
         if (n == 0u) {
             heypy::detail::tbb_gc.reset();
         } else {
@@ -403,6 +409,9 @@ PYBIND11_MODULE(core, m, pybind11::mod_gil_not_used())
 #if !defined(NDEBUG)
         std::cout << "Cleaning up the TBB control structure" << std::endl;
 #endif
+
+        const std::scoped_lock lock(heypy::detail::tbb_gc_mutex);
+
         heypy::detail::tbb_gc.reset();
     }));
 
