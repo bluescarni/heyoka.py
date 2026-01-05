@@ -10,3 +10,4 @@ Variational equations
   notebooks/learning_mascons
   notebooks/map_inversion
   notebooks/oppenheimer_volkoff.ipynb
+  notebooks/ett_pc
