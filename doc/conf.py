@@ -117,6 +117,8 @@ nb_execution_excludepatterns = [
     "eo_third_body*",
     "eo_geopot*",
     "eo_atmo*",
+    # NOTE: this one takes long to run and contains some benchmark timings.
+    "ett_pc*",
 ]
 
 # Force printing traceback to stderr on execution error.
