@@ -10,6 +10,7 @@
 #include <variant>
 #include <vector>
 
+#include <pybind11/native_enum.h>
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 
@@ -32,13 +33,12 @@ void expose_var_ode_sys(py::module_ &m)
     using namespace pybind11::literals;
 
     // var_args enum.
-    py::enum_<hey::var_args>(m, "var_args", docstrings::var_args().c_str())
+    py::native_enum<hey::var_args>(m, "var_args", "enum.IntFlag", docstrings::var_args().c_str())
         .value("vars", hey::var_args::vars, docstrings::var_args_vars().c_str())
         .value("params", hey::var_args::params, docstrings::var_args_params().c_str())
         .value("time", hey::var_args::time, docstrings::var_args_time().c_str())
         .value("all", hey::var_args::all, docstrings::var_args_all().c_str())
-        .def("__or__", [](hey::var_args a, hey::var_args b) { return a | b; })
-        .def("__and__", [](hey::var_args a, hey::var_args b) { return a & b; });
+        .finalize();
 
     // var_ode_sys class.
     py::class_<hey::var_ode_sys> v_cl(m, "var_ode_sys", py::dynamic_attr{}, docstrings::var_ode_sys().c_str());

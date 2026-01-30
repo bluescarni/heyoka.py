@@ -19,6 +19,6 @@ Enums
 
 .. autosummary::
    :toctree: autosummary_generated
-   :template: custom-enum-template.rst
+   :template: custom-flag-template.rst
 
    var_args
