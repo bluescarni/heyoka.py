@@ -608,10 +608,10 @@ equations will be formulated.
 
 If *args* is of type :class:`~heyoka.var_args`, then the variational equations will be constructed
 with respect to arguments deduced from *sys*. E.g., if *sys* contains the two state variables
-:math:`x` and :math:`y` and *args* is the *vars* enumerator of :class:`~heyoka.var_args`, then
-the variational equations will be formulated with respect to the initial conditions of
-:math:`x` and :math:`y`. Similarly, if *sys* contains two parameters ``par[0]`` and ``par[1]``
-and *args* is the *params* enumerator of :class:`~heyoka.var_args`, then
+:math:`x` and :math:`y` and *args* is the :attr:`~heyoka.var_args.vars` enumerator of
+:class:`~heyoka.var_args`, then the variational equations will be formulated with respect to the
+initial conditions of :math:`x` and :math:`y`. Similarly, if *sys* contains two parameters ``par[0]``
+and ``par[1]`` and *args* is the :attr:`~heyoka.var_args.params` enumerator of :class:`~heyoka.var_args`, then
 the variational equations will be formulated with respect to the two parameters.
 
 If *args* is a list of :class:`~heyoka.expression`, then the variational equations will be formulated
@@ -1167,9 +1167,10 @@ std::string code_model()
 
 .. versionadded:: 6.0.0
 
-The default code model used by heyoka.py is ``small``. Large computational graphs may require the
-use of the ``large`` code model. Note that currently only the ``small`` and ``large``
-code models are supported on all platforms.
+The default code model used by heyoka.py is :attr:`~heyoka.code_model.small`. Large computational
+graphs may require the use of the :attr:`~heyoka.code_model.large` code model. Note that currently
+only the :attr:`~heyoka.code_model.small` and :attr:`~heyoka.code_model.large` code models are
+supported on all platforms.
 
 )";
 }
