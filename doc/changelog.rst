@@ -3,6 +3,18 @@
 Changelog
 =========
 
+7.9.2 (unreleased)
+------------------
+
+Changes
+~~~~~~~
+
+- Enums and flags are now correctly documented
+  (`#262 <https://github.com/bluescarni/heyoka.py/pull/262>`__).
+- heyoka now requires pybind11>=3
+  (`#262 <https://github.com/bluescarni/heyoka.py/pull/262>`__).
+
+
 7.9.1 (2026-01-25)
 ------------------
 
