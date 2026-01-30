@@ -154,9 +154,9 @@ message(STATUS "Python3 installation directory: ${Python3_SITEARCH}")
 if(${Python3_VERSION_MINOR} LESS 9)
     message(FATAL_ERROR "The minimum supported version of Python is 3.9, but version 3.${Python3_VERSION_MINOR} was found instead")
 endif()
-# We support only NumPy>=2.
-if((heyoka_WITH_REAL OR heyoka_WITH_REAL128) AND ${Python3_NumPy_VERSION} VERSION_LESS 2)
-    message(FATAL_ERROR "NumPy>=2 is required when building with support for quadruple-precision or arbitrary-precision computations")
+# We support only NumPy 2.*.
+if(${Python3_NumPy_VERSION} VERSION_LESS 2 OR ${Python3_NumPy_VERSION} VERSION_GREATER_EQUAL 3)
+    message(FATAL_ERROR "NumPy 2.* is required, but version ${Python3_NumPy_VERSION} was found instead")
 endif()
 message(STATUS "NumPy version: ${Python3_NumPy_VERSION}")
 unset(_HEYOKA_PY_PYTHON3_COMPONENTS)
@@ -174,10 +174,7 @@ endif()
 mark_as_advanced(HEYOKA_PY_INSTALL_PATH)
 
 # pybind11.
-find_package(pybind11 REQUIRED CONFIG)
-if(${pybind11_VERSION} VERSION_LESS "2.10")
-    message(FATAL_ERROR "pybind11 >= 2.10 is required, but version ${pybind11_VERSION} was found instead.")
-endif()
+find_package(pybind11 3...<4 REQUIRED CONFIG)
 
 # Boost.
 # NOTE: we look for Boost in CONFIG mode first, as that has become the official supported way
