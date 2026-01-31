@@ -39,6 +39,7 @@ extensions = [
     "sphinx.ext.autosummary",
     "sphinx.ext.doctest",
     "sphinxcontrib.bibtex",
+    "enum_tools.autoenum",
 ]
 
 bibtex_bibfiles = ["biblio.bib"]

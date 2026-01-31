@@ -171,10 +171,7 @@ class event_classes_test_case(_ut.TestCase):
                     direction=event_direction(10),
                     fp_type=fp_t,
                 )
-            self.assertTrue(
-                "Invalid value selected for the direction of a non-terminal event"
-                in str(cm.exception)
-            )
+            self.assertTrue("10 is not a valid event_direction" in str(cm.exception))
 
             with self.assertRaises(TypeError) as cm:
                 nt_event(ex=x + v, callback=3, fp_type=fp_t)
@@ -333,10 +330,7 @@ class event_classes_test_case(_ut.TestCase):
                     cooldown=fp_t(3),
                     callback=lambda _: _,
                 )
-            self.assertTrue(
-                "Invalid value selected for the direction of a terminal event"
-                in str(cm.exception)
-            )
+            self.assertTrue("45 is not a valid event_direction" in str(cm.exception))
 
             with self.assertRaises(TypeError) as cm:
                 t_event(x + v, callback=3, fp_type=fp_t)
@@ -481,10 +475,7 @@ class event_classes_test_case(_ut.TestCase):
             nt_event_batch(
                 ex=x + v, callback=lambda _: _, direction=event_direction(10)
             )
-        self.assertTrue(
-            "Invalid value selected for the direction of a non-terminal event"
-            in str(cm.exception)
-        )
+        self.assertTrue("10 is not a valid event_direction" in str(cm.exception))
 
         with self.assertRaises(TypeError) as cm:
             nt_event_batch(ex=x + v, callback=3)
@@ -623,10 +614,7 @@ class event_classes_test_case(_ut.TestCase):
                 cooldown=fp_t(3),
                 callback=lambda _: _,
             )
-        self.assertTrue(
-            "Invalid value selected for the direction of a terminal event"
-            in str(cm.exception)
-        )
+        self.assertTrue("45 is not a valid event_direction" in str(cm.exception))
 
         with self.assertRaises(TypeError) as cm:
             t_event_batch(x + v, callback=3)

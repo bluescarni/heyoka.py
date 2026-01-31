@@ -44,7 +44,7 @@ These are keyword arguments influencing just-in-time (JIT) compilation via LLVM.
   which may improve floating-point performance at the expense of accuracy and/or strict conformance
   to the IEEE 754 standard. The default value is ``False``.
 - ``code_model``: an enumerator of type :py:class:`code_model` representing the code model
-  to be used for JIT compilation. The default code model is ``small``.
+  to be used for JIT compilation. The default code model is :py:attr:`~code_model.small`.
 
   .. versionadded:: 6.0.0
 
@@ -52,10 +52,6 @@ These are keyword arguments influencing just-in-time (JIT) compilation via LLVM.
   parallelised. This flag has an effect only when compact mode is enabled. The default value is ``False``.
 
   .. versionadded:: 6.0.0
-
-  .. note::
-
-     Due to several LLVM issues around parallel JIT compilation, the ``parjit`` flag is currently disabled.
 
 .. _api_common_kwargs_cfunc:
 

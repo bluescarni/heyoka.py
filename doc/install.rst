@@ -110,7 +110,7 @@ and several CPU architectures (x86-64, 64-bit ARM and 64-bit PowerPC).
 In addition to the C++ dependencies enumerated :ref:`earlier <installation_deps>`,
 installation from source requires also:
 
-* `pybind11 <https://github.com/pybind/pybind11>`__ (version >= 2.10),
+* `pybind11 <https://github.com/pybind/pybind11>`__ (version >= 3),
 * `CMake <https://cmake.org/>`__, version 3.20 or later.
 
 Note that heyoka.py makes use of the :ref:`NumPy C API <numpy:c-api>`

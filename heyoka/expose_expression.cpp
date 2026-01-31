@@ -29,6 +29,7 @@
 #include <fmt/core.h>
 #include <fmt/ranges.h>
 
+#include <pybind11/native_enum.h>
 #include <pybind11/operators.h>
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
@@ -665,10 +666,11 @@ void expose_expression(py::module_ &m)
     dtens_cl.def(py::pickle(&pickle_getstate_wrapper<hey::dtens>, &pickle_setstate_wrapper<hey::dtens>));
 
     // diff_args enum.
-    py::enum_<hey::diff_args>(m, "diff_args", docstrings::diff_args().c_str())
+    py::native_enum<hey::diff_args>(m, "diff_args", "enum.Enum", docstrings::diff_args().c_str())
         .value("vars", hey::diff_args::vars, docstrings::diff_args_vars().c_str())
         .value("params", hey::diff_args::params, docstrings::diff_args_pars().c_str())
-        .value("all", hey::diff_args::all, docstrings::diff_args_all().c_str());
+        .value("all", hey::diff_args::all, docstrings::diff_args_all().c_str())
+        .finalize();
 
     // diff_tensors().
     m.def(

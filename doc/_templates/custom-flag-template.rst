@@ -2,4 +2,4 @@
 
 .. currentmodule:: {{ module }}
 
-.. autoenum:: {{ objname }}
+.. autoflag:: {{ objname }}
