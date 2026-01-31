@@ -278,6 +278,10 @@ PYBIND11_MODULE(core, m, pybind11::mod_gil_not_used())
     m.def("hamiltonian", &hey::hamiltonian, "H"_a, "qs"_a, "ps"_a, docstrings::hamiltonian().c_str());
 
     // taylor_outcome enum.
+    //
+    // NOTE: we cannot convert this into a native enum at this time as there are apparently issues when exposing a C++
+    // enum with negative values as a IntFlag - it seems like negative values are converted into 32-bit unsigned ints.
+    // We need to investigate this better.
     py::enum_<hey::taylor_outcome>(m, "taylor_outcome", py::arithmetic())
         .value("success", hey::taylor_outcome::success)
         .value("step_limit", hey::taylor_outcome::step_limit)
@@ -286,10 +290,11 @@ PYBIND11_MODULE(core, m, pybind11::mod_gil_not_used())
         .value("cb_stop", hey::taylor_outcome::cb_stop);
 
     // event_direction enum.
-    py::enum_<hey::event_direction>(m, "event_direction")
+    py::native_enum<hey::event_direction>(m, "event_direction", "enum.Enum")
         .value("any", hey::event_direction::any)
         .value("positive", hey::event_direction::positive)
-        .value("negative", hey::event_direction::negative);
+        .value("negative", hey::event_direction::negative)
+        .finalize();
 
     // Compiled functions.
     heypy::expose_add_cfunc_flt(m);
@@ -309,18 +314,16 @@ PYBIND11_MODULE(core, m, pybind11::mod_gil_not_used())
 #endif
 
     // Expose the continuous output function objects.
-    // NOTE: do it *before* the integrators so that
-    // the type name of the continuous output function
-    // objects shows up correctly in the signature of the
-    // propagate_*() functions.
+    //
+    // NOTE: do it *before* the integrators so that the type name of the continuous output function objects shows up
+    // correctly in the signature of the propagate_*() functions.
     heypy::taylor_expose_c_output(m);
 
     // Expose the events.
-    // NOTE: make sure these are exposed *before* the integrators.
-    // Events are used in the integrator API (e.g., ctors), and in order
-    // to have their types pretty-printed in the pybind11 machinery (e.g.,
-    // when raising an error message about wrong types being passed to an
-    // integrator's method), they need to be already exposed.
+    //
+    // NOTE: make sure these are exposed *before* the integrators. Events are used in the integrator API (e.g., ctors),
+    // and in order to have their types pretty-printed in the pybind11 machinery (e.g., when raising an error message
+    // about wrong types being passed to an integrator's method), they need to be already exposed.
     heypy::expose_taylor_t_event_flt(m);
     heypy::expose_taylor_t_event_dbl(m);
     heypy::expose_taylor_t_event_ldbl(m);

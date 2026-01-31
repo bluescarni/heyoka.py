@@ -33,7 +33,7 @@ void expose_var_ode_sys(py::module_ &m)
     using namespace pybind11::literals;
 
     // var_args enum.
-    py::native_enum<hey::var_args>(m, "var_args", "enum.IntFlag", docstrings::var_args().c_str())
+    py::native_enum<hey::var_args>(m, "var_args", "enum.Flag", docstrings::var_args().c_str())
         .value("vars", hey::var_args::vars, docstrings::var_args_vars().c_str())
         .value("params", hey::var_args::params, docstrings::var_args_params().c_str())
         .value("time", hey::var_args::time, docstrings::var_args_time().c_str())
