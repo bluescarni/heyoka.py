@@ -3,6 +3,20 @@
 Changelog
 =========
 
+7.10.0 (unreleased)
+-------------------
+
+Fix
+~~~
+
+- Improve symbol isolation by ensuring that the heyoka C++ library and its
+  dependencies are never opened with RTLD_GLOBAL when they are added to the JIT
+  runtimes. This should help avoiding potential symbol collisions with other Python
+  modules
+  (`#264 <https://github.com/bluescarni/heyoka.py/pull/264>`__).
+- Fix build failure with pybind11 3.0.2
+  (`#264 <https://github.com/bluescarni/heyoka.py/pull/264>`__).
+
 7.9.2 (2026-02-13)
 ------------------
 
