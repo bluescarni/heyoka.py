@@ -182,6 +182,28 @@ bool may_share_memory(const py::array &a, const py::array &b, const Args &...arg
     return false;
 }
 
+// Check that an inputs array does not overlap with the integrator's internal state during the evaluation of a Taylor
+// map in a Taylor integrator. The evaluation is implemented internally via a cfunc, which requires disjoint memory
+// areas.
+template <typename TA>
+void check_eval_taylor_map_overlap(const TA *ta, const py::array &inputs, const py::object &o, const int dt)
+{
+    // NOTE: the easiest thing is to re-use may_share_memory() which requires creating numpy views on the data. We
+    // create 1D numpy views - the shape does not matter for the overlap check.
+    const py::array state_arr(py::dtype(dt),
+                              py::array::ShapeContainer{boost::numeric_cast<py::ssize_t>(ta->get_state().size())},
+                              ta->get_state_data(), o);
+    const py::array tstate_arr(py::dtype(dt),
+                               py::array::ShapeContainer{boost::numeric_cast<py::ssize_t>(ta->get_tstate().size())},
+                               ta->get_tstate().data(), o);
+
+    if (may_share_memory(inputs, state_arr) || may_share_memory(inputs, tstate_arr)) [[unlikely]] {
+        py_throw(PyExc_ValueError, "The inputs array provided for the evaluation of a Taylor map may overlap with the "
+                                   "integrator's internal data: please make sure that the inputs array does not share "
+                                   "memory with the state or tstate arrays of the integrator");
+    }
+}
+
 // Helper to check if a numpy array is a NPY_ARRAY_CARRAY (i.e., C-style
 // contiguous and with properly aligned storage). The flag signals whether
 // the array must also be writeable or not.

@@ -465,6 +465,10 @@ void expose_taylor_integrator_impl(py::module &m, const std::string &suffix)
 
 #endif
 
+                 // Check that the inputs array does not overlap with the integrator's internal buffers used by the
+                 // cfunc call.
+                 check_eval_taylor_map_overlap(ta, inputs, o, dt);
+
                  // Run the evaluation.
                  const auto *data_ptr = static_cast<const T *>(inputs.data());
                  ta->eval_taylor_map(std::ranges::subrange(data_ptr, data_ptr + inputs.shape(0)));
