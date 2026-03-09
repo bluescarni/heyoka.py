@@ -636,6 +636,10 @@ void expose_batch_integrator_impl(py::module_ &m, const std::string &suffix)
                                                     .c_str());
                  }
 
+                 // Check that the inputs array does not overlap with the integrator's internal buffers used by the
+                 // cfunc call.
+                 check_eval_taylor_map_overlap(ta, inputs, o, dt);
+
                  // Run the evaluation.
                  const auto *data_ptr = static_cast<const T *>(inputs.data());
                  ta->eval_taylor_map(std::ranges::subrange(data_ptr, data_ptr + inputs.size()));

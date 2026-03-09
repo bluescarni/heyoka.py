@@ -103,6 +103,17 @@ class var_integrator_test_case(_ut.TestCase):
             " elements, " in str(cm.exception)
         )
 
+        # Check that passing a view of the integrator's state as input
+        # is detected as a memory overlap.
+        with self.assertRaises(ValueError) as cm:
+            ta.eval_taylor_map(ta.state[:2])
+        self.assertTrue("may overlap" in str(cm.exception))
+
+        # Same check with tstate.
+        with self.assertRaises(ValueError) as cm:
+            ta.eval_taylor_map(ta.tstate)
+        self.assertTrue("may overlap" in str(cm.exception))
+
         if not hasattr(core, "real"):
             return
 
@@ -234,6 +245,17 @@ class var_integrator_test_case(_ut.TestCase):
             "The array of inputs provided for the evaluation of a Taylor map has 1"
             " column(s), but it must have 2 column(s) instead" in str(cm.exception)
         )
+
+        # Check that passing a view of the integrator's state as input
+        # is detected as a memory overlap.
+        with self.assertRaises(ValueError) as cm:
+            ta.eval_taylor_map(ta.state[:2])
+        self.assertTrue("may overlap" in str(cm.exception))
+
+        # Same check with tstate.
+        with self.assertRaises(ValueError) as cm:
+            ta.eval_taylor_map(ta.tstate)
+        self.assertTrue("may overlap" in str(cm.exception))
 
     def test_size_check_bug(self):
         # BUG: wrong size check on the input for a Taylor map (the size is checked against
