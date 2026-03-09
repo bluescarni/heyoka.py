@@ -269,7 +269,7 @@ void expose_batch_integrator_impl(py::module_ &m, const std::string &suffix)
                                                         kw::c_output = c_output);
                             }();
 
-                            return py::make_tuple(std::move(std::get<0>(ret)), py::none{});
+                            return py::make_tuple(std::move(std::get<0>(ret)), scb_arg_t(py::none{}));
                         }
                     },
                     delta_t, std::move(max_delta_t));
@@ -305,7 +305,7 @@ void expose_batch_integrator_impl(py::module_ &m, const std::string &suffix)
                                                           kw::c_output = c_output);
                             }();
 
-                            return py::make_tuple(std::move(std::get<0>(ret)), py::none{});
+                            return py::make_tuple(std::move(std::get<0>(ret)), scb_arg_t(py::none{}));
                         }
                     },
                     tm, std::move(max_delta_t));
@@ -384,7 +384,7 @@ void expose_batch_integrator_impl(py::module_ &m, const std::string &suffix)
                         if (cb_) {
                             return py::make_tuple(step_callback_to_scb_arg_t(*cb_, std::get<0>(ret)), std::move(a_ret));
                         } else {
-                            return py::make_tuple(py::none{}, std::move(a_ret));
+                            return py::make_tuple(scb_arg_t(py::none{}), std::move(a_ret));
                         }
                     },
                     std::move(max_delta_t));

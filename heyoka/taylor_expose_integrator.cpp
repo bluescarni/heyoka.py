@@ -276,7 +276,7 @@ void expose_taylor_integrator_impl(py::module &m, const std::string &suffix)
                     }();
 
                     return py::make_tuple(std::get<0>(ret), std::get<1>(ret), std::get<2>(ret), std::get<3>(ret),
-                                          std::move(std::get<4>(ret)), py::none{});
+                                          std::move(std::get<4>(ret)), scb_arg_t(py::none{}));
                 }
             },
             "delta_t"_a.noconvert(), "max_steps"_a = 0,
@@ -309,7 +309,7 @@ void expose_taylor_integrator_impl(py::module &m, const std::string &suffix)
                     }();
 
                     return py::make_tuple(std::get<0>(ret), std::get<1>(ret), std::get<2>(ret), std::get<3>(ret),
-                                          std::move(std::get<4>(ret)), py::none{});
+                                          std::move(std::get<4>(ret)), scb_arg_t(py::none{}));
                 }
             },
             "t"_a.noconvert(), "max_steps"_a = 0,
@@ -347,7 +347,7 @@ void expose_taylor_integrator_impl(py::module &m, const std::string &suffix)
                                           step_callback_to_scb_arg_t(*cb_, std::get<4>(ret)), std::move(a_ret));
                 } else {
                     return py::make_tuple(std::get<0>(ret), std::get<1>(ret), std::get<2>(ret), std::get<3>(ret),
-                                          py::none{}, std::move(a_ret));
+                                          scb_arg_t(py::none{}), std::move(a_ret));
                 }
             },
             "grid"_a.noconvert(), "max_steps"_a = 0,
