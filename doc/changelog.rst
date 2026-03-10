@@ -9,6 +9,10 @@ Changelog
 Fix
 ~~~
 
+- Fix excessively long compile times for large variational integrators (e.g., neural ODEs).
+  The slowness was due to the JIT-compiled code for Taylor map evaluation not employing
+  compact mode
+  (`#264 <https://github.com/bluescarni/heyoka.py/pull/264>`__).
 - Improve symbol isolation by ensuring that the heyoka C++ library and its
   dependencies are never opened with RTLD_GLOBAL when they are added to the JIT
   runtimes. This should help avoiding potential symbol collisions with other Python
