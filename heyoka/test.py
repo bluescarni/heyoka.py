@@ -2090,6 +2090,7 @@ def run_test_suite():
         _test_batch_integrator,
         _test_ensemble,
         _test_memcache,
+        _test_diskcache,
         _test_celmec,
         _test_sympy,
         _test_vsop2013,
@@ -2148,6 +2149,7 @@ def run_test_suite():
     suite.addTest(tl.loadTestsFromTestCase(_test_celmec.kepDE_test_case))
     suite.addTest(tl.loadTestsFromTestCase(_test_sympy.sympy_test_case))
     suite.addTest(tl.loadTestsFromTestCase(_test_memcache.memcache_test_case))
+    suite.addTest(tl.loadTestsFromTestCase(_test_diskcache.diskcache_test_case))
     suite.addTest(tl.loadTestsFromTestCase(_test_eop_data.eop_data_test_case))
     suite.addTest(tl.loadTestsFromTestCase(_test_sw_data.sw_data_test_case))
 

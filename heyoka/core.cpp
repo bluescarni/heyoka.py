@@ -10,18 +10,20 @@
 
 #include <cstddef>
 #include <exception>
+#include <filesystem>
 #include <initializer_list>
 #include <iostream>
 #include <mutex>
 #include <optional>
 #include <sstream>
-#include <type_traits>
+#include <utility>
 
 #include <oneapi/tbb/global_control.h>
 
 #include <pybind11/native_enum.h>
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
+#include <pybind11/stl/filesystem.h>
 
 #define PY_ARRAY_UNIQUE_SYMBOL heyoka_py_ARRAY_API
 #define PY_UFUNC_UNIQUE_SYMBOL heyoka_py_UFUNC_API
@@ -143,6 +145,9 @@ PYBIND11_MODULE(core, m, pybind11::mod_gil_not_used())
 #endif
         ;
 
+    // Switch on the disk cache.
+    hey::llvm_state::set_diskcache_enabled(true);
+
     // Expose the real128 type.
     // NOTE: it is *important* this is done
     // before the exposition of real, since the real
@@ -206,13 +211,28 @@ PYBIND11_MODULE(core, m, pybind11::mod_gil_not_used())
         // Pickle support.
         .def(py::pickle(&heypy::pickle_getstate_wrapper<hey::llvm_state>,
                         &heypy::pickle_setstate_wrapper<hey::llvm_state>))
-        // Cache management.
+        // In-memory cache management.
         .def_property_readonly_static("memcache_size",
                                       [](const py::object &) { return hey::llvm_state::get_memcache_size(); })
         .def_property_static(
             "memcache_limit", [](const py::object &) { return hey::llvm_state::get_memcache_limit(); },
             [](const py::object &, std::size_t limit) { hey::llvm_state::set_memcache_limit(limit); })
-        .def_static("clear_memcache", &hey::llvm_state::clear_memcache);
+        .def_static("clear_memcache", &hey::llvm_state::clear_memcache)
+        // On-disk cache management.
+        .def_property_static(
+            "diskcache_path", [](const py::object &) { return hey::llvm_state::get_diskcache_path(); },
+            [](const py::object &, std::filesystem::path path) {
+                hey::llvm_state::set_diskcache_path(std::move(path));
+            })
+        .def_property_static(
+            "diskcache_enabled", [](const py::object &) { return hey::llvm_state::get_diskcache_enabled(); },
+            [](const py::object &, const bool flag) { hey::llvm_state::set_diskcache_enabled(flag); })
+        .def_property_static(
+            "diskcache_limit", [](const py::object &) { return hey::llvm_state::get_diskcache_limit(); },
+            [](const py::object &, const std::int64_t value) { hey::llvm_state::set_diskcache_limit(value); })
+        .def_property_readonly_static("diskcache_size",
+                                      [](const py::object &) { return hey::llvm_state::get_diskcache_size(); })
+        .def_static("clear_diskcache", &hey::llvm_state::clear_diskcache);
 
     // LLVM multi state.
     py::class_<hey::llvm_multi_state>(m, "llvm_multi_state", py::dynamic_attr{})
