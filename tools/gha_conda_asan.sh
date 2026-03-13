@@ -17,7 +17,7 @@ bash miniconda.sh -b -p $HOME/miniconda
 conda config --add channels conda-forge
 conda config --set channel_priority strict
 conda create -y -q -p $deps_dir python=3.12 git pybind11 'numpy>=2' mpmath \
-    cmake ninja llvmdev tbb-devel tbb libboost-devel 'mppp=2.*' sleef fmt \
+    cmake ninja llvmdev sqlite tbb-devel tbb libboost-devel 'mppp=2.*' sleef fmt \
     skyfield spdlog sympy cloudpickle c-compiler cxx-compiler
 source activate $deps_dir
 
