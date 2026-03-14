@@ -19,7 +19,7 @@ std::string llvm_state()
 
 This class encapsulates a single LLVM IR module together with the options used to compile it.
 
-Static methods are provided to interact with both the in-memory and on-disk caches, which are used by both
+Static methods are provided to interact with both the in-memory and on-disk compilation caches, which are used by both
 :py:class:`~heyoka.llvm_state` and :py:class:`~heyoka.llvm_multi_state`. All static methods are thread-safe,
 and the static methods interacting with the on-disk cache can be invoked concurrently from multiple processes.
 
@@ -265,6 +265,45 @@ std::string llvm_multi_state()
     return R"(LLVM multi state class.
 
 This class encapsulates a set of LLVM IR modules together with the options used to compile them.
+All modules in an :py:class:`~heyoka.llvm_multi_state` are compiled with the same set of options.
+
+The compilation caches are managed via the static methods of :py:class:`~heyoka.llvm_state`.
+
+)";
+}
+
+std::string llvm_multi_state_ir()
+{
+    return R"(The intermediate representations (IR) of the modules.
+
+:type: list[str]
+
+)";
+}
+
+std::string llvm_multi_state_bc()
+{
+    return R"(The bitcode of the modules.
+
+:type: list[bytes]
+
+)";
+}
+
+std::string llvm_multi_state_object_code()
+{
+    return R"(The object code of the modules.
+
+:type: list[bytes]
+
+)";
+}
+
+std::string llvm_multi_state_parjit()
+{
+    return R"(Flag indicating whether parallel JIT compilation was enabled.
+
+:type: bool
 
 )";
 }

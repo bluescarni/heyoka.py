@@ -176,6 +176,10 @@ std::string llvm_state_get_diskcache_size();
 std::string llvm_state_clear_diskcache();
 
 std::string llvm_multi_state();
+std::string llvm_multi_state_ir();
+std::string llvm_multi_state_bc();
+std::string llvm_multi_state_object_code();
+std::string llvm_multi_state_parjit();
 
 } // namespace heyoka_py::docstrings
 

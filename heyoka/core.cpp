@@ -246,33 +246,44 @@ PYBIND11_MODULE(core, m, pybind11::mod_gil_not_used())
 
     // LLVM multi state.
     py::class_<hey::llvm_multi_state>(m, "llvm_multi_state", py::dynamic_attr{}, docstrings::llvm_multi_state().c_str())
-        .def("get_ir", &hey::llvm_multi_state::get_ir)
-        .def("get_bc",
-             [](const hey::llvm_multi_state &s) {
-                 py::list ret;
+        .def_property_readonly("ir", &hey::llvm_multi_state::get_ir,
+                               docstrings::llvm_multi_state_ir().c_str())
+        .def_property_readonly(
+            "bc",
+            [](const hey::llvm_multi_state &s) {
+                py::list ret;
 
-                 for (const auto &cur_bc : s.get_bc()) {
-                     ret.append(py::bytes(cur_bc));
-                 }
+                for (const auto &cur_bc : s.get_bc()) {
+                    ret.append(py::bytes(cur_bc));
+                }
 
-                 return ret;
-             })
-        .def("get_object_code",
-             [](const hey::llvm_multi_state &s) {
-                 py::list ret;
+                return ret;
+            },
+            docstrings::llvm_multi_state_bc().c_str())
+        .def_property_readonly(
+            "object_code",
+            [](const hey::llvm_multi_state &s) {
+                py::list ret;
 
-                 for (const auto &cur_ob : s.get_object_code()) {
-                     ret.append(py::bytes(cur_ob));
-                 }
+                for (const auto &cur_ob : s.get_object_code()) {
+                    ret.append(py::bytes(cur_ob));
+                }
 
-                 return ret;
-             })
-        .def_property_readonly("opt_level", &hey::llvm_multi_state::get_opt_level)
-        .def_property_readonly("fast_math", &hey::llvm_multi_state::fast_math)
-        .def_property_readonly("force_avx512", &hey::llvm_multi_state::force_avx512)
-        .def_property_readonly("slp_vectorize", &hey::llvm_multi_state::get_slp_vectorize)
-        .def_property_readonly("parjit", &hey::llvm_multi_state::get_parjit)
-        .def_property_readonly("code_model", &hey::llvm_multi_state::get_code_model)
+                return ret;
+            },
+            docstrings::llvm_multi_state_object_code().c_str())
+        .def_property_readonly("opt_level", &hey::llvm_multi_state::get_opt_level,
+                               docstrings::llvm_state_opt_level().c_str())
+        .def_property_readonly("fast_math", &hey::llvm_multi_state::fast_math,
+                               docstrings::llvm_state_fast_math().c_str())
+        .def_property_readonly("force_avx512", &hey::llvm_multi_state::force_avx512,
+                               docstrings::llvm_state_force_avx512().c_str())
+        .def_property_readonly("slp_vectorize", &hey::llvm_multi_state::get_slp_vectorize,
+                               docstrings::llvm_state_slp_vectorize().c_str())
+        .def_property_readonly("parjit", &hey::llvm_multi_state::get_parjit,
+                               docstrings::llvm_multi_state_parjit().c_str())
+        .def_property_readonly("code_model", &hey::llvm_multi_state::get_code_model,
+                               docstrings::llvm_state_code_model().c_str())
         // Repr.
         .def("__repr__",
              [](const hey::llvm_multi_state &s) {
