@@ -18,42 +18,42 @@ class diskcache_test_case(_ut.TestCase):
         import numpy as np
 
         # Save original state.
-        orig_path = llvm_state.diskcache_path
-        orig_enabled = llvm_state.diskcache_enabled
+        orig_path = llvm_state.get_diskcache_path()
+        orig_enabled = llvm_state.get_diskcache_enabled()
 
         try:
             with tempfile.TemporaryDirectory(prefix="heyoka_diskcache_test_") as tmp:
                 tmp_dir = pathlib.Path(tmp)
 
-                llvm_state.diskcache_path = tmp_dir
-                self.assertEqual(llvm_state.diskcache_path, tmp_dir)
+                llvm_state.set_diskcache_path(tmp_dir)
+                self.assertEqual(llvm_state.get_diskcache_path(), tmp_dir)
 
-                llvm_state.diskcache_enabled = True
-                self.assertTrue(llvm_state.diskcache_enabled)
+                llvm_state.set_diskcache_enabled(True)
+                self.assertTrue(llvm_state.get_diskcache_enabled())
 
                 # Fresh cache should be empty.
-                self.assertEqual(llvm_state.diskcache_size, 0)
+                self.assertEqual(llvm_state.get_diskcache_size(), 0)
 
                 # Default limit should be positive.
-                orig_limit = llvm_state.diskcache_limit
+                orig_limit = llvm_state.get_diskcache_limit()
                 self.assertGreater(orig_limit, 0)
 
                 # Set and restore limit.
-                llvm_state.diskcache_limit = 1000000
-                self.assertEqual(llvm_state.diskcache_limit, 1000000)
-                llvm_state.diskcache_limit = orig_limit
+                llvm_state.set_diskcache_limit(1000000)
+                self.assertEqual(llvm_state.get_diskcache_limit(), 1000000)
+                llvm_state.set_diskcache_limit(orig_limit)
 
                 # Compile something - should populate disk cache.
                 llvm_state.clear_memcache()
                 x, y = make_vars("x", "y")
                 _cf = cfunc([x + y], [x, y])
-                self.assertGreater(llvm_state.diskcache_size, 0)
-                disk_size = llvm_state.diskcache_size
+                self.assertGreater(llvm_state.get_diskcache_size(), 0)
+                disk_size = llvm_state.get_diskcache_size()
 
                 # Clear memcache, recompile - should hit disk cache.
                 llvm_state.clear_memcache()
                 cf2 = cfunc([x + y], [x, y])
-                self.assertEqual(llvm_state.diskcache_size, disk_size)
+                self.assertEqual(llvm_state.get_diskcache_size(), disk_size)
 
                 # Verify correctness.
                 out = np.zeros(1)
@@ -62,21 +62,21 @@ class diskcache_test_case(_ut.TestCase):
 
                 # Clear disk cache.
                 llvm_state.clear_diskcache()
-                self.assertEqual(llvm_state.diskcache_size, 0)
+                self.assertEqual(llvm_state.get_diskcache_size(), 0)
 
                 # Disable disk cache.
-                llvm_state.diskcache_enabled = False
-                self.assertFalse(llvm_state.diskcache_enabled)
+                llvm_state.set_diskcache_enabled(False)
+                self.assertFalse(llvm_state.get_diskcache_enabled())
                 llvm_state.clear_memcache()
                 _cf3 = cfunc([x * y], [x, y])
-                self.assertEqual(llvm_state.diskcache_size, 0)
+                self.assertEqual(llvm_state.get_diskcache_size(), 0)
 
                 # NOTE: restore the original state before leaving the 'with' block, so that the SQLite connection
                 # is closed before TemporaryDirectory cleanup attempts to delete the files (would fail on Windows).
-                llvm_state.diskcache_path = orig_path
-                llvm_state.diskcache_enabled = orig_enabled
+                llvm_state.set_diskcache_path(orig_path)
+                llvm_state.set_diskcache_enabled(orig_enabled)
 
         finally:
             # Safety net: ensure restore happens even if an exception was thrown before the restore above.
-            llvm_state.diskcache_path = orig_path
-            llvm_state.diskcache_enabled = orig_enabled
+            llvm_state.set_diskcache_path(orig_path)
+            llvm_state.set_diskcache_enabled(orig_enabled)

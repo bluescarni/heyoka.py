@@ -189,15 +189,21 @@ PYBIND11_MODULE(core, m, pybind11::mod_gil_not_used())
         .finalize();
 
     // LLVM state.
-    py::class_<hey::llvm_state>(m, "llvm_state", py::dynamic_attr{})
-        .def("get_ir", &hey::llvm_state::get_ir)
-        .def("get_bc", [](const hey::llvm_state &s) { return py::bytes(s.get_bc()); })
-        .def("get_object_code", [](const hey::llvm_state &s) { return py::bytes(s.get_object_code()); })
-        .def_property_readonly("opt_level", &hey::llvm_state::get_opt_level)
-        .def_property_readonly("fast_math", [](const hey::llvm_state &s) { return s.fast_math(); })
-        .def_property_readonly("force_avx512", [](const hey::llvm_state &s) { return s.force_avx512(); })
-        .def_property_readonly("slp_vectorize", &hey::llvm_state::get_slp_vectorize)
-        .def_property_readonly("code_model", &hey::llvm_state::get_code_model)
+    py::class_<hey::llvm_state>(m, "llvm_state", py::dynamic_attr{}, docstrings::llvm_state().c_str())
+        .def_property_readonly("ir", &hey::llvm_state::get_ir, docstrings::llvm_state_ir().c_str())
+        .def_property_readonly(
+            "bc", [](const hey::llvm_state &s) { return py::bytes(s.get_bc()); }, docstrings::llvm_state_bc().c_str())
+        .def_property_readonly(
+            "object_code", [](const hey::llvm_state &s) { return py::bytes(s.get_object_code()); },
+            docstrings::llvm_state_object_code().c_str())
+        .def_property_readonly("opt_level", &hey::llvm_state::get_opt_level, docstrings::llvm_state_opt_level().c_str())
+        .def_property_readonly("fast_math", &hey::llvm_state::fast_math, docstrings::llvm_state_fast_math().c_str())
+        .def_property_readonly("force_avx512", &hey::llvm_state::force_avx512,
+                               docstrings::llvm_state_force_avx512().c_str())
+        .def_property_readonly("slp_vectorize", &hey::llvm_state::get_slp_vectorize,
+                               docstrings::llvm_state_slp_vectorize().c_str())
+        .def_property_readonly("code_model", &hey::llvm_state::get_code_model,
+                               docstrings::llvm_state_code_model().c_str())
         // Repr.
         .def("__repr__",
              [](const hey::llvm_state &s) {
@@ -212,30 +218,34 @@ PYBIND11_MODULE(core, m, pybind11::mod_gil_not_used())
         .def(py::pickle(&heypy::pickle_getstate_wrapper<hey::llvm_state>,
                         &heypy::pickle_setstate_wrapper<hey::llvm_state>))
         // In-memory cache management.
-        .def_property_readonly_static("memcache_size",
-                                      [](const py::object &) { return hey::llvm_state::get_memcache_size(); })
-        .def_property_static(
-            "memcache_limit", [](const py::object &) { return hey::llvm_state::get_memcache_limit(); },
-            [](const py::object &, std::size_t limit) { hey::llvm_state::set_memcache_limit(limit); })
-        .def_static("clear_memcache", &hey::llvm_state::clear_memcache)
+        .def_static("get_memcache_size", &hey::llvm_state::get_memcache_size,
+                     docstrings::llvm_state_get_memcache_size().c_str())
+        .def_static("get_memcache_limit", &hey::llvm_state::get_memcache_limit,
+                     docstrings::llvm_state_get_memcache_limit().c_str())
+        .def_static("set_memcache_limit", &hey::llvm_state::set_memcache_limit,
+                     docstrings::llvm_state_set_memcache_limit().c_str())
+        .def_static("clear_memcache", &hey::llvm_state::clear_memcache,
+                     docstrings::llvm_state_clear_memcache().c_str())
         // On-disk cache management.
-        .def_property_static(
-            "diskcache_path", [](const py::object &) { return hey::llvm_state::get_diskcache_path(); },
-            [](const py::object &, std::filesystem::path path) {
-                hey::llvm_state::set_diskcache_path(std::move(path));
-            })
-        .def_property_static(
-            "diskcache_enabled", [](const py::object &) { return hey::llvm_state::get_diskcache_enabled(); },
-            [](const py::object &, const bool flag) { hey::llvm_state::set_diskcache_enabled(flag); })
-        .def_property_static(
-            "diskcache_limit", [](const py::object &) { return hey::llvm_state::get_diskcache_limit(); },
-            [](const py::object &, const std::int64_t value) { hey::llvm_state::set_diskcache_limit(value); })
-        .def_property_readonly_static("diskcache_size",
-                                      [](const py::object &) { return hey::llvm_state::get_diskcache_size(); })
-        .def_static("clear_diskcache", &hey::llvm_state::clear_diskcache);
+        .def_static("get_diskcache_path", &hey::llvm_state::get_diskcache_path,
+                     docstrings::llvm_state_get_diskcache_path().c_str())
+        .def_static("set_diskcache_path", &hey::llvm_state::set_diskcache_path,
+                     docstrings::llvm_state_set_diskcache_path().c_str())
+        .def_static("get_diskcache_enabled", &hey::llvm_state::get_diskcache_enabled,
+                     docstrings::llvm_state_get_diskcache_enabled().c_str())
+        .def_static("set_diskcache_enabled", &hey::llvm_state::set_diskcache_enabled,
+                     docstrings::llvm_state_set_diskcache_enabled().c_str())
+        .def_static("get_diskcache_limit", &hey::llvm_state::get_diskcache_limit,
+                     docstrings::llvm_state_get_diskcache_limit().c_str())
+        .def_static("set_diskcache_limit", &hey::llvm_state::set_diskcache_limit,
+                     docstrings::llvm_state_set_diskcache_limit().c_str())
+        .def_static("get_diskcache_size", &hey::llvm_state::get_diskcache_size,
+                     docstrings::llvm_state_get_diskcache_size().c_str())
+        .def_static("clear_diskcache", &hey::llvm_state::clear_diskcache,
+                     docstrings::llvm_state_clear_diskcache().c_str());
 
     // LLVM multi state.
-    py::class_<hey::llvm_multi_state>(m, "llvm_multi_state", py::dynamic_attr{})
+    py::class_<hey::llvm_multi_state>(m, "llvm_multi_state", py::dynamic_attr{}, docstrings::llvm_multi_state().c_str())
         .def("get_ir", &hey::llvm_multi_state::get_ir)
         .def("get_bc",
              [](const hey::llvm_multi_state &s) {
@@ -258,8 +268,8 @@ PYBIND11_MODULE(core, m, pybind11::mod_gil_not_used())
                  return ret;
              })
         .def_property_readonly("opt_level", &hey::llvm_multi_state::get_opt_level)
-        .def_property_readonly("fast_math", [](const hey::llvm_multi_state &s) { return s.fast_math(); })
-        .def_property_readonly("force_avx512", [](const hey::llvm_multi_state &s) { return s.force_avx512(); })
+        .def_property_readonly("fast_math", &hey::llvm_multi_state::fast_math)
+        .def_property_readonly("force_avx512", &hey::llvm_multi_state::force_avx512)
         .def_property_readonly("slp_vectorize", &hey::llvm_multi_state::get_slp_vectorize)
         .def_property_readonly("parjit", &hey::llvm_multi_state::get_parjit)
         .def_property_readonly("code_model", &hey::llvm_multi_state::get_code_model)

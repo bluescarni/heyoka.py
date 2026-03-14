@@ -15,16 +15,16 @@ class memcache_test_case(_ut.TestCase):
         from . import llvm_state
 
         # NOTE: make sure to restore the original limit before exiting.
-        orig_limit = llvm_state.memcache_limit
+        orig_limit = llvm_state.get_memcache_limit()
 
         try:
-            self.assertTrue(llvm_state.memcache_limit != 0)
-            self.assertTrue(llvm_state.memcache_size >= 0)
+            self.assertTrue(llvm_state.get_memcache_limit() != 0)
+            self.assertTrue(llvm_state.get_memcache_size() >= 0)
             llvm_state.clear_memcache()
-            self.assertTrue(llvm_state.memcache_size == 0)
-            llvm_state.memcache_limit = 1024 * 1024 * 1024
-            self.assertTrue(llvm_state.memcache_limit == 1024 * 1024 * 1024)
+            self.assertTrue(llvm_state.get_memcache_size() == 0)
+            llvm_state.set_memcache_limit(1024 * 1024 * 1024)
+            self.assertTrue(llvm_state.get_memcache_limit() == 1024 * 1024 * 1024)
 
         finally:
-            llvm_state.memcache_limit = orig_limit
-            self.assertTrue(llvm_state.memcache_limit == orig_limit)
+            llvm_state.set_memcache_limit(orig_limit)
+            self.assertTrue(llvm_state.get_memcache_limit() == orig_limit)

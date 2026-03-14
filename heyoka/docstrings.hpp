@@ -152,6 +152,31 @@ std::string func_args_init();
 std::string func_args_args();
 std::string func_args_is_shared();
 
+// llvm_state and llvm_multi_state.
+std::string llvm_state();
+std::string llvm_state_ir();
+std::string llvm_state_bc();
+std::string llvm_state_object_code();
+std::string llvm_state_opt_level();
+std::string llvm_state_fast_math();
+std::string llvm_state_force_avx512();
+std::string llvm_state_slp_vectorize();
+std::string llvm_state_code_model();
+std::string llvm_state_get_memcache_size();
+std::string llvm_state_get_memcache_limit();
+std::string llvm_state_set_memcache_limit();
+std::string llvm_state_clear_memcache();
+std::string llvm_state_get_diskcache_path();
+std::string llvm_state_set_diskcache_path();
+std::string llvm_state_get_diskcache_enabled();
+std::string llvm_state_set_diskcache_enabled();
+std::string llvm_state_get_diskcache_limit();
+std::string llvm_state_set_diskcache_limit();
+std::string llvm_state_get_diskcache_size();
+std::string llvm_state_clear_diskcache();
+
+std::string llvm_multi_state();
+
 } // namespace heyoka_py::docstrings
 
 #endif
