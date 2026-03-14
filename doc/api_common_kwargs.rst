@@ -43,6 +43,10 @@ These are keyword arguments influencing just-in-time (JIT) compilation via LLVM.
 - ``fast_math``: a boolean flag indicating whether or not to enable optimisations
   which may improve floating-point performance at the expense of accuracy and/or strict conformance
   to the IEEE 754 standard. The default value is ``False``.
+- ``force_avx512``: a boolean flag indicating whether or not to force the use of `AVX-512 <https://en.wikipedia.org/wiki/AVX-512>`__
+  registers on x86 processors. Currently heyoka.py's default is to *disable* the use of AVX-512 registers on all Intel processors
+  ant to *enable* it on AMD Zen 4 and later processors. This option overrides the default heuristic, forcing the use of AVX-512
+  registers. On processors without AVX-512 instructions, this flag has no effect.
 - ``code_model``: an enumerator of type :py:class:`code_model` representing the code model
   to be used for JIT compilation. The default code model is :py:attr:`~code_model.small`.
 
