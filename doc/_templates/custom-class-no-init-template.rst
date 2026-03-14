@@ -1,7 +1,7 @@
 {# Template for classes without a user-facing constructor (e.g., llvm_state). #}
 {# Extends the base template but excludes __init__ from both :special-members: #}
 {# and the methods autosummary table. The methods block below duplicates the   #}
-{# logic from custom-class-base-template.rst with an added __init__ filter —  #}
+{# logic from custom-class-base-template.rst with an added __init__ filter -  #}
 {# keep it in sync if the base template's methods block changes.               #}
 {% extends "custom-class-base-template.rst" %}
 {% block methods %}
