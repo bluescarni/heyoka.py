@@ -6,17 +6,32 @@ Changelog
 7.10.0 (unreleased)
 -------------------
 
-Fix
+New
 ~~~
 
-- Fix excessively long compile times for large variational integrators (e.g., neural ODEs).
-  The slowness was due to the JIT-compiled code for Taylor map evaluation not employing
-  compact mode
+- Add an on-disk cache for JIT-compiled data
+  (`#266 <https://github.com/bluescarni/heyoka.py/pull/266>`__).
+
+Changes
+~~~~~~~
+
+- Deep-copying Taylor integrators now results in shallow copies of the internal
+  JIT-compiled code
   (`#264 <https://github.com/bluescarni/heyoka.py/pull/264>`__).
 - Improve symbol isolation by ensuring that the heyoka C++ library and its
   dependencies are never opened with RTLD_GLOBAL when they are added to the JIT
   runtimes. This should help avoiding potential symbol collisions with other Python
   modules
+  (`#264 <https://github.com/bluescarni/heyoka.py/pull/264>`__).
+
+Fix
+~~~
+
+- Make the memory utilisation accounting more accurate for the in-memory cache
+  (`#264 <https://github.com/bluescarni/heyoka.py/pull/264>`__).
+- Fix excessively long compile times for large variational integrators (e.g., neural ODEs).
+  The slowness was due to the JIT-compiled code for Taylor map evaluation not employing
+  compact mode
   (`#264 <https://github.com/bluescarni/heyoka.py/pull/264>`__).
 - Fix build failure with pybind11 3.0.2
   (`#264 <https://github.com/bluescarni/heyoka.py/pull/264>`__).

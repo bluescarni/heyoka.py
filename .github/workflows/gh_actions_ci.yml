@@ -123,7 +123,7 @@ jobs:
       - name: Build
         shell: pwsh
         run: |
-          conda install -y python=3.12 git pybind11 numpy>=2 cmake llvmdev tbb-devel tbb astroquery libboost-devel fmt skyfield spdlog sleef sympy cloudpickle zlib libzlib 'mppp=2.*' numba
+          conda install -y python=3.12 git pybind11 numpy>=2 cmake llvmdev sqlite tbb-devel tbb astroquery libboost-devel fmt skyfield spdlog sleef sympy cloudpickle zlib libzlib 'mppp=2.*' numba
           git clone --depth 1 https://github.com/bluescarni/heyoka.git heyoka_cpp
           cd heyoka_cpp
           mkdir build
@@ -139,12 +139,12 @@ jobs:
           cd ..
           cd tools
           python ci_test_runner.py --with-numba
-  binder_cache:
-    runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main'
-    steps:
-    - name: cache binder build on mybinder.org
-      uses: jupyterhub/repo2docker-action@master
-      with:
-        NO_PUSH: true
-        MYBINDERORG_TAG: ${{ github.event.ref }} # This builds the container on mybinder.org with the branch that was pushed on.
+  # binder_cache:
+  #   runs-on: ubuntu-latest
+  #   if: github.ref == 'refs/heads/main'
+  #   steps:
+  #   - name: cache binder build on mybinder.org
+  #     uses: jupyterhub/repo2docker-action@master
+  #     with:
+  #       NO_PUSH: true
+  #       MYBINDERORG_TAG: ${{ github.event.ref }} # This builds the container on mybinder.org with the branch that was pushed on.

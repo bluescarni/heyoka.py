@@ -175,7 +175,7 @@ std::string dtens_order()
 {
     return R"(The maximum differentiation order.
 
-:rtype: int
+:type: int
 
 )";
 }
@@ -184,7 +184,7 @@ std::string dtens_nouts()
 {
     return R"(The number of function components.
 
-:rtype: int
+:type: int
 
 )";
 }
@@ -193,7 +193,7 @@ std::string dtens_nargs()
 {
     return R"(The number of arguments with respect to which the derivatives are computed.
 
-:rtype: int
+:type: int
 
 )";
 }
@@ -220,7 +220,7 @@ std::string dtens_args()
 {
     return R"(The list of arguments with respect to which the derivatives are computed.
 
-:rtype: list[expression]
+:type: list[expression]
 
 )";
 }
@@ -229,7 +229,7 @@ std::string dtens_gradient()
 {
     return R"(The gradient of the function.
 
-:rtype: list[expression]
+:type: list[expression]
 
 :raises ValueError: if the function has not exactly 1 component or if the maximum derivative order is zero.
 
@@ -240,7 +240,7 @@ std::string dtens_jacobian()
 {
     return R"(The Jacobian of the function as a 2D array.
 
-:rtype: numpy.ndarray[expression]
+:type: numpy.ndarray[expression]
 
 :raises ValueError: if the function has zero components or if the maximum derivative order is zero.
 
@@ -649,7 +649,7 @@ std::string var_ode_sys_sys()
 {
     return R"(The full system of equations (including partials).
 
-:rtype: list[tuple[expression, expression]]
+:type: list[tuple[expression, expression]]
 
 )";
 }
@@ -658,7 +658,7 @@ std::string var_ode_sys_vargs()
 {
     return R"(The list of variational arguments.
 
-:rtype: list[expression]
+:type: list[expression]
 
 )";
 }
@@ -667,7 +667,7 @@ std::string var_ode_sys_n_orig_sv()
 {
     return R"(The number of original state variables.
 
-:rtype: int
+:type: int
 
 )";
 }
@@ -676,7 +676,7 @@ std::string var_ode_sys_order()
 {
     return R"(The differentitation order.
 
-:rtype: int
+:type: int
 
 )";
 }
@@ -958,7 +958,7 @@ two fields of type :py:class:`{}`, the first one called ``jd`` and representing 
 the second one called ``frac`` representing a fractional correction to ``jd`` (so that the full
 Julian date is ``jd + frac``).
 
-:rtype: numpy.dtype
+:type: numpy.dtype
 
 )",
                        tp);
@@ -968,7 +968,7 @@ std::string sgp4_propagator_nsats()
 {
     return R"(The total number of satellites.
 
-:rtype: int
+:type: int
 
 )";
 }
@@ -977,7 +977,7 @@ std::string sgp4_propagator_nouts()
 {
     return R"(The total number of outputs, including the derivatives.
 
-:rtype: int
+:type: int
 
 )";
 }
@@ -990,7 +990,7 @@ std::string sgp4_propagator_diff_args()
 
    This property is available only if derivatives were requested on construction.
 
-:rtype: list[expression]
+:type: list[expression]
 
 )";
 }
@@ -999,7 +999,7 @@ std::string sgp4_propagator_diff_order()
 {
     return R"(The differentiation order.
 
-:rtype: int
+:type: int
 
 )";
 }
@@ -1023,7 +1023,7 @@ The rows contain the following quantities:
 7. the reference epoch (as a Julian date),
 8. a fractional correction to the epoch (in Julian days).
 
-:rtype: numpy.ndarray[{}]
+:type: numpy.ndarray[{}]
 
 )",
                        suffix, tp);
@@ -1277,7 +1277,7 @@ std::string eop_data_table()
 This is a :ref:`structured NumPy array<numpy:defining-structured-types>` containing the raw EOP data.
 The dtype of the returned array is :py:attr:`~heyoka.eop_data_row`.
 
-:rtype: numpy.ndarray
+:type: numpy.ndarray
 
 )";
 }
@@ -1291,7 +1291,7 @@ the same dataset.
 
 The timestamp is inferred from the timestamp of the files on the remote data servers.
 
-:rtype: str
+:type: str
 
 )";
 }
@@ -1302,7 +1302,7 @@ std::string eop_data_identifier()
 
 A string uniquely identifying the source of EOP data.
 
-:rtype: str
+:type: str
 
 )";
 }
@@ -2032,7 +2032,7 @@ std::string sw_data_table()
 This is a :ref:`structured NumPy array<numpy:defining-structured-types>` containing the raw SW data.
 The dtype of the returned array is :py:attr:`~heyoka.sw_data_row`.
 
-:rtype: numpy.ndarray
+:type: numpy.ndarray
 
 )";
 }
@@ -2046,7 +2046,7 @@ the same dataset.
 
 The timestamp is inferred from the timestamp of the files on the remote data servers.
 
-:rtype: str
+:type: str
 
 )";
 }
@@ -2057,7 +2057,7 @@ std::string sw_data_identifier()
 
 A string uniquely identifying the source of SW data.
 
-:rtype: str
+:type: str
 
 )";
 }
@@ -2211,7 +2211,7 @@ std::string func_args_args()
 {
     return R"(The list of function arguments.
 
-:rtype: list[expression]
+:type: list[expression]
 
 )";
 }
@@ -2222,7 +2222,7 @@ std::string func_args_is_shared()
 
 The flag is ``True`` if reference semantics is being used to represent the arguments, ``False`` otherwise.
 
-:rtype: bool
+:type: bool
 
 )";
 }

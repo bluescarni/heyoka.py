@@ -1382,8 +1382,8 @@ class llvm_state_test_case(_ut.TestCase):
 
         self.assertEqual(id(ls.bar), id(copy(ls).bar))
         self.assertNotEqual(id(ls.bar), id(deepcopy(ls).bar))
-        self.assertEqual(ls.get_ir(), copy(ls).get_ir())
-        self.assertEqual(ls.get_ir(), deepcopy(ls).get_ir())
+        self.assertEqual(ls.ir, copy(ls).ir)
+        self.assertEqual(ls.ir, deepcopy(ls).ir)
 
     def test_s11n(self):
         from . import make_vars, sin, taylor_adaptive
@@ -1402,7 +1402,7 @@ class llvm_state_test_case(_ut.TestCase):
         ls = ta.llvm_state
         self.assertEqual(getrefcount(ta), rc + 1)
 
-        self.assertEqual(ls.get_ir(), pickle.loads(pickle.dumps(ls)).get_ir())
+        self.assertEqual(ls.ir, pickle.loads(pickle.dumps(ls)).ir)
 
         # Test dynamic attributes.
         ls.foo = "hello world"
@@ -1482,7 +1482,7 @@ class c_output_test_case(_ut.TestCase):
 
             self.assertFalse("forward" in repr(c_out))
 
-            self.assertFalse(c_out.llvm_state.get_ir() == "")
+            self.assertFalse(c_out.llvm_state.ir == "")
 
             # Try copies as well.
             c_out = copy(c_out)
@@ -1498,7 +1498,7 @@ class c_output_test_case(_ut.TestCase):
 
             self.assertFalse("forward" in repr(c_out))
 
-            self.assertFalse(c_out.llvm_state.get_ir() == "")
+            self.assertFalse(c_out.llvm_state.ir == "")
 
             c_out = deepcopy(c_out)
 
@@ -1513,7 +1513,7 @@ class c_output_test_case(_ut.TestCase):
 
             self.assertFalse("forward" in repr(c_out))
 
-            self.assertFalse(c_out.llvm_state.get_ir() == "")
+            self.assertFalse(c_out.llvm_state.ir == "")
 
             # Pickling.
             c_out = loads(dumps(c_out))
@@ -1529,7 +1529,7 @@ class c_output_test_case(_ut.TestCase):
 
             self.assertFalse("forward" in repr(c_out))
 
-            self.assertFalse(c_out.llvm_state.get_ir() == "")
+            self.assertFalse(c_out.llvm_state.ir == "")
 
             ic = [
                 [fp_t(0), fp_t(0.01), fp_t(0.02), fp_t(0.03)],
@@ -1724,14 +1724,14 @@ class c_output_test_case(_ut.TestCase):
             # Repr.
             self.assertTrue("forward" in repr(c_out))
 
-            self.assertFalse(c_out.llvm_state.get_ir() == "")
+            self.assertFalse(c_out.llvm_state.ir == "")
 
             # Try copies as well.
             c_out = copy(c_out)
 
             self.assertEqual(c_out.tcs.shape, (c_out.n_steps, 2, ta.order + 1, 4))
 
-            self.assertFalse(c_out.llvm_state.get_ir() == "")
+            self.assertFalse(c_out.llvm_state.ir == "")
 
             c_out = deepcopy(c_out)
 
@@ -1740,7 +1740,7 @@ class c_output_test_case(_ut.TestCase):
             # Pickling.
             c_out = loads(dumps(c_out))
 
-            self.assertFalse(c_out.llvm_state.get_ir() == "")
+            self.assertFalse(c_out.llvm_state.ir == "")
 
             self.assertEqual(c_out.tcs.shape, (c_out.n_steps, 2, ta.order + 1, 4))
 
@@ -1764,7 +1764,7 @@ class c_output_test_case(_ut.TestCase):
             c_out.foo = []
             c_out = loads(dumps(c_out))
 
-            self.assertFalse(c_out.llvm_state.get_ir() == "")
+            self.assertFalse(c_out.llvm_state.ir == "")
 
             self.assertEqual(c_out.tcs.shape, (c_out.n_steps, 2, ta.order + 1, 4))
 
@@ -1848,7 +1848,7 @@ class c_output_test_case(_ut.TestCase):
 
             self.assertFalse("forward" in repr(c_out))
 
-            self.assertFalse(c_out.llvm_state.get_ir() == "")
+            self.assertFalse(c_out.llvm_state.ir == "")
 
             # Try copies as well.
             c_out = copy(c_out)
@@ -1862,7 +1862,7 @@ class c_output_test_case(_ut.TestCase):
 
             self.assertFalse("forward" in repr(c_out))
 
-            self.assertFalse(c_out.llvm_state.get_ir() == "")
+            self.assertFalse(c_out.llvm_state.ir == "")
 
             c_out = deepcopy(c_out)
 
@@ -1875,7 +1875,7 @@ class c_output_test_case(_ut.TestCase):
 
             self.assertFalse("forward" in repr(c_out))
 
-            self.assertFalse(c_out.llvm_state.get_ir() == "")
+            self.assertFalse(c_out.llvm_state.ir == "")
 
             # Pickling.
             c_out = loads(dumps(c_out))
@@ -1889,7 +1889,7 @@ class c_output_test_case(_ut.TestCase):
 
             self.assertFalse("forward" in repr(c_out))
 
-            self.assertFalse(c_out.llvm_state.get_ir() == "")
+            self.assertFalse(c_out.llvm_state.ir == "")
 
             ic = [fp_t(0), fp_t(0.25)]
 
@@ -1975,7 +1975,7 @@ class c_output_test_case(_ut.TestCase):
 
             self.assertTrue("forward" in repr(c_out))
 
-            self.assertFalse(c_out.llvm_state.get_ir() == "")
+            self.assertFalse(c_out.llvm_state.ir == "")
 
             # Try copies as well.
             c_out = copy(c_out)
@@ -1985,7 +1985,7 @@ class c_output_test_case(_ut.TestCase):
             with self.assertRaises(ValueError) as cm:
                 c_out.tcs[0, 0, 0] = 0.5
 
-            self.assertFalse(c_out.llvm_state.get_ir() == "")
+            self.assertFalse(c_out.llvm_state.ir == "")
 
             c_out = deepcopy(c_out)
 
@@ -2013,7 +2013,7 @@ class c_output_test_case(_ut.TestCase):
             # Pickling.
             c_out = loads(dumps(c_out))
 
-            self.assertFalse(c_out.llvm_state.get_ir() == "")
+            self.assertFalse(c_out.llvm_state.ir == "")
 
             self.assertEqual(c_out.tcs.shape, (nsteps, 2, ta.order + 1))
             self.assertTrue(np.all(np.isfinite(c_out.tcs)))
@@ -2024,7 +2024,7 @@ class c_output_test_case(_ut.TestCase):
             c_out.foo = []
             c_out = loads(dumps(c_out))
 
-            self.assertFalse(c_out.llvm_state.get_ir() == "")
+            self.assertFalse(c_out.llvm_state.ir == "")
 
             self.assertEqual(c_out.tcs.shape, (nsteps, 2, ta.order + 1))
             self.assertTrue(np.all(np.isfinite(c_out.tcs)))
@@ -2090,6 +2090,7 @@ def run_test_suite():
         _test_batch_integrator,
         _test_ensemble,
         _test_memcache,
+        _test_diskcache,
         _test_celmec,
         _test_sympy,
         _test_vsop2013,
@@ -2148,6 +2149,7 @@ def run_test_suite():
     suite.addTest(tl.loadTestsFromTestCase(_test_celmec.kepDE_test_case))
     suite.addTest(tl.loadTestsFromTestCase(_test_sympy.sympy_test_case))
     suite.addTest(tl.loadTestsFromTestCase(_test_memcache.memcache_test_case))
+    suite.addTest(tl.loadTestsFromTestCase(_test_diskcache.diskcache_test_case))
     suite.addTest(tl.loadTestsFromTestCase(_test_eop_data.eop_data_test_case))
     suite.addTest(tl.loadTestsFromTestCase(_test_sw_data.sw_data_test_case))
 

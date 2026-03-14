@@ -38,20 +38,20 @@ class cfunc_test_case(_ut.TestCase):
         self.assertEqual(cf.vars, [x, y, z])
         self.assertEqual(cf.fn, [y * (x + z)])
         self.assertEqual(len(cf.dc), 6)
-        self.assertTrue(all(len(_.get_ir()) != 0 for _ in cf.llvm_states))
+        self.assertTrue(all(len(_.ir) != 0 for _ in cf.llvm_states))
         self.assertEqual(deepcopy(cf).vars, [x, y, z])
         self.assertEqual(deepcopy(cf).fn, [y * (x + z)])
         self.assertEqual(deepcopy(cf).dc, cf.dc)
         self.assertEqual(
-            [_.get_ir() for _ in deepcopy(cf).llvm_states],
-            [_.get_ir() for _ in cf.llvm_states],
+            [_.ir for _ in deepcopy(cf).llvm_states],
+            [_.ir for _ in cf.llvm_states],
         )
         self.assertEqual(pickle.loads(pickle.dumps(cf)).vars, [x, y, z])
         self.assertEqual(pickle.loads(pickle.dumps(cf)).fn, [y * (x + z)])
         self.assertEqual(pickle.loads(pickle.dumps(cf)).dc, cf.dc)
         self.assertEqual(
-            [_.get_ir() for _ in pickle.loads(pickle.dumps(cf)).llvm_states],
-            [_.get_ir() for _ in cf.llvm_states],
+            [_.ir for _ in pickle.loads(pickle.dumps(cf)).llvm_states],
+            [_.ir for _ in cf.llvm_states],
         )
 
         # Construct with custom LLVM settings too.
