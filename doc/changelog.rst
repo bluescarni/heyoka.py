@@ -9,12 +9,16 @@ Changelog
 New
 ~~~
 
+- heyoka.py can now take advantage of combined ``sincos()`` functions
+  for SIMD vectors and extended/multiple precision datatypes.
 - Add an on-disk cache for JIT-compiled data
   (`#266 <https://github.com/bluescarni/heyoka.py/pull/266>`__).
 
 Changes
 ~~~~~~~
 
+- The ``fast_math`` compilation flag does not set the LLVM ``nnan`` and ``ninf``
+  flags any more.
 - Deep-copying Taylor integrators now results in shallow copies of the internal
   JIT-compiled code
   (`#264 <https://github.com/bluescarni/heyoka.py/pull/264>`__).
