@@ -863,3 +863,74 @@ class model_test_case(_ut.TestCase):
         )
 
         self.assertTrue(np.all(np.abs((output - state_orekit) / state_orekit) < 1e-12))
+
+    def test_eo_dynamics(self):
+        # Tests for the Python exposition of model.eo_dynamics. These focus on the wiring of the kwargs
+        # from Python into C++ (type handling, None-as-missing semantics, exception translation, etc.).
+        # The physical/numerical correctness of the dynamics is exercised by the C++ tests.
+        from . import (
+            model,
+            expression as ex,
+            make_vars,
+            par,
+            cfunc,
+            eop_data,
+            sw_data,
+        )
+        import numpy as np
+
+        # Basic smoke test: default kwargs produce 6 equations.
+        dyn = model.eo_dynamics()
+        self.assertEqual(len(dyn), 6)
+
+        # Integer-typed kwargs enforce noconvert on the C++ side.
+        with self.assertRaises(TypeError):
+            model.eo_dynamics(max_geo_degree=2.0)
+        with self.assertRaises(TypeError):
+            model.eo_dynamics(max_geo_order=2.0)
+
+        # The elp2000/vsop2013 pairing invariant is enforced in C++ (std::invalid_argument)
+        # and must be translated to a Python ValueError by pybind11.
+        with self.assertRaises(ValueError):
+            model.eo_dynamics(elp2000_thresh=1e-3)
+        with self.assertRaises(ValueError):
+            model.eo_dynamics(vsop2013_thresh=1e-3)
+
+        # Both thresholds together: OK.
+        dyn = model.eo_dynamics(elp2000_thresh=1e-3, vsop2013_thresh=1e-3)
+        self.assertEqual(len(dyn), 6)
+
+        # None-as-missing semantics: an explicit None kwarg must produce the same dynamics as
+        # omitting the kwarg entirely. Verified by cfunc-evaluating the RHS of all 6 equations
+        # at a LEO test state and checking exact equality.
+        x, y, z, vx, vy, vz = make_vars("x", "y", "z", "vx", "vy", "vz")
+        vars_ = [x, y, z, vx, vy, vz]
+        state = [6778.0, 100.0, -100.0, 1.0, 7.67, 0.5]
+
+        def eval_rhs(dyn_):
+            cf = cfunc([p[1] for p in dyn_], vars_)
+            return cf(inputs=state, time=0.0)
+
+        out_default = eval_rhs(model.eo_dynamics())
+
+        out_cb_none = eval_rhs(model.eo_dynamics(Cb=None))
+        self.assertTrue(np.all(out_default == out_cb_none))
+
+        out_pair_none = eval_rhs(
+            model.eo_dynamics(elp2000_thresh=None, vsop2013_thresh=None)
+        )
+        self.assertTrue(np.all(out_default == out_pair_none))
+
+        out_all_none = eval_rhs(
+            model.eo_dynamics(Cb=None, elp2000_thresh=None, vsop2013_thresh=None)
+        )
+        self.assertTrue(np.all(out_default == out_all_none))
+
+        # Cb accepts multiple alternatives of the vex_t variant: double, expression, parametric.
+        for cb in (0.02, ex(0.02), par[0]):
+            dyn = model.eo_dynamics(Cb=cb)
+            self.assertEqual(len(dyn), 6)
+
+        # Non-default eop_data / sw_data instances pass through.
+        dyn = model.eo_dynamics(eop_data=eop_data(), sw_data=sw_data())
+        self.assertEqual(len(dyn), 6)
