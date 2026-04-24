@@ -446,7 +446,7 @@ void expose_models(py::module_ &m)
                          / (hy::model::detail::a_earth * hy::model::detail::a_earth),
         "R_eq"_a = hy::model::detail::a_earth, docstrings::geo2cart().c_str());
 
-    // Thermospheric model NRLMSISE00
+    // Thermospheric model NRLMSISE-00.
     m.def(
         "_model_nrlmsise00_tn",
         [](const std::vector<hy::expression> &geodetic, const hy::expression &f107, const hy::expression &f107a,
@@ -456,7 +456,7 @@ void expose_models(py::module_ &m)
         },
         "geodetic"_a, "f107"_a, "f107a"_a, "ap"_a, "time_expr"_a, docstrings::nrlmsise00_tn().c_str());
 
-    // Thermospheric model JB08
+    // Thermospheric model JB08.
     m.def(
         "_model_jb08_tn",
         [](const std::vector<hy::expression> &geodetic, const hy::expression &f107, const hy::expression &f107a,
@@ -641,6 +641,32 @@ void expose_models(py::module_ &m)
     HEYOKA_PY_EXPOSE_MODEL_FRAME_RSW(state_from_rsw_inertial);
 
 #undef HEYOKA_PY_EXPOSE_MODEL_FRAME_RSW
+
+    // Expose eo_dynamics.
+    m.def(
+        "_model_eo_dynamics",
+        [](const std::uint32_t max_geo_degree, const std::uint32_t max_geo_order, const hy::eop_data &eop_data,
+           const hy::sw_data &sw_data, const double iau2006_thresh, const std::optional<vex_t> &Cb_,
+           const std::optional<double> &elp2000_thresh, const std::optional<double> &vsop2013_thresh) {
+            // NOTE: release the GIL during model construction.
+            const py::gil_scoped_release release;
+
+            // Construct the Cb argument.
+            std::optional<hy::expression> Cb;
+            if (Cb_) {
+                Cb.emplace(detail::ex_from_variant(*Cb_));
+            }
+
+            return hy::model::eo_dynamics(hy::kw::max_geo_degree = max_geo_degree,
+                                          hy::kw::max_geo_order = max_geo_order, hy::kw::eop_data = eop_data,
+                                          hy::kw::sw_data = sw_data, hy::kw::iau2006_thresh = iau2006_thresh,
+                                          hy::kw::Cb = std::move(Cb), hy::kw::elp2000_thresh = elp2000_thresh,
+                                          hy::kw::vsop2013_thresh = vsop2013_thresh);
+        },
+        py::kw_only(), "max_geo_degree"_a.noconvert() = 0u, "max_geo_order"_a.noconvert() = 0u,
+        "eop_data"_a = hy::eop_data{}, "sw_data"_a = hy::sw_data{},
+        "iau2006_thresh"_a = hy::model::detail::eo_dynamics_default_iau2006_thresh, "Cb"_a = py::none{},
+        "elp2000_thresh"_a = py::none{}, "vsop2013_thresh"_a = py::none{}, docstrings::eo_dynamics().c_str());
 }
 
 } // namespace heyoka_py

@@ -511,11 +511,11 @@ std::string nrlmsise00_tn()
 {
     return R"(nrlmsise00_tn(geodetic: typing.Iterable[expression], f107: expression, f107a: expression, ap: expression, time_expr: expression) -> expression
 
-Produces the expression of the thermospheric density as a function of geodetic coordinates and weather indices.
+Formulate the expression of the NRLMSISE-00 thermospheric density as a function of geodetic coordinates and weather indices.
 
 .. versionadded:: 4.0.0
 
-The expression is approximated by an artificial neural network (a thermoNET) trained over NRLMSISE00 data. 
+The expression is approximated by an artificial neural network (a thermoNET) trained over NRLMSISE-00 data.
 
 .. note::
 
@@ -535,7 +535,7 @@ must be three.
 :param ap: the average of the Ap indices on the day of *time_expr*.
 :param time_expr: number of fractional days passed since 1st of January.
 
-:returns: the thermospheric density in [kg / m^3] as predicted by the NRLMSISE00 thermoNET model.
+:returns: the thermospheric density in [kg / m^3] as predicted by the NRLMSISE-00 thermoNET model.
 
 :raises ValueError: if one or more input arguments are malformed, as explained above.
 
@@ -546,7 +546,7 @@ std::string jb08_tn()
 {
     return R"(jb08_tn(geodetic: typing.Iterable[expression], f107: expression, f107a: expression, s107: expression, s107a: expression, m107: expression, m107a: expression, y107: expression, y107a: expression, dDstdT: expression, time_expr: expression) -> expression
 
-Produces the expression of the thermospheric density as a function of geodetic coordinates and weather indices.
+Formulate the expression of the JB08 thermospheric density as a function of geodetic coordinates and weather indices.
 
 .. versionadded:: 4.0.0
 
@@ -733,7 +733,7 @@ std::string fixed_centres()
 {
     return R"(fixed_centres(Gconst: expression = 1., masses:  list[expression] = [], positions: typing.Iterable = numpy.empty((0, 3), dtype=float)) -> list[tuple[expression, expression]]
 
-Produces the expressions for the dynamics in a fixed-centres problem.
+Formulate the expressions for the dynamics in a fixed-centres problem.
 
 In the fixed-centres problem, a test particle moves in the Newtonian gravitational field generated
 by a number of massive particles whose positions are fixed in space. The test particle's Cartesian position and
@@ -761,7 +761,7 @@ std::string pendulum()
 {
     return R"(pendulum(gconst: expression = 1., length: expression = 1.) -> list[tuple[expression, expression]]
 
-Produces the expression for the dynamics of the simple pendulum.
+Formulate the expression for the dynamics of the simple pendulum.
 
 The gravitational constant is *gconst*, while the length of the pendulum is *length*.
 In the return value, the angle with respect to the downwards vertical is represented by
@@ -785,7 +785,7 @@ std::string sgp4()
 {
     return R"(sgp4(inputs: list[expression] | None = None) -> list[expression]
 
-Produces the expressions for the SGP4 propagator.
+Formulate the expressions for the SGP4 propagator.
 
 .. versionadded:: 5.1.0
 
