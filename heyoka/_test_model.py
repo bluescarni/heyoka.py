@@ -1,4 +1,4 @@
-# Copyright 2020-2025 Francesco Biscani (bluescarni@gmail.com), Dario Izzo (dario.izzo@gmail.com)
+# Copyright 2020-2026 Francesco Biscani (bluescarni@gmail.com), Dario Izzo (dario.izzo@gmail.com)
 #
 # This file is part of the heyoka.py library.
 #
@@ -961,7 +961,9 @@ class model_test_case(_ut.TestCase):
         # vex_t handling on the scalar args: mu and tm must each accept any of expression / float / par.
         for mu in (3.986e5, ex(3.986e5), par[0]):
             for tm in (600.0, ex(600.0), par[1]):
-                model.lagrange_prop(pos0=[7000.0, 0.0, 0.0], vel0=[0.0, 7.5, 0.0], mu=mu, tm=tm)
+                model.lagrange_prop(
+                    pos0=[7000.0, 0.0, 0.0], vel0=[0.0, 7.5, 0.0], mu=mu, tm=tm
+                )
 
         # vex_t handling on the iterable args: each element of pos0/vel0 must accept the same variant.
         x, y, z = ex("x"), ex("y"), ex("z")

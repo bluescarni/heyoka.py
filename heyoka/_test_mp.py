@@ -1,4 +1,4 @@
-# Copyright 2020-2025 Francesco Biscani (bluescarni@gmail.com), Dario Izzo (dario.izzo@gmail.com)
+# Copyright 2020-2026 Francesco Biscani (bluescarni@gmail.com), Dario Izzo (dario.izzo@gmail.com)
 #
 # This file is part of the heyoka.py library.
 #
@@ -102,7 +102,7 @@ class mp_test_case(_ut.TestCase):
         self.assertTrue(
             "An invalid time value was passed for the evaluation of a compiled"
             " function in multiprecision mode: the time value has a precision of"
-            f" {prec-1}, while the expected precision is {prec} instead"
+            f" {prec - 1}, while the expected precision is {prec} instead"
             in str(cm.exception)
         )
 

@@ -1,4 +1,4 @@
-// Copyright 2020-2025 Francesco Biscani (bluescarni@gmail.com), Dario Izzo (dario.izzo@gmail.com)
+// Copyright 2020-2026 Francesco Biscani (bluescarni@gmail.com), Dario Izzo (dario.izzo@gmail.com)
 //
 // This file is part of the heyoka.py library.
 //
@@ -219,35 +219,33 @@ PYBIND11_MODULE(core, m, pybind11::mod_gil_not_used())
                         &heypy::pickle_setstate_wrapper<hey::llvm_state>))
         // In-memory cache management.
         .def_static("get_memcache_size", &hey::llvm_state::get_memcache_size,
-                     docstrings::llvm_state_get_memcache_size().c_str())
+                    docstrings::llvm_state_get_memcache_size().c_str())
         .def_static("get_memcache_limit", &hey::llvm_state::get_memcache_limit,
-                     docstrings::llvm_state_get_memcache_limit().c_str())
+                    docstrings::llvm_state_get_memcache_limit().c_str())
         .def_static("set_memcache_limit", &hey::llvm_state::set_memcache_limit,
-                     docstrings::llvm_state_set_memcache_limit().c_str())
-        .def_static("clear_memcache", &hey::llvm_state::clear_memcache,
-                     docstrings::llvm_state_clear_memcache().c_str())
+                    docstrings::llvm_state_set_memcache_limit().c_str())
+        .def_static("clear_memcache", &hey::llvm_state::clear_memcache, docstrings::llvm_state_clear_memcache().c_str())
         // On-disk cache management.
         .def_static("get_diskcache_path", &hey::llvm_state::get_diskcache_path,
-                     docstrings::llvm_state_get_diskcache_path().c_str())
+                    docstrings::llvm_state_get_diskcache_path().c_str())
         .def_static("set_diskcache_path", &hey::llvm_state::set_diskcache_path,
-                     docstrings::llvm_state_set_diskcache_path().c_str())
+                    docstrings::llvm_state_set_diskcache_path().c_str())
         .def_static("get_diskcache_enabled", &hey::llvm_state::get_diskcache_enabled,
-                     docstrings::llvm_state_get_diskcache_enabled().c_str())
+                    docstrings::llvm_state_get_diskcache_enabled().c_str())
         .def_static("set_diskcache_enabled", &hey::llvm_state::set_diskcache_enabled,
-                     docstrings::llvm_state_set_diskcache_enabled().c_str())
+                    docstrings::llvm_state_set_diskcache_enabled().c_str())
         .def_static("get_diskcache_limit", &hey::llvm_state::get_diskcache_limit,
-                     docstrings::llvm_state_get_diskcache_limit().c_str())
+                    docstrings::llvm_state_get_diskcache_limit().c_str())
         .def_static("set_diskcache_limit", &hey::llvm_state::set_diskcache_limit,
-                     docstrings::llvm_state_set_diskcache_limit().c_str())
+                    docstrings::llvm_state_set_diskcache_limit().c_str())
         .def_static("get_diskcache_size", &hey::llvm_state::get_diskcache_size,
-                     docstrings::llvm_state_get_diskcache_size().c_str())
+                    docstrings::llvm_state_get_diskcache_size().c_str())
         .def_static("clear_diskcache", &hey::llvm_state::clear_diskcache,
-                     docstrings::llvm_state_clear_diskcache().c_str());
+                    docstrings::llvm_state_clear_diskcache().c_str());
 
     // LLVM multi state.
     py::class_<hey::llvm_multi_state>(m, "llvm_multi_state", py::dynamic_attr{}, docstrings::llvm_multi_state().c_str())
-        .def_property_readonly("ir", &hey::llvm_multi_state::get_ir,
-                               docstrings::llvm_multi_state_ir().c_str())
+        .def_property_readonly("ir", &hey::llvm_multi_state::get_ir, docstrings::llvm_multi_state_ir().c_str())
         .def_property_readonly(
             "bc",
             [](const hey::llvm_multi_state &s) {
