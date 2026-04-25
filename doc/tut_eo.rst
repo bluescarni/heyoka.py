@@ -1,6 +1,11 @@
 Earth orbit dynamics
 ====================
 
+heyoka.py provides comprehensive support for modelling the dynamics of an Earth-orbiting spacecraft via the
+:py:func:`heyoka.model.eo_dynamics()` function. The notebooks in this section detail the formulation of
+each individual dynamical perturbation and serve as a pedagogical reference for what
+:py:func:`~heyoka.model.eo_dynamics()` assembles internally.
+
 .. toctree::
    :maxdepth: 1
 
