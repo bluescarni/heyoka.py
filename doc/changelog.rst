@@ -3,6 +3,24 @@
 Changelog
 =========
 
+7.11.0 (unreleased)
+-------------------
+
+New
+~~~
+
+- Introduce the :py:func:`~heyoka.model.lagrange_prop()` model, for the formulation of Lagrangian Keplerian
+  propagators
+  (`#269 <https://github.com/bluescarni/heyoka.py/pull/269>`__).
+- Introduce the :py:func:`~heyoka.model.eo_dynamics()` model, for the formulation of the dynamics of an
+  Earth-orbiting spacecraft
+  (`#269 <https://github.com/bluescarni/heyoka.py/pull/269>`__).
+- Introduce expression inlining for ``cfunc`` in compact mode.
+  This leads to a performance increase for the evaluation of large expressions
+  in the x2-x3 range
+  (`#269 <https://github.com/bluescarni/heyoka.py/pull/269>`__). Note that this
+  applies only to compiled functions, Taylor integrators are unaffected.
+
 7.10.1 (2026-03-20)
 -------------------
 
