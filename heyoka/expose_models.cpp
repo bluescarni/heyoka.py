@@ -667,6 +667,16 @@ void expose_models(py::module_ &m)
         "eop_data"_a = hy::eop_data{}, "sw_data"_a = hy::sw_data{},
         "iau2006_thresh"_a = hy::model::detail::eo_dynamics_default_iau2006_thresh, "Cb"_a = py::none{},
         "elp2000_thresh"_a = py::none{}, "vsop2013_thresh"_a = py::none{}, docstrings::eo_dynamics().c_str());
+
+    // Expose lagrange_prop.
+    m.def(
+        "_model_lagrange_prop",
+        [](const std::array<vex_t, 3> &pos0, const std::array<vex_t, 3> &vel0, const vex_t &mu, const vex_t &tm) {
+            return hy::model::lagrange_prop(detail::arr_ex_from_arr_variant(pos0),
+                                            detail::arr_ex_from_arr_variant(vel0), detail::ex_from_variant(mu),
+                                            detail::ex_from_variant(tm));
+        },
+        py::kw_only(), "pos0"_a, "vel0"_a, "mu"_a, "tm"_a, docstrings::lagrange_prop().c_str());
 }
 
 } // namespace heyoka_py

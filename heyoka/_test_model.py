@@ -934,3 +934,61 @@ class model_test_case(_ut.TestCase):
         # Non-default eop_data / sw_data instances pass through.
         dyn = model.eo_dynamics(eop_data=eop_data(), sw_data=sw_data())
         self.assertEqual(len(dyn), 6)
+
+    def test_lagrange_prop(self):
+        # Tests for the Python exposition of model.lagrange_prop. These focus on the wiring of the kwargs
+        # from Python into C++ (vex_t conversion, iterable handling, exception translation, kw-only enforcement).
+        # The numerical correctness of the propagator is exercised by the C++ tests.
+        from . import model, expression as ex, par
+        import numpy as np
+
+        # Basic smoke test: returns a (pos, vel) pair of length-3 lists of expressions.
+        pos, vel = model.lagrange_prop(
+            pos0=[7000.0, 0.0, 0.0],
+            vel0=[0.0, 7.5, 0.0],
+            mu=3.986004415e5,
+            tm=600.0,
+        )
+        self.assertEqual(len(pos), 3)
+        self.assertEqual(len(vel), 3)
+        for c in (*pos, *vel):
+            self.assertIsInstance(c, ex)
+
+        # Keyword-only enforcement: positional arguments must be rejected.
+        with self.assertRaises(TypeError):
+            model.lagrange_prop([7000.0, 0.0, 0.0], [0.0, 7.5, 0.0], 3.986e5, 600.0)
+
+        # vex_t handling on the scalar args: mu and tm must each accept any of expression / float / par.
+        for mu in (3.986e5, ex(3.986e5), par[0]):
+            for tm in (600.0, ex(600.0), par[1]):
+                model.lagrange_prop(pos0=[7000.0, 0.0, 0.0], vel0=[0.0, 7.5, 0.0], mu=mu, tm=tm)
+
+        # vex_t handling on the iterable args: each element of pos0/vel0 must accept the same variant.
+        x, y, z = ex("x"), ex("y"), ex("z")
+        model.lagrange_prop(
+            pos0=[x, 0.0, par[0]], vel0=[0.0, y, z], mu=3.986e5, tm=600.0
+        )
+
+        # pos0/vel0 must accept any iterable of length 3, not only lists.
+        for ctor in (list, tuple, np.array):
+            model.lagrange_prop(
+                pos0=ctor([7000.0, 0.0, 0.0]),
+                vel0=ctor([0.0, 7.5, 0.0]),
+                mu=3.986e5,
+                tm=600.0,
+            )
+
+        # Length-mismatch on pos0 / vel0 must be reported as a TypeError (pybind11's std::array caster
+        # rejects size mismatches at the cast layer, which surfaces as TypeError).
+        with self.assertRaises(TypeError):
+            model.lagrange_prop(
+                pos0=[7000.0, 0.0], vel0=[0.0, 7.5, 0.0], mu=3.986e5, tm=600.0
+            )
+        with self.assertRaises(TypeError):
+            model.lagrange_prop(
+                pos0=[7000.0, 0.0, 0.0, 0.0], vel0=[0.0, 7.5, 0.0], mu=3.986e5, tm=600.0
+            )
+        with self.assertRaises(TypeError):
+            model.lagrange_prop(
+                pos0=[7000.0, 0.0, 0.0], vel0=[0.0, 7.5], mu=3.986e5, tm=600.0
+            )

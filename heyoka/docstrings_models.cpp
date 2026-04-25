@@ -15,7 +15,7 @@ namespace heyoka_py::docstrings
 
 std::string eo_dynamics()
 {
-    return R"(eo_dynamics(max_geo_degree: int = 0, max_geo_order: int = 0, eop_data: eop_data = eop_data(), sw_data: sw_data = sw_data(), iau2006_thresh: float = 1e-3, Cb: expression | None = None, elp2000_thresh: float | None = None, vsop2013_thresh: float | None = None) -> list[tuple[expression, expression]]
+    return R"(eo_dynamics(*, max_geo_degree: int = 0, max_geo_order: int = 0, eop_data: eop_data = eop_data(), sw_data: sw_data = sw_data(), iau2006_thresh: float = 1e-3, Cb: expression | None = None, elp2000_thresh: float | None = None, vsop2013_thresh: float | None = None) -> list[tuple[expression, expression]]
 
 Formulate the dynamics of an Earth-orbiting spacecraft.
 
@@ -23,7 +23,8 @@ Formulate the dynamics of an Earth-orbiting spacecraft.
 
 The dynamics is formulated in terms of the Cartesian state variables ``[x, y, z, vx, vy, vz]`` in the
 `GCRS <https://en.wikipedia.org/wiki/Barycentric_and_geocentric_celestial_reference_systems>`__, with
-distances measured in kilometres and time in seconds.
+distances measured in kilometres and time in `TT <https://en.wikipedia.org/wiki/Terrestrial_Time>`__
+seconds since the epoch of J2000.
 
 The precise formulation of the dynamics is controlled by several (optional) keyword arguments. By default (i.e., if no
 arguments are passed in input), purely Keplerian dynamics is returned, with the Earth's gravitational parameter taken
@@ -52,6 +53,41 @@ present or absent) control the formulation of the third-body perturbations.
 :returns: the differential equations for the state variables ``[x, y, z, vx, vy, vz]``.
 
 :raises ValueError: if one or more input arguments are malformed.
+
+)";
+}
+
+std::string lagrange_prop()
+{
+    return R"(lagrange_prop(*, pos0: typing.Iterable[expression], vel0: typing.Iterable[expression], mu: expression, tm: expression) -> tuple[list[expression], list[expression]]
+
+Formulate a Lagrangian propagator.
+
+.. versionadded:: 7.11.0
+
+Given in input:
+
+- initial Cartesian position and velocity vectors *pos0* and *vel0*,
+- a gravitational parameter *mu*,
+- a propagation time *tm*,
+
+this function will return the symbolic expressions for the propagated Cartesian position and velocity vectors, computed
+according to Keplerian dynamics via the classical Lagrange (F&G) propagator.
+
+The propagator currently assumes a bound (elliptical) orbit - the formulation will break down in case of parabolic or
+hyperbolic orbits.
+
+The lengths of *pos0* and *vel0* must both be three. The propagator is unit-agnostic: any consistent set of units for
+position, velocity, gravitational parameter and time is accepted.
+
+:param pos0: the initial Cartesian position vector.
+:param vel0: the initial Cartesian velocity vector.
+:param mu: the gravitational parameter.
+:param tm: the propagation time.
+
+:returns: a pair containing the symbolic expressions for the propagated Cartesian position and velocity vectors.
+
+:raises TypeError: if *pos0* or *vel0* do not have length three.
 
 )";
 }
