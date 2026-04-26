@@ -67,6 +67,10 @@ Formulate a Lagrangian propagator.
 
 .. versionadded:: 7.11.0
 
+.. note::
+
+   A :ref:`tutorial <tut_lagrange_prop>` explaining the use of this function is available.
+
 Given in input:
 
 - initial Cartesian position and velocity vectors *pos0* and *vel0*,
