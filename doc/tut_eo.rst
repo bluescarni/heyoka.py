@@ -1,3 +1,5 @@
+.. _tut_eo_dynamics:
+
 Earth orbit dynamics
 ====================
 
