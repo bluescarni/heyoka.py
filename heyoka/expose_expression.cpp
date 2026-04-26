@@ -1,4 +1,4 @@
-// Copyright 2020-2025 Francesco Biscani (bluescarni@gmail.com), Dario Izzo (dario.izzo@gmail.com)
+// Copyright 2020-2026 Francesco Biscani (bluescarni@gmail.com), Dario Izzo (dario.izzo@gmail.com)
 //
 // This file is part of the heyoka.py library.
 //
@@ -285,7 +285,7 @@ void expose_expression(py::module_ &m)
     m.def("prod", &hey::prod, "terms"_a, docstrings::prod().c_str());
 
     // NOTE: need explicit casts for sqrt and exp due to the presence of overloads for number.
-    m.def("sqrt", static_cast<hey::expression (*)(hey::expression)>(&hey::sqrt), "arg"_a);
+    m.def("sqrt", static_cast<hey::expression (*)(const hey::expression &)>(&hey::sqrt), "arg"_a);
     m.def("exp", static_cast<hey::expression (*)(hey::expression)>(&hey::exp), "arg"_a);
     m.def("log", &hey::log, "arg"_a);
     m.def("sin", &hey::sin, "arg"_a);

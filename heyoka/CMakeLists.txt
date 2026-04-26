@@ -69,6 +69,7 @@ set(_HEYOKA_PY_CORE_SOURCES
     step_cb_utils.cpp
     docstrings.cpp
     docstrings_llvm_state.cpp
+    docstrings_models.cpp
 )
 
 Python3_add_library(core MODULE WITH_SOABI ${_HEYOKA_PY_CORE_SOURCES})

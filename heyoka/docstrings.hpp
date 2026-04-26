@@ -1,4 +1,4 @@
-// Copyright 2020-2025 Francesco Biscani (bluescarni@gmail.com), Dario Izzo (dario.izzo@gmail.com)
+// Copyright 2020-2026 Francesco Biscani (bluescarni@gmail.com), Dario Izzo (dario.izzo@gmail.com)
 //
 // This file is part of the heyoka.py library.
 //
@@ -92,6 +92,8 @@ std::string get_elp2000_mus();
 std::string get_egm2008_mu();
 std::string get_egm2008_a();
 std::string dayfrac();
+std::string eo_dynamics();
+std::string lagrange_prop();
 
 // var_ode_sys() and related.
 std::string var_args();
