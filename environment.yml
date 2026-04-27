@@ -1,8 +1,8 @@
 channels:
   - conda-forge
 dependencies:
-  - python =3.11
-  - heyoka.py =3.2.*
+  - python =3.14
+  - heyoka.py =7.11.*
   - pykep
   - matplotlib
   - sympy
@@ -11,3 +11,6 @@ dependencies:
   - tqdm
   - cloudpickle
   - astroquery
+  - skyfield
+  - cartopy
+  - sgp4
