@@ -40,7 +40,7 @@ Currently the dynamical model includes:
 The *eop_data* argument is used in the formulation of the Earth's gravity and of the atmospheric drag. The *sw_data* argument
 is used in the formulation of the atmospheric drag. The threshold arguments *iau2006_thresh*, *elp2000_thresh* and *vsop2013_thresh*
 control the precision of the analytical theories used in the formulation of the dynamics. Please refer to the
-:ref:`Earth-orbit dynamics section <tut_eo_dynamics>` in the documentation for a quantitative analysis of how these threshold
+:ref:`Earth-orbit dynamics section <tut_eo_dynamics>` in the documentation for a quantitative analysis of how these thresholds
 affect the accuracy of numerical integration.
 
 :param max_geo_degree: the maximum geopotential degree.
