@@ -3,6 +3,15 @@
 Changelog
 =========
 
+7.11.1 (2026-06-15)
+-------------------
+
+Fix
+~~~
+
+- Update github actions versions in the CI
+  (`#271 <https://github.com/bluescarni/heyoka.py/pull/271>`__).
+
 7.11.0 (2026-04-27)
 -------------------
 
