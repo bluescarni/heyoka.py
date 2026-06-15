@@ -12,13 +12,13 @@ jobs:
   conda_asan:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Build
         run: bash tools/gha_conda_asan.sh
   conda_static:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Build
         run: bash tools/gha_conda_static.sh
   osx_heyoka_head_x86_64:
@@ -27,7 +27,7 @@ jobs:
       HEYOKA_PY_PY_VERSION: "3.12"
       HEYOKA_PY_CONDA_ARCH: "MacOSX-x86_64"
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Build
         run: bash tools/gha_osx_heyoka_head.sh
   osx_heyoka_head_x86_64_static:
@@ -36,7 +36,7 @@ jobs:
       HEYOKA_PY_PY_VERSION: "3.12"
       HEYOKA_PY_CONDA_ARCH: "MacOSX-x86_64"
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Build
         run: bash tools/gha_osx_heyoka_head_static.sh
   osx_heyoka_head_arm64:
@@ -45,7 +45,7 @@ jobs:
       HEYOKA_PY_PY_VERSION: "3.12"
       HEYOKA_PY_CONDA_ARCH: "MacOSX-arm64"
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Build
         run: bash tools/gha_osx_heyoka_head.sh
   osx_heyoka_head_arm64_static:
@@ -54,7 +54,7 @@ jobs:
       HEYOKA_PY_PY_VERSION: "3.12"
       HEYOKA_PY_CONDA_ARCH: "MacOSX-arm64"
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Build
         run: bash tools/gha_osx_heyoka_head_static.sh
   manylinux_2_28_x86_64-sdist:
@@ -66,10 +66,10 @@ jobs:
         HEYOKA_PY_BUILD_SDIST: "yes"
         UV_PUBLISH_TOKEN: ${{ secrets.UV_PUBLISH_TOKEN }}
      steps:
-       - uses: actions/checkout@v4
+       - uses: actions/checkout@v6
        - name: Build
          run: bash tools/gha_manylinux.sh
-       - uses: actions/upload-artifact@v4
+       - uses: actions/upload-artifact@v7
          with:
            name: sdist
            path: dist/*.tar.gz
@@ -84,10 +84,10 @@ jobs:
         HEYOKA_PY_BUILD_TYPE: ${{ matrix.heyoka_py_build_type }}
         UV_PUBLISH_TOKEN: ${{ secrets.UV_PUBLISH_TOKEN }}
      steps:
-       - uses: actions/checkout@v4
+       - uses: actions/checkout@v6
        - name: Build
          run: bash tools/gha_manylinux.sh
-       - uses: actions/upload-artifact@v4
+       - uses: actions/upload-artifact@v7
          with:
            name: wheel_${{ matrix.heyoka_py_build_type }}_linux_x86_64
            path: repaired_wheel/*.whl
@@ -102,18 +102,18 @@ jobs:
         HEYOKA_PY_BUILD_TYPE: ${{ matrix.heyoka_py_build_type }}
         UV_PUBLISH_TOKEN: ${{ secrets.UV_PUBLISH_TOKEN }}
      steps:
-       - uses: actions/checkout@v4
+       - uses: actions/checkout@v6
        - name: Build
          run: bash tools/gha_manylinux.sh
-       - uses: actions/upload-artifact@v4
+       - uses: actions/upload-artifact@v7
          with:
            name: wheel_${{ matrix.heyoka_py_build_type }}_linux_aarch64
            path: repaired_wheel/*.whl
   windows_2022_heyoka_head:
     runs-on: windows-2022
     steps:
-      - uses: actions/checkout@v4
-      - uses: conda-incubator/setup-miniconda@v3
+      - uses: actions/checkout@v6
+      - uses: conda-incubator/setup-miniconda@v4
         with:
           auto-update-conda: true
           python-version: "3.12"
