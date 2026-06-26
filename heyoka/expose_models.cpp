@@ -14,6 +14,7 @@
 #include <cstdint>
 #include <iterator>
 #include <optional>
+#include <ranges>
 #include <string>
 #include <tuple>
 #include <utility>
@@ -602,6 +603,42 @@ void expose_models(py::module_ &m)
         "a"_a = hy::model::get_egm2008_a(), docstrings::egm2008_acc().c_str());
     m.def("_model_get_egm2008_mu", &hy::model::get_egm2008_mu, docstrings::get_egm2008_mu().c_str());
     m.def("_model_get_egm2008_a", &hy::model::get_egm2008_a, docstrings::get_egm2008_a().c_str());
+
+    // Custom spherical harmonics gravity.
+
+    // Transformer to turn std::array<vex_t, 2> (a C/S pair) into an array of 2 expressions.
+    const auto array2_vec_transform = [](const std::array<vex_t, 2> &cs) {
+        return std::array{detail::ex_from_variant(cs[0]), detail::ex_from_variant(cs[1])};
+    };
+
+    m.def(
+        "_model_sh_gravity_pot",
+        [array2_vec_transform](const std::array<vex_t, 3> &xyz,
+                               const std::vector<std::array<vex_t, 2>> &sh_coefficients, const vex_t &mu,
+                               const vex_t &a, const std::optional<std::uint32_t> &max_degree,
+                               const std::optional<std::uint32_t> &max_order) {
+            auto cs_rng = sh_coefficients | std::views::transform(array2_vec_transform);
+            return hy::model::sh_gravity_pot(detail::arr_ex_from_arr_variant(xyz), hy::kw::sh_coefficients = cs_rng,
+                                             hy::kw::mu = detail::ex_from_variant(mu),
+                                             hy::kw::a = detail::ex_from_variant(a), hy::kw::max_degree = max_degree,
+                                             hy::kw::max_order = max_order);
+        },
+        "xyz"_a, "sh_coefficients"_a, "mu"_a, "a"_a, py::kw_only(), "max_degree"_a = py::none{},
+        "max_order"_a = py::none{}, docstrings::sh_gravity_pot().c_str());
+    m.def(
+        "_model_sh_gravity_acc",
+        [array2_vec_transform](const std::array<vex_t, 3> &xyz,
+                               const std::vector<std::array<vex_t, 2>> &sh_coefficients, const vex_t &mu,
+                               const vex_t &a, const std::optional<std::uint32_t> &max_degree,
+                               const std::optional<std::uint32_t> &max_order) {
+            auto cs_rng = sh_coefficients | std::views::transform(array2_vec_transform);
+            return hy::model::sh_gravity_acc(detail::arr_ex_from_arr_variant(xyz), hy::kw::sh_coefficients = cs_rng,
+                                             hy::kw::mu = detail::ex_from_variant(mu),
+                                             hy::kw::a = detail::ex_from_variant(a), hy::kw::max_degree = max_degree,
+                                             hy::kw::max_order = max_order);
+        },
+        "xyz"_a, "sh_coefficients"_a, "mu"_a, "a"_a, py::kw_only(), "max_degree"_a = py::none{},
+        "max_order"_a = py::none{}, docstrings::sh_gravity_acc().c_str());
 
     // Use macro to expose the SW models.
 #define HEYOKA_PY_EXPOSE_MODEL_SW(name)                                                                                \

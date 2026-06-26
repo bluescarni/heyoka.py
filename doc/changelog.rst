@@ -3,6 +3,18 @@
 Changelog
 =========
 
+7.12.0 (unreleased)
+-------------------
+
+New
+~~~
+
+- In addition to the existing EGM2008 geopotential model, it is now possible to
+  define custom spherical harmonics gravity models via the
+  :py:func:`~heyoka.model.sh_gravity_pot()` and :py:func:`~heyoka.model.sh_gravity_acc()`
+  functions. The models can be defined in terms of numerical or symbolic coefficients
+  (`#273 <https://github.com/bluescarni/heyoka.py/pull/273>`__).
+
 7.11.1 (2026-06-15)
 -------------------
 

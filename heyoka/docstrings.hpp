@@ -79,6 +79,8 @@ std::string dYp();
 std::string iau2006(double);
 std::string egm2008_pot();
 std::string egm2008_acc();
+std::string sh_gravity_pot();
+std::string sh_gravity_acc();
 std::string Ap_avg();
 std::string f107();
 std::string f107a_center81();

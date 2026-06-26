@@ -98,4 +98,80 @@ position, velocity, gravitational parameter and time is accepted.
 )";
 }
 
+std::string sh_gravity_pot()
+{
+    return R"(sh_gravity_pot(xyz: typing.Iterable[expression], sh_coefficients: typing.Iterable[typing.Iterable[expression]], mu: expression, a: expression, max_degree: int | None = None, max_order: int | None = None) -> expression
+
+Custom spherical harmonics gravitational potential.
+
+.. versionadded:: 7.12.0
+
+This function will return the value of a custom spherical harmonics gravitational potential at the input Cartesian
+position *xyz*. The potential is fully determined by the user-supplied normalised harmonic coefficients
+*sh_coefficients*, the gravitational parameter *mu* and the reference radius *a*. This is a generalisation of
+:py:func:`~heyoka.model.egm2008_pot()` in which the model is not fixed to the EGM2008 data.
+
+*xyz* is expected to represent the position vector with respect to the body-fixed frame in which the harmonic
+coefficients are defined.
+
+*sh_coefficients* is the list of normalised :math:`\bar{C}_{nm}` and :math:`\bar{S}_{nm}` harmonic coefficients,
+provided as an iterable of ``[C, S]`` pairs. The coefficients are read in degree-then-order order, that is:
+
+.. math::
+
+   \left[\left(\bar{C}_{0,0}, \bar{S}_{0,0}\right),\ \left(\bar{C}_{1,0}, \bar{S}_{1,0}\right),\ \left(\bar{C}_{1,1}, \bar{S}_{1,1}\right),\ \left(\bar{C}_{2,0}, \bar{S}_{2,0}\right),\ \ldots\ \left(\bar{C}_{n,n}, \bar{S}_{n,n}\right)\right].
+
+The maximum harmonic degree of the model is inferred from the number of coefficients provided. Each coefficient
+can be any object convertible to a heyoka :py:class:`~heyoka.expression`, including numerical constants, runtime
+parameters or arbitrary expressions.
+
+*mu* and *a* are, respectively, the gravitational parameter and the reference radius to be used in the computation.
+Both are expected to be provided in units consistent with each other and with *xyz*.
+
+*max_degree* and *max_order* can be used to optionally restrict the computation to a subset of the full model
+inferred from *sh_coefficients*. If left to ``None``, the full model is used.
+
+:param xyz: the position at which the potential will be evaluated.
+:param sh_coefficients: the list of ``[C, S]`` normalised harmonic coefficient pairs.
+:param mu: the gravitational parameter.
+:param a: the reference radius.
+:param max_degree: the maximum harmonic degree to be used in the computation.
+:param max_order: the maximum harmonic order to be used in the computation.
+
+:returns: an expression for the gravitational potential at the position *xyz*.
+
+:raises ValueError: if *max_order* > *max_degree* or if the requested degree exceeds the model inferred from *sh_coefficients*.
+
+)";
+}
+
+std::string sh_gravity_acc()
+{
+    return R"(sh_gravity_acc(xyz: typing.Iterable[expression], sh_coefficients: typing.Iterable[typing.Iterable[expression]], mu: expression, a: expression, max_degree: int | None = None, max_order: int | None = None) -> list[expression]
+
+Custom spherical harmonics gravitational acceleration.
+
+.. versionadded:: 7.12.0
+
+This function will return the value of the gravitational acceleration due to a custom spherical harmonics
+gravitational potential at the input Cartesian position *xyz*. The output acceleration vector is expressed in the
+same body-fixed frame as *xyz*. This is a generalisation of :py:func:`~heyoka.model.egm2008_acc()` in which the
+model is not fixed to the EGM2008 data.
+
+See :py:func:`~heyoka.model.sh_gravity_pot()` for a detailed explanation of the arguments.
+
+:param xyz: the position at which the acceleration will be evaluated.
+:param sh_coefficients: the list of ``[C, S]`` normalised harmonic coefficient pairs.
+:param mu: the gravitational parameter.
+:param a: the reference radius.
+:param max_degree: the maximum harmonic degree to be used in the computation.
+:param max_order: the maximum harmonic order to be used in the computation.
+
+:returns: an expression for the Cartesian acceleration vector due to the custom gravitational potential at the position *xyz*.
+
+:raises ValueError: if *max_order* > *max_degree* or if the requested degree exceeds the model inferred from *sh_coefficients*.
+
+)";
+}
+
 } // namespace heyoka_py::docstrings
