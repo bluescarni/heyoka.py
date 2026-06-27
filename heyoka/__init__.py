@@ -9,94 +9,151 @@
 # Version setup.
 from ._version import __version__
 
-import cloudpickle as _cloudpickle
-from threading import Lock as _Lock
+# The top-level imports from the core module.
+from ._core import (
+    acos,
+    acosh,
+    asin,
+    asinh,
+    atan,
+    atan2,
+    atanh,
+    cfunc_dbl,
+    cfunc_f128,
+    cfunc_flt,
+    cfunc_ldbl,
+    cfunc_real,
+    code_model,
+    continuous_output_batch_dbl,
+    continuous_output_batch_flt,
+    continuous_output_dbl,
+    continuous_output_f128,
+    continuous_output_flt,
+    continuous_output_ldbl,
+    continuous_output_real,
+    cos,
+    cosh,
+    dfun,
+    diff,
+    diff_args,
+    diff_tensors,
+    dtens,
+    eop_data,
+    eop_data_row,
+    eq,
+    erf,
+    event_direction,
+    exp,
+    expression,
+    func_args,
+    get_nthreads,
+    get_params,
+    get_variables,
+    gt,
+    gte,
+    hamiltonian,
+    install_custom_numpy_mem_handler,
+    kepDE,
+    kepE,
+    kepF,
+    lagrangian,
+    leaky_relu,
+    leaky_relup,
+    llvm_multi_state,
+    llvm_state,
+    log,
+    logical_and,
+    logical_or,
+    lt,
+    lte,
+    make_vars,
+    neq,
+    nt_event_batch_dbl,
+    nt_event_batch_flt,
+    nt_event_dbl,
+    nt_event_f128,
+    nt_event_flt,
+    nt_event_ldbl,
+    nt_event_real,
+    pi,
+    prod,
+    real,
+    real128,
+    real_prec_max,
+    real_prec_min,
+    relu,
+    relup,
+    remove_custom_numpy_mem_handler,
+    rename_variables,
+    select,
+    set_logger_level_critical,
+    set_logger_level_debug,
+    set_logger_level_error,
+    set_logger_level_info,
+    set_logger_level_trace,
+    set_logger_level_warning,
+    set_nthreads,
+    sigmoid,
+    sin,
+    sinh,
+    sqrt,
+    subs,
+    sum,
+    sw_data,
+    sw_data_row,
+    t_event_batch_dbl,
+    t_event_batch_flt,
+    t_event_dbl,
+    t_event_f128,
+    t_event_flt,
+    t_event_ldbl,
+    t_event_real,
+    tan,
+    tanh,
+    taylor_adaptive_batch_dbl,
+    taylor_adaptive_batch_flt,
+    taylor_adaptive_dbl,
+    taylor_adaptive_f128,
+    taylor_adaptive_flt,
+    taylor_adaptive_ldbl,
+    taylor_adaptive_real,
+    taylor_outcome,
+    to_sympy,
+    var_args,
+    var_ode_sys,
+)
 
-# We import the sub-modules into the root namespace.
-from .core import *
-
-# Explicitly import the submodules
-# NOTE: it is *important* that the import is performed
-# here, *after* the initial import of core. Otherwise,
+# Explicitly import the sub-packages
+#
+# NOTE: it is *important* that the import is performed here, *after* the initial import of core. Otherwise,
 # we would get missing symbols on POSIX platforms.
 from . import test, model, callback
 
-
-def _with_real128():
-    # Small helper to check if real128 is available.
-    from . import core
-
-    return hasattr(core, "real128")
-
-
-def _with_real():
-    # Small helper to check if real is available.
-    from . import core
-
-    return hasattr(core, "real")
-
-
-from numpy import float32 as _f32, float64 as _f64, longdouble as _ld, dtype as _dtype
-
-_fp_to_suffix_dict = {_f32: "_flt", _f64: "_dbl", float: "_dbl", _ld: "_ldbl"}
-
-del _f32
-del _f64
-del _ld
-
-if _with_real128():
-    _fp_to_suffix_dict[real128] = "_f128"
-
-if _with_real():
-    _fp_to_suffix_dict[real] = "_real"
-
-
-def _fp_to_suffix(fp_t):
-    if not isinstance(fp_t, type):
-        raise TypeError(
-            'A Python type was expected in input, but an object of type "{}" was'
-            " provided instead".format(type(fp_t))
-        )
-
-    if fp_t in _fp_to_suffix_dict:
-        return _fp_to_suffix_dict[fp_t]
-
-    raise TypeError(
-        'The floating-point type "{}" is not recognized/supported'.format(fp_t)
-    )
+from ._fp_suffixes import _fp_to_suffix
+from ._sympy_utils import _with_sympy, _from_sympy_impl
 
 
 def taylor_adaptive(sys, state=[], **kwargs):
-    from . import core
-
     fp_type = kwargs.pop("fp_type", float)
     fp_suffix = _fp_to_suffix(fp_type)
 
-    return getattr(core, "taylor_adaptive{}".format(fp_suffix))(sys, state, **kwargs)
+    return globals()[f"taylor_adaptive{fp_suffix}"](sys, state, **kwargs)
 
 
 def taylor_adaptive_batch(sys, state, **kwargs):
-    from . import core
-
     fp_type = kwargs.pop("fp_type", float)
     fp_suffix = _fp_to_suffix(fp_type)
 
-    return getattr(core, "taylor_adaptive_batch{}".format(fp_suffix))(
-        sys, state, **kwargs
-    )
+    return globals()[f"taylor_adaptive_batch{fp_suffix}"](sys, state, **kwargs)
 
 
 def recommended_simd_size(fp_type=float):
-    from . import core
-
     fp_suffix = _fp_to_suffix(fp_type)
 
-    return getattr(core, "_recommended_simd_size{}".format(fp_suffix))()
+    return globals()[f"_recommended_simd_size{fp_suffix}"]()
 
 
 def cfunc(fn, vars, **kwargs):
-    from . import core
-
     fp_type = kwargs.pop("fp_type", float)
     fp_suffix = _fp_to_suffix(fp_type)
 
@@ -104,8 +161,6 @@ def cfunc(fn, vars, **kwargs):
 
 
 def nt_event(ex, callback, **kwargs):
-    from . import core
-
     fp_type = kwargs.pop("fp_type", float)
     fp_suffix = _fp_to_suffix(fp_type)
 
@@ -113,8 +168,6 @@ def nt_event(ex, callback, **kwargs):
 
 
 def t_event(ex, **kwargs):
-    from . import core
-
     fp_type = kwargs.pop("fp_type", float)
     fp_suffix = _fp_to_suffix(fp_type)
 
@@ -122,8 +175,6 @@ def t_event(ex, **kwargs):
 
 
 def nt_event_batch(ex, callback, **kwargs):
-    from . import core
-
     fp_type = kwargs.pop("fp_type", float)
     fp_suffix = _fp_to_suffix(fp_type)
 
@@ -131,47 +182,10 @@ def nt_event_batch(ex, callback, **kwargs):
 
 
 def t_event_batch(ex, **kwargs):
-    from . import core
-
     fp_type = kwargs.pop("fp_type", float)
     fp_suffix = _fp_to_suffix(fp_type)
 
     return getattr(core, "t_event_batch{}".format(fp_suffix))(ex, **kwargs)
-
-
-def from_sympy(ex, s_dict={}):
-    from ._sympy_utils import _with_sympy, _from_sympy_impl
-
-    if not _with_sympy:
-        raise ImportError(
-            "The 'from_sympy()' function is not available because sympy is not"
-            " installed"
-        )
-
-    from sympy import Basic
-    from .core import expression
-
-    if not isinstance(ex, Basic):
-        raise TypeError(
-            "The 'ex' parameter must be a sympy expression but it is of type {} instead".format(
-                type(ex)
-            )
-        )
-
-    if not isinstance(s_dict, dict):
-        raise TypeError(
-            "The 's_dict' parameter must be a dict but it is of type {} instead".format(
-                type(s_dict)
-            )
-        )
-
-    if any(not isinstance(_, Basic) for _ in s_dict):
-        raise TypeError("The keys in 's_dict' must all be sympy expressions")
-
-    if any(not isinstance(s_dict[_], expression) for _ in s_dict):
-        raise TypeError("The values in 's_dict' must all be heyoka expressions")
-
-    return _from_sympy_impl(ex, s_dict, {})
 
 
 # Machinery for the setup of the serialization backend.
@@ -376,7 +390,7 @@ time: expression = _create_time()
 Time expression.
 
 This global object is an :py:class:`~heyoka.expression` which is used to represent
-time (i.e., the independent variable) in differential equations.
+time (i.e., the independent variable) in righ-hand side of differential equations.
 
 """
 
@@ -416,4 +430,120 @@ a row of space weather (SW) data in the :py:class:`~heyoka.sw_data` class. The f
 
 """
 
-del _dtype
+__all__ = [
+    # Imports from the core module.
+    "acos",
+    "acosh",
+    "asin",
+    "asinh",
+    "atan",
+    "atan2",
+    "atanh",
+    "cfunc_dbl",
+    "cfunc_f128",
+    "cfunc_flt",
+    "cfunc_ldbl",
+    "cfunc_real",
+    "code_model",
+    "continuous_output_batch_dbl",
+    "continuous_output_batch_flt",
+    "continuous_output_dbl",
+    "continuous_output_f128",
+    "continuous_output_flt",
+    "continuous_output_ldbl",
+    "continuous_output_real",
+    "cos",
+    "cosh",
+    "dfun",
+    "diff",
+    "diff_args",
+    "diff_tensors",
+    "dtens",
+    "eop_data",
+    "eop_data_row",
+    "eq",
+    "erf",
+    "event_direction",
+    "exp",
+    "expression",
+    "func_args",
+    "get_nthreads",
+    "get_params",
+    "get_variables",
+    "gt",
+    "gte",
+    "hamiltonian",
+    "install_custom_numpy_mem_handler",
+    "kepDE",
+    "kepE",
+    "kepF",
+    "lagrangian",
+    "leaky_relu",
+    "leaky_relup",
+    "llvm_multi_state",
+    "llvm_state",
+    "log",
+    "logical_and",
+    "logical_or",
+    "lt",
+    "lte",
+    "make_vars",
+    "neq",
+    "nt_event_batch_dbl",
+    "nt_event_batch_flt",
+    "nt_event_dbl",
+    "nt_event_f128",
+    "nt_event_flt",
+    "nt_event_ldbl",
+    "nt_event_real",
+    "pi",
+    "prod",
+    "real",
+    "real128",
+    "real_prec_max",
+    "real_prec_min",
+    "relu",
+    "relup",
+    "remove_custom_numpy_mem_handler",
+    "rename_variables",
+    "select",
+    "set_logger_level_critical",
+    "set_logger_level_debug",
+    "set_logger_level_error",
+    "set_logger_level_info",
+    "set_logger_level_trace",
+    "set_logger_level_warning",
+    "set_nthreads",
+    "sigmoid",
+    "sin",
+    "sinh",
+    "sqrt",
+    "subs",
+    "sum",
+    "sw_data",
+    "sw_data_row",
+    "t_event_batch_dbl",
+    "t_event_batch_flt",
+    "t_event_dbl",
+    "t_event_f128",
+    "t_event_flt",
+    "t_event_ldbl",
+    "t_event_real",
+    "tan",
+    "tanh",
+    "taylor_adaptive_batch_dbl",
+    "taylor_adaptive_batch_flt",
+    "taylor_adaptive_dbl",
+    "taylor_adaptive_f128",
+    "taylor_adaptive_flt",
+    "taylor_adaptive_ldbl",
+    "taylor_adaptive_real",
+    "taylor_outcome",
+    "to_sympy",
+    "var_args",
+    "var_ode_sys",
+    # Sub-packages.
+    "test",
+    "model",
+    "callback",
+]

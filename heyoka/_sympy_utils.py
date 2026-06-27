@@ -6,27 +6,29 @@
 # Public License v. 2.0. If a copy of the MPL was not distributed
 # with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+import re
+from math import isfinite
+import numpy as np
+from ._core import expression
+from . import _core
+
 _with_sympy = True
 
 try:
-    import sympy as _spy
+    import sympy
+    from sympy import Basic
 except ImportError:
     _with_sympy = False
 
 
 def _from_sympy_symbol(sym):
-    import re
-
     # Check if it is a parameter.
     m = re.match(r"par\[((?:[1-9][0-9]*|0))\]", sym.name)
 
     if m:
         from . import par
-
         return par[int(m.groups()[0])]
     else:
-        from . import expression
-
         return expression(sym.name)
 
 
@@ -42,8 +44,6 @@ def _from_sympy_number(ex):
             "Only floating-point, integer and (some) rational numbers can be converted"
             " from sympy"
         )
-
-    from . import expression
 
     # Extract the needed precision in bits.
     # NOTE: the bit size returned by mpmath accounts
@@ -72,9 +72,6 @@ def _from_sympy_number(ex):
     if prec <= 53:
         # Double precision is sufficient to represent
         # exactly the number.
-
-        from math import isfinite
-
         retval = float(ex)
 
         # NOTE: a non-finite value could be produced if the original
@@ -83,8 +80,6 @@ def _from_sympy_number(ex):
             raise ValueError(nf_err_msg)
 
         return expression(retval)
-
-    import numpy as np
 
     # NOTE: the number returned by finfo does not account for
     # the implicit bit.
@@ -100,8 +95,6 @@ def _from_sympy_number(ex):
             raise ValueError(nf_err_msg)
 
         return expression(retval)
-
-    from . import core
 
     if hasattr(core, "real128") and prec <= 113:
         # We have real128, and quadmath precision
@@ -222,3 +215,33 @@ def _from_sympy_impl(ex, s_dict, c_dict):
     c_dict[id(ex)] = ret
 
     return ret
+
+
+def from_sympy(ex, s_dict={}):
+    if not _with_sympy:
+        raise ImportError(
+            "The 'from_sympy()' function is not available because sympy is not"
+            " installed"
+        )
+
+    if not isinstance(ex, Basic):
+        raise TypeError(
+            "The 'ex' parameter must be a sympy expression but it is of type {} instead".format(
+                type(ex)
+            )
+        )
+
+    if not isinstance(s_dict, dict):
+        raise TypeError(
+            "The 's_dict' parameter must be a dict but it is of type {} instead".format(
+                type(s_dict)
+            )
+        )
+
+    if any(not isinstance(_, Basic) for _ in s_dict):
+        raise TypeError("The keys in 's_dict' must all be sympy expressions")
+
+    if any(not isinstance(s_dict[_], expression) for _ in s_dict):
+        raise TypeError("The values in 's_dict' must all be heyoka expressions")
+
+    return _from_sympy_impl(ex, s_dict, {})
