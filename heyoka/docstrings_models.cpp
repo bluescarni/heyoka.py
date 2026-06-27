@@ -108,8 +108,9 @@ Custom spherical harmonics gravitational potential.
 
 This function will return the value of a custom spherical harmonics gravitational potential at the input Cartesian
 position *xyz*. The potential is fully determined by the user-supplied normalised harmonic coefficients
-*sh_coefficients*, the gravitational parameter *mu* and the reference radius *a*. This is a generalisation of
-:py:func:`~heyoka.model.egm2008_pot()` in which the model is not fixed to the EGM2008 data.
+*sh_coefficients*, the gravitational parameter *mu* and the reference radius *a*. The definitions and conventions
+adopted for the spherical harmonics expansion - in particular, the normalisation of the harmonic coefficients -
+follow §3.2 of :cite:`montenbruck`.
 
 *xyz* is expected to represent the position vector with respect to the body-fixed frame in which the harmonic
 coefficients are defined.
@@ -155,8 +156,7 @@ Custom spherical harmonics gravitational acceleration.
 
 This function will return the value of the gravitational acceleration due to a custom spherical harmonics
 gravitational potential at the input Cartesian position *xyz*. The output acceleration vector is expressed in the
-same body-fixed frame as *xyz*. This is a generalisation of :py:func:`~heyoka.model.egm2008_acc()` in which the
-model is not fixed to the EGM2008 data.
+same body-fixed frame as *xyz*.
 
 See :py:func:`~heyoka.model.sh_gravity_pot()` for a detailed explanation of the arguments.
 
