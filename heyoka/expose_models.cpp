@@ -10,15 +10,19 @@
 
 #include <algorithm>
 #include <array>
+#include <cassert>
 #include <cstddef>
 #include <cstdint>
 #include <iterator>
 #include <optional>
+#include <ranges>
 #include <string>
 #include <tuple>
 #include <utility>
 #include <variant>
 #include <vector>
+
+#include <boost/numeric/conversion/cast.hpp>
 
 #include <fmt/core.h>
 
@@ -602,6 +606,69 @@ void expose_models(py::module_ &m)
         "a"_a = hy::model::get_egm2008_a(), docstrings::egm2008_acc().c_str());
     m.def("_model_get_egm2008_mu", &hy::model::get_egm2008_mu, docstrings::get_egm2008_mu().c_str());
     m.def("_model_get_egm2008_a", &hy::model::get_egm2008_a, docstrings::get_egm2008_a().c_str());
+    // NOTE: the EGM2008 CS coefficients live in a static buffer inside the compiled module's shared object, so we can
+    // expose them as a read-only, zero-copy numpy array. A truthy "base" object is required to make pybind produce a
+    // view rather than a copy.
+    //
+    // NOTE: we deliberately use the module m as the "base". The view is valid only as long as the module's shared
+    // object remains loaded in memory, and m is the Python object whose lifetime logically corresponds to that. Current
+    // CPython never unloads an extension's shared object while the interpreter is alive, so this is not strictly
+    // necessary today. But tying the view's lifetime to the module makes the dependency explicit and keeps the view
+    // safe under any implementation that ties extension unloading to the module object's lifetime (where passing, e.g.,
+    // None as "base" could leave the view dangling).
+    m.def(
+        "_model_get_egm2008_CS",
+        [m]() {
+            const auto cs_span = hy::model::get_egm2008_CS();
+
+            const auto n_pairs = boost::numeric_cast<py::ssize_t>(cs_span.extent(0));
+            assert(cs_span.extent(1) == 2u);
+
+            auto ret = py::array_t<double>(py::array::ShapeContainer{n_pairs, static_cast<py::ssize_t>(2)},
+                                           cs_span.data_handle(), m);
+
+            // Ensure the returned array is read-only.
+            ret.attr("flags").attr("writeable") = false;
+
+            return ret;
+        },
+        docstrings::get_egm2008_CS().c_str());
+
+    // Custom spherical harmonics gravity.
+
+    // Transformer to turn std::array<vex_t, 2> (a C/S pair) into an array of 2 expressions.
+    const auto array2_vec_transform = [](const std::array<vex_t, 2> &cs) {
+        return std::array{detail::ex_from_variant(cs[0]), detail::ex_from_variant(cs[1])};
+    };
+
+    m.def(
+        "_model_sh_gravity_pot",
+        [array2_vec_transform](const std::array<vex_t, 3> &xyz,
+                               const std::vector<std::array<vex_t, 2>> &sh_coefficients, const vex_t &mu,
+                               const vex_t &a, const std::optional<std::uint32_t> &max_degree,
+                               const std::optional<std::uint32_t> &max_order) {
+            auto cs_rng = sh_coefficients | std::views::transform(array2_vec_transform);
+            return hy::model::sh_gravity_pot(detail::arr_ex_from_arr_variant(xyz), hy::kw::sh_coefficients = cs_rng,
+                                             hy::kw::mu = detail::ex_from_variant(mu),
+                                             hy::kw::a = detail::ex_from_variant(a), hy::kw::max_degree = max_degree,
+                                             hy::kw::max_order = max_order);
+        },
+        "xyz"_a, "sh_coefficients"_a, "mu"_a, "a"_a, py::kw_only(), "max_degree"_a = py::none{},
+        "max_order"_a = py::none{}, docstrings::sh_gravity_pot().c_str());
+    m.def(
+        "_model_sh_gravity_acc",
+        [array2_vec_transform](const std::array<vex_t, 3> &xyz,
+                               const std::vector<std::array<vex_t, 2>> &sh_coefficients, const vex_t &mu,
+                               const vex_t &a, const std::optional<std::uint32_t> &max_degree,
+                               const std::optional<std::uint32_t> &max_order) {
+            auto cs_rng = sh_coefficients | std::views::transform(array2_vec_transform);
+            return hy::model::sh_gravity_acc(detail::arr_ex_from_arr_variant(xyz), hy::kw::sh_coefficients = cs_rng,
+                                             hy::kw::mu = detail::ex_from_variant(mu),
+                                             hy::kw::a = detail::ex_from_variant(a), hy::kw::max_degree = max_degree,
+                                             hy::kw::max_order = max_order);
+        },
+        "xyz"_a, "sh_coefficients"_a, "mu"_a, "a"_a, py::kw_only(), "max_degree"_a = py::none{},
+        "max_order"_a = py::none{}, docstrings::sh_gravity_acc().c_str());
 
     // Use macro to expose the SW models.
 #define HEYOKA_PY_EXPOSE_MODEL_SW(name)                                                                                \

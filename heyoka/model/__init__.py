@@ -7,8 +7,8 @@
 # with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 from .. import core as _core, expression
-from typing import Union
-import numpy
+from typing import Union as _Union
+import numpy as _numpy
 
 _lst = list(filter(lambda name: name.startswith("_model_"), dir(_core)))
 
@@ -44,7 +44,7 @@ del expression
 
 
 def sgp4_propagator(
-    sat_list: Union[list, numpy.ndarray],
+    sat_list: _Union[list, _numpy.ndarray],
     diff_order: int = 0,
     **kwargs,
 ):
@@ -123,4 +123,4 @@ def sgp4_propagator(
         raise TypeError(f"No sgp4 propagator available for the fp type '{fp_type}'")
 
 
-del _core, _lst, _name, numpy, Union
+del _core, _lst, _name

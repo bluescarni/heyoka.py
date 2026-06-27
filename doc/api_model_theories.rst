@@ -11,6 +11,9 @@ Analytical theories and models
    egm2008_acc
    get_egm2008_mu
    get_egm2008_a
+   get_egm2008_CS
+   sh_gravity_pot
+   sh_gravity_acc
    vsop2013_cartesian_icrf
    vsop2013_cartesian
    vsop2013_elliptic

@@ -604,12 +604,38 @@ class model_test_case(_ut.TestCase):
         self.assertTrue(np.allclose(out, [1.0, 1.1, 1.2], rtol=1e-15, atol=0.0))
 
     def test_egm2008(self):
+        import math
+        import numpy as np
         from . import make_vars
-        from .model import egm2008_pot, egm2008_acc, get_egm2008_mu, get_egm2008_a
+        from .model import (
+            egm2008_pot,
+            egm2008_acc,
+            get_egm2008_mu,
+            get_egm2008_a,
+            get_egm2008_CS,
+        )
 
         x, y, z = make_vars("x", "y", "z")
 
         self.assertNotEqual(get_egm2008_mu(), get_egm2008_a())
+
+        # CS coefficients getter.
+        cs = get_egm2008_CS()
+        self.assertEqual(cs.ndim, 2)
+        self.assertEqual(cs.shape[1], 2)
+        self.assertEqual(cs.dtype, np.float64)
+
+        # The array is a read-only view: it must not be writeable nor own its memory.
+        self.assertFalse(cs.flags.writeable)
+        self.assertFalse(cs.flags.owndata)
+        with self.assertRaises(ValueError):
+            cs[0, 0] = 0.0
+
+        # The coefficients start at degree n=2, i.e. the first 3 pairs (n=0,1) are omitted.
+        # Hence rows + 3 must be a triangular number (Nmax+1)*(Nmax+2)/2.
+        tri = cs.shape[0] + 3
+        disc = 8 * tri + 1
+        self.assertEqual(math.isqrt(disc) ** 2, disc)
         self.assertNotEqual(
             egm2008_pot([x, y, z], n=2, m=2), egm2008_pot([x, y, z], n=2, m=2, mu=1.2)
         )
@@ -631,6 +657,85 @@ class model_test_case(_ut.TestCase):
             egm2008_acc([x, y, z], n=2, m=2, a=1.2),
             egm2008_acc([x, y, z], n=2, m=2, mu=1.2),
         )
+
+    def test_sh_gravity(self):
+        from . import make_vars, expression, par
+        from .model import sh_gravity_pot, sh_gravity_acc
+
+        x, y, z = make_vars("x", "y", "z")
+
+        # A degree-2 model needs 6 [C, S] coefficient pairs.
+        coeffs = [
+            [1.0, 0.0],
+            [0.0, 0.0],
+            [0.0, 0.0],
+            [-1e-3, 0.0],
+            [0.0, 0.0],
+            [1e-6, -1e-6],
+        ]
+
+        pot = sh_gravity_pot([x, y, z], coeffs, mu=1.0, a=1.0)
+        self.assertIsInstance(pot, expression)
+
+        acc = sh_gravity_acc([x, y, z], coeffs, mu=1.0, a=1.0)
+        self.assertEqual(len(acc), 3)
+
+        # mu and a affect the result.
+        self.assertNotEqual(
+            pot, sh_gravity_pot([x, y, z], coeffs, mu=1.2, a=1.0)
+        )
+        self.assertNotEqual(
+            pot, sh_gravity_pot([x, y, z], coeffs, mu=1.0, a=1.2)
+        )
+
+        # The coefficients can be numbers, expressions, strings (variables) or runtime parameters.
+        mixed_coeffs = [
+            [expression(1.0), 0.0],
+            [0.0, 0.0],
+            [0.0, 0.0],
+            ["foo", par[1]],
+            [par[0], 0.0],
+            [1e-6, -1e-6],
+        ]
+        self.assertIsInstance(
+            sh_gravity_pot([x, y, z], mixed_coeffs, mu=1.0, a=1.0), expression
+        )
+
+        # max_degree/max_order: passing None uses the full inferred model.
+        self.assertEqual(
+            sh_gravity_pot([x, y, z], coeffs, mu=1.0, a=1.0),
+            sh_gravity_pot(
+                [x, y, z], coeffs, mu=1.0, a=1.0, max_degree=2, max_order=2
+            ),
+        )
+
+        # Restricting to a subset gives a different model.
+        self.assertNotEqual(
+            pot,
+            sh_gravity_pot([x, y, z], coeffs, mu=1.0, a=1.0, max_degree=1),
+        )
+
+        # max_order without max_degree is an error.
+        with self.assertRaises(ValueError):
+            sh_gravity_pot([x, y, z], coeffs, mu=1.0, a=1.0, max_order=1)
+
+        # max_degree exceeding the inferred degree is an error.
+        with self.assertRaises(ValueError):
+            sh_gravity_pot([x, y, z], coeffs, mu=1.0, a=1.0, max_degree=3)
+
+        # max_order > max_degree is an error.
+        with self.assertRaises(ValueError):
+            sh_gravity_pot(
+                [x, y, z], coeffs, mu=1.0, a=1.0, max_degree=1, max_order=2
+            )
+
+        # A list of coefficients whose size is not a triangular number is an error.
+        with self.assertRaises(ValueError):
+            sh_gravity_pot([x, y, z], coeffs[:-1], mu=1.0, a=1.0)
+
+        # An empty list of coefficients is an error.
+        with self.assertRaises(ValueError):
+            sh_gravity_pot([x, y, z], [], mu=1.0, a=1.0)
 
     def test_dayfrac(self):
         from . import make_vars
