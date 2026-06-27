@@ -174,4 +174,35 @@ See :py:func:`~heyoka.model.sh_gravity_pot()` for a detailed explanation of the 
 )";
 }
 
+std::string get_egm2008_CS()
+{
+    return R"(get_egm2008_CS() -> numpy.ndarray
+
+Get the harmonic coefficients of the EGM2008 model.
+
+.. versionadded:: 7.12.0
+
+This function will return the set of normalised :math:`\bar{C}_{nm}` and :math:`\bar{S}_{nm}` harmonic
+coefficients of the `EGM2008 geopotential model <https://en.wikipedia.org/wiki/Earth_Gravitational_Model#EGM2008>`__.
+
+The coefficients are returned as a read-only ``(N, 2)`` array of double-precision values, where each row is a
+``[C, S]`` pair and the rows are ordered by degree and then by order. See the :py:func:`~heyoka.model.sh_gravity_pot()`
+function for a detailed description of the layout.
+
+.. note::
+
+   Consistently with the published EGM2008 coefficients, this function will return ``[C, S]`` pairs starting from
+   the harmonic degree :math:`n=2` (and not :math:`n=0`). In the EGM2008 model :math:`\bar{C}_{0,0}=1`, while all
+   the remaining coefficients of degree less than 2 are zero.
+
+   As a consequence, the returned array is *not* directly in the format expected by the *sh_coefficients* argument
+   of :py:func:`~heyoka.model.sh_gravity_pot()` and :py:func:`~heyoka.model.sh_gravity_acc()`, which begins at
+   :math:`n=0`. To use these coefficients with those functions, prepend the three lower-degree pairs ``[1, 0]``,
+   ``[0, 0]`` and ``[0, 0]`` (corresponding to :math:`(n,m)` indices :math:`(0,0)`, :math:`(1,0)` and :math:`(1,1)`).
+
+:returns: a read-only ``(N, 2)`` array of normalised ``[C, S]`` harmonic coefficient pairs.
+
+)";
+}
+
 } // namespace heyoka_py::docstrings

@@ -10,6 +10,7 @@
 
 #include <algorithm>
 #include <array>
+#include <cassert>
 #include <cstddef>
 #include <cstdint>
 #include <iterator>
@@ -20,6 +21,8 @@
 #include <utility>
 #include <variant>
 #include <vector>
+
+#include <boost/numeric/conversion/cast.hpp>
 
 #include <fmt/core.h>
 
@@ -603,6 +606,33 @@ void expose_models(py::module_ &m)
         "a"_a = hy::model::get_egm2008_a(), docstrings::egm2008_acc().c_str());
     m.def("_model_get_egm2008_mu", &hy::model::get_egm2008_mu, docstrings::get_egm2008_mu().c_str());
     m.def("_model_get_egm2008_a", &hy::model::get_egm2008_a, docstrings::get_egm2008_a().c_str());
+    // NOTE: the EGM2008 CS coefficients live in a static buffer inside the compiled module's shared object, so we can
+    // expose them as a read-only, zero-copy numpy array. A truthy "base" object is required to make pybind produce a
+    // view rather than a copy.
+    //
+    // NOTE: we deliberately use the module m as the "base". The view is valid only as long as the module's shared
+    // object remains loaded in memory, and m is the Python object whose lifetime logically corresponds to that. Current
+    // CPython never unloads an extension's shared object while the interpreter is alive, so this is not strictly
+    // necessary today. But tying the view's lifetime to the module makes the dependency explicit and keeps the view
+    // safe under any implementation that ties extension unloading to the module object's lifetime (where passing, e.g.,
+    // None as "base" could leave the view dangling).
+    m.def(
+        "_model_get_egm2008_CS",
+        [m]() {
+            const auto cs_span = hy::model::get_egm2008_CS();
+
+            const auto n_pairs = boost::numeric_cast<py::ssize_t>(cs_span.extent(0));
+            assert(cs_span.extent(1) == 2u);
+
+            auto ret = py::array_t<double>(py::array::ShapeContainer{n_pairs, static_cast<py::ssize_t>(2)},
+                                           cs_span.data_handle(), m);
+
+            // Ensure the returned array is read-only.
+            ret.attr("flags").attr("writeable") = false;
+
+            return ret;
+        },
+        docstrings::get_egm2008_CS().c_str());
 
     // Custom spherical harmonics gravity.
 

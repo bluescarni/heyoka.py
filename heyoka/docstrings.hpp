@@ -93,6 +93,7 @@ std::string elp2000_cartesian_fk5();
 std::string get_elp2000_mus();
 std::string get_egm2008_mu();
 std::string get_egm2008_a();
+std::string get_egm2008_CS();
 std::string dayfrac();
 std::string eo_dynamics();
 std::string lagrange_prop();

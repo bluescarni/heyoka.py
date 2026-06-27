@@ -604,12 +604,38 @@ class model_test_case(_ut.TestCase):
         self.assertTrue(np.allclose(out, [1.0, 1.1, 1.2], rtol=1e-15, atol=0.0))
 
     def test_egm2008(self):
+        import math
+        import numpy as np
         from . import make_vars
-        from .model import egm2008_pot, egm2008_acc, get_egm2008_mu, get_egm2008_a
+        from .model import (
+            egm2008_pot,
+            egm2008_acc,
+            get_egm2008_mu,
+            get_egm2008_a,
+            get_egm2008_CS,
+        )
 
         x, y, z = make_vars("x", "y", "z")
 
         self.assertNotEqual(get_egm2008_mu(), get_egm2008_a())
+
+        # CS coefficients getter.
+        cs = get_egm2008_CS()
+        self.assertEqual(cs.ndim, 2)
+        self.assertEqual(cs.shape[1], 2)
+        self.assertEqual(cs.dtype, np.float64)
+
+        # The array is a read-only view: it must not be writeable nor own its memory.
+        self.assertFalse(cs.flags.writeable)
+        self.assertFalse(cs.flags.owndata)
+        with self.assertRaises(ValueError):
+            cs[0, 0] = 0.0
+
+        # The coefficients start at degree n=2, i.e. the first 3 pairs (n=0,1) are omitted.
+        # Hence rows + 3 must be a triangular number (Nmax+1)*(Nmax+2)/2.
+        tri = cs.shape[0] + 3
+        disc = 8 * tri + 1
+        self.assertEqual(math.isqrt(disc) ** 2, disc)
         self.assertNotEqual(
             egm2008_pot([x, y, z], n=2, m=2), egm2008_pot([x, y, z], n=2, m=2, mu=1.2)
         )
