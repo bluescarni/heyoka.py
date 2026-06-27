@@ -9,6 +9,9 @@ Changelog
 New
 ~~~
 
+- Add the :py:func:`~heyoka.model.get_egm2008_CS()` function, returning the harmonic coefficients of the
+  EGM2008 model
+  (`#273 <https://github.com/bluescarni/heyoka.py/pull/273>`__).
 - In addition to the existing EGM2008 geopotential model, it is now possible to
   define custom spherical harmonics gravity models via the
   :py:func:`~heyoka.model.sh_gravity_pot()` and :py:func:`~heyoka.model.sh_gravity_acc()`

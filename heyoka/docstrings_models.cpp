@@ -197,8 +197,8 @@ function for a detailed description of the layout.
 
    As a consequence, the returned array is *not* directly in the format expected by the *sh_coefficients* argument
    of :py:func:`~heyoka.model.sh_gravity_pot()` and :py:func:`~heyoka.model.sh_gravity_acc()`, which begins at
-   :math:`n=0`. To use these coefficients with those functions, prepend the three lower-degree pairs ``[1, 0]``,
-   ``[0, 0]`` and ``[0, 0]`` (corresponding to :math:`(n,m)` indices :math:`(0,0)`, :math:`(1,0)` and :math:`(1,1)`).
+   :math:`n=0`. To use these coefficients with those functions, prepend the three lower-degree pairs ``[1.0, 0.0]``,
+   ``[0.0, 0.0]`` and ``[0.0, 0.0]`` (corresponding to :math:`(n,m)` indices :math:`(0,0)`, :math:`(1,0)` and :math:`(1,1)`).
 
 :returns: a read-only ``(N, 2)`` array of normalised ``[C, S]`` harmonic coefficient pairs.
 
