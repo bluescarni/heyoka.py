@@ -35,6 +35,8 @@ set(HEYOKA_PY_PYTHON_FILES
     _test_sw_data.py
     _sgp4_test_data.py
     model/__init__.py
+    model/_globals.py
+    model/_sgp4_propagator.py
     callback/__init__.py
 )
 
