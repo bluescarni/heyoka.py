@@ -11,7 +11,6 @@ import re
 from math import isfinite
 import numpy as np
 from . import _core
-from ._globals import time as htime, par
 
 _with_sympy = importlib.util.find_spec("sympy") is not None
 
@@ -21,7 +20,7 @@ def _from_sympy_symbol(sym):
     m = re.match(r"par\[((?:[1-9][0-9]*|0))\]", sym.name)
 
     if m:
-        return par[int(m.groups()[0])]
+        return _core._par[int(m.groups()[0])]
     else:
         return _core.expression(sym.name)
 
@@ -169,7 +168,7 @@ def _build_fmap():
     retval[sympy.Function("heyoka_kepE")] = _core.kepE
     retval[sympy.Function("heyoka_kepF")] = _core.kepF
     retval[sympy.Function("heyoka_kepDE")] = _core.kepDE
-    retval[sympy.Function("heyoka_time")] = lambda: htime
+    retval[sympy.Function("heyoka_time")] = lambda: _core._time
 
     return retval
 

@@ -7,7 +7,6 @@ set(HEYOKA_PY_PYTHON_FILES
     test.py
     _sympy_utils.py
     _generic_wrappers.py
-    _globals.py
     _s11n.py
     _ensemble_impl.py
     _real_reduce_factory.py
@@ -35,7 +34,6 @@ set(HEYOKA_PY_PYTHON_FILES
     _test_sw_data.py
     _sgp4_test_data.py
     model/__init__.py
-    model/_globals.py
     model/_sgp4_propagator.py
     callback/__init__.py
 )

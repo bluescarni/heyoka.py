@@ -295,7 +295,9 @@ class sympy_test_case(_ut.TestCase):
         self.assertEqual(
             _core.kepE(hx, hy), from_sympy(spy.Function("heyoka_kepE")(x, y))
         )
-        self.assertEqual(to_sympy(_core.kepE(hx, hy)), spy.Function("heyoka_kepE")(x, y))
+        self.assertEqual(
+            to_sympy(_core.kepE(hx, hy)), spy.Function("heyoka_kepE")(x, y)
+        )
 
         self.assertEqual(
             _core.kepF(hx, hy, hz), from_sympy(spy.Function("heyoka_kepF")(x, y, z))
@@ -328,7 +330,9 @@ class sympy_test_case(_ut.TestCase):
         self.assertEqual(-1.0 * hx, from_sympy(-x))
         self.assertEqual(to_sympy(-hx), -x)
 
-        self.assertEqual(to_sympy(_core.sigmoid(hx + hy)), 1.0 / (1.0 + spy.exp(-x - y)))
+        self.assertEqual(
+            to_sympy(_core.sigmoid(hx + hy)), 1.0 / (1.0 + spy.exp(-x - y))
+        )
 
         self.assertEqual(htime, from_sympy(spy.Function("heyoka_time")()))
         self.assertEqual(to_sympy(htime), spy.Function("heyoka_time")())

@@ -539,6 +539,7 @@ void expose_expression(py::module_ &m)
     py::class_<hey::detail::par_impl>(m, "_par_generator")
         .def(py::init<>())
         .def("__getitem__", &hey::detail::par_impl::operator[]);
+    m.attr("_par") = hey::detail::par_impl{};
 
     // dtens.
     py::class_<hey::dtens> dtens_cl(m, "dtens", py::dynamic_attr{}, docstrings::dtens().c_str());

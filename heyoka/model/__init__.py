@@ -82,8 +82,25 @@ from .._core import (
     vsop2013_elliptic,
 )
 
-from ._globals import delta_tt_tai
 from ._sgp4_propagator import sgp4_propagator
+from .. import _core
+
+# NOTE: these global attributes need to be defined directly in this file - if we
+# define them in a separate file and then import them, sphinx documentation is not
+# properly built.
+
+delta_tt_tai: _core.expression = _core.delta_tt_tai
+"""
+Difference between TT and TAI.
+
+.. versionadded:: 7.3.0
+
+This expression is a constant representing the difference between `terrestrial time (TT) <https://en.wikipedia.org/wiki/Terrestrial_Time>`__
+and `international atomic time (TAI) <https://en.wikipedia.org/wiki/International_Atomic_Time>`__.
+
+This difference amounts to exactly 32.184 SI seconds.
+
+"""
 
 __all__ = [
     # Core imports.
