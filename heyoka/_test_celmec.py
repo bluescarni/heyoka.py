@@ -12,8 +12,8 @@ import unittest as _ut
 
 class kepE_test_case(_ut.TestCase):
     def test_expr(self):
-        from . import kepE, diff, make_vars, sin, cos, core
-        from .core import _ppc_arch
+        from . import kepE, diff, make_vars, sin, cos, _core
+        from ._core import _ppc_arch
         import numpy as np
 
         x, y = make_vars("x", "y")
@@ -63,10 +63,10 @@ class kepE_test_case(_ut.TestCase):
             in str(cm.exception)
         )
 
-        if not hasattr(core, "real128"):
+        if not hasattr(_core, "real128"):
             return
 
-        from .core import real128
+        from ._core import real128
 
         self.assertEqual(
             diff(kepE(x, real128("1.1")), x),
@@ -80,8 +80,8 @@ class kepE_test_case(_ut.TestCase):
 
 class kepF_test_case(_ut.TestCase):
     def test_expr(self):
-        from . import kepF, make_vars, core
-        from .core import _ppc_arch
+        from . import kepF, make_vars, _core
+        from ._core import _ppc_arch
         import numpy as np
 
         x, y, z = make_vars("x", "y", "z")
@@ -119,10 +119,10 @@ class kepF_test_case(_ut.TestCase):
             in str(cm.exception)
         )
 
-        if not hasattr(core, "real128"):
+        if not hasattr(_core, "real128"):
             return
 
-        from .core import real128
+        from ._core import real128
 
         kepF(real128(0.1), y, z)
         kepF(real128(0.1), real128(0.2), z)
@@ -137,8 +137,8 @@ class kepF_test_case(_ut.TestCase):
 
 class kepDE_test_case(_ut.TestCase):
     def test_expr(self):
-        from . import kepDE, make_vars, core
-        from .core import _ppc_arch
+        from . import kepDE, make_vars, _core
+        from ._core import _ppc_arch
         import numpy as np
 
         x, y, z = make_vars("x", "y", "z")
@@ -176,10 +176,10 @@ class kepDE_test_case(_ut.TestCase):
             in str(cm.exception)
         )
 
-        if not hasattr(core, "real128"):
+        if not hasattr(_core, "real128"):
             return
 
-        from .core import real128
+        from ._core import real128
 
         kepDE(real128(0.1), y, z)
         kepDE(real128(0.1), real128(0.2), z)

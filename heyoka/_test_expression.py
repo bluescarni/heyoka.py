@@ -11,15 +11,15 @@ import unittest as _ut
 
 class expression_test_case(_ut.TestCase):
     def test_basic(self):
-        from . import expression as ex, core
+        from . import expression as ex, _core
         from . import make_vars
         import numpy as np
 
-        with_real128 = hasattr(core, "real128")
+        with_real128 = hasattr(_core, "real128")
         ld_63bit = np.finfo(np.longdouble).nmant == 63
 
         if with_real128:
-            real128 = core.real128
+            real128 = _core.real128
 
         # Minimal make_vars() testing.
         with self.assertRaises(ValueError) as cm:
@@ -251,8 +251,8 @@ class expression_test_case(_ut.TestCase):
         )
 
     def test_s11n(self):
-        from . import make_vars, sin, cos, core
-        from .core import _ppc_arch
+        from . import make_vars, sin, cos, _core
+        from ._core import _ppc_arch
         from numpy import longdouble
         import pickle
 
@@ -270,10 +270,10 @@ class expression_test_case(_ut.TestCase):
             ex = sin(longdouble("1.1") * x) + 2.0 * y
             self.assertEqual(ex, pickle.loads(pickle.dumps(ex)))
 
-        if not hasattr(core, "real128"):
+        if not hasattr(_core, "real128"):
             return
 
-        from .core import real128
+        from ._core import real128
 
         # Quad precision.
         if not _ppc_arch:

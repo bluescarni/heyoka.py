@@ -16,10 +16,10 @@ def _get_eps(fp_t):
     if fp_t == float or fp_t == np.longdouble or fp_t == np.float32:
         return np.finfo(fp_t).eps
 
-    from . import core
+    from . import _core
 
-    if hasattr(core, "real128"):
-        return core._get_real128_eps()
+    if hasattr(_core, "real128"):
+        return _core._get_real128_eps()
 
     raise TypeError(
         'Cannot compute the epsilon of the floating-point type "{}"'.format(fp_t)
@@ -80,9 +80,9 @@ class event_classes_test_case(_ut.TestCase):
             nt_event_batch,
             make_vars,
             event_direction,
-            core,
+            _core,
         )
-        from .core import _ppc_arch
+        from ._core import _ppc_arch
         import numpy as np
         import pickle
         import gc
@@ -95,8 +95,8 @@ class event_classes_test_case(_ut.TestCase):
         else:
             fp_types = [np.float32, float, np.longdouble]
 
-        if hasattr(core, "real128"):
-            fp_types.append(core.real128)
+        if hasattr(_core, "real128"):
+            fp_types.append(_core.real128)
 
         for fp_t in fp_types:
             # Non-terminal event.
@@ -1039,9 +1039,9 @@ class event_detection_test_case(_ut.TestCase):
             sin,
             taylor_adaptive,
             taylor_outcome,
-            core,
+            _core,
         )
-        from .core import _ppc_arch
+        from ._core import _ppc_arch
         from sys import getrefcount
         import numpy as np
         from copy import deepcopy
@@ -1053,8 +1053,8 @@ class event_detection_test_case(_ut.TestCase):
         else:
             fp_types = [np.float32, float, np.longdouble]
 
-        if hasattr(core, "real128"):
-            fp_types.append(core.real128)
+        if hasattr(_core, "real128"):
+            fp_types.append(_core.real128)
 
         # Use a pendulum for testing purposes.
         sys = [(x, v), (v, -9.8 * sin(x))]
@@ -1778,9 +1778,9 @@ class c_output_test_case(_ut.TestCase):
             taylor_adaptive,
             continuous_output_dbl,
             continuous_output_flt,
-            core,
+            _core,
         )
-        from .core import _ppc_arch
+        from ._core import _ppc_arch
         import numpy as np
         from pickle import dumps, loads
         from sys import getrefcount
@@ -1801,10 +1801,10 @@ class c_output_test_case(_ut.TestCase):
                 (np.longdouble, continuous_output_ldbl),
             ]
 
-        if hasattr(core, "real128"):
+        if hasattr(_core, "real128"):
             from . import continuous_output_f128
 
-            fp_types.append((core.real128, continuous_output_f128))
+            fp_types.append((_core.real128, continuous_output_f128))
 
         # Use a pendulum for testing purposes.
         sys = [(x, v), (v, -9.8 * sin(x))]
@@ -2076,6 +2076,73 @@ class s11n_backend_test_case(_ut.TestCase):
         self.assertEqual(get_serialization_backend(), cp)
 
 
+class package_layout_test_case(_ut.TestCase):
+    # Names exposed by the compiled _core module that are intentionally *not*
+    # re-exported by any public (sub)package. This should normally be empty;
+    # add an entry here (with a justification) if a public _core name must
+    # remain internal.
+    _allowed_unexported = set()
+
+    def test_core_names_are_partitioned(self):
+        # Every public (non-underscore) name provided by the compiled _core
+        # module must be re-exported - by identity and via __all__ - by exactly
+        # one of the public packages. This guards against two failure modes:
+        # a new _core binding that nobody re-exports (orphan), and the same
+        # name leaking out of more than one package (duplicate).
+        import heyoka
+        from heyoka import _core
+
+        packages = {
+            "heyoka": heyoka,
+            "heyoka.model": heyoka.model,
+            "heyoka.callback": heyoka.callback,
+        }
+
+        orphaned = []
+        duplicated = []
+        for name in dir(_core):
+            if name.startswith("_") or name in self._allowed_unexported:
+                continue
+            obj = getattr(_core, name)
+            homes = [
+                pkg_name
+                for pkg_name, pkg in packages.items()
+                if name in getattr(pkg, "__all__", ())
+                and getattr(pkg, name, None) is obj
+            ]
+            if len(homes) == 0:
+                orphaned.append(name)
+            elif len(homes) > 1:
+                duplicated.append((name, homes))
+
+        self.assertEqual(
+            orphaned,
+            [],
+            msg="public _core names re-exported by no package: {}".format(orphaned),
+        )
+        self.assertEqual(
+            duplicated,
+            [],
+            msg="public _core names re-exported by multiple packages: {}".format(
+                duplicated
+            ),
+        )
+
+    def test_all_entries_are_bound(self):
+        # Everything advertised in a package's __all__ must actually be an
+        # attribute of that package, otherwise 'from <pkg> import *' is broken.
+        import heyoka
+
+        for pkg in (heyoka, heyoka.model, heyoka.callback):
+            for name in pkg.__all__:
+                self.assertTrue(
+                    hasattr(pkg, name),
+                    msg="{}.__all__ lists '{}', which is not bound".format(
+                        pkg.__name__, name
+                    ),
+                )
+
+
 def run_test_suite():
     from . import (
         taylor_adaptive,
@@ -2138,6 +2205,7 @@ def run_test_suite():
     suite.addTest(tl.loadTestsFromTestCase(_test_cfunc.cfunc_test_case))
     suite.addTest(tl.loadTestsFromTestCase(_test_ensemble.ensemble_test_case))
     suite.addTest(tl.loadTestsFromTestCase(s11n_backend_test_case))
+    suite.addTest(tl.loadTestsFromTestCase(package_layout_test_case))
     suite.addTest(tl.loadTestsFromTestCase(recommended_simd_size_test_case))
     suite.addTest(tl.loadTestsFromTestCase(c_output_test_case))
     suite.addTest(tl.loadTestsFromTestCase(_test_expression.expression_test_case))

@@ -8,6 +8,7 @@
 
 # Imports from core.
 from .._core import (
+    Ap_avg,
     cart2geo,
     cr3bp,
     cr3bp_jacobi,
@@ -31,6 +32,7 @@ from .._core import (
     fixed_centres_energy,
     fixed_centres_potential,
     geo2cart,
+    get_egm2008_CS,
     get_egm2008_a,
     get_egm2008_mu,
     get_elp2000_mus,
@@ -69,6 +71,8 @@ from .._core import (
     sgp4,
     sgp4_propagator_dbl,
     sgp4_propagator_flt,
+    sh_gravity_acc,
+    sh_gravity_pot,
     state_from_rsw,
     state_from_rsw_inertial,
     state_to_rsw,
@@ -83,6 +87,7 @@ from ._sgp4_propagator import sgp4_propagator
 
 __all__ = [
     # Core imports.
+    "Ap_avg",
     "cart2geo",
     "cr3bp",
     "cr3bp_jacobi",
@@ -106,6 +111,7 @@ __all__ = [
     "fixed_centres_energy",
     "fixed_centres_potential",
     "geo2cart",
+    "get_egm2008_CS",
     "get_egm2008_a",
     "get_egm2008_mu",
     "get_elp2000_mus",
@@ -144,6 +150,8 @@ __all__ = [
     "sgp4",
     "sgp4_propagator_dbl",
     "sgp4_propagator_flt",
+    "sh_gravity_acc",
+    "sh_gravity_pot",
     "state_from_rsw",
     "state_from_rsw_inertial",
     "state_to_rsw",

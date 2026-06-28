@@ -21,7 +21,7 @@ class var_integrator_test_case(_ut.TestCase):
             par,
             time,
             taylor_adaptive,
-            core,
+            _core,
         )
         from sys import getrefcount
         import numpy as np
@@ -114,7 +114,7 @@ class var_integrator_test_case(_ut.TestCase):
             ta.eval_taylor_map(ta.tstate)
         self.assertTrue("may overlap" in str(cm.exception))
 
-        if not hasattr(core, "real"):
+        if not hasattr(_core, "real"):
             return
 
         from . import real
@@ -151,7 +151,7 @@ class var_integrator_test_case(_ut.TestCase):
             par,
             time,
             taylor_adaptive_batch,
-            core,
+            _core,
         )
         from sys import getrefcount
         import numpy as np
@@ -271,7 +271,7 @@ class var_integrator_test_case(_ut.TestCase):
             time,
             taylor_adaptive_batch,
             taylor_adaptive,
-            core,
+            _core,
         )
         import numpy as np
 
