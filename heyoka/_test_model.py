@@ -681,12 +681,8 @@ class model_test_case(_ut.TestCase):
         self.assertEqual(len(acc), 3)
 
         # mu and a affect the result.
-        self.assertNotEqual(
-            pot, sh_gravity_pot([x, y, z], coeffs, mu=1.2, a=1.0)
-        )
-        self.assertNotEqual(
-            pot, sh_gravity_pot([x, y, z], coeffs, mu=1.0, a=1.2)
-        )
+        self.assertNotEqual(pot, sh_gravity_pot([x, y, z], coeffs, mu=1.2, a=1.0))
+        self.assertNotEqual(pot, sh_gravity_pot([x, y, z], coeffs, mu=1.0, a=1.2))
 
         # The coefficients can be numbers, expressions, strings (variables) or runtime parameters.
         mixed_coeffs = [
@@ -704,9 +700,7 @@ class model_test_case(_ut.TestCase):
         # max_degree/max_order: passing None uses the full inferred model.
         self.assertEqual(
             sh_gravity_pot([x, y, z], coeffs, mu=1.0, a=1.0),
-            sh_gravity_pot(
-                [x, y, z], coeffs, mu=1.0, a=1.0, max_degree=2, max_order=2
-            ),
+            sh_gravity_pot([x, y, z], coeffs, mu=1.0, a=1.0, max_degree=2, max_order=2),
         )
 
         # Restricting to a subset gives a different model.
@@ -725,9 +719,7 @@ class model_test_case(_ut.TestCase):
 
         # max_order > max_degree is an error.
         with self.assertRaises(ValueError):
-            sh_gravity_pot(
-                [x, y, z], coeffs, mu=1.0, a=1.0, max_degree=1, max_order=2
-            )
+            sh_gravity_pot([x, y, z], coeffs, mu=1.0, a=1.0, max_degree=1, max_order=2)
 
         # A list of coefficients whose size is not a triangular number is an error.
         with self.assertRaises(ValueError):

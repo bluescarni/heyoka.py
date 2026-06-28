@@ -83,7 +83,7 @@ class scalar_integrator_test_case(_ut.TestCase):
             )
 
     def test_dtime(self):
-        from .core import _ppc_arch
+        from ._core import _ppc_arch
         from . import taylor_adaptive, make_vars, sin
 
         x, v = make_vars("x", "v")
@@ -143,8 +143,8 @@ class scalar_integrator_test_case(_ut.TestCase):
         self.assertNotEqual(ta_dc.state[0], ta.state[0])
 
     def test_basic(self):
-        from . import taylor_adaptive, make_vars, t_event, sin, core
-        from .core import _ppc_arch
+        from . import taylor_adaptive, make_vars, t_event, sin, _core
+        from ._core import _ppc_arch
         from .callback import angle_reducer
         import numpy as np
 
@@ -153,8 +153,8 @@ class scalar_integrator_test_case(_ut.TestCase):
         else:
             fp_types = [np.float32, float, np.longdouble]
 
-        if hasattr(core, "real128"):
-            fp_types.append(core.real128)
+        if hasattr(_core, "real128"):
+            fp_types.append(_core.real128)
 
         x, v = make_vars("x", "v")
 
@@ -323,8 +323,8 @@ class scalar_integrator_test_case(_ut.TestCase):
             delattr(ta, "foo")
 
     def test_events(self):
-        from . import nt_event, t_event, make_vars, sin, taylor_adaptive, core
-        from .core import _ppc_arch
+        from . import nt_event, t_event, make_vars, sin, taylor_adaptive, _core
+        from ._core import _ppc_arch
         import numpy as np
 
         if _ppc_arch:
@@ -332,8 +332,8 @@ class scalar_integrator_test_case(_ut.TestCase):
         else:
             fp_types = [np.float32, float, np.longdouble]
 
-        if hasattr(core, "real128"):
-            fp_types.append(core.real128)
+        if hasattr(_core, "real128"):
+            fp_types.append(_core.real128)
 
         x, v = make_vars("x", "v")
 
@@ -365,8 +365,8 @@ class scalar_integrator_test_case(_ut.TestCase):
             self.assertTrue(ta.te_cooldowns[0] is None)
 
     def test_s11n(self):
-        from . import nt_event, make_vars, sin, taylor_adaptive, core
-        from .core import _ppc_arch
+        from . import nt_event, make_vars, sin, taylor_adaptive, _core
+        from ._core import _ppc_arch
         import numpy as np
         import pickle
 
@@ -377,8 +377,8 @@ class scalar_integrator_test_case(_ut.TestCase):
         else:
             fp_types = [np.float32, float, np.longdouble]
 
-        if hasattr(core, "real128"):
-            fp_types.append(core.real128)
+        if hasattr(_core, "real128"):
+            fp_types.append(_core.real128)
 
         # Use a pendulum for testing purposes.
         sys = [(x, v), (v, -9.8 * sin(x))]
@@ -465,8 +465,8 @@ class scalar_integrator_test_case(_ut.TestCase):
                 )
 
     def test_step_callback(self):
-        from . import taylor_adaptive, make_vars, sin, core
-        from .core import _ppc_arch
+        from . import taylor_adaptive, make_vars, sin, _core
+        from ._core import _ppc_arch
         from .callback import angle_reducer
         import numpy as np
 
@@ -475,8 +475,8 @@ class scalar_integrator_test_case(_ut.TestCase):
         else:
             fp_types = [np.float32, float, np.longdouble]
 
-        if hasattr(core, "real128"):
-            fp_types.append(core.real128)
+        if hasattr(_core, "real128"):
+            fp_types.append(_core.real128)
 
         x, v = make_vars("x", "v")
 

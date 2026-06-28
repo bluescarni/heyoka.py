@@ -6,6 +6,10 @@
 # Public License v. 2.0. If a copy of the MPL was not distributed
 # with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-from .._core import angle_reducer
+from ._core import real
 
-__all__ = ["angle_reducer"]
+
+def _real_reduce_factory():
+    # Internal factory function used in the implementation
+    # of the pickle protocol for real.
+    return real()

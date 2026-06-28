@@ -1176,7 +1176,7 @@ void expose_real128(py::module_ &m)
 {
     // Fill out the entries of py_real128_type.
     py_real128_type.tp_base = &PyGenericArrType_Type;
-    py_real128_type.tp_name = "heyoka.core.real128";
+    py_real128_type.tp_name = "heyoka._core.real128";
     py_real128_type.tp_basicsize = sizeof(py_real128);
     py_real128_type.tp_flags = Py_TPFLAGS_DEFAULT;
     py_real128_type.tp_doc = PyDoc_STR("");

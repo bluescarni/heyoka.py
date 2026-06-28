@@ -11,14 +11,14 @@ import unittest as _ut
 
 class real128_test_case(_ut.TestCase):
     def test_scalar(self):
-        from . import core
+        from . import _core
 
-        if not hasattr(core, "real128"):
+        if not hasattr(_core, "real128"):
             return
 
         import random
         from . import real128
-        from .core import _ppc_arch
+        from ._core import _ppc_arch
 
         if _ppc_arch:
             ld = float
@@ -87,8 +87,8 @@ class real128_test_case(_ut.TestCase):
         self.assertEqual(str(real128("-123")), "-123")
 
         # Construction from real.
-        if hasattr(core, "real"):
-            real = core.real
+        if hasattr(_core, "real"):
+            real = _core.real
 
             self.assertEqual(real128(real("1.1", 113)), real128("1.1"))
             self.assertNotEqual(real128(real("1.1", 100)), real128("1.1"))
@@ -144,8 +144,8 @@ class real128_test_case(_ut.TestCase):
         self.assertEqual(repr(1.0 + real128(42)), "43")
         # self.assertEqual(repr(ld(1) + real128(42)), "43")
         self.assertEqual(repr(f32(1) + real128(42)), "43")
-        if hasattr(core, "real"):
-            real = core.real
+        if hasattr(_core, "real"):
+            real = _core.real
             self.assertTrue(isinstance(real128() + real(), real))
             self.assertTrue(isinstance(real() + real128(), real))
             self.assertEqual(
@@ -173,8 +173,8 @@ class real128_test_case(_ut.TestCase):
         self.assertEqual(repr(1.0 - real128(42)), "-41")
         # self.assertEqual(repr(ld(1) - real128(42)), "-41")
         self.assertEqual(repr(f32(1) - real128(42)), "-41")
-        if hasattr(core, "real"):
-            real = core.real
+        if hasattr(_core, "real"):
+            real = _core.real
             self.assertTrue(isinstance(real128() - real(), real))
             self.assertTrue(isinstance(real() - real128(), real))
             self.assertEqual(
@@ -197,8 +197,8 @@ class real128_test_case(_ut.TestCase):
         self.assertEqual(repr(2.0 * real128(42)), "84")
         # self.assertEqual(repr(ld(2) * real128(42)), "84")
         self.assertEqual(repr(f32(2) * real128(42)), "84")
-        if hasattr(core, "real"):
-            real = core.real
+        if hasattr(_core, "real"):
+            real = _core.real
             self.assertTrue(isinstance(real128() * real(), real))
             self.assertTrue(isinstance(real() * real128(), real))
             self.assertEqual(
@@ -221,8 +221,8 @@ class real128_test_case(_ut.TestCase):
         self.assertEqual(repr(-42.0 // real128(9)), "-5")
         # self.assertEqual(repr(ld(-42) // real128(9)), "-5")
         self.assertEqual(repr(f32(-42) // real128(9)), "-5")
-        if hasattr(core, "real"):
-            real = core.real
+        if hasattr(_core, "real"):
+            real = _core.real
             self.assertTrue(isinstance(real128(1) // real(1), real))
             self.assertTrue(isinstance(real(1) // real128(1), real))
             self.assertEqual(
@@ -268,8 +268,8 @@ class real128_test_case(_ut.TestCase):
         self.assertFalse(real128("nan") < 2)
         self.assertFalse(2 < real128("nan"))
         self.assertFalse(real128("nan") < real128("nan"))
-        if hasattr(core, "real"):
-            real = core.real
+        if hasattr(_core, "real"):
+            real = _core.real
 
             self.assertTrue(real(1) < real128(2))
             self.assertTrue(real128(1) < real(2))
@@ -316,9 +316,9 @@ class real128_test_case(_ut.TestCase):
         self.assertEqual(x, y)
 
     def test_numpy(self):
-        from . import core
+        from . import _core
 
-        if not hasattr(core, "real128"):
+        if not hasattr(_core, "real128"):
             return
 
         import numpy as np
@@ -743,8 +743,8 @@ class real128_test_case(_ut.TestCase):
         self.assertTrue(np.isnan(arr1_sorted[2]))
 
         # Setitem from real.
-        if hasattr(core, "real"):
-            real = core.real
+        if hasattr(_core, "real"):
+            real = _core.real
 
             arr1 = np.array([1, 2, 3], dtype=real128)
             arr1[1] = real("1.1", 113)

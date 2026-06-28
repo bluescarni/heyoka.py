@@ -6,7 +6,10 @@ set(HEYOKA_PY_PYTHON_FILES
     __init__.py
     test.py
     _sympy_utils.py
+    _generic_wrappers.py
+    _s11n.py
     _ensemble_impl.py
+    _real_reduce_factory.py
     _test_real.py
     _test_real128.py
     _test_mp.py
@@ -31,6 +34,7 @@ set(HEYOKA_PY_PYTHON_FILES
     _test_sw_data.py
     _sgp4_test_data.py
     model/__init__.py
+    model/_sgp4_propagator.py
     callback/__init__.py
 )
 
@@ -72,34 +76,34 @@ set(_HEYOKA_PY_CORE_SOURCES
     docstrings_models.cpp
 )
 
-Python3_add_library(core MODULE WITH_SOABI ${_HEYOKA_PY_CORE_SOURCES})
+Python3_add_library(_core MODULE WITH_SOABI ${_HEYOKA_PY_CORE_SOURCES})
 
 unset(_HEYOKA_PY_CORE_SOURCES)
 
-target_link_libraries(core PRIVATE heyoka::heyoka fmt::fmt Boost::boost Boost::serialization TBB::tbb Python3::NumPy)
-target_link_libraries(core PRIVATE "${pybind11_LIBRARIES}")
+target_link_libraries(_core PRIVATE heyoka::heyoka fmt::fmt Boost::boost Boost::serialization TBB::tbb Python3::NumPy)
+target_link_libraries(_core PRIVATE "${pybind11_LIBRARIES}")
 if(heyoka_WITH_REAL128 OR heyoka_WITH_REAL)
-    target_link_libraries(core PRIVATE mp++::mp++)
+    target_link_libraries(_core PRIVATE mp++::mp++)
 endif()
-target_include_directories(core SYSTEM PRIVATE "${pybind11_INCLUDE_DIR}" "${Python3_INCLUDE_DIRS}")
-target_compile_definitions(core PRIVATE "${pybind11_DEFINITIONS}")
-target_compile_options(core PRIVATE
+target_include_directories(_core SYSTEM PRIVATE "${pybind11_INCLUDE_DIR}" "${Python3_INCLUDE_DIRS}")
+target_compile_definitions(_core PRIVATE "${pybind11_DEFINITIONS}")
+target_compile_options(_core PRIVATE
     "$<$<CONFIG:Debug>:${HEYOKA_PY_CXX_FLAGS_DEBUG}>"
     "$<$<CONFIG:Release>:${HEYOKA_PY_CXX_FLAGS_RELEASE}>"
     "$<$<CONFIG:RelWithDebInfo>:${HEYOKA_PY_CXX_FLAGS_RELEASE}>"
     "$<$<CONFIG:MinSizeRel>:${HEYOKA_PY_CXX_FLAGS_RELEASE}>"
 )
-set_target_properties(core PROPERTIES CXX_VISIBILITY_PRESET hidden)
-set_target_properties(core PROPERTIES VISIBILITY_INLINES_HIDDEN TRUE)
-target_compile_features(core PRIVATE cxx_std_23)
-set_property(TARGET core PROPERTY CXX_EXTENSIONS NO)
+set_target_properties(_core PROPERTIES CXX_VISIBILITY_PRESET hidden)
+set_target_properties(_core PROPERTIES VISIBILITY_INLINES_HIDDEN TRUE)
+target_compile_features(_core PRIVATE cxx_std_23)
+set_property(TARGET _core PROPERTY CXX_EXTENSIONS NO)
 
 if (HEYOKA_PY_ENABLE_IPO)
     include(CheckIPOSupported)
     check_ipo_supported(RESULT _HEYOKA_PY_IPO_RESULT OUTPUT _HEYOKA_PY_IPO_OUTPUT)
     if (_HEYOKA_PY_IPO_RESULT)
         message(STATUS "IPO requested and supported, enabling.")
-        set_property(TARGET core PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
+        set_property(TARGET _core PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
     else()
         message(STATUS "IPO requested, but it is not supported by the compiler:\n${_HEYOKA_PY_IPO_OUTPUT}")
     endif()
@@ -117,7 +121,7 @@ else()
 endif()
 
 # Install the core module.
-install(TARGETS core
+install(TARGETS _core
     RUNTIME DESTINATION ${_HEYOKA_PY_INSTALL_DIR}
     LIBRARY DESTINATION ${_HEYOKA_PY_INSTALL_DIR}
 )

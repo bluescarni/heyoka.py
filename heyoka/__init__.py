@@ -9,227 +9,159 @@
 # Version setup.
 from ._version import __version__
 
-import cloudpickle as _cloudpickle
-from threading import Lock as _Lock
+# The top-level imports from the core module.
+from ._core import (
+    acos,
+    acosh,
+    asin,
+    asinh,
+    atan,
+    atan2,
+    atanh,
+    cfunc_dbl,
+    cfunc_flt,
+    cfunc_ldbl,
+    code_model,
+    continuous_output_batch_dbl,
+    continuous_output_batch_flt,
+    continuous_output_dbl,
+    continuous_output_flt,
+    continuous_output_ldbl,
+    cos,
+    cosh,
+    dfun,
+    diff,
+    diff_args,
+    diff_tensors,
+    dtens,
+    eop_data,
+    eq,
+    erf,
+    event_direction,
+    exp,
+    expression,
+    func_args,
+    get_nthreads,
+    get_params,
+    get_variables,
+    gt,
+    gte,
+    hamiltonian,
+    install_custom_numpy_mem_handler,
+    kepDE,
+    kepE,
+    kepF,
+    lagrangian,
+    leaky_relu,
+    leaky_relup,
+    llvm_multi_state,
+    llvm_state,
+    log,
+    logical_and,
+    logical_or,
+    lt,
+    lte,
+    make_vars,
+    neq,
+    nt_event_batch_dbl,
+    nt_event_batch_flt,
+    nt_event_dbl,
+    nt_event_flt,
+    nt_event_ldbl,
+    pi,
+    prod,
+    relu,
+    relup,
+    remove_custom_numpy_mem_handler,
+    rename_variables,
+    select,
+    set_logger_level_critical,
+    set_logger_level_debug,
+    set_logger_level_error,
+    set_logger_level_info,
+    set_logger_level_trace,
+    set_logger_level_warning,
+    set_nthreads,
+    sigmoid,
+    sin,
+    sinh,
+    sqrt,
+    subs,
+    sum,
+    sw_data,
+    t_event_batch_dbl,
+    t_event_batch_flt,
+    t_event_dbl,
+    t_event_flt,
+    t_event_ldbl,
+    tan,
+    tanh,
+    taylor_adaptive_batch_dbl,
+    taylor_adaptive_batch_flt,
+    taylor_adaptive_dbl,
+    taylor_adaptive_flt,
+    taylor_adaptive_ldbl,
+    taylor_outcome,
+    to_sympy,
+    var_args,
+    var_ode_sys,
+)
 
-# We import the sub-modules into the root namespace.
-from .core import *
-
-# Explicitly import the submodules
-# NOTE: it is *important* that the import is performed
-# here, *after* the initial import of core. Otherwise,
-# we would get missing symbols on POSIX platforms.
-from . import test, model, callback
-
-
-def _with_real128():
-    # Small helper to check if real128 is available.
-    from . import core
-
-    return hasattr(core, "real128")
-
-
-def _with_real():
-    # Small helper to check if real is available.
-    from . import core
-
-    return hasattr(core, "real")
-
-
-from numpy import float32 as _f32, float64 as _f64, longdouble as _ld, dtype as _dtype
-
-_fp_to_suffix_dict = {_f32: "_flt", _f64: "_dbl", float: "_dbl", _ld: "_ldbl"}
-
-del _f32
-del _f64
-del _ld
+# The real128 and real classes - and the functions/classes that depend on them -
+# are available only in certain environments. Import them conditionally, reusing
+# the availability checks from _generic_wrappers (a leaf module depending only on
+# _core, so importing it here introduces no circular dependency).
+from ._generic_wrappers import _with_real128, _with_real
 
 if _with_real128():
-    _fp_to_suffix_dict[real128] = "_f128"
+    from ._core import (
+        cfunc_f128,
+        continuous_output_f128,
+        nt_event_f128,
+        real128,
+        t_event_f128,
+        taylor_adaptive_f128,
+    )
 
 if _with_real():
-    _fp_to_suffix_dict[real] = "_real"
-
-
-def _fp_to_suffix(fp_t):
-    if not isinstance(fp_t, type):
-        raise TypeError(
-            'A Python type was expected in input, but an object of type "{}" was'
-            " provided instead".format(type(fp_t))
-        )
-
-    if fp_t in _fp_to_suffix_dict:
-        return _fp_to_suffix_dict[fp_t]
-
-    raise TypeError(
-        'The floating-point type "{}" is not recognized/supported'.format(fp_t)
+    from ._core import (
+        cfunc_real,
+        continuous_output_real,
+        nt_event_real,
+        real,
+        real_prec_max,
+        real_prec_min,
+        t_event_real,
+        taylor_adaptive_real,
     )
 
-
-def taylor_adaptive(sys, state=[], **kwargs):
-    from . import core
-
-    fp_type = kwargs.pop("fp_type", float)
-    fp_suffix = _fp_to_suffix(fp_type)
-
-    return getattr(core, "taylor_adaptive{}".format(fp_suffix))(sys, state, **kwargs)
-
-
-def taylor_adaptive_batch(sys, state, **kwargs):
-    from . import core
-
-    fp_type = kwargs.pop("fp_type", float)
-    fp_suffix = _fp_to_suffix(fp_type)
-
-    return getattr(core, "taylor_adaptive_batch{}".format(fp_suffix))(
-        sys, state, **kwargs
-    )
-
-
-def recommended_simd_size(fp_type=float):
-    from . import core
-
-    fp_suffix = _fp_to_suffix(fp_type)
-
-    return getattr(core, "_recommended_simd_size{}".format(fp_suffix))()
-
-
-def cfunc(fn, vars, **kwargs):
-    from . import core
-
-    fp_type = kwargs.pop("fp_type", float)
-    fp_suffix = _fp_to_suffix(fp_type)
-
-    return getattr(core, "cfunc{}".format(fp_suffix))(fn, vars, **kwargs)
-
-
-def nt_event(ex, callback, **kwargs):
-    from . import core
-
-    fp_type = kwargs.pop("fp_type", float)
-    fp_suffix = _fp_to_suffix(fp_type)
-
-    return getattr(core, "nt_event{}".format(fp_suffix))(ex, callback, **kwargs)
-
-
-def t_event(ex, **kwargs):
-    from . import core
-
-    fp_type = kwargs.pop("fp_type", float)
-    fp_suffix = _fp_to_suffix(fp_type)
-
-    return getattr(core, "t_event{}".format(fp_suffix))(ex, **kwargs)
-
-
-def nt_event_batch(ex, callback, **kwargs):
-    from . import core
-
-    fp_type = kwargs.pop("fp_type", float)
-    fp_suffix = _fp_to_suffix(fp_type)
-
-    return getattr(core, "nt_event_batch{}".format(fp_suffix))(ex, callback, **kwargs)
-
-
-def t_event_batch(ex, **kwargs):
-    from . import core
-
-    fp_type = kwargs.pop("fp_type", float)
-    fp_suffix = _fp_to_suffix(fp_type)
-
-    return getattr(core, "t_event_batch{}".format(fp_suffix))(ex, **kwargs)
-
-
-def from_sympy(ex, s_dict={}):
-    from ._sympy_utils import _with_sympy, _from_sympy_impl
-
-    if not _with_sympy:
-        raise ImportError(
-            "The 'from_sympy()' function is not available because sympy is not"
-            " installed"
-        )
-
-    from sympy import Basic
-    from .core import expression
-
-    if not isinstance(ex, Basic):
-        raise TypeError(
-            "The 'ex' parameter must be a sympy expression but it is of type {} instead".format(
-                type(ex)
-            )
-        )
-
-    if not isinstance(s_dict, dict):
-        raise TypeError(
-            "The 's_dict' parameter must be a dict but it is of type {} instead".format(
-                type(s_dict)
-            )
-        )
-
-    if any(not isinstance(_, Basic) for _ in s_dict):
-        raise TypeError("The keys in 's_dict' must all be sympy expressions")
-
-    if any(not isinstance(s_dict[_], expression) for _ in s_dict):
-        raise TypeError("The values in 's_dict' must all be heyoka expressions")
-
-    return _from_sympy_impl(ex, s_dict, {})
-
-
-# Machinery for the setup of the serialization backend.
-
-
-# Helper to create dicts mapping a name to a serialization backend
-# and vice-versa.
-def _make_s11n_backend_maps():
-    import pickle
-
-    ret = {"cloudpickle": _cloudpickle, "pickle": pickle}
-
-    try:
-        import dill
-
-        ret["dill"] = dill
-    except ImportError:
-        pass
-
-    inv = dict([(ret[_], _) for _ in ret])
-
-    return ret, inv
-
-
-_s11n_backend_map, _s11n_backend_inv_map = _make_s11n_backend_maps()
-
-# The currently active s11n backend.
-_s11n_backend = _cloudpickle
-
-# Lock to protect access to _s11n_backend.
-_s11n_backend_mutex = _Lock()
-
-
-def set_serialization_backend(name):
-    global _s11n_backend
-
-    if not isinstance(name, str):
-        raise TypeError(
-            "The serialization backend must be specified as a string, but an object of"
-            " type {} was provided instead".format(type(name))
-        )
-
-    if not name in _s11n_backend_map:
-        raise ValueError(
-            "The serialization backend '{}' is not valid. The valid backends are: {}".format(
-                name, list(_s11n_backend_map.keys())
-            )
-        )
-
-    new_backend = _s11n_backend_map[name]
-
-    with _s11n_backend_mutex:
-        _s11n_backend = new_backend
-
-
-def get_serialization_backend():
-    with _s11n_backend_mutex:
-        return _s11n_backend
+# Explicitly import the sub-packages
+#
+# NOTE: it is *important* that the import is performed here, *after* the initial import of core. Otherwise,
+# we would get missing symbols on POSIX platforms.
+from . import test, model, callback
+from ._sympy_utils import from_sympy
+from ._generic_wrappers import (
+    taylor_adaptive,
+    taylor_adaptive_batch,
+    recommended_simd_size,
+    cfunc,
+    nt_event,
+    t_event,
+    nt_event_batch,
+    t_event_batch,
+)
+from ._s11n import get_serialization_backend, set_serialization_backend
+from ._ensemble_impl import (
+    ensemble_propagate_until,
+    ensemble_propagate_for,
+    ensemble_propagate_grid,
+    ensemble_propagate_until_batch,
+    ensemble_propagate_for_batch,
+    ensemble_propagate_grid_batch,
+)
+from . import _core
+from numpy import dtype as _dtype
 
 
 # Machinery to setup the custom SSL verify file.
@@ -239,117 +171,18 @@ def _setup_custom_verify_file():
     except ImportError:
         return
 
-    from .core import _set_ssl_verify_file
+    from ._core import _set_ssl_verify_file
 
     _set_ssl_verify_file(certifi.where())
 
 
 _setup_custom_verify_file()
 
+# NOTE: these global attributes need to be defined directly in this file - if we
+# define them in a separate file and then import them, sphinx documentation is not
+# properly built.
 
-# Ensemble propagations.
-def _ensemble_propagate_generic(tp, ta, arg, n_iter, gen, **kwargs):
-    import numpy as np
-
-    if not isinstance(n_iter, int):
-        raise TypeError(
-            "The n_iter parameter must be an integer, but an object of type {} was"
-            " provided instead".format(type(n_iter))
-        )
-
-    if n_iter < 0:
-        raise ValueError(
-            "The n_iter parameter must be non-negative, but it is {} instead".format(
-                n_iter
-            )
-        )
-
-    # Validate arg and max_delta_t, if present.
-    def is_iterable(x):
-        from collections.abc import Iterable
-
-        return isinstance(x, Iterable)
-
-    if tp == "until" or tp == "for":
-        if is_iterable(arg):
-            raise TypeError(
-                "Cannot perform an ensemble propagate_until/for(): the final epoch/time"
-                " interval must be a scalar, not an iterable object"
-            )
-    else:
-        arg = np.array(arg)
-
-        if arg.ndim != 1:
-            raise ValueError(
-                "Cannot perform an ensemble propagate_grid(): the input time grid must"
-                " be one-dimensional, but instead it has {} dimensions".format(arg.ndim)
-            )
-
-    if "max_delta_t" in kwargs and is_iterable(kwargs["max_delta_t"]):
-        raise TypeError(
-            'Cannot perform an ensemble propagate_until/for/grid(): the "max_delta_t"'
-            " argument must be a scalar, not an iterable object"
-        )
-
-    # Parallelisation algorithm.
-    algo = kwargs.pop("algorithm", "thread")
-    allowed_algos = ["thread", "process"]
-
-    if algo == "thread":
-        from ._ensemble_impl import _ensemble_propagate_thread
-
-        return _ensemble_propagate_thread(tp, ta, arg, n_iter, gen, **kwargs)
-
-    if algo == "process":
-        from ._ensemble_impl import _ensemble_propagate_process
-
-        return _ensemble_propagate_process(tp, ta, arg, n_iter, gen, **kwargs)
-
-    raise ValueError(
-        "The parallelisation algorithm must be one of {}, but '{}' was provided instead".format(
-            allowed_algos, algo
-        )
-    )
-
-
-def ensemble_propagate_until(ta, t, n_iter, gen, **kwargs):
-    return _ensemble_propagate_generic("until", ta, t, n_iter, gen, **kwargs)
-
-
-def ensemble_propagate_for(ta, delta_t, n_iter, gen, **kwargs):
-    return _ensemble_propagate_generic("for", ta, delta_t, n_iter, gen, **kwargs)
-
-
-def ensemble_propagate_grid(ta, grid, n_iter, gen, **kwargs):
-    return _ensemble_propagate_generic("grid", ta, grid, n_iter, gen, **kwargs)
-
-
-def ensemble_propagate_until_batch(ta, t, n_iter, gen, **kwargs):
-    return _ensemble_propagate_generic("until", ta, t, n_iter, gen, **kwargs)
-
-
-def ensemble_propagate_for_batch(ta, delta_t, n_iter, gen, **kwargs):
-    return _ensemble_propagate_generic("for", ta, delta_t, n_iter, gen, **kwargs)
-
-
-def ensemble_propagate_grid_batch(ta, grid, n_iter, gen, **kwargs):
-    return _ensemble_propagate_generic("grid", ta, grid, n_iter, gen, **kwargs)
-
-
-def _real_reduce_factory():
-    # Internal factory function used in the implementation
-    # of the pickle protocol for real.
-    return real()
-
-
-# Machinery for the par generator.
-def _create_par():
-    from . import core
-
-    return core._par_generator()
-
-
-par = _create_par()
+par = _core._par
 """
 Parameter factory.
 
@@ -363,24 +196,16 @@ Examples:
 
 """
 
-
-# Machinery for the time attribute.
-def _create_time():
-    from . import core
-
-    return core._time
-
-
-time: expression = _create_time()
+time: _core.expression = _core._time
 """
 Time expression.
 
 This global object is an :py:class:`~heyoka.expression` which is used to represent
-time (i.e., the independent variable) in differential equations.
+time (i.e., the independent variable) in right-hand side of differential equations.
 
 """
 
-eop_data_row: _dtype = eop_data_row
+eop_data_row: _dtype = _core.eop_data_row
 """
 EOP data row.
 
@@ -400,7 +225,7 @@ a row of EOP data in the :py:class:`~heyoka.eop_data` class. The fields in the d
 
 """
 
-sw_data_row: _dtype = sw_data_row
+sw_data_row: _dtype = _core.sw_data_row
 """
 Space weather data row.
 
@@ -416,4 +241,156 @@ a row of space weather (SW) data in the :py:class:`~heyoka.sw_data` class. The f
 
 """
 
-del _dtype
+
+__all__ = [
+    "__version__",
+    # Imports from the core module.
+    "acos",
+    "acosh",
+    "asin",
+    "asinh",
+    "atan",
+    "atan2",
+    "atanh",
+    "cfunc_dbl",
+    "cfunc_flt",
+    "cfunc_ldbl",
+    "code_model",
+    "continuous_output_batch_dbl",
+    "continuous_output_batch_flt",
+    "continuous_output_dbl",
+    "continuous_output_flt",
+    "continuous_output_ldbl",
+    "cos",
+    "cosh",
+    "dfun",
+    "diff",
+    "diff_args",
+    "diff_tensors",
+    "dtens",
+    "eop_data",
+    "eq",
+    "erf",
+    "event_direction",
+    "exp",
+    "expression",
+    "func_args",
+    "get_nthreads",
+    "get_params",
+    "get_variables",
+    "gt",
+    "gte",
+    "hamiltonian",
+    "install_custom_numpy_mem_handler",
+    "kepDE",
+    "kepE",
+    "kepF",
+    "lagrangian",
+    "leaky_relu",
+    "leaky_relup",
+    "llvm_multi_state",
+    "llvm_state",
+    "log",
+    "logical_and",
+    "logical_or",
+    "lt",
+    "lte",
+    "make_vars",
+    "neq",
+    "nt_event_batch_dbl",
+    "nt_event_batch_flt",
+    "nt_event_dbl",
+    "nt_event_flt",
+    "nt_event_ldbl",
+    "pi",
+    "prod",
+    "relu",
+    "relup",
+    "remove_custom_numpy_mem_handler",
+    "rename_variables",
+    "select",
+    "set_logger_level_critical",
+    "set_logger_level_debug",
+    "set_logger_level_error",
+    "set_logger_level_info",
+    "set_logger_level_trace",
+    "set_logger_level_warning",
+    "set_nthreads",
+    "sigmoid",
+    "sin",
+    "sinh",
+    "sqrt",
+    "subs",
+    "sum",
+    "sw_data",
+    "t_event_batch_dbl",
+    "t_event_batch_flt",
+    "t_event_dbl",
+    "t_event_flt",
+    "t_event_ldbl",
+    "tan",
+    "tanh",
+    "taylor_adaptive_batch_dbl",
+    "taylor_adaptive_batch_flt",
+    "taylor_adaptive_dbl",
+    "taylor_adaptive_flt",
+    "taylor_adaptive_ldbl",
+    "taylor_outcome",
+    "to_sympy",
+    "var_args",
+    "var_ode_sys",
+    # Sub-packages.
+    "test",
+    "model",
+    "callback",
+    # Globals.
+    "par",
+    "time",
+    "eop_data_row",
+    "sw_data_row",
+    # Sympy utils.
+    "from_sympy",
+    # Generic wrappers.
+    "taylor_adaptive",
+    "taylor_adaptive_batch",
+    "recommended_simd_size",
+    "cfunc",
+    "nt_event",
+    "t_event",
+    "nt_event_batch",
+    "t_event_batch",
+    # Serialization.
+    "get_serialization_backend",
+    "set_serialization_backend",
+    # Ensemble propagations.
+    "ensemble_propagate_until",
+    "ensemble_propagate_for",
+    "ensemble_propagate_grid",
+    "ensemble_propagate_until_batch",
+    "ensemble_propagate_for_batch",
+    "ensemble_propagate_grid_batch",
+]
+
+# Add the conditionally-available features to __all__, mirroring the conditional
+# imports above so that the public surface matches what is actually exposed.
+if _with_real128():
+    __all__ += [
+        "cfunc_f128",
+        "continuous_output_f128",
+        "nt_event_f128",
+        "real128",
+        "t_event_f128",
+        "taylor_adaptive_f128",
+    ]
+
+if _with_real():
+    __all__ += [
+        "cfunc_real",
+        "continuous_output_real",
+        "nt_event_real",
+        "real",
+        "real_prec_max",
+        "real_prec_min",
+        "t_event_real",
+        "taylor_adaptive_real",
+    ]

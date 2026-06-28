@@ -12,7 +12,7 @@ import unittest as _ut
 
 class cfunc_test_case(_ut.TestCase):
     def test_basic(self):
-        from . import cfunc, make_vars, core, par, time, code_model
+        from . import cfunc, make_vars, _core, par, time, code_model
         import pickle
         from copy import copy, deepcopy
         from sys import getrefcount
@@ -103,10 +103,10 @@ class cfunc_test_case(_ut.TestCase):
         # NOTE: test for a bug in the multiprecision
         # implementation where the precision is not
         # correctly copied.
-        if not hasattr(core, "real"):
+        if not hasattr(_core, "real"):
             return
 
-        real = core.real
+        real = _core.real
 
         cf = cfunc([y * (x + z)], [x, y, z], fp_type=real, prec=128)
         self.assertEqual(
@@ -120,8 +120,8 @@ class cfunc_test_case(_ut.TestCase):
 
     def test_multi(self):
         import numpy as np
-        from . import cfunc, make_vars, sin, par, expression, core, time
-        from .core import _ppc_arch
+        from . import cfunc, make_vars, sin, par, expression, _core, time
+        from ._core import _ppc_arch
         from .test import _get_eps, _allclose
 
         if _ppc_arch:
@@ -129,8 +129,8 @@ class cfunc_test_case(_ut.TestCase):
         else:
             fp_types = [np.float32, float, np.longdouble]
 
-        if hasattr(core, "real128"):
-            fp_types.append(core.real128)
+        if hasattr(_core, "real128"):
+            fp_types.append(_core.real128)
 
         x, y = make_vars("x", "y")
         func = [sin(x + y), x - par[0], x + y + par[1] * time]
@@ -754,8 +754,8 @@ class cfunc_test_case(_ut.TestCase):
 
     def test_single(self):
         import numpy as np
-        from . import cfunc, make_vars, sin, par, expression, core, time
-        from .core import _ppc_arch
+        from . import cfunc, make_vars, sin, par, expression, _core, time
+        from ._core import _ppc_arch
         from .test import _get_eps, _allclose
 
         if _ppc_arch:
@@ -763,8 +763,8 @@ class cfunc_test_case(_ut.TestCase):
         else:
             fp_types = [np.float32, float, np.longdouble]
 
-        if hasattr(core, "real128"):
-            fp_types.append(core.real128)
+        if hasattr(_core, "real128"):
+            fp_types.append(_core.real128)
 
         x, y = make_vars("x", "y")
         func = [sin(x + y), x - par[0], x + y + par[1] + time]

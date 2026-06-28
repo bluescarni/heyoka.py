@@ -59,8 +59,8 @@ class sympy_test_case(_ut.TestCase):
         except ImportError:
             return
 
-        from . import to_sympy, from_sympy, expression, core
-        from .core import _ppc_arch
+        from . import to_sympy, from_sympy, expression, _core
+        from ._core import _ppc_arch
         from sympy import Float, Rational, Integer
         from mpmath import workprec
         import numpy as np
@@ -133,15 +133,15 @@ class sympy_test_case(_ut.TestCase):
                     )
 
         # Too high precision.
-        if not hasattr(core, "real"):
+        if not hasattr(_core, "real"):
             with self.assertRaises(ValueError) as cm:
                 from_sympy(Integer(2**500 + 1))
             self.assertTrue("the required precision" in str(cm.exception))
 
-        if not hasattr(core, "real128") or _ppc_arch:
+        if not hasattr(_core, "real128") or _ppc_arch:
             return
 
-        from .core import real128
+        from ._core import real128
 
         # Quad precision.
         with workprec(113):
@@ -194,7 +194,7 @@ class sympy_test_case(_ut.TestCase):
         import sympy as spy
 
         from . import (
-            core,
+            _core,
             make_vars,
             from_sympy,
             to_sympy,
@@ -209,56 +209,56 @@ class sympy_test_case(_ut.TestCase):
         x, y, z, a, b, c = spy.symbols("x y z a b c", real=True)
         hx, hy, hz, ha, hb, hc = make_vars("x", "y", "z", "a", "b", "c")
 
-        self.assertEqual(core.acos(hx), from_sympy(spy.acos(x)))
-        self.assertEqual(to_sympy(core.acos(hx)), spy.acos(x))
+        self.assertEqual(_core.acos(hx), from_sympy(spy.acos(x)))
+        self.assertEqual(to_sympy(_core.acos(hx)), spy.acos(x))
 
-        self.assertEqual(core.acosh(hx), from_sympy(spy.acosh(x)))
-        self.assertEqual(to_sympy(core.acosh(hx)), spy.acosh(x))
+        self.assertEqual(_core.acosh(hx), from_sympy(spy.acosh(x)))
+        self.assertEqual(to_sympy(_core.acosh(hx)), spy.acosh(x))
 
-        self.assertEqual(core.asin(hx), from_sympy(spy.asin(x)))
-        self.assertEqual(to_sympy(core.asin(hx)), spy.asin(x))
+        self.assertEqual(_core.asin(hx), from_sympy(spy.asin(x)))
+        self.assertEqual(to_sympy(_core.asin(hx)), spy.asin(x))
 
-        self.assertEqual(core.asinh(hx), from_sympy(spy.asinh(x)))
-        self.assertEqual(to_sympy(core.asinh(hx)), spy.asinh(x))
+        self.assertEqual(_core.asinh(hx), from_sympy(spy.asinh(x)))
+        self.assertEqual(to_sympy(_core.asinh(hx)), spy.asinh(x))
 
-        self.assertEqual(core.atan(hx), from_sympy(spy.atan(x)))
-        self.assertEqual(to_sympy(core.atan(hx)), spy.atan(x))
+        self.assertEqual(_core.atan(hx), from_sympy(spy.atan(x)))
+        self.assertEqual(to_sympy(_core.atan(hx)), spy.atan(x))
 
-        self.assertEqual(core.atan2(hy, hx), from_sympy(spy.atan2(y, x)))
-        self.assertEqual(to_sympy(core.atan2(hy, hx)), spy.atan2(y, x))
+        self.assertEqual(_core.atan2(hy, hx), from_sympy(spy.atan2(y, x)))
+        self.assertEqual(to_sympy(_core.atan2(hy, hx)), spy.atan2(y, x))
 
-        self.assertEqual(core.atanh(hx), from_sympy(spy.atanh(x)))
-        self.assertEqual(to_sympy(core.atanh(hx)), spy.atanh(x))
+        self.assertEqual(_core.atanh(hx), from_sympy(spy.atanh(x)))
+        self.assertEqual(to_sympy(_core.atanh(hx)), spy.atanh(x))
 
-        self.assertEqual(core.cos(hx), from_sympy(spy.cos(x)))
-        self.assertEqual(to_sympy(core.cos(hx)), spy.cos(x))
+        self.assertEqual(_core.cos(hx), from_sympy(spy.cos(x)))
+        self.assertEqual(to_sympy(_core.cos(hx)), spy.cos(x))
 
-        self.assertEqual(core.cosh(hx), from_sympy(spy.cosh(x)))
-        self.assertEqual(to_sympy(core.cosh(hx)), spy.cosh(x))
+        self.assertEqual(_core.cosh(hx), from_sympy(spy.cosh(x)))
+        self.assertEqual(to_sympy(_core.cosh(hx)), spy.cosh(x))
 
-        self.assertEqual(core.erf(hx), from_sympy(spy.erf(x)))
-        self.assertEqual(to_sympy(core.erf(hx)), spy.erf(x))
+        self.assertEqual(_core.erf(hx), from_sympy(spy.erf(x)))
+        self.assertEqual(to_sympy(_core.erf(hx)), spy.erf(x))
 
-        self.assertEqual(core.exp(hx), from_sympy(spy.exp(x)))
-        self.assertEqual(to_sympy(core.exp(hx)), spy.exp(x))
+        self.assertEqual(_core.exp(hx), from_sympy(spy.exp(x)))
+        self.assertEqual(to_sympy(_core.exp(hx)), spy.exp(x))
 
-        self.assertEqual(core.log(hx), from_sympy(spy.log(x)))
-        self.assertEqual(to_sympy(core.log(hx)), spy.log(x))
+        self.assertEqual(_core.log(hx), from_sympy(spy.log(x)))
+        self.assertEqual(to_sympy(_core.log(hx)), spy.log(x))
 
-        self.assertEqual(core.sin(hx), from_sympy(spy.sin(x)))
-        self.assertEqual(to_sympy(core.sin(hx)), spy.sin(x))
+        self.assertEqual(_core.sin(hx), from_sympy(spy.sin(x)))
+        self.assertEqual(to_sympy(_core.sin(hx)), spy.sin(x))
 
-        self.assertEqual(core.sinh(hx), from_sympy(spy.sinh(x)))
-        self.assertEqual(to_sympy(core.sinh(hx)), spy.sinh(x))
+        self.assertEqual(_core.sinh(hx), from_sympy(spy.sinh(x)))
+        self.assertEqual(to_sympy(_core.sinh(hx)), spy.sinh(x))
 
-        self.assertEqual(core.sqrt(hx), from_sympy(spy.sqrt(x)))
-        self.assertEqual(to_sympy(core.sqrt(hx)), spy.sqrt(x))
+        self.assertEqual(_core.sqrt(hx), from_sympy(spy.sqrt(x)))
+        self.assertEqual(to_sympy(_core.sqrt(hx)), spy.sqrt(x))
 
-        self.assertEqual(core.tan(hx), from_sympy(spy.tan(x)))
-        self.assertEqual(to_sympy(core.tan(hx)), spy.tan(x))
+        self.assertEqual(_core.tan(hx), from_sympy(spy.tan(x)))
+        self.assertEqual(to_sympy(_core.tan(hx)), spy.tan(x))
 
-        self.assertEqual(core.tanh(hx), from_sympy(spy.tanh(x)))
-        self.assertEqual(to_sympy(core.tanh(hx)), spy.tanh(x))
+        self.assertEqual(_core.tanh(hx), from_sympy(spy.tanh(x)))
+        self.assertEqual(to_sympy(_core.tanh(hx)), spy.tanh(x))
 
         self.assertEqual(hx**3.5, from_sympy(x**3.5))
         self.assertEqual(to_sympy(hx**3.5), x**3.5)
@@ -293,42 +293,46 @@ class sympy_test_case(_ut.TestCase):
         self.assertEqual(to_sympy(hx / hz), x / z)
 
         self.assertEqual(
-            core.kepE(hx, hy), from_sympy(spy.Function("heyoka_kepE")(x, y))
-        )
-        self.assertEqual(to_sympy(core.kepE(hx, hy)), spy.Function("heyoka_kepE")(x, y))
-
-        self.assertEqual(
-            core.kepF(hx, hy, hz), from_sympy(spy.Function("heyoka_kepF")(x, y, z))
+            _core.kepE(hx, hy), from_sympy(spy.Function("heyoka_kepE")(x, y))
         )
         self.assertEqual(
-            to_sympy(core.kepF(hx, hy, hz)), spy.Function("heyoka_kepF")(x, y, z)
+            to_sympy(_core.kepE(hx, hy)), spy.Function("heyoka_kepE")(x, y)
         )
 
         self.assertEqual(
-            core.kepDE(hx, hy, hz), from_sympy(spy.Function("heyoka_kepDE")(x, y, z))
+            _core.kepF(hx, hy, hz), from_sympy(spy.Function("heyoka_kepF")(x, y, z))
         )
         self.assertEqual(
-            to_sympy(core.kepDE(hx, hy, hz)), spy.Function("heyoka_kepDE")(x, y, z)
+            to_sympy(_core.kepF(hx, hy, hz)), spy.Function("heyoka_kepF")(x, y, z)
+        )
+
+        self.assertEqual(
+            _core.kepDE(hx, hy, hz), from_sympy(spy.Function("heyoka_kepDE")(x, y, z))
+        )
+        self.assertEqual(
+            to_sympy(_core.kepDE(hx, hy, hz)), spy.Function("heyoka_kepDE")(x, y, z)
         )
 
         # relu/relup.
         self.assertEqual(
-            to_sympy(core.relu(hx)), spy.Piecewise((x, x > 0), (0.0, True))
+            to_sympy(_core.relu(hx)), spy.Piecewise((x, x > 0), (0.0, True))
         )
         self.assertEqual(
-            to_sympy(core.relup(hx)), spy.Piecewise((1.0, x > 0), (0.0, True))
+            to_sympy(_core.relup(hx)), spy.Piecewise((1.0, x > 0), (0.0, True))
         )
         self.assertEqual(
-            to_sympy(core.relu(hx, 0.1)), spy.Piecewise((x, x > 0), (x * 0.1, True))
+            to_sympy(_core.relu(hx, 0.1)), spy.Piecewise((x, x > 0), (x * 0.1, True))
         )
         self.assertEqual(
-            to_sympy(core.relup(hx, 0.1)), spy.Piecewise((1.0, x > 0), (0.1, True))
+            to_sympy(_core.relup(hx, 0.1)), spy.Piecewise((1.0, x > 0), (0.1, True))
         )
 
         self.assertEqual(-1.0 * hx, from_sympy(-x))
         self.assertEqual(to_sympy(-hx), -x)
 
-        self.assertEqual(to_sympy(core.sigmoid(hx + hy)), 1.0 / (1.0 + spy.exp(-x - y)))
+        self.assertEqual(
+            to_sympy(_core.sigmoid(hx + hy)), 1.0 / (1.0 + spy.exp(-x - y))
+        )
 
         self.assertEqual(htime, from_sympy(spy.Function("heyoka_time")()))
         self.assertEqual(to_sympy(htime), spy.Function("heyoka_time")())

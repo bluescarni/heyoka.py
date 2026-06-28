@@ -115,7 +115,7 @@ PyObject *import_numpy(PyObject *m)
 
 #endif
 
-PYBIND11_MODULE(core, m, pybind11::mod_gil_not_used())
+PYBIND11_MODULE(_core, m, pybind11::mod_gil_not_used())
 {
     using namespace pybind11::literals;
     namespace docstrings = heypy::docstrings;
@@ -133,8 +133,6 @@ PYBIND11_MODULE(core, m, pybind11::mod_gil_not_used())
         // is to throw the pybind11 exception.
         throw py::error_already_set();
     }
-
-    m.doc() = "The core heyoka module";
 
     // Flag PPC arch.
     m.attr("_ppc_arch") =

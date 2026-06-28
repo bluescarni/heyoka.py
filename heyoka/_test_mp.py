@@ -11,9 +11,9 @@ import unittest as _ut
 
 class mp_test_case(_ut.TestCase):
     def test_cfunc(self):
-        from . import core
+        from . import _core
 
-        if not hasattr(core, "real"):
+        if not hasattr(_core, "real"):
             return
 
         from . import real, cfunc, make_vars, sin, par, time
@@ -204,9 +204,9 @@ class mp_test_case(_ut.TestCase):
         )
 
     def test_sympy(self):
-        from . import core
+        from . import _core
 
-        if not hasattr(core, "real"):
+        if not hasattr(_core, "real"):
             return
 
         try:
@@ -256,9 +256,9 @@ class mp_test_case(_ut.TestCase):
         )
 
     def test_expression(self):
-        from . import core
+        from . import _core
 
-        if not hasattr(core, "real"):
+        if not hasattr(_core, "real"):
             return
 
         from . import expression as ex, real, kepE, kepF, kepDE, atan2
@@ -318,9 +318,9 @@ class mp_test_case(_ut.TestCase):
         atan2(real("1.1", 128), ex("x"))
 
     def test_events(self):
-        from . import core
+        from . import _core
 
-        if not hasattr(core, "real"):
+        if not hasattr(_core, "real"):
             return
 
         # Basic event testing.
@@ -353,12 +353,12 @@ class mp_test_case(_ut.TestCase):
         self.assertLess(abs(ta.state[1]), 1e-70)
 
     def test_c_out(self):
-        from . import core
+        from . import _core
 
-        if not hasattr(core, "real"):
+        if not hasattr(_core, "real"):
             return
 
-        from . import make_vars, taylor_adaptive, real, core
+        from . import make_vars, taylor_adaptive, real, _core
         import numpy as np
         from copy import deepcopy
 
@@ -391,7 +391,7 @@ class mp_test_case(_ut.TestCase):
 
         # Test with non-owning array.
         vout = res[-2](
-            core._make_no_real_array([real("5.3", prec + 10), real("7.3", prec + 10)])
+            _core._make_no_real_array([real("5.3", prec + 10), real("7.3", prec + 10)])
         )
         self.assertTrue(np.all(vout[0] == r5))
         self.assertTrue(np.all(vout[1] == r7))
@@ -410,12 +410,12 @@ class mp_test_case(_ut.TestCase):
         self.assertTrue("1" in str(cm.exception))
 
     def test_basic(self):
-        from . import core
+        from . import _core
 
-        if not hasattr(core, "real"):
+        if not hasattr(_core, "real"):
             return
 
-        from . import make_vars, taylor_adaptive, sin, real, core
+        from . import make_vars, taylor_adaptive, sin, real, _core
         import numpy as np
 
         x, v = make_vars("x", "v")
@@ -484,53 +484,53 @@ class mp_test_case(_ut.TestCase):
         # Testing for the pyreal_check_array() helper.
         arr = np.empty((5,), dtype=real)
         with self.assertRaises(ValueError) as cm:
-            core._real_check_array(arr)
+            _core._real_check_array(arr)
         self.assertTrue("A non-constructed/invalid real" in str(cm.exception))
         self.assertTrue("0" in str(cm.exception))
 
         arr[0] = 5
         with self.assertRaises(ValueError) as cm:
-            core._real_check_array(arr)
+            _core._real_check_array(arr)
         self.assertTrue("A non-constructed/invalid real" in str(cm.exception))
         self.assertTrue("1" in str(cm.exception))
 
-        core._real_check_array(core._make_no_real_array(arr))
+        _core._real_check_array(_core._make_no_real_array(arr))
 
         arr.fill(real(5))
-        core._real_check_array(arr)
+        _core._real_check_array(arr)
 
         arr = np.empty((5, 5), dtype=real)
         with self.assertRaises(ValueError) as cm:
-            core._real_check_array(arr)
+            _core._real_check_array(arr)
         self.assertTrue("A non-constructed/invalid real" in str(cm.exception))
         self.assertTrue("0, 0" in str(cm.exception))
 
         arr[0, 0] = 5
         with self.assertRaises(ValueError) as cm:
-            core._real_check_array(arr)
+            _core._real_check_array(arr)
         self.assertTrue("A non-constructed/invalid real" in str(cm.exception))
         self.assertTrue("0, 1" in str(cm.exception))
         arr[0].fill(real(5))
         arr[1, 0] = 6
         arr[1, 1] = 7
         with self.assertRaises(ValueError) as cm:
-            core._real_check_array(arr)
+            _core._real_check_array(arr)
         self.assertTrue("A non-constructed/invalid real" in str(cm.exception))
         self.assertTrue("1, 2" in str(cm.exception))
 
         arr.fill(real(5))
-        core._real_check_array(arr)
+        _core._real_check_array(arr)
 
         arr = np.empty((), dtype=real)
-        core._real_check_array(arr)
+        _core._real_check_array(arr)
 
         arr = np.empty((1, 0, 3), dtype=real)
-        core._real_check_array(arr)
+        _core._real_check_array(arr)
 
         arr = np.empty((1, 2, 3), dtype=real)
 
         with self.assertRaises(ValueError) as cm:
-            core._real_check_array(arr)
+            _core._real_check_array(arr)
         self.assertTrue(
             "Cannot call pyreal_check_array() on an array with 3 dimensions"
             in str(cm.exception)
@@ -538,23 +538,23 @@ class mp_test_case(_ut.TestCase):
 
         # Testing for the pyreal_ensure_array() helper.
         arr = np.empty((5,), dtype=real)
-        core._real_ensure_array(arr, 71)
+        _core._real_ensure_array(arr, 71)
         for val in arr:
             self.assertEqual(val, 0)
             self.assertEqual(val.prec, 71)
 
         arr = np.empty((5,), dtype=real)
         arr[0] = real(5, 88)
-        core._real_ensure_array(arr, 71)
+        _core._real_ensure_array(arr, 71)
         self.assertEqual(arr[0], 5)
         self.assertEqual(arr[0].prec, 71)
         for val in arr[1:]:
             self.assertEqual(val, 0)
             self.assertEqual(val.prec, 71)
 
-        arr = core._make_no_real_array(np.empty((5,), dtype=real))
+        arr = _core._make_no_real_array(np.empty((5,), dtype=real))
         arr[0] = real(5, 88)
-        core._real_ensure_array(arr, 71)
+        _core._real_ensure_array(arr, 71)
         self.assertEqual(arr[0], 5)
         self.assertEqual(arr[0].prec, 71)
         for val in arr[1:]:
@@ -562,13 +562,13 @@ class mp_test_case(_ut.TestCase):
             self.assertEqual(val.prec, 71)
 
         arr = np.full((5,), real("1.1", 11))
-        core._real_ensure_array(arr, 71)
+        _core._real_ensure_array(arr, 71)
         for val in arr:
             self.assertEqual(val, real(real("1.1", 11), 71))
             self.assertEqual(val.prec, 71)
 
         arr = np.empty((5, 5), dtype=real)
-        core._real_ensure_array(arr, 71)
+        _core._real_ensure_array(arr, 71)
         for r in arr:
             for val in r:
                 self.assertEqual(val, 0)
@@ -576,7 +576,7 @@ class mp_test_case(_ut.TestCase):
 
         arr = np.empty((5, 5), dtype=real)
         arr[0, :] = real(5, 88)
-        core._real_ensure_array(arr, 71)
+        _core._real_ensure_array(arr, 71)
         self.assertTrue(np.all(arr[0, :] == np.full((5,), real(5, 88))))
         for r in arr[1:]:
             for val in r:
@@ -584,14 +584,14 @@ class mp_test_case(_ut.TestCase):
                 self.assertEqual(val.prec, 71)
 
         arr = np.full((5, 5), real("1.1", 11))
-        core._real_ensure_array(arr, 71)
+        _core._real_ensure_array(arr, 71)
         for r in arr:
             for val in r:
                 self.assertEqual(val, real(real("1.1", 11), 71))
                 self.assertEqual(val.prec, 71)
 
         arr = np.empty((), dtype=real)
-        core._real_ensure_array(arr, 71)
+        _core._real_ensure_array(arr, 71)
 
         arr = np.empty((1, 0, 3), dtype=real)
         self.assertEqual(arr.size, 0)

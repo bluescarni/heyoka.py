@@ -928,7 +928,7 @@ PyObject *py_real_reduce(PyObject *self, [[maybe_unused]] PyObject *args)
     assert(args == nullptr);
 
     // Fetch the factory function.
-    auto *hy_mod = PyImport_ImportModule("heyoka");
+    auto *hy_mod = PyImport_ImportModule("heyoka._real_reduce_factory");
     if (hy_mod == nullptr) {
         return nullptr;
     }
@@ -2301,7 +2301,7 @@ void expose_real(py::module_ &m)
 
     // Fill out the entries of py_real_type.
     py_real_type.tp_base = &PyGenericArrType_Type;
-    py_real_type.tp_name = "heyoka.core.real";
+    py_real_type.tp_name = "heyoka._core.real";
     py_real_type.tp_basicsize = sizeof(py_real);
     py_real_type.tp_flags = Py_TPFLAGS_DEFAULT;
     py_real_type.tp_doc = PyDoc_STR("");

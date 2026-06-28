@@ -137,7 +137,7 @@ void expose_sgp4_propagator_impl(py::module_ &m, const std::string &suffix)
     using date_t = typename prop_t::date;
     PYBIND11_NUMPY_DTYPE(date_t, jd, frac);
 
-    py::class_<prop_t> prop_cl(m, fmt::format("_model_sgp4_propagator_{}", suffix).c_str(), py::dynamic_attr{},
+    py::class_<prop_t> prop_cl(m, fmt::format("sgp4_propagator_{}", suffix).c_str(), py::dynamic_attr{},
                                docstrings::sgp4_propagator(std::same_as<T, double> ? "double" : "single").c_str());
     prop_cl.def(
         py::init([](std::variant<py::list, py::array_t<T>> sat_list, std::uint32_t diff_order, bool high_accuracy,
