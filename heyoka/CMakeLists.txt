@@ -5,8 +5,10 @@ configure_file("${CMAKE_CURRENT_SOURCE_DIR}/_version.py.in" "${CMAKE_CURRENT_BIN
 set(HEYOKA_PY_PYTHON_FILES
     __init__.py
     test.py
-    _fp_suffixes.py
     _sympy_utils.py
+    _generic_wrappers.py
+    _globals.py
+    _s11n.py
     _ensemble_impl.py
     _test_real.py
     _test_real128.py

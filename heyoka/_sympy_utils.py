@@ -6,19 +6,14 @@
 # Public License v. 2.0. If a copy of the MPL was not distributed
 # with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+import importlib.util
 import re
 from math import isfinite
 import numpy as np
-from ._core import expression
 from . import _core
+from ._globals import time as htime, par
 
-_with_sympy = True
-
-try:
-    import sympy
-    from sympy import Basic
-except ImportError:
-    _with_sympy = False
+_with_sympy = importlib.util.find_spec("sympy") is not None
 
 
 def _from_sympy_symbol(sym):
@@ -26,18 +21,19 @@ def _from_sympy_symbol(sym):
     m = re.match(r"par\[((?:[1-9][0-9]*|0))\]", sym.name)
 
     if m:
-        from . import par
         return par[int(m.groups()[0])]
     else:
-        return expression(sym.name)
+        return _core.expression(sym.name)
 
 
 def _from_sympy_number(ex):
-    is_rational = isinstance(ex, _spy.Rational)
+    import sympy
+
+    is_rational = isinstance(ex, sympy.Rational)
 
     if (
-        not isinstance(ex, _spy.Float)
-        and not isinstance(ex, _spy.Integer)
+        not isinstance(ex, sympy.Float)
+        and not isinstance(ex, sympy.Integer)
         and not is_rational
     ):
         raise TypeError(
@@ -64,7 +60,7 @@ def _from_sympy_number(ex):
         prec = ex.p.bit_length()
     else:
         prec = (
-            ex.num.context.prec if isinstance(ex, _spy.Float) else int(ex).bit_length()
+            ex.num.context.prec if isinstance(ex, sympy.Float) else int(ex).bit_length()
         )
 
     nf_err_msg = "A non-finite value was produced when converting from a sympy number"
@@ -79,7 +75,7 @@ def _from_sympy_number(ex):
         if not isfinite(retval):
             raise ValueError(nf_err_msg)
 
-        return expression(retval)
+        return _core.expression(retval)
 
     # NOTE: the number returned by finfo does not account for
     # the implicit bit.
@@ -94,28 +90,28 @@ def _from_sympy_number(ex):
         if not np.isfinite(retval):
             raise ValueError(nf_err_msg)
 
-        return expression(retval)
+        return _core.expression(retval)
 
-    if hasattr(core, "real128") and prec <= 113:
+    if hasattr(_core, "real128") and prec <= 113:
         # We have real128, and quadmath precision
         # is enough to represent exactly the number.
-        real128 = core.real128
+        real128 = _core.real128
 
         retval = real128(ex.p) / real128(ex.q) if is_rational else real128(str(ex))
 
         if not np.isfinite(retval):
             raise ValueError(nf_err_msg)
 
-        return expression(retval)
+        return _core.expression(retval)
 
-    if hasattr(core, "real"):
+    if hasattr(_core, "real"):
         # We have real, we can in principle represent
         # any number.
-        real = core.real
+        real = _core.real
 
         # Ensure we are not going to employ
         # a too-low precision.
-        prec = max(prec, core.real_prec_min())
+        prec = max(prec, _core.real_prec_min())
 
         retval = (
             real(ex.p, prec) / real(ex.q, prec) if is_rational else real(str(ex), prec)
@@ -124,7 +120,7 @@ def _from_sympy_number(ex):
         if not np.isfinite(retval):
             raise ValueError(nf_err_msg)
 
-        return expression(retval)
+        return _core.expression(retval)
 
     raise ValueError(
         "Cannot convert the number {} from sympy exactly: the required precision ({})"
@@ -136,44 +132,44 @@ def _build_fmap():
     if not _with_sympy:
         return None
 
-    from . import core, pi, time as htime
+    import sympy
 
     retval = {}
 
-    retval[_spy.acos] = core.acos
-    retval[_spy.acosh] = core.acosh
-    retval[_spy.asin] = core.asin
-    retval[_spy.asinh] = core.asinh
-    retval[_spy.atan] = core.atan
-    retval[_spy.atan2] = core.atan2
-    retval[_spy.atanh] = core.atanh
-    retval[_spy.cos] = core.cos
-    retval[_spy.cosh] = core.cosh
-    retval[_spy.erf] = core.erf
-    retval[_spy.exp] = core.exp
-    retval[_spy.log] = core.log
-    retval[_spy.sin] = core.sin
-    retval[_spy.sinh] = core.sinh
-    retval[_spy.tan] = core.tan
-    retval[_spy.tanh] = core.tanh
-    retval[_spy.Pow] = lambda x, y: x**y
+    retval[sympy.acos] = _core.acos
+    retval[sympy.acosh] = _core.acosh
+    retval[sympy.asin] = _core.asin
+    retval[sympy.asinh] = _core.asinh
+    retval[sympy.atan] = _core.atan
+    retval[sympy.atan2] = _core.atan2
+    retval[sympy.atanh] = _core.atanh
+    retval[sympy.cos] = _core.cos
+    retval[sympy.cosh] = _core.cosh
+    retval[sympy.erf] = _core.erf
+    retval[sympy.exp] = _core.exp
+    retval[sympy.log] = _core.log
+    retval[sympy.sin] = _core.sin
+    retval[sympy.sinh] = _core.sinh
+    retval[sympy.tan] = _core.tan
+    retval[sympy.tanh] = _core.tanh
+    retval[sympy.Pow] = lambda x, y: x**y
     # NOTE: sympy.pi is an instance of this type.
-    retval[_spy.core.numbers.Pi] = lambda: pi
+    retval[sympy.core.numbers.Pi] = lambda: _core.pi
 
     def add_wrapper(*args):
-        return core.sum(args)
+        return _core.sum(args)
 
-    retval[_spy.Add] = add_wrapper
+    retval[sympy.Add] = add_wrapper
 
     def mul_wrapper(*args):
-        return core.prod(args)
+        return _core.prod(args)
 
-    retval[_spy.Mul] = mul_wrapper
+    retval[sympy.Mul] = mul_wrapper
 
-    retval[_spy.Function("heyoka_kepE")] = core.kepE
-    retval[_spy.Function("heyoka_kepF")] = core.kepF
-    retval[_spy.Function("heyoka_kepDE")] = core.kepDE
-    retval[_spy.Function("heyoka_time")] = lambda: htime
+    retval[sympy.Function("heyoka_kepE")] = _core.kepE
+    retval[sympy.Function("heyoka_kepF")] = _core.kepF
+    retval[sympy.Function("heyoka_kepDE")] = _core.kepDE
+    retval[sympy.Function("heyoka_time")] = lambda: htime
 
     return retval
 
@@ -186,13 +182,15 @@ def _from_sympy_function(func, s_dict, c_dict):
 
     tp = type(func)
 
-    if not tp in _fmap:
+    if tp not in _fmap:
         raise TypeError("Unable to convert the sympy object {}".format(func))
 
     return _fmap[tp](*args)
 
 
 def _from_sympy_impl(ex, s_dict, c_dict):
+    import sympy
+
     # Check s_dict first.
     if ex in s_dict:
         return s_dict[ex]
@@ -201,12 +199,12 @@ def _from_sympy_impl(ex, s_dict, c_dict):
     if id(ex) in c_dict:
         return c_dict[id(ex)]
 
-    if isinstance(ex, _spy.Number):
+    if isinstance(ex, sympy.Number):
         ret = _from_sympy_number(ex)
         c_dict[id(ex)] = ret
         return ret
 
-    if isinstance(ex, _spy.Symbol):
+    if isinstance(ex, sympy.Symbol):
         ret = _from_sympy_symbol(ex)
         c_dict[id(ex)] = ret
         return ret
@@ -218,6 +216,8 @@ def _from_sympy_impl(ex, s_dict, c_dict):
 
 
 def from_sympy(ex, s_dict={}):
+    from sympy import Basic
+
     if not _with_sympy:
         raise ImportError(
             "The 'from_sympy()' function is not available because sympy is not"
@@ -241,7 +241,7 @@ def from_sympy(ex, s_dict={}):
     if any(not isinstance(_, Basic) for _ in s_dict):
         raise TypeError("The keys in 's_dict' must all be sympy expressions")
 
-    if any(not isinstance(s_dict[_], expression) for _ in s_dict):
+    if any(not isinstance(s_dict[_], _core.expression) for _ in s_dict):
         raise TypeError("The values in 's_dict' must all be heyoka expressions")
 
     return _from_sympy_impl(ex, s_dict, {})
