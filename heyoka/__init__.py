@@ -187,7 +187,7 @@ time: _core.expression = _core._time
 Time expression.
 
 This global object is an :py:class:`~heyoka.expression` which is used to represent
-time (i.e., the independent variable) in righ-hand side of differential equations.
+time (i.e., the independent variable) in right-hand side of differential equations.
 
 """
 
