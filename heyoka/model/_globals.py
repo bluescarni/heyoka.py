@@ -6,10 +6,9 @@
 # Public License v. 2.0. If a copy of the MPL was not distributed
 # with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-from .. import expression
-from .._core import delta_tt_tai
+from .. import _core
 
-delta_tt_tai: expression = delta_tt_tai
+delta_tt_tai: _core.expression = _core.delta_tt_tai
 """
 Difference between TT and TAI.
 
