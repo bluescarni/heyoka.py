@@ -9,8 +9,6 @@
 #include <sstream>
 #include <vector>
 
-#include <fmt/core.h>
-
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 
@@ -33,17 +31,17 @@ namespace
 {
 
 // NOTE: possible improvements:
-// - expose operator()/pre_hook()? Might be handy in step-by-step
-//   integrations. If we do it we probably need to expose them
-//   *after* having exposed the integrators, otherwise we have the usual
-//   issue of the signatures with the "wrong" names.
+//
+// - expose operator()/pre_hook()? Might be handy in step-by-step integrations. If we do it we probably need to expose
+//  them *after* having exposed the integrators, otherwise we have the usual issue of the signatures with the "wrong"
+//  names.
 template <typename StepCallback>
 py::class_<StepCallback> expose_step_callback(py::module_ &m, const char *name)
 {
     // NOLINTNEXTLINE(google-build-using-namespace)
     using namespace pybind11::literals;
 
-    py::class_<StepCallback> ret(m, fmt::format("_callback_{}", name).c_str(), py::dynamic_attr{});
+    py::class_<StepCallback> ret(m, name, py::dynamic_attr{});
     ret.def(py::init<>());
     // Repr.
     ret.def("__repr__", [](const StepCallback &cb) {

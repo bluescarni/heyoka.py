@@ -239,37 +239,37 @@ void expose_models(py::module_ &m)
 
     // N-body.
     m.def(
-        "_model_nbody",
+        "nbody",
         [](std::uint32_t n, const vex_t &Gconst, const std::optional<std::vector<vex_t>> &masses) {
             return detail::nbody_impl(hy::model::nbody, n, Gconst, masses);
         },
         "n"_a.noconvert(), "Gconst"_a.noconvert() = 1., "masses"_a.noconvert() = py::none{});
     m.def(
-        "_model_nbody_energy",
+        "nbody_energy",
         [](std::uint32_t n, const vex_t &Gconst, const std::optional<std::vector<vex_t>> &masses) {
             return detail::nbody_impl(hy::model::nbody_energy, n, Gconst, masses);
         },
         "n"_a.noconvert(), "Gconst"_a.noconvert() = 1., "masses"_a.noconvert() = py::none{});
     m.def(
-        "_model_nbody_potential",
+        "nbody_potential",
         [](std::uint32_t n, const vex_t &Gconst, const std::optional<std::vector<vex_t>> &masses) {
             return detail::nbody_impl(hy::model::nbody_potential, n, Gconst, masses);
         },
         "n"_a.noconvert(), "Gconst"_a.noconvert() = 1., "masses"_a.noconvert() = py::none{});
     m.def(
-        "_model_np1body",
+        "np1body",
         [](std::uint32_t n, const vex_t &Gconst, const std::optional<std::vector<vex_t>> &masses) {
             return detail::nbody_impl(hy::model::np1body, n, Gconst, masses);
         },
         "n"_a.noconvert(), "Gconst"_a.noconvert() = 1., "masses"_a.noconvert() = py::none{});
     m.def(
-        "_model_np1body_energy",
+        "np1body_energy",
         [](std::uint32_t n, const vex_t &Gconst, const std::optional<std::vector<vex_t>> &masses) {
             return detail::nbody_impl(hy::model::np1body_energy, n, Gconst, masses);
         },
         "n"_a.noconvert(), "Gconst"_a.noconvert() = 1., "masses"_a.noconvert() = py::none{});
     m.def(
-        "_model_np1body_potential",
+        "np1body_potential",
         [](std::uint32_t n, const vex_t &Gconst, const std::optional<std::vector<vex_t>> &masses) {
             return detail::nbody_impl(hy::model::np1body_potential, n, Gconst, masses);
         },
@@ -277,11 +277,11 @@ void expose_models(py::module_ &m)
 
     // Pendulum.
     m.def(
-        "_model_pendulum",
+        "pendulum",
         [](const vex_t &gconst, const vex_t &l) { return detail::pendulum_impl(hy::model::pendulum, gconst, l); },
         "gconst"_a.noconvert() = 1., "length"_a.noconvert() = 1., docstrings::pendulum().c_str());
     m.def(
-        "_model_pendulum_energy",
+        "pendulum_energy",
         [](const vex_t &gconst, const vex_t &l) {
             return detail::pendulum_impl(hy::model::pendulum_energy, gconst, l);
         },
@@ -289,7 +289,7 @@ void expose_models(py::module_ &m)
 
     // Fixed centres.
     m.def(
-        "_model_fixed_centres",
+        "fixed_centres",
         [](const vex_t &Gconst, const std::vector<vex_t> &masses, const py::iterable &positions) {
             return detail::fixed_centres_impl(hy::model::fixed_centres, Gconst, masses, positions);
         },
@@ -297,14 +297,14 @@ void expose_models(py::module_ &m)
         "positions"_a = py::array{py::dtype(get_dtype<double>()), py::array::ShapeContainer{0, 3}},
         docstrings::fixed_centres().c_str());
     m.def(
-        "_model_fixed_centres_energy",
+        "fixed_centres_energy",
         [](const vex_t &Gconst, const std::vector<vex_t> &masses, const py::iterable &positions) {
             return detail::fixed_centres_impl(hy::model::fixed_centres_energy, Gconst, masses, positions);
         },
         "Gconst"_a.noconvert() = 1., "masses"_a.noconvert() = py::list{},
         "positions"_a = py::array{py::dtype(get_dtype<double>()), py::array::ShapeContainer{0, 3}});
     m.def(
-        "_model_fixed_centres_potential",
+        "fixed_centres_potential",
         [](const vex_t &Gconst, const std::vector<vex_t> &masses, const py::iterable &positions) {
             return detail::fixed_centres_impl(hy::model::fixed_centres_potential, Gconst, masses, positions);
         },
@@ -313,21 +313,20 @@ void expose_models(py::module_ &m)
 
     // Rotating reference frame.
     m.def(
-        "_model_rotating",
-        [](const std::vector<vex_t> &omega) { return detail::rotating_impl(hy::model::rotating, omega); },
+        "rotating", [](const std::vector<vex_t> &omega) { return detail::rotating_impl(hy::model::rotating, omega); },
         "omega"_a.noconvert() = py::list{});
     m.def(
-        "_model_rotating_energy",
+        "rotating_energy",
         [](const std::vector<vex_t> &omega) { return detail::rotating_impl(hy::model::rotating_energy, omega); },
         "omega"_a.noconvert() = py::list{});
     m.def(
-        "_model_rotating_potential",
+        "rotating_potential",
         [](const std::vector<vex_t> &omega) { return detail::rotating_impl(hy::model::rotating_potential, omega); },
         "omega"_a.noconvert() = py::list{});
 
     // Mascon.
     m.def(
-        "_model_mascon",
+        "mascon",
         [](const vex_t &Gconst, const std::vector<vex_t> &masses, const py::iterable &positions,
            const std::vector<vex_t> &omega) {
             return detail::mascon_impl(hy::model::mascon, Gconst, masses, positions, omega);
@@ -336,7 +335,7 @@ void expose_models(py::module_ &m)
         "positions"_a = py::array{py::dtype(get_dtype<double>()), py::array::ShapeContainer{0, 3}},
         "omega"_a.noconvert() = py::list{});
     m.def(
-        "_model_mascon_energy",
+        "mascon_energy",
         [](const vex_t &Gconst, const std::vector<vex_t> &masses, const py::iterable &positions,
            const std::vector<vex_t> &omega) {
             return detail::mascon_impl(hy::model::mascon_energy, Gconst, masses, positions, omega);
@@ -345,7 +344,7 @@ void expose_models(py::module_ &m)
         "positions"_a = py::array{py::dtype(get_dtype<double>()), py::array::ShapeContainer{0, 3}},
         "omega"_a.noconvert() = py::list{});
     m.def(
-        "_model_mascon_potential",
+        "mascon_potential",
         [](const vex_t &Gconst, const std::vector<vex_t> &masses, const py::iterable &positions,
            const std::vector<vex_t> &omega) {
             return detail::mascon_impl(hy::model::mascon_potential, Gconst, masses, positions, omega);
@@ -356,7 +355,7 @@ void expose_models(py::module_ &m)
 
     // VSOP2013.
     m.def(
-        "_model_vsop2013_elliptic",
+        "vsop2013_elliptic",
         [](std::uint32_t pl_idx, std::uint32_t var_idx, hy::expression t_expr, double thresh) {
             return hy::model::vsop2013_elliptic(pl_idx, var_idx, hy::kw::time_expr = std::move(t_expr),
                                                 hy::kw::thresh = thresh);
@@ -364,48 +363,46 @@ void expose_models(py::module_ &m)
         "pl_idx"_a, "var_idx"_a = 0, "time_expr"_a = hy::time, "thresh"_a.noconvert() = 1e-9,
         docstrings::vsop2013_elliptic().c_str());
     m.def(
-        "_model_vsop2013_cartesian",
+        "vsop2013_cartesian",
         [](std::uint32_t pl_idx, hy::expression t_expr, double thresh) {
             return hy::model::vsop2013_cartesian(pl_idx, hy::kw::time_expr = std::move(t_expr),
                                                  hy::kw::thresh = thresh);
         },
         "pl_idx"_a, "time_expr"_a = hy::time, "thresh"_a.noconvert() = 1e-9, docstrings::vsop2013_cartesian().c_str());
     m.def(
-        "_model_vsop2013_cartesian_icrf",
+        "vsop2013_cartesian_icrf",
         [](std::uint32_t pl_idx, hy::expression t_expr, double thresh) {
             return hy::model::vsop2013_cartesian_icrf(pl_idx, hy::kw::time_expr = std::move(t_expr),
                                                       hy::kw::thresh = thresh);
         },
         "pl_idx"_a, "time_expr"_a = hy::time, "thresh"_a.noconvert() = 1e-9,
         docstrings::vsop2013_cartesian_icrf().c_str());
-    m.def("_model_get_vsop2013_mus", &hy::model::get_vsop2013_mus, docstrings::get_vsop2013_mus().c_str());
+    m.def("get_vsop2013_mus", &hy::model::get_vsop2013_mus, docstrings::get_vsop2013_mus().c_str());
 
     // ELP2000.
     m.def(
-        "_model_elp2000_cartesian_e2000",
+        "elp2000_cartesian_e2000",
         [](hy::expression t_expr, double thresh) {
             return hy::model::elp2000_cartesian_e2000(hy::kw::time_expr = std::move(t_expr), hy::kw::thresh = thresh);
         },
         "time_expr"_a = hy::time, "thresh"_a.noconvert() = 1e-6, docstrings::elp2000_cartesian_e2000().c_str());
     m.def(
-        "_model_elp2000_cartesian_fk5",
+        "elp2000_cartesian_fk5",
         [](hy::expression t_expr, double thresh) {
             return hy::model::elp2000_cartesian_fk5(hy::kw::time_expr = std::move(t_expr), hy::kw::thresh = thresh);
         },
         "time_expr"_a = hy::time, "thresh"_a.noconvert() = 1e-6, docstrings::elp2000_cartesian_fk5().c_str());
-    m.def("_model_get_elp2000_mus", &hy::model::get_elp2000_mus, docstrings::get_elp2000_mus().c_str());
+    m.def("get_elp2000_mus", &hy::model::get_elp2000_mus, docstrings::get_elp2000_mus().c_str());
 
     // CR3BP.
+    m.def("cr3bp", [](const vex_t &mu) { return detail::cr3bp_impl(hy::model::cr3bp, mu); }, "mu"_a.noconvert() = 1e-3);
     m.def(
-        "_model_cr3bp", [](const vex_t &mu) { return detail::cr3bp_impl(hy::model::cr3bp, mu); },
-        "mu"_a.noconvert() = 1e-3);
-    m.def(
-        "_model_cr3bp_jacobi", [](const vex_t &mu) { return detail::cr3bp_impl(hy::model::cr3bp_jacobi, mu); },
+        "cr3bp_jacobi", [](const vex_t &mu) { return detail::cr3bp_impl(hy::model::cr3bp_jacobi, mu); },
         "mu"_a.noconvert() = 1e-3);
 
     // FFNN.
     m.def(
-        "_model_ffnn",
+        "ffnn",
         [](const std::vector<hy::expression> &inputs, const std::vector<std::uint32_t> &nn_hidden, std::uint32_t n_out,
            const std::vector<std::function<hy::expression(const hy::expression &)>> &activations,
            const std::variant<std::vector<hy::expression>, std::vector<double>> &nn_wb) {
@@ -419,7 +416,7 @@ void expose_models(py::module_ &m)
         "inputs"_a, "nn_hidden"_a, "n_out"_a, "activations"_a, "nn_wb"_a);
 
     m.def(
-        "_model_ffnn",
+        "ffnn",
         [](const std::vector<hy::expression> &inputs, const std::vector<std::uint32_t> &nn_hidden, std::uint32_t n_out,
            const std::vector<std::function<hy::expression(const hy::expression &)>> &activations) {
             return hy::model::ffnn(hy::kw::inputs = inputs, hy::kw::nn_hidden = nn_hidden, hy::kw::n_out = n_out,
@@ -429,7 +426,7 @@ void expose_models(py::module_ &m)
 
     // Cartesian<->geodetic.
     m.def(
-        "_model_cart2geo",
+        "cart2geo",
         [](const std::array<vex_t, 3> &xyz, double ecc2, double R_eq, unsigned n_iters) {
             return hy::model::cart2geo(detail::arr_ex_from_arr_variant(xyz), hy::kw::ecc2 = ecc2, hy::kw::R_eq = R_eq,
                                        hy::kw::n_iters = n_iters);
@@ -440,7 +437,7 @@ void expose_models(py::module_ &m)
                          / (hy::model::detail::a_earth * hy::model::detail::a_earth),
         "R_eq"_a = hy::model::detail::a_earth, "n_iters"_a = 4u, docstrings::cart2geo().c_str());
     m.def(
-        "_model_geo2cart",
+        "geo2cart",
         [](const std::array<vex_t, 3> &geo, double ecc2, double R_eq) {
             return hy::model::geo2cart(detail::arr_ex_from_arr_variant(geo), hy::kw::ecc2 = ecc2, hy::kw::R_eq = R_eq);
         },
@@ -452,7 +449,7 @@ void expose_models(py::module_ &m)
 
     // Thermospheric model NRLMSISE-00.
     m.def(
-        "_model_nrlmsise00_tn",
+        "nrlmsise00_tn",
         [](const std::vector<hy::expression> &geodetic, const hy::expression &f107, const hy::expression &f107a,
            const hy::expression &ap, const hy::expression &time) -> hy::expression {
             return hy::model::nrlmsise00_tn(hy::kw::geodetic = geodetic, hy::kw::f107 = f107, hy::kw::f107a = f107a,
@@ -462,7 +459,7 @@ void expose_models(py::module_ &m)
 
     // Thermospheric model JB08.
     m.def(
-        "_model_jb08_tn",
+        "jb08_tn",
         [](const std::vector<hy::expression> &geodetic, const hy::expression &f107, const hy::expression &f107a,
            const hy::expression &s107, const hy::expression &s107a, const hy::expression &m107,
            const hy::expression &m107a, const hy::expression &y107a, const hy::expression &y107,
@@ -477,7 +474,7 @@ void expose_models(py::module_ &m)
 
     // sgp4.
     m.def(
-        "_model_sgp4",
+        "sgp4",
         [](const std::optional<std::vector<vex_t>> &inputs_) {
             if (inputs_) {
                 std::vector<hy::expression> inputs;
@@ -493,31 +490,31 @@ void expose_models(py::module_ &m)
         },
         "inputs"_a.noconvert() = py::none{}, docstrings::sgp4().c_str());
     expose_sgp4_propagators(m);
-    m.def("_model_gpe_is_deep_space", &hy::model::gpe_is_deep_space, "n0"_a.noconvert(), "e0"_a.noconvert(),
+    m.def("gpe_is_deep_space", &hy::model::gpe_is_deep_space, "n0"_a.noconvert(), "e0"_a.noconvert(),
           "i0"_a.noconvert(), docstrings::gpe_is_deep_space().c_str());
 
     // Time conversions.
-    m.attr("_model_delta_tt_tai") = hy::model::delta_tt_tai;
+    m.attr("delta_tt_tai") = hy::model::delta_tt_tai;
     m.def(
-        "_model_delta_tdb_tt",
+        "delta_tdb_tt",
         [](const vex_t &time_expr) { return hy::model::delta_tdb_tt(detail::ex_from_variant(time_expr)); },
         "time_expr"_a.noconvert() = hy::time, docstrings::delta_tdb_tt().c_str());
 
     // Frame transformations.
     m.def(
-        "_model_rot_fk5j2000_icrs",
+        "rot_fk5j2000_icrs",
         [](const std::array<vex_t, 3> &xyz) {
             return hy::model::rot_fk5j2000_icrs(detail::arr_ex_from_arr_variant(xyz));
         },
         "xyz"_a, docstrings::rot_fk5j2000_icrs().c_str());
     m.def(
-        "_model_rot_icrs_fk5j2000",
+        "rot_icrs_fk5j2000",
         [](const std::array<vex_t, 3> &xyz) {
             return hy::model::rot_icrs_fk5j2000(detail::arr_ex_from_arr_variant(xyz));
         },
         "xyz"_a, docstrings::rot_icrs_fk5j2000().c_str());
     m.def(
-        "_model_rot_itrs_icrs",
+        "rot_itrs_icrs",
         [](const std::array<vex_t, 3> &xyz, const vex_t &time_expr, double thresh, const hy::eop_data &data) {
             return hy::model::rot_itrs_icrs(detail::arr_ex_from_arr_variant(xyz),
                                             hy::kw::time_expr = detail::ex_from_variant(time_expr),
@@ -526,7 +523,7 @@ void expose_models(py::module_ &m)
         "xyz"_a, "time_expr"_a = hy::time, "thresh"_a.noconvert() = hy::model::detail::iau2006_default_thresh,
         "eop_data"_a = hy::eop_data(), docstrings::rot_itrs_icrs(hy::model::detail::iau2006_default_thresh).c_str());
     m.def(
-        "_model_rot_icrs_itrs",
+        "rot_icrs_itrs",
         [](const std::array<vex_t, 3> &xyz, const vex_t &time_expr, double thresh, const hy::eop_data &data) {
             return hy::model::rot_icrs_itrs(detail::arr_ex_from_arr_variant(xyz),
                                             hy::kw::time_expr = detail::ex_from_variant(time_expr),
@@ -535,7 +532,7 @@ void expose_models(py::module_ &m)
         "xyz"_a, "time_expr"_a = hy::time, "thresh"_a.noconvert() = hy::model::detail::iau2006_default_thresh,
         "eop_data"_a = hy::eop_data(), docstrings::rot_icrs_itrs(hy::model::detail::iau2006_default_thresh).c_str());
     m.def(
-        "_model_rot_itrs_teme",
+        "rot_itrs_teme",
         [](const std::array<vex_t, 3> &xyz, const vex_t &time_expr, const hy::eop_data &data) {
             return hy::model::rot_itrs_teme(detail::arr_ex_from_arr_variant(xyz),
                                             hy::kw::time_expr = detail::ex_from_variant(time_expr),
@@ -543,7 +540,7 @@ void expose_models(py::module_ &m)
         },
         "xyz"_a, "time_expr"_a = hy::time, "eop_data"_a = hy::eop_data(), docstrings::rot_itrs_teme().c_str());
     m.def(
-        "_model_rot_teme_itrs",
+        "rot_teme_itrs",
         [](const std::array<vex_t, 3> &xyz, const vex_t &time_expr, const hy::eop_data &data) {
             return hy::model::rot_teme_itrs(detail::arr_ex_from_arr_variant(xyz),
                                             hy::kw::time_expr = detail::ex_from_variant(time_expr),
@@ -554,13 +551,13 @@ void expose_models(py::module_ &m)
     // Use macro to expose the EOP models.
 #define HEYOKA_PY_EXPOSE_MODEL_EOP(name)                                                                               \
     m.def(                                                                                                             \
-        "_model_" #name,                                                                                               \
+        #name,                                                                                                         \
         [](const vex_t &time_expr, const hy::eop_data &data) {                                                         \
             return hy::model::name(hy::kw::time_expr = detail::ex_from_variant(time_expr), hy::kw::eop_data = data);   \
         },                                                                                                             \
         "time_expr"_a = hy::time, "eop_data"_a = hy::eop_data(), docstrings::name().c_str());                          \
     m.def(                                                                                                             \
-        "_model_" #name "p",                                                                                           \
+        #name "p",                                                                                                     \
         [](const vex_t &time_expr, const hy::eop_data &data) {                                                         \
             return hy::model::name##p(hy::kw::time_expr = detail::ex_from_variant(time_expr),                          \
                                       hy::kw::eop_data = data);                                                        \
@@ -578,7 +575,7 @@ void expose_models(py::module_ &m)
 
     // IAU2006 precession/nutation.
     m.def(
-        "_model_iau2006",
+        "iau2006",
         [](hy::expression t_expr, double thresh) {
             return hy::model::iau2006(hy::kw::time_expr = std::move(t_expr), hy::kw::thresh = thresh);
         },
@@ -587,7 +584,7 @@ void expose_models(py::module_ &m)
 
     // EGM2008.
     m.def(
-        "_model_egm2008_pot",
+        "egm2008_pot",
         [](const std::array<vex_t, 3> &xyz, std::uint32_t n, std::uint32_t m, const vex_t &mu, const vex_t &a) {
             return hy::model::egm2008_pot(detail::arr_ex_from_arr_variant(xyz), n, m,
                                           hy::kw::mu = detail::ex_from_variant(mu),
@@ -596,7 +593,7 @@ void expose_models(py::module_ &m)
         "xyz"_a, "n"_a.noconvert(), "m"_a.noconvert(), "mu"_a = hy::model::get_egm2008_mu(),
         "a"_a = hy::model::get_egm2008_a(), docstrings::egm2008_pot().c_str());
     m.def(
-        "_model_egm2008_acc",
+        "egm2008_acc",
         [](const std::array<vex_t, 3> &xyz, std::uint32_t n, std::uint32_t m, const vex_t &mu, const vex_t &a) {
             return hy::model::egm2008_acc(detail::arr_ex_from_arr_variant(xyz), n, m,
                                           hy::kw::mu = detail::ex_from_variant(mu),
@@ -604,8 +601,8 @@ void expose_models(py::module_ &m)
         },
         "xyz"_a, "n"_a.noconvert(), "m"_a.noconvert(), "mu"_a = hy::model::get_egm2008_mu(),
         "a"_a = hy::model::get_egm2008_a(), docstrings::egm2008_acc().c_str());
-    m.def("_model_get_egm2008_mu", &hy::model::get_egm2008_mu, docstrings::get_egm2008_mu().c_str());
-    m.def("_model_get_egm2008_a", &hy::model::get_egm2008_a, docstrings::get_egm2008_a().c_str());
+    m.def("get_egm2008_mu", &hy::model::get_egm2008_mu, docstrings::get_egm2008_mu().c_str());
+    m.def("get_egm2008_a", &hy::model::get_egm2008_a, docstrings::get_egm2008_a().c_str());
     // NOTE: the EGM2008 CS coefficients live in a static buffer inside the compiled module's shared object, so we can
     // expose them as a read-only, zero-copy numpy array. A truthy "base" object is required to make pybind produce a
     // view rather than a copy.
@@ -617,7 +614,7 @@ void expose_models(py::module_ &m)
     // safe under any implementation that ties extension unloading to the module object's lifetime (where passing, e.g.,
     // None as "base" could leave the view dangling).
     m.def(
-        "_model_get_egm2008_CS",
+        "get_egm2008_CS",
         [m]() {
             const auto cs_span = hy::model::get_egm2008_CS();
 
@@ -642,7 +639,7 @@ void expose_models(py::module_ &m)
     };
 
     m.def(
-        "_model_sh_gravity_pot",
+        "sh_gravity_pot",
         [array2_vec_transform](const std::array<vex_t, 3> &xyz,
                                const std::vector<std::array<vex_t, 2>> &sh_coefficients, const vex_t &mu,
                                const vex_t &a, const std::optional<std::uint32_t> &max_degree,
@@ -656,7 +653,7 @@ void expose_models(py::module_ &m)
         "xyz"_a, "sh_coefficients"_a, "mu"_a, "a"_a, py::kw_only(), "max_degree"_a = py::none{},
         "max_order"_a = py::none{}, docstrings::sh_gravity_pot().c_str());
     m.def(
-        "_model_sh_gravity_acc",
+        "sh_gravity_acc",
         [array2_vec_transform](const std::array<vex_t, 3> &xyz,
                                const std::vector<std::array<vex_t, 2>> &sh_coefficients, const vex_t &mu,
                                const vex_t &a, const std::optional<std::uint32_t> &max_degree,
@@ -673,7 +670,7 @@ void expose_models(py::module_ &m)
     // Use macro to expose the SW models.
 #define HEYOKA_PY_EXPOSE_MODEL_SW(name)                                                                                \
     m.def(                                                                                                             \
-        "_model_" #name,                                                                                               \
+        #name,                                                                                                         \
         [](const vex_t &time_expr, const hy::sw_data &data) {                                                          \
             return hy::model::name(hy::kw::time_expr = detail::ex_from_variant(time_expr), hy::kw::sw_data = data);    \
         },                                                                                                             \
@@ -687,13 +684,13 @@ void expose_models(py::module_ &m)
 
     // dayfrac().
     m.def(
-        "_model_dayfrac", [](const hy::expression &tm) { return hy::model::dayfrac(hy::kw::time_expr = tm); },
+        "dayfrac", [](const hy::expression &tm) { return hy::model::dayfrac(hy::kw::time_expr = tm); },
         "time_expr"_a = hy::time, docstrings::dayfrac().c_str());
 
     // RSW frame transformations.
 #define HEYOKA_PY_EXPOSE_MODEL_FRAME_RSW(name)                                                                         \
     m.def(                                                                                                             \
-        "_model_" #name,                                                                                               \
+        #name,                                                                                                         \
         [](const std::array<vex_t, 3> &pos, const std::array<vex_t, 3> &vel, const std::array<vex_t, 3> &r,            \
            const std::array<vex_t, 3> &v) {                                                                            \
             auto ret = hy::model::name(detail::arr_ex_from_arr_variant(pos), detail::arr_ex_from_arr_variant(vel),     \
@@ -711,7 +708,7 @@ void expose_models(py::module_ &m)
 
     // Expose eo_dynamics.
     m.def(
-        "_model_eo_dynamics",
+        "eo_dynamics",
         [](const std::uint32_t max_geo_degree, const std::uint32_t max_geo_order, const hy::eop_data &eop_data,
            const hy::sw_data &sw_data, const double iau2006_thresh, const std::optional<vex_t> &Cb_,
            const std::optional<double> &elp2000_thresh, const std::optional<double> &vsop2013_thresh) {
@@ -737,7 +734,7 @@ void expose_models(py::module_ &m)
 
     // Expose lagrange_prop.
     m.def(
-        "_model_lagrange_prop",
+        "lagrange_prop",
         [](const std::array<vex_t, 3> &pos0, const std::array<vex_t, 3> &vel0, const vex_t &mu, const vex_t &tm) {
             return hy::model::lagrange_prop(detail::arr_ex_from_arr_variant(pos0),
                                             detail::arr_ex_from_arr_variant(vel0), detail::ex_from_variant(mu),

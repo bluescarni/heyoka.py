@@ -50,55 +50,71 @@ def _fp_to_suffix(fp_t):
 
 
 def taylor_adaptive(sys, state=[], **kwargs):
+    import heyoka as hy
+
     fp_type = kwargs.pop("fp_type", float)
     fp_suffix = _fp_to_suffix(fp_type)
 
-    return globals()[f"taylor_adaptive{fp_suffix}"](sys, state, **kwargs)
+    return getattr(hy, f"taylor_adaptive{fp_suffix}")(sys, state, **kwargs)
 
 
 def taylor_adaptive_batch(sys, state, **kwargs):
+    import heyoka as hy
+
     fp_type = kwargs.pop("fp_type", float)
     fp_suffix = _fp_to_suffix(fp_type)
 
-    return globals()[f"taylor_adaptive_batch{fp_suffix}"](sys, state, **kwargs)
+    return getattr(hy, f"taylor_adaptive_batch{fp_suffix}")(sys, state, **kwargs)
 
 
 def recommended_simd_size(fp_type=float):
+    import heyoka as hy
+
     fp_suffix = _fp_to_suffix(fp_type)
 
-    return globals()[f"_recommended_simd_size{fp_suffix}"]()
+    return getattr(hy, f"_recommended_simd_size{fp_suffix}")()
 
 
 def cfunc(fn, vars, **kwargs):
+    import heyoka as hy
+
     fp_type = kwargs.pop("fp_type", float)
     fp_suffix = _fp_to_suffix(fp_type)
 
-    return globals()[f"cfunc{fp_suffix}"](fn, vars, **kwargs)
+    return getattr(hy, f"cfunc{fp_suffix}")(fn, vars, **kwargs)
 
 
 def nt_event(ex, callback, **kwargs):
+    import heyoka as hy
+
     fp_type = kwargs.pop("fp_type", float)
     fp_suffix = _fp_to_suffix(fp_type)
 
-    return globals()[f"nt_event{fp_suffix}"](ex, callback, **kwargs)
+    return getattr(hy, f"nt_event{fp_suffix}")(ex, callback, **kwargs)
 
 
 def t_event(ex, **kwargs):
+    import heyoka as hy
+
     fp_type = kwargs.pop("fp_type", float)
     fp_suffix = _fp_to_suffix(fp_type)
 
-    return globals()[f"t_event{fp_suffix}"](ex, **kwargs)
+    return getattr(hy, f"t_event{fp_suffix}")(ex, **kwargs)
 
 
 def nt_event_batch(ex, callback, **kwargs):
+    import heyoka as hy
+
     fp_type = kwargs.pop("fp_type", float)
     fp_suffix = _fp_to_suffix(fp_type)
 
-    return globals()[f"nt_event_batch{fp_suffix}"](ex, callback, **kwargs)
+    return getattr(hy, f"nt_event_batch{fp_suffix}")(ex, callback, **kwargs)
 
 
 def t_event_batch(ex, **kwargs):
+    import heyoka as hy
+
     fp_type = kwargs.pop("fp_type", float)
     fp_suffix = _fp_to_suffix(fp_type)
 
-    return globals()[f"t_event_batch{fp_suffix}"](ex, **kwargs)
+    return getattr(hy, f"t_event_batch{fp_suffix}")(ex, **kwargs)

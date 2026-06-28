@@ -81,8 +81,8 @@ def sgp4_propagator(
     except KeyError:
         raise TypeError(f"Unknown fp type '{fp_type}'")
 
-    if hasattr(_core, f"_model_sgp4_propagator{fp_suffix}"):
-        return getattr(_core, f"_model_sgp4_propagator{fp_suffix}")(
+    if hasattr(_core, f"sgp4_propagator{fp_suffix}"):
+        return getattr(_core, f"sgp4_propagator{fp_suffix}")(
             sat_list, diff_order, **kwargs
         )
     else:
