@@ -46,7 +46,7 @@ struct type_caster<long double> {
 
 template <>
 struct type_caster<mppp::real128> {
-    PYBIND11_TYPE_CASTER(mppp::real128, _("heyoka._core.real128"));
+    PYBIND11_TYPE_CASTER(mppp::real128, _("heyoka.real128"));
     bool load(handle, bool);
     static handle cast(const mppp::real128 &, return_value_policy, handle);
 };
@@ -57,7 +57,7 @@ struct type_caster<mppp::real128> {
 
 template <>
 struct type_caster<mppp::real> {
-    PYBIND11_TYPE_CASTER(mppp::real, _("heyoka._core.real"));
+    PYBIND11_TYPE_CASTER(mppp::real, _("heyoka.real"));
     bool load(handle, bool);
     static handle cast(const mppp::real &, return_value_policy, handle);
 };
