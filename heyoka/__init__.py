@@ -19,18 +19,14 @@ from ._core import (
     atan2,
     atanh,
     cfunc_dbl,
-    cfunc_f128,
     cfunc_flt,
     cfunc_ldbl,
-    cfunc_real,
     code_model,
     continuous_output_batch_dbl,
     continuous_output_batch_flt,
     continuous_output_dbl,
-    continuous_output_f128,
     continuous_output_flt,
     continuous_output_ldbl,
-    continuous_output_real,
     cos,
     cosh,
     dfun,
@@ -70,16 +66,10 @@ from ._core import (
     nt_event_batch_dbl,
     nt_event_batch_flt,
     nt_event_dbl,
-    nt_event_f128,
     nt_event_flt,
     nt_event_ldbl,
-    nt_event_real,
     pi,
     prod,
-    real,
-    real128,
-    real_prec_max,
-    real_prec_min,
     relu,
     relup,
     remove_custom_numpy_mem_handler,
@@ -102,24 +92,48 @@ from ._core import (
     t_event_batch_dbl,
     t_event_batch_flt,
     t_event_dbl,
-    t_event_f128,
     t_event_flt,
     t_event_ldbl,
-    t_event_real,
     tan,
     tanh,
     taylor_adaptive_batch_dbl,
     taylor_adaptive_batch_flt,
     taylor_adaptive_dbl,
-    taylor_adaptive_f128,
     taylor_adaptive_flt,
     taylor_adaptive_ldbl,
-    taylor_adaptive_real,
     taylor_outcome,
     to_sympy,
     var_args,
     var_ode_sys,
 )
+
+# The real128 and real classes - and the functions/classes that depend on them -
+# are available only in certain environments. Import them conditionally, reusing
+# the availability checks from _generic_wrappers (a leaf module depending only on
+# _core, so importing it here introduces no circular dependency).
+from ._generic_wrappers import _with_real128, _with_real
+
+if _with_real128():
+    from ._core import (
+        cfunc_f128,
+        continuous_output_f128,
+        nt_event_f128,
+        real128,
+        t_event_f128,
+        taylor_adaptive_f128,
+    )
+
+if _with_real():
+    from ._core import (
+        cfunc_real,
+        continuous_output_real,
+        nt_event_real,
+        real,
+        real_prec_max,
+        real_prec_min,
+        t_event_real,
+        taylor_adaptive_real,
+    )
 
 # Explicitly import the sub-packages
 #
@@ -239,18 +253,14 @@ __all__ = [
     "atan2",
     "atanh",
     "cfunc_dbl",
-    "cfunc_f128",
     "cfunc_flt",
     "cfunc_ldbl",
-    "cfunc_real",
     "code_model",
     "continuous_output_batch_dbl",
     "continuous_output_batch_flt",
     "continuous_output_dbl",
-    "continuous_output_f128",
     "continuous_output_flt",
     "continuous_output_ldbl",
-    "continuous_output_real",
     "cos",
     "cosh",
     "dfun",
@@ -290,16 +300,10 @@ __all__ = [
     "nt_event_batch_dbl",
     "nt_event_batch_flt",
     "nt_event_dbl",
-    "nt_event_f128",
     "nt_event_flt",
     "nt_event_ldbl",
-    "nt_event_real",
     "pi",
     "prod",
-    "real",
-    "real128",
-    "real_prec_max",
-    "real_prec_min",
     "relu",
     "relup",
     "remove_custom_numpy_mem_handler",
@@ -322,19 +326,15 @@ __all__ = [
     "t_event_batch_dbl",
     "t_event_batch_flt",
     "t_event_dbl",
-    "t_event_f128",
     "t_event_flt",
     "t_event_ldbl",
-    "t_event_real",
     "tan",
     "tanh",
     "taylor_adaptive_batch_dbl",
     "taylor_adaptive_batch_flt",
     "taylor_adaptive_dbl",
-    "taylor_adaptive_f128",
     "taylor_adaptive_flt",
     "taylor_adaptive_ldbl",
-    "taylor_adaptive_real",
     "taylor_outcome",
     "to_sympy",
     "var_args",
@@ -370,3 +370,27 @@ __all__ = [
     "ensemble_propagate_for_batch",
     "ensemble_propagate_grid_batch",
 ]
+
+# Add the conditionally-available features to __all__, mirroring the conditional
+# imports above so that the public surface matches what is actually exposed.
+if _with_real128():
+    __all__ += [
+        "cfunc_f128",
+        "continuous_output_f128",
+        "nt_event_f128",
+        "real128",
+        "t_event_f128",
+        "taylor_adaptive_f128",
+    ]
+
+if _with_real():
+    __all__ += [
+        "cfunc_real",
+        "continuous_output_real",
+        "nt_event_real",
+        "real",
+        "real_prec_max",
+        "real_prec_min",
+        "t_event_real",
+        "taylor_adaptive_real",
+    ]
