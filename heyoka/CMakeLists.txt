@@ -4,7 +4,6 @@ configure_file("${CMAKE_CURRENT_SOURCE_DIR}/_version.py.in" "${CMAKE_CURRENT_BIN
 # The list of heyoka.py's Python files.
 set(HEYOKA_PY_PYTHON_FILES
     __init__.py
-    test.py
     _sympy_utils.py
     _generic_wrappers.py
     _s11n.py
@@ -36,6 +35,14 @@ set(HEYOKA_PY_PYTHON_FILES
     model/__init__.py
     model/_sgp4_propagator.py
     callback/__init__.py
+    test/__init__.py
+    test/_utils.py
+    test/test_c_output.py
+    test/test_events.py
+    test/test_llvm_state.py
+    test/test_package_layout.py
+    test/test_recommended_simd_size.py
+    test/test_s11n_backend.py
 )
 
 # Copy the python files in the current binary dir,
