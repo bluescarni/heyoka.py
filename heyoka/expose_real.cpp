@@ -928,7 +928,7 @@ PyObject *py_real_reduce(PyObject *self, [[maybe_unused]] PyObject *args)
     assert(args == nullptr);
 
     // Fetch the factory function.
-    auto *hy_mod = PyImport_ImportModule("heyoka");
+    auto *hy_mod = PyImport_ImportModule("heyoka._real_reduce_factory");
     if (hy_mod == nullptr) {
         return nullptr;
     }

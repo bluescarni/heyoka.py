@@ -156,18 +156,12 @@ def _setup_custom_verify_file():
     except ImportError:
         return
 
-    from .core import _set_ssl_verify_file
+    from ._core import _set_ssl_verify_file
 
     _set_ssl_verify_file(certifi.where())
 
 
 _setup_custom_verify_file()
-
-
-def _real_reduce_factory():
-    # Internal factory function used in the implementation
-    # of the pickle protocol for real.
-    return real()
 
 
 __all__ = [

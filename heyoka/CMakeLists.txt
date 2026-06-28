@@ -10,6 +10,7 @@ set(HEYOKA_PY_PYTHON_FILES
     _globals.py
     _s11n.py
     _ensemble_impl.py
+    _real_reduce_factory.py
     _test_real.py
     _test_real128.py
     _test_mp.py
