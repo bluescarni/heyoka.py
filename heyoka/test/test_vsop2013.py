@@ -7,15 +7,14 @@
 # with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 
-import unittest as _ut
+import unittest
+from .. import cfunc
+from ..model import vsop2013_elliptic, vsop2013_cartesian
 
 
-class vsop2013_test_case(_ut.TestCase):
+class vsop2013_test_case(unittest.TestCase):
     # Just a small basic test.
     def test_basic(self):
-        from . import cfunc
-        from .model import vsop2013_elliptic, vsop2013_cartesian
-
         sol = vsop2013_elliptic(1, 1)
         cf = cfunc([sol], [])
 

@@ -7,17 +7,37 @@
 # with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 
-import unittest as _ut
+import unittest
+from importlib.util import find_spec
+
+import numpy as np
+from .. import (
+    to_sympy,
+    from_sympy,
+    make_vars,
+    expression,
+    par,
+    pi,
+    prod,
+    sum as hsum,
+    time as htime,
+    _core,
+)
+from ..model import nbody
+
+# NOTE: real and real128 are available only in some builds. Reference them through
+# these module globals so the optional sub-tests can guard with "... is not None".
+real = getattr(_core, "real", None)
+real128 = getattr(_core, "real128", None)
+
+# sympy (and mpmath) are optional dependencies: skip the whole test case if absent.
+_has_sympy = find_spec("sympy") is not None
 
 
-class sympy_test_case(_ut.TestCase):
+@unittest.skipUnless(_has_sympy, "sympy is not available")
+class sympy_test_case(unittest.TestCase):
     def test_basic(self):
-        try:
-            import sympy
-        except ImportError:
-            return
-
-        from . import from_sympy, make_vars, sum as hsum
+        import sympy
 
         with self.assertRaises(TypeError) as cm:
             from_sympy(3.5)
@@ -54,16 +74,8 @@ class sympy_test_case(_ut.TestCase):
         )
 
     def test_number_conversion(self):
-        try:
-            import sympy
-        except ImportError:
-            return
-
-        from . import to_sympy, from_sympy, expression, _core
-        from ._core import _ppc_arch
         from sympy import Float, Rational, Integer
         from mpmath import workprec
-        import numpy as np
 
         with self.assertRaises(ValueError) as cm:
             from_sympy(Rational(3, 5))
@@ -100,7 +112,7 @@ class sympy_test_case(_ut.TestCase):
             )
 
         # Long double precision.
-        if not _ppc_arch:
+        if not _core._ppc_arch:
             with workprec(np.finfo(np.longdouble).nmant + 1):
                 self.assertEqual(
                     to_sympy(expression(np.longdouble("1.1"))),
@@ -133,15 +145,13 @@ class sympy_test_case(_ut.TestCase):
                     )
 
         # Too high precision.
-        if not hasattr(_core, "real"):
+        if real is None:
             with self.assertRaises(ValueError) as cm:
                 from_sympy(Integer(2**500 + 1))
             self.assertTrue("the required precision" in str(cm.exception))
 
-        if not hasattr(_core, "real128") or _ppc_arch:
+        if real128 is None or _core._ppc_arch:
             return
-
-        from ._core import real128
 
         # Quad precision.
         with workprec(113):
@@ -161,12 +171,6 @@ class sympy_test_case(_ut.TestCase):
             )
 
     def test_sympar_conversion(self):
-        try:
-            import sympy
-        except ImportError:
-            return
-
-        from . import to_sympy, from_sympy, expression, par
         from sympy import Symbol
 
         self.assertEqual(Symbol("x", real=True), to_sympy(expression("x")))
@@ -186,25 +190,7 @@ class sympy_test_case(_ut.TestCase):
         self.assertEqual(from_sympy(Symbol("par[]")), expression("par[]"))
 
     def test_func_conversion(self):
-        try:
-            import sympy
-        except ImportError:
-            return
-
         import sympy as spy
-
-        from . import (
-            _core,
-            make_vars,
-            from_sympy,
-            to_sympy,
-            pi,
-            sum as hsum,
-            prod,
-            time as htime,
-        )
-
-        from .model import nbody
 
         x, y, z, a, b, c = spy.symbols("x y z a b c", real=True)
         hx, hy, hz, ha, hb, hc = make_vars("x", "y", "z", "a", "b", "c")

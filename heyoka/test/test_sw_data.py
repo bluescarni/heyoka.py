@@ -7,17 +7,16 @@
 # with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 
-import unittest as _ut
+import unittest
+import pickle
+from sys import getrefcount
+from copy import copy, deepcopy
+import numpy as np
+from .. import sw_data, sw_data_row
 
 
-class sw_data_test_case(_ut.TestCase):
+class sw_data_test_case(unittest.TestCase):
     def test_basic(self):
-        from . import sw_data, sw_data_row
-        import numpy as np
-        from sys import getrefcount
-        import pickle
-        from copy import copy, deepcopy
-
         self.assertTrue(isinstance(sw_data_row, np.dtype))
 
         # Check access to the data table.

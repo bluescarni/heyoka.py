@@ -6,18 +6,34 @@
 # Public License v. 2.0. If a copy of the MPL was not distributed
 # with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import unittest as _ut
+import unittest
+import pickle
+from copy import copy, deepcopy
+from sys import getrefcount
+import numpy as np
+from numpy import longdouble as ld
+from .. import (
+    taylor_adaptive,
+    make_vars,
+    sin,
+    nt_event,
+    t_event,
+    code_model,
+    _core,
+)
+from ..model import pendulum
+from ..callback import angle_reducer
+
+# NOTE: real128 is available only in some builds - reference it through this module
+# global so the optional sub-tests can guard with "if real128 is not None".
+real128 = getattr(_core, "real128", None)
 
 
-class scalar_integrator_test_case(_ut.TestCase):
+class scalar_integrator_test_case(unittest.TestCase):
     def test_llvm_state_settings(self):
         # Test to check that the llvm state flags
         # are correctly propagated through the integrator
         # constructor.
-
-        from . import taylor_adaptive, code_model
-        from .model import pendulum
-        from sys import getrefcount
 
         ta = taylor_adaptive(pendulum(), [0.0, 0.0])
 
@@ -53,9 +69,6 @@ class scalar_integrator_test_case(_ut.TestCase):
         # Test to check automatic conversions of std::vector<T>
         # in the integrator's constructor.
 
-        from . import taylor_adaptive, make_vars, sin
-        import numpy as np
-
         d_digs = np.finfo(np.double).nmant
         ld_digs = np.finfo(np.longdouble).nmant
 
@@ -83,9 +96,6 @@ class scalar_integrator_test_case(_ut.TestCase):
             )
 
     def test_dtime(self):
-        from ._core import _ppc_arch
-        from . import taylor_adaptive, make_vars, sin
-
         x, v = make_vars("x", "v")
 
         sys = [(x, v), (v, -9.8 * sin(x))]
@@ -103,22 +113,17 @@ class scalar_integrator_test_case(_ut.TestCase):
 
         self.assertEqual(ta.dtime, (1.5, 0.0))
 
-        if _ppc_arch:
+        if _core._ppc_arch:
             return
 
         # BUG: the dtime setter used to be hard-coded
         # to double.
-        from numpy import longdouble as ld
 
         ta = taylor_adaptive(sys=sys, state=[ld(0.0), ld(0.25)], fp_type=ld)
         ta.dtime = (ld("1.1"), ld(0))
         self.assertEqual(ta.dtime, (ld("1.1"), ld(0)))
 
     def test_copy(self):
-        from . import taylor_adaptive, make_vars, t_event, sin
-        import numpy as np
-        from copy import copy, deepcopy
-
         x, v = make_vars("x", "v")
 
         sys = [(x, v), (v, -9.8 * sin(x))]
@@ -143,18 +148,13 @@ class scalar_integrator_test_case(_ut.TestCase):
         self.assertNotEqual(ta_dc.state[0], ta.state[0])
 
     def test_basic(self):
-        from . import taylor_adaptive, make_vars, t_event, sin, _core
-        from ._core import _ppc_arch
-        from .callback import angle_reducer
-        import numpy as np
-
-        if _ppc_arch:
+        if _core._ppc_arch:
             fp_types = [np.float32, float]
         else:
             fp_types = [np.float32, float, np.longdouble]
 
-        if hasattr(_core, "real128"):
-            fp_types.append(_core.real128)
+        if real128 is not None:
+            fp_types.append(real128)
 
         x, v = make_vars("x", "v")
 
@@ -323,17 +323,13 @@ class scalar_integrator_test_case(_ut.TestCase):
             delattr(ta, "foo")
 
     def test_events(self):
-        from . import nt_event, t_event, make_vars, sin, taylor_adaptive, _core
-        from ._core import _ppc_arch
-        import numpy as np
-
-        if _ppc_arch:
+        if _core._ppc_arch:
             fp_types = [np.float32, float]
         else:
             fp_types = [np.float32, float, np.longdouble]
 
-        if hasattr(_core, "real128"):
-            fp_types.append(_core.real128)
+        if real128 is not None:
+            fp_types.append(real128)
 
         x, v = make_vars("x", "v")
 
@@ -365,20 +361,15 @@ class scalar_integrator_test_case(_ut.TestCase):
             self.assertTrue(ta.te_cooldowns[0] is None)
 
     def test_s11n(self):
-        from . import nt_event, make_vars, sin, taylor_adaptive, _core
-        from ._core import _ppc_arch
-        import numpy as np
-        import pickle
-
         x, v = make_vars("x", "v")
 
-        if _ppc_arch:
+        if _core._ppc_arch:
             fp_types = [np.float32, float]
         else:
             fp_types = [np.float32, float, np.longdouble]
 
-        if hasattr(_core, "real128"):
-            fp_types.append(_core.real128)
+        if real128 is not None:
+            fp_types.append(real128)
 
         # Use a pendulum for testing purposes.
         sys = [(x, v), (v, -9.8 * sin(x))]
@@ -456,7 +447,7 @@ class scalar_integrator_test_case(_ut.TestCase):
             self.assertEqual(ta.tol, fp_t(1e-6))
 
         # Check throwing behaviour with long double on PPC.
-        if _ppc_arch:
+        if _core._ppc_arch:
             fp_t = np.longdouble
 
             with self.assertRaises(NotImplementedError):
@@ -465,18 +456,13 @@ class scalar_integrator_test_case(_ut.TestCase):
                 )
 
     def test_step_callback(self):
-        from . import taylor_adaptive, make_vars, sin, _core
-        from ._core import _ppc_arch
-        from .callback import angle_reducer
-        import numpy as np
-
-        if _ppc_arch:
+        if _core._ppc_arch:
             fp_types = [np.float32, float]
         else:
             fp_types = [np.float32, float, np.longdouble]
 
-        if hasattr(_core, "real128"):
-            fp_types.append(_core.real128)
+        if real128 is not None:
+            fp_types.append(real128)
 
         x, v = make_vars("x", "v")
 

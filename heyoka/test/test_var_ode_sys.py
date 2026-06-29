@@ -7,21 +7,18 @@
 # with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 
-import unittest as _ut
+import unittest
+from copy import copy, deepcopy
+from pickle import dumps, loads
+from .. import make_vars, var_ode_sys, var_args, sin, par, time
 
 
-class var_ode_sys_test_case(_ut.TestCase):
+class var_ode_sys_test_case(unittest.TestCase):
     def test_enum(self):
-        from . import var_args
-
         self.assertEqual(var_args.vars | var_args.time | var_args.params, var_args.all)
         self.assertTrue((var_args.vars | var_args.time) & var_args.time)
 
     def test_basic(self):
-        from . import make_vars, var_ode_sys, var_args, sin, par, time
-        from copy import copy, deepcopy
-        from pickle import dumps, loads
-
         x, v = make_vars("x", "v")
 
         orig_sys = [(x, v), (v, -par[0] * sin(x) + time)]
