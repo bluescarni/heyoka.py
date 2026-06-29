@@ -6,14 +6,13 @@
 # Public License v. 2.0. If a copy of the MPL was not distributed
 # with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import unittest as _ut
+import unittest
+from .. import lagrangian, hamiltonian, make_vars, cos, sin, expression
 
 
-class lagham_test_case(_ut.TestCase):
+class lagham_test_case(unittest.TestCase):
     def test_basic(self):
         # Just some basic testing for the keyword arguments.
-        from . import lagrangian, hamiltonian, make_vars, cos, sin, expression
-
         x, v, p = make_vars("x", "v", "p")
         L = 0.5 * v**2 - (1.0 - cos(x))
         sys = lagrangian(L=L, qs=[x], qdots=[v], D=expression(0.0))
