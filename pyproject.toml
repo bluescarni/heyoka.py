@@ -13,7 +13,9 @@ requires-python = '>=3.9'
 # is unable to use the system's certificate store due to path mismatches.
 dependencies = ['cloudpickle', 'numpy >= 2, < 3', 'certifi']
 authors = [{ name = 'Francesco Biscani', email = 'bluescarni@gmail.com' }]
-license = { text = 'MPL-2.0' }
+# NOTE: SPDX license expression + license file (PEP 639).
+license = "MPL-2.0"
+license-files = ["LICENSE"]
 classifiers = [
     # How mature is this project? Common values are
     #   3 - Alpha
@@ -25,7 +27,6 @@ classifiers = [
     "Topic :: Scientific/Engineering",
     "Topic :: Scientific/Engineering :: Mathematics",
     "Topic :: Scientific/Engineering :: Physics",
-    "License :: OSI Approved :: Mozilla Public License 2.0 (MPL 2.0)",
     "Programming Language :: Python :: 3",
 ]
 keywords = ['science', 'math', 'physics', 'ode']
@@ -45,6 +46,10 @@ sgp4 = ["skyfield"]
 # needed to run the full suite (otherwise the sympy/sgp4 tests would be skipped).
 [dependency-groups]
 test = ["pytest", "heyoka[sympy,sgp4]"]
+
+[tool.pytest.ini_options]
+# NOTE: "-ra" prints a summary of skipped/xfailed tests at the end.
+addopts = "-ra"
 
 [tool.scikit-build]
 # Avoid copying the C++ source files when building
