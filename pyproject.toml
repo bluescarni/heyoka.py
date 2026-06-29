@@ -38,6 +38,14 @@ Repository = "https://github.com/bluescarni/heyoka.py"
 sympy = ["sympy", "mpmath"]
 sgp4 = ["skyfield"]
 
+# Development/CI dependency groups (PEP 735). These are NOT part of the wheel
+# metadata - they describe how to set up a local/CI environment, not optional
+# runtime features of the package. The "test" group pulls in pytest plus the
+# optional-feature extras, so that "pip install --group test" provides everything
+# needed to run the full suite (otherwise the sympy/sgp4 tests would be skipped).
+[dependency-groups]
+test = ["pytest", "heyoka[sympy,sgp4]"]
+
 [tool.scikit-build]
 # Avoid copying the C++ source files when building
 # binary wheels.
