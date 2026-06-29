@@ -9,9 +9,6 @@ set(HEYOKA_PY_PYTHON_FILES
     _s11n.py
     _ensemble_impl.py
     _real_reduce_factory.py
-    _test_real.py
-    _test_real128.py
-    _test_mp.py
     _test_scalar_integrator.py
     _test_sympy.py
     _test_vsop2013.py
@@ -43,6 +40,9 @@ set(HEYOKA_PY_PYTHON_FILES
     test/test_lagham.py
     test/test_memcache.py
     test/test_model.py
+    test/test_mp.py
+    test/test_real128.py
+    test/test_real.py
 )
 
 # Copy the python files in the current binary dir,

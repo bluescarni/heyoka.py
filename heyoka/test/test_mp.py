@@ -6,19 +6,37 @@
 # Public License v. 2.0. If a copy of the MPL was not distributed
 # with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import unittest as _ut
+import unittest
+from copy import deepcopy
+import numpy as np
+from .. import (
+    _core,
+    cfunc,
+    make_vars,
+    sin,
+    par,
+    time,
+    expression,
+    to_sympy,
+    from_sympy,
+    sum as sum_hy,
+    kepE,
+    kepF,
+    kepDE,
+    atan2,
+    taylor_adaptive,
+    t_event,
+)
+
+# NOTE: the 'real' type is available only in some builds. When it is missing the
+# whole test case is skipped (see the skipUnless decorator below), so the None
+# fallback is never actually used at runtime.
+real = getattr(_core, "real", None)
 
 
-class mp_test_case(_ut.TestCase):
+@unittest.skipUnless(real is not None, "the 'real' type is not available")
+class mp_test_case(unittest.TestCase):
     def test_cfunc(self):
-        from . import _core
-
-        if not hasattr(_core, "real"):
-            return
-
-        from . import real, cfunc, make_vars, sin, par, time
-        import numpy as np
-
         x, y = make_vars("x", "y")
         func = [sin(x + y), x - par[0], x + y + par[1] + time]
 
@@ -204,18 +222,11 @@ class mp_test_case(_ut.TestCase):
         )
 
     def test_sympy(self):
-        from . import _core
-
-        if not hasattr(_core, "real"):
-            return
-
         try:
             import sympy
-            from mpmath import mp, pi, workprec
+            from mpmath import pi, workprec
         except ImportError:
             return
-
-        from . import to_sympy, from_sympy, real, expression, sum as sum_hy
 
         with workprec(128):
             from_spy_ex = from_sympy(pi() + sympy.Symbol("x"))
@@ -256,76 +267,63 @@ class mp_test_case(_ut.TestCase):
         )
 
     def test_expression(self):
-        from . import _core
-
-        if not hasattr(_core, "real"):
-            return
-
-        from . import expression as ex, real, kepE, kepF, kepDE, atan2
-
         self.assertEqual(
-            str(ex(real("1.1", 128))), "1.100000000000000000000000000000000000001"
+            str(expression(real("1.1", 128))),
+            "1.100000000000000000000000000000000000001",
         )
 
         self.assertEqual(
-            str(1.0 + ex(real("1.1", 128))), "2.099999999999999999999999999999999999995"
+            str(1.0 + expression(real("1.1", 128))), "2.099999999999999999999999999999999999995"
         )
         self.assertEqual(
-            str(ex(real("1.1", 128)) + 1), "2.099999999999999999999999999999999999995"
+            str(expression(real("1.1", 128)) + 1), "2.099999999999999999999999999999999999995"
         )
 
         self.assertEqual(
-            str(1.0 - ex(real("1.1", 128))),
+            str(1.0 - expression(real("1.1", 128))),
             "-1.000000000000000000000000000000000000012e-1",
         )
         self.assertEqual(
-            str(ex(real("1.1", 128)) - 1),
+            str(expression(real("1.1", 128)) - 1),
             "1.000000000000000000000000000000000000012e-1",
         )
 
         self.assertEqual(
-            str(1.0 * ex(real("1.1", 128))),
+            str(1.0 * expression(real("1.1", 128))),
             "1.100000000000000000000000000000000000001",
         )
         self.assertEqual(
-            str(ex(real("1.1", 128)) * 1),
+            str(expression(real("1.1", 128)) * 1),
             "1.100000000000000000000000000000000000001",
         )
 
         self.assertEqual(
-            str(1.0 / ex(real("1.1", 128))),
+            str(1.0 / expression(real("1.1", 128))),
             "9.090909090909090909090909090909090909070e-1",
         )
         self.assertEqual(
-            str(ex(real("1.1", 128)) / 1),
+            str(expression(real("1.1", 128)) / 1),
             "1.100000000000000000000000000000000000001",
         )
 
         # NOTE: just test execution for the time being,
         # as these currently do not fold.
-        ex(1.1) ** real("1.1", 128)
+        expression(1.1) ** real("1.1", 128)
 
-        kepE(ex("x"), real("1.1", 128))
-        kepE(real("1.1", 128), ex("x"))
+        kepE(expression("x"), real("1.1", 128))
+        kepE(real("1.1", 128), expression("x"))
 
-        kepF(ex("x"), real("1.1", 128), ex("y"))
-        kepF(real("1.1", 128), ex("y"), ex("x"))
+        kepF(expression("x"), real("1.1", 128), expression("y"))
+        kepF(real("1.1", 128), expression("y"), expression("x"))
 
-        kepDE(ex("x"), real("1.1", 128), ex("y"))
-        kepDE(real("1.1", 128), ex("y"), ex("x"))
+        kepDE(expression("x"), real("1.1", 128), expression("y"))
+        kepDE(real("1.1", 128), expression("y"), expression("x"))
 
-        atan2(ex("x"), real("1.1", 128))
-        atan2(real("1.1", 128), ex("x"))
+        atan2(expression("x"), real("1.1", 128))
+        atan2(real("1.1", 128), expression("x"))
 
     def test_events(self):
-        from . import _core
-
-        if not hasattr(_core, "real"):
-            return
-
         # Basic event testing.
-        from . import make_vars, taylor_adaptive, real, t_event
-
         x, v = make_vars("x", "v")
 
         prec = 237
@@ -353,15 +351,6 @@ class mp_test_case(_ut.TestCase):
         self.assertLess(abs(ta.state[1]), 1e-70)
 
     def test_c_out(self):
-        from . import _core
-
-        if not hasattr(_core, "real"):
-            return
-
-        from . import make_vars, taylor_adaptive, real, _core
-        import numpy as np
-        from copy import deepcopy
-
         x, v = make_vars("x", "v")
 
         prec = 237
@@ -410,14 +399,6 @@ class mp_test_case(_ut.TestCase):
         self.assertTrue("1" in str(cm.exception))
 
     def test_basic(self):
-        from . import _core
-
-        if not hasattr(_core, "real"):
-            return
-
-        from . import make_vars, taylor_adaptive, sin, real, _core
-        import numpy as np
-
         x, v = make_vars("x", "v")
 
         prec = 237
