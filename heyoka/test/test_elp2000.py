@@ -7,15 +7,14 @@
 # with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 
-import unittest as _ut
+import unittest
+from .. import cfunc
+from ..model import elp2000_cartesian_e2000, elp2000_cartesian_fk5
 
 
-class elp2000_test_case(_ut.TestCase):
+class elp2000_test_case(unittest.TestCase):
     # Just a small basic test.
     def test_basic(self):
-        from . import cfunc
-        from .model import elp2000_cartesian_e2000, elp2000_cartesian_fk5
-
         sol = elp2000_cartesian_e2000(thresh=1e-5)[0]
         cf = cfunc([sol], [])
 

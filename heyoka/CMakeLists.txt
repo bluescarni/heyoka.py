@@ -12,23 +12,15 @@ set(HEYOKA_PY_PYTHON_FILES
     _test_real.py
     _test_real128.py
     _test_mp.py
-    _test_cfunc.py
     _test_model.py
-    _test_expression.py
-    _test_dtens.py
     _test_scalar_integrator.py
-    _test_ensemble.py
     _test_memcache.py
-    _test_diskcache.py
-    _test_celmec.py
     _test_sympy.py
     _test_vsop2013.py
-    _test_elp2000.py
     _test_lagham.py
     _test_var_ode_sys.py
     _test_var_integrator.py
     _test_sgp4_propagator.py
-    _test_eop_data.py
     _test_sw_data.py
     model/__init__.py
     model/_sgp4_propagator.py
@@ -43,6 +35,14 @@ set(HEYOKA_PY_PYTHON_FILES
     test/test_recommended_simd_size.py
     test/test_s11n_backend.py
     test/test_batch_integrator.py
+    test/test_celmec.py
+    test/test_cfunc.py
+    test/test_diskcache.py
+    test/test_dtens.py
+    test/test_elp2000.py
+    test/test_ensemble.py
+    test/test_eop_data.py
+    test/test_expression.py
 )
 
 # Copy the python files in the current binary dir,

@@ -6,22 +6,26 @@
 # Public License v. 2.0. If a copy of the MPL was not distributed
 # with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import unittest as _ut
+import unittest
+from .. import (
+    ensemble_propagate_until_batch,
+    ensemble_propagate_for_batch,
+    ensemble_propagate_grid_batch,
+    make_vars,
+    sin,
+    taylor_adaptive_batch,
+    taylor_adaptive,
+    ensemble_propagate_until,
+    taylor_outcome,
+    ensemble_propagate_for,
+    ensemble_propagate_grid,
+)
+from ..callback import angle_reducer
+import numpy as np
 
 
-class ensemble_test_case(_ut.TestCase):
+class ensemble_test_case(unittest.TestCase):
     def test_batch(self):
-        from . import (
-            ensemble_propagate_until_batch,
-            ensemble_propagate_for_batch,
-            ensemble_propagate_grid_batch,
-            make_vars,
-            sin,
-            taylor_adaptive_batch,
-        )
-        from .callback import angle_reducer
-        import numpy as np
-
         x, v = make_vars("x", "v")
 
         # Use a pendulum for testing purposes.
@@ -220,6 +224,15 @@ class ensemble_test_case(_ut.TestCase):
             self.assertEqual(len(r[2]), 2)
 
         # Test s11n machinery in multi-processing situations.
+        #
+        # NOTE: need to redefine step_cb not to capture self, otherwise pickling
+        # becomes problematic.
+        class step_cb:
+            def __call__(self, ta):
+                return True
+
+        cb = step_cb()
+
         ret = ensemble_propagate_for_batch(
             ta,
             20.0,
@@ -236,18 +249,6 @@ class ensemble_test_case(_ut.TestCase):
             self.assertEqual(len(r[2]), 2)
 
     def test_scalar(self):
-        from . import (
-            ensemble_propagate_until,
-            ensemble_propagate_for,
-            ensemble_propagate_grid,
-            make_vars,
-            sin,
-            taylor_adaptive,
-            taylor_outcome,
-        )
-        from .callback import angle_reducer
-        import numpy as np
-
         x, v = make_vars("x", "v")
 
         # Use a pendulum for testing purposes.
@@ -480,6 +481,15 @@ class ensemble_test_case(_ut.TestCase):
             self.assertEqual(len(r[-1]), 2)
 
         # Test s11n machinery in multi-processing situations.
+        #
+        # NOTE: need to redefine step_cb not to capture self, otherwise pickling
+        # becomes problematic.
+        class step_cb:
+            def __call__(self, ta):
+                return True
+
+        cb = step_cb()
+
         ret = ensemble_propagate_for(
             ta,
             20.0,

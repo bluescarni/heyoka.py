@@ -7,16 +7,17 @@
 # with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 
-import unittest as _ut
+import unittest
+from .. import cfunc, make_vars, _core, par, time, code_model, sin, expression
+import pickle
+from copy import copy, deepcopy
+from sys import getrefcount
+import numpy as np
+from ._utils import _get_eps, _allclose
 
 
-class cfunc_test_case(_ut.TestCase):
+class cfunc_test_case(unittest.TestCase):
     def test_basic(self):
-        from . import cfunc, make_vars, _core, par, time, code_model
-        import pickle
-        from copy import copy, deepcopy
-        from sys import getrefcount
-
         self.assertRaises(ValueError, lambda: cfunc([], []))
 
         x, y, z, s = make_vars("x", "y", "z", "s")
@@ -119,12 +120,7 @@ class cfunc_test_case(_ut.TestCase):
         self.assertEqual(pickle.loads(pickle.dumps(cf)).prec, 128)
 
     def test_multi(self):
-        import numpy as np
-        from . import cfunc, make_vars, sin, par, expression, _core, time
-        from ._core import _ppc_arch
-        from .test import _get_eps, _allclose
-
-        if _ppc_arch:
+        if _core._ppc_arch:
             fp_types = [np.float32, float]
         else:
             fp_types = [np.float32, float, np.longdouble]
@@ -748,17 +744,12 @@ class cfunc_test_case(_ut.TestCase):
                 )
 
         # Check throwing behaviour with long double on PPC.
-        if _ppc_arch:
+        if _core._ppc_arch:
             with self.assertRaises(NotImplementedError):
                 cfunc(func, vars=[y, x], fp_type=np.longdouble)
 
     def test_single(self):
-        import numpy as np
-        from . import cfunc, make_vars, sin, par, expression, _core, time
-        from ._core import _ppc_arch
-        from .test import _get_eps, _allclose
-
-        if _ppc_arch:
+        if _core._ppc_arch:
             fp_types = [np.float32, float]
         else:
             fp_types = [np.float32, float, np.longdouble]
