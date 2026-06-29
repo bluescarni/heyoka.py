@@ -15,7 +15,7 @@ from numpy import float32 as f32
 from .. import _core
 
 # NOTE: real128 and real are available only in some builds. When real128 is missing
-# the whole test case is skipped (see the skipUnless decorator below); the inner
+# the whole test case is skipped (see the skipUnless decorator below). The inner
 # "if real is not None" blocks similarly guard the optional real-type interactions.
 real128 = getattr(_core, "real128", None)
 real = getattr(_core, "real", None)
