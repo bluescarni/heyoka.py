@@ -185,13 +185,7 @@ installed by running the test suite with the following command:
 
 .. code-block:: bash
 
-   $ python -c "import heyoka; heyoka.test.run_test_suite();"
-
-If this command executes without any error, then
-your heyoka.py installation is ready for use.
-
-Note that the test suite makes use of the optional dependencies, thus if they
-are not installed some tests will fail.
+   $ pytest --pyargs heyoka.test
 
 Getting help
 ------------
