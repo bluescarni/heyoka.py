@@ -150,9 +150,9 @@ find_package(Python3 QUIET REQUIRED COMPONENTS ${_HEYOKA_PY_PYTHON3_COMPONENTS})
 
 message(STATUS "Python3 interpreter: ${Python3_EXECUTABLE}")
 message(STATUS "Python3 installation directory: ${Python3_SITEARCH}")
-# NOTE: Python 3.9 seems like the absolute minimum for NumPy 2.
-if(${Python3_VERSION_MINOR} LESS 9)
-    message(FATAL_ERROR "The minimum supported version of Python is 3.9, but version 3.${Python3_VERSION_MINOR} was found instead")
+# NOTE: we are using Python 3.10 typing syntax.
+if(${Python3_VERSION_MINOR} LESS 10)
+    message(FATAL_ERROR "The minimum supported version of Python is 3.10, but version 3.${Python3_VERSION_MINOR} was found instead")
 endif()
 # We support only NumPy 2.*.
 if(${Python3_NumPy_VERSION} VERSION_LESS 2 OR ${Python3_NumPy_VERSION} VERSION_GREATER_EQUAL 3)

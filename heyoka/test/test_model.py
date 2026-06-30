@@ -6,18 +6,26 @@
 # Public License v. 2.0. If a copy of the MPL was not distributed
 # with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import unittest as _ut
+import unittest
+import math
+from .. import (
+    model,
+    make_vars,
+    expression,
+    par,
+    sin,
+    cos,
+    sum as hysum,
+    cfunc,
+    time,
+    eop_data,
+    sw_data,
+)
+import numpy as np
 
 
-class model_test_case(_ut.TestCase):
+class model_test_case(unittest.TestCase):
     def test_mascon(self):
-        from . import (
-            model,
-            make_vars,
-            expression as ex,
-            par,
-        )
-
         x, y, z, vx, vy, vz = make_vars("x", "y", "z", "vx", "vy", "vz")
 
         dyn = model.mascon(
@@ -25,7 +33,7 @@ class model_test_case(_ut.TestCase):
         )
 
         self.assertEqual(dyn[0][0], x)
-        self.assertEqual(dyn[0][1], ex("vx"))
+        self.assertEqual(dyn[0][1], expression("vx"))
 
         pot = model.mascon_potential(
             Gconst=1.5, masses=[1.1], positions=[[1.0, 2.0, 3.0]], omega=[0.0, 0.0, 3.0]
@@ -83,14 +91,12 @@ class model_test_case(_ut.TestCase):
         )
 
     def test_rotating(self):
-        from . import model, make_vars, expression as ex
-
         x, y, z, vx, vy, vz = make_vars("x", "y", "z", "vx", "vy", "vz")
 
         dyn = model.rotating(omega=[0.0, 0.0, 3.0])
 
         self.assertEqual(dyn[0][0], x)
-        self.assertEqual(dyn[0][1], ex("vx"))
+        self.assertEqual(dyn[0][1], expression("vx"))
 
         self.assertTrue(len(dyn[3][1]) > 5)
 
@@ -99,15 +105,12 @@ class model_test_case(_ut.TestCase):
         model.rotating_energy([0.0, 0.0, 3.0])
 
     def test_fixed_centres(self):
-        from . import model, make_vars, expression as ex
-        from numpy import single
-
         x, y, z, vx, vy, vz = make_vars("x", "y", "z", "vx", "vy", "vz")
 
         dyn = model.fixed_centres(Gconst=1.5, masses=[1.1], positions=[[1.0, 2.0, 3.0]])
 
         self.assertEqual(dyn[0][0], x)
-        self.assertEqual(dyn[0][1], ex("vx"))
+        self.assertEqual(dyn[0][1], expression("vx"))
 
         model.fixed_centres_energy(
             Gconst=1.5, masses=[1.1], positions=[[1.0, 2.0, 3.0]]
@@ -143,16 +146,14 @@ class model_test_case(_ut.TestCase):
 
         # Run also a small test with single-precision values.
         dyn = model.fixed_centres(
-            Gconst=single(1.5), masses=[single(1.1)], positions=[[1.0, 2.0, 3.0]]
+            Gconst=np.single(1.5), masses=[np.single(1.1)], positions=[[1.0, 2.0, 3.0]]
         )
 
         self.assertEqual(dyn[0][0], x)
-        self.assertEqual(dyn[0][1], ex("vx"))
+        self.assertEqual(dyn[0][1], expression("vx"))
         self.assertTrue("1.10000002" in repr(dyn))
 
     def test_nbody(self):
-        from . import model, expression, make_vars
-
         dyn = model.nbody(2, masses=[0.0, 0.0])
 
         self.assertEqual(len(dyn), 12)
@@ -208,8 +209,6 @@ class model_test_case(_ut.TestCase):
         self.assertTrue("5.0000000000000" in str(en))
 
     def test_pendulum(self):
-        from . import model, make_vars, sin, cos
-
         x, v = make_vars("x", "v")
 
         dyn = model.pendulum()
@@ -260,8 +259,6 @@ class model_test_case(_ut.TestCase):
         )
 
     def test_cr3bp(self):
-        from . import model, make_vars
-
         x, px, y = make_vars("x", "px", "y")
 
         dyn = model.cr3bp()
@@ -278,8 +275,6 @@ class model_test_case(_ut.TestCase):
         self.assertTrue("0.06250000000" in str(jac))
 
     def test_ffnn(self):
-        from . import model, make_vars, expression, par, sum as hysum
-
         x, y = make_vars("x", "y")
 
         def linear(x):
@@ -297,9 +292,6 @@ class model_test_case(_ut.TestCase):
         self.assertEqual(my_ffnn4[0], expression(1.3) + (expression(1.2) * x))
 
     def test_cart2geo(self):
-        import numpy as np
-        from . import model, make_vars, cfunc
-
         x, y, z = make_vars("x", "y", "z")
         h, phi, lon = make_vars("h", "phi", "lon")
         geodesic1 = model.cart2geo([x, y, z], ecc2=0.13, R_eq=60.0, n_iters=1)
@@ -362,8 +354,6 @@ class model_test_case(_ut.TestCase):
         )
 
     def test_nrlmsise00(self):
-        from . import model, make_vars, cfunc, time
-
         h, lat, lon, f107, f107a, ap = make_vars(
             "h", "lat", "lon", "f107", "f107a", "ap"
         )
@@ -396,8 +386,6 @@ class model_test_case(_ut.TestCase):
         )
 
     def test_jb08(self):
-        from . import model, make_vars, cfunc, time
-
         (
             h,
             lat,
@@ -478,14 +466,11 @@ class model_test_case(_ut.TestCase):
         )
 
     def test_sgp4(self):
-        from . import par, time as tm
-        from .model import sgp4
-
-        self.assertEqual(len(sgp4()), 7)
-        self.assertEqual(len(sgp4([])), 7)
+        self.assertEqual(len(model.sgp4()), 7)
+        self.assertEqual(len(model.sgp4([])), 7)
 
         # Test also with custom inputs.
-        self.assertEqual(len(sgp4(["a", "b", "c", "d", "e", "f", par[0], tm])), 7)
+        self.assertEqual(len(model.sgp4(["a", "b", "c", "d", "e", "f", par[0], time])), 7)
 
     def test_gpe_is_deep_space(self):
         try:
@@ -493,106 +478,78 @@ class model_test_case(_ut.TestCase):
         except ImportError:
             return
 
-        from .model import gpe_is_deep_space
-
         # A non-deepspace TLE.
         s1 = "1 00045U 60007A   24187.45810325  .00000504  00000-0  14841-3 0  9992"
         t1 = "2 00045  66.6943  81.3521 0257384 317.3173  40.8180 14.34783636277898"
         sat = Satrec.twoline2rv(s1, t1)
 
-        self.assertFalse(gpe_is_deep_space(sat.no_kozai, sat.ecco, sat.inclo))
+        self.assertFalse(model.gpe_is_deep_space(sat.no_kozai, sat.ecco, sat.inclo))
 
         # A deepspace TLE.
         t1 = "2 00045  66.6943  81.3521 0257384 317.3173  40.8180  6.34783636277898"
         sat = Satrec.twoline2rv(s1, t1)
 
-        self.assertTrue(gpe_is_deep_space(sat.no_kozai, sat.ecco, sat.inclo))
+        self.assertTrue(model.gpe_is_deep_space(sat.no_kozai, sat.ecco, sat.inclo))
 
     def test_era_erap(self):
-        from . import cfunc, make_vars
-        from .model import era, erap
-        import numpy as np
-
         x = make_vars("x")
-        cf = cfunc([era(x), erap(x)], [x])
+        cf = cfunc([model.era(x), model.erap(x)], [x])
 
         out = cf(inputs=[0.0])
         self.assertFalse(np.any(np.isnan(out)))
 
     def test_pm(self):
-        from . import cfunc, make_vars
-        from .model import pm_x, pm_xp, pm_y, pm_yp
-        import numpy as np
-
         x = make_vars("x")
-        cf = cfunc([pm_x(x), pm_xp(x), pm_y(x), pm_yp(x)], [x])
+        cf = cfunc(
+            [model.pm_x(x), model.pm_xp(x), model.pm_y(x), model.pm_yp(x)], [x]
+        )
 
         out = cf(inputs=[0.0])
         self.assertFalse(np.any(np.isnan(out)))
 
     def test_sw(self):
-        from . import cfunc, make_vars
-        from .model import Ap_avg, f107, f107a_center81
-        import numpy as np
-
         x = make_vars("x")
-        cf = cfunc([Ap_avg(x), f107(x), f107a_center81(x)], [x])
+        cf = cfunc([model.Ap_avg(x), model.f107(x), model.f107a_center81(x)], [x])
 
         out = cf(inputs=[0.0])
         self.assertFalse(np.any(np.isnan(out)))
 
     def test_dXdY(self):
-        from . import cfunc, make_vars
-        from .model import dX, dXp, dY, dYp
-        import numpy as np
-
         x = make_vars("x")
-        cf = cfunc([dX(x), dXp(x), dY(x), dYp(x)], [x])
+        cf = cfunc(
+            [model.dX(x), model.dXp(x), model.dY(x), model.dYp(x)], [x]
+        )
 
         out = cf(inputs=[0.0])
         self.assertFalse(np.any(np.isnan(out)))
 
     def test_rot_fk5j2000_icrs(self):
-        from . import cfunc, make_vars
-        from .model import rot_fk5j2000_icrs, rot_icrs_fk5j2000
-        import numpy as np
-
         x, y, z = make_vars("x", "y", "z")
-        cf = cfunc(rot_fk5j2000_icrs(rot_icrs_fk5j2000([x, y, z])), [x, y, z])
+        cf = cfunc(
+            model.rot_fk5j2000_icrs(model.rot_icrs_fk5j2000([x, y, z])), [x, y, z]
+        )
 
         out = cf(inputs=[1.0, 1.1, 1.2])
         self.assertTrue(np.allclose(out, [1.0, 1.1, 1.2], rtol=1e-15, atol=0.0))
 
     def test_time_conversions(self):
-        from . import cfunc, make_vars
-        from .model import delta_tdb_tt, delta_tt_tai
-        import numpy as np
-
         x = make_vars("x")
-        cf = cfunc([delta_tdb_tt(x), delta_tt_tai], [x])
+        cf = cfunc([model.delta_tdb_tt(x), model.delta_tt_tai], [x])
 
         out = cf(inputs=[0.0])
         self.assertFalse(np.isnan(out[0]))
         self.assertTrue(np.allclose(out[1], 32.184, rtol=1e-16, atol=0.0))
 
     def test_iau2006(self):
-        from . import cfunc, make_vars
-        from .model import iau2006
-        import numpy as np
-
         x = make_vars("x")
-        cf = cfunc(iau2006(time_expr=x, thresh=1e-6), [x])
+        cf = cfunc(model.iau2006(time_expr=x, thresh=1e-6), [x])
 
         out = cf(inputs=[0.0])
         self.assertFalse(np.isnan(out[0]))
 
     def test_rot_itrs_icrs(self):
-        from . import cfunc, make_vars
-        from .model import rot_itrs_icrs, rot_icrs_itrs
-        import numpy as np
-
         x, y, z = make_vars("x", "y", "z")
-        cf = cfunc(rot_icrs_itrs(rot_itrs_icrs([x, y, z])), [x, y, z])
+        cf = cfunc(model.rot_icrs_itrs(model.rot_itrs_icrs([x, y, z])), [x, y, z])
 
         out = cf(inputs=[1.0, 1.1, 1.2], time=0.0)
         self.assertTrue(np.allclose(out, [1.0, 1.1, 1.2], rtol=1e-15, atol=0.0))
@@ -604,23 +561,12 @@ class model_test_case(_ut.TestCase):
         self.assertTrue(np.allclose(out, [1.0, 1.1, 1.2], rtol=1e-15, atol=0.0))
 
     def test_egm2008(self):
-        import math
-        import numpy as np
-        from . import make_vars
-        from .model import (
-            egm2008_pot,
-            egm2008_acc,
-            get_egm2008_mu,
-            get_egm2008_a,
-            get_egm2008_CS,
-        )
-
         x, y, z = make_vars("x", "y", "z")
 
-        self.assertNotEqual(get_egm2008_mu(), get_egm2008_a())
+        self.assertNotEqual(model.get_egm2008_mu(), model.get_egm2008_a())
 
         # CS coefficients getter.
-        cs = get_egm2008_CS()
+        cs = model.get_egm2008_CS()
         self.assertEqual(cs.ndim, 2)
         self.assertEqual(cs.shape[1], 2)
         self.assertEqual(cs.dtype, np.float64)
@@ -637,31 +583,32 @@ class model_test_case(_ut.TestCase):
         disc = 8 * tri + 1
         self.assertEqual(math.isqrt(disc) ** 2, disc)
         self.assertNotEqual(
-            egm2008_pot([x, y, z], n=2, m=2), egm2008_pot([x, y, z], n=2, m=2, mu=1.2)
+            model.egm2008_pot([x, y, z], n=2, m=2),
+            model.egm2008_pot([x, y, z], n=2, m=2, mu=1.2),
         )
         self.assertNotEqual(
-            egm2008_pot([x, y, z], n=2, m=2), egm2008_pot([x, y, z], n=2, m=2, a=1.2)
+            model.egm2008_pot([x, y, z], n=2, m=2),
+            model.egm2008_pot([x, y, z], n=2, m=2, a=1.2),
         )
         self.assertNotEqual(
-            egm2008_pot([x, y, z], n=2, m=2, a=1.2),
-            egm2008_pot([x, y, z], n=2, m=2, mu=1.2),
+            model.egm2008_pot([x, y, z], n=2, m=2, a=1.2),
+            model.egm2008_pot([x, y, z], n=2, m=2, mu=1.2),
         )
 
         self.assertNotEqual(
-            egm2008_acc([x, y, z], n=2, m=2), egm2008_acc([x, y, z], n=2, m=2, mu=1.2)
+            model.egm2008_acc([x, y, z], n=2, m=2),
+            model.egm2008_acc([x, y, z], n=2, m=2, mu=1.2),
         )
         self.assertNotEqual(
-            egm2008_acc([x, y, z], n=2, m=2), egm2008_acc([x, y, z], n=2, m=2, a=1.2)
+            model.egm2008_acc([x, y, z], n=2, m=2),
+            model.egm2008_acc([x, y, z], n=2, m=2, a=1.2),
         )
         self.assertNotEqual(
-            egm2008_acc([x, y, z], n=2, m=2, a=1.2),
-            egm2008_acc([x, y, z], n=2, m=2, mu=1.2),
+            model.egm2008_acc([x, y, z], n=2, m=2, a=1.2),
+            model.egm2008_acc([x, y, z], n=2, m=2, mu=1.2),
         )
 
     def test_sh_gravity(self):
-        from . import make_vars, expression, par
-        from .model import sh_gravity_pot, sh_gravity_acc
-
         x, y, z = make_vars("x", "y", "z")
 
         # A degree-2 model needs 6 [C, S] coefficient pairs.
@@ -674,15 +621,15 @@ class model_test_case(_ut.TestCase):
             [1e-6, -1e-6],
         ]
 
-        pot = sh_gravity_pot([x, y, z], coeffs, mu=1.0, a=1.0)
+        pot = model.sh_gravity_pot([x, y, z], coeffs, mu=1.0, a=1.0)
         self.assertIsInstance(pot, expression)
 
-        acc = sh_gravity_acc([x, y, z], coeffs, mu=1.0, a=1.0)
+        acc = model.sh_gravity_acc([x, y, z], coeffs, mu=1.0, a=1.0)
         self.assertEqual(len(acc), 3)
 
         # mu and a affect the result.
-        self.assertNotEqual(pot, sh_gravity_pot([x, y, z], coeffs, mu=1.2, a=1.0))
-        self.assertNotEqual(pot, sh_gravity_pot([x, y, z], coeffs, mu=1.0, a=1.2))
+        self.assertNotEqual(pot, model.sh_gravity_pot([x, y, z], coeffs, mu=1.2, a=1.0))
+        self.assertNotEqual(pot, model.sh_gravity_pot([x, y, z], coeffs, mu=1.0, a=1.2))
 
         # The coefficients can be numbers, expressions, strings (variables) or runtime parameters.
         mixed_coeffs = [
@@ -694,73 +641,63 @@ class model_test_case(_ut.TestCase):
             [1e-6, -1e-6],
         ]
         self.assertIsInstance(
-            sh_gravity_pot([x, y, z], mixed_coeffs, mu=1.0, a=1.0), expression
+            model.sh_gravity_pot([x, y, z], mixed_coeffs, mu=1.0, a=1.0), expression
         )
 
         # max_degree/max_order: passing None uses the full inferred model.
         self.assertEqual(
-            sh_gravity_pot([x, y, z], coeffs, mu=1.0, a=1.0),
-            sh_gravity_pot([x, y, z], coeffs, mu=1.0, a=1.0, max_degree=2, max_order=2),
+            model.sh_gravity_pot([x, y, z], coeffs, mu=1.0, a=1.0),
+            model.sh_gravity_pot([x, y, z], coeffs, mu=1.0, a=1.0, max_degree=2, max_order=2),
         )
 
         # Restricting to a subset gives a different model.
         self.assertNotEqual(
             pot,
-            sh_gravity_pot([x, y, z], coeffs, mu=1.0, a=1.0, max_degree=1),
+            model.sh_gravity_pot([x, y, z], coeffs, mu=1.0, a=1.0, max_degree=1),
         )
 
         # max_order without max_degree is an error.
         with self.assertRaises(ValueError):
-            sh_gravity_pot([x, y, z], coeffs, mu=1.0, a=1.0, max_order=1)
+            model.sh_gravity_pot([x, y, z], coeffs, mu=1.0, a=1.0, max_order=1)
 
         # max_degree exceeding the inferred degree is an error.
         with self.assertRaises(ValueError):
-            sh_gravity_pot([x, y, z], coeffs, mu=1.0, a=1.0, max_degree=3)
+            model.sh_gravity_pot([x, y, z], coeffs, mu=1.0, a=1.0, max_degree=3)
 
         # max_order > max_degree is an error.
         with self.assertRaises(ValueError):
-            sh_gravity_pot([x, y, z], coeffs, mu=1.0, a=1.0, max_degree=1, max_order=2)
+            model.sh_gravity_pot([x, y, z], coeffs, mu=1.0, a=1.0, max_degree=1, max_order=2)
 
         # A list of coefficients whose size is not a triangular number is an error.
         with self.assertRaises(ValueError):
-            sh_gravity_pot([x, y, z], coeffs[:-1], mu=1.0, a=1.0)
+            model.sh_gravity_pot([x, y, z], coeffs[:-1], mu=1.0, a=1.0)
 
         # An empty list of coefficients is an error.
         with self.assertRaises(ValueError):
-            sh_gravity_pot([x, y, z], [], mu=1.0, a=1.0)
+            model.sh_gravity_pot([x, y, z], [], mu=1.0, a=1.0)
 
     def test_dayfrac(self):
-        from . import make_vars
-        from .model import dayfrac
-
-        self.assertEqual(str(dayfrac()), "dayfrac(t)")
+        self.assertEqual(str(model.dayfrac()), "dayfrac(t)")
 
         x = make_vars("x")
-        self.assertEqual(str(dayfrac(time_expr=x)), "dayfrac(x)")
+        self.assertEqual(str(model.dayfrac(time_expr=x)), "dayfrac(x)")
 
     def test_gmst82(self):
-        from . import make_vars
-        from .model import gmst82, gmst82p
-
-        self.assertTrue(str(gmst82()).startswith("eop_gmst82_"))
-        self.assertTrue(str(gmst82()).endswith("(t)"))
+        self.assertTrue(str(model.gmst82()).startswith("eop_gmst82_"))
+        self.assertTrue(str(model.gmst82()).endswith("(t)"))
 
         x = make_vars("x")
-        self.assertTrue(str(gmst82(time_expr=x)).endswith("(x)"))
+        self.assertTrue(str(model.gmst82(time_expr=x)).endswith("(x)"))
 
-        self.assertTrue(str(gmst82p()).startswith("eop_gmst82p_"))
-        self.assertTrue(str(gmst82p(time_expr=x)).endswith("(x)"))
+        self.assertTrue(str(model.gmst82p()).startswith("eop_gmst82p_"))
+        self.assertTrue(str(model.gmst82p(time_expr=x)).endswith("(x)"))
 
     def test_rot_itrs_teme(self):
-        import numpy as np
-        from . import cfunc, make_vars
-        from .model import rot_itrs_teme, rot_teme_itrs
-
         x, y, z = make_vars("x", "y", "z")
-        teme_x, teme_y, teme_z = rot_itrs_teme([x, y, z])
+        teme_x, teme_y, teme_z = model.rot_itrs_teme([x, y, z])
         cf = cfunc([teme_x, teme_y, teme_z], [x, y, z], compact_mode=True)
 
-        itrs_x, itrs_y, itrs_z = rot_teme_itrs([x, y, z])
+        itrs_x, itrs_y, itrs_z = model.rot_teme_itrs([x, y, z])
         cf_inv = cfunc([itrs_x, itrs_y, itrs_z], [x, y, z], compact_mode=True)
 
         out = cf(
@@ -779,22 +716,13 @@ class model_test_case(_ut.TestCase):
 
     def test_rsw(self):
         # A couple of simple tests from orekit.
-        from .model import (
-            state_to_rsw,
-            state_to_rsw_inertial,
-            state_from_rsw,
-            state_from_rsw_inertial,
-        )
-        from . import cfunc, make_vars
-        import numpy as np
-
         pos_x, pos_y, pos_z = make_vars("pos_x", "pos_y", "pos_z")
         vel_x, vel_y, vel_z = make_vars("vel_x", "vel_y", "vel_z")
         x, y, z = make_vars("x", "y", "z")
         vx, vy, vz = make_vars("vx", "vy", "vz")
 
         # state_to_rsw().
-        pos_p, vel_p = state_to_rsw(
+        pos_p, vel_p = model.state_to_rsw(
             pos=[pos_x, pos_y, pos_z],
             vel=[vel_x, vel_y, vel_z],
             r=[x, y, z],
@@ -836,7 +764,7 @@ class model_test_case(_ut.TestCase):
         self.assertTrue(np.all(np.abs((output - state_orekit) / state_orekit) < 1e-12))
 
         # state_to_rsw_inertial().
-        pos_p, vel_p = state_to_rsw_inertial(
+        pos_p, vel_p = model.state_to_rsw_inertial(
             pos=[pos_x, pos_y, pos_z],
             vel=[vel_x, vel_y, vel_z],
             r=[x, y, z],
@@ -878,7 +806,7 @@ class model_test_case(_ut.TestCase):
         self.assertTrue(np.all(np.abs((output - state_orekit) / state_orekit) < 1e-12))
 
         # state_from_rsw().
-        pos_p, vel_p = state_from_rsw(
+        pos_p, vel_p = model.state_from_rsw(
             pos=[pos_x, pos_y, pos_z],
             vel=[vel_x, vel_y, vel_z],
             r=[x, y, z],
@@ -920,7 +848,7 @@ class model_test_case(_ut.TestCase):
         self.assertTrue(np.all(np.abs((output - state_orekit) / state_orekit) < 1e-12))
 
         # state_from_rsw_inertial().
-        pos_p, vel_p = state_from_rsw_inertial(
+        pos_p, vel_p = model.state_from_rsw_inertial(
             pos=[pos_x, pos_y, pos_z],
             vel=[vel_x, vel_y, vel_z],
             r=[x, y, z],
@@ -965,17 +893,6 @@ class model_test_case(_ut.TestCase):
         # Tests for the Python exposition of model.eo_dynamics. These focus on the wiring of the kwargs
         # from Python into C++ (type handling, None-as-missing semantics, exception translation, etc.).
         # The physical/numerical correctness of the dynamics is exercised by the C++ tests.
-        from . import (
-            model,
-            expression as ex,
-            make_vars,
-            par,
-            cfunc,
-            eop_data,
-            sw_data,
-        )
-        import numpy as np
-
         # Basic smoke test: default kwargs produce 6 equations.
         dyn = model.eo_dynamics()
         self.assertEqual(len(dyn), 6)
@@ -1024,7 +941,7 @@ class model_test_case(_ut.TestCase):
         self.assertTrue(np.all(out_default == out_all_none))
 
         # Cb accepts multiple alternatives of the vex_t variant: double, expression, parametric.
-        for cb in (0.02, ex(0.02), par[0]):
+        for cb in (0.02, expression(0.02), par[0]):
             dyn = model.eo_dynamics(Cb=cb)
             self.assertEqual(len(dyn), 6)
 
@@ -1036,9 +953,6 @@ class model_test_case(_ut.TestCase):
         # Tests for the Python exposition of model.lagrange_prop. These focus on the wiring of the kwargs
         # from Python into C++ (vex_t conversion, iterable handling, exception translation, kw-only enforcement).
         # The numerical correctness of the propagator is exercised by the C++ tests.
-        from . import model, expression as ex, par
-        import numpy as np
-
         # Basic smoke test: returns a (pos, vel) pair of length-3 lists of expressions.
         pos, vel = model.lagrange_prop(
             pos0=[7000.0, 0.0, 0.0],
@@ -1049,21 +963,21 @@ class model_test_case(_ut.TestCase):
         self.assertEqual(len(pos), 3)
         self.assertEqual(len(vel), 3)
         for c in (*pos, *vel):
-            self.assertIsInstance(c, ex)
+            self.assertIsInstance(c, expression)
 
         # Keyword-only enforcement: positional arguments must be rejected.
         with self.assertRaises(TypeError):
             model.lagrange_prop([7000.0, 0.0, 0.0], [0.0, 7.5, 0.0], 3.986e5, 600.0)
 
         # vex_t handling on the scalar args: mu and tm must each accept any of expression / float / par.
-        for mu in (3.986e5, ex(3.986e5), par[0]):
-            for tm in (600.0, ex(600.0), par[1]):
+        for mu in (3.986e5, expression(3.986e5), par[0]):
+            for tm in (600.0, expression(600.0), par[1]):
                 model.lagrange_prop(
                     pos0=[7000.0, 0.0, 0.0], vel0=[0.0, 7.5, 0.0], mu=mu, tm=tm
                 )
 
         # vex_t handling on the iterable args: each element of pos0/vel0 must accept the same variant.
-        x, y, z = ex("x"), ex("y"), ex("z")
+        x, y, z = expression("x"), expression("y"), expression("z")
         model.lagrange_prop(
             pos0=[x, 0.0, par[0]], vel0=[0.0, y, z], mu=3.986e5, tm=600.0
         )

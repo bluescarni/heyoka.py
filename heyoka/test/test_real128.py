@@ -6,27 +6,29 @@
 # Public License v. 2.0. If a copy of the MPL was not distributed
 # with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import unittest as _ut
+import unittest
+import random
+from copy import copy, deepcopy
+from pickle import dumps, loads
+import numpy as np
+from numpy import float32 as f32
+from .. import _core
+
+# NOTE: real128 and real are available only in some builds. When real128 is missing
+# the whole test case is skipped (see the skipUnless decorator below). The inner
+# "if real is not None" blocks similarly guard the optional real-type interactions.
+real128 = getattr(_core, "real128", None)
+real = getattr(_core, "real", None)
+
+if _core._ppc_arch:
+    ld = float
+else:
+    from numpy import longdouble as ld
 
 
-class real128_test_case(_ut.TestCase):
+@unittest.skipUnless(real128 is not None, "the 'real128' type is not available")
+class real128_test_case(unittest.TestCase):
     def test_scalar(self):
-        from . import _core
-
-        if not hasattr(_core, "real128"):
-            return
-
-        import random
-        from . import real128
-        from ._core import _ppc_arch
-
-        if _ppc_arch:
-            ld = float
-        else:
-            from numpy import longdouble as ld
-
-        from numpy import float32 as f32
-
         # Make random testing deterministic.
         random.seed(42)
 
@@ -87,8 +89,7 @@ class real128_test_case(_ut.TestCase):
         self.assertEqual(str(real128("-123")), "-123")
 
         # Construction from real.
-        if hasattr(_core, "real"):
-            real = _core.real
+        if real is not None:
 
             self.assertEqual(real128(real("1.1", 113)), real128("1.1"))
             self.assertNotEqual(real128(real("1.1", 100)), real128("1.1"))
@@ -144,8 +145,7 @@ class real128_test_case(_ut.TestCase):
         self.assertEqual(repr(1.0 + real128(42)), "43")
         # self.assertEqual(repr(ld(1) + real128(42)), "43")
         self.assertEqual(repr(f32(1) + real128(42)), "43")
-        if hasattr(_core, "real"):
-            real = _core.real
+        if real is not None:
             self.assertTrue(isinstance(real128() + real(), real))
             self.assertTrue(isinstance(real() + real128(), real))
             self.assertEqual(
@@ -173,8 +173,7 @@ class real128_test_case(_ut.TestCase):
         self.assertEqual(repr(1.0 - real128(42)), "-41")
         # self.assertEqual(repr(ld(1) - real128(42)), "-41")
         self.assertEqual(repr(f32(1) - real128(42)), "-41")
-        if hasattr(_core, "real"):
-            real = _core.real
+        if real is not None:
             self.assertTrue(isinstance(real128() - real(), real))
             self.assertTrue(isinstance(real() - real128(), real))
             self.assertEqual(
@@ -197,8 +196,7 @@ class real128_test_case(_ut.TestCase):
         self.assertEqual(repr(2.0 * real128(42)), "84")
         # self.assertEqual(repr(ld(2) * real128(42)), "84")
         self.assertEqual(repr(f32(2) * real128(42)), "84")
-        if hasattr(_core, "real"):
-            real = _core.real
+        if real is not None:
             self.assertTrue(isinstance(real128() * real(), real))
             self.assertTrue(isinstance(real() * real128(), real))
             self.assertEqual(
@@ -221,8 +219,7 @@ class real128_test_case(_ut.TestCase):
         self.assertEqual(repr(-42.0 // real128(9)), "-5")
         # self.assertEqual(repr(ld(-42) // real128(9)), "-5")
         self.assertEqual(repr(f32(-42) // real128(9)), "-5")
-        if hasattr(_core, "real"):
-            real = _core.real
+        if real is not None:
             self.assertTrue(isinstance(real128(1) // real(1), real))
             self.assertTrue(isinstance(real(1) // real128(1), real))
             self.assertEqual(
@@ -268,8 +265,7 @@ class real128_test_case(_ut.TestCase):
         self.assertFalse(real128("nan") < 2)
         self.assertFalse(2 < real128("nan"))
         self.assertFalse(real128("nan") < real128("nan"))
-        if hasattr(_core, "real"):
-            real = _core.real
+        if real is not None:
 
             self.assertTrue(real(1) < real128(2))
             self.assertTrue(real128(1) < real(2))
@@ -298,8 +294,6 @@ class real128_test_case(_ut.TestCase):
         self.assertTrue(real128(3) >= real128(2))
 
         # Copy/deepcopy.
-        from copy import copy, deepcopy
-
         x = real128("1.1")
         y = copy(x)
         self.assertEqual(x, y)
@@ -309,23 +303,11 @@ class real128_test_case(_ut.TestCase):
         # Pickling.
         # NOTE: this is provided for free by the
         # NumPy inheritance.
-        import pickle
-
         x = real128("1.1")
-        y = pickle.loads(pickle.dumps(x))
+        y = loads(dumps(x))
         self.assertEqual(x, y)
 
     def test_numpy(self):
-        from . import _core
-
-        if not hasattr(_core, "real128"):
-            return
-
-        import numpy as np
-        from copy import copy, deepcopy
-        from . import real128
-        from pickle import dumps, loads
-
         # Basic creation/getitem/setitem.
         arr = np.array([1, 2, 3], dtype=real128)
         self.assertEqual(type(arr[0]), real128)
@@ -743,8 +725,7 @@ class real128_test_case(_ut.TestCase):
         self.assertTrue(np.isnan(arr1_sorted[2]))
 
         # Setitem from real.
-        if hasattr(_core, "real"):
-            real = _core.real
+        if real is not None:
 
             arr1 = np.array([1, 2, 3], dtype=real128)
             arr1[1] = real("1.1", 113)

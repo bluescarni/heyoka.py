@@ -6,19 +6,24 @@
 # Public License v. 2.0. If a copy of the MPL was not distributed
 # with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import unittest as _ut
+import unittest
+import pickle
+from copy import copy, deepcopy
+import numpy as np
+from .. import _core
+
+# NOTE: real and real128 are available only in some builds. When real is missing the
+# whole test case is skipped (see the skipUnless decorator below). The inner
+# "if real128 is not None" blocks similarly guard the optional real128 interactions.
+real = getattr(_core, "real", None)
+real128 = getattr(_core, "real128", None)
+real_prec_min = getattr(_core, "real_prec_min", None)
+real_prec_max = getattr(_core, "real_prec_max", None)
 
 
-class real_test_case(_ut.TestCase):
+@unittest.skipUnless(real is not None, "the 'real' type is not available")
+class real_test_case(unittest.TestCase):
     def test_numpy_realloc(self):
-        from . import _core
-
-        if not hasattr(_core, "real"):
-            return
-
-        from . import real
-        import numpy as np
-
         # Start with a full array,
         arr = np.full((2,), real("1.1", 128))
         arr.resize((5,))
@@ -76,14 +81,6 @@ class real_test_case(_ut.TestCase):
         self.assertEqual(arr.shape, (0,))
 
     def test_numpy_matmul(self):
-        from . import _core
-
-        if not hasattr(_core, "real"):
-            return
-
-        from . import real
-        import numpy as np
-
         # Matrix multiplication.
         mat = np.array(
             [[real("1.1", 113), real("1.3", 113)], [real("2.1", 113), real("2.3", 113)]]
@@ -178,15 +175,6 @@ class real_test_case(_ut.TestCase):
         )
 
     def test_numpy_comparisons(self):
-        from . import _core
-
-        if not hasattr(_core, "real"):
-            return
-
-        from . import real
-        import numpy as np
-        from . import _core
-
         make_no = _core._make_no_real_array
 
         # Basic.
@@ -275,20 +263,11 @@ class real_test_case(_ut.TestCase):
         self.assertTrue(np.all(arr < real(2)))
         self.assertTrue(np.all(arr > 0))
         # self.assertTrue(np.all(arr <= 3.0))
-        if hasattr(_core, "real128"):
-            real128 = _core.real128
+        if real128 is not None:
 
             self.assertTrue(np.all(arr >= real128(-2.0)))
 
     def test_numpy_binary(self):
-        from . import _core
-
-        if not hasattr(_core, "real"):
-            return
-
-        from . import real
-        import numpy as np
-
         arr1 = np.full((10,), real("1.1", 128), dtype=real)
         arr2 = np.full((10,), real("1", 128), dtype=real)
         arr3 = arr1 // arr2
@@ -356,14 +335,6 @@ class real_test_case(_ut.TestCase):
         self.assertTrue(np.all(arr3 == ret))
 
     def test_numpy_unary(self):
-        from . import _core
-
-        if not hasattr(_core, "real"):
-            return
-
-        from . import real
-        import numpy as np
-
         arr1 = np.full((10,), real("-1.1", 128), dtype=real)
         arr2 = np.absolute(arr1)
         self.assertTrue(np.all(arr2 == np.full((10,), real("1.1", 128), dtype=real)))
@@ -785,15 +756,7 @@ class real_test_case(_ut.TestCase):
         self.assertTrue(all([_.prec == 128 for _ in ret]))
 
     def test_numpy_pickle(self):
-        from . import _core
-
-        if not hasattr(_core, "real"):
-            return
-
         # Pickle support.
-        import pickle
-        import numpy as np
-        from . import real
 
         arr = np.full((10,), real("1.1", 128), dtype=real)
         arr2 = pickle.loads(pickle.dumps(arr))
@@ -803,15 +766,6 @@ class real_test_case(_ut.TestCase):
             self.assertEqual(arr2[i].prec, 128)
 
     def test_numpy_conversions(self):
-        from . import _core
-
-        if not hasattr(_core, "real"):
-            return
-
-        from . import real
-        from . import _core
-        import numpy as np
-
         make_no = _core._make_no_real_array
 
         # real -> other.
@@ -872,8 +826,7 @@ class real_test_case(_ut.TestCase):
             arr.astype(np.int32, casting="safe")
 
         # real128 interop.
-        if hasattr(_core, "real128"):
-            real128 = _core.real128
+        if real128 is not None:
 
             arr = np.array([1, 2, 3, 4, 5], dtype=real128)
             self.assertTrue(np.all(arr == arr.astype(real)))
@@ -885,15 +838,6 @@ class real_test_case(_ut.TestCase):
                 self.assertTrue(np.all(arr == arr.astype(real128, casting="safe")))
 
     def test_numpy_square(self):
-        from . import _core
-
-        if not hasattr(_core, "real"):
-            return
-
-        from . import real
-        from . import _core
-        import numpy as np
-
         make_no = _core._make_no_real_array
 
         # Basic.
@@ -946,15 +890,6 @@ class real_test_case(_ut.TestCase):
         self.assertEqual(arr2[2], real(3) * real(3))
 
     def test_numpy_div(self):
-        from . import _core
-
-        if not hasattr(_core, "real"):
-            return
-
-        from . import real
-        from . import _core
-        import numpy as np
-
         make_no = _core._make_no_real_array
 
         # Basic.
@@ -1015,15 +950,6 @@ class real_test_case(_ut.TestCase):
         self.assertEqual(arr3[2], 1)
 
     def test_numpy_mul(self):
-        from . import _core
-
-        if not hasattr(_core, "real"):
-            return
-
-        from . import real
-        from . import _core
-        import numpy as np
-
         make_no = _core._make_no_real_array
 
         # Basic.
@@ -1083,15 +1009,6 @@ class real_test_case(_ut.TestCase):
         self.assertEqual(arr3[2], 0)
 
     def test_numpy_add(self):
-        from . import _core
-
-        if not hasattr(_core, "real"):
-            return
-
-        from . import real
-        from . import _core
-        import numpy as np
-
         make_no = _core._make_no_real_array
 
         # Basic.
@@ -1149,15 +1066,6 @@ class real_test_case(_ut.TestCase):
         self.assertEqual(arr3[2], 0)
 
     def test_numpy_sub(self):
-        from . import _core
-
-        if not hasattr(_core, "real"):
-            return
-
-        from . import real
-        from . import _core
-        import numpy as np
-
         make_no = _core._make_no_real_array
 
         # Basic.
@@ -1215,15 +1123,6 @@ class real_test_case(_ut.TestCase):
         self.assertEqual(arr3[2], 0)
 
     def test_numpy_basic(self):
-        from . import _core
-
-        if not hasattr(_core, "real"):
-            return
-
-        from . import real
-        from . import _core
-        import numpy as np
-
         make_no = _core._make_no_real_array
 
         arr = np.empty((5,), dtype=real)
@@ -1265,8 +1164,7 @@ class real_test_case(_ut.TestCase):
         self.assertEqual(arr[1], real(1.0))
         self.assertEqual(arr[1].prec, real(1.0).prec)
 
-        if hasattr(_core, "real128"):
-            real128 = _core.real128
+        if real128 is not None:
             arr[1] = real128(1.0)
             self.assertEqual(arr[1], real(real128(1.0)))
             self.assertEqual(arr[1].prec, real(real128(1.0)).prec)
@@ -1484,15 +1382,6 @@ class real_test_case(_ut.TestCase):
         self.assertTrue(np.all(arr3[3:] == arr2))
 
     def test_comparisons(self):
-        from . import _core
-
-        if not hasattr(_core, "real"):
-            return
-
-        from . import real
-        from . import _core
-        import numpy as np
-
         ld = np.longdouble
         f32 = np.float32
 
@@ -1511,8 +1400,7 @@ class real_test_case(_ut.TestCase):
         self.assertEqual(real(2), f32(2.0))
         self.assertEqual(f32(2.0), real(2))
 
-        if hasattr(_core, "real128"):
-            real128 = _core.real128
+        if real128 is not None:
 
             self.assertEqual(real(2), real128(2))
             self.assertEqual(real128(2), real(2))
@@ -1532,8 +1420,7 @@ class real_test_case(_ut.TestCase):
         self.assertNotEqual(real(3), f32(2.0))
         self.assertNotEqual(f32(3.0), real(2))
 
-        if hasattr(_core, "real128"):
-            real128 = _core.real128
+        if real128 is not None:
 
             self.assertNotEqual(real(3), real128(2))
             self.assertNotEqual(real128(2), real(3))
@@ -1553,8 +1440,7 @@ class real_test_case(_ut.TestCase):
         self.assertLess(real(1), f32(2.0))
         self.assertLess(f32(1.0), real(2))
 
-        if hasattr(_core, "real128"):
-            real128 = _core.real128
+        if real128 is not None:
 
             self.assertLess(real(1), real128(2))
             self.assertLess(real128(1), real(3))
@@ -1574,8 +1460,7 @@ class real_test_case(_ut.TestCase):
         self.assertLessEqual(real(1), f32(2.0))
         self.assertLessEqual(f32(2.0), real(2))
 
-        if hasattr(_core, "real128"):
-            real128 = _core.real128
+        if real128 is not None:
 
             self.assertLessEqual(real(1), real128(2))
             self.assertLessEqual(real128(3), real(3))
@@ -1595,8 +1480,7 @@ class real_test_case(_ut.TestCase):
         self.assertGreater(real(3), f32(2.0))
         self.assertGreater(f32(3.0), real(2))
 
-        if hasattr(_core, "real128"):
-            real128 = _core.real128
+        if real128 is not None:
 
             self.assertGreater(real(3), real128(2))
             self.assertGreater(real128(3), real(2))
@@ -1616,20 +1500,12 @@ class real_test_case(_ut.TestCase):
         self.assertGreaterEqual(real(3), f32(2.0))
         self.assertGreaterEqual(f32(3.0), real(3))
 
-        if hasattr(_core, "real128"):
-            real128 = _core.real128
+        if real128 is not None:
 
             self.assertGreaterEqual(real(3), real128(2))
             self.assertGreaterEqual(real128(3), real(3))
 
     def test_conversions(self):
-        from . import _core
-
-        if not hasattr(_core, "real"):
-            return
-
-        from . import real
-
         self.assertTrue(bool(real(1)))
         self.assertFalse(bool(real(0)))
         self.assertTrue(bool(real("nan", 32)))
@@ -1652,15 +1528,6 @@ class real_test_case(_ut.TestCase):
         self.assertTrue("Cannot convert real infinity to integer" in str(cm.exception))
 
     def test_binary(self):
-        from . import _core
-
-        if not hasattr(_core, "real"):
-            return
-
-        from . import real
-        from . import _core
-        import numpy as np
-
         ld = np.longdouble
         f32 = np.float32
 
@@ -1682,8 +1549,7 @@ class real_test_case(_ut.TestCase):
         self.assertEqual(str(f32("1.1") + real(1, 20)), "2.09999990")
 
         # real128.
-        if hasattr(_core, "real128"):
-            real128 = _core.real128
+        if real128 is not None:
 
             self.assertEqual(str(x + real128(-2.0)), str(real(-1, 128)))
             self.assertEqual(str(real128(1.0) + y), str(real(-1, 128)))
@@ -1711,8 +1577,7 @@ class real_test_case(_ut.TestCase):
         self.assertEqual(str(f32("1.1") - real(1, 20)), "1.00000024e-1")
 
         # real128.
-        if hasattr(_core, "real128"):
-            real128 = _core.real128
+        if real128 is not None:
 
             self.assertEqual(str(x - real128(-2.0)), str(real(3, 128)))
             self.assertEqual(str(real128(1.0) - y), str(real(3, 128)))
@@ -1740,8 +1605,7 @@ class real_test_case(_ut.TestCase):
         self.assertEqual(str(f32("1.1") * real(1, 20)), "1.10000002")
 
         # real128.
-        if hasattr(_core, "real128"):
-            real128 = _core.real128
+        if real128 is not None:
 
             self.assertEqual(str(x * real128(-2.0)), str(real(-2, 128)))
             self.assertEqual(str(real128(1.0) * y), str(real(-2, 128)))
@@ -1769,8 +1633,7 @@ class real_test_case(_ut.TestCase):
         self.assertEqual(str(f32("1.1") / real(1, 20)), "1.10000002")
 
         # real128.
-        if hasattr(_core, "real128"):
-            real128 = _core.real128
+        if real128 is not None:
 
             self.assertEqual(str(x / real128(-2.0)), str(real(-0.5, 128)))
             self.assertEqual(str(real128(1.0) / y), str(real(-0.5, 128)))
@@ -1796,8 +1659,7 @@ class real_test_case(_ut.TestCase):
         self.assertEqual(str(f32("1.1") // real(1, 20)), "1.00000000")
 
         # real128.
-        if hasattr(_core, "real128"):
-            real128 = _core.real128
+        if real128 is not None:
 
             self.assertEqual(str(real(2.1, 128) // real128(1)), str(real(2.0, 128)))
             self.assertEqual(str(real128(1) // real(2.1, 128)), str(real(0.0, 128)))
@@ -1823,8 +1685,7 @@ class real_test_case(_ut.TestCase):
         self.assertEqual(str(f32("1.1") ** real(1, 20)), "1.10000002")
 
         # real128.
-        if hasattr(_core, "real128"):
-            real128 = _core.real128
+        if real128 is not None:
 
             self.assertEqual(str(real(2.0, 128) ** real128(3.0)), str(real(8.0, 128)))
             self.assertEqual(str(real128(2.0) ** real(3.0, 128)), str(real(8.0, 128)))
@@ -1853,8 +1714,7 @@ class real_test_case(_ut.TestCase):
         self.assertFalse(real("nan", 10) < 2)
         self.assertFalse(2 < real("nan", 10))
         self.assertFalse(real("nan", 10) < real("nan", 10))
-        if hasattr(_core, "real128"):
-            real128 = _core.real128
+        if real128 is not None:
 
             self.assertTrue(real(1) < real128(2))
             self.assertTrue(real128(1) < real(2))
@@ -1883,13 +1743,6 @@ class real_test_case(_ut.TestCase):
         self.assertTrue(real(3) >= real(2))
 
     def test_unary(self):
-        from . import _core
-
-        if not hasattr(_core, "real"):
-            return
-
-        from . import real
-
         x = real("1.1", 512)
         self.assertEqual(str(x), str(+x))
 
@@ -1898,15 +1751,6 @@ class real_test_case(_ut.TestCase):
         self.assertEqual(str(abs(xm)), str(x))
 
     def test_basic(self):
-        from . import _core
-
-        if not hasattr(_core, "real"):
-            return
-
-        from . import real
-        from . import _core, real_prec_min, real_prec_max
-        import numpy as np
-
         ld = np.longdouble
         f32 = np.float32
 
@@ -2026,8 +1870,7 @@ class real_test_case(_ut.TestCase):
         self.assertEqual(x.prec, np.finfo(f32).nmant + 1)
 
         # real128.
-        if hasattr(_core, "real128"):
-            real128 = _core.real128
+        if real128 is not None:
 
             x = real(real128("1.1"))
             self.assertEqual(str(x), "1.10000000000000000000000000000000008")
@@ -2136,7 +1979,6 @@ class real_test_case(_ut.TestCase):
             x.prec_round(1 << 512)
 
         # copy/deepcopy.
-        from copy import copy, deepcopy
 
         x = real("1.1", 123)
         y = copy(x)
@@ -2162,7 +2004,6 @@ class real_test_case(_ut.TestCase):
         self.assertTrue("mamo" in str(cm.exception))
 
         # Pickle support.
-        import pickle
 
         x = real("1.1", 128)
         y = pickle.loads(pickle.dumps(x))

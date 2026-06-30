@@ -85,6 +85,8 @@ if [[ "${HEYOKA_PY_BUILD_SDIST}" == "yes" ]]; then
 	echo "sdist archive size: `du -h dist/heyoka*|awk '{print $1}'`"
 	# Try to install it and run the tests.
 	/opt/python/${PYTHON_DIR}/bin/pip install dist/heyoka*
+	# Install the test dependency group (pytest + the optional-feature extras).
+	/opt/python/${PYTHON_DIR}/bin/pip install --group ${GITHUB_WORKSPACE}/pyproject.toml:test
 	cd ${GITHUB_WORKSPACE}/tools
 	/opt/python/${PYTHON_DIR}/bin/python ci_test_runner.py
 	cd /
@@ -104,6 +106,8 @@ else
 	unset LD_LIBRARY_PATH
 	cd /
 	/opt/python/${PYTHON_DIR}/bin/pip install ${GITHUB_WORKSPACE}/repaired_wheel/heyoka*
+	# Install the test dependency group (pytest + the optional-feature extras).
+	/opt/python/${PYTHON_DIR}/bin/pip install --group ${GITHUB_WORKSPACE}/pyproject.toml:test
 	cd ${GITHUB_WORKSPACE}/tools
 	/opt/python/${PYTHON_DIR}/bin/python ci_test_runner.py
 	cd /

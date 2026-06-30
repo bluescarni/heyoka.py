@@ -7,25 +7,28 @@
 # with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 
-import unittest as _ut
+import unittest
+from sys import getrefcount
+import numpy as np
+from .. import (
+    make_vars,
+    var_ode_sys,
+    var_args,
+    cos,
+    sin,
+    par,
+    time,
+    taylor_adaptive,
+    taylor_adaptive_batch,
+    _core,
+)
+
+# real is available only in some builds. Reference it through this module global.
+real = getattr(_core, "real", None)
 
 
-class var_integrator_test_case(_ut.TestCase):
+class var_integrator_test_case(unittest.TestCase):
     def test_scalar(self):
-        from . import (
-            make_vars,
-            var_ode_sys,
-            var_args,
-            cos,
-            sin,
-            par,
-            time,
-            taylor_adaptive,
-            _core,
-        )
-        from sys import getrefcount
-        import numpy as np
-
         x, v = make_vars("x", "v")
 
         orig_sys = [(x, v), (v, cos(time) - par[0] * v - sin(x))]
@@ -114,10 +117,8 @@ class var_integrator_test_case(_ut.TestCase):
             ta.eval_taylor_map(ta.tstate)
         self.assertTrue("may overlap" in str(cm.exception))
 
-        if not hasattr(_core, "real"):
+        if real is None:
             return
-
-        from . import real
 
         prec = 14
 
@@ -142,20 +143,6 @@ class var_integrator_test_case(_ut.TestCase):
         self.assertTrue(np.all(ts2 == ta.state[:2]))
 
     def test_batch(self):
-        from . import (
-            make_vars,
-            var_ode_sys,
-            var_args,
-            cos,
-            sin,
-            par,
-            time,
-            taylor_adaptive_batch,
-            _core,
-        )
-        from sys import getrefcount
-        import numpy as np
-
         x, v = make_vars("x", "v")
 
         orig_sys = [(x, v), (v, cos(time) - par[0] * v - sin(x))]
@@ -260,20 +247,6 @@ class var_integrator_test_case(_ut.TestCase):
     def test_size_check_bug(self):
         # BUG: wrong size check on the input for a Taylor map (the size is checked against
         # the number of original state variables instead of the number of variational arguments).
-
-        from . import (
-            make_vars,
-            var_ode_sys,
-            var_args,
-            cos,
-            sin,
-            par,
-            time,
-            taylor_adaptive_batch,
-            taylor_adaptive,
-            _core,
-        )
-        import numpy as np
 
         x, v = make_vars("x", "v")
 

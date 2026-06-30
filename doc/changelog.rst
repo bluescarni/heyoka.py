@@ -9,6 +9,9 @@ Changelog
 New
 ~~~
 
+- Re-organize the Python code structure to be more aligned with modern practices
+  (`#275 <https://github.com/bluescarni/heyoka.py/pull/275>`__,
+  `#274 <https://github.com/bluescarni/heyoka.py/pull/274>`__).
 - Add the :py:func:`~heyoka.model.get_egm2008_CS()` function, returning the harmonic coefficients of the
   EGM2008 model
   (`#273 <https://github.com/bluescarni/heyoka.py/pull/273>`__).
@@ -17,6 +20,12 @@ New
   :py:func:`~heyoka.model.sh_gravity_pot()` and :py:func:`~heyoka.model.sh_gravity_acc()`
   functions. The models can be defined in terms of numerical or symbolic coefficients
   (`#273 <https://github.com/bluescarni/heyoka.py/pull/273>`__).
+
+Changes
+~~~~~~~
+
+- heyoka.py now requires Python >= 3.10
+  (`#275 <https://github.com/bluescarni/heyoka.py/pull/275>`__).
 
 7.11.1 (2026-06-15)
 -------------------

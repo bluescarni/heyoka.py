@@ -7,15 +7,13 @@
 # with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 
-import unittest as _ut
+import unittest
+from .. import kepE, kepF, kepDE, diff, make_vars, sin, cos, _core
+import numpy as np
 
 
-class kepE_test_case(_ut.TestCase):
+class kepE_test_case(unittest.TestCase):
     def test_expr(self):
-        from . import kepE, diff, make_vars, sin, cos, _core
-        from ._core import _ppc_arch
-        import numpy as np
-
         x, y = make_vars("x", "y")
 
         # Try a few overloads.
@@ -35,7 +33,7 @@ class kepE_test_case(_ut.TestCase):
         with self.assertRaises(TypeError) as cm:
             kepE(x, 23)
 
-        if not _ppc_arch:
+        if not _core._ppc_arch:
             self.assertEqual(
                 diff(kepE(x, np.longdouble("1.1")), x),
                 sin(kepE(x, np.longdouble("1.1")))
@@ -66,7 +64,7 @@ class kepE_test_case(_ut.TestCase):
         if not hasattr(_core, "real128"):
             return
 
-        from ._core import real128
+        from .._core import real128
 
         self.assertEqual(
             diff(kepE(x, real128("1.1")), x),
@@ -78,12 +76,8 @@ class kepE_test_case(_ut.TestCase):
         )
 
 
-class kepF_test_case(_ut.TestCase):
+class kepF_test_case(unittest.TestCase):
     def test_expr(self):
-        from . import kepF, make_vars, _core
-        from ._core import _ppc_arch
-        import numpy as np
-
         x, y, z = make_vars("x", "y", "z")
 
         # Try a few overloads.
@@ -101,7 +95,7 @@ class kepF_test_case(_ut.TestCase):
         with self.assertRaises(TypeError) as cm:
             kepF(x, y, 23)
 
-        if not _ppc_arch:
+        if not _core._ppc_arch:
             kepF(x, y, np.longdouble("1.1"))
             kepF(x, np.longdouble(".1"), np.longdouble("1.1"))
 
@@ -122,7 +116,7 @@ class kepF_test_case(_ut.TestCase):
         if not hasattr(_core, "real128"):
             return
 
-        from ._core import real128
+        from .._core import real128
 
         kepF(real128(0.1), y, z)
         kepF(real128(0.1), real128(0.2), z)
@@ -135,12 +129,8 @@ class kepF_test_case(_ut.TestCase):
         )
 
 
-class kepDE_test_case(_ut.TestCase):
+class kepDE_test_case(unittest.TestCase):
     def test_expr(self):
-        from . import kepDE, make_vars, _core
-        from ._core import _ppc_arch
-        import numpy as np
-
         x, y, z = make_vars("x", "y", "z")
 
         # Try a few overloads.
@@ -158,7 +148,7 @@ class kepDE_test_case(_ut.TestCase):
         with self.assertRaises(TypeError) as cm:
             kepDE(x, y, 23)
 
-        if not _ppc_arch:
+        if not _core._ppc_arch:
             kepDE(x, y, np.longdouble("1.1"))
             kepDE(x, np.longdouble(".1"), np.longdouble("1.1"))
 
@@ -179,7 +169,7 @@ class kepDE_test_case(_ut.TestCase):
         if not hasattr(_core, "real128"):
             return
 
-        from ._core import real128
+        from .._core import real128
 
         kepDE(real128(0.1), y, z)
         kepDE(real128(0.1), real128(0.2), z)

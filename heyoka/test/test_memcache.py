@@ -7,13 +7,12 @@
 # with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 
-import unittest as _ut
+import unittest
+from .. import llvm_state
 
 
-class memcache_test_case(_ut.TestCase):
+class memcache_test_case(unittest.TestCase):
     def test_basic(self):
-        from . import llvm_state
-
         # NOTE: make sure to restore the original limit before exiting.
         orig_limit = llvm_state.get_memcache_limit()
 

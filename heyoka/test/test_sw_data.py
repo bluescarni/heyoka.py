@@ -7,22 +7,20 @@
 # with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 
-import unittest as _ut
+import unittest
+import pickle
+from sys import getrefcount
+from copy import copy, deepcopy
+import numpy as np
+from .. import sw_data, sw_data_row
 
 
-class eop_data_test_case(_ut.TestCase):
+class sw_data_test_case(unittest.TestCase):
     def test_basic(self):
-        from concurrent.futures import ThreadPoolExecutor
-        from . import eop_data, eop_data_row
-        import numpy as np
-        from sys import getrefcount
-        import pickle
-        from copy import copy, deepcopy
-
-        self.assertTrue(isinstance(eop_data_row, np.dtype))
+        self.assertTrue(isinstance(sw_data_row, np.dtype))
 
         # Check access to the data table.
-        data = eop_data()
+        data = sw_data()
         rc = getrefcount(data)
         tbl = data.table
         self.assertEqual(getrefcount(data), rc + 1)
@@ -32,7 +30,7 @@ class eop_data_test_case(_ut.TestCase):
             tbl[:] = tbl[:]
         self.assertTrue("read-only" in str(cm.exception))
 
-        self.assertEqual(tbl.dtype, eop_data_row)
+        self.assertEqual(tbl.dtype, sw_data_row)
 
         self.assertGreater(len(data.timestamp), 0)
         self.assertGreater(len(data.identifier), 0)
@@ -54,24 +52,3 @@ class eop_data_test_case(_ut.TestCase):
         self.assertEqual(new_data.timestamp, data.timestamp)
         self.assertEqual(new_data.identifier, data.identifier)
         self.assertTrue(np.all(new_data.table == tbl))
-
-        # Small download test.
-        with ThreadPoolExecutor() as executor:
-            data1 = executor.submit(
-                eop_data.fetch_latest_iers_rapid, "usno", "finals2000A.daily"
-            )
-            data2 = executor.submit(
-                eop_data.fetch_latest_iers_rapid, "iers", "finals.all.iau2000.txt"
-            )
-            data3 = executor.submit(eop_data.fetch_latest_celestrak)
-
-        # Allow this block to fail in case of transient network issues.
-        try:
-            data1 = data1.result()
-            data2 = data2.result()
-            data3 = data3.result()
-
-            self.assertGreate(len(data1.table), 0)
-            self.assertGreate(len(data2.table), 0)
-        except Exception:
-            pass

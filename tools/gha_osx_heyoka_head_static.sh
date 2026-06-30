@@ -13,7 +13,7 @@ export PATH="$HOME/miniconda/bin:$PATH"
 bash miniconda.sh -b -p $HOME/miniconda
 conda create -y -p $deps_dir python=${HEYOKA_PY_PY_VERSION} c-compiler cxx-compiler git pybind11 'numpy>=2' \
     ninja cmake llvmdev sqlite tbb-devel tbb astroquery libboost-devel sleef fmt skyfield \
-    spdlog sympy cloudpickle 'mppp=2.*' numba
+    spdlog sympy cloudpickle 'mppp=2.*' numba pytest
 source activate $deps_dir
 
 # Clear the compilation flags set up by conda.

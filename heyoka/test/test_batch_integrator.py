@@ -6,25 +6,35 @@
 # Public License v. 2.0. If a copy of the MPL was not distributed
 # with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import unittest as _ut
+import unittest
+from .. import (
+    taylor_adaptive_batch,
+    code_model,
+    make_vars,
+    sin,
+    nt_event_batch,
+    t_event_batch,
+    taylor_adaptive,
+)
+from ..model import pendulum
+from ..callback import angle_reducer
+from sys import getrefcount
+import numpy as np
+from copy import copy, deepcopy
+import pickle
 
 
-class batch_integrator_test_case(_ut.TestCase):
+class batch_integrator_test_case(unittest.TestCase):
     def test_llvm_state_settings(self):
         # Test to check that the llvm state flags
         # are correctly propagated through the integrator
         # constructor.
-
-        from . import taylor_adaptive_batch, code_model
-        from .model import pendulum
-        from sys import getrefcount
-
         ta = taylor_adaptive_batch(pendulum(), [[0.0, 0.0], [0.0, 0.0]])
 
         # Check correct reference count handling of the
         # llvm_state property.
         rc = getrefcount(ta)
-        tmp = ta.llvm_state
+        _tmp = ta.llvm_state
         self.assertEqual(getrefcount(ta), rc + 1)
 
         self.assertFalse(ta.llvm_state.force_avx512)
@@ -41,7 +51,7 @@ class batch_integrator_test_case(_ut.TestCase):
         )
 
         rc = getrefcount(ta)
-        tmp = ta.llvm_state
+        _tmp = ta.llvm_state
         self.assertEqual(getrefcount(ta), rc + 1)
 
         self.assertTrue(ta.llvm_state.force_avx512)
@@ -51,9 +61,6 @@ class batch_integrator_test_case(_ut.TestCase):
     def test_type_conversions(self):
         # Test to check automatic conversions of std::vector<T>
         # in the integrator's constructor.
-
-        from . import taylor_adaptive_batch, make_vars, sin
-        import numpy as np
 
         d_digs = np.finfo(np.double).nmant
         ld_digs = np.finfo(np.longdouble).nmant
@@ -87,10 +94,6 @@ class batch_integrator_test_case(_ut.TestCase):
             )
 
     def test_copy(self):
-        from . import nt_event_batch, make_vars, sin, taylor_adaptive_batch
-        from copy import copy, deepcopy
-        import numpy as np
-
         x, v = make_vars("x", "v")
 
         # Use a pendulum for testing purposes.
@@ -126,10 +129,6 @@ class batch_integrator_test_case(_ut.TestCase):
         self.assertNotEqual(ta_dc.state[0, 0], ta.state[0, 0])
 
     def test_propagate_for(self):
-        from . import taylor_adaptive_batch, make_vars, sin
-        from copy import deepcopy
-        import numpy as np
-
         fp_types = [np.float32, float]
 
         for fp_t in fp_types:
@@ -232,10 +231,6 @@ class batch_integrator_test_case(_ut.TestCase):
             delattr(ta, "foo")
 
     def test_propagate_until(self):
-        from . import taylor_adaptive_batch, make_vars, sin
-        from copy import deepcopy
-        import numpy as np
-
         fp_types = [np.float32, float]
 
         for fp_t in fp_types:
@@ -338,11 +333,6 @@ class batch_integrator_test_case(_ut.TestCase):
             delattr(ta, "foo")
 
     def test_update_d_output(self):
-        from . import taylor_adaptive_batch, make_vars, sin
-        from sys import getrefcount
-        from copy import deepcopy
-        import numpy as np
-
         fp_types = [np.float32, float]
 
         for fp_t in fp_types:
@@ -413,9 +403,6 @@ class batch_integrator_test_case(_ut.TestCase):
             )
 
     def test_set_time(self):
-        from . import taylor_adaptive_batch, make_vars, sin
-        import numpy as np
-
         fp_types = [np.float32, float]
 
         for fp_t in fp_types:
@@ -438,9 +425,6 @@ class batch_integrator_test_case(_ut.TestCase):
             self.assertTrue(np.all(ta.time == [5, 5]))
 
     def test_dtime(self):
-        from . import taylor_adaptive_batch, make_vars, sin
-        import numpy as np
-
         fp_types = [np.float32, float]
 
         for fp_t in fp_types:
@@ -488,9 +472,6 @@ class batch_integrator_test_case(_ut.TestCase):
             )
 
     def test_basic(self):
-        from . import taylor_adaptive_batch, make_vars, t_event_batch, sin
-        import numpy as np
-
         fp_types = [np.float32, float]
 
         for fp_t in fp_types:
@@ -553,15 +534,6 @@ class batch_integrator_test_case(_ut.TestCase):
             self.assertEqual(ta.llvm_state.opt_level, 0)
 
     def test_events(self):
-        from . import (
-            nt_event_batch,
-            t_event_batch,
-            make_vars,
-            sin,
-            taylor_adaptive_batch,
-        )
-        import numpy as np
-
         fp_types = [np.float32, float]
 
         for fp_t in fp_types:
@@ -600,16 +572,6 @@ class batch_integrator_test_case(_ut.TestCase):
             self.assertTrue(ta.te_cooldowns[1][0] is None)
 
     def test_s11n(self):
-        from . import (
-            nt_event_batch,
-            t_event_batch,
-            make_vars,
-            sin,
-            taylor_adaptive_batch,
-        )
-        import numpy as np
-        import pickle
-
         fp_types = [np.float32, float]
 
         for fp_t in fp_types:
@@ -690,10 +652,6 @@ class batch_integrator_test_case(_ut.TestCase):
             self.assertEqual(ta.t_events[0].callback.n, ta2.t_events[0].callback.n)
 
     def test_propagate_grid(self):
-        from . import make_vars, taylor_adaptive, taylor_adaptive_batch, sin
-        import numpy as np
-        from copy import deepcopy
-
         fp_types = [np.float32, float]
 
         for fp_t in fp_types:
@@ -857,10 +815,6 @@ class batch_integrator_test_case(_ut.TestCase):
             delattr(ta, "foo")
 
     def test_step_callback(self):
-        from . import taylor_adaptive_batch, make_vars, sin
-        from .callback import angle_reducer
-        import numpy as np
-
         fp_types = [np.float32, float]
 
         x, v = make_vars("x", "v")

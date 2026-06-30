@@ -18,7 +18,7 @@ conda config --add channels conda-forge
 conda config --set channel_priority strict
 conda create -y -q -p $deps_dir python=3.12 git pybind11 'numpy>=2' mpmath \
     cmake ninja llvmdev sqlite tbb-devel tbb libboost-devel 'mppp=2.*' sleef fmt \
-    skyfield spdlog sympy cloudpickle c-compiler cxx-compiler
+    skyfield spdlog sympy cloudpickle c-compiler cxx-compiler pytest
 source activate $deps_dir
 
 # Clear the compilation flags set up by conda.

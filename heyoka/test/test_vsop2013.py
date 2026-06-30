@@ -7,26 +7,25 @@
 # with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 
-import unittest as _ut
+import unittest
+from .. import cfunc
+from ..model import vsop2013_elliptic, vsop2013_cartesian
 
 
-class elp2000_test_case(_ut.TestCase):
+class vsop2013_test_case(unittest.TestCase):
     # Just a small basic test.
     def test_basic(self):
-        from . import cfunc
-        from .model import elp2000_cartesian_e2000, elp2000_cartesian_fk5
-
-        sol = elp2000_cartesian_e2000(thresh=1e-5)[0]
+        sol = vsop2013_elliptic(1, 1)
         cf = cfunc([sol], [])
 
-        date = 2469000.5
+        date = 2411545.0
         self.assertAlmostEqual(
-            cf([], time=(date - 2451545.0) / 36525)[0], -361605.79234692274
+            cf([], time=(date - 2451545.0) / 365250)[0], 0.3870979635
         )
 
-        sol = elp2000_cartesian_fk5(thresh=1e-5)[0]
-        cf = cfunc([sol], [])
+        sol = vsop2013_cartesian(1, thresh=1e-8)
+        cf = cfunc([sol[0]], [])
 
         self.assertAlmostEqual(
-            cf([], time=(date - 2451545.0) / 36525)[0], -361605.7668217605
+            cf([], time=(date - 2451545.0) / 365250)[0], 0.3493879042
         )

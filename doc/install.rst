@@ -21,7 +21,7 @@ heyoka.py has several Python and C++ dependencies. On the C++ side, heyoka.py de
   :ref:`heyoka <hy:installation>` and :ref:`mp++ <mppp:installation>` installation
   instructions).
 
-On the Python side, heyoka.py requires at least Python 3.9 and depends on:
+On the Python side, heyoka.py requires at least Python 3.10 and depends on:
 
 * `NumPy <https://numpy.org/>`__ (version >=2, **mandatory**),
 * `cloudpickle <https://github.com/cloudpipe/cloudpickle>`__ (**mandatory**),
@@ -185,13 +185,7 @@ installed by running the test suite with the following command:
 
 .. code-block:: bash
 
-   $ python -c "import heyoka; heyoka.test.run_test_suite();"
-
-If this command executes without any error, then
-your heyoka.py installation is ready for use.
-
-Note that the test suite makes use of the optional dependencies, thus if they
-are not installed some tests will fail.
+   $ pytest --pyargs heyoka.test
 
 Getting help
 ------------

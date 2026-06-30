@@ -7,21 +7,20 @@
 # with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 
-import unittest as _ut
+import unittest
+from .. import eop_data, eop_data_row
+import numpy as np
+from sys import getrefcount
+import pickle
+from copy import copy, deepcopy
 
 
-class sw_data_test_case(_ut.TestCase):
+class eop_data_test_case(unittest.TestCase):
     def test_basic(self):
-        from . import sw_data, sw_data_row
-        import numpy as np
-        from sys import getrefcount
-        import pickle
-        from copy import copy, deepcopy
-
-        self.assertTrue(isinstance(sw_data_row, np.dtype))
+        self.assertTrue(isinstance(eop_data_row, np.dtype))
 
         # Check access to the data table.
-        data = sw_data()
+        data = eop_data()
         rc = getrefcount(data)
         tbl = data.table
         self.assertEqual(getrefcount(data), rc + 1)
@@ -31,7 +30,7 @@ class sw_data_test_case(_ut.TestCase):
             tbl[:] = tbl[:]
         self.assertTrue("read-only" in str(cm.exception))
 
-        self.assertEqual(tbl.dtype, sw_data_row)
+        self.assertEqual(tbl.dtype, eop_data_row)
 
         self.assertGreater(len(data.timestamp), 0)
         self.assertGreater(len(data.identifier), 0)

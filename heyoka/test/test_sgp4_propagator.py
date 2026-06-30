@@ -6,10 +6,18 @@
 # Public License v. 2.0. If a copy of the MPL was not distributed
 # with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import unittest as _ut
+import unittest
+import math
+import numpy as np
+from copy import copy, deepcopy
+from pickle import loads, dumps
+from importlib.util import find_spec
+from .. import make_vars, code_model
+from ..model import sgp4_propagator
 
 
-class sgp4_propagator_test_case(_ut.TestCase):
+@unittest.skipUnless(find_spec("sgp4") is not None, "the sgp4 module is not available")
+class sgp4_propagator_test_case(unittest.TestCase):
     # Couple of TLEs downloaded from SpaceTrack.
     s1 = "1 00045U 60007A   24187.45810325  .00000504  00000-0  14841-3 0  9992"
     t1 = "2 00045  66.6943  81.3521 0257384 317.3173  40.8180 14.34783636277898"
@@ -18,16 +26,7 @@ class sgp4_propagator_test_case(_ut.TestCase):
     t2 = "2 00046  66.6912   4.9995 0194928 108.0242 254.2215 14.52078523353568"
 
     def test_basics(self):
-        try:
-            from sgp4.api import Satrec
-        except ImportError:
-            return
-
-        from .model import sgp4_propagator
-        from pickle import loads, dumps
-        from copy import copy, deepcopy
-        from . import make_vars, code_model
-        import numpy as np
+        from sgp4.api import Satrec
 
         s1 = sgp4_propagator_test_case.s1
         t1 = sgp4_propagator_test_case.t1
@@ -172,13 +171,7 @@ class sgp4_propagator_test_case(_ut.TestCase):
         self.assertTrue(np.all(prop.sat_data == prop2.sat_data))
 
     def test_propagation(self):
-        try:
-            from sgp4.api import Satrec
-        except ImportError:
-            return
-
-        import numpy as np
-        from .model import sgp4_propagator
+        from sgp4.api import Satrec
 
         s1 = sgp4_propagator_test_case.s1
         t1 = sgp4_propagator_test_case.t1
@@ -431,17 +424,16 @@ class sgp4_propagator_test_case(_ut.TestCase):
                 out=out,
             )
 
+    @unittest.skipUnless(
+        find_spec("skyfield") is not None, "the skyfield module is not available"
+    )
     def test_skyfield_comp(self):
-        try:
-            from skyfield.api import load
-            from skyfield.iokit import parse_tle_file
-        except ImportError:
-            return
-
-        from .model import sgp4_propagator
-        from ._sgp4_test_data import sgp4_test_tle
-        import math, numpy as np
+        from skyfield.api import load
+        from skyfield.iokit import parse_tle_file
         from sgp4.api import SatrecArray
+
+        # NOTE: kept local as this data module is large (multi-MB).
+        from ._sgp4_test_data import sgp4_test_tle
 
         # Load the test dataset.
         ts = load.timescale()
@@ -502,14 +494,7 @@ class sgp4_propagator_test_case(_ut.TestCase):
             self.assertTrue(np.all(e[:, 0] == sv[-1, :].T))
 
     def test_replace_sat_data(self):
-        try:
-            from sgp4.api import Satrec
-        except ImportError:
-            return
-
-        from copy import deepcopy
-        from .model import sgp4_propagator
-        import numpy as np
+        from sgp4.api import Satrec
 
         s1 = sgp4_propagator_test_case.s1
         t1 = sgp4_propagator_test_case.t1
@@ -586,13 +571,7 @@ class sgp4_propagator_test_case(_ut.TestCase):
 
     def test_leap_second(self):
         # Test with a TLE close to a leap second day.
-        try:
-            from sgp4.api import Satrec
-        except ImportError:
-            return
-
-        from .model import sgp4_propagator
-        import numpy as np
+        from sgp4.api import Satrec
 
         s = "1 00045U 60007A   05363.79166667  .00000504  00000-0  14841-3 0  9992"
         t = "2 00045  66.6943  81.3521 0257384 317.3173  40.8180 14.34783636277898"

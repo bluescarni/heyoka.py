@@ -6,15 +6,39 @@
 # Public License v. 2.0. If a copy of the MPL was not distributed
 # with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import unittest as _ut
+import unittest
+from .. import (
+    expression as ex,
+    _core,
+    make_vars,
+    sin,
+    cos,
+    diff,
+    par,
+    get_variables,
+    rename_variables,
+    subs,
+    leaky_relu,
+    leaky_relup,
+    relu,
+    relup,
+    dfun,
+    lt,
+    eq,
+    logical_and,
+    logical_or,
+    select,
+    get_params,
+    func_args,
+)
+import numpy as np
+from copy import copy, deepcopy
+from numpy import longdouble
+import pickle
 
 
-class expression_test_case(_ut.TestCase):
+class expression_test_case(unittest.TestCase):
     def test_basic(self):
-        from . import expression as ex, _core
-        from . import make_vars
-        import numpy as np
-
         with_real128 = hasattr(_core, "real128")
         ld_63bit = np.finfo(np.longdouble).nmant == 63
 
@@ -211,8 +235,6 @@ class expression_test_case(_ut.TestCase):
             )
 
         # Copy and deepcopy.
-        from copy import copy, deepcopy
-
         tmp = ex("x") + ex("y")
         tmp.foo = [1, 2, 3]
         id_foo = id(tmp.foo)
@@ -223,9 +245,6 @@ class expression_test_case(_ut.TestCase):
         self.assertEqual(tmp.foo, tmp_dcopy.foo)
 
     def test_copy(self):
-        from . import make_vars
-        from copy import copy, deepcopy
-
         x, y = make_vars("x", "y")
         ex = x + y
 
@@ -240,8 +259,6 @@ class expression_test_case(_ut.TestCase):
         self.assertEqual(ex, deepcopy(ex))
 
     def test_diff(self):
-        from . import make_vars, sin, cos, diff, par
-
         x, y = make_vars("x", "y")
         self.assertEqual(diff(cos(x * x - y), "x"), -sin(x * x - y) * (x + x))
         self.assertEqual(diff(cos(x * x - y), x), -sin(x * x - y) * (x + x))
@@ -251,11 +268,6 @@ class expression_test_case(_ut.TestCase):
         )
 
     def test_s11n(self):
-        from . import make_vars, sin, cos, _core
-        from ._core import _ppc_arch
-        from numpy import longdouble
-        import pickle
-
         x, y = make_vars("x", "y")
 
         ex = x + 2.0 * y
@@ -266,32 +278,27 @@ class expression_test_case(_ut.TestCase):
         ex = pickle.loads(pickle.dumps(ex))
         self.assertEqual(ex.foo, "hello world")
 
-        if not _ppc_arch:
+        if not _core._ppc_arch:
             ex = sin(longdouble("1.1") * x) + 2.0 * y
             self.assertEqual(ex, pickle.loads(pickle.dumps(ex)))
 
         if not hasattr(_core, "real128"):
             return
 
-        from ._core import real128
+        from .._core import real128
 
         # Quad precision.
-        if not _ppc_arch:
+        if not _core._ppc_arch:
             ex = sin(longdouble("1.1") * x) + real128("1.3") * cos(2.0 * y)
             self.assertEqual(ex, pickle.loads(pickle.dumps(ex)))
 
     def test_len(self):
-        from . import make_vars
-
         x, y, z = make_vars("x", "y", "z")
 
         self.assertEqual(len(x), 1)
         self.assertEqual(len((x - y - z) + (y * z)), 13)
 
     def test_hash(self):
-        from . import make_vars
-        from copy import deepcopy
-
         x, y, z = make_vars("x", "y", "z")
 
         ex = x + y
@@ -301,15 +308,11 @@ class expression_test_case(_ut.TestCase):
         self.assertEqual(hash(z * ex2 + ex2), hash(z * (x + y) + (x + y)))
 
     def test_get_variables(self):
-        from . import make_vars, get_variables
-
         x, y, z = make_vars("x", "y", "z")
         self.assertEqual(get_variables(arg=x + y), ["x", "y"])
         self.assertEqual(get_variables(arg=[z - y, x + y]), ["x", "y", "z"])
 
     def test_rename_variables(self):
-        from . import make_vars, rename_variables
-
         x, y, a, b = make_vars("x", "y", "a", "b")
         self.assertEqual(rename_variables(arg=x + y, d={"x": "b", "y": "a"}), b + a)
         self.assertEqual(
@@ -318,8 +321,6 @@ class expression_test_case(_ut.TestCase):
         )
 
     def test_subs(self):
-        from . import make_vars, subs
-
         x, y, a, b = make_vars("x", "y", "a", "b")
         self.assertEqual(str(subs(arg=x + y, smap={"x": b, "y": a})), "(b + a)")
         self.assertEqual(str(subs(arg=x + y, smap={x: b, y: a})), "(b + a)")
@@ -329,8 +330,6 @@ class expression_test_case(_ut.TestCase):
         self.assertEqual(str(subs(arg=[x + y, x - y], smap={x: b, y: a})[1]), "(b - a)")
 
     def test_relu_wrappers(self):
-        from . import make_vars, leaky_relu, leaky_relup, relu, relup
-
         x, y = make_vars("x", "y")
 
         self.assertEqual(leaky_relu(0.0)(x), relu(x))
@@ -344,8 +343,6 @@ class expression_test_case(_ut.TestCase):
         self.assertEqual(leaky_relup(0.1)(x * y + y), relup(x * y + y, 0.1))
 
     def test_dfun(self):
-        from . import make_vars, dfun
-
         x, y = make_vars("x", "y")
 
         self.assertEqual(str(dfun("f", [x, y])), "(∂^0 f)")
@@ -355,8 +352,6 @@ class expression_test_case(_ut.TestCase):
         )
 
     def test_relational(self):
-        from . import make_vars, lt, eq
-
         x, y = make_vars("x", "y")
 
         self.assertEqual(str(lt(x, y)), "(x < y)")
@@ -372,17 +367,12 @@ class expression_test_case(_ut.TestCase):
         )
 
     def test_logical(self):
-        from . import make_vars, logical_and, logical_or
-
         x, y = make_vars("x", "y")
 
         self.assertEqual(str(logical_and([x, y])), "logical_and(x, y)")
         self.assertEqual(str(logical_or([x, y])), "logical_or(x, y)")
 
     def test_select(self):
-        from . import make_vars, select
-        import numpy as np
-
         x, y = make_vars("x", "y")
 
         self.assertEqual(str(select(x, y, x)), "select(x, y, x)")
@@ -408,8 +398,6 @@ class expression_test_case(_ut.TestCase):
         )
 
     def test_get_params(self):
-        from . import make_vars, par, get_params
-
         x, y = make_vars("x", "y")
 
         self.assertEqual(get_params(x + y), [])
@@ -419,8 +407,6 @@ class expression_test_case(_ut.TestCase):
         self.assertEqual(get_params([x + par[42], par[1] - y]), [par[1], par[42]])
 
     def test_func_args(self):
-        from . import make_vars, func_args
-
         x, y = make_vars("x", "y")
 
         fargs = func_args()

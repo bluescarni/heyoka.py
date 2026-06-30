@@ -4,38 +4,45 @@ configure_file("${CMAKE_CURRENT_SOURCE_DIR}/_version.py.in" "${CMAKE_CURRENT_BIN
 # The list of heyoka.py's Python files.
 set(HEYOKA_PY_PYTHON_FILES
     __init__.py
-    test.py
     _sympy_utils.py
     _generic_wrappers.py
     _s11n.py
     _ensemble_impl.py
     _real_reduce_factory.py
-    _test_real.py
-    _test_real128.py
-    _test_mp.py
-    _test_cfunc.py
-    _test_model.py
-    _test_expression.py
-    _test_dtens.py
-    _test_scalar_integrator.py
-    _test_batch_integrator.py
-    _test_ensemble.py
-    _test_memcache.py
-    _test_diskcache.py
-    _test_celmec.py
-    _test_sympy.py
-    _test_vsop2013.py
-    _test_elp2000.py
-    _test_lagham.py
-    _test_var_ode_sys.py
-    _test_var_integrator.py
-    _test_sgp4_propagator.py
-    _test_eop_data.py
-    _test_sw_data.py
-    _sgp4_test_data.py
     model/__init__.py
     model/_sgp4_propagator.py
     callback/__init__.py
+    test/__init__.py
+    test/_utils.py
+    test/_sgp4_test_data.py
+    test/test_c_output.py
+    test/test_events.py
+    test/test_llvm_state.py
+    test/test_package_layout.py
+    test/test_recommended_simd_size.py
+    test/test_s11n_backend.py
+    test/test_batch_integrator.py
+    test/test_celmec.py
+    test/test_cfunc.py
+    test/test_diskcache.py
+    test/test_dtens.py
+    test/test_elp2000.py
+    test/test_ensemble.py
+    test/test_eop_data.py
+    test/test_expression.py
+    test/test_lagham.py
+    test/test_memcache.py
+    test/test_model.py
+    test/test_mp.py
+    test/test_real128.py
+    test/test_real.py
+    test/test_scalar_integrator.py
+    test/test_sympy.py
+    test/test_vsop2013.py
+    test/test_var_ode_sys.py
+    test/test_sgp4_propagator.py
+    test/test_var_integrator.py
+    test/test_sw_data.py
 )
 
 # Copy the python files in the current binary dir,

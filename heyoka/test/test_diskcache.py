@@ -7,16 +7,15 @@
 # with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 
-import unittest as _ut
+import unittest
+import tempfile
+import pathlib
+from .. import llvm_state, make_vars, cfunc
+import numpy as np
 
 
-class diskcache_test_case(_ut.TestCase):
+class diskcache_test_case(unittest.TestCase):
     def test_basic(self):
-        import tempfile
-        import pathlib
-        from . import llvm_state, make_vars, cfunc
-        import numpy as np
-
         # Save original state.
         orig_path = llvm_state.get_diskcache_path()
         orig_enabled = llvm_state.get_diskcache_enabled()
