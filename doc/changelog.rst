@@ -24,6 +24,13 @@ New
 Changes
 ~~~~~~~
 
+- In the expression system, the values of the space weather (SW) indices are now linearly
+  interpolated between the dates in the SW datasets. Previously, the SW indices were
+  implemented as piecewise step functions
+  (`#276 <https://github.com/bluescarni/heyoka.py/pull/276>`__).
+- In the space weather (SW) datasets, the ``Ap_avg`` index is now stored as a
+  double-precision floating-point value, rather than as a 16-bit unsigned integer
+  (`#276 <https://github.com/bluescarni/heyoka.py/pull/276>`__).
 - heyoka.py now requires Python >= 3.10
   (`#275 <https://github.com/bluescarni/heyoka.py/pull/275>`__).
 

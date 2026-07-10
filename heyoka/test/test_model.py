@@ -470,7 +470,9 @@ class model_test_case(unittest.TestCase):
         self.assertEqual(len(model.sgp4([])), 7)
 
         # Test also with custom inputs.
-        self.assertEqual(len(model.sgp4(["a", "b", "c", "d", "e", "f", par[0], time])), 7)
+        self.assertEqual(
+            len(model.sgp4(["a", "b", "c", "d", "e", "f", par[0], time])), 7
+        )
 
     def test_gpe_is_deep_space(self):
         try:
@@ -501,7 +503,13 @@ class model_test_case(unittest.TestCase):
     def test_pm(self):
         x = make_vars("x")
         cf = cfunc(
-            [model.pm_x(x), model.pm_xp(x), model.pm_y(x), model.pm_yp(x)], [x]
+            [
+                model.pm_x(time_expr=x),
+                model.pm_xp(x),
+                model.pm_y(x),
+                model.pm_yp(time_expr=x),
+            ],
+            [x],
         )
 
         out = cf(inputs=[0.0])
@@ -509,16 +517,24 @@ class model_test_case(unittest.TestCase):
 
     def test_sw(self):
         x = make_vars("x")
-        cf = cfunc([model.Ap_avg(x), model.f107(x), model.f107a_center81(x)], [x])
+        cf = cfunc(
+            [
+                model.Ap_avg(time_expr=x),
+                model.Ap_avgp(x),
+                model.f107(x),
+                model.f107p(time_expr=x),
+                model.f107a_center81(x),
+                model.f107a_center81p(time_expr=x),
+            ],
+            [x],
+        )
 
         out = cf(inputs=[0.0])
         self.assertFalse(np.any(np.isnan(out)))
 
     def test_dXdY(self):
         x = make_vars("x")
-        cf = cfunc(
-            [model.dX(x), model.dXp(x), model.dY(x), model.dYp(x)], [x]
-        )
+        cf = cfunc([model.dX(x), model.dXp(x), model.dY(x), model.dYp(x)], [x])
 
         out = cf(inputs=[0.0])
         self.assertFalse(np.any(np.isnan(out)))
@@ -647,7 +663,9 @@ class model_test_case(unittest.TestCase):
         # max_degree/max_order: passing None uses the full inferred model.
         self.assertEqual(
             model.sh_gravity_pot([x, y, z], coeffs, mu=1.0, a=1.0),
-            model.sh_gravity_pot([x, y, z], coeffs, mu=1.0, a=1.0, max_degree=2, max_order=2),
+            model.sh_gravity_pot(
+                [x, y, z], coeffs, mu=1.0, a=1.0, max_degree=2, max_order=2
+            ),
         )
 
         # Restricting to a subset gives a different model.
@@ -666,7 +684,9 @@ class model_test_case(unittest.TestCase):
 
         # max_order > max_degree is an error.
         with self.assertRaises(ValueError):
-            model.sh_gravity_pot([x, y, z], coeffs, mu=1.0, a=1.0, max_degree=1, max_order=2)
+            model.sh_gravity_pot(
+                [x, y, z], coeffs, mu=1.0, a=1.0, max_degree=1, max_order=2
+            )
 
         # A list of coefficients whose size is not a triangular number is an error.
         with self.assertRaises(ValueError):

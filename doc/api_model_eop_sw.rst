@@ -19,5 +19,8 @@ Earth orientation and space weather
    dY
    dYp
    Ap_avg
+   Ap_avgp
    f107
+   f107p
    f107a_center81
+   f107a_center81p

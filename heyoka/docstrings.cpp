@@ -1611,7 +1611,7 @@ as a function of the input time expression *time_expr*. *time_expr* is expected 
 since the epoch of J2000 in the `terrestrial time scale (TT) <https://en.wikipedia.org/wiki/Terrestrial_Time>`__. *eop_data* is
 the Earth orientation parameters dataset to be used for the computation.
 
-The ERA is modelled as a piecewise linear function of time, where the switch points are given by the dates in *eop_data*. Evaluation
+The ERA is modelled as a piecewise linear function of time, where the nodes are given by the dates in *eop_data*. Evaluation
 of the ERA outside the dates range of *eop_data* will produce a value of ``NaN``.
 
 The ERA is returned in radians, reduced to the :math:`\left[0, 2\pi\right]` range.
@@ -1637,8 +1637,8 @@ as a function of the input time expression *time_expr*. *time_expr* is expected 
 since the epoch of J2000 in the `terrestrial time scale (TT) <https://en.wikipedia.org/wiki/Terrestrial_Time>`__. *eop_data* is
 the Earth orientation parameters dataset to be used for the computation.
 
-The derivative of the Earth rotation angle (ERA) is modelled as a piecewise constant function of time, where the switch
-points are given by the dates in *eop_data*. Evaluation outside the dates range of *eop_data* will produce a value of ``NaN``.
+The derivative of the Earth rotation angle (ERA) is modelled as a piecewise constant function of time, where the nodes
+are given by the dates in *eop_data*. Evaluation outside the dates range of *eop_data* will produce a value of ``NaN``.
 
 The derivative of the ERA is returned in radians per Julian century (TT).
 
@@ -1663,7 +1663,7 @@ according to the IAU 1982 model as a function of the input time expression *time
 Julian centuries elapsed since the epoch of J2000 in the `terrestrial time scale (TT) <https://en.wikipedia.org/wiki/Terrestrial_Time>`__.
 *eop_data* is the Earth orientation parameters dataset to be used for the computation.
 
-The GMST is modelled as a piecewise linear function of time, where the switch points are given by the dates in *eop_data*. Evaluation
+The GMST is modelled as a piecewise linear function of time, where the nodes are given by the dates in *eop_data*. Evaluation
 of the GMST outside the dates range of *eop_data* will produce a value of ``NaN``.
 
 The GMST is returned in radians, reduced to the :math:`\left[0, 2\pi\right]` range.
@@ -1689,8 +1689,8 @@ as a function of the input time expression *time_expr*. *time_expr* is expected 
 since the epoch of J2000 in the `terrestrial time scale (TT) <https://en.wikipedia.org/wiki/Terrestrial_Time>`__. *eop_data* is
 the Earth orientation parameters dataset to be used for the computation.
 
-The derivative of the Greenwich mean sidereal time (GMST) is modelled as a piecewise constant function of time, where the switch
-points are given by the dates in *eop_data*. Evaluation outside the dates range of *eop_data* will produce a value of ``NaN``.
+The derivative of the Greenwich mean sidereal time (GMST) is modelled as a piecewise constant function of time, where the nodes
+are given by the dates in *eop_data*. Evaluation outside the dates range of *eop_data* will produce a value of ``NaN``.
 
 The derivative of the GMST is returned in radians per Julian century (TT).
 
@@ -1721,7 +1721,7 @@ as a function of the input time expression *time_expr*. *time_expr* is expected 
 since the epoch of J2000 in the `terrestrial time scale (TT) <https://en.wikipedia.org/wiki/Terrestrial_Time>`__. *eop_data* is
 the Earth orientation parameters dataset to be used for the computation.
 
-This quantity is modelled as a piecewise linear function of time, where the switch points are given by the dates in *eop_data*. Evaluation
+This quantity is modelled as a piecewise linear function of time, where the nodes are given by the dates in *eop_data*. Evaluation
 outside the dates range of *eop_data* will produce a value of ``NaN``.
 
 The return value is expressed in radians.
@@ -1749,8 +1749,8 @@ This function will return an expression representing the first-order derivative 
 since the epoch of J2000 in the `terrestrial time scale (TT) <https://en.wikipedia.org/wiki/Terrestrial_Time>`__. *eop_data* is
 the Earth orientation parameters dataset to be used for the computation.
 
-This quantity is modelled as a piecewise constant function of time, where the switch
-points are given by the dates in *eop_data*. Evaluation outside the dates range of *eop_data* will produce a value of ``NaN``.
+This quantity is modelled as a piecewise constant function of time, where the nodes
+are given by the dates in *eop_data*. Evaluation outside the dates range of *eop_data* will produce a value of ``NaN``.
 
 The return value is expressed in radians per Julian century (TT).
 
@@ -1807,7 +1807,7 @@ expected to represent the number of Julian centuries elapsed since the epoch of 
 `terrestrial time scale (TT) <https://en.wikipedia.org/wiki/Terrestrial_Time>`__. *eop_data* is
 the Earth orientation parameters dataset to be used for the computation.
 
-This quantity is modelled as a piecewise linear function of time, where the switch points are given by the dates in *eop_data*. Evaluation
+This quantity is modelled as a piecewise linear function of time, where the nodes are given by the dates in *eop_data*. Evaluation
 outside the dates range of *eop_data* will produce a value of ``NaN``.
 
 The return value is expressed in radians.
@@ -1835,8 +1835,8 @@ the correction to the Earth's precession-nutation model (IAU 2000/2006) as a fun
 since the epoch of J2000 in the `terrestrial time scale (TT) <https://en.wikipedia.org/wiki/Terrestrial_Time>`__. *eop_data* is
 the Earth orientation parameters dataset to be used for the computation.
 
-This quantity is modelled as a piecewise constant function of time, where the switch
-points are given by the dates in *eop_data*. Evaluation outside the dates range of *eop_data* will produce a value of ``NaN``.
+This quantity is modelled as a piecewise constant function of time, where the nodes
+are given by the dates in *eop_data*. Evaluation outside the dates range of *eop_data* will produce a value of ``NaN``.
 
 The return value is expressed in radians per Julian century (TT).
 
@@ -2090,82 +2090,6 @@ for more information about the content of these files.
 :param long_term: flag selecting which file to be downloaded.
 
 :returns: an :py:class:`~heyoka.sw_data` instance constructed from the remote file.
-
-)";
-}
-
-std::string Ap_avg()
-{
-    return R"(Ap_avg(time_expr: expression = heyoka.time, sw_data: sw_data = sw_data()) -> expression
-
-Average of the geomagnetic Ap indices.
-
-.. versionadded:: 7.3.0
-
-This function will return an expression representing the average of the 8 `Ap indices <https://en.wikipedia.org/wiki/K-index>`__
-as a function of the input time expression *time_expr*. *time_expr* is
-expected to represent the number of Julian centuries elapsed since the epoch of J2000 in the
-`terrestrial time scale (TT) <https://en.wikipedia.org/wiki/Terrestrial_Time>`__. *sw_data* is
-the space weather dataset to be used for the computation.
-
-This quantity is modelled as a piecewise constant function of time, where the switch points are given by the dates in *sw_data*.
-Evaluation outside the dates range of *sw_data* will produce a value of ``NaN``.
-
-:param time_expr: the input time expression.
-:param sw_data: the SW data to be used for the computation.
-
-:returns: an expression representing the average of the Ap indices.
-
-)";
-}
-
-std::string f107()
-{
-    return R"(f107(time_expr: expression = heyoka.time, sw_data: sw_data = sw_data()) -> expression
-
-Observed 10.7-cm solar radio flux.
-
-.. versionadded:: 7.3.0
-
-This function will return an expression representing the observed 10.7-cm `solar radio flux <https://en.wikipedia.org/wiki/Solar_flux_unit>`__
-as a function of the input time expression *time_expr*. *time_expr* is
-expected to represent the number of Julian centuries elapsed since the epoch of J2000 in the
-`terrestrial time scale (TT) <https://en.wikipedia.org/wiki/Terrestrial_Time>`__. *sw_data* is
-the space weather dataset to be used for the computation.
-
-This quantity is modelled as a piecewise constant function of time, where the switch points are given by the dates in *sw_data*.
-Evaluation outside the dates range of *sw_data* will produce a value of ``NaN``.
-
-:param time_expr: the input time expression.
-:param sw_data: the SW data to be used for the computation.
-
-:returns: an expression representing the observed 10.7-cm solar radio flux.
-
-)";
-}
-
-std::string f107a_center81()
-{
-    return R"(f107a_center81(time_expr: expression = heyoka.time, sw_data: sw_data = sw_data()) -> expression
-
-Average of the 10.7-cm solar radio flux.
-
-.. versionadded:: 7.3.0
-
-This function will return an expression representing the 81-day arithmetic average of
-the observed `solar radio flux <https://en.wikipedia.org/wiki/Solar_flux_unit>`__ centred
-on the input time expression *time_expr*. *time_expr* is
-expected to represent the number of Julian centuries elapsed since the epoch of J2000 in the
-`terrestrial time scale (TT) <https://en.wikipedia.org/wiki/Terrestrial_Time>`__. *sw_data* is
-the space weather dataset to be used for the computation.
-
-This quantity is modelled as a piecewise constant function of time, where the switch points are given by the dates in *sw_data*.
-Evaluation outside the dates range of *sw_data* will produce a value of ``NaN``.
-
-:param time_expr: the input time expression.
-:param sw_data: the SW data to be used for the computation.
-
-:returns: an expression representing the 81-day arithmetic average of the observed 10.7-cm solar radio flux.
 
 )";
 }

@@ -9,6 +9,7 @@
 # Imports from core.
 from .._core import (
     Ap_avg,
+    Ap_avgp,
     cart2geo,
     cr3bp,
     cr3bp_jacobi,
@@ -27,6 +28,8 @@ from .._core import (
     erap,
     f107,
     f107a_center81,
+    f107a_center81p,
+    f107p,
     ffnn,
     fixed_centres,
     fixed_centres_energy,
@@ -105,6 +108,7 @@ This difference amounts to exactly 32.184 SI seconds.
 __all__ = [
     # Core imports.
     "Ap_avg",
+    "Ap_avgp",
     "cart2geo",
     "cr3bp",
     "cr3bp_jacobi",
@@ -123,6 +127,8 @@ __all__ = [
     "erap",
     "f107",
     "f107a_center81",
+    "f107a_center81p",
+    "f107p",
     "ffnn",
     "fixed_centres",
     "fixed_centres_energy",

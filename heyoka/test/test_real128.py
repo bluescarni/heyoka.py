@@ -90,7 +90,6 @@ class real128_test_case(unittest.TestCase):
 
         # Construction from real.
         if real is not None:
-
             self.assertEqual(real128(real("1.1", 113)), real128("1.1"))
             self.assertNotEqual(real128(real("1.1", 100)), real128("1.1"))
 
@@ -266,7 +265,6 @@ class real128_test_case(unittest.TestCase):
         self.assertFalse(2 < real128("nan"))
         self.assertFalse(real128("nan") < real128("nan"))
         if real is not None:
-
             self.assertTrue(real(1) < real128(2))
             self.assertTrue(real128(1) < real(2))
             self.assertFalse(real(1) > real128(2))
@@ -726,7 +724,6 @@ class real128_test_case(unittest.TestCase):
 
         # Setitem from real.
         if real is not None:
-
             arr1 = np.array([1, 2, 3], dtype=real128)
             arr1[1] = real("1.1", 113)
             self.assertEqual(arr1[1], real128("1.1"))
