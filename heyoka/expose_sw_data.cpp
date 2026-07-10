@@ -51,11 +51,7 @@ auto make_sw_data_row_dtype()
     const std::vector<std::string> fields = {"mjd", "Ap_avg", "f107", "f107a_center81"};
     py::list dlist;
     for (const auto &field : fields) {
-        if (field == "Ap_avg") {
-            dlist.append(py::make_tuple(field, "u2"));
-        } else {
-            dlist.append(py::make_tuple(field, "f8"));
-        }
+        dlist.append(py::make_tuple(field, "f8"));
     }
     return py::module_::import("numpy").attr("dtype")(dlist, "align"_a = true).cast<pybind11::dtype>();
 }
