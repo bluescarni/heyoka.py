@@ -9,6 +9,9 @@ Changelog
 New
 ~~~
 
+- In addition to the builtin datasets, it is now possible to construct and use
+  custom :py:class:`~heyoka.eop_data` and :py:class:`~heyoka.sw_data` datasets
+  (`#276 <https://github.com/bluescarni/heyoka.py/pull/276>`__).
 - Re-organize the Python code structure to be more aligned with modern practices
   (`#275 <https://github.com/bluescarni/heyoka.py/pull/275>`__,
   `#274 <https://github.com/bluescarni/heyoka.py/pull/274>`__).
