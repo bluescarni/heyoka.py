@@ -74,6 +74,11 @@ void expose_sw_data(py::module_ &m)
             return hy::sw_data::fetch_latest_celestrak(long_term);
         },
         "long_term"_a = false, docstrings::sw_data_fetch_latest_celestrak().c_str());
+    // Repr.
+    sw_data_class.def("__repr__", [](const hy::sw_data &data) {
+        return fmt::format("N of rows : {}\nTimestamp : {}\nIdentifier: {}\n", data.get_table().size(),
+                           data.get_timestamp(), data.get_identifier());
+    });
     // Copy/deepcopy.
     sw_data_class.def("__copy__", copy_wrapper<hy::sw_data>);
     sw_data_class.def("__deepcopy__", deepcopy_wrapper<hy::sw_data>, "memo"_a);
