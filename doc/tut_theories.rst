@@ -17,3 +17,4 @@ gradient-based inverse problems and optimisation tasks).
    notebooks/elp2000
    notebooks/iau2006
    notebooks/egm2008
+   notebooks/custom_grav_models
