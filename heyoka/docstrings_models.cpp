@@ -106,6 +106,10 @@ Custom spherical harmonics gravitational potential.
 
 .. versionadded:: 7.12.0
 
+.. note::
+
+   A :ref:`tutorial <tut_sh_grav>` is available showcasing the use of this function.
+
 This function will return the value of a custom spherical harmonics gravitational potential at the input Cartesian
 position *xyz*. The potential is fully determined by the user-supplied normalised harmonic coefficients
 *sh_coefficients*, the gravitational parameter *mu* and the reference radius *a*. The definitions and conventions
@@ -153,6 +157,10 @@ std::string sh_gravity_acc()
 Custom spherical harmonics gravitational acceleration.
 
 .. versionadded:: 7.12.0
+
+.. note::
+
+   A :ref:`tutorial <tut_sh_grav>` is available showcasing the use of this function.
 
 This function will return the value of the gravitational acceleration due to a custom spherical harmonics
 gravitational potential at the input Cartesian position *xyz*. The output acceleration vector is expressed in the
