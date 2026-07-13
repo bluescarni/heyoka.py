@@ -548,30 +548,35 @@ void expose_models(py::module_ &m)
         },
         "xyz"_a, "time_expr"_a = hy::time, "eop_data"_a = hy::eop_data(), docstrings::rot_teme_itrs().c_str());
 
-    // Use macro to expose the EOP models.
-#define HEYOKA_PY_EXPOSE_MODEL_EOP(name)                                                                               \
+    // Common macro for the exposition of EOP/SW models.
+#define HEYOKA_PY_EXPOSE_MODEL_EOP_SW(descr, name)                                                                     \
     m.def(                                                                                                             \
         #name,                                                                                                         \
-        [](const vex_t &time_expr, const hy::eop_data &data) {                                                         \
-            return hy::model::name(hy::kw::time_expr = detail::ex_from_variant(time_expr), hy::kw::eop_data = data);   \
+        [](const vex_t &time_expr, const hy::descr##_data &data) {                                                     \
+            return hy::model::name(hy::kw::time_expr = detail::ex_from_variant(time_expr),                             \
+                                   hy::kw::descr##_data = data);                                                       \
         },                                                                                                             \
-        "time_expr"_a = hy::time, "eop_data"_a = hy::eop_data(), docstrings::name().c_str());                          \
+        "time_expr"_a = hy::time, #descr "_data"_a = hy::descr##_data(), docstrings::name().c_str());                  \
     m.def(                                                                                                             \
         #name "p",                                                                                                     \
-        [](const vex_t &time_expr, const hy::eop_data &data) {                                                         \
+        [](const vex_t &time_expr, const hy::descr##_data &data) {                                                     \
             return hy::model::name##p(hy::kw::time_expr = detail::ex_from_variant(time_expr),                          \
-                                      hy::kw::eop_data = data);                                                        \
+                                      hy::kw::descr##_data = data);                                                    \
         },                                                                                                             \
-        "time_expr"_a = hy::time, "eop_data"_a = hy::eop_data(), docstrings::name##p().c_str());
+        "time_expr"_a = hy::time, #descr "_data"_a = hy::descr##_data(), docstrings::name##p().c_str());
 
-    HEYOKA_PY_EXPOSE_MODEL_EOP(era);
-    HEYOKA_PY_EXPOSE_MODEL_EOP(gmst82);
-    HEYOKA_PY_EXPOSE_MODEL_EOP(pm_x);
-    HEYOKA_PY_EXPOSE_MODEL_EOP(pm_y);
-    HEYOKA_PY_EXPOSE_MODEL_EOP(dX);
-    HEYOKA_PY_EXPOSE_MODEL_EOP(dY);
+    HEYOKA_PY_EXPOSE_MODEL_EOP_SW(eop, era);
+    HEYOKA_PY_EXPOSE_MODEL_EOP_SW(eop, gmst82);
+    HEYOKA_PY_EXPOSE_MODEL_EOP_SW(eop, pm_x);
+    HEYOKA_PY_EXPOSE_MODEL_EOP_SW(eop, pm_y);
+    HEYOKA_PY_EXPOSE_MODEL_EOP_SW(eop, dX);
+    HEYOKA_PY_EXPOSE_MODEL_EOP_SW(eop, dY);
 
-#undef HEYOKA_PY_EXPOSE_MODEL_EOP
+    HEYOKA_PY_EXPOSE_MODEL_EOP_SW(sw, Ap_avg);
+    HEYOKA_PY_EXPOSE_MODEL_EOP_SW(sw, f107);
+    HEYOKA_PY_EXPOSE_MODEL_EOP_SW(sw, f107a_center81);
+
+#undef HEYOKA_PY_EXPOSE_MODEL_EOP_SW
 
     // IAU2006 precession/nutation.
     m.def(
@@ -666,21 +671,6 @@ void expose_models(py::module_ &m)
         },
         "xyz"_a, "sh_coefficients"_a, "mu"_a, "a"_a, py::kw_only(), "max_degree"_a = py::none{},
         "max_order"_a = py::none{}, docstrings::sh_gravity_acc().c_str());
-
-    // Use macro to expose the SW models.
-#define HEYOKA_PY_EXPOSE_MODEL_SW(name)                                                                                \
-    m.def(                                                                                                             \
-        #name,                                                                                                         \
-        [](const vex_t &time_expr, const hy::sw_data &data) {                                                          \
-            return hy::model::name(hy::kw::time_expr = detail::ex_from_variant(time_expr), hy::kw::sw_data = data);    \
-        },                                                                                                             \
-        "time_expr"_a = hy::time, "sw_data"_a = hy::sw_data(), docstrings::name().c_str());
-
-    HEYOKA_PY_EXPOSE_MODEL_SW(Ap_avg);
-    HEYOKA_PY_EXPOSE_MODEL_SW(f107);
-    HEYOKA_PY_EXPOSE_MODEL_SW(f107a_center81);
-
-#undef HEYOKA_PY_EXPOSE_MODEL_SW
 
     // dayfrac().
     m.def(

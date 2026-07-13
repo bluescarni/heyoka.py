@@ -11,10 +11,15 @@
 #include <cassert>
 #include <cstdint>
 #include <exception>
+#include <optional>
+#include <ranges>
 #include <string>
 #include <utility>
 
+#include <boost/align/is_aligned.hpp>
 #include <boost/numeric/conversion/cast.hpp>
+
+#include <fmt/core.h>
 
 #include <pybind11/numpy.h>
 #include <pybind11/pybind11.h>
@@ -38,8 +43,10 @@
 #endif
 
 #include <heyoka/detail/safe_integer.hpp>
+#include <heyoka/eop_data.hpp>
 #include <heyoka/expression.hpp>
 #include <heyoka/number.hpp>
+#include <heyoka/sw_data.hpp>
 
 #include "common_utils.hpp"
 #include "custom_casters.hpp"
@@ -171,5 +178,69 @@ py::array as_carray(const py::iterable &v, int dt)
 
     return ret;
 }
+
+// Common helper for the implementation of the ctor for the EOP/SW data classes.
+template <typename Data>
+Data eop_sw_ctor(const char *descr, const std::optional<py::array> &data, const std::optional<std::string> &timestamp,
+                 const std::optional<std::string> &identifier)
+{
+    const auto with_data = static_cast<bool>(data);
+    const auto with_ts = static_cast<bool>(timestamp);
+    const auto with_id = static_cast<bool>(identifier);
+
+    if (with_data && with_ts && with_id) {
+        // Fetch the structured dtype corresponding to the row type of Data.
+        const auto dt = make_aligned_dtype<typename Data::row_type>();
+
+        // Check the dtype.
+        //
+        // NOTE: this will check structural equality of the layout, but not other attributes of the dtype (e.g., whether
+        // it is aligned or not).
+        if (!data->dtype().equal(dt)) [[unlikely]] {
+            py_throw(PyExc_TypeError, fmt::format("Unable to construct an {} dataset: the dtype of the input NumPy "
+                                                  "array is {}, but it should be {} instead",
+                                                  descr, str(data->dtype()), str(dt))
+                                          .c_str());
+        }
+
+        // Check the array dimensionality.
+        if (data->ndim() != 1) [[unlikely]] {
+            py_throw(PyExc_ValueError, fmt::format("Unable to construct an {} dataset: the input data array must have "
+                                                   "1 dimension, but instead {} dimensions were detected",
+                                                   descr, data->ndim())
+                                           .c_str());
+        }
+
+        // Ensure that the data is C-contiguous *and* correctly aligned: reinterpreting the raw buffer as a range of
+        // row_type below requires both.
+        //
+        // NOTE: because dt is an aligned dtype, np.require() will make an aligned copy if the input is not already
+        // aligned - a merely contiguous buffer (e.g. a view into a byte buffer at an odd offset) can be misaligned,
+        // which would make the reinterpretation UB.
+        const auto cdata = py::module_::import("numpy")
+                               .attr("require")(*data, dt, py::make_tuple("C_CONTIGUOUS", "ALIGNED"))
+                               .template cast<py::array>();
+
+        // Fetch the begin/end iterators to the raw data.
+        assert(boost::alignment::is_aligned(cdata.data(), alignof(typename Data::row_type)));
+        const auto *const begin = static_cast<typename Data::row_type const *>(cdata.data());
+        const auto *const end = begin + cdata.shape(0);
+
+        return Data{std::ranges::subrange(begin, end), *timestamp, *identifier};
+    } else if (!with_data && !with_ts && !with_id) {
+        return Data{};
+    } else [[unlikely]] {
+        py_throw(PyExc_TypeError, fmt::format("Unable to construct an {} dataset: either none or all of the three "
+                                              "construction arguments must be provided",
+                                              descr)
+                                      .c_str());
+    }
+}
+
+// Explicit instantiations.
+template heyoka::eop_data eop_sw_ctor(const char *, const std::optional<py::array> &,
+                                      const std::optional<std::string> &, const std::optional<std::string> &);
+template heyoka::sw_data eop_sw_ctor(const char *, const std::optional<py::array> &, const std::optional<std::string> &,
+                                     const std::optional<std::string> &);
 
 } // namespace heyoka_py

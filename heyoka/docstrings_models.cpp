@@ -106,6 +106,10 @@ Custom spherical harmonics gravitational potential.
 
 .. versionadded:: 7.12.0
 
+.. note::
+
+   A :ref:`tutorial <tut_sh_grav>` is available showcasing the use of this function.
+
 This function will return the value of a custom spherical harmonics gravitational potential at the input Cartesian
 position *xyz*. The potential is fully determined by the user-supplied normalised harmonic coefficients
 *sh_coefficients*, the gravitational parameter *mu* and the reference radius *a*. The definitions and conventions
@@ -154,6 +158,10 @@ Custom spherical harmonics gravitational acceleration.
 
 .. versionadded:: 7.12.0
 
+.. note::
+
+   A :ref:`tutorial <tut_sh_grav>` is available showcasing the use of this function.
+
 This function will return the value of the gravitational acceleration due to a custom spherical harmonics
 gravitational potential at the input Cartesian position *xyz*. The output acceleration vector is expressed in the
 same body-fixed frame as *xyz*.
@@ -201,6 +209,163 @@ function for a detailed description of the layout.
    ``[0.0, 0.0]`` and ``[0.0, 0.0]`` (corresponding to :math:`(n,m)` indices :math:`(0,0)`, :math:`(1,0)` and :math:`(1,1)`).
 
 :returns: a read-only ``(N, 2)`` array of normalised ``[C, S]`` harmonic coefficient pairs.
+
+)";
+}
+
+std::string Ap_avg()
+{
+    return R"(Ap_avg(time_expr: expression = heyoka.time, sw_data: sw_data = sw_data()) -> expression
+
+Average of the geomagnetic Ap index.
+
+.. versionadded:: 7.3.0
+
+This function will return an expression representing the 24-hour running average of the
+`Ap index <https://en.wikipedia.org/wiki/K-index>`__ centred on the input time *time_expr*. *time_expr* is
+expected to represent the number of Julian centuries elapsed since the epoch of J2000 in the
+`terrestrial time scale (TT) <https://en.wikipedia.org/wiki/Terrestrial_Time>`__. *sw_data* is
+the space weather dataset to be used for the computation.
+
+This quantity is modelled as a piecewise linear function of time, where the nodes are given by the dates in *sw_data*.
+Evaluation outside the dates range of *sw_data* will produce a value of ``NaN``.
+
+:param time_expr: the input time expression.
+:param sw_data: the SW data to be used for the computation.
+
+:returns: an expression representing the 24-hour running average of the Ap index.
+
+)";
+}
+
+std::string Ap_avgp()
+{
+    return R"(Ap_avgp(time_expr: expression = heyoka.time, sw_data: sw_data = sw_data()) -> expression
+
+Derivative of the average of the geomagnetic Ap index.
+
+.. versionadded:: 7.12.0
+
+This function will return an expression representing the first-order derivative of :py:func:`~heyoka.model.Ap_avg()`
+as a function of the input time expression *time_expr*. *time_expr* is
+expected to represent the number of Julian centuries elapsed since the epoch of J2000 in the
+`terrestrial time scale (TT) <https://en.wikipedia.org/wiki/Terrestrial_Time>`__. *sw_data* is
+the space weather dataset to be used for the computation.
+
+The derivative is modelled as a piecewise constant function of time, where the nodes are given by the dates in *sw_data*.
+Evaluation outside the dates range of *sw_data* will produce a value of ``NaN``.
+
+The derivative is returned in units of Ap index per Julian century (TT).
+
+:param time_expr: the input time expression.
+:param sw_data: the SW data to be used for the computation.
+
+:returns: an expression representing the derivative of the 24-hour running average of the Ap index.
+
+)";
+}
+
+std::string f107()
+{
+    return R"(f107(time_expr: expression = heyoka.time, sw_data: sw_data = sw_data()) -> expression
+
+Observed 10.7-cm solar radio flux.
+
+.. versionadded:: 7.3.0
+
+This function will return an expression representing the observed 10.7-cm `solar radio flux <https://en.wikipedia.org/wiki/Solar_flux_unit>`__
+as a function of the input time expression *time_expr*. *time_expr* is
+expected to represent the number of Julian centuries elapsed since the epoch of J2000 in the
+`terrestrial time scale (TT) <https://en.wikipedia.org/wiki/Terrestrial_Time>`__. *sw_data* is
+the space weather dataset to be used for the computation.
+
+This quantity is modelled as a piecewise linear function of time, where the nodes are given by the dates in *sw_data*.
+Evaluation outside the dates range of *sw_data* will produce a value of ``NaN``.
+
+:param time_expr: the input time expression.
+:param sw_data: the SW data to be used for the computation.
+
+:returns: an expression representing the observed 10.7-cm solar radio flux.
+
+)";
+}
+
+std::string f107p()
+{
+    return R"(f107p(time_expr: expression = heyoka.time, sw_data: sw_data = sw_data()) -> expression
+
+Derivative of the observed 10.7-cm solar radio flux.
+
+.. versionadded:: 7.12.0
+
+This function will return an expression representing the first-order derivative of :py:func:`~heyoka.model.f107()`
+as a function of the input time expression *time_expr*. *time_expr* is
+expected to represent the number of Julian centuries elapsed since the epoch of J2000 in the
+`terrestrial time scale (TT) <https://en.wikipedia.org/wiki/Terrestrial_Time>`__. *sw_data* is
+the space weather dataset to be used for the computation.
+
+The derivative is modelled as a piecewise constant function of time, where the nodes are given by the dates in *sw_data*.
+Evaluation outside the dates range of *sw_data* will produce a value of ``NaN``.
+
+The derivative is returned in `solar flux units <https://en.wikipedia.org/wiki/Solar_flux_unit>`__ per Julian century (TT).
+
+:param time_expr: the input time expression.
+:param sw_data: the SW data to be used for the computation.
+
+:returns: an expression representing the derivative of the observed 10.7-cm solar radio flux.
+
+)";
+}
+
+std::string f107a_center81()
+{
+    return R"(f107a_center81(time_expr: expression = heyoka.time, sw_data: sw_data = sw_data()) -> expression
+
+Average of the 10.7-cm solar radio flux.
+
+.. versionadded:: 7.3.0
+
+This function will return an expression representing the 81-day running average of
+the observed `solar radio flux <https://en.wikipedia.org/wiki/Solar_flux_unit>`__ centred
+on the input time expression *time_expr*. *time_expr* is
+expected to represent the number of Julian centuries elapsed since the epoch of J2000 in the
+`terrestrial time scale (TT) <https://en.wikipedia.org/wiki/Terrestrial_Time>`__. *sw_data* is
+the space weather dataset to be used for the computation.
+
+This quantity is modelled as a piecewise linear function of time, where the nodes are given by the dates in *sw_data*.
+Evaluation outside the dates range of *sw_data* will produce a value of ``NaN``.
+
+:param time_expr: the input time expression.
+:param sw_data: the SW data to be used for the computation.
+
+:returns: an expression representing the 81-day running average of the observed 10.7-cm solar radio flux.
+
+)";
+}
+
+std::string f107a_center81p()
+{
+    return R"(f107a_center81p(time_expr: expression = heyoka.time, sw_data: sw_data = sw_data()) -> expression
+
+Derivative of the average of the 10.7-cm solar radio flux.
+
+.. versionadded:: 7.12.0
+
+This function will return an expression representing the first-order derivative of :py:func:`~heyoka.model.f107a_center81()`
+as a function of the input time expression *time_expr*. *time_expr* is
+expected to represent the number of Julian centuries elapsed since the epoch of J2000 in the
+`terrestrial time scale (TT) <https://en.wikipedia.org/wiki/Terrestrial_Time>`__. *sw_data* is
+the space weather dataset to be used for the computation.
+
+The derivative is modelled as a piecewise constant function of time, where the nodes are given by the dates in *sw_data*.
+Evaluation outside the dates range of *sw_data* will produce a value of ``NaN``.
+
+The derivative is returned in `solar flux units <https://en.wikipedia.org/wiki/Solar_flux_unit>`__ per Julian century (TT).
+
+:param time_expr: the input time expression.
+:param sw_data: the SW data to be used for the computation.
+
+:returns: an expression representing the derivative of the 81-day running average of the observed 10.7-cm solar radio flux.
 
 )";
 }

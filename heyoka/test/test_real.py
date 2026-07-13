@@ -264,7 +264,6 @@ class real_test_case(unittest.TestCase):
         self.assertTrue(np.all(arr > 0))
         # self.assertTrue(np.all(arr <= 3.0))
         if real128 is not None:
-
             self.assertTrue(np.all(arr >= real128(-2.0)))
 
     def test_numpy_binary(self):
@@ -827,7 +826,6 @@ class real_test_case(unittest.TestCase):
 
         # real128 interop.
         if real128 is not None:
-
             arr = np.array([1, 2, 3, 4, 5], dtype=real128)
             self.assertTrue(np.all(arr == arr.astype(real)))
             self.assertTrue(np.all(arr == arr.astype(real, casting="safe")))
@@ -1401,7 +1399,6 @@ class real_test_case(unittest.TestCase):
         self.assertEqual(f32(2.0), real(2))
 
         if real128 is not None:
-
             self.assertEqual(real(2), real128(2))
             self.assertEqual(real128(2), real(2))
 
@@ -1421,7 +1418,6 @@ class real_test_case(unittest.TestCase):
         self.assertNotEqual(f32(3.0), real(2))
 
         if real128 is not None:
-
             self.assertNotEqual(real(3), real128(2))
             self.assertNotEqual(real128(2), real(3))
 
@@ -1441,7 +1437,6 @@ class real_test_case(unittest.TestCase):
         self.assertLess(f32(1.0), real(2))
 
         if real128 is not None:
-
             self.assertLess(real(1), real128(2))
             self.assertLess(real128(1), real(3))
 
@@ -1461,7 +1456,6 @@ class real_test_case(unittest.TestCase):
         self.assertLessEqual(f32(2.0), real(2))
 
         if real128 is not None:
-
             self.assertLessEqual(real(1), real128(2))
             self.assertLessEqual(real128(3), real(3))
 
@@ -1481,7 +1475,6 @@ class real_test_case(unittest.TestCase):
         self.assertGreater(f32(3.0), real(2))
 
         if real128 is not None:
-
             self.assertGreater(real(3), real128(2))
             self.assertGreater(real128(3), real(2))
 
@@ -1501,7 +1494,6 @@ class real_test_case(unittest.TestCase):
         self.assertGreaterEqual(f32(3.0), real(3))
 
         if real128 is not None:
-
             self.assertGreaterEqual(real(3), real128(2))
             self.assertGreaterEqual(real128(3), real(3))
 
@@ -1550,7 +1542,6 @@ class real_test_case(unittest.TestCase):
 
         # real128.
         if real128 is not None:
-
             self.assertEqual(str(x + real128(-2.0)), str(real(-1, 128)))
             self.assertEqual(str(real128(1.0) + y), str(real(-1, 128)))
 
@@ -1578,7 +1569,6 @@ class real_test_case(unittest.TestCase):
 
         # real128.
         if real128 is not None:
-
             self.assertEqual(str(x - real128(-2.0)), str(real(3, 128)))
             self.assertEqual(str(real128(1.0) - y), str(real(3, 128)))
 
@@ -1606,7 +1596,6 @@ class real_test_case(unittest.TestCase):
 
         # real128.
         if real128 is not None:
-
             self.assertEqual(str(x * real128(-2.0)), str(real(-2, 128)))
             self.assertEqual(str(real128(1.0) * y), str(real(-2, 128)))
 
@@ -1634,7 +1623,6 @@ class real_test_case(unittest.TestCase):
 
         # real128.
         if real128 is not None:
-
             self.assertEqual(str(x / real128(-2.0)), str(real(-0.5, 128)))
             self.assertEqual(str(real128(1.0) / y), str(real(-0.5, 128)))
 
@@ -1660,7 +1648,6 @@ class real_test_case(unittest.TestCase):
 
         # real128.
         if real128 is not None:
-
             self.assertEqual(str(real(2.1, 128) // real128(1)), str(real(2.0, 128)))
             self.assertEqual(str(real128(1) // real(2.1, 128)), str(real(0.0, 128)))
 
@@ -1686,7 +1673,6 @@ class real_test_case(unittest.TestCase):
 
         # real128.
         if real128 is not None:
-
             self.assertEqual(str(real(2.0, 128) ** real128(3.0)), str(real(8.0, 128)))
             self.assertEqual(str(real128(2.0) ** real(3.0, 128)), str(real(8.0, 128)))
 
@@ -1715,7 +1701,6 @@ class real_test_case(unittest.TestCase):
         self.assertFalse(2 < real("nan", 10))
         self.assertFalse(real("nan", 10) < real("nan", 10))
         if real128 is not None:
-
             self.assertTrue(real(1) < real128(2))
             self.assertTrue(real128(1) < real(2))
             self.assertFalse(real(1) > real128(2))
@@ -1871,7 +1856,6 @@ class real_test_case(unittest.TestCase):
 
         # real128.
         if real128 is not None:
-
             x = real(real128("1.1"))
             self.assertEqual(str(x), "1.10000000000000000000000000000000008")
             self.assertEqual(x.prec, 113)

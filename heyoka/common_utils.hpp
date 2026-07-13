@@ -10,8 +10,10 @@
 #define HEYOKA_PY_COMMON_UTILS_HPP
 
 #include <array>
+#include <cassert>
 #include <cstddef>
 #include <functional>
+#include <optional>
 #include <string>
 #include <utility>
 #include <variant>
@@ -22,6 +24,11 @@
 
 #endif
 
+#include <boost/numeric/conversion/cast.hpp>
+#include <boost/pfr/core.hpp>
+#include <boost/pfr/core_name.hpp>
+#include <boost/pfr/tuple_size.hpp>
+
 #include <pybind11/numpy.h>
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
@@ -31,19 +38,6 @@
 #include <heyoka/expression.hpp>
 #include <heyoka/llvm_state.hpp>
 #include <heyoka/number.hpp>
-
-// NOTE: implementation of Py_SET_TYPE() for Python < 3.9. See:
-// https://docs.python.org/3.11/whatsnew/3.11.html
-
-#if PY_VERSION_HEX < 0x030900A4 && !defined(Py_SET_TYPE)
-
-static inline void _Py_SET_TYPE(PyObject *ob, PyTypeObject *type)
-{
-    ob->ob_type = type;
-}
-#define Py_SET_TYPE(ob, type) _Py_SET_TYPE((PyObject *)(ob), type)
-
-#endif
 
 namespace heyoka_py
 {
@@ -264,6 +258,50 @@ py::array as_carray(const py::iterable &, int);
 #define HEYOKA_PY_CFUNC_ARGS(default_cm)                                                                               \
     "high_accuracy"_a.noconvert() = false, "compact_mode"_a.noconvert() = default_cm,                                  \
     "parallel_mode"_a.noconvert() = false, "batch_size"_a.noconvert() = 0, "prec"_a.noconvert() = 0
+
+// Common helper for the implementation of the ctor for the EOP/SW data classes.
+template <typename Data>
+Data eop_sw_ctor(const char *, const std::optional<py::array> &, const std::optional<std::string> &,
+                 const std::optional<std::string> &);
+
+// Small helper to make a structured dtype from the POD-like C++ type T.
+//
+// This is similar in spirit to the PYBIND11_NUMPY_DTYPE macro, but:
+//
+// - it is not necessary to list the data members, these are inferred via Boost.PFR, and
+// - the resulting dtype is built with align=true (whereas PYBIND11_NUMPY_DTYPE leaves the dtype unaligned).
+//
+// The second bit is important because it guarantees that, if we are given a numpy array which is flagged as C style,
+// contiguous and properly aligned, then we can fetch T pointers from its underlying memory buffer and use them for
+// read/write operations without running into UB due to misaligned loads/stores.
+template <typename T>
+auto make_aligned_dtype()
+{
+    using namespace py::literals;
+
+    // Fetch the names of T's data members.
+    const auto fields = boost::pfr::names_as_array<T>();
+
+    // Construct the list of tuples from which the dtype will be inited. These are pairs containing the name of the
+    // field and its dtype.
+    py::list dlist;
+    const auto add_fields = [&dlist, &fields]<std::size_t... I>(std::index_sequence<I...>) {
+        // NOTE: cast to void in order to enforce the use of the builtin comma operator, which, through guaranteed
+        // sequencing, ensures that the tuples are appended in the correct order.
+        (..., static_cast<void>(
+                  dlist.append(py::make_tuple(fields[I], py::dtype::of<boost::pfr::tuple_element_t<I, T>>()))));
+    };
+    add_fields(std::make_index_sequence<boost::pfr::tuple_size_v<T>>{});
+
+    // NOTE: ensure proper alignment with align=true.
+    auto ret = py::module_::import("numpy").attr("dtype")(dlist, "align"_a = true).cast<pybind11::dtype>();
+
+    // NOTE: let's make sure that the size and alignment computed by numpy match the C++ values.
+    assert(ret.itemsize() == boost::numeric_cast<py::ssize_t>(sizeof(T)));
+    assert(ret.alignment() == boost::numeric_cast<py::ssize_t>(alignof(T)));
+
+    return ret;
+}
 
 } // namespace heyoka_py
 

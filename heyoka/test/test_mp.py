@@ -273,10 +273,12 @@ class mp_test_case(unittest.TestCase):
         )
 
         self.assertEqual(
-            str(1.0 + expression(real("1.1", 128))), "2.099999999999999999999999999999999999995"
+            str(1.0 + expression(real("1.1", 128))),
+            "2.099999999999999999999999999999999999995",
         )
         self.assertEqual(
-            str(expression(real("1.1", 128)) + 1), "2.099999999999999999999999999999999999995"
+            str(expression(real("1.1", 128)) + 1),
+            "2.099999999999999999999999999999999999995",
         )
 
         self.assertEqual(
