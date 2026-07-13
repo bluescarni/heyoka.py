@@ -6,7 +6,7 @@
 // Public License v. 2.0. If a copy of the MPL was not distributed
 // with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-#include <initializer_list>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -30,54 +30,29 @@ namespace heyoka_py
 
 namespace py = pybind11;
 
-namespace detail
-{
-
-namespace
-{
-
-// Helper to construct the numpy dtype corresponding to eop_data_row.
-//
-// NOTE: we use this approach, rather than the usual PYBIND11_NUMPY_DTYPE macro,
-// due to an inscrutable compilation error on MSVC. I suspect some shenanigans
-// with the MSVC preprocessor, however this is hard to diagnose and fix without
-// access to a Windows machine. Hence, this workaround which creates the dtype
-// "the Python way". We have checked manually that, on Linux, this produces the
-// exact same dtype as the PYBIND11_NUMPY_DTYPE macro.
-auto make_eop_data_row_dtype()
-{
-    using namespace pybind11::literals;
-
-    const std::vector<std::string> fields = {"mjd", "delta_ut1_utc", "pm_x", "pm_y", "dX", "dY"};
-    py::list dlist;
-    for (const auto &field : fields) {
-        dlist.append(py::make_tuple(field, "f8"));
-    }
-    return py::module_::import("numpy").attr("dtype")(dlist, "align"_a = true).cast<pybind11::dtype>();
-}
-
-} // namespace
-
-} // namespace detail
-
 void expose_eop_data(py::module_ &m)
 {
     namespace hy = heyoka;
     using namespace pybind11::literals;
 
     // Add the eop_data_row dtype as a module attribute.
-    m.attr("eop_data_row") = detail::make_eop_data_row_dtype();
+    m.attr("eop_data_row") = make_aligned_dtype<hy::eop_data_row>();
 
     // Expose the eop_data class.
     py::class_<hy::eop_data> eop_data_class(m, "eop_data", py::dynamic_attr{}, docstrings::eop_data().c_str());
-    eop_data_class.def(py::init<>(), docstrings::eop_data_init().c_str());
+    eop_data_class.def(py::init([](const std::optional<py::array> &data, const std::optional<std::string> &timestamp,
+                                   const std::optional<std::string> &identifier) {
+                           return eop_sw_ctor<hy::eop_data>("EOP", data, timestamp, identifier);
+                       }),
+                       py::kw_only(), "data"_a = py::none{}, "timestamp"_a = py::none{}, "identifier"_a = py::none{},
+                       docstrings::eop_data_init().c_str());
     eop_data_class.def_property_readonly(
         "table",
         [](const py::object &o) {
             auto *edata = py::cast<const hy::eop_data *>(o);
             const auto &table = edata->get_table();
 
-            auto ret = py::array(detail::make_eop_data_row_dtype(), boost::numeric_cast<py::ssize_t>(table.size()),
+            auto ret = py::array(make_aligned_dtype<hy::eop_data_row>(), boost::numeric_cast<py::ssize_t>(table.size()),
                                  table.data(), o);
 
             // Ensure the returned array is read-only.

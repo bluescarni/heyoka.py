@@ -1257,15 +1257,32 @@ This class is used to manage and access Earth orientation parameters data.
 
 std::string eop_data_init()
 {
-    return R"(__init__(self)
+    return R"(__init__(self, *, data: numpy.ndarray | None = None, timestamp: str | None = None, identifier: str | None = None)
 
-Default constructor.
+Constructor.
 
-The default constructor initialises the EOP data with a builtin copy of the ``finals2000A.all``
+If no arguments are provided, the data is initialised with a builtin copy of the ``finals2000A.all``
 rapid data file from the `IERS datacenter <https://datacenter.iers.org/eop.php>`__.
 
 Note that the builtin EOP data is likely to be outdated. You can use functions such as
 :py:func:`~heyoka.eop_data.fetch_latest_iers_rapid()` to fetch up-to-date data from the internet.
+
+Alternatively, a custom dataset can be built by providing all three of the *data*, *timestamp* and *identifier*
+arguments.
+
+.. versionadded:: 7.12.0
+
+   The ability to construct custom datasets.
+
+:param data: the EOP data table. If provided, it must be a one-dimensional :ref:`structured NumPy array<numpy:defining-structured-types>`
+   whose dtype is :py:attr:`~heyoka.eop_data_row`.
+:param timestamp: a string used to disambiguate between different versions of the same dataset
+   (see :py:attr:`~heyoka.eop_data.timestamp`).
+:param identifier: a string uniquely identifying the source of the data
+   (see :py:attr:`~heyoka.eop_data.identifier`).
+
+:raises TypeError: if only some (but not all) of *data*, *timestamp* and *identifier* are provided, or if the input array has the wrong dtype.
+:raises ValueError: in case of invalid input arguments.
 
 )";
 }
@@ -1288,8 +1305,6 @@ std::string eop_data_timestamp()
 
 A timestamp in string format which can be used to disambiguate between different versions of
 the same dataset.
-
-The timestamp is inferred from the timestamp of the files on the remote data servers.
 
 :type: str
 
@@ -2012,15 +2027,32 @@ This class is used to manage and access space weather (SW) data.
 
 std::string sw_data_init()
 {
-    return R"(__init__(self)
+    return R"(__init__(self, *, data: numpy.ndarray | None = None, timestamp: str | None = None, identifier: str | None = None)
 
-Default constructor.
+Constructor.
 
-The default constructor initialises the SW data with a builtin copy of the ``SW-All.csv``
+If no arguments are provided, the data is initialised with a builtin copy of the ``SW-All.csv``
 data file from `celestrak <https://celestrak.org/SpaceData/>`__.
 
 Note that the builtin SW data is likely to be outdated. You can use functions such as
 :py:func:`~heyoka.sw_data.fetch_latest_celestrak()` to fetch up-to-date data from the internet.
+
+Alternatively, a custom dataset can be built by providing all three of the *data*, *timestamp* and *identifier*
+arguments.
+
+.. versionadded:: 7.12.0
+
+   The ability to construct custom datasets.
+
+:param data: the SW data table. If provided, it must be a one-dimensional :ref:`structured NumPy array<numpy:defining-structured-types>`
+   whose dtype is :py:attr:`~heyoka.sw_data_row`.
+:param timestamp: a string used to disambiguate between different versions of the same dataset
+   (see :py:attr:`~heyoka.sw_data.timestamp`).
+:param identifier: a string uniquely identifying the source of the data
+   (see :py:attr:`~heyoka.sw_data.identifier`).
+
+:raises TypeError: if only some (but not all) of *data*, *timestamp* and *identifier* are provided, or if the input array has the wrong dtype.
+:raises ValueError: in case of invalid input arguments.
 
 )";
 }
@@ -2043,8 +2075,6 @@ std::string sw_data_timestamp()
 
 A timestamp in string format which can be used to disambiguate between different versions of
 the same dataset.
-
-The timestamp is inferred from the timestamp of the files on the remote data servers.
 
 :type: str
 
