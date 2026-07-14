@@ -133,10 +133,6 @@ void expose_sgp4_propagator_impl(py::module_ &m, const std::string &suffix)
     using namespace py::literals;
     using prop_t = hy::model::sgp4_propagator<T>;
 
-    // Register the date type as a numpy dtype.
-    using date_t = typename prop_t::date;
-    PYBIND11_NUMPY_DTYPE(date_t, jd, frac);
-
     py::class_<prop_t> prop_cl(m, fmt::format("sgp4_propagator_{}", suffix).c_str(), py::dynamic_attr{},
                                docstrings::sgp4_propagator(std::same_as<T, double> ? "double" : "single").c_str());
     prop_cl.def(
@@ -204,22 +200,11 @@ void expose_sgp4_propagator_impl(py::module_ &m, const std::string &suffix)
         "sat_list"_a.noconvert(), "diff_order"_a.noconvert() = static_cast<std::uint32_t>(0),
         HEYOKA_PY_CFUNC_ARGS(false), HEYOKA_PY_LLVM_STATE_ARGS,
         docstrings::sgp4_propagator_init(std::same_as<T, double> ? "float" : "numpy.single").c_str());
-    // NOTE: this should be a static property, but at the moment doing this will mess up
-    // the documentation as sphinx will not pick up the docstring properly. Either we are
-    // doing something wrong in the docstring format or it is a genuine sphinx issue.
+    // NOTE: this should be a static property, but at the moment doing this will mess up the documentation as sphinx
+    // will not pick up the docstring properly. Either we are doing something wrong in the docstring format or it is a
+    // genuine sphinx issue.
     prop_cl.def_property_readonly(
-        "jdtype",
-        [](const prop_t &) -> py::object {
-            auto np = py::module_::import("numpy");
-
-            py::object dtype = np.attr("dtype");
-
-            py::list l;
-            l.append(py::make_tuple("jd", std::same_as<T, double> ? np.attr("double") : np.attr("single")));
-            l.append(py::make_tuple("frac", std::same_as<T, double> ? np.attr("double") : np.attr("single")));
-
-            return dtype(l);
-        },
+        "jdtype", [](const prop_t &) { return make_aligned_dtype<typename prop_t::date>(); },
         docstrings::sgp4_propagator_jdtype(std::same_as<T, double> ? "float" : "numpy.single").c_str());
     prop_cl.def_property_readonly("nsats", &prop_t::get_nsats, docstrings::sgp4_propagator_nsats().c_str());
     prop_cl.def_property_readonly("nouts", &prop_t::get_nouts, docstrings::sgp4_propagator_nouts().c_str());
@@ -292,206 +277,231 @@ void expose_sgp4_propagator_impl(py::module_ &m, const std::string &suffix)
         "i"_a.noconvert(), docstrings::sgp4_propagator_get_mindex(suffix).c_str());
     prop_cl.def(
         "__call__",
-        [](const prop_t &prop, std::variant<py::array_t<T>, py::array_t<date_t>> tm_arr,
-           std::optional<py::array_t<T>> out) -> py::array_t<T> {
-            // NOTE: here we are repeating several checks which are redundant with
-            // checks already performed on the C++ side, with the goal of providing better
-            // error messages.
-            return std::visit(
-                [&]<typename U>(py::array_t<U> &in_arr) {
-                    // Checks on the input array.
-                    const auto in_ndim = in_arr.ndim();
-                    if (in_ndim != 1 && in_ndim != 2) [[unlikely]] {
-                        py_throw(
-                            PyExc_ValueError,
-                            fmt::format(
-                                "A times/dates array with 1 or 2 dimensions is expected as an input for the call "
+        [](const prop_t &prop, py::array tm_arr, std::optional<py::array_t<T>> out) -> py::array_t<T> {
+            // Check the dtype first and foremost.
+            const auto tm_dt = tm_arr.dtype();
+            const auto date_dt = make_aligned_dtype<typename prop_t::date>();
+            const auto scal_dt = py::dtype::of<T>();
+            const auto tm_is_scalar = tm_dt.equal(scal_dt);
+            const auto tm_is_date = tm_dt.equal(date_dt);
+            if (!tm_is_scalar && !tm_is_date) [[unlikely]] {
+                py_throw(PyExc_TypeError, fmt::format("Invalid dtype detected in the call operator of an sgp4 "
+                                                      "propagator for the times/dates array: the allowed "
+                                                      "dtypes are {} and {}, but a dtype of {} was detected instead",
+                                                      str(date_dt), str(scal_dt), str(tm_dt))
+                                              .c_str());
+            }
+
+            // NOTE: here we are repeating several checks which are redundant with checks already performed on the C++
+            // side, with the goal of providing better error messages.
+            // Checks on the input array.
+            const auto in_ndim = tm_arr.ndim();
+            if (in_ndim != 1 && in_ndim != 2) [[unlikely]] {
+                py_throw(
+                    PyExc_ValueError,
+                    fmt::format("A times/dates array with 1 or 2 dimensions is expected as an input for the call "
                                 "operator of an sgp4 propagator, but an array with {} dimensions was provided instead",
                                 in_ndim)
-                                .c_str());
-                    }
+                        .c_str());
+            }
 
-                    if (in_ndim == 1) {
-                        // In scalar mode, the number of elements must match the number of satellites.
-                        if (in_arr.shape(0) != boost::numeric_cast<py::ssize_t>(prop.get_nsats())) [[unlikely]] {
-                            py_throw(PyExc_ValueError,
-                                     fmt::format(
-                                         "Invalid times/dates array detected as an input for the call operator of "
+            if (in_ndim == 1) {
+                // In scalar mode, the number of elements must match the number of satellites.
+                if (tm_arr.shape(0) != boost::numeric_cast<py::ssize_t>(prop.get_nsats())) [[unlikely]] {
+                    py_throw(PyExc_ValueError,
+                             fmt::format("Invalid times/dates array detected as an input for the call operator of "
                                          "an sgp4 propagator: the number of satellites inferred from the "
                                          "times/dates array is {}, but the propagator contains {} satellite(s) instead",
-                                         in_arr.shape(0), prop.get_nsats())
-                                         .c_str());
-                        }
-                    } else {
-                        // In batch mode, the number of input columns must match the number of satellites.
-                        if (in_arr.shape(1) != boost::numeric_cast<py::ssize_t>(prop.get_nsats())) [[unlikely]] {
-                            py_throw(PyExc_ValueError,
-                                     fmt::format(
-                                         "Invalid times/dates array detected as an input for the call operator of "
+                                         tm_arr.shape(0), prop.get_nsats())
+                                 .c_str());
+                }
+            } else {
+                // In batch mode, the number of input columns must match the number of satellites.
+                if (tm_arr.shape(1) != boost::numeric_cast<py::ssize_t>(prop.get_nsats())) [[unlikely]] {
+                    py_throw(PyExc_ValueError,
+                             fmt::format("Invalid times/dates array detected as an input for the call operator of "
                                          "an sgp4 propagator in batch mode: the number of satellites inferred from the "
                                          "times/dates array is {}, but the propagator contains {} satellite(s) instead",
-                                         in_arr.shape(1), prop.get_nsats())
-                                         .c_str());
-                        }
-                    }
+                                         tm_arr.shape(1), prop.get_nsats())
+                                 .c_str());
+                }
+            }
 
-                    // We need a C array in both scalar and batch mode.
-                    if (!is_npy_array_carray(in_arr)) [[unlikely]] {
+            // We need a C array in both scalar and batch mode.
+            if (!is_npy_array_carray(tm_arr)) [[unlikely]] {
+                py_throw(PyExc_ValueError, "Invalid times/dates array detected as an input for the call operator of "
+                                           "an sgp4 propagator: the array is not C-style contiguous");
+            }
+            // NOTE: for the date dtype we need an additional alignment check. is_npy_array_carray() guarantees that the
+            // buffer is aligned with respect to the *declared* alignment of the dtype, but the dtype check performed
+            // above via .equal() ignores the alignment attribute. Thus, a maliciously-crafted packed dtype (with a
+            // declared alignment of 1) could compare equal to date_dt and pass the is_npy_array_carray() check while
+            // still being backed by a misaligned buffer, which would result in UB when reinterpreting the buffer as a
+            // range of date values. We close this hole by explicitly checking that the declared alignment of the input
+            // dtype matches the (correct) alignment of date_dt.
+            if (tm_is_date && tm_dt.alignment() != date_dt.alignment()) [[unlikely]] {
+                // NOTE: this is a dtype-related error (the declared alignment of the dtype is wrong), hence we raise a
+                // TypeError for consistency with the other dtype check above.
+                py_throw(PyExc_TypeError, "Invalid times/dates array detected as an input for the call operator of "
+                                          "an sgp4 propagator: the dtype of the times/dates array is not correctly "
+                                          "aligned");
+            }
+
+            // Establish whether we are operating in scalar or batch mode.
+            std::optional<std::size_t> n_evals;
+            if (in_ndim == 2) {
+                // Batch mode. Set the number of evaluations.
+                n_evals.emplace(boost::numeric_cast<std::size_t>(tm_arr.shape(0)));
+            }
+
+            // Build or fetch the output array.
+            if (out) {
+                // Array provided by the user. We need to check that:
+                //
+                // - it is a writable C array,
+                // - it has no memory overlap with the inputs array,
+                // - it has the correct shape.
+                if (!is_npy_array_carray(*out, true)) [[unlikely]] {
+                    py_throw(PyExc_ValueError, "Invalid output array detected in the call operator of "
+                                               "an sgp4 propagator: the array is not C-style contiguous and writeable");
+                }
+
+                if (may_share_memory(*out, tm_arr)) [[unlikely]] {
+                    py_throw(PyExc_ValueError, "Invalid input/output arrays detected in the call operator of "
+                                               "an sgp4 propagator: the input/outputs arrays may overlap");
+                }
+
+                if (n_evals) {
+                    // Batch mode.
+                    if (out->ndim() != 3) [[unlikely]] {
                         py_throw(PyExc_ValueError,
-                                 "Invalid times/dates array detected as an input for the call operator of "
-                                 "an sgp4 propagator: the array is not C-style contiguous");
+                                 fmt::format("Invalid output array detected in the call operator of "
+                                             "an sgp4 propagator in batch mode: the array has {} dimension(s), "
+                                             "but 3 dimensions are expected instead",
+                                             out->ndim())
+                                     .c_str());
                     }
 
-                    // Establish whether we are operating in scalar or batch mode.
-                    std::optional<std::size_t> n_evals;
-                    if (in_ndim == 2) {
-                        // Batch mode. Set the number of evaluations.
-                        n_evals.emplace(boost::numeric_cast<std::size_t>(in_arr.shape(0)));
-                    }
-
-                    // Build or fetch the output array.
-                    if (out) {
-                        // Array provided by the user. We need to check that:
-                        //
-                        // - it is a writable C array,
-                        // - it has no memory overlap with the inputs array,
-                        // - it has the correct shape.
-                        if (!is_npy_array_carray(*out, true)) [[unlikely]] {
-                            py_throw(PyExc_ValueError,
-                                     "Invalid output array detected in the call operator of "
-                                     "an sgp4 propagator: the array is not C-style contiguous and writeable");
-                        }
-
-                        if (may_share_memory(*out, in_arr)) [[unlikely]] {
-                            py_throw(PyExc_ValueError, "Invalid input/output arrays detected in the call operator of "
-                                                       "an sgp4 propagator: the input/outputs arrays may overlap");
-                        }
-
-                        if (n_evals) {
-                            // Batch mode.
-                            if (out->ndim() != 3) [[unlikely]] {
-                                py_throw(PyExc_ValueError,
-                                         fmt::format("Invalid output array detected in the call operator of "
-                                                     "an sgp4 propagator in batch mode: the array has {} dimension(s), "
-                                                     "but 3 dimensions are expected instead",
-                                                     out->ndim())
-                                             .c_str());
-                            }
-
-                            if (out->shape(0) != boost::numeric_cast<py::ssize_t>(*n_evals)) [[unlikely]] {
-                                py_throw(
-                                    PyExc_ValueError,
-                                    fmt::format(
-                                        "Invalid output array detected in the call operator of "
+                    if (out->shape(0) != boost::numeric_cast<py::ssize_t>(*n_evals)) [[unlikely]] {
+                        py_throw(
+                            PyExc_ValueError,
+                            fmt::format("Invalid output array detected in the call operator of "
                                         "an sgp4 propagator in batch mode: the first dimension has a size of {}, but a "
                                         "size of {} (i.e., equal to the number of evaluations) is required instead",
                                         out->shape(0), *n_evals)
-                                        .c_str());
-                            }
-
-                            if (out->shape(1) != boost::numeric_cast<py::ssize_t>(prop.get_nouts())) [[unlikely]] {
-                                py_throw(PyExc_ValueError,
-                                         fmt::format("Invalid output array detected in the call operator of "
-                                                     "an sgp4 propagator in batch mode: the second dimension has a "
-                                                     "size of {}, but a "
-                                                     "size of {} (i.e., equal to the number of outputs for each "
-                                                     "propagation) is required instead",
-                                                     out->shape(1), prop.get_nouts())
-                                             .c_str());
-                            }
-
-                            if (out->shape(2) != boost::numeric_cast<py::ssize_t>(prop.get_nsats())) [[unlikely]] {
-                                py_throw(PyExc_ValueError,
-                                         fmt::format("Invalid output array detected in the call operator of "
-                                                     "an sgp4 propagator in batch mode: the third dimension has a "
-                                                     "size of {}, but a "
-                                                     "size of {} (i.e., equal to the total number of satellites) is "
-                                                     "required instead",
-                                                     out->shape(2), prop.get_nsats())
-                                             .c_str());
-                            }
-                        } else {
-                            // Scalar mode.
-                            if (out->ndim() != 2) [[unlikely]] {
-                                py_throw(PyExc_ValueError,
-                                         fmt::format("Invalid output array detected in the call operator of "
-                                                     "an sgp4 propagator: the array has {} dimension(s), "
-                                                     "but 2 dimensions are expected instead",
-                                                     out->ndim())
-                                             .c_str());
-                            }
-
-                            if (out->shape(0) != boost::numeric_cast<py::ssize_t>(prop.get_nouts())) [[unlikely]] {
-                                py_throw(PyExc_ValueError,
-                                         fmt::format("Invalid output array detected in the call operator of "
-                                                     "an sgp4 propagator: the first dimension has a "
-                                                     "size of {}, but a "
-                                                     "size of {} (i.e., equal to the number of outputs for each "
-                                                     "propagation) is required instead",
-                                                     out->shape(0), prop.get_nouts())
-                                             .c_str());
-                            }
-
-                            if (out->shape(1) != boost::numeric_cast<py::ssize_t>(prop.get_nsats())) [[unlikely]] {
-                                py_throw(PyExc_ValueError,
-                                         fmt::format("Invalid output array detected in the call operator of "
-                                                     "an sgp4 propagator: the second dimension has a "
-                                                     "size of {}, but a "
-                                                     "size of {} (i.e., equal to the total number of satellites) is "
-                                                     "required instead",
-                                                     out->shape(1), prop.get_nsats())
-                                             .c_str());
-                            }
-                        }
-                    } else {
-                        // Construct an output array.
-                        if (n_evals) {
-                            // Batch mode.
-                            out.emplace(py::array::ShapeContainer{boost::numeric_cast<py::ssize_t>(*n_evals),
-                                                                  boost::numeric_cast<py::ssize_t>(prop.get_nouts()),
-                                                                  boost::numeric_cast<py::ssize_t>(prop.get_nsats())});
-                        } else {
-                            // Scalar mode.
-                            out.emplace(py::array::ShapeContainer{boost::numeric_cast<py::ssize_t>(prop.get_nouts()),
-                                                                  boost::numeric_cast<py::ssize_t>(prop.get_nsats())});
-                        }
+                                .c_str());
                     }
 
-                    // Create the spans and invoke the call operator.
-                    if (n_evals) {
-                        // Batch mode.
-                        typename prop_t::out_3d out_span(out->mutable_data(),
-                                                         boost::numeric_cast<std::size_t>(out->shape(0)),
-                                                         boost::numeric_cast<std::size_t>(out->shape(1)),
-                                                         boost::numeric_cast<std::size_t>(out->shape(2)));
-
-                        typename prop_t::template in_2d<U> in_span(in_arr.data(),
-                                                                   boost::numeric_cast<std::size_t>(in_arr.shape(0)),
-                                                                   boost::numeric_cast<std::size_t>(in_arr.shape(1)));
-
-                        // NOTE: release the GIL during propagation.
-                        py::gil_scoped_release release;
-
-                        prop(out_span, in_span);
-                    } else {
-                        // Scalar mode.
-                        typename prop_t::out_2d out_span(out->mutable_data(),
-                                                         boost::numeric_cast<std::size_t>(out->shape(0)),
-                                                         boost::numeric_cast<std::size_t>(out->shape(1)));
-
-                        typename prop_t::template in_1d<U> in_span(in_arr.data(),
-                                                                   boost::numeric_cast<std::size_t>(in_arr.shape(0)));
-
-                        // NOTE: release the GIL during propagation.
-                        py::gil_scoped_release release;
-
-                        prop(out_span, in_span);
+                    if (out->shape(1) != boost::numeric_cast<py::ssize_t>(prop.get_nouts())) [[unlikely]] {
+                        py_throw(PyExc_ValueError,
+                                 fmt::format("Invalid output array detected in the call operator of "
+                                             "an sgp4 propagator in batch mode: the second dimension has a "
+                                             "size of {}, but a "
+                                             "size of {} (i.e., equal to the number of outputs for each "
+                                             "propagation) is required instead",
+                                             out->shape(1), prop.get_nouts())
+                                     .c_str());
                     }
 
-                    // Return the result.
-                    return std::move(*out);
-                },
-                tm_arr);
+                    if (out->shape(2) != boost::numeric_cast<py::ssize_t>(prop.get_nsats())) [[unlikely]] {
+                        py_throw(PyExc_ValueError,
+                                 fmt::format("Invalid output array detected in the call operator of "
+                                             "an sgp4 propagator in batch mode: the third dimension has a "
+                                             "size of {}, but a "
+                                             "size of {} (i.e., equal to the total number of satellites) is "
+                                             "required instead",
+                                             out->shape(2), prop.get_nsats())
+                                     .c_str());
+                    }
+                } else {
+                    // Scalar mode.
+                    if (out->ndim() != 2) [[unlikely]] {
+                        py_throw(PyExc_ValueError, fmt::format("Invalid output array detected in the call operator of "
+                                                               "an sgp4 propagator: the array has {} dimension(s), "
+                                                               "but 2 dimensions are expected instead",
+                                                               out->ndim())
+                                                       .c_str());
+                    }
+
+                    if (out->shape(0) != boost::numeric_cast<py::ssize_t>(prop.get_nouts())) [[unlikely]] {
+                        py_throw(PyExc_ValueError,
+                                 fmt::format("Invalid output array detected in the call operator of "
+                                             "an sgp4 propagator: the first dimension has a "
+                                             "size of {}, but a "
+                                             "size of {} (i.e., equal to the number of outputs for each "
+                                             "propagation) is required instead",
+                                             out->shape(0), prop.get_nouts())
+                                     .c_str());
+                    }
+
+                    if (out->shape(1) != boost::numeric_cast<py::ssize_t>(prop.get_nsats())) [[unlikely]] {
+                        py_throw(PyExc_ValueError,
+                                 fmt::format("Invalid output array detected in the call operator of "
+                                             "an sgp4 propagator: the second dimension has a "
+                                             "size of {}, but a "
+                                             "size of {} (i.e., equal to the total number of satellites) is "
+                                             "required instead",
+                                             out->shape(1), prop.get_nsats())
+                                     .c_str());
+                    }
+                }
+            } else {
+                // Construct an output array.
+                if (n_evals) {
+                    // Batch mode.
+                    out.emplace(py::array::ShapeContainer{boost::numeric_cast<py::ssize_t>(*n_evals),
+                                                          boost::numeric_cast<py::ssize_t>(prop.get_nouts()),
+                                                          boost::numeric_cast<py::ssize_t>(prop.get_nsats())});
+                } else {
+                    // Scalar mode.
+                    out.emplace(py::array::ShapeContainer{boost::numeric_cast<py::ssize_t>(prop.get_nouts()),
+                                                          boost::numeric_cast<py::ssize_t>(prop.get_nsats())});
+                }
+            }
+
+            // Helper to create the spans and invoke the call operator. Needs to be templated in order to accommodate
+            // the two possible types for the times/dates array.
+            const auto eval_impl = [&]<typename U>() {
+                if (n_evals) {
+                    // Batch mode.
+                    typename prop_t::out_3d out_span(out->mutable_data(),
+                                                     boost::numeric_cast<std::size_t>(out->shape(0)),
+                                                     boost::numeric_cast<std::size_t>(out->shape(1)),
+                                                     boost::numeric_cast<std::size_t>(out->shape(2)));
+
+                    typename prop_t::template in_2d<U> in_span(static_cast<const U *>(tm_arr.data()),
+                                                               boost::numeric_cast<std::size_t>(tm_arr.shape(0)),
+                                                               boost::numeric_cast<std::size_t>(tm_arr.shape(1)));
+
+                    // NOTE: release the GIL during propagation.
+                    py::gil_scoped_release release;
+
+                    prop(out_span, in_span);
+                } else {
+                    // Scalar mode.
+                    typename prop_t::out_2d out_span(out->mutable_data(),
+                                                     boost::numeric_cast<std::size_t>(out->shape(0)),
+                                                     boost::numeric_cast<std::size_t>(out->shape(1)));
+
+                    typename prop_t::template in_1d<U> in_span(static_cast<const U *>(tm_arr.data()),
+                                                               boost::numeric_cast<std::size_t>(tm_arr.shape(0)));
+
+                    // NOTE: release the GIL during propagation.
+                    py::gil_scoped_release release;
+
+                    prop(out_span, in_span);
+                }
+            };
+
+            // Run the evaluation.
+            if (tm_is_scalar) {
+                eval_impl.template operator()<T>();
+            } else {
+                eval_impl.template operator()<typename prop_t::date>();
+            }
+
+            // Return the result.
+            return std::move(*out);
         },
         "times"_a.noconvert(), "out"_a.noconvert() = py::none{},
         docstrings::sgp4_propagator_call(suffix, std::same_as<T, double> ? "float" : "numpy.single").c_str());
