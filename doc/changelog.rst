@@ -37,6 +37,12 @@ Changes
 - heyoka.py now requires Python >= 3.10
   (`#275 <https://github.com/bluescarni/heyoka.py/pull/275>`__).
 
+Fix
+~~~
+
+- Harden the internal array-alignment checks against misaligned structured datatypes
+  (`#277 <https://github.com/bluescarni/heyoka.py/pull/277>`__).
+
 7.11.1 (2026-06-15)
 -------------------
 
