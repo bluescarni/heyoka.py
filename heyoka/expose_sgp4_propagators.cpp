@@ -282,7 +282,9 @@ void expose_sgp4_propagator_impl(py::module_ &m, const std::string &suffix)
             const auto tm_dt = tm_arr.dtype();
             const auto date_dt = make_aligned_dtype<typename prop_t::date>();
             const auto scal_dt = py::dtype::of<T>();
-            if (!tm_dt.equal(scal_dt) && !tm_dt.equal(date_dt)) [[unlikely]] {
+            const auto tm_is_scalar = tm_dt.equal(scal_dt);
+            const auto tm_is_date = tm_dt.equal(date_dt);
+            if (!tm_is_scalar && !tm_is_date) [[unlikely]] {
                 py_throw(PyExc_TypeError, fmt::format("Invalid dtype detected in the call operator of an sgp4 "
                                                       "propagator for the times/dates array: the allowed "
                                                       "dtypes are {} and {}, but a dtype of {} was detected instead",
@@ -329,6 +331,20 @@ void expose_sgp4_propagator_impl(py::module_ &m, const std::string &suffix)
             if (!is_npy_array_carray(tm_arr)) [[unlikely]] {
                 py_throw(PyExc_ValueError, "Invalid times/dates array detected as an input for the call operator of "
                                            "an sgp4 propagator: the array is not C-style contiguous");
+            }
+            // NOTE: for the date dtype we need an additional alignment check. is_npy_array_carray() guarantees that the
+            // buffer is aligned with respect to the *declared* alignment of the dtype, but the dtype check performed
+            // above via .equal() ignores the alignment attribute. Thus, a maliciously-crafted packed dtype (with a
+            // declared alignment of 1) could compare equal to date_dt and pass the is_npy_array_carray() check while
+            // still being backed by a misaligned buffer, which would result in UB when reinterpreting the buffer as a
+            // range of date values. We close this hole by explicitly checking that the declared alignment of the input
+            // dtype matches the (correct) alignment of date_dt.
+            if (tm_is_date && tm_dt.alignment() != date_dt.alignment()) [[unlikely]] {
+                // NOTE: this is a dtype-related error (the declared alignment of the dtype is wrong), hence we raise a
+                // TypeError for consistency with the other dtype check above.
+                py_throw(PyExc_TypeError, "Invalid times/dates array detected as an input for the call operator of "
+                                          "an sgp4 propagator: the dtype of the times/dates array is not correctly "
+                                          "aligned");
             }
 
             // Establish whether we are operating in scalar or batch mode.
@@ -478,7 +494,7 @@ void expose_sgp4_propagator_impl(py::module_ &m, const std::string &suffix)
             };
 
             // Run the evaluation.
-            if (tm_dt.equal(scal_dt)) {
+            if (tm_is_scalar) {
                 eval_impl.template operator()<T>();
             } else {
                 eval_impl.template operator()<typename prop_t::date>();

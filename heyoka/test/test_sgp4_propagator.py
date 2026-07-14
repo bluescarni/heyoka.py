@@ -593,3 +593,57 @@ class sgp4_propagator_test_case(unittest.TestCase):
         # Check closeness.
         self.assertTrue(np.allclose(res1[:3, 0], res2[:3, 0], atol=1e-12))
         self.assertTrue(np.allclose(res1[3:, 0], res2[3:, 0], atol=1e-15))
+
+    def test_call_date_alignment(self):
+        # Test that the call operator rejects a dates array whose dtype is a
+        # "packed" (i.e., unaligned) version of the jdtype. Such a dtype compares
+        # equal to the jdtype (structured dtype equality ignores the alignment
+        # attribute) and would thus slip past the dtype check, but reinterpreting
+        # its buffer as a range of dates in C++ could result in misaligned
+        # loads/stores (UB).
+        from sgp4.api import Satrec
+
+        s = "1 00045U 60007A   05363.79166667  .00000504  00000-0  14841-3 0  9992"
+        t = "2 00045  66.6943  81.3521 0257384 317.3173  40.8180 14.34783636277898"
+
+        sat = Satrec.twoline2rv(s, t)
+
+        prop = sgp4_propagator([sat])
+
+        # Build a packed version of the jdtype: same layout (so it compares equal),
+        # but with a declared alignment of 1 (whereas jdtype is properly aligned).
+        packed_jdtype = np.dtype([("jd", np.double), ("frac", np.double)])
+        # Sanity checks: the packed dtype is layout-equal to jdtype, yet its
+        # declared alignment differs.
+        self.assertEqual(packed_jdtype, prop.jdtype)
+        self.assertEqual(packed_jdtype.alignment, 1)
+        self.assertEqual(prop.jdtype.alignment, np.dtype(np.double).alignment)
+        self.assertNotEqual(packed_jdtype.alignment, prop.jdtype.alignment)
+
+        # Scalar mode.
+        dates = np.zeros((1,), dtype=packed_jdtype)
+        dates["jd"] = sat.jdsatepoch + 10
+        dates["frac"] = sat.jdsatepochF
+        with self.assertRaises(TypeError) as cm:
+            prop(dates)
+        self.assertTrue(
+            "the dtype of the times/dates array is not correctly aligned"
+            in str(cm.exception)
+        )
+
+        # Batch mode.
+        batch_dates = np.zeros((5, 1), dtype=packed_jdtype)
+        batch_dates["jd"] = sat.jdsatepoch + 10
+        batch_dates["frac"] = sat.jdsatepochF
+        with self.assertRaises(TypeError) as cm:
+            prop(batch_dates)
+        self.assertTrue(
+            "the dtype of the times/dates array is not correctly aligned"
+            in str(cm.exception)
+        )
+
+        # Sanity check: the properly-aligned jdtype is accepted.
+        good_dates = np.zeros((1,), dtype=prop.jdtype)
+        good_dates["jd"] = sat.jdsatepoch + 10
+        good_dates["frac"] = sat.jdsatepochF
+        prop(good_dates)

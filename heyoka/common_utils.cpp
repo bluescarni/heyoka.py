@@ -86,19 +86,15 @@ bool may_share_memory(const py::array &a, const py::array &b)
     return py::module_::import("numpy").attr("may_share_memory")(a, b).cast<bool>();
 }
 
-// Helper to check if a numpy array is a NPY_ARRAY_CARRAY (i.e., C-style
-// contiguous and with properly aligned storage). The flag signals whether
-// the array must also be writeable or not.
-bool is_npy_array_carray(const py::array &arr, bool writeable)
+// Helper to check if a numpy array is a NPY_ARRAY_CARRAY (i.e., C-style contiguous and with storage properly aligned
+// for the array's dtype). The flag signals whether the array must also be writeable or not.
+bool is_npy_array_carray(const py::array &arr, const bool writeable)
 {
     assert(PyObject_IsInstance(arr.ptr(), reinterpret_cast<PyObject *>(&PyArray_Type)));
 
     // NOTE: NPY_ARRAY_CARRAY is NPY_ARRAY_CARRAY_RO + writeable flag.
-    if (writeable) {
-        return PyArray_CHKFLAGS(reinterpret_cast<const PyArrayObject *>(arr.ptr()), NPY_ARRAY_CARRAY) != 0;
-    } else {
-        return PyArray_CHKFLAGS(reinterpret_cast<const PyArrayObject *>(arr.ptr()), NPY_ARRAY_CARRAY_RO) != 0;
-    }
+    const auto flags = writeable ? NPY_ARRAY_CARRAY : NPY_ARRAY_CARRAY_RO;
+    return PyArray_CHKFLAGS(reinterpret_cast<const PyArrayObject *>(arr.ptr()), flags) != 0;
 }
 
 namespace detail
@@ -165,13 +161,15 @@ heyoka::dtens::v_idx_t dtens_t_it::sparse_to_dense(const heyoka::dtens::sv_idx_t
     return ret;
 }
 
-// Small helper to facilitate the conversion of an iterable into
-// a contiguous NumPy array of type dt.
+// Small helper to facilitate the conversion of an iterable into a contiguous aligned NumPy array of type dt.
 py::array as_carray(const py::iterable &v, int dt)
 {
     using namespace pybind11::literals;
 
-    py::array ret = py::module_::import("numpy").attr("ascontiguousarray")(v, "dtype"_a = py::dtype(dt));
+    // NOTE: use numpy.require() (rather than numpy.ascontiguousarray()) so that we guarantee not only C-contiguity, but
+    // also that the resulting array's memory buffer's alignment is the one specified by the input dtype.
+    py::array ret
+        = py::module_::import("numpy").attr("require")(v, py::dtype(dt), py::make_tuple("C_CONTIGUOUS", "ALIGNED"));
 
     assert(ret.dtype().num() == dt);
     assert(is_npy_array_carray(ret));
@@ -217,6 +215,10 @@ Data eop_sw_ctor(const char *descr, const std::optional<py::array> &data, const 
         // NOTE: because dt is an aligned dtype, np.require() will make an aligned copy if the input is not already
         // aligned - a merely contiguous buffer (e.g. a view into a byte buffer at an odd offset) can be misaligned,
         // which would make the reinterpretation UB.
+        //
+        // NOTE: this is essentially the same as as_carray(), but we cannot use it directly because at this time it
+        // requires a builtin scalar type and here we are dealing with a structured dtype instead. Perhaps we can
+        // consider an additional as_carray() overload in the future.
         const auto cdata = py::module_::import("numpy")
                                .attr("require")(*data, dt, py::make_tuple("C_CONTIGUOUS", "ALIGNED"))
                                .template cast<py::array>();
