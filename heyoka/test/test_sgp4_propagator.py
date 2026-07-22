@@ -433,7 +433,13 @@ class sgp4_propagator_test_case(unittest.TestCase):
         from sgp4.api import SatrecArray
 
         # NOTE: kept local as this data module is large (multi-MB).
-        from ._sgp4_test_data import sgp4_test_tle
+        #
+        # NOTE: currently the dataset is not present in the binary wheel due to
+        # size concerns. If we do not find it, exit early.
+        try:
+            from ._sgp4_test_data import sgp4_test_tle
+        except ImportError:
+            return
 
         # Load the test dataset.
         ts = load.timescale()

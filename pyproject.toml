@@ -55,6 +55,9 @@ addopts = "-ra"
 # Avoid copying the C++ source files when building
 # binary wheels.
 wheel.packages = []
+# Exclude a large dataset from the test suite, in an effort
+# to curb the size of the archive.
+wheel.exclude = ["heyoka/test/_sgp4_test_data.py"]
 # Enable IPO.
 cmake.define.HEYOKA_PY_ENABLE_IPO = "ON"
 # Do not include the docs in the sdist.
