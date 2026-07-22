@@ -4,7 +4,7 @@ requires = ['scikit-build-core', 'pybind11 >= 3, < 4', 'numpy >= 2, < 3']
 
 [project]
 name = 'heyoka'
-version = '7.12.0'
+version = '7.12.1'
 description = "Python library for ODE integration via Taylor's method and LLVM"
 readme = 'README.md'
 requires-python = '>=3.10'
@@ -55,6 +55,9 @@ addopts = "-ra"
 # Avoid copying the C++ source files when building
 # binary wheels.
 wheel.packages = []
+# Exclude a large dataset from the test suite, in an effort
+# to curb the size of the archive.
+wheel.exclude = ["heyoka/test/_sgp4_test_data.py"]
 # Enable IPO.
 cmake.define.HEYOKA_PY_ENABLE_IPO = "ON"
 # Do not include the docs in the sdist.

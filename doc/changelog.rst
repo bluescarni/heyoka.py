@@ -3,6 +3,15 @@
 Changelog
 =========
 
+7.12.1 (2026-07-22)
+-------------------
+
+Changes
+~~~~~~~
+
+- Avoid including a large dataset used for testing in the binary wheel
+  (`#279 <https://github.com/bluescarni/heyoka.py/pull/279>`__).
+
 7.12.0 (2026-07-16)
 -------------------
 
