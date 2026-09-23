@@ -3,6 +3,17 @@
 Changelog
 =========
 
+7.13.0 (2026-09-23)
+-------------------
+
+New
+~~~
+
+- Implement the new functions ``erfc()``, ``expm1()`` and ``log1p()``. These are variants
+  of ``erf()``, ``exp()`` and ``log()`` which are numerically stable in specific regimes
+  where the original functions suffer from catastrophic cancellation
+  (`#281 <https://github.com/bluescarni/heyoka.py/pull/281>`__).
+
 7.12.1 (2026-07-22)
 -------------------
 
