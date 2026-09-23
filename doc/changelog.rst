@@ -3,6 +3,40 @@
 Changelog
 =========
 
+7.13.0 (2026-09-23)
+-------------------
+
+New
+~~~
+
+- Implement the new functions ``erfc()``, ``expm1()`` and ``log1p()``. These are variants
+  of ``erf()``, ``exp()`` and ``log()`` which are numerically stable in specific regimes
+  where the original functions suffer from catastrophic cancellation
+  (`#281 <https://github.com/bluescarni/heyoka.py/pull/281>`__).
+- It is now possible to construct an :py:class:`~heyoka.expression` from another
+  expression, which results in a copy
+  (`#281 <https://github.com/bluescarni/heyoka.py/pull/281>`__).
+
+Changes
+~~~~~~~
+
+- The :py:class:`~heyoka.expression` constructor, the arithmetic operators and the
+  multivariate functions now accept any Python integer, converting it to double precision (which may result
+  in a loss of precision for large integers). Previously, only integers fitting in 32 bits
+  were accepted by the constructor and the arithmetic operators, and no integers
+  at all by the multivariate functions. More generally, the arithmetic operators and the
+  multivariate functions now convert to double precision any argument which Python
+  can convert to :py:class:`float` (e.g., NumPy integers).
+  This change aligns heyoka.py with Python's numeric tower (PEP 484) and with
+  the behaviour of pybind11 >= 3.1
+  (`#281 <https://github.com/bluescarni/heyoka.py/pull/281>`__).
+
+Fix
+~~~
+
+- Fix a test failure with NumPy >= 2.5
+  (`#281 <https://github.com/bluescarni/heyoka.py/pull/281>`__).
+
 7.12.1 (2026-07-22)
 -------------------
 

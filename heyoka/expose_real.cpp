@@ -1468,10 +1468,11 @@ int npy_py_real_setitem(PyObject *item, void *data, [[maybe_unused]] void *arr)
 
 // Copyswap primitive.
 // NOTE: apparently there's no mechanism to directly report an error from this
-// function, as it returns void. As a consequence, in case of errors Python throws
-// a generic SystemError (rather than the exception of our choice) and complains that
+// function, as it returns void. As a consequence, in case of errors older NumPy versions
+// throw a generic SystemError (rather than the exception of our choice) and complain that
 // the function "returned a result with an exception set". This is not optimal,
-// but better than just crashing I guess?
+// but better than just crashing I guess? Newer NumPy versions (e.g., 2.5.x) instead
+// propagate the exception we set here.
 // NOTE: implementing copyswapn() would allow us to avoid peeking in the memory
 // map for every element that is being copied.
 void npy_py_real_copyswap(void *dst, void *src, int swap, [[maybe_unused]] void *arr)

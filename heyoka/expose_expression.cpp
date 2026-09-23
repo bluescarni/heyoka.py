@@ -62,16 +62,17 @@ namespace heyoka_py
 
 namespace py = pybind11;
 
-// NOTE: regarding single-precision support: we only expose the expression ctor,
-// but not the arithmetic operators. The reason for this is that np.float32 already
-// has math operators defined which sometimes take the precedence over our own exposed
-// operators, leading to implicit conversions to float64 and general inconsistent
-// behaviour (e.g., when constant folding is involved). In a similar fashion and for
-// consistency, we do not expose float32 overloads for multivariate functions.
-// NOTE: I am not 100% sure why this happens, as the same problem does not seem to
-// be there when doing mixed-mode arithmetic between real and float32 for instance.
-// Perhaps something to do with pybind11's conversion machinery (since the exposition
-// of real does not use pybind11)?
+// NOTE: regarding single-precision support: we only expose the expression ctor, but not the arithmetic operators or
+// other multivariate functions. The reason for this is that np.float32 already has math operators defined which
+// sometimes take the precedence over our own exposed operators, leading to implicit conversions to float64 and general
+// inconsistent behaviour (e.g., when constant folding is involved). Note however that, since the operators and the
+// multivariate functions allow conversions to double, np.float32 arguments will be silently converted to double (unless
+// the np.float32 is the left operand of a binary operator, in which case NumPy's operator is tried first).
+//
+// NOTE: I am not 100% sure why this happens, as the same problem does not seem to be there when doing mixed-mode
+// arithmetic between real and float32 for instance. Perhaps something to do with pybind11's conversion machinery (since
+// the exposition of real does not use pybind11)?
+//
 // NOTE: this may be solved in the new NumPy 2 dtype API, need to check at one point.
 void expose_expression(py::module_ &m)
 {
@@ -79,154 +80,102 @@ void expose_expression(py::module_ &m)
     // NOLINTNEXTLINE(google-build-using-namespace)
     using namespace pybind11::literals;
 
-    // NOTE: typedef to avoid complications in the
-    // exposition of the operators.
-    using ld_t = long double;
-
     // Variant holding either an expression or a list of expressions.
     using v_ex_t = std::variant<hey::expression, std::vector<hey::expression>>;
 
-    py::class_<hey::expression>(m, "expression", py::dynamic_attr{}, docstrings::expression().c_str())
-        .def(py::init<>(), docstrings::expression_init().c_str())
-        .def(py::init([](std::int32_t x) { return hey::expression{static_cast<double>(x)}; }), "x"_a.noconvert())
-        .def(py::init<float>(), "x"_a.noconvert())
-        .def(py::init<double>(), "x"_a.noconvert())
-        .def(py::init<ld_t>(), "x"_a.noconvert())
+    // NOTE: when exposing multivariate functions, we want to be able to pass in numerical arguments for convenience.
+    // Thus, we expose such functions taking in input a union of expression and supported numerical types.
+    using mvf_arg_t = std::variant<hey::expression, double, long double
 #if defined(HEYOKA_HAVE_REAL128)
-        .def(py::init<mppp::real128>(), "x"_a.noconvert())
+                                   ,
+                                   mppp::real128
 #endif
 #if defined(HEYOKA_HAVE_REAL)
-        .def(py::init<mppp::real>(), "x"_a.noconvert())
+                                   ,
+                                   mppp::real
 #endif
-        .def(py::init<std::string>(), "x"_a)
-        // Unary operators.
-        .def(-py::self)
-        .def(+py::self)
-        // Binary operators.
-        .def(py::self + py::self, "x"_a)
-        // NOTE: provide a custom implementation of
-        // these convenience overloads so that
-        // ex + int/int + ex is allowed only if
-        // the int fits 32-bit integers, which
-        // automatically guarantees they are representable
-        // exactly as doubles.
-        .def(
-            "__add__", [](const hey::expression &ex, std::int32_t x) { return ex + static_cast<double>(x); },
-            "x"_a.noconvert())
-        .def(
-            "__radd__", [](const hey::expression &ex, std::int32_t x) { return ex + static_cast<double>(x); },
-            "x"_a.noconvert())
-        .def(py::self + double(), "x"_a.noconvert())
-        .def(double() + py::self, "x"_a.noconvert())
-        .def(py::self + ld_t(), "x"_a.noconvert())
-        .def(ld_t() + py::self, "x"_a.noconvert())
+                                   >;
+
+    // Construction argument type for expression.
+    using ex_ctor_arg_t = std::variant<hey::expression, std::string, float, double, long double
 #if defined(HEYOKA_HAVE_REAL128)
-        .def(py::self + mppp::real128(), "x"_a.noconvert())
-        .def(mppp::real128() + py::self, "x"_a.noconvert())
+                                       ,
+                                       mppp::real128
 #endif
 #if defined(HEYOKA_HAVE_REAL)
-        .def(py::self + mppp::real(), "x"_a.noconvert())
-        .def(mppp::real() + py::self, "x"_a.noconvert())
+                                       ,
+                                       mppp::real
 #endif
-        // NOLINTNEXTLINE(misc-redundant-expression)
-        .def(py::self - py::self, "x"_a)
-        .def(
-            "__sub__", [](const hey::expression &ex, std::int32_t x) { return ex - static_cast<double>(x); },
-            "x"_a.noconvert())
-        .def(
-            "__rsub__", [](const hey::expression &ex, std::int32_t x) { return static_cast<double>(x) - ex; },
-            "x"_a.noconvert())
-        .def(py::self - double(), "x"_a.noconvert())
-        .def(double() - py::self, "x"_a.noconvert())
-        .def(py::self - ld_t(), "x"_a.noconvert())
-        .def(ld_t() - py::self, "x"_a.noconvert())
-#if defined(HEYOKA_HAVE_REAL128)
-        .def(py::self - mppp::real128(), "x"_a.noconvert())
-        .def(mppp::real128() - py::self, "x"_a.noconvert())
-#endif
-#if defined(HEYOKA_HAVE_REAL)
-        .def(py::self - mppp::real(), "x"_a.noconvert())
-        .def(mppp::real() - py::self, "x"_a.noconvert())
-#endif
-        .def(py::self * py::self, "x"_a)
-        .def(
-            "__mul__", [](const hey::expression &ex, std::int32_t x) { return ex * static_cast<double>(x); },
-            "x"_a.noconvert())
-        .def(
-            "__rmul__", [](const hey::expression &ex, std::int32_t x) { return ex * static_cast<double>(x); },
-            "x"_a.noconvert())
-        .def(py::self * double(), "x"_a.noconvert())
-        .def(double() * py::self, "x"_a.noconvert())
-        .def(py::self * ld_t(), "x"_a.noconvert())
-        .def(ld_t() * py::self, "x"_a.noconvert())
-#if defined(HEYOKA_HAVE_REAL128)
-        .def(py::self * mppp::real128(), "x"_a.noconvert())
-        .def(mppp::real128() * py::self, "x"_a.noconvert())
-#endif
-#if defined(HEYOKA_HAVE_REAL)
-        .def(py::self * mppp::real(), "x"_a.noconvert())
-        .def(mppp::real() * py::self, "x"_a.noconvert())
-#endif
-        // NOLINTNEXTLINE(misc-redundant-expression)
-        .def(py::self / py::self, "x"_a)
-        .def(
-            "__truediv__", [](const hey::expression &ex, std::int32_t x) { return ex / static_cast<double>(x); },
-            "x"_a.noconvert())
-        .def(
-            "__rtruediv__", [](const hey::expression &ex, std::int32_t x) { return static_cast<double>(x) / ex; },
-            "x"_a.noconvert())
-        .def(py::self / double(), "x"_a.noconvert())
-        .def(double() / py::self, "x"_a.noconvert())
-        .def(py::self / ld_t(), "x"_a.noconvert())
-        .def(ld_t() / py::self, "x"_a.noconvert())
-#if defined(HEYOKA_HAVE_REAL128)
-        .def(py::self / mppp::real128(), "x"_a.noconvert())
-        .def(mppp::real128() / py::self, "x"_a.noconvert())
-#endif
-#if defined(HEYOKA_HAVE_REAL)
-        .def(py::self / mppp::real(), "x"_a.noconvert())
-        .def(mppp::real() / py::self, "x"_a.noconvert())
-#endif
-        // Comparisons.
+                                       >;
+
+    py::class_<hey::expression> ex_class(m, "expression", py::dynamic_attr{}, docstrings::expression().c_str());
+
+    // Ctor.
+    ex_class.def(py::init([](const ex_ctor_arg_t &x) {
+                     return std::visit([](const auto &arg) { return hey::expression{arg}; }, x);
+                 }),
+                 "x"_a = 0., docstrings::expression_init().c_str());
+
+    // Unary operators.
+    ex_class.def(-py::self).def(+py::self);
+
+#define HEYOKA_PY_EXPOSE_BINARY_OPERATOR(op_name, op)                                                                  \
+    ex_class                                                                                                           \
+        .def(                                                                                                          \
+            "__" #op_name "__",                                                                                        \
+            [](const hey::expression &a, const mvf_arg_t &b) {                                                         \
+                return std::visit([&a](const auto &v) { return a op v; }, b);                                          \
+            },                                                                                                         \
+            py::is_operator(), "x"_a)                                                                                  \
+        .def(                                                                                                          \
+            "__r" #op_name "__",                                                                                       \
+            [](const hey::expression &a, const mvf_arg_t &b) {                                                         \
+                return std::visit([&a](const auto &v) { return v op a; }, b);                                          \
+            },                                                                                                         \
+            py::is_operator(), "x"_a)
+
+    // Binary operators.
+    HEYOKA_PY_EXPOSE_BINARY_OPERATOR(add, +);
+    HEYOKA_PY_EXPOSE_BINARY_OPERATOR(sub, -);
+    HEYOKA_PY_EXPOSE_BINARY_OPERATOR(mul, *);
+    HEYOKA_PY_EXPOSE_BINARY_OPERATOR(truediv, /);
+
+#undef HEYOKA_PY_EXPOSE_BINARY_OPERATOR
+
+    // Comparisons.
+    ex_class
         // NOLINTNEXTLINE(misc-redundant-expression)
         .def(py::self == py::self, "x"_a)
         // NOLINTNEXTLINE(misc-redundant-expression)
-        .def(py::self != py::self, "x"_a)
-        // pow().
-        .def(
-            "__pow__", [](const hey::expression &b, const hey::expression &e) { return hey::pow(b, e); }, "e"_a)
-        .def(
-            "__pow__", [](const hey::expression &b, std::int32_t e) { return hey::pow(b, static_cast<double>(e)); },
-            "e"_a.noconvert())
-        .def(
-            "__pow__", [](const hey::expression &b, double e) { return hey::pow(b, e); }, "e"_a.noconvert())
-        .def(
-            "__pow__", [](const hey::expression &b, long double e) { return hey::pow(b, e); }, "e"_a.noconvert())
-#if defined(HEYOKA_HAVE_REAL128)
-        .def(
-            "__pow__", [](const hey::expression &b, mppp::real128 e) { return hey::pow(b, e); }, "e"_a.noconvert())
-#endif
-#if defined(HEYOKA_HAVE_REAL)
-        .def(
-            "__pow__", [](const hey::expression &b, mppp::real e) { return hey::pow(b, std::move(e)); },
-            "e"_a.noconvert())
-#endif
-        // Expression size.
-        .def("__len__", [](const hey::expression &e) { return hey::get_n_nodes(e); })
-        // Repr.
-        .def("__repr__",
-             [](const hey::expression &e) {
-                 std::ostringstream oss;
-                 oss << e;
-                 return oss.str();
-             })
-        // Copy/deepcopy.
-        .def("__copy__", copy_wrapper<hey::expression>)
-        .def("__deepcopy__", deepcopy_wrapper<hey::expression>, "memo"_a)
-        // Hashing.
-        .def("__hash__", [](const heyoka::expression &e) { return std::hash<heyoka::expression>{}(e); })
-        // Pickle support.
-        .def(py::pickle(&pickle_getstate_wrapper<hey::expression>, &pickle_setstate_wrapper<hey::expression>));
+        .def(py::self != py::self, "x"_a);
+
+    // pow().
+    ex_class.def(
+        "__pow__",
+        [](const hey::expression &b, const mvf_arg_t &e) {
+            return std::visit([&b](const auto &arg) { return hey::pow(b, arg); }, e);
+        },
+        py::is_operator(), "e"_a);
+
+    // Expression size.
+    ex_class.def("__len__", [](const hey::expression &e) { return hey::get_n_nodes(e); });
+
+    // Repr.
+    ex_class.def("__repr__", [](const hey::expression &e) {
+        std::ostringstream oss;
+        oss << e;
+        return oss.str();
+    });
+
+    // Copy/deepcopy.
+    ex_class.def("__copy__", copy_wrapper<hey::expression>)
+        .def("__deepcopy__", deepcopy_wrapper<hey::expression>, "memo"_a);
+
+    // Hashing.
+    ex_class.def("__hash__", [](const heyoka::expression &e) { return std::hash<heyoka::expression>{}(e); });
+
+    // Pickle support.
+    ex_class.def(py::pickle(&pickle_getstate_wrapper<hey::expression>, &pickle_setstate_wrapper<hey::expression>));
 
     // get_variables().
     m.def(
@@ -287,7 +236,9 @@ void expose_expression(py::module_ &m)
     // NOTE: need explicit casts for sqrt and exp due to the presence of overloads for number.
     m.def("sqrt", static_cast<hey::expression (*)(const hey::expression &)>(&hey::sqrt), "arg"_a);
     m.def("exp", static_cast<hey::expression (*)(hey::expression)>(&hey::exp), "arg"_a);
+    m.def("expm1", &hey::expm1, "arg"_a);
     m.def("log", &hey::log, "arg"_a);
+    m.def("log1p", &hey::log1p, "arg"_a);
     m.def("sin", &hey::sin, "arg"_a);
     m.def("cos", &hey::cos, "arg"_a);
     m.def("tan", &hey::tan, "arg"_a);
@@ -302,6 +253,7 @@ void expose_expression(py::module_ &m)
     m.def("atanh", &hey::atanh, "arg"_a);
     m.def("sigmoid", &hey::sigmoid, "arg"_a);
     m.def("erf", &hey::erf, "arg"_a);
+    m.def("erfc", &hey::erfc, "arg"_a);
     m.def("relu", &hey::relu, "arg"_a, "slope"_a = 0.);
     m.def("relup", &hey::relup, "arg"_a, "slope"_a = 0.);
 
@@ -314,25 +266,11 @@ void expose_expression(py::module_ &m)
     lrp_class.def(py::init([](double slope) { return hey::leaky_relup(slope); }), "slope"_a);
     lrp_class.def("__call__", &hey::leaky_relup::operator(), "arg"_a);
 
-    // NOTE: when exposing multivariate functions, we want to be able to pass
-    // in numerical arguments for convenience. Thus, we expose such functions taking
-    // in input a union of expression and supported numerical types.
-    using mvf_arg = std::variant<hey::expression, double, long double
-#if defined(HEYOKA_HAVE_REAL128)
-                                 ,
-                                 mppp::real128
-#endif
-#if defined(HEYOKA_HAVE_REAL)
-                                 ,
-                                 mppp::real
-#endif
-                                 >;
-
     // Relational operators.
 #define HEYOKA_PY_EXPOSE_REL(op)                                                                                       \
     m.def(                                                                                                             \
         #op,                                                                                                           \
-        [](const mvf_arg &x, const mvf_arg &y) {                                                                       \
+        [](const mvf_arg_t &x, const mvf_arg_t &y) {                                                                   \
             return std::visit(                                                                                         \
                 []<typename T, typename U>(const T &a, const U &b) -> hey::expression {                                \
                     if constexpr (!std::same_as<T, hey::expression> && !std::same_as<U, hey::expression>) {            \
@@ -343,7 +281,7 @@ void expose_expression(py::module_ &m)
                 },                                                                                                     \
                 x, y);                                                                                                 \
         },                                                                                                             \
-        "x"_a.noconvert(), "y"_a.noconvert())
+        "x"_a, "y"_a)
 
     HEYOKA_PY_EXPOSE_REL(eq);
     HEYOKA_PY_EXPOSE_REL(neq);
@@ -361,7 +299,7 @@ void expose_expression(py::module_ &m)
     // select().
     m.def(
         "select",
-        [](const mvf_arg &c, const mvf_arg &t, const mvf_arg &f) {
+        [](const mvf_arg_t &c, const mvf_arg_t &t, const mvf_arg_t &f) {
             return std::visit(
                 []<typename T, typename U, typename V>(const T &a, const U &b, const V &c) -> hey::expression {
                     constexpr auto tp1_num = static_cast<int>(!std::same_as<T, hey::expression>);
@@ -391,12 +329,12 @@ void expose_expression(py::module_ &m)
                 },
                 c, t, f);
         },
-        "c"_a.noconvert(), "t"_a.noconvert(), "f"_a.noconvert());
+        "c"_a, "t"_a, "f"_a);
 
     // kepE().
     m.def(
         "kepE",
-        [](const mvf_arg &e, const mvf_arg &M) {
+        [](const mvf_arg_t &e, const mvf_arg_t &M) {
             return std::visit(
                 [](const auto &a, const auto &b) -> hey::expression {
                     using tp1 = std::remove_cvref_t<decltype(a)>;
@@ -410,12 +348,12 @@ void expose_expression(py::module_ &m)
                 },
                 e, M);
         },
-        "e"_a.noconvert(), "M"_a.noconvert());
+        "e"_a, "M"_a);
 
     // kepF().
     m.def(
         "kepF",
-        [](const mvf_arg &h, const mvf_arg &k, const mvf_arg &lam) {
+        [](const mvf_arg_t &h, const mvf_arg_t &k, const mvf_arg_t &lam) {
             return std::visit(
                 [](const auto &a, const auto &b, const auto &c) -> hey::expression {
                     using tp1 = std::remove_cvref_t<decltype(a)>;
@@ -448,12 +386,12 @@ void expose_expression(py::module_ &m)
                 },
                 h, k, lam);
         },
-        "h"_a.noconvert(), "k"_a.noconvert(), "lam"_a.noconvert());
+        "h"_a, "k"_a, "lam"_a);
 
     // kepDE().
     m.def(
         "kepDE",
-        [](const mvf_arg &s0, const mvf_arg &c0, const mvf_arg &DM) {
+        [](const mvf_arg_t &s0, const mvf_arg_t &c0, const mvf_arg_t &DM) {
             return std::visit(
                 [](const auto &a, const auto &b, const auto &c) -> hey::expression {
                     using tp1 = std::remove_cvref_t<decltype(a)>;
@@ -487,12 +425,12 @@ void expose_expression(py::module_ &m)
                 },
                 s0, c0, DM);
         },
-        "s0"_a.noconvert(), "c0"_a.noconvert(), "DM"_a.noconvert());
+        "s0"_a, "c0"_a, "DM"_a);
 
     // atan2().
     m.def(
         "atan2",
-        [](const mvf_arg &y, const mvf_arg &x) {
+        [](const mvf_arg_t &y, const mvf_arg_t &x) {
             return std::visit(
                 [](const auto &a, const auto &b) -> hey::expression {
                     using tp1 = std::remove_cvref_t<decltype(a)>;
@@ -506,7 +444,7 @@ void expose_expression(py::module_ &m)
                 },
                 y, x);
         },
-        "y"_a.noconvert(), "x"_a.noconvert());
+        "y"_a, "x"_a);
 
     // dfun().
     m.def(

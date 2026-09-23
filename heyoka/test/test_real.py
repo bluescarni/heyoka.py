@@ -1193,10 +1193,13 @@ class real_test_case(unittest.TestCase):
         self.assertNotEqual(no_arr2[3], no_arr[3])
 
         # Test that byteswapping is forbidden.
-        with self.assertRaises(SystemError) as cm:
+        # NOTE: older NumPy versions do not propagate the error raised in the copyswap
+        # primitive and throw a generic SystemError instead, newer versions (e.g., 2.5.x)
+        # propagate the original ValueError.
+        with self.assertRaises((SystemError, ValueError)):
             arr2.byteswap()
 
-        with self.assertRaises(SystemError) as cm:
+        with self.assertRaises((SystemError, ValueError)):
             no_arr2.byteswap()
 
         # Nonzero.

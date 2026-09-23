@@ -282,6 +282,7 @@ void setup_sympy(py::module &m)
         detail::fmap[typeid(hy::detail::cos_impl)] = py::object(detail::spy->attr("cos"));
         detail::fmap[typeid(hy::detail::cosh_impl)] = py::object(detail::spy->attr("cosh"));
         detail::fmap[typeid(hy::detail::erf_impl)] = py::object(detail::spy->attr("erf"));
+        detail::fmap[typeid(hy::detail::erfc_impl)] = py::object(detail::spy->attr("erfc"));
         detail::fmap[typeid(hy::detail::exp_impl)] = py::object(detail::spy->attr("exp"));
         detail::fmap[typeid(hy::detail::log_impl)] = py::object(detail::spy->attr("log"));
         detail::fmap[typeid(hy::detail::sin_impl)] = py::object(detail::spy->attr("sin"));
@@ -375,6 +376,26 @@ void setup_sympy(py::module &m)
 
                   return py::cast(1.)
                          / (py::cast(1.) + detail::spy->attr("exp")(-detail::to_sympy_impl(func_map, f.args()[0])));
+              };
+
+        // expm1 and log1p.
+        //
+        // NOTE: sympy does not have these functions in its main namespace, thus we convert them to exp(x) - 1 and log(x
+        // + 1). We use an integer 1 (rather than 1.) so that sympy can simplify (see the comment in the number
+        // conversion function).
+        detail::fmap[typeid(hy::detail::expm1_impl)]
+            = [](std::unordered_map<const void *, py::object> &func_map, const hy::func &f) {
+                  assert(f.args().size() == 1u);
+
+                  // NOTE: py::int_ here yields the same result as sympy's Integer in the final expression.
+                  return detail::spy->attr("exp")(detail::to_sympy_impl(func_map, f.args()[0])) - py::int_(1);
+              };
+
+        detail::fmap[typeid(hy::detail::log1p_impl)]
+            = [](std::unordered_map<const void *, py::object> &func_map, const hy::func &f) {
+                  assert(f.args().size() == 1u);
+
+                  return detail::spy->attr("log")(detail::to_sympy_impl(func_map, f.args()[0]) + py::int_(1));
               };
 
         // time.
