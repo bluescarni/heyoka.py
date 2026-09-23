@@ -6,35 +6,42 @@
 # Public License v. 2.0. If a copy of the MPL was not distributed
 # with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+import pickle
 import unittest
+from copy import copy, deepcopy
+
+import numpy as np
+from numpy import longdouble
+
 from .. import (
-    expression as ex,
     _core,
-    make_vars,
-    sin,
     cos,
+    dfun,
     diff,
-    par,
+    eq,
+    erfc,
+    expm1,
+    func_args,
+    get_params,
     get_variables,
-    rename_variables,
-    subs,
     leaky_relu,
     leaky_relup,
-    relu,
-    relup,
-    dfun,
-    lt,
-    eq,
+    log1p,
     logical_and,
     logical_or,
+    lt,
+    make_vars,
+    par,
+    relu,
+    relup,
+    rename_variables,
     select,
-    get_params,
-    func_args,
+    sin,
+    subs,
 )
-import numpy as np
-from copy import copy, deepcopy
-from numpy import longdouble
-import pickle
+from .. import (
+    expression as ex,
+)
 
 
 class expression_test_case(unittest.TestCase):
@@ -420,3 +427,11 @@ class expression_test_case(unittest.TestCase):
         fargs = func_args(args=[x, y], shared=True)
         self.assertEqual(fargs.args, [x, y])
         self.assertTrue(fargs.is_shared)
+
+    def test_stable_variants(self):
+        x = make_vars("x")
+
+        # NOTE: just test that we exposed the correct ones.
+        self.assertEqual("erfc(x)", str(erfc(x)))
+        self.assertEqual("log1p(x)", str(log1p(x)))
+        self.assertEqual("expm1(x)", str(expm1(x)))
