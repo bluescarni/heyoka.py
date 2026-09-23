@@ -43,13 +43,19 @@ to form new expressions of arbitrary complexity.
 
 std::string expression_init()
 {
-    return R"(__init__(self, x: int | numpy.single | float | numpy.longdouble | str = 0.)
+    return R"(__init__(self, x: int | numpy.single | float | numpy.longdouble | str | expression = 0.)
 
 Constructor.
 
-This constructor will initialise the expression either as a numerical
+The constructor will initialise the expression as a numerical
 constant (if *x* is of a numerical type) or as a variable (if *x* is
-a :py:class:`str`).
+a :py:class:`str`). If *x* is an :py:class:`~heyoka.expression`, a copy
+is performed.
+
+.. note::
+
+   Integral values are converted to double precision, which may result in a loss
+   of precision for large integers.
 
 :param x: the construction argument.
 

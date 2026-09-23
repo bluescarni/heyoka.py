@@ -76,10 +76,8 @@ class expression_test_case(unittest.TestCase):
         self.assertEqual(str(ex(123)), "123.00000000000000")
         self.assertEqual(str(ex(np.float32("1.1"))), "1.10000002")
 
-        # Error with large integer.
-        with self.assertRaises(TypeError) as cm:
-            ex(123 << 56)
-        self.assertTrue("incompatible constructor arguments" in str(cm.exception))
+        # Large integers are converted to float.
+        self.assertEqual(ex(123 << 56), ex(float(123 << 56)))
 
         self.assertEqual(str(ex(1.1)), "1.1000000000000001")
 
@@ -101,10 +99,8 @@ class expression_test_case(unittest.TestCase):
         self.assertEqual(ex(42) + ex(-1), ex(41))
         self.assertEqual(ex(42) + -1, ex(41))
         self.assertEqual(-1 + ex(42), ex(41))
-        with self.assertRaises(TypeError) as cm:
-            ex(42) + (2 << 112)
-        with self.assertRaises(TypeError) as cm:
-            (2 << 112) + ex(42)
+        self.assertEqual(ex(42) + (2 << 112), ex(42) + float(2 << 112))
+        self.assertEqual((2 << 112) + ex(42), float(2 << 112) + ex(42))
         self.assertEqual(ex(42) + -1.1, ex(40.899999999999999))
         self.assertEqual(-1.1 + ex(42), ex(40.899999999999999))
         if ld_63bit:
@@ -130,10 +126,8 @@ class expression_test_case(unittest.TestCase):
         self.assertEqual(ex(42) - ex(-1), ex(43))
         self.assertEqual(ex(42) - -1, ex(43))
         self.assertEqual(-1 - ex(42), ex(-43))
-        with self.assertRaises(TypeError) as cm:
-            ex(42) - (2 << 112)
-        with self.assertRaises(TypeError) as cm:
-            (2 << 112) - ex(42)
+        self.assertEqual(ex(42) - (2 << 112), ex(42) - float(2 << 112))
+        self.assertEqual((2 << 112) - ex(42), float(2 << 112) - ex(42))
         self.assertEqual(ex(42) - -1.1, ex(43.100000000000001))
         self.assertEqual(-1.1 - ex(42), ex(-43.100000000000001))
         if ld_63bit:
@@ -159,10 +153,8 @@ class expression_test_case(unittest.TestCase):
         self.assertEqual(ex(42) * ex(-1), ex(-42))
         self.assertEqual(ex(42) * -1, ex(-42))
         self.assertEqual(-1 * ex(42), ex(-42))
-        with self.assertRaises(TypeError) as cm:
-            ex(42) * (2 << 112)
-        with self.assertRaises(TypeError) as cm:
-            (2 << 112) * ex(42)
+        self.assertEqual(ex(42) * (2 << 112), ex(42) * float(2 << 112))
+        self.assertEqual((2 << 112) * ex(42), float(2 << 112) * ex(42))
         self.assertEqual(ex(42) * -1.1, ex(-46.200000000000003))
         self.assertEqual(-1.1 * ex(42), ex(-46.200000000000003))
         if ld_63bit:
@@ -188,10 +180,8 @@ class expression_test_case(unittest.TestCase):
         self.assertEqual(ex(42) / ex(-1), ex(-42))
         self.assertEqual(ex(42) / -1, ex(-42))
         self.assertEqual(-42 / ex(1), ex(-42))
-        with self.assertRaises(TypeError) as cm:
-            ex(42) / (2 << 112)
-        with self.assertRaises(TypeError) as cm:
-            (2 << 112) / ex(42)
+        self.assertEqual(ex(42) / (2 << 112), ex(42) / float(2 << 112))
+        self.assertEqual((2 << 112) / ex(42), float(2 << 112) / ex(42))
         self.assertEqual(ex(42) / -1.1, ex(-38.181818181818180))
         self.assertEqual(-1.1 / ex(42), ex(-0.02619047619047619))
         if ld_63bit:
@@ -223,8 +213,10 @@ class expression_test_case(unittest.TestCase):
         self.assertEqual(str(ex("x") ** ex("y")), "x**y")
         self.assertEqual(str(ex("x") ** ex(2)), "x**2.0000000000000000")
         self.assertEqual(str(ex("x") ** ex(1.1)), "x**1.1000000000000001")
-        with self.assertRaises(TypeError) as cm:
-            ex(42) ** (2 << 112)
+        # NOTE: use a variable as base in order to avoid overflow
+        # in the constant folding. Also, the exponent must fit in a
+        # 64-bit integer, as pow() converts integral exponents to std::int64_t.
+        self.assertEqual(ex("x") ** (2 << 60), ex("x") ** float(2 << 60))
         if ld_63bit:
             self.assertEqual(
                 ex(42) / np.longdouble("-1.1"),
