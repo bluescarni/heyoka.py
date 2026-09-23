@@ -225,11 +225,18 @@ class sympy_test_case(unittest.TestCase):
         self.assertEqual(_core.erf(hx), from_sympy(spy.erf(x)))
         self.assertEqual(to_sympy(_core.erf(hx)), spy.erf(x))
 
+        self.assertEqual(_core.erfc(hx), from_sympy(spy.erfc(x)))
+        self.assertEqual(to_sympy(_core.erfc(hx)), spy.erfc(x))
+
         self.assertEqual(_core.exp(hx), from_sympy(spy.exp(x)))
         self.assertEqual(to_sympy(_core.exp(hx)), spy.exp(x))
 
         self.assertEqual(_core.log(hx), from_sympy(spy.log(x)))
         self.assertEqual(to_sympy(_core.log(hx)), spy.log(x))
+
+        # NOTE: expm1() and log1p() are expanded into exp()/log() when converting to sympy.
+        self.assertEqual(to_sympy(_core.expm1(hx)), spy.exp(x) - 1)
+        self.assertEqual(to_sympy(_core.log1p(hx)), spy.log(x + 1))
 
         self.assertEqual(_core.sin(hx), from_sympy(spy.sin(x)))
         self.assertEqual(to_sympy(_core.sin(hx)), spy.sin(x))

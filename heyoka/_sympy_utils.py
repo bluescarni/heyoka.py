@@ -145,6 +145,7 @@ def _build_fmap():
     retval[sympy.cos] = _core.cos
     retval[sympy.cosh] = _core.cosh
     retval[sympy.erf] = _core.erf
+    retval[sympy.erfc] = _core.erfc
     retval[sympy.exp] = _core.exp
     retval[sympy.log] = _core.log
     retval[sympy.sin] = _core.sin
