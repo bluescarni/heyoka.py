@@ -287,7 +287,9 @@ void expose_expression(py::module_ &m)
     // NOTE: need explicit casts for sqrt and exp due to the presence of overloads for number.
     m.def("sqrt", static_cast<hey::expression (*)(const hey::expression &)>(&hey::sqrt), "arg"_a);
     m.def("exp", static_cast<hey::expression (*)(hey::expression)>(&hey::exp), "arg"_a);
+    m.def("expm1", &hey::expm1, "arg"_a);
     m.def("log", &hey::log, "arg"_a);
+    m.def("log1p", &hey::log1p, "arg"_a);
     m.def("sin", &hey::sin, "arg"_a);
     m.def("cos", &hey::cos, "arg"_a);
     m.def("tan", &hey::tan, "arg"_a);
@@ -302,6 +304,7 @@ void expose_expression(py::module_ &m)
     m.def("atanh", &hey::atanh, "arg"_a);
     m.def("sigmoid", &hey::sigmoid, "arg"_a);
     m.def("erf", &hey::erf, "arg"_a);
+    m.def("erfc", &hey::erfc, "arg"_a);
     m.def("relu", &hey::relu, "arg"_a, "slope"_a = 0.);
     m.def("relup", &hey::relup, "arg"_a, "slope"_a = 0.);
 
