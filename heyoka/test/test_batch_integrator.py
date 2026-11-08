@@ -418,6 +418,29 @@ class batch_integrator_test_case(unittest.TestCase):
 
             self.assertTrue(np.all(ta.time == [0, 0]))
 
+            # Check that the time array is read-only
+            # and the writeability cannot be changed.
+            self.assertFalse(ta.time.flags.writeable)
+            with self.assertRaises(ValueError):
+                ta.time.flags.writeable = True
+            with self.assertRaises(ValueError):
+                ta.time[0] = fp_t(0.5)
+
+            # Check that aliases of the time array are read-only too.
+            t_slice = ta.time[:]
+            self.assertFalse(t_slice.flags.writeable)
+            with self.assertRaises(ValueError):
+                t_slice.flags.writeable = True
+            t_view = ta.time.view()
+            self.assertFalse(t_view.flags.writeable)
+            with self.assertRaises(ValueError):
+                t_view.flags.writeable = True
+            t_strided = np.lib.stride_tricks.as_strided(ta.time, writeable=True)
+            self.assertFalse(t_strided.flags.writeable)
+            with self.assertRaises(ValueError):
+                t_strided.flags.writeable = True
+            self.assertTrue(memoryview(ta.time).readonly)
+
             ta.set_time([fp_t(-1.0), fp_t(1.0)])
             self.assertTrue(np.all(ta.time == [-1, 1]))
 
@@ -447,6 +470,14 @@ class batch_integrator_test_case(unittest.TestCase):
 
             with self.assertRaises(ValueError) as cm:
                 ta.dtime[1][0] = 0.5
+
+            # Check that the writeability cannot be changed.
+            self.assertFalse(ta.dtime[0].flags.writeable)
+            with self.assertRaises(ValueError):
+                ta.dtime[0].flags.writeable = True
+            self.assertFalse(ta.dtime[1].flags.writeable)
+            with self.assertRaises(ValueError):
+                ta.dtime[1].flags.writeable = True
 
             ta.step()
             ta.propagate_for(fp_t(1000.1))
