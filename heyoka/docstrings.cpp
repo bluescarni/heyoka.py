@@ -60,7 +60,8 @@ is performed.
 .. note::
 
    On platforms where heyoka does not support the C++ ``long double`` type,
-   :py:class:`numpy.longdouble` arguments are converted to double precision.
+   :py:class:`numpy.longdouble` arguments are converted to double precision
+   (see the :ref:`extended precision tutorial <ext_precision_tutorial>`).
 
 :param x: the construction argument.
 
