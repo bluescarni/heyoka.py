@@ -18,6 +18,8 @@
 #include <sstream>
 #include <utility>
 
+#include <boost/predef/compiler/clang.h>
+
 #include <oneapi/tbb/global_control.h>
 
 #include <pybind11/native_enum.h>
@@ -104,7 +106,7 @@ PyObject *import_numpy(PyObject *m)
 
 } // namespace heyoka_py::detail
 
-#if defined(__clang__)
+#if BOOST_COMP_CLANG
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wself-assign-overloaded"
@@ -462,7 +464,7 @@ PYBIND11_MODULE(_core, m, pybind11::mod_gil_not_used())
     m.def("_set_ssl_verify_file", &hey::detail::set_ssl_verify_file);
 }
 
-#if defined(__clang__)
+#if BOOST_COMP_CLANG
 
 #pragma clang diagnostic pop
 

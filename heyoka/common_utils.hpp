@@ -18,16 +18,17 @@
 #include <utility>
 #include <variant>
 
-#if defined(__GLIBCXX__)
-
-#include <cxxabi.h>
-
-#endif
-
 #include <boost/numeric/conversion/cast.hpp>
 #include <boost/pfr/core.hpp>
 #include <boost/pfr/core_name.hpp>
 #include <boost/pfr/tuple_size.hpp>
+#include <boost/predef/library/std/stdcpp3.h>
+
+#if BOOST_LIB_STD_GNU
+
+#include <cxxabi.h>
+
+#endif
 
 #include <pybind11/numpy.h>
 #include <pybind11/pybind11.h>
@@ -226,7 +227,7 @@ bool with_pybind11_eh(const F &f)
     } catch (py::error_already_set &e) {
         e.restore();
         return true;
-#ifdef __GLIBCXX__
+#if BOOST_LIB_STD_GNU
     } catch (abi::__forced_unwind &) {
         throw;
 #endif

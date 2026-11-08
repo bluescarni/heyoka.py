@@ -29,6 +29,8 @@
 #include <boost/archive/binary_iarchive.hpp>
 #include <boost/archive/binary_oarchive.hpp>
 #include <boost/numeric/conversion/cast.hpp>
+#include <boost/predef/compiler/clang.h>
+#include <boost/predef/compiler/gcc.h>
 
 #include <fmt/format.h>
 #include <fmt/ranges.h>
@@ -78,13 +80,13 @@ namespace heyoka_py
 
 namespace py = pybind11;
 
-#if defined(__GNUC__)
+#if BOOST_COMP_GNUC || BOOST_COMP_CLANG
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wmissing-field-initializers"
 #pragma GCC diagnostic ignored "-Wcast-align"
 
-#if !defined(__clang__)
+#if BOOST_COMP_GNUC
 
 #pragma GCC diagnostic ignored "-Wcast-function-type"
 
@@ -2824,7 +2826,7 @@ void expose_real(py::module_ &m)
     m.def("_real_ensure_array", &pyreal_ensure_array);
 }
 
-#if defined(__GNUC__)
+#if BOOST_COMP_GNUC || BOOST_COMP_CLANG
 
 #pragma GCC diagnostic pop
 

@@ -10,6 +10,9 @@
 
 #include <cassert>
 
+#include <boost/predef/compiler/clang.h>
+#include <boost/predef/compiler/gcc.h>
+
 #include <pybind11/pybind11.h>
 
 #define NO_IMPORT_ARRAY
@@ -41,7 +44,7 @@
 
 #endif
 
-#if defined(__GNUC__)
+#if BOOST_COMP_GNUC || BOOST_COMP_CLANG
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wcast-align"
@@ -161,7 +164,7 @@ handle type_caster<mppp::real>::cast(const mppp::real &src, return_value_policy,
 
 } // namespace pybind11::detail
 
-#if defined(__GNUC__)
+#if BOOST_COMP_GNUC || BOOST_COMP_CLANG
 
 #pragma GCC diagnostic pop
 

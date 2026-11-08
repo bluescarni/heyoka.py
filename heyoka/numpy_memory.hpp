@@ -18,11 +18,14 @@
 #include <typeinfo>
 #include <utility>
 
+#include <boost/predef/compiler/clang.h>
+#include <boost/predef/compiler/gcc.h>
+
 #include <pybind11/pybind11.h>
 
 #include "common_utils.hpp"
 
-#if defined(__GNUC__)
+#if BOOST_COMP_GNUC || BOOST_COMP_CLANG
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wmissing-field-initializers"
@@ -113,7 +116,7 @@ void setup_custom_numpy_mem_handler(pybind11::module_ &);
 
 } // namespace heyoka_py
 
-#if defined(__GNUC__)
+#if BOOST_COMP_GNUC || BOOST_COMP_CLANG
 
 #pragma GCC diagnostic pop
 
