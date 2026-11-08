@@ -21,8 +21,6 @@
 #include <unordered_map>
 #include <variant>
 
-#include <boost/numeric/conversion/cast.hpp>
-
 #include <pybind11/functional.h>
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
@@ -31,21 +29,12 @@
 
 #include <fmt/format.h>
 
-#if defined(HEYOKA_HAVE_REAL128) || defined(HEYOKA_HAVE_REAL)
-
 #include <mp++/integer.hpp>
-
-#endif
+#include <mp++/real.hpp>
 
 #if defined(HEYOKA_HAVE_REAL128)
 
 #include <mp++/real128.hpp>
-
-#endif
-
-#if defined(HEYOKA_HAVE_REAL)
-
-#include <mp++/real.hpp>
 
 #endif
 
@@ -157,7 +146,6 @@ py::object to_sympy_impl(std::unordered_map<const void *, py::object> &, const h
             }
 #endif
 
-#if defined(HEYOKA_HAVE_REAL)
             if constexpr (std::is_same_v<T, mppp::real>) {
                 if (is_int) {
                     return spy->attr("Integer")(static_cast<mppp::integer<1>>(x).to_string());
@@ -165,18 +153,10 @@ py::object to_sympy_impl(std::unordered_map<const void *, py::object> &, const h
                     return spy->attr("Float")(x.to_string(), py::none{}, x.get_prec());
                 }
             }
-#endif
 
             if constexpr (std::is_floating_point_v<T>) {
                 if (is_int) {
-#if defined(HEYOKA_HAVE_REAL128) || defined(HEYOKA_HAVE_REAL)
                     return spy->attr("Integer")(static_cast<mppp::integer<1>>(x).to_string());
-#else
-                    // NOTE: if we cannot leverage mppp::integer for the conversion, let's just
-                    // try with a 64-bit int. Clearly this could overflow and raise an exception,
-                    // if this becomes an issue we will have to find a better solution.
-                    return spy->attr("Integer")(boost::numeric_cast<std::int64_t>(x));
-#endif
                 } else {
                     return spy->attr("Float")(py::cast(x));
                 }

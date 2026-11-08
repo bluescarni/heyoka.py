@@ -8,12 +8,6 @@
 
 #include <heyoka/config.hpp>
 
-#include <pybind11/numpy.h>
-#include <pybind11/pybind11.h>
-#include <pybind11/stl.h>
-
-#if defined(HEYOKA_HAVE_REAL)
-
 #include <algorithm>
 #include <array>
 #include <cassert>
@@ -38,6 +32,10 @@
 
 #include <fmt/format.h>
 #include <fmt/ranges.h>
+
+#include <pybind11/numpy.h>
+#include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
 
 #define NO_IMPORT_ARRAY
 #define NO_IMPORT_UFUNC
@@ -64,9 +62,6 @@
 #include <heyoka/detail/safe_integer.hpp>
 
 #include "common_utils.hpp"
-
-#endif
-
 #include "custom_casters.hpp"
 #include "dtypes.hpp"
 #include "expose_real.hpp"
@@ -82,8 +77,6 @@ namespace heyoka_py
 {
 
 namespace py = pybind11;
-
-#if defined(HEYOKA_HAVE_REAL)
 
 #if defined(__GNUC__)
 
@@ -2834,12 +2827,6 @@ void expose_real(py::module_ &m)
 #if defined(__GNUC__)
 
 #pragma GCC diagnostic pop
-
-#endif
-
-#else
-
-void expose_real(py::module_ &) {}
 
 #endif
 

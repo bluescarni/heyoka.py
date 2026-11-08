@@ -45,11 +45,7 @@
 
 #endif
 
-#if defined(HEYOKA_HAVE_REAL)
-
 #include <mp++/real.hpp>
-
-#endif
 
 #include "common_utils.hpp"
 #include "custom_casters.hpp"
@@ -85,28 +81,30 @@ void expose_expression(py::module_ &m)
 
     // NOTE: when exposing multivariate functions, we want to be able to pass in numerical arguments for convenience.
     // Thus, we expose such functions taking in input a union of expression and supported numerical types.
-    using mvf_arg_t = std::variant<hey::expression, double, long double
+    using mvf_arg_t = std::variant<hey::expression, double
+#if defined(HEYOKA_HAVE_LONG_DOUBLE)
+                                   ,
+                                   long double
+#endif
 #if defined(HEYOKA_HAVE_REAL128)
                                    ,
                                    mppp::real128
 #endif
-#if defined(HEYOKA_HAVE_REAL)
                                    ,
-                                   mppp::real
-#endif
-                                   >;
+                                   mppp::real>;
 
     // Construction argument type for expression.
-    using ex_ctor_arg_t = std::variant<hey::expression, std::string, float, double, long double
+    using ex_ctor_arg_t = std::variant<hey::expression, std::string, float, double
+#if defined(HEYOKA_HAVE_LONG_DOUBLE)
+                                       ,
+                                       long double
+#endif
 #if defined(HEYOKA_HAVE_REAL128)
                                        ,
                                        mppp::real128
 #endif
-#if defined(HEYOKA_HAVE_REAL)
                                        ,
-                                       mppp::real
-#endif
-                                       >;
+                                       mppp::real>;
 
     py::class_<hey::expression> ex_class(m, "expression", py::dynamic_attr{}, docstrings::expression().c_str());
 

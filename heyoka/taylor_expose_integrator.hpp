@@ -20,7 +20,12 @@ namespace py = pybind11;
 
 void expose_taylor_integrator_flt(py::module &);
 void expose_taylor_integrator_dbl(py::module &);
+
+#if defined(HEYOKA_HAVE_LONG_DOUBLE)
+
 void expose_taylor_integrator_ldbl(py::module &);
+
+#endif
 
 #if defined(HEYOKA_HAVE_REAL128)
 
@@ -28,11 +33,7 @@ void expose_taylor_integrator_f128(py::module &);
 
 #endif
 
-#if defined(HEYOKA_HAVE_REAL)
-
 void expose_taylor_integrator_real(py::module &);
-
-#endif
 
 } // namespace heyoka_py
 

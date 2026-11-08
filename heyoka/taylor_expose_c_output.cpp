@@ -30,25 +30,16 @@
 
 #endif
 
-#if defined(HEYOKA_HAVE_REAL)
-
 #include <mp++/real.hpp>
-
-#endif
 
 #include <heyoka/continuous_output.hpp>
 
 #include "common_utils.hpp"
 #include "custom_casters.hpp"
 #include "dtypes.hpp"
+#include "expose_real.hpp"
 #include "pickle_wrappers.hpp"
 #include "taylor_expose_c_output.hpp"
-
-#if defined(HEYOKA_HAVE_REAL)
-
-#include "expose_real.hpp"
-
-#endif
 
 namespace heyoka_py
 {
@@ -123,15 +114,11 @@ void expose_c_output_impl(py::module &m, const std::string &suffix)
                                  .c_str());
                 }
 
-#if defined(HEYOKA_HAVE_REAL)
-
                 if constexpr (std::is_same_v<T, mppp::real>) {
                     // Check that the input time array contains correctly
                     // constructed reals.
                     pyreal_check_array(tm);
                 }
-
-#endif
 
                 // Compute the number of rows.
                 const auto nrows = tm.shape(0);
@@ -141,8 +128,6 @@ void expose_c_output_impl(py::module &m, const std::string &suffix)
 
                 // Prepare the output object.
                 auto ret = py::array(tm.dtype(), py::array::ShapeContainer{nrows, ncols});
-
-#if defined(HEYOKA_HAVE_REAL)
 
                 if constexpr (std::is_same_v<T, mppp::real>) {
                     // Ensure that ret contains initialised reals with the
@@ -155,8 +140,6 @@ void expose_c_output_impl(py::module &m, const std::string &suffix)
                     // the get_bounds() function will throw.
                     pyreal_ensure_array(ret, c_out->get_bounds().first.get_prec());
                 }
-
-#endif
 
                 // Fetch a pointer for writing.
                 auto *ret_ptr = static_cast<T *>(ret.mutable_data());
@@ -534,7 +517,12 @@ void taylor_expose_c_output(py::module &m)
     // Expose the scalar versions.
     detail::expose_c_output_impl<float>(m, "flt");
     detail::expose_c_output_impl<double>(m, "dbl");
+
+#if defined(HEYOKA_HAVE_LONG_DOUBLE)
+
     detail::expose_c_output_impl<long double>(m, "ldbl");
+
+#endif
 
 #if defined(HEYOKA_HAVE_REAL128)
 
@@ -542,11 +530,7 @@ void taylor_expose_c_output(py::module &m)
 
 #endif
 
-#if defined(HEYOKA_HAVE_REAL)
-
     detail::expose_c_output_impl<mppp::real>(m, "real");
-
-#endif
 
     // Expose the batch versions.
     detail::expose_c_output_batch_impl<float>(m, "flt");

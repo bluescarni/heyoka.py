@@ -12,16 +12,14 @@ from copy import copy, deepcopy
 import numpy as np
 from .. import _core
 
-# NOTE: real and real128 are available only in some builds. When real is missing the
-# whole test case is skipped (see the skipUnless decorator below). The inner
-# "if real128 is not None" blocks similarly guard the optional real128 interactions.
-real = getattr(_core, "real", None)
+# NOTE: real128 is available only in some builds. The "if real128 is not None"
+# blocks guard the optional real128 interactions.
+real = _core.real
 real128 = getattr(_core, "real128", None)
-real_prec_min = getattr(_core, "real_prec_min", None)
-real_prec_max = getattr(_core, "real_prec_max", None)
+real_prec_min = _core.real_prec_min
+real_prec_max = _core.real_prec_max
 
 
-@unittest.skipUnless(real is not None, "the 'real' type is not available")
 class real_test_case(unittest.TestCase):
     def test_numpy_realloc(self):
         # Start with a full array,

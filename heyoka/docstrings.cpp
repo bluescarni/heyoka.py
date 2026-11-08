@@ -57,6 +57,11 @@ is performed.
    Integral values are converted to double precision, which may result in a loss
    of precision for large integers.
 
+.. note::
+
+   On platforms where heyoka does not support the C++ ``long double`` type,
+   :py:class:`numpy.longdouble` arguments are converted to double precision.
+
 :param x: the construction argument.
 
 )";

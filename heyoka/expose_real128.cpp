@@ -51,13 +51,8 @@
 
 #include "custom_casters.hpp"
 #include "dtypes.hpp"
-#include "expose_real128.hpp"
-
-#if defined(HEYOKA_HAVE_REAL)
-
 #include "expose_real.hpp"
-
-#endif
+#include "expose_real128.hpp"
 
 namespace heyoka_py
 {
@@ -436,11 +431,9 @@ int py_real128_init(PyObject *self, PyObject *args, PyObject *kwargs)
     } else if (PyObject_IsInstance(arg, reinterpret_cast<PyObject *>(&PyLongDoubleArrType_Type)) != 0) {
         *get_real128_val(self) = reinterpret_cast<PyLongDoubleScalarObject *>(arg)->obval;
 #endif
-#if defined(HEYOKA_HAVE_REAL)
     } else if (py_real_check(arg)) {
         // NOTE: conversion of real to real128 cannot throw.
         *get_real128_val(self) = static_cast<mppp::real128>(*get_real_val(arg));
-#endif
     } else if (py_real128_check(arg)) {
         *get_real128_val(self) = *get_real128_val(arg);
     } else if (PyUnicode_Check(arg)) {
@@ -507,11 +500,9 @@ std::pair<std::optional<mppp::real128>, bool> real128_from_ob(PyObject *arg)
     } else if (PyObject_IsInstance(arg, reinterpret_cast<PyObject *>(&PyLongDoubleArrType_Type)) != 0) {
         return {reinterpret_cast<PyLongDoubleScalarObject *>(arg)->obval, true};
 #endif
-#if defined(HEYOKA_HAVE_REAL)
     } else if (py_real_check(arg)) {
         // NOTE: conversion of real to real128 cannot throw.
         return {static_cast<mppp::real128>(*get_real_val(arg)), true};
-#endif
     } else {
         return {{}, true};
     }
@@ -587,8 +578,6 @@ PyObject *py_real128_binop(PyObject *a, PyObject *b, const F &op)
     if (a_is_real128) {
         // a is a real128, b is not.
 
-#if defined(HEYOKA_HAVE_REAL)
-
         // NOTE: if one of the operands is a real,
         // the result will be a real too.
         if (py_real_check(b)) {
@@ -599,7 +588,6 @@ PyObject *py_real128_binop(PyObject *a, PyObject *b, const F &op)
             return retval;
         }
 
-#endif
         auto [r, flag] = real128_from_ob(b);
 
         if (r) {
@@ -619,8 +607,6 @@ PyObject *py_real128_binop(PyObject *a, PyObject *b, const F &op)
     if (b_is_real128) {
         // The mirror of the previous case.
 
-#if defined(HEYOKA_HAVE_REAL)
-
         if (py_real_check(a)) {
             PyObject *retval = nullptr;
 
@@ -628,8 +614,6 @@ PyObject *py_real128_binop(PyObject *a, PyObject *b, const F &op)
 
             return retval;
         }
-
-#endif
 
         auto [r, flag] = real128_from_ob(a);
 
@@ -671,8 +655,6 @@ PyObject *py_real128_rcmp(PyObject *a, PyObject *b, int op)
         if (a_is_real128) {
             // a is a real128, b is not.
 
-#if defined(HEYOKA_HAVE_REAL)
-
             if (py_real_check(b)) {
                 // NOTE: comparisons cannot throw.
                 if (func(*get_real128_val(a), *get_real_val(b))) {
@@ -681,8 +663,6 @@ PyObject *py_real128_rcmp(PyObject *a, PyObject *b, int op)
                     Py_RETURN_FALSE;
                 }
             }
-
-#endif
 
             auto [r, flag] = real128_from_ob(b);
 
@@ -707,8 +687,6 @@ PyObject *py_real128_rcmp(PyObject *a, PyObject *b, int op)
         if (b_is_real128) {
             // The mirror of the previous case.
 
-#if defined(HEYOKA_HAVE_REAL)
-
             if (py_real_check(a)) {
                 if (func(*get_real_val(a), *get_real128_val(b))) {
                     Py_RETURN_TRUE;
@@ -716,8 +694,6 @@ PyObject *py_real128_rcmp(PyObject *a, PyObject *b, int op)
                     Py_RETURN_FALSE;
                 }
             }
-
-#endif
 
             auto [r, flag] = real128_from_ob(a);
 

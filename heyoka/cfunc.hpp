@@ -20,7 +20,12 @@ namespace py = pybind11;
 
 void expose_add_cfunc_flt(py::module &);
 void expose_add_cfunc_dbl(py::module &);
+
+#if defined(HEYOKA_HAVE_LONG_DOUBLE)
+
 void expose_add_cfunc_ldbl(py::module &);
+
+#endif
 
 #if defined(HEYOKA_HAVE_REAL128)
 
@@ -28,11 +33,7 @@ void expose_add_cfunc_f128(py::module &);
 
 #endif
 
-#if defined(HEYOKA_HAVE_REAL)
-
 void expose_add_cfunc_real(py::module &);
-
-#endif
 
 } // namespace heyoka_py
 

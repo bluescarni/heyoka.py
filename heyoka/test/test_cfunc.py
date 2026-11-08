@@ -104,9 +104,6 @@ class cfunc_test_case(unittest.TestCase):
         # NOTE: test for a bug in the multiprecision
         # implementation where the precision is not
         # correctly copied.
-        if not hasattr(_core, "real"):
-            return
-
         real = _core.real
 
         cf = cfunc([y * (x + z)], [x, y, z], fp_type=real, prec=128)
@@ -120,7 +117,7 @@ class cfunc_test_case(unittest.TestCase):
         self.assertEqual(pickle.loads(pickle.dumps(cf)).prec, 128)
 
     def test_multi(self):
-        if _core._ppc_arch:
+        if not _core._have_long_double:
             fp_types = [np.float32, float]
         else:
             fp_types = [np.float32, float, np.longdouble]
@@ -743,13 +740,13 @@ class cfunc_test_case(unittest.TestCase):
                     )
                 )
 
-        # Check throwing behaviour with long double on PPC.
-        if _core._ppc_arch:
-            with self.assertRaises(NotImplementedError):
+        # Check throwing behaviour with long double when it is not available.
+        if not _core._have_long_double:
+            with self.assertRaises(TypeError):
                 cfunc(func, vars=[y, x], fp_type=np.longdouble)
 
     def test_single(self):
-        if _core._ppc_arch:
+        if not _core._have_long_double:
             fp_types = [np.float32, float]
         else:
             fp_types = [np.float32, float, np.longdouble]

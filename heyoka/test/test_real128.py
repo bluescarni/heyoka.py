@@ -14,13 +14,12 @@ import numpy as np
 from numpy import float32 as f32
 from .. import _core
 
-# NOTE: real128 and real are available only in some builds. When real128 is missing
-# the whole test case is skipped (see the skipUnless decorator below). The inner
-# "if real is not None" blocks similarly guard the optional real-type interactions.
+# NOTE: real128 is available only in some builds. When it is missing the whole test
+# case is skipped (see the skipUnless decorator below).
 real128 = getattr(_core, "real128", None)
-real = getattr(_core, "real", None)
+real = _core.real
 
-if _core._ppc_arch:
+if not _core._have_long_double:
     ld = float
 else:
     from numpy import longdouble as ld
@@ -89,9 +88,8 @@ class real128_test_case(unittest.TestCase):
         self.assertEqual(str(real128("-123")), "-123")
 
         # Construction from real.
-        if real is not None:
-            self.assertEqual(real128(real("1.1", 113)), real128("1.1"))
-            self.assertNotEqual(real128(real("1.1", 100)), real128("1.1"))
+        self.assertEqual(real128(real("1.1", 113)), real128("1.1"))
+        self.assertNotEqual(real128(real("1.1", 100)), real128("1.1"))
 
         with self.assertRaises(ValueError) as cm:
             real128("hello world")
@@ -144,15 +142,14 @@ class real128_test_case(unittest.TestCase):
         self.assertEqual(repr(1.0 + real128(42)), "43")
         # self.assertEqual(repr(ld(1) + real128(42)), "43")
         self.assertEqual(repr(f32(1) + real128(42)), "43")
-        if real is not None:
-            self.assertTrue(isinstance(real128() + real(), real))
-            self.assertTrue(isinstance(real() + real128(), real))
-            self.assertEqual(
-                real128("1.1") + real("1.1", 100), real("1.1", 113) + real("1.1", 100)
-            )
-            self.assertEqual(
-                real("1.1", 100) + real128("1.1"), real("1.1", 113) + real("1.1", 100)
-            )
+        self.assertTrue(isinstance(real128() + real(), real))
+        self.assertTrue(isinstance(real() + real128(), real))
+        self.assertEqual(
+            real128("1.1") + real("1.1", 100), real("1.1", 113) + real("1.1", 100)
+        )
+        self.assertEqual(
+            real("1.1", 100) + real128("1.1"), real("1.1", 113) + real("1.1", 100)
+        )
         with self.assertRaises(TypeError) as cm:
             real128(1) + []
         with self.assertRaises(TypeError) as cm:
@@ -172,15 +169,14 @@ class real128_test_case(unittest.TestCase):
         self.assertEqual(repr(1.0 - real128(42)), "-41")
         # self.assertEqual(repr(ld(1) - real128(42)), "-41")
         self.assertEqual(repr(f32(1) - real128(42)), "-41")
-        if real is not None:
-            self.assertTrue(isinstance(real128() - real(), real))
-            self.assertTrue(isinstance(real() - real128(), real))
-            self.assertEqual(
-                real128("1.1") - real("1.1", 100), real("1.1", 113) - real("1.1", 100)
-            )
-            self.assertEqual(
-                real("1.1", 100) - real128("1.1"), real("1.1", 100) - real("1.1", 113)
-            )
+        self.assertTrue(isinstance(real128() - real(), real))
+        self.assertTrue(isinstance(real() - real128(), real))
+        self.assertEqual(
+            real128("1.1") - real("1.1", 100), real("1.1", 113) - real("1.1", 100)
+        )
+        self.assertEqual(
+            real("1.1", 100) - real128("1.1"), real("1.1", 100) - real("1.1", 113)
+        )
         with self.assertRaises(TypeError) as cm:
             real128(1) - []
         with self.assertRaises(TypeError) as cm:
@@ -195,15 +191,14 @@ class real128_test_case(unittest.TestCase):
         self.assertEqual(repr(2.0 * real128(42)), "84")
         # self.assertEqual(repr(ld(2) * real128(42)), "84")
         self.assertEqual(repr(f32(2) * real128(42)), "84")
-        if real is not None:
-            self.assertTrue(isinstance(real128() * real(), real))
-            self.assertTrue(isinstance(real() * real128(), real))
-            self.assertEqual(
-                real128("1.1") * real("1.1", 100), real("1.1", 113) * real("1.1", 100)
-            )
-            self.assertEqual(
-                real("1.1", 100) * real128("1.1"), real("1.1", 113) * real("1.1", 100)
-            )
+        self.assertTrue(isinstance(real128() * real(), real))
+        self.assertTrue(isinstance(real() * real128(), real))
+        self.assertEqual(
+            real128("1.1") * real("1.1", 100), real("1.1", 113) * real("1.1", 100)
+        )
+        self.assertEqual(
+            real("1.1", 100) * real128("1.1"), real("1.1", 113) * real("1.1", 100)
+        )
         with self.assertRaises(TypeError) as cm:
             real128(1) * []
         with self.assertRaises(TypeError) as cm:
@@ -218,15 +213,14 @@ class real128_test_case(unittest.TestCase):
         self.assertEqual(repr(-42.0 // real128(9)), "-5")
         # self.assertEqual(repr(ld(-42) // real128(9)), "-5")
         self.assertEqual(repr(f32(-42) // real128(9)), "-5")
-        if real is not None:
-            self.assertTrue(isinstance(real128(1) // real(1), real))
-            self.assertTrue(isinstance(real(1) // real128(1), real))
-            self.assertEqual(
-                real128("1.1") // real("1.1", 100), real("1.1", 113) // real("1.1", 100)
-            )
-            self.assertEqual(
-                real("1.1", 100) // real128("1.1"), real("1.1", 100) // real("1.1", 113)
-            )
+        self.assertTrue(isinstance(real128(1) // real(1), real))
+        self.assertTrue(isinstance(real(1) // real128(1), real))
+        self.assertEqual(
+            real128("1.1") // real("1.1", 100), real("1.1", 113) // real("1.1", 100)
+        )
+        self.assertEqual(
+            real("1.1", 100) // real128("1.1"), real("1.1", 100) // real("1.1", 113)
+        )
         with self.assertRaises(TypeError) as cm:
             real128(1) // []
         with self.assertRaises(TypeError) as cm:
@@ -264,11 +258,10 @@ class real128_test_case(unittest.TestCase):
         self.assertFalse(real128("nan") < 2)
         self.assertFalse(2 < real128("nan"))
         self.assertFalse(real128("nan") < real128("nan"))
-        if real is not None:
-            self.assertTrue(real(1) < real128(2))
-            self.assertTrue(real128(1) < real(2))
-            self.assertFalse(real(1) > real128(2))
-            self.assertFalse(real128(1) > real(2))
+        self.assertTrue(real(1) < real128(2))
+        self.assertTrue(real128(1) < real(2))
+        self.assertFalse(real(1) > real128(2))
+        self.assertFalse(real128(1) > real(2))
         with self.assertRaises(TypeError) as cm:
             real128(1) < []
         with self.assertRaises(TypeError) as cm:
@@ -723,7 +716,6 @@ class real128_test_case(unittest.TestCase):
         self.assertTrue(np.isnan(arr1_sorted[2]))
 
         # Setitem from real.
-        if real is not None:
-            arr1 = np.array([1, 2, 3], dtype=real128)
-            arr1[1] = real("1.1", 113)
-            self.assertEqual(arr1[1], real128("1.1"))
+        arr1 = np.array([1, 2, 3], dtype=real128)
+        arr1[1] = real("1.1", 113)
+        self.assertEqual(arr1[1], real128("1.1"))

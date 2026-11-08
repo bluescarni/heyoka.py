@@ -19,11 +19,7 @@
 
 #endif
 
-#if defined(HEYOKA_HAVE_REAL)
-
 #include <mp++/real.hpp>
-
-#endif
 
 namespace pybind11::detail
 {
@@ -35,12 +31,16 @@ struct type_caster<float> {
     static handle cast(const float &, return_value_policy, handle);
 };
 
+#if defined(HEYOKA_HAVE_LONG_DOUBLE)
+
 template <>
 struct type_caster<long double> {
     PYBIND11_TYPE_CASTER(long double, _("numpy.longdouble"));
     bool load(handle, bool);
     static handle cast(const long double &, return_value_policy, handle);
 };
+
+#endif
 
 #if defined(HEYOKA_HAVE_REAL128)
 
@@ -53,16 +53,12 @@ struct type_caster<mppp::real128> {
 
 #endif
 
-#if defined(HEYOKA_HAVE_REAL)
-
 template <>
 struct type_caster<mppp::real> {
     PYBIND11_TYPE_CASTER(mppp::real, _("heyoka.real"));
     bool load(handle, bool);
     static handle cast(const mppp::real &, return_value_policy, handle);
 };
-
-#endif
 
 } // namespace pybind11::detail
 

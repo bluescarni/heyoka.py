@@ -113,7 +113,7 @@ class scalar_integrator_test_case(unittest.TestCase):
 
         self.assertEqual(ta.dtime, (1.5, 0.0))
 
-        if _core._ppc_arch:
+        if not _core._have_long_double:
             return
 
         # BUG: the dtime setter used to be hard-coded
@@ -148,7 +148,7 @@ class scalar_integrator_test_case(unittest.TestCase):
         self.assertNotEqual(ta_dc.state[0], ta.state[0])
 
     def test_basic(self):
-        if _core._ppc_arch:
+        if not _core._have_long_double:
             fp_types = [np.float32, float]
         else:
             fp_types = [np.float32, float, np.longdouble]
@@ -323,7 +323,7 @@ class scalar_integrator_test_case(unittest.TestCase):
             delattr(ta, "foo")
 
     def test_events(self):
-        if _core._ppc_arch:
+        if not _core._have_long_double:
             fp_types = [np.float32, float]
         else:
             fp_types = [np.float32, float, np.longdouble]
@@ -363,7 +363,7 @@ class scalar_integrator_test_case(unittest.TestCase):
     def test_s11n(self):
         x, v = make_vars("x", "v")
 
-        if _core._ppc_arch:
+        if not _core._have_long_double:
             fp_types = [np.float32, float]
         else:
             fp_types = [np.float32, float, np.longdouble]
@@ -446,17 +446,17 @@ class scalar_integrator_test_case(unittest.TestCase):
 
             self.assertEqual(ta.tol, fp_t(1e-6))
 
-        # Check throwing behaviour with long double on PPC.
-        if _core._ppc_arch:
+        # Check throwing behaviour with long double when it is not available.
+        if not _core._have_long_double:
             fp_t = np.longdouble
 
-            with self.assertRaises(NotImplementedError):
+            with self.assertRaises(TypeError):
                 taylor_adaptive(
                     sys=sys, state=[fp_t(0), fp_t(0.25)], fp_type=np.longdouble
                 )
 
     def test_step_callback(self):
-        if _core._ppc_arch:
+        if not _core._have_long_double:
             fp_types = [np.float32, float]
         else:
             fp_types = [np.float32, float, np.longdouble]

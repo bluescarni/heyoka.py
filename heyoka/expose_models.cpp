@@ -39,11 +39,7 @@
 
 #endif
 
-#if defined(HEYOKA_HAVE_REAL)
-
 #include <mp++/real.hpp>
-
-#endif
 
 #include <heyoka/eop_data.hpp>
 #include <heyoka/expression.hpp>
@@ -225,17 +221,18 @@ void expose_models(py::module_ &m)
 
     // A variant containing either an expression or a numerical/string
     // type from which an expression can be constructed.
-    using vex_t = std::variant<hy::expression, std::string, float, double, long double
+    using vex_t = std::variant<hy::expression, std::string, float, double
+#if defined(HEYOKA_HAVE_LONG_DOUBLE)
+                               ,
+                               long double
+#endif
 #if defined(HEYOKA_HAVE_REAL128)
                                ,
                                mppp::real128
 
 #endif
-#if defined(HEYOKA_HAVE_REAL)
                                ,
-                               mppp::real
-#endif
-                               >;
+                               mppp::real>;
 
     // N-body.
     m.def(

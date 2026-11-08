@@ -26,8 +26,7 @@ if __name__ == "__main__":
 
     run_test_suite()
 
-    if hasattr(heyoka, "real"):
-        heyoka.install_custom_numpy_mem_handler()
-        run_test_suite()
-        heyoka.remove_custom_numpy_mem_handler()
-        run_test_suite()
+    heyoka.install_custom_numpy_mem_handler()
+    run_test_suite()
+    heyoka.remove_custom_numpy_mem_handler()
+    run_test_suite()

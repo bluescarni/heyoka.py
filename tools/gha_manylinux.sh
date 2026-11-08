@@ -63,8 +63,7 @@ fi
 
 mkdir build
 cd build
-cmake -DHEYOKA_WITH_MPPP=yes \
-    -DHEYOKA_WITH_SLEEF=yes \
+cmake -DHEYOKA_WITH_SLEEF=yes \
     -DHEYOKA_ENABLE_IPO=ON \
     -DHEYOKA_FORCE_STATIC_LLVM=yes \
     -DHEYOKA_HIDE_LLVM_SYMBOLS=yes \

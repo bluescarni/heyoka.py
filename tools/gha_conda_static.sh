@@ -34,7 +34,6 @@ cd build
 cmake ../ -G Ninja \
     -DCMAKE_INSTALL_PREFIX=$deps_dir \
     -DCMAKE_PREFIX_PATH=$deps_dir \
-    -DHEYOKA_WITH_MPPP=yes \
     -DHEYOKA_WITH_SLEEF=yes \
     -DHEYOKA_FORCE_STATIC_LLVM=yes \
     -DHEYOKA_HIDE_LLVM_SYMBOLS=yes

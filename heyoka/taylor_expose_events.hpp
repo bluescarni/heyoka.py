@@ -20,7 +20,12 @@ namespace py = pybind11;
 
 void expose_taylor_t_event_flt(py::module &);
 void expose_taylor_t_event_dbl(py::module &);
+
+#if defined(HEYOKA_HAVE_LONG_DOUBLE)
+
 void expose_taylor_t_event_ldbl(py::module &);
+
+#endif
 
 #if defined(HEYOKA_HAVE_REAL128)
 
@@ -28,15 +33,16 @@ void expose_taylor_t_event_f128(py::module &);
 
 #endif
 
-#if defined(HEYOKA_HAVE_REAL)
-
 void expose_taylor_t_event_real(py::module &);
-
-#endif
 
 void expose_taylor_nt_event_flt(py::module &);
 void expose_taylor_nt_event_dbl(py::module &);
+
+#if defined(HEYOKA_HAVE_LONG_DOUBLE)
+
 void expose_taylor_nt_event_ldbl(py::module &);
+
+#endif
 
 #if defined(HEYOKA_HAVE_REAL128)
 
@@ -44,11 +50,7 @@ void expose_taylor_nt_event_f128(py::module &);
 
 #endif
 
-#if defined(HEYOKA_HAVE_REAL)
-
 void expose_taylor_nt_event_real(py::module &);
-
-#endif
 
 // Batch mode (only float and double).
 void expose_taylor_t_event_batch_flt(py::module &);

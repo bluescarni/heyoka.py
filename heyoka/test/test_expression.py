@@ -277,7 +277,7 @@ class expression_test_case(unittest.TestCase):
         ex = pickle.loads(pickle.dumps(ex))
         self.assertEqual(ex.foo, "hello world")
 
-        if not _core._ppc_arch:
+        if _core._have_long_double:
             ex = sin(longdouble("1.1") * x) + 2.0 * y
             self.assertEqual(ex, pickle.loads(pickle.dumps(ex)))
 
@@ -287,7 +287,7 @@ class expression_test_case(unittest.TestCase):
         from .._core import real128
 
         # Quad precision.
-        if not _core._ppc_arch:
+        if _core._have_long_double:
             ex = sin(longdouble("1.1") * x) + real128("1.3") * cos(2.0 * y)
             self.assertEqual(ex, pickle.loads(pickle.dumps(ex)))
 
@@ -389,12 +389,13 @@ class expression_test_case(unittest.TestCase):
             in str(cm.exception)
         )
 
-        with self.assertRaises(TypeError) as cm:
-            select(1.0, y, np.longdouble(2.0))
-        self.assertTrue(
-            "The numerical arguments of select() must be all of the same type"
-            in str(cm.exception)
-        )
+        if _core._have_long_double:
+            with self.assertRaises(TypeError) as cm:
+                select(1.0, y, np.longdouble(2.0))
+            self.assertTrue(
+                "The numerical arguments of select() must be all of the same type"
+                in str(cm.exception)
+            )
 
     def test_get_params(self):
         x, y = make_vars("x", "y")
