@@ -516,3 +516,83 @@ class scalar_integrator_test_case(unittest.TestCase):
             res = ta.propagate_for(fp_t(10.0), callback=angle_reducer([x]))
             self.assertTrue(isinstance(res[-1], angle_reducer))
             self.assertTrue((ta.state[0] >= fp_t(0) and ta.state[0] < fp_t(6.29)))
+
+    def test_busy(self):
+        # Invoking the stepping/propagation functions or the time setters on an
+        # integrator from within one of its callbacks raises an exception.
+        x, v = make_vars("x", "v")
+
+        sys = [(x, v), (v, -9.8 * sin(x))]
+
+        # Non-terminal event callback invoking step().
+        def nt_cb(ta, t, d_sgn):
+            ta.step()
+
+        ta = taylor_adaptive(
+            sys=sys, state=[0.0, 0.25], nt_events=[nt_event(v, nt_cb)]
+        )
+
+        with self.assertRaises(RuntimeError) as cm:
+            ta.propagate_until(10.0)
+        self.assertTrue(
+            "Cannot invoke the function 'step()' while the integrator is "
+            "stepping/propagating" in str(cm.exception)
+        )
+
+        # The integrator is not busy any more.
+        ta.time = 0.0
+        self.assertEqual(ta.time, 0.0)
+
+        # Terminal event callback setting the time.
+        def t_cb(ta, d_sgn):
+            ta.time = 0.0
+            return True
+
+        ta = taylor_adaptive(
+            sys=sys, state=[0.0, 0.25], t_events=[t_event(v, callback=t_cb)]
+        )
+
+        with self.assertRaises(RuntimeError) as cm:
+            ta.propagate_until(10.0)
+        self.assertTrue(
+            "Cannot invoke the function 'set_time()' while the integrator is "
+            "stepping/propagating" in str(cm.exception)
+        )
+
+        ta.dtime = (1.0, 0.0)
+        self.assertEqual(ta.time, 1.0)
+
+        # Step callback setting the time via dtime.
+        def step_cb0(ta):
+            ta.dtime = (0.0, 0.0)
+            return True
+
+        ta = taylor_adaptive(sys=sys, state=[0.0, 0.25])
+
+        with self.assertRaises(RuntimeError) as cm:
+            ta.propagate_until(10.0, callback=step_cb0)
+        self.assertTrue(
+            "Cannot invoke the function 'set_dtime()' while the integrator is "
+            "stepping/propagating" in str(cm.exception)
+        )
+
+        # Step callback invoking propagate_for().
+        def step_cb1(ta):
+            ta.propagate_for(1.0)
+            return True
+
+        with self.assertRaises(RuntimeError) as cm:
+            ta.propagate_grid([ta.time, ta.time + 1.0], callback=step_cb1)
+        self.assertTrue(
+            "Cannot invoke the function 'propagate_for()' while the integrator is "
+            "stepping/propagating" in str(cm.exception)
+        )
+
+        # A copy made from within a callback is not busy.
+        def step_cb2(ta):
+            ta_copy = deepcopy(ta)
+            ta_copy.step()
+            ta_copy.time = 0.0
+            return True
+
+        ta.propagate_for(1.0, callback=step_cb2)
