@@ -3,6 +3,66 @@
 Changelog
 =========
 
+7.14.0 (unreleased)
+-------------------
+
+New
+~~~
+
+- Parallel JIT compilation is now available and enabled by default
+  (`#286 <https://github.com/bluescarni/heyoka.py/pull/286>`__).
+- Event detection now uses a rigorous real root isolation algorithm based on interval arithmetic
+  (`#286 <https://github.com/bluescarni/heyoka.py/pull/286>`__).
+- The ``propagate_grid()`` method of the batch integrator now supports
+  grids in which different batch elements are propagated in different directions
+  (`#286 <https://github.com/bluescarni/heyoka.py/pull/286>`__).
+
+Changes
+~~~~~~~
+
+- Invoking the stepping/propagation methods of an integrator or setting its time coordinate
+  (via the ``time`` and ``dtime`` properties of the scalar integrator, or via the
+  ``set_time()`` and ``set_dtime()`` methods of the batch integrator) from within one of
+  its own event or step callbacks now raises an exception
+  (`#286 <https://github.com/bluescarni/heyoka.py/pull/286>`__).
+- The mp++ library is now a mandatory dependency, and arbitrary-precision computations
+  via ``heyoka.real`` are now always supported
+  (`#286 <https://github.com/bluescarni/heyoka.py/pull/286>`__).
+- On platforms where the heyoka C++ library does not support the C++ ``long double`` type
+  (e.g., PowerPC with the IBM double-double format), the :py:class:`numpy.longdouble` versions
+  of heyoka.py's classes are not available any more, and passing ``fp_type=numpy.longdouble``
+  raises a :py:exc:`TypeError` (previously, using them resulted in a runtime error). On such platforms,
+  :py:class:`numpy.longdouble` arguments to the functions which build expressions are converted
+  to double precision
+  (`#286 <https://github.com/bluescarni/heyoka.py/pull/286>`__).
+- The integrators now return the ``err_nf_state`` outcome if non-finite values are detected in the input data
+  of event detection (e.g., in the Taylor coefficients of the event equations)
+  (`#286 <https://github.com/bluescarni/heyoka.py/pull/286>`__).
+- In the batch integrator, the event callbacks are now invoked after the time coordinates, the last timesteps
+  and the cooldowns of all batch elements have been updated
+  (`#286 <https://github.com/bluescarni/heyoka.py/pull/286>`__).
+- Events triggering at exactly the same time are now guaranteed to be processed in increasing order
+  of their index
+  (`#286 <https://github.com/bluescarni/heyoka.py/pull/286>`__).
+- The time-limited propagation methods now guarantee that, at the end of a successful propagation,
+  the integrator time matches exactly the end time of the propagation
+  (`#286 <https://github.com/bluescarni/heyoka.py/pull/286>`__).
+- heyoka.py now requires version 7.14.0 of the
+  heyoka C++ library
+  (`#286 <https://github.com/bluescarni/heyoka.py/pull/286>`__).
+
+Fix
+~~~
+
+- Fix incorrect indexing into memory buffers with :math:`2^{31}` or more elements in JIT-compiled code
+  (`#286 <https://github.com/bluescarni/heyoka.py/pull/286>`__).
+- Fix the relational ``neq()`` function evaluating to false when one or both operands are NaN
+  (`#286 <https://github.com/bluescarni/heyoka.py/pull/286>`__).
+- Fix NaN values in the Taylor coefficients being silently ignored in the computation of the adaptive timestep
+  (`#286 <https://github.com/bluescarni/heyoka.py/pull/286>`__).
+- Fix a number of inconsistencies and corner-case issues in the time-limited propagation methods
+  (`#286 <https://github.com/bluescarni/heyoka.py/pull/286>`__).
+
 7.13.2 (2026-09-25)
 -------------------
 
