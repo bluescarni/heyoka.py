@@ -23,8 +23,7 @@ from .. import (
     _core,
 )
 
-# real is available only in some builds. Reference it through this module global.
-real = getattr(_core, "real", None)
+real = _core.real
 
 
 class var_integrator_test_case(unittest.TestCase):
@@ -116,9 +115,6 @@ class var_integrator_test_case(unittest.TestCase):
         with self.assertRaises(ValueError) as cm:
             ta.eval_taylor_map(ta.tstate)
         self.assertTrue("may overlap" in str(cm.exception))
-
-        if real is None:
-            return
 
         prec = 14
 

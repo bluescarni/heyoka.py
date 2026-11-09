@@ -19,8 +19,10 @@ the computations (as seen, for instance, in the :ref:`extended precision tutoria
 The floating-point type is selected via the ``fp_type`` keyword argument, which must
 be one of the floating-point types supported by heyoka.py. The types :py:class:`float`
 (double precision) and :py:class:`numpy.single` (single precision) are always available,
-while support for other floating-point types varies depending on the platform and on
-the installed optional dependencies.
+while support for the extended-precision types :py:class:`numpy.longdouble` and ``heyoka.real128``
+varies depending on the platform (see the :ref:`extended precision tutorial<ext_precision_tutorial>`).
+The arbitrary-precision type ``heyoka.real`` is available on all platforms, but it is not
+supported everywhere (e.g., in batch mode).
 
 By default, ``fp_type`` is always
 :py:class:`float` - that is, heyoka.py operates by default in double precision.
@@ -53,7 +55,8 @@ These are keyword arguments influencing just-in-time (JIT) compilation via LLVM.
   .. versionadded:: 6.0.0
 
 - ``parjit``: a boolean flag indicating that the JIT compilation process should be
-  parallelised. This flag has an effect only when compact mode is enabled. The default value is ``False``.
+  parallelised. This flag has an effect only when compact mode is enabled. The default value
+  is ``True``.
 
   .. versionadded:: 6.0.0
 

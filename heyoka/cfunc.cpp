@@ -39,23 +39,14 @@
 
 #endif
 
-#if defined(HEYOKA_HAVE_REAL)
-
 #include <mp++/real.hpp>
-
-#endif
 
 #include "cfunc.hpp"
 #include "common_utils.hpp"
 #include "custom_casters.hpp"
 #include "dtypes.hpp"
-#include "pickle_wrappers.hpp"
-
-#if defined(HEYOKA_HAVE_REAL)
-
 #include "expose_real.hpp"
-
-#endif
+#include "pickle_wrappers.hpp"
 
 namespace heyoka_py
 {
@@ -70,13 +61,7 @@ namespace
 {
 
 template <typename T>
-constexpr bool default_cm =
-#if defined(HEYOKA_HAVE_REAL)
-    std::is_same_v<T, mppp::real>
-#else
-    false
-#endif
-    ;
+constexpr bool default_cm = std::same_as<T, mppp::real>;
 
 template <typename T>
 void expose_add_cfunc_impl(py::module &m, const char *suffix)
@@ -339,8 +324,6 @@ void expose_add_cfunc_impl(py::module &m, const char *suffix)
                 }
             }();
 
-#if defined(HEYOKA_HAVE_REAL)
-
             // Run the checks specific for mppp::real.
             if constexpr (std::is_same_v<T, mppp::real>) {
                 // Check that the inputs array contains values with the correct precision.
@@ -371,8 +354,6 @@ void expose_add_cfunc_impl(py::module &m, const char *suffix)
                     }
                 }
             }
-
-#endif
 
             // Run the overlapping memory checks.
             bool maybe_share_memory{};
@@ -482,13 +463,9 @@ void expose_add_cfunc_impl(py::module &m, const char *suffix)
     cfunc_inst.def_property_readonly("nouts", &hey::cfunc<T>::get_nouts);
     cfunc_inst.def_property_readonly("is_time_dependent", &hey::cfunc<T>::is_time_dependent);
 
-#if defined(HEYOKA_HAVE_REAL)
-
     if constexpr (std::is_same_v<T, mppp::real>) {
         cfunc_inst.def_property_readonly("prec", &hey::cfunc<T>::get_prec);
     }
-
-#endif
 
     // Copy/deepcopy.
     cfunc_inst.def("__copy__", copy_wrapper<hey::cfunc<T>>);
@@ -519,10 +496,14 @@ void expose_add_cfunc_dbl(py::module &m)
     detail::expose_add_cfunc_impl<double>(m, "dbl");
 }
 
+#if defined(HEYOKA_HAVE_LONG_DOUBLE)
+
 void expose_add_cfunc_ldbl(py::module &m)
 {
     detail::expose_add_cfunc_impl<long double>(m, "ldbl");
 }
+
+#endif
 
 #if defined(HEYOKA_HAVE_REAL128)
 
@@ -533,13 +514,9 @@ void expose_add_cfunc_f128(py::module &m)
 
 #endif
 
-#if defined(HEYOKA_HAVE_REAL)
-
 void expose_add_cfunc_real(py::module &m)
 {
     detail::expose_add_cfunc_impl<mppp::real>(m, "real");
 }
-
-#endif
 
 } // namespace heyoka_py

@@ -9,26 +9,17 @@
 #ifndef HEYOKA_PY_EXPOSE_REAL_HPP
 #define HEYOKA_PY_EXPOSE_REAL_HPP
 
-#include <heyoka/config.hpp>
-
-#include <pybind11/pybind11.h>
-
-#if defined(HEYOKA_HAVE_REAL)
-
 #include <pybind11/numpy.h>
+#include <pybind11/pybind11.h>
 
 #include <Python.h>
 
 #include <mp++/real.hpp>
 
-#endif
-
 namespace heyoka_py
 {
 
 namespace py = pybind11;
-
-#if defined(HEYOKA_HAVE_REAL)
 
 // The Python type that will represent mppp::real.
 struct py_real {
@@ -49,8 +40,6 @@ PyObject *pyreal_from_real(mppp::real &&);
 
 void pyreal_check_array(const py::array &, mpfr_prec_t = 0);
 void pyreal_ensure_array(py::array &, mpfr_prec_t);
-
-#endif
 
 void expose_real(py::module_ &);
 

@@ -30,7 +30,7 @@ class kepE_test_case(unittest.TestCase):
         self.assertEqual(kepE(23, x), kepE(23.0, x))
         self.assertEqual(kepE(x, 23), kepE(x, 23.0))
 
-        if not _core._ppc_arch:
+        if _core._have_long_double:
             self.assertEqual(
                 diff(kepE(x, np.longdouble("1.1")), x),
                 sin(kepE(x, np.longdouble("1.1")))
@@ -87,7 +87,7 @@ class kepF_test_case(unittest.TestCase):
         self.assertEqual(kepF(x, 23, y), kepF(x, 23.0, y))
         self.assertEqual(kepF(x, y, 23), kepF(x, y, 23.0))
 
-        if not _core._ppc_arch:
+        if _core._have_long_double:
             kepF(x, y, np.longdouble("1.1"))
             kepF(x, np.longdouble(".1"), np.longdouble("1.1"))
 
@@ -135,7 +135,7 @@ class kepDE_test_case(unittest.TestCase):
         self.assertEqual(kepDE(x, 23, y), kepDE(x, 23.0, y))
         self.assertEqual(kepDE(x, y, 23), kepDE(x, y, 23.0))
 
-        if not _core._ppc_arch:
+        if _core._have_long_double:
             kepDE(x, y, np.longdouble("1.1"))
             kepDE(x, np.longdouble(".1"), np.longdouble("1.1"))
 

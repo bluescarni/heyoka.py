@@ -8,12 +8,6 @@
 
 #include <heyoka/config.hpp>
 
-#include <pybind11/numpy.h>
-#include <pybind11/pybind11.h>
-#include <pybind11/stl.h>
-
-#if defined(HEYOKA_HAVE_REAL)
-
 #include <algorithm>
 #include <array>
 #include <cassert>
@@ -35,9 +29,15 @@
 #include <boost/archive/binary_iarchive.hpp>
 #include <boost/archive/binary_oarchive.hpp>
 #include <boost/numeric/conversion/cast.hpp>
+#include <boost/predef/compiler/clang.h>
+#include <boost/predef/compiler/gcc.h>
 
 #include <fmt/format.h>
 #include <fmt/ranges.h>
+
+#include <pybind11/numpy.h>
+#include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
 
 #define NO_IMPORT_ARRAY
 #define NO_IMPORT_UFUNC
@@ -64,9 +64,6 @@
 #include <heyoka/detail/safe_integer.hpp>
 
 #include "common_utils.hpp"
-
-#endif
-
 #include "custom_casters.hpp"
 #include "dtypes.hpp"
 #include "expose_real.hpp"
@@ -83,15 +80,13 @@ namespace heyoka_py
 
 namespace py = pybind11;
 
-#if defined(HEYOKA_HAVE_REAL)
-
-#if defined(__GNUC__)
+#if BOOST_COMP_GNUC || BOOST_COMP_CLANG
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wmissing-field-initializers"
 #pragma GCC diagnostic ignored "-Wcast-align"
 
-#if !defined(__clang__)
+#if BOOST_COMP_GNUC
 
 #pragma GCC diagnostic ignored "-Wcast-function-type"
 
@@ -2831,15 +2826,9 @@ void expose_real(py::module_ &m)
     m.def("_real_ensure_array", &pyreal_ensure_array);
 }
 
-#if defined(__GNUC__)
+#if BOOST_COMP_GNUC || BOOST_COMP_CLANG
 
 #pragma GCC diagnostic pop
-
-#endif
-
-#else
-
-void expose_real(py::module_ &) {}
 
 #endif
 

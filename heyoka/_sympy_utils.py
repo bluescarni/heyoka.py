@@ -78,9 +78,9 @@ def _from_sympy_number(ex):
 
     # NOTE: the number returned by finfo does not account for
     # the implicit bit.
-    if prec <= np.finfo(np.longdouble).nmant + 1:
-        # Long double precision is sufficient to represent
-        # exactly the number.
+    if _core._have_long_double and prec <= np.finfo(np.longdouble).nmant + 1:
+        # We have long double, and long double precision
+        # is enough to represent exactly the number.
         retval = (
             np.longdouble(ex.p) / np.longdouble(ex.q)
             if is_rational
@@ -103,28 +103,20 @@ def _from_sympy_number(ex):
 
         return _core.expression(retval)
 
-    if hasattr(_core, "real"):
-        # We have real, we can in principle represent
-        # any number.
-        real = _core.real
+    # Use real, which can in principle represent
+    # any number.
+    real = _core.real
 
-        # Ensure we are not going to employ
-        # a too-low precision.
-        prec = max(prec, _core.real_prec_min())
+    # Ensure we are not going to employ
+    # a too-low precision.
+    prec = max(prec, _core.real_prec_min())
 
-        retval = (
-            real(ex.p, prec) / real(ex.q, prec) if is_rational else real(str(ex), prec)
-        )
+    retval = real(ex.p, prec) / real(ex.q, prec) if is_rational else real(str(ex), prec)
 
-        if not np.isfinite(retval):
-            raise ValueError(nf_err_msg)
+    if not np.isfinite(retval):
+        raise ValueError(nf_err_msg)
 
-        return _core.expression(retval)
-
-    raise ValueError(
-        "Cannot convert the number {} from sympy exactly: the required precision ({})"
-        " is too high".format(ex, prec)
-    )
+    return _core.expression(retval)
 
 
 def _build_fmap():

@@ -10,6 +10,9 @@
 
 #include <cassert>
 
+#include <boost/predef/compiler/clang.h>
+#include <boost/predef/compiler/gcc.h>
+
 #include <pybind11/pybind11.h>
 
 #define NO_IMPORT_ARRAY
@@ -29,14 +32,11 @@
 
 #endif
 
-#if defined(HEYOKA_HAVE_REAL)
-
 #include <mp++/real.hpp>
-
-#endif
 
 #include "common_utils.hpp"
 #include "custom_casters.hpp"
+#include "expose_real.hpp"
 
 #if defined(HEYOKA_HAVE_REAL128)
 
@@ -44,13 +44,7 @@
 
 #endif
 
-#if defined(HEYOKA_HAVE_REAL)
-
-#include "expose_real.hpp"
-
-#endif
-
-#if defined(__GNUC__)
+#if BOOST_COMP_GNUC || BOOST_COMP_CLANG
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wcast-align"
@@ -85,6 +79,8 @@ handle type_caster<float>::cast(const float &src, return_value_policy, handle)
     return ret_ob;
 }
 
+#if defined(HEYOKA_HAVE_LONG_DOUBLE)
+
 bool type_caster<long double>::load(handle src, bool)
 {
     if (PyObject_IsInstance(src.ptr(), reinterpret_cast<PyObject *>(&PyLongDoubleArrType_Type)) == 0) {
@@ -109,6 +105,8 @@ handle type_caster<long double>::cast(const long double &src, return_value_polic
 
     return ret_ob;
 }
+
+#endif
 
 #if defined(HEYOKA_HAVE_REAL128)
 
@@ -139,8 +137,6 @@ handle type_caster<mppp::real128>::cast(const mppp::real128 &src, return_value_p
 
 #endif
 
-#if defined(HEYOKA_HAVE_REAL)
-
 bool type_caster<mppp::real>::load(handle src, bool)
 {
     namespace heypy = heyoka_py;
@@ -166,11 +162,9 @@ handle type_caster<mppp::real>::cast(const mppp::real &src, return_value_policy,
     return ret_ob;
 }
 
-#endif
-
 } // namespace pybind11::detail
 
-#if defined(__GNUC__)
+#if BOOST_COMP_GNUC || BOOST_COMP_CLANG
 
 #pragma GCC diagnostic pop
 

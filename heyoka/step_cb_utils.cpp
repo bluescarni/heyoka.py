@@ -26,11 +26,7 @@
 
 #endif
 
-#if defined(HEYOKA_HAVE_REAL)
-
 #include <mp++/real.hpp>
-
-#endif
 
 #include <heyoka/step_callback.hpp>
 #include <heyoka/taylor.hpp>
@@ -158,8 +154,7 @@ scb_t step_callback_to_scb(const scb_t &s, StepCallback &cb)
 // Metaprogramming to select the step callback
 // set corresponding to the input step callback type.
 template <typename StepCallback>
-struct make_callback_set {
-};
+struct make_callback_set {};
 
 template <typename T>
 struct make_callback_set<heyoka::step_callback<T>> {
@@ -245,8 +240,12 @@ template void step_cb_wrapper::pre_hook(heyoka::taylor_adaptive<float> &);
 template bool step_cb_wrapper::operator()(heyoka::taylor_adaptive<double> &);
 template void step_cb_wrapper::pre_hook(heyoka::taylor_adaptive<double> &);
 
+#if defined(HEYOKA_HAVE_LONG_DOUBLE)
+
 template bool step_cb_wrapper::operator()(heyoka::taylor_adaptive<long double> &);
 template void step_cb_wrapper::pre_hook(heyoka::taylor_adaptive<long double> &);
+
+#endif
 
 #if defined(HEYOKA_HAVE_REAL128)
 
@@ -255,12 +254,8 @@ template void step_cb_wrapper::pre_hook(heyoka::taylor_adaptive<mppp::real128> &
 
 #endif
 
-#if defined(HEYOKA_HAVE_REAL)
-
 template bool step_cb_wrapper::operator()(heyoka::taylor_adaptive<mppp::real> &);
 template void step_cb_wrapper::pre_hook(heyoka::taylor_adaptive<mppp::real> &);
-
-#endif
 
 template bool step_cb_wrapper::operator()(heyoka::taylor_adaptive_batch<float> &);
 template void step_cb_wrapper::pre_hook(heyoka::taylor_adaptive_batch<float> &);
@@ -274,8 +269,12 @@ template scb_arg_t step_callback_to_scb_arg_t(const scb_arg_t &, heyoka::step_ca
 template heyoka::step_callback<double> scb_arg_to_step_callback(scb_arg_t &);
 template scb_arg_t step_callback_to_scb_arg_t(const scb_arg_t &, heyoka::step_callback<double> &);
 
+#if defined(HEYOKA_HAVE_LONG_DOUBLE)
+
 template heyoka::step_callback<long double> scb_arg_to_step_callback(scb_arg_t &);
 template scb_arg_t step_callback_to_scb_arg_t(const scb_arg_t &, heyoka::step_callback<long double> &);
+
+#endif
 
 #if defined(HEYOKA_HAVE_REAL128)
 
@@ -284,12 +283,8 @@ template scb_arg_t step_callback_to_scb_arg_t(const scb_arg_t &, heyoka::step_ca
 
 #endif
 
-#if defined(HEYOKA_HAVE_REAL)
-
 template heyoka::step_callback<mppp::real> scb_arg_to_step_callback(scb_arg_t &);
 template scb_arg_t step_callback_to_scb_arg_t(const scb_arg_t &, heyoka::step_callback<mppp::real> &);
-
-#endif
 
 template heyoka::step_callback_batch<float> scb_arg_to_step_callback(scb_arg_t &);
 template scb_arg_t step_callback_to_scb_arg_t(const scb_arg_t &, heyoka::step_callback_batch<float> &);

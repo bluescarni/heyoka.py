@@ -28,13 +28,9 @@ from .. import (
     t_event,
 )
 
-# NOTE: the 'real' type is available only in some builds. When it is missing the
-# whole test case is skipped (see the skipUnless decorator below), so the None
-# fallback is never actually used at runtime.
-real = getattr(_core, "real", None)
+real = _core.real
 
 
-@unittest.skipUnless(real is not None, "the 'real' type is not available")
 class mp_test_case(unittest.TestCase):
     def test_cfunc(self):
         x, y = make_vars("x", "y")

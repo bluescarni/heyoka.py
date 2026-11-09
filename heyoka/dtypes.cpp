@@ -27,23 +27,14 @@
 
 #endif
 
-#if defined(HEYOKA_HAVE_REAL)
-
 #include <mp++/real.hpp>
 
-#endif
-
 #include "dtypes.hpp"
+#include "expose_real.hpp"
 
 #if defined(HEYOKA_HAVE_REAL128)
 
 #include "expose_real128.hpp"
-
-#endif
-
-#if defined(HEYOKA_HAVE_REAL)
-
-#include "expose_real.hpp"
 
 #endif
 
@@ -58,8 +49,7 @@ namespace
 
 // Machinery to associate C++ builtin types to a NumPy dtype.
 template <typename>
-struct cpp_to_numpy_t {
-};
+struct cpp_to_numpy_t {};
 
 #define HEYOKA_PY_ASSOC_TY(cpp_tp, npy_tp)                                                                             \
     template <>                                                                                                        \
@@ -69,7 +59,13 @@ struct cpp_to_numpy_t {
 
 HEYOKA_PY_ASSOC_TY(float, NPY_FLOAT);
 HEYOKA_PY_ASSOC_TY(double, NPY_DOUBLE);
+
+#if defined(HEYOKA_HAVE_LONG_DOUBLE)
+
 HEYOKA_PY_ASSOC_TY(long double, NPY_LONGDOUBLE);
+
+#endif
+
 HEYOKA_PY_ASSOC_TY(npy_int8, NPY_INT8);
 HEYOKA_PY_ASSOC_TY(npy_int16, NPY_INT16);
 HEYOKA_PY_ASSOC_TY(npy_int32, NPY_INT32);
@@ -96,13 +92,9 @@ int get_dtype()
 
 #endif
 
-#if defined(HEYOKA_HAVE_REAL)
-
     if constexpr (std::is_same_v<T, mppp::real>) {
         return npy_registered_py_real;
     }
-
-#endif
 
     if constexpr (std::is_arithmetic_v<T>) {
         return detail::cpp_to_numpy_t<T>::value;
@@ -115,7 +107,13 @@ int get_dtype()
 // Explicit instantiations.
 template int get_dtype<float>();
 template int get_dtype<double>();
+
+#if defined(HEYOKA_HAVE_LONG_DOUBLE)
+
 template int get_dtype<long double>();
+
+#endif
+
 template int get_dtype<npy_int8>();
 template int get_dtype<npy_int16>();
 template int get_dtype<npy_int32>();
@@ -131,10 +129,6 @@ template int get_dtype<mppp::real128>();
 
 #endif
 
-#if defined(HEYOKA_HAVE_REAL)
-
 template int get_dtype<mppp::real>();
-
-#endif
 
 } // namespace heyoka_py

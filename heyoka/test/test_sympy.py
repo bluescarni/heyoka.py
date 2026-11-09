@@ -25,9 +25,8 @@ from .. import (
 )
 from ..model import nbody
 
-# NOTE: real and real128 are available only in some builds. Reference them through
-# these module globals so the optional sub-tests can guard with "... is not None".
-real = getattr(_core, "real", None)
+# NOTE: real128 is available only in some builds. Reference it through this
+# module global so the optional sub-tests can guard with "... is not None".
 real128 = getattr(_core, "real128", None)
 
 # sympy (and mpmath) are optional dependencies: skip the whole test case if absent.
@@ -112,7 +111,7 @@ class sympy_test_case(unittest.TestCase):
             )
 
         # Long double precision.
-        if not _core._ppc_arch:
+        if _core._have_long_double:
             with workprec(np.finfo(np.longdouble).nmant + 1):
                 self.assertEqual(
                     to_sympy(expression(np.longdouble("1.1"))),
@@ -144,13 +143,7 @@ class sympy_test_case(unittest.TestCase):
                         expression(np.longdouble(2**expo + 1) / np.longdouble(2**128)),
                     )
 
-        # Too high precision.
-        if real is None:
-            with self.assertRaises(ValueError) as cm:
-                from_sympy(Integer(2**500 + 1))
-            self.assertTrue("the required precision" in str(cm.exception))
-
-        if real128 is None or _core._ppc_arch:
+        if real128 is None:
             return
 
         # Quad precision.

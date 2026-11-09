@@ -17,7 +17,7 @@ if(NOT CMAKE_BUILD_TYPE)
 	FORCE)
 endif()
 
-project(heyoka.py VERSION 7.13.2 LANGUAGES CXX C)
+project(heyoka.py VERSION 7.14.0 LANGUAGES CXX C)
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake" "${CMAKE_CURRENT_SOURCE_DIR}/cmake/yacma")
 
@@ -124,7 +124,7 @@ find_package(fmt REQUIRED CONFIG)
 message(STATUS "fmt version: ${fmt_VERSION}")
 
 # heyoka.
-find_package(heyoka 7.13.0 REQUIRED CONFIG)
+find_package(heyoka 7.14.0...<7.15.0 REQUIRED CONFIG)
 
 # Python.
 
@@ -194,14 +194,8 @@ message(STATUS "Found Boost version ${Boost_VERSION}.")
 # Mandatory dependency on TBB.
 find_package(TBB REQUIRED CONFIG)
 
-# NOTE: we make direct use of the mp++ headers
-# in the heyoka.py source code if real/real128 support is enabled.
-if(heyoka_WITH_REAL128 OR heyoka_WITH_REAL)
-    # NOTE: sync up the required mp++ version
-    # with heyoka for now, not sure if there is
-    # a better solution.
-    find_package(mp++ ${heyoka_mp++_VERSION} REQUIRED CONFIG)
-endif()
+# NOTE: sync up the required mp++ version with heyoka for now, not sure if there is a better solution.
+find_package(mp++ ${heyoka_mp++_VERSION} REQUIRED CONFIG)
 
 # Add the module directory.
 add_subdirectory(heyoka)

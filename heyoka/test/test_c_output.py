@@ -374,7 +374,7 @@ class c_output_test_case(unittest.TestCase):
     def test_scalar(self):
         x, v = make_vars("x", "v")
 
-        if _core._ppc_arch:
+        if not _core._have_long_double:
             fp_types = [
                 (np.float32, continuous_output_flt),
                 (float, continuous_output_dbl),

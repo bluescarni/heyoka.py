@@ -9,17 +9,11 @@ Dependencies
 heyoka.py has several Python and C++ dependencies. On the C++ side, heyoka.py depends on:
 
 * the `heyoka C++ library <https://github.com/bluescarni/heyoka>`__,
-  version 7.13.x (**mandatory**),
+  version 7.14.x (**mandatory**),
 * the `Boost <https://www.boost.org/>`__ C++ libraries (**mandatory**),
 * the `{fmt} <https://fmt.dev/latest/index.html>`__ library (**mandatory**),
 * the `TBB <https://github.com/oneapi-src/oneTBB>`__ library (**mandatory**),
-* the `mp++ <https://github.com/bluescarni/mppp>`__ library (**mandatory** if the
-  heyoka C++ library was compiled with the ``HEYOKA_WITH_MPPP`` option enabled
-  and the mp++ installation supports quadruple-precision computations via
-  the :cpp:class:`mppp::real128` type and/or arbitrary-precision computations
-  via the :cpp:class:`mppp::real` type - see the
-  :ref:`heyoka <hy:installation>` and :ref:`mp++ <mppp:installation>` installation
-  instructions).
+* the `mp++ <https://github.com/bluescarni/mppp>`__ library (**mandatory**).
 
 On the Python side, heyoka.py requires at least Python 3.10 and depends on:
 
@@ -71,15 +65,6 @@ We currently offer prebuilt binary wheels for x86-64 Linux, along with a source 
 When using the sdist for installation, you are responsible for managing the installation of the C++ dependencies.
 
 We plan to add in the near future prebuilt wheels for additional operating systems and CPU architectures.
-
-.. note::
-
-   heyoka.py relies on a stack of C++ dependencies which are bundled in the prebuilt binary wheels.
-   There is a non-negligible chance of conflicts with other packages which might also depend on and bundle
-   the same C++ libraries, which can lead to unpredictable runtime errors and hard-to-diagnose
-   issues.
-
-   We encourage users to install heyoka.py via conda rather than ``pip`` whenever possible.
 
 FreeBSD
 ^^^^^^^

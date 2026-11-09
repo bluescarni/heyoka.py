@@ -15,23 +15,23 @@ def _with_real128():
     return hasattr(_core, "real128")
 
 
-def _with_real():
-    # Small helper to check if real is available.
-    return hasattr(_core, "real")
+def _with_long_double():
+    # Small helper to check if long double is available.
+    return _core._have_long_double
 
 
 _fp_to_suffix_dict = {
     float32: "_flt",
     float64: "_dbl",
     float: "_dbl",
-    longdouble: "_ldbl",
+    _core.real: "_real",
 }
+
+if _with_long_double():
+    _fp_to_suffix_dict[longdouble] = "_ldbl"
 
 if _with_real128():
     _fp_to_suffix_dict[_core.real128] = "_f128"
-
-if _with_real():
-    _fp_to_suffix_dict[_core.real] = "_real"
 
 
 def _fp_to_suffix(fp_t):

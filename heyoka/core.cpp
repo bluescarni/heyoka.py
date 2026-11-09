@@ -18,6 +18,8 @@
 #include <sstream>
 #include <utility>
 
+#include <boost/predef/compiler/clang.h>
+
 #include <oneapi/tbb/global_control.h>
 
 #include <pybind11/native_enum.h>
@@ -40,11 +42,7 @@
 
 #endif
 
-#if defined(HEYOKA_HAVE_REAL)
-
 #include <mp++/real.hpp>
-
-#endif
 
 #include <heyoka/detail/http_download.hpp>
 #include <heyoka/exceptions.hpp>
@@ -108,7 +106,7 @@ PyObject *import_numpy(PyObject *m)
 
 } // namespace heyoka_py::detail
 
-#if defined(__clang__)
+#if BOOST_COMP_CLANG
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wself-assign-overloaded"
@@ -134,9 +132,9 @@ PYBIND11_MODULE(_core, m, pybind11::mod_gil_not_used())
         throw py::error_already_set();
     }
 
-    // Flag PPC arch.
-    m.attr("_ppc_arch") =
-#if defined(HEYOKA_ARCH_PPC)
+    // Flag the availability of long double.
+    m.attr("_have_long_double") =
+#if defined(HEYOKA_HAVE_LONG_DOUBLE)
         true
 #else
         false
@@ -336,7 +334,12 @@ PYBIND11_MODULE(_core, m, pybind11::mod_gil_not_used())
     // Compiled functions.
     heypy::expose_add_cfunc_flt(m);
     heypy::expose_add_cfunc_dbl(m);
+
+#if defined(HEYOKA_HAVE_LONG_DOUBLE)
+
     heypy::expose_add_cfunc_ldbl(m);
+
+#endif
 
 #if defined(HEYOKA_HAVE_REAL128)
 
@@ -344,11 +347,7 @@ PYBIND11_MODULE(_core, m, pybind11::mod_gil_not_used())
 
 #endif
 
-#if defined(HEYOKA_HAVE_REAL)
-
     heypy::expose_add_cfunc_real(m);
-
-#endif
 
     // Expose the continuous output function objects.
     //
@@ -363,7 +362,12 @@ PYBIND11_MODULE(_core, m, pybind11::mod_gil_not_used())
     // about wrong types being passed to an integrator's method), they need to be already exposed.
     heypy::expose_taylor_t_event_flt(m);
     heypy::expose_taylor_t_event_dbl(m);
+
+#if defined(HEYOKA_HAVE_LONG_DOUBLE)
+
     heypy::expose_taylor_t_event_ldbl(m);
+
+#endif
 
 #if defined(HEYOKA_HAVE_REAL128)
 
@@ -371,15 +375,16 @@ PYBIND11_MODULE(_core, m, pybind11::mod_gil_not_used())
 
 #endif
 
-#if defined(HEYOKA_HAVE_REAL)
-
     heypy::expose_taylor_t_event_real(m);
-
-#endif
 
     heypy::expose_taylor_nt_event_flt(m);
     heypy::expose_taylor_nt_event_dbl(m);
+
+#if defined(HEYOKA_HAVE_LONG_DOUBLE)
+
     heypy::expose_taylor_nt_event_ldbl(m);
+
+#endif
 
 #if defined(HEYOKA_HAVE_REAL128)
 
@@ -387,11 +392,7 @@ PYBIND11_MODULE(_core, m, pybind11::mod_gil_not_used())
 
 #endif
 
-#if defined(HEYOKA_HAVE_REAL)
-
     heypy::expose_taylor_nt_event_real(m);
-
-#endif
 
     // Batch mode.
     heypy::expose_taylor_nt_event_batch_flt(m);
@@ -405,7 +406,12 @@ PYBIND11_MODULE(_core, m, pybind11::mod_gil_not_used())
     // Scalar adaptive taylor integrators.
     heypy::expose_taylor_integrator_flt(m);
     heypy::expose_taylor_integrator_dbl(m);
+
+#if defined(HEYOKA_HAVE_LONG_DOUBLE)
+
     heypy::expose_taylor_integrator_ldbl(m);
+
+#endif
 
 #if defined(HEYOKA_HAVE_REAL128)
 
@@ -413,11 +419,7 @@ PYBIND11_MODULE(_core, m, pybind11::mod_gil_not_used())
 
 #endif
 
-#if defined(HEYOKA_HAVE_REAL)
-
     heypy::expose_taylor_integrator_real(m);
-
-#endif
 
     // Batch integrators.
     heypy::expose_batch_integrators(m);
@@ -462,7 +464,7 @@ PYBIND11_MODULE(_core, m, pybind11::mod_gil_not_used())
     m.def("_set_ssl_verify_file", &hey::detail::set_ssl_verify_file);
 }
 
-#if defined(__clang__)
+#if BOOST_COMP_CLANG
 
 #pragma clang diagnostic pop
 

@@ -38,7 +38,7 @@ echo "PYTHON_DIR: ${PYTHON_DIR}"
 /opt/python/${PYTHON_DIR}/bin/pip install uv
 
 # The heyoka version to be used for releases.
-export HEYOKA_VERSION_RELEASE="7.13.0"
+export HEYOKA_VERSION_RELEASE="7.14.0"
 
 # Check if this is a release build.
 if [[ "${GITHUB_REF}" == "refs/tags/v"* ]]; then
@@ -63,8 +63,7 @@ fi
 
 mkdir build
 cd build
-cmake -DHEYOKA_WITH_MPPP=yes \
-    -DHEYOKA_WITH_SLEEF=yes \
+cmake -DHEYOKA_WITH_SLEEF=yes \
     -DHEYOKA_ENABLE_IPO=ON \
     -DHEYOKA_FORCE_STATIC_LLVM=yes \
     -DHEYOKA_HIDE_LLVM_SYMBOLS=yes \

@@ -39,11 +39,7 @@
 
 #endif
 
-#if defined(HEYOKA_HAVE_REAL)
-
 #include <mp++/real.hpp>
-
-#endif
 
 #include <heyoka/events.hpp>
 #include <heyoka/expression.hpp>
@@ -56,15 +52,10 @@
 #include "common_utils.hpp"
 #include "custom_casters.hpp"
 #include "dtypes.hpp"
+#include "expose_real.hpp"
 #include "pickle_wrappers.hpp"
 #include "step_cb_utils.hpp"
 #include "taylor_expose_integrator.hpp"
-
-#if defined(HEYOKA_HAVE_REAL)
-
-#include "expose_real.hpp"
-
-#endif
 
 namespace heyoka_py
 {
@@ -79,13 +70,7 @@ namespace
 {
 
 template <typename T>
-constexpr bool default_cm =
-#if defined(HEYOKA_HAVE_REAL)
-    std::is_same_v<T, mppp::real>
-#else
-    false
-#endif
-    ;
+constexpr bool default_cm = std::same_as<T, mppp::real>;
 
 // Helper to fetch the tstate from a variational integrator.
 // Extracted here for re-use.
@@ -455,15 +440,11 @@ void expose_taylor_integrator_impl(py::module &m, const std::string &suffix)
                                                     .c_str());
                  }
 
-#if defined(HEYOKA_HAVE_REAL)
-
                  // Run the checks specific for mppp::real.
                  if constexpr (std::same_as<T, mppp::real>) {
                      // Check that the inputs array contains values with the correct precision.
                      pyreal_check_array(inputs, ta->get_prec());
                  }
-
-#endif
 
                  // Check that the inputs array does not overlap with the integrator's internal buffers used by the
                  // cfunc call.
@@ -486,13 +467,9 @@ void expose_taylor_integrator_impl(py::module &m, const std::string &suffix)
     // Expose the llvm state getter.
     expose_llvm_state_property_ta(cl);
 
-#if defined(HEYOKA_HAVE_REAL)
-
     if constexpr (std::is_same_v<T, mppp::real>) {
         cl.def_property_readonly("prec", &hey::taylor_adaptive<T>::get_prec);
     }
-
-#endif
 }
 
 } // namespace
@@ -509,10 +486,14 @@ void expose_taylor_integrator_dbl(py::module &m)
     detail::expose_taylor_integrator_impl<double>(m, "dbl");
 }
 
+#if defined(HEYOKA_HAVE_LONG_DOUBLE)
+
 void expose_taylor_integrator_ldbl(py::module &m)
 {
     detail::expose_taylor_integrator_impl<long double>(m, "ldbl");
 }
+
+#endif
 
 #if defined(HEYOKA_HAVE_REAL128)
 
@@ -523,13 +504,9 @@ void expose_taylor_integrator_f128(py::module &m)
 
 #endif
 
-#if defined(HEYOKA_HAVE_REAL)
-
 void expose_taylor_integrator_real(py::module &m)
 {
     detail::expose_taylor_integrator_impl<mppp::real>(m, "real");
 }
-
-#endif
 
 } // namespace heyoka_py

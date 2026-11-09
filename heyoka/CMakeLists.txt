@@ -89,9 +89,7 @@ unset(_HEYOKA_PY_CORE_SOURCES)
 
 target_link_libraries(_core PRIVATE heyoka::heyoka fmt::fmt Boost::boost Boost::serialization TBB::tbb Python3::NumPy)
 target_link_libraries(_core PRIVATE "${pybind11_LIBRARIES}")
-if(heyoka_WITH_REAL128 OR heyoka_WITH_REAL)
-    target_link_libraries(_core PRIVATE mp++::mp++)
-endif()
+target_link_libraries(_core PRIVATE mp++::mp++)
 target_include_directories(_core SYSTEM PRIVATE "${pybind11_INCLUDE_DIR}" "${Python3_INCLUDE_DIRS}")
 target_compile_definitions(_core PRIVATE "${pybind11_DEFINITIONS}")
 target_compile_options(_core PRIVATE

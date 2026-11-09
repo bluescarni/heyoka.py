@@ -34,11 +34,7 @@
 
 #endif
 
-#if defined(HEYOKA_HAVE_REAL)
-
 #include <mp++/real.hpp>
-
-#endif
 
 #include <heyoka/callable.hpp>
 #include <heyoka/events.hpp>
@@ -181,6 +177,19 @@ private:
     BOOST_SERIALIZATION_SPLIT_MEMBER()
 };
 
+// Metaprogramming for selecting event and callback types in expose_taylor_nt_event_impl().
+template <typename T, bool B>
+struct expose_taylor_nt_event_impl_select_types {
+    using ev_t = heyoka::nt_event_batch<T>;
+    using callback_t = ev_callback<void, heyoka::taylor_adaptive_batch<T> &, T, int, std::uint32_t>;
+};
+
+template <typename T>
+struct expose_taylor_nt_event_impl_select_types<T, false> {
+    using ev_t = heyoka::nt_event<T>;
+    using callback_t = ev_callback<void, heyoka::taylor_adaptive<T> &, T, int>;
+};
+
 // Helper to expose non-terminal events.
 template <typename T, bool B>
 void expose_taylor_nt_event_impl(py::module &m, const std::string &suffix)
@@ -188,9 +197,8 @@ void expose_taylor_nt_event_impl(py::module &m, const std::string &suffix)
     using namespace pybind11::literals;
     namespace kw = hey::kw;
 
-    using ev_t = std::conditional_t<B, hey::nt_event_batch<T>, hey::nt_event<T>>;
-    using callback_t = std::conditional_t<B, ev_callback<void, hey::taylor_adaptive_batch<T> &, T, int, std::uint32_t>,
-                                          ev_callback<void, hey::taylor_adaptive<T> &, T, int>>;
+    using ev_t = typename expose_taylor_nt_event_impl_select_types<T, B>::ev_t;
+    using callback_t = typename expose_taylor_nt_event_impl_select_types<T, B>::callback_t;
 
     const auto name = B ? fmt::format("nt_event_batch_{}", suffix) : fmt::format("nt_event_{}", suffix);
 
@@ -244,6 +252,19 @@ void expose_taylor_nt_event_impl(py::module &m, const std::string &suffix)
         .def(py::pickle(&pickle_getstate_wrapper<ev_t>, &pickle_setstate_wrapper<ev_t>));
 }
 
+// Metaprogramming for selecting event and callback types in expose_taylor_t_event_impl().
+template <typename T, bool B>
+struct expose_taylor_t_event_impl_select_types {
+    using ev_t = heyoka::t_event_batch<T>;
+    using callback_t = ev_callback<bool, heyoka::taylor_adaptive_batch<T> &, int, std::uint32_t>;
+};
+
+template <typename T>
+struct expose_taylor_t_event_impl_select_types<T, false> {
+    using ev_t = heyoka::t_event<T>;
+    using callback_t = ev_callback<bool, heyoka::taylor_adaptive<T> &, int>;
+};
+
 // Helper to expose terminal events.
 template <typename T, bool B>
 void expose_taylor_t_event_impl(py::module &m, const std::string &suffix)
@@ -251,9 +272,8 @@ void expose_taylor_t_event_impl(py::module &m, const std::string &suffix)
     using namespace pybind11::literals;
     namespace kw = hey::kw;
 
-    using ev_t = std::conditional_t<B, hey::t_event_batch<T>, hey::t_event<T>>;
-    using callback_t = std::conditional_t<B, ev_callback<bool, hey::taylor_adaptive_batch<T> &, int, std::uint32_t>,
-                                          ev_callback<bool, hey::taylor_adaptive<T> &, int>>;
+    using ev_t = typename expose_taylor_t_event_impl_select_types<T, B>::ev_t;
+    using callback_t = typename expose_taylor_t_event_impl_select_types<T, B>::callback_t;
 
     const auto name = B ? fmt::format("t_event_batch_{}", suffix) : fmt::format("t_event_{}", suffix);
 
@@ -330,10 +350,14 @@ void expose_taylor_t_event_dbl(py::module &m)
     detail::expose_taylor_t_event_impl<double, false>(m, "dbl");
 }
 
+#if defined(HEYOKA_HAVE_LONG_DOUBLE)
+
 void expose_taylor_t_event_ldbl(py::module &m)
 {
     detail::expose_taylor_t_event_impl<long double, false>(m, "ldbl");
 }
+
+#endif
 
 #if defined(HEYOKA_HAVE_REAL128)
 
@@ -344,14 +368,10 @@ void expose_taylor_t_event_f128(py::module &m)
 
 #endif
 
-#if defined(HEYOKA_HAVE_REAL)
-
 void expose_taylor_t_event_real(py::module &m)
 {
     detail::expose_taylor_t_event_impl<mppp::real, false>(m, "real");
 }
-
-#endif
 
 void expose_taylor_nt_event_flt(py::module &m)
 {
@@ -363,10 +383,14 @@ void expose_taylor_nt_event_dbl(py::module &m)
     detail::expose_taylor_nt_event_impl<double, false>(m, "dbl");
 }
 
+#if defined(HEYOKA_HAVE_LONG_DOUBLE)
+
 void expose_taylor_nt_event_ldbl(py::module &m)
 {
     detail::expose_taylor_nt_event_impl<long double, false>(m, "ldbl");
 }
+
+#endif
 
 #if defined(HEYOKA_HAVE_REAL128)
 
@@ -377,14 +401,10 @@ void expose_taylor_nt_event_f128(py::module &m)
 
 #endif
 
-#if defined(HEYOKA_HAVE_REAL)
-
 void expose_taylor_nt_event_real(py::module &m)
 {
     detail::expose_taylor_nt_event_impl<mppp::real, false>(m, "real");
 }
-
-#endif
 
 void expose_taylor_t_event_batch_flt(py::module &m)
 {
@@ -411,7 +431,12 @@ void expose_taylor_nt_event_batch_dbl(py::module &m)
 // Boost.Serialization library complaining that the class name is too long.
 using nt_cb_flt = detail::ev_callback<void, heyoka::taylor_adaptive<float> &, float, int>;
 using nt_cb_dbl = detail::ev_callback<void, heyoka::taylor_adaptive<double> &, double, int>;
+
+#if defined(HEYOKA_HAVE_LONG_DOUBLE)
+
 using nt_cb_ldbl = detail::ev_callback<void, heyoka::taylor_adaptive<long double> &, long double, int>;
+
+#endif
 
 #if defined(HEYOKA_HAVE_REAL128)
 
@@ -419,15 +444,16 @@ using nt_cb_f128 = detail::ev_callback<void, heyoka::taylor_adaptive<mppp::real1
 
 #endif
 
-#if defined(HEYOKA_HAVE_REAL)
-
 using nt_cb_real = detail::ev_callback<void, heyoka::taylor_adaptive<mppp::real> &, mppp::real, int>;
-
-#endif
 
 using t_cb_flt = detail::ev_callback<bool, heyoka::taylor_adaptive<float> &, int>;
 using t_cb_dbl = detail::ev_callback<bool, heyoka::taylor_adaptive<double> &, int>;
+
+#if defined(HEYOKA_HAVE_LONG_DOUBLE)
+
 using t_cb_ldbl = detail::ev_callback<bool, heyoka::taylor_adaptive<long double> &, int>;
+
+#endif
 
 #if defined(HEYOKA_HAVE_REAL128)
 
@@ -435,11 +461,7 @@ using t_cb_f128 = detail::ev_callback<bool, heyoka::taylor_adaptive<mppp::real12
 
 #endif
 
-#if defined(HEYOKA_HAVE_REAL)
-
 using t_cb_real = detail::ev_callback<bool, heyoka::taylor_adaptive<mppp::real> &, int>;
-
-#endif
 
 using tabf = heyoka::taylor_adaptive_batch<float>;
 
@@ -456,8 +478,13 @@ using t_batch_cb_dbl = detail::ev_callback<bool, tabd &, int, std::uint32_t>;
 // Register the callback wrappers in the serialisation system.
 HEYOKA_S11N_CALLABLE_EXPORT(heyoka_py::nt_cb_flt, false, void, heyoka::taylor_adaptive<float> &, float, int)
 HEYOKA_S11N_CALLABLE_EXPORT(heyoka_py::nt_cb_dbl, false, void, heyoka::taylor_adaptive<double> &, double, int)
+
+#if defined(HEYOKA_HAVE_LONG_DOUBLE)
+
 HEYOKA_S11N_CALLABLE_EXPORT(heyoka_py::nt_cb_ldbl, false, void, heyoka::taylor_adaptive<long double> &, long double,
                             int)
+
+#endif
 
 #if defined(HEYOKA_HAVE_REAL128)
 
@@ -466,15 +493,16 @@ HEYOKA_S11N_CALLABLE_EXPORT(heyoka_py::nt_cb_f128, false, void, heyoka::taylor_a
 
 #endif
 
-#if defined(HEYOKA_HAVE_REAL)
-
 HEYOKA_S11N_CALLABLE_EXPORT(heyoka_py::nt_cb_real, false, void, heyoka::taylor_adaptive<mppp::real> &, mppp::real, int)
-
-#endif
 
 HEYOKA_S11N_CALLABLE_EXPORT(heyoka_py::t_cb_flt, false, bool, heyoka::taylor_adaptive<float> &, int)
 HEYOKA_S11N_CALLABLE_EXPORT(heyoka_py::t_cb_dbl, false, bool, heyoka::taylor_adaptive<double> &, int)
+
+#if defined(HEYOKA_HAVE_LONG_DOUBLE)
+
 HEYOKA_S11N_CALLABLE_EXPORT(heyoka_py::t_cb_ldbl, false, bool, heyoka::taylor_adaptive<long double> &, int)
+
+#endif
 
 #if defined(HEYOKA_HAVE_REAL128)
 
@@ -482,11 +510,7 @@ HEYOKA_S11N_CALLABLE_EXPORT(heyoka_py::t_cb_f128, false, bool, heyoka::taylor_ad
 
 #endif
 
-#if defined(HEYOKA_HAVE_REAL)
-
 HEYOKA_S11N_CALLABLE_EXPORT(heyoka_py::t_cb_real, false, bool, heyoka::taylor_adaptive<mppp::real> &, int)
-
-#endif
 
 HEYOKA_S11N_CALLABLE_EXPORT(heyoka_py::nt_batch_cb_flt, false, void, heyoka_py::tabf &, float, int, std::uint32_t)
 HEYOKA_S11N_CALLABLE_EXPORT(heyoka_py::t_batch_cb_flt, false, bool, heyoka_py::tabf &, int, std::uint32_t)
