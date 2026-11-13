@@ -132,6 +132,18 @@ class event_classes_test_case(unittest.TestCase):
                 in str(cm.exception)
             )
 
+            # The cross-step flag (disabled by default).
+            ev = nt_event(x + v, lambda _: _, fp_type=fp_t)
+            self.assertFalse(ev.cross_step)
+            self.assertTrue("Cross step     : no" in repr(ev))
+
+            ev = nt_event(x + v, lambda _: _, fp_type=fp_t, cross_step=True)
+            self.assertTrue(ev.cross_step)
+            self.assertTrue("Cross step     : yes" in repr(ev))
+            self.assertTrue(copy(ev).cross_step)
+            self.assertTrue(deepcopy(ev).cross_step)
+            self.assertTrue(pickle.loads(pickle.dumps(ev)).cross_step)
+
             ev = nt_event(
                 ex=x + v,
                 callback=lambda _: _,
@@ -183,7 +195,7 @@ class event_classes_test_case(unittest.TestCase):
             self.assertTrue("auto" in repr(ev))
             self.assertEqual(ev.expression, x + v)
             self.assertEqual(ev.direction, event_direction.any)
-            self.assertEqual(ev.cooldown, fp_t(-1))
+            self.assertIsNone(ev.cooldown)
             self.assertTrue(ev.callback is None)
 
             ev = t_event(
@@ -282,6 +294,25 @@ class event_classes_test_case(unittest.TestCase):
                 " is not callable".format(str(type(3)))
                 in str(cm.exception)
             )
+
+            # A cooldown of None selects the automatic deduction, zero and negative cooldowns are rejected.
+            self.assertIsNone(t_event(x + v, fp_type=fp_t, cooldown=None).cooldown)
+            for cd in [fp_t(0), fp_t(-1)]:
+                with self.assertRaises(ValueError) as cm:
+                    t_event(x + v, fp_type=fp_t, cooldown=cd)
+                self.assertTrue("Cannot set a non-positive cooldown value" in str(cm.exception))
+
+            # The cross-step flag (disabled by default).
+            ev = t_event(x + v, fp_type=fp_t)
+            self.assertFalse(ev.cross_step)
+            self.assertTrue("Cross step     : no" in repr(ev))
+
+            ev = t_event(x + v, fp_type=fp_t, cross_step=True)
+            self.assertTrue(ev.cross_step)
+            self.assertTrue("Cross step     : yes" in repr(ev))
+            self.assertTrue(copy(ev).cross_step)
+            self.assertTrue(deepcopy(ev).cross_step)
+            self.assertTrue(pickle.loads(pickle.dumps(ev)).cross_step)
 
             ev = t_event(
                 x + v,
@@ -436,6 +467,18 @@ class event_classes_test_case(unittest.TestCase):
             in str(cm.exception)
         )
 
+        # The cross-step flag (disabled by default).
+        ev = nt_event_batch(x + v, lambda _: _)
+        self.assertFalse(ev.cross_step)
+        self.assertTrue("Cross step     : no" in repr(ev))
+
+        ev = nt_event_batch(x + v, lambda _: _, cross_step=True)
+        self.assertTrue(ev.cross_step)
+        self.assertTrue("Cross step     : yes" in repr(ev))
+        self.assertTrue(copy(ev).cross_step)
+        self.assertTrue(deepcopy(ev).cross_step)
+        self.assertTrue(pickle.loads(pickle.dumps(ev)).cross_step)
+
         ev = nt_event_batch(
             ex=x + v, callback=lambda _: _, direction=event_direction.negative
         )
@@ -482,7 +525,7 @@ class event_classes_test_case(unittest.TestCase):
         self.assertTrue("auto" in repr(ev))
         self.assertEqual(ev.expression, x + v)
         self.assertEqual(ev.direction, event_direction.any)
-        self.assertEqual(ev.cooldown, fp_t(-1))
+        self.assertIsNone(ev.cooldown)
         self.assertTrue(ev.callback is None)
 
         ev = t_event_batch(x + v, direction=event_direction.negative, cooldown=fp_t(3))
@@ -566,6 +609,25 @@ class event_classes_test_case(unittest.TestCase):
             " not callable".format(str(type(3)))
             in str(cm.exception)
         )
+
+        # A cooldown of None selects the automatic deduction, zero and negative cooldowns are rejected.
+        self.assertIsNone(t_event_batch(x + v, cooldown=None).cooldown)
+        for cd in [fp_t(0), fp_t(-1)]:
+            with self.assertRaises(ValueError) as cm:
+                t_event_batch(x + v, cooldown=cd)
+            self.assertTrue("Cannot set a non-positive cooldown value" in str(cm.exception))
+
+        # The cross-step flag (disabled by default).
+        ev = t_event_batch(x + v)
+        self.assertFalse(ev.cross_step)
+        self.assertTrue("Cross step     : no" in repr(ev))
+
+        ev = t_event_batch(x + v, cross_step=True)
+        self.assertTrue(ev.cross_step)
+        self.assertTrue("Cross step     : yes" in repr(ev))
+        self.assertTrue(copy(ev).cross_step)
+        self.assertTrue(deepcopy(ev).cross_step)
+        self.assertTrue(pickle.loads(pickle.dumps(ev)).cross_step)
 
         ev = t_event_batch(
             x + v,
