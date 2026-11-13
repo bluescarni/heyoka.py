@@ -314,9 +314,10 @@ PYBIND11_MODULE(_core, m, pybind11::mod_gil_not_used())
 
     // taylor_outcome enum.
     //
-    // NOTE: we cannot convert this into a native enum at this time as there are apparently issues when exposing a C++
-    // enum with negative values as a IntFlag - it seems like negative values are converted into 32-bit unsigned ints.
-    // We need to investigate this better.
+    // NOTE: we cannot convert this into a native enum at this time. In addition to the enumerators, taylor_outcome is
+    // used to represent the indices of terminal events via arbitrary integral values, which native Python enums cannot
+    // represent: enum.IntEnum rejects non-member values with a ValueError, while enum.IntFlag maps negative values to
+    // their two's complement within the bit width of the flag.
     py::enum_<hey::taylor_outcome>(m, "taylor_outcome", py::arithmetic())
         .value("success", hey::taylor_outcome::success)
         .value("step_limit", hey::taylor_outcome::step_limit)
