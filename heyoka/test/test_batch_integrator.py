@@ -11,6 +11,7 @@ from .. import (
     taylor_adaptive_batch,
     code_model,
     make_vars,
+    expression,
     sin,
     nt_event_batch,
     t_event_batch,
@@ -601,6 +602,54 @@ class batch_integrator_test_case(unittest.TestCase):
             ta.reset_cooldowns()
             self.assertTrue(ta.te_cooldowns[0][0] is None)
             self.assertTrue(ta.te_cooldowns[1][0] is None)
+
+    def test_cross_step(self):
+        # Cross-step event detection and the reset of the tracked event signs.
+        v = make_vars("v")
+
+        # The reset methods, together with the expected records of the event with cross-step detection enabled.
+        resets = [
+            (lambda ta: None, [(0, 0.25, 1), (1, 0.25, -1)]),
+            (lambda ta: ta.reset_event_signs(), []),
+            (lambda ta: ta.reset_event_signs(1), [(0, 0.25, 1)]),
+        ]
+
+        for reset, expected in resets:
+            # The (batch index, time, direction) records of the non-terminal events, with and without cross-step
+            # detection.
+            cs_records = []
+            def_records = []
+
+            def cs_cb(ta, t, d_sgn, bidx):
+                cs_records.append((bidx, t, d_sgn))
+
+            def def_cb(ta, t, d_sgn, bidx):
+                def_records.append((bidx, t, d_sgn))
+
+            ta = taylor_adaptive_batch(
+                sys=[(v, expression(-1.0))],
+                state=np.array([[-1.0, 2.0]]),
+                nt_events=[nt_event_batch(v, cs_cb, cross_step=True), nt_event_batch(v, def_cb)],
+            )
+
+            # First step: v is negative at the end of the step in batch element 0, and positive in batch element 1.
+            ta.step(max_delta_t=[0.25, 0.25])
+
+            # Jump of v through zero in both batch elements, followed by the reset.
+            ta.state[0, 0] = 1.0
+            ta.state[0, 1] = -1.0
+            reset(ta)
+
+            # Second step: v does not cross zero within the step in either batch element. The jumps are reported only
+            # by the event with cross-step detection enabled, and only in the batch elements which were not reset.
+            ta.step(max_delta_t=[0.25, 0.25])
+            self.assertEqual(cs_records, expected)
+            self.assertEqual(def_records, [])
+
+        # reset_event_signs() can be invoked also on integrators without events.
+        ta = taylor_adaptive_batch(sys=[(v, expression(-1.0))], state=np.array([[-1.0, 2.0]]))
+        ta.reset_event_signs()
+        ta.reset_event_signs(1)
 
     def test_s11n(self):
         fp_types = [np.float32, float]

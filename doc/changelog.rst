@@ -9,6 +9,10 @@ Changelog
 New
 ~~~
 
+- Event detection can now optionally detect the zero crossings of the event functions occurring across
+  integration step boundaries, which could be missed by the in-step event detection. This cross-step
+  event detection is enabled on a per-event basis via the new ``cross_step`` keyword argument
+  (`#287 <https://github.com/bluescarni/heyoka.py/pull/287>`__).
 - Parallel JIT compilation is now available and enabled by default
   (`#286 <https://github.com/bluescarni/heyoka.py/pull/286>`__).
 - Event detection now uses a rigorous real root isolation algorithm based on interval arithmetic
@@ -20,6 +24,20 @@ New
 Changes
 ~~~~~~~
 
+- Zero and negative cooldown values for terminal events now raise an exception. In order to request the
+  automatic deduction of the cooldown, the ``cooldown`` keyword argument must now be omitted or set to ``None``
+  (which is now its default value). Accordingly, the ``cooldown`` property of terminal events now returns
+  ``None`` if the cooldown is automatically deduced
+  (`#287 <https://github.com/bluescarni/heyoka.py/pull/287>`__).
+- The automatically-deduced cooldown of terminal events is now guaranteed to be finite and strictly positive
+  (`#287 <https://github.com/bluescarni/heyoka.py/pull/287>`__).
+- Setting the time coordinate of an integrator (via the ``time`` and ``dtime`` properties of the scalar
+  integrator, or via the ``set_time()`` and ``set_dtime()`` methods of the batch integrator) now resets
+  the cooldowns of the terminal events (and the sign tracking of cross-step event detection)
+  (`#287 <https://github.com/bluescarni/heyoka.py/pull/287>`__).
+- The ``reset_cooldowns()`` methods of the integrators do not raise an exception any more
+  if no events were defined
+  (`#287 <https://github.com/bluescarni/heyoka.py/pull/287>`__).
 - Invoking the stepping/propagation methods of an integrator or setting its time coordinate
   (via the ``time`` and ``dtime`` properties of the scalar integrator, or via the
   ``set_time()`` and ``set_dtime()`` methods of the batch integrator) from within one of

@@ -15,6 +15,7 @@ from numpy import longdouble as ld
 from .. import (
     taylor_adaptive,
     make_vars,
+    expression,
     sin,
     nt_event,
     t_event,
@@ -359,6 +360,45 @@ class scalar_integrator_test_case(unittest.TestCase):
 
             ta.reset_cooldowns()
             self.assertTrue(ta.te_cooldowns[0] is None)
+
+    def test_cross_step(self):
+        # Cross-step event detection and the reset of the tracked event signs.
+        v = make_vars("v")
+
+        for reset in [False, True]:
+            # The (time, direction) records of the non-terminal events, with and without cross-step detection.
+            cs_records = []
+            def_records = []
+
+            def cs_cb(ta, t, d_sgn):
+                cs_records.append((t, d_sgn))
+
+            def def_cb(ta, t, d_sgn):
+                def_records.append((t, d_sgn))
+
+            ta = taylor_adaptive(
+                sys=[(v, expression(-1.0))],
+                state=[-1.0],
+                nt_events=[nt_event(v, cs_cb, cross_step=True), nt_event(v, def_cb)],
+            )
+
+            # First step: v is negative at the end of the step.
+            ta.step(max_delta_t=0.25)
+
+            # Jump of v through zero, optionally followed by a reset of the tracked event signs.
+            ta.state[0] = 1.0
+            if reset:
+                ta.reset_event_signs()
+
+            # Second step: v does not cross zero within the step. The jump is reported only by the event with
+            # cross-step detection enabled, and only if the event signs were not reset.
+            ta.step(max_delta_t=0.25)
+            self.assertEqual(cs_records, [] if reset else [(0.25, 1)])
+            self.assertEqual(def_records, [])
+
+        # reset_event_signs() can be invoked also on integrators without events.
+        ta = taylor_adaptive(sys=[(v, expression(-1.0))], state=[-1.0])
+        ta.reset_event_signs()
 
     def test_s11n(self):
         x, v = make_vars("x", "v")

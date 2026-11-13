@@ -651,7 +651,10 @@ void expose_batch_integrator_impl(py::module_ &m, const std::string &suffix)
         .def_property_readonly("with_events", &hey::taylor_adaptive_batch<T>::with_events)
         .def_property_readonly("te_cooldowns", &hey::taylor_adaptive_batch<T>::get_te_cooldowns)
         .def("reset_cooldowns", [](hey::taylor_adaptive_batch<T> &ta) { ta.reset_cooldowns(); })
-        .def("reset_cooldowns", [](hey::taylor_adaptive_batch<T> &ta, std::uint32_t i) { ta.reset_cooldowns(i); })
+        .def("reset_cooldowns", [](hey::taylor_adaptive_batch<T> &ta, const std::uint32_t i) { ta.reset_cooldowns(i); })
+        .def("reset_event_signs", [](hey::taylor_adaptive_batch<T> &ta) { ta.reset_event_signs(); })
+        .def("reset_event_signs",
+             [](hey::taylor_adaptive_batch<T> &ta, const std::uint32_t i) { ta.reset_event_signs(i); })
         .def_property_readonly("t_events", &hey::taylor_adaptive_batch<T>::get_t_events)
         .def_property_readonly("nt_events", &hey::taylor_adaptive_batch<T>::get_nt_events)
         // Repr.

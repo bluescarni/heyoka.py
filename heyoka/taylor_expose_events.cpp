@@ -11,6 +11,7 @@
 #include <cassert>
 #include <cstddef>
 #include <cstdint>
+#include <optional>
 #include <sstream>
 #include <string>
 #include <type_traits>
@@ -25,6 +26,7 @@
 #include <fmt/format.h>
 
 #include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
 
 #include <Python.h>
 
@@ -208,8 +210,9 @@ void expose_taylor_nt_event_impl(py::module &m, const std::string &suffix)
     // because any Python-specific bit can be encapsulated
     // inside the callback, instead of the event object.
     py::class_<ev_t>(m, name.c_str(), py::dynamic_attr{})
-        .def(py::init([](const hey::expression &ex, py::object callback, hey::event_direction dir) {
-                 if (!heypy::callable(callback)) {
+        .def(py::init([](const hey::expression &ex, py::object callback, const hey::event_direction dir,
+                         const bool cross_step) {
+                 if (!heypy::callable(callback)) [[unlikely]] {
                      heypy::py_throw(
                          PyExc_TypeError,
                          fmt::format(
@@ -218,9 +221,9 @@ void expose_taylor_nt_event_impl(py::module &m, const std::string &suffix)
                              .c_str());
                  }
 
-                 return ev_t(ex, callback_t{std::move(callback)}, kw::direction = dir);
+                 return ev_t(ex, callback_t{std::move(callback)}, kw::direction = dir, kw::cross_step = cross_step);
              }),
-             "expression"_a, "callback"_a, "direction"_a = hey::event_direction::any)
+             "expression"_a, "callback"_a, "direction"_a = hey::event_direction::any, "cross_step"_a = false)
         // Repr.
         .def("__repr__",
              [](const ev_t &e) {
@@ -245,6 +248,8 @@ void expose_taylor_nt_event_impl(py::module &m, const std::string &suffix)
                                })
         // Direction.
         .def_property_readonly("direction", &ev_t::get_direction)
+        // Cross-step.
+        .def_property_readonly("cross_step", &ev_t::get_cross_step)
         // Copy/deepcopy.
         .def("__copy__", copy_wrapper<ev_t>)
         .def("__deepcopy__", deepcopy_wrapper<ev_t>, "memo"_a)
@@ -284,11 +289,13 @@ void expose_taylor_t_event_impl(py::module &m, const std::string &suffix)
     // inside the callback, instead of the event object.
     py::class_<ev_t>(m, name.c_str(), py::dynamic_attr{})
         .def(
-            py::init([](const hey::expression &ex, py::object callback, hey::event_direction dir, T cooldown) {
+            py::init([](const hey::expression &ex, py::object callback, const hey::event_direction dir,
+                        std::optional<T> cooldown, const bool cross_step) {
                 if (callback.is_none()) {
-                    return ev_t(ex, kw::direction = dir, kw::cooldown = cooldown);
+                    return ev_t(ex, kw::direction = dir, kw::cooldown = std::move(cooldown),
+                                kw::cross_step = cross_step);
                 } else {
-                    if (!heypy::callable(callback)) {
+                    if (!heypy::callable(callback)) [[unlikely]] {
                         heypy::py_throw(
                             PyExc_TypeError,
                             fmt::format(
@@ -298,11 +305,11 @@ void expose_taylor_t_event_impl(py::module &m, const std::string &suffix)
                     }
 
                     return ev_t(ex, kw::callback = callback_t{std::move(callback)}, kw::direction = dir,
-                                kw::cooldown = cooldown);
+                                kw::cooldown = std::move(cooldown), kw::cross_step = cross_step);
                 }
             }),
             "expression"_a, "callback"_a = py::none{}, "direction"_a = hey::event_direction::any,
-            "cooldown"_a.noconvert() = static_cast<T>(-1))
+            "cooldown"_a.noconvert() = py::none{}, "cross_step"_a = false)
         // Repr.
         .def("__repr__",
              [](const ev_t &e) {
@@ -329,6 +336,8 @@ void expose_taylor_t_event_impl(py::module &m, const std::string &suffix)
         .def_property_readonly("direction", &ev_t::get_direction)
         // Cooldown.
         .def_property_readonly("cooldown", &ev_t::get_cooldown)
+        // Cross-step.
+        .def_property_readonly("cross_step", &ev_t::get_cross_step)
         // Copy/deepcopy.
         .def("__copy__", copy_wrapper<ev_t>)
         .def("__deepcopy__", deepcopy_wrapper<ev_t>, "memo"_a)
