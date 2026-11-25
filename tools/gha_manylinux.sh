@@ -16,9 +16,7 @@ BRANCH_NAME=`git rev-parse --abbrev-ref HEAD`
 echo "BRANCH_NAME: ${BRANCH_NAME}"
 
 # Detect the Python version.
-if [[ ${HEYOKA_PY_BUILD_TYPE} == *311 ]]; then
-	PYTHON_DIR="cp311-cp311"
-elif [[ ${HEYOKA_PY_BUILD_TYPE} == *312 ]]; then
+if [[ ${HEYOKA_PY_BUILD_TYPE} == *312 ]]; then
 	PYTHON_DIR="cp312-cp312"
 elif [[ ${HEYOKA_PY_BUILD_TYPE} == *313 ]]; then
 	PYTHON_DIR="cp313-cp313"
@@ -26,6 +24,10 @@ elif [[ ${HEYOKA_PY_BUILD_TYPE} == *314 ]]; then
 	PYTHON_DIR="cp314-cp314"
 elif [[ ${HEYOKA_PY_BUILD_TYPE} == *314t ]]; then
 	PYTHON_DIR="cp314-cp314t"
+elif [[ ${HEYOKA_PY_BUILD_TYPE} == *315 ]]; then
+	PYTHON_DIR="cp315-cp315"
+elif [[ ${HEYOKA_PY_BUILD_TYPE} == *315t ]]; then
+	PYTHON_DIR="cp315-cp315t"
 else
 	echo "Invalid build type: ${HEYOKA_PY_BUILD_TYPE}"
 	exit 1

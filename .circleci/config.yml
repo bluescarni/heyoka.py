@@ -11,7 +11,7 @@ jobs:
         name: Build and test
         command: bash ./tools/conda_docs.sh
         environment:
-          HEYOKA_PY_PY_VERSION: "3.12"
+          HEYOKA_PY_PY_VERSION: "3.14"
           HEYOKA_PY_CONDA_ARCH: "Linux-x86_64"
   conda_arm64_heyoka_head_312:
     machine:
@@ -23,7 +23,7 @@ jobs:
         name: Build and test
         command: bash ./tools/conda_docs.sh
         environment:
-          HEYOKA_PY_PY_VERSION: "3.12"
+          HEYOKA_PY_PY_VERSION: "3.14"
           HEYOKA_PY_CONDA_ARCH: "Linux-aarch64"
 
 workflows:
