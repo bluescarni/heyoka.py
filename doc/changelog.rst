@@ -6,6 +6,13 @@ Changelog
 7.14.1 (unreleased)
 -------------------
 
+New
+~~~
+
+- The prebuilt manylinux wheels for Python 3.15 (including free-threaded) are now available. The wheels for
+  Python 3.11 have been discontinued
+  (`#289 <https://github.com/bluescarni/heyoka.py/pull/289>`__).
+
 7.14.0 (2026-11-14)
 -------------------
 
